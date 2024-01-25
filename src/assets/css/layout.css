@@ -1,0 +1,38 @@
+/* header */
+.header{
+    display: flex;
+    justify-content: space-between;
+}
+
+.appHeaderLeft > a {
+    font-size: 1rem;
+    color: #212121;
+    display: block;
+    margin-top: 33px;
+}
+
+.appHeaderLeft > a > p {
+    margin-top: 7px;
+    font-size: 0.8rem;
+}
+
+
+
+.appHeaderLeft {
+    margin-left: 10px;
+    height: 100%;
+    position: absolute;
+    background: #fff;
+    width: 15%;
+    text-align: center;
+}
+
+.borderLine {
+    margin: auto;
+    margin-top: 50px;
+    padding-bottom: 50px;
+    border-bottom: 1px solid #6d6d6d;
+    font-size: 1.9rem;
+    font-weight: 700;
+    width: 80%;
+}
