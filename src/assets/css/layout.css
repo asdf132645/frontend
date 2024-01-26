@@ -1,14 +1,32 @@
-/* header */
-.header{
-    display: flex;
-    justify-content: space-between;
+/*공통 css*/
+.mt1{
+    margin-top: 10px;
+}
+.mt2{
+    margin-top: 20px;
+}
+.mt3{
+    margin-top: 30px;
+}
+.mt4{
+    margin-top: 40px;
+}
+/* header-menu */
+.header {
+    height: 5rem;
+    width: 100%;
+    display: block;
+    background: #353942;
 }
 
 .appHeaderLeft > a {
     font-size: 1rem;
-    color: #212121;
+    color: #ffffff;
     display: block;
-    margin-top: 33px;
+    margin-top: 0px;
+    text-align: left;
+    padding-left: 30px;
+    padding: 30px;
 }
 
 .appHeaderLeft > a > p {
@@ -17,16 +35,19 @@
 }
 
 
-
 .appHeaderLeft {
-    margin-left: 10px;
     height: 100%;
     position: absolute;
-    background: #fff;
+    background: #353942;
     width: 15%;
     text-align: center;
+    border-right: 1px solid #dedede;
 }
-
+.leftMenu {
+    text-align: left;
+    margin-left: 16%;
+    padding-top: 47px;
+}
 .borderLine {
     margin: auto;
     margin-top: 50px;
@@ -35,4 +56,91 @@
     font-size: 1.9rem;
     font-weight: 700;
     width: 80%;
+    margin-bottom: 50px;
+    color: #ffffff;
 }
+
+.leftMenu > ul > li {
+    display: inline-block;
+    margin-left: 8px;
+    color: #ffffff;
+}
+
+.display-flex > div {
+    /*display: inline-block;*/
+    /*width: 47%;*/
+    vertical-align: middle;
+    padding-top: 31px;
+    color: #ffffff;
+}
+
+.lastMenu {
+    text-align: right;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #e6614a;
+    height: 3.39rem;
+    padding: 0 33px;
+    padding-top: 26px!important;
+}
+
+span.icoText {
+    margin-left: 7px;
+    display: inline-block;
+}
+.greenColor {
+    color: #29c7ca;
+}
+
+/* header-menu-end */
+
+/*main*/
+main.content {
+    margin-left: 15%;
+}
+
+.contentLeft {
+    text-align: left;
+    background: #f1f3f2;
+    width: 20%;
+    margin: 10px;
+    padding: 10px;
+}
+
+h3.titleText {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.execute {
+    text-align: center;
+    background: #fff;
+    /*border: 1px solid #28c7c7;*/
+    padding: 19px;
+    display: flex;
+    justify-content: space-between;
+}
+.initBtn {
+    background: #353942;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 7px;
+    font-size: 0.9rem;
+}
+p.startStopP {
+    border: 1px solid #28c7c7;
+    padding: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.stopDiv {
+    margin-left: 5px;
+}
+.leftActive{
+    background: #484c59;
+}
+/*main end*/

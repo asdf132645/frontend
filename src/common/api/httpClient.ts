@@ -1,16 +1,16 @@
 // useHttpClient.ts
 import axios, { AxiosRequestConfig } from 'axios';
 import { Endpoint, GenericObject } from '../type/generalTypes';
-import { Context } from '@nuxt/types';
 
 export interface ApiResponse<T> {
     code: number;
-    data: T | any;
-    msg: string;
+    data: T;
+    success: boolean;
 }
 
 interface HttpResponse<T> {
     data: ApiResponse<T>;
+    success: boolean;
 }
 
 export function useHttpClient() {

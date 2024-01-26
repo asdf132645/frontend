@@ -8,6 +8,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'HomeView',
         component: HomeView,
     },
+    {
+        path: '/analysis',
+        name: 'AnalysisView', // 수정: 다른 이름으로 변경
+        component: HomeView,
+    },
 ];
 
 const router = createRouter({
