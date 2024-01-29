@@ -11,4 +11,16 @@ export const apiConstants = {
             requiresToken: false,
         },
     },
+    rbcclassification: {
+        list: {
+            endpoint: 'rbc/getAllRbc',
+            requiresToken: false,
+        }
+    },
+    wbcclassification:{
+        list: {
+            endpoint: 'rbc/getAllWbc',
+            requiresToken: false,
+        }
+    }
 };
