@@ -1,13 +1,11 @@
 <template>
   <Fragment>
-    <div class="contentLeft">
-      <ProcessInfo/>
-    </div>
+      <Analysis/>
   </Fragment>
 </template>
 
 <script setup lang="ts">
-import ProcessInfo from "@/views/analysis/index";
+import Analysis from "@/views/analysis/index.vue";
 
 
 </script>

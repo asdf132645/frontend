@@ -19,7 +19,7 @@ export const apiConstants = {
     },
     wbcclassification:{
         list: {
-            endpoint: 'rbc/getAllWbc',
+            endpoint: 'wbc/getAllWbc',
             requiresToken: false,
         }
     }
