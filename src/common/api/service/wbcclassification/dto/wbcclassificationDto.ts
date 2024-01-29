@@ -1,6 +1,7 @@
 export interface WBClassificationRes {
-    category: string;
+    id: number;
     class: string;
-    degree: string;
+    count: number;
+    percent: number;
   }
   

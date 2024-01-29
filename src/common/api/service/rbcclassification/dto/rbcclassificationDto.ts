@@ -1,6 +1,7 @@
 export interface RBCClassificationRes {
+    id: number;
     category: string;
     class: string;
-    degree: string;
+    degree: number;
   }
   
