@@ -1,6 +1,6 @@
 <template>
     <div class="mt2">
-      <h3 class="titleText"> <span class="greenColor">P</span>rocessing <span class="greenColor">I</span>nformation </h3>
+      <h3 class="titleText"> <span class="greenColor">RBC</span> <span class="greenColor">C</span>lassification </h3>
       <ul>
         <li v-for="rbcInfoItem in rbcInfoArray" :key="rbcInfoItem?.id">
           <p>{{ rbcInfoItem?.category }}</p>

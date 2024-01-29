@@ -7,14 +7,14 @@
     </div>
     <div>
       <workingView/>
-      <wbcclassification/>
       <rbcclassification/>
+      <wbcclassification/>
     </div>
   </Fragment>
 </template>
 
 <script setup lang="ts">
-// import ProcessInfo from '@/views/analysis/commponent/processInfo.vue';
+import ProcessInfo from '@/views/analysis/commponent/processInfo.vue';
 import Execute from '@/views/analysis/commponent/execute.vue';
 import workingView from '@/views/analysis/commponent/workingView.vue';
 import orderList from './commponent/orderList.vue';

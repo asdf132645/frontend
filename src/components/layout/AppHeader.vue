@@ -41,8 +41,12 @@
         </div>
         <div class="lastMenu">
           <ul>
-            <li>date: 2024-01-22</li>
-            <li>User name</li>
+            <li>Logged: 2024-01-22</li>
+            <li>10:26:49
+              <select>
+                <option>admin</option>
+              </select>
+            </li>
           </ul>
         </div>
       </div>
