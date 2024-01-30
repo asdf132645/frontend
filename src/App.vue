@@ -9,31 +9,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { io, Socket } from 'socket.io-client';
+import { onMounted, getCurrentInstance } from 'vue';
+import { tcpReq } from '@/common/tcpRequest/tcpReq';
+const instance = getCurrentInstance();
 
 import AppHeader from "@/components/layout/AppHeader.vue";
-
-const socket: Socket = io('http://localhost:3002', { transports: ['websocket'], withCredentials: true });
-
-const messageToSend = ref("");
-
 const startSys = () => {
-  if (messageToSend.value.trim() !== "") {
-    socket.emit('message', { type: 'SEND_DATA', payload: { message: messageToSend.value } });
-  } else {
-    console.warn('Message is empty. Please enter a message.');
-  }
+  instance?.appContext.config.globalProperties.$socket.emit('message', { type: 'SEND_DATA', payload: tcpReq.embedStatus.start });
+
 };
 
 onMounted(() => {
-  socket.connect();
+  //최초 실행
+  instance?.appContext.config.globalProperties.$socket.connect();
   startSys();
 });
 
-socket.on('chat', (data) => {
-  console.log(data)
+instance?.appContext.config.globalProperties.$socket.on('chat', (data) => {
+  console.log(data);
 });
+
 </script>
 
 <style>

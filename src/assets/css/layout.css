@@ -39,7 +39,7 @@
     height: 100%;
     position: absolute;
     background: #353942;
-    width: 15%;
+    width: 12%;
     text-align: center;
     border-right: 1px solid #dedede;
 }
@@ -97,7 +97,7 @@ span.icoText {
 
 /*main*/
 main.content {
-    margin-left: 15%;
+    margin-left: 12%;
 }
 
 .contentLeft {

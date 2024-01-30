@@ -29,7 +29,7 @@ onMounted(() => {
 const fetchProcessInfo = async (): Promise<void> => {
   try {
     const response = await getProcessInfo();
-    console.log('Process Info:', response.data);
+    // console.log('Process Info:', response.data);
     if(response.success){
       processInfoArray.value = response.data as unknown as ProcessInfo[];
     }

@@ -21,13 +21,13 @@
   
   onMounted(() => {
     fetchWbcInfo();
-    console.log(wbcInfoArray)
+    // console.log(wbcInfoArray)
   });
   
   const fetchWbcInfo = async (): Promise<void> => {
     try {
       const response = await getAllWbc();
-      console.log('WBClassificationRes Info:', response.data);
+      // console.log('WBClassificationRes Info:', response.data);
       if(response.success){
         wbcInfoArray.value = response.data as unknown as WBClassificationRes[];
         

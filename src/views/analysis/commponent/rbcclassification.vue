@@ -25,7 +25,7 @@
   const fetchRbcInfo = async (): Promise<void> => {
     try {
       const response = await getAllRbc();
-      console.log('RBCClassificationRes Info:', response.data);
+      // console.log('RBCClassificationRes Info:', response.data);
       if(response.success){
         rbcInfoArray.value = response.data as unknown as RBCClassificationRes[];
       }
