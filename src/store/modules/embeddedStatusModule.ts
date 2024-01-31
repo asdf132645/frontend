@@ -5,6 +5,7 @@ interface EmbeddedStatusState {
     embeddedStatusJobCmd: string;
     userStop: boolean;
     isRecoveryRun: boolean;
+    isPause: boolean,
     sysInfo: object;
 }
 
@@ -14,6 +15,7 @@ interface EmbeddedStatusModule {
         setEmbeddedStatusJobCmd: (state: EmbeddedStatusState, value: string) => void;
         setUserStop: (state: EmbeddedStatusState, value: boolean) => void;
         setIsRecoveryRun: (state: EmbeddedStatusState, value: boolean) => void;
+        setIsPause: (state: EmbeddedStatusState, value: boolean) => void;
         setSysInfo: (state: EmbeddedStatusState, value: object) => void;
     };
     actions: {
@@ -26,6 +28,7 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
         embeddedStatusJobCmd: '',
         userStop: false,
         isRecoveryRun: false,
+        isPause: false,
         sysInfo: {},
     }),
     mutations: {
@@ -38,6 +41,9 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
         setIsRecoveryRun(state: EmbeddedStatusState, value: boolean): void {
             state.isRecoveryRun = value;
         },
+        setIsPause(state: EmbeddedStatusState, value: boolean): void {
+            state.isPause = value;
+        },
         setSysInfo(state: EmbeddedStatusState, value: object): void {
             state.sysInfo = value;
         },
@@ -47,6 +53,7 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
             commit('setEmbeddedStatusJobCmd', payload.embeddedStatusJobCmd);
             commit('setUserStop', payload.userStop);
             commit('setIsRecoveryRun', payload.isRecoveryRun);
+            commit('setIsPause',payload.isPause);
             commit('setSysInfo', payload.sysInfo);
         },
     },
