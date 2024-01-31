@@ -24,7 +24,7 @@ interface ExecuteModule {
 export const executeModule: ExecuteModule = {
     state: () => ({
         analysisType: '',
-        wbcDiffVal: '',
+        wbcDiffVal: '100',
         stitchCount: '',
     }),
     mutations: {

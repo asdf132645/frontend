@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, getCurrentInstance} from "vue";
+import {ref, onMounted, getCurrentInstance, computed, watch} from "vue";
 
 import {useStore} from "vuex";
 import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
@@ -47,22 +47,20 @@ const instance = getCurrentInstance();
 
 // 스토어
 const store = useStore();
-const embeddedStatusJobCmd = ref(store.state.embeddedStatusJobCmd)
+const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+const executeState = computed(() => store.state.executeModule);
+const {analysisType:analysisTypeVal, wbcDiffVal:wbcCountVal, stitchCount: stitchCountVal} = executeState.value ?? {};
 const {isPause, isRunningState, userStop, isRecoveryRun, isInit} = embeddedStatusJobCmd.value ?? {};
+const analysisType = ref(analysisTypeVal);
+const wbcCount = ref(wbcCountVal);
+const stitchCount = ref(stitchCountVal);
 // 스토어 end
 
+
 //내부 변수
-const analysisType = ref(store.state.executeModule.analysisType);
-const wbcCount = ref(store.state.executeModule.wbcDiffVal);
-const stitchCount = ref(store.state.executeModule.stitchCount);
 const showStopBtn = ref(false);
 const btnStatus = ref('');
 //내부 변수
-
-//웹소켓으로 백엔드에 전송
-const emitSocketData = (type: string, payload: object) => {
-  instance?.appContext.config.globalProperties.$socket.emit('message', {type, payload});
-};
 
 onMounted(() => {
   if (isPause) {
@@ -78,6 +76,32 @@ onMounted(() => {
   }
 });
 
+// 스토어 변경 감시
+watch([embeddedStatusJobCmd, executeState], () => {
+  analysisType.value = executeState.value.analysisType;
+  wbcCount.value = executeState.value.wbcDiffVal;
+  stitchCount.value = executeState.value.stitchCount;
+
+  if (isPause) {
+    btnStatus.value = 'isPause';
+  } else if (isRunningState) {
+    btnStatus.value = 'isRunning';
+  } else if (userStop && !isRecoveryRun) {
+    btnStatus.value = 'start';
+  } else if (isInit === 'N') {
+    btnStatus.value = 'isInit';
+  } else {
+    btnStatus.value = 'start';
+  }
+
+  // showStopBtn 설정
+  showStopBtn.value = isPause || (userStop && !isRecoveryRun) || (userStop && isRecoveryRun) || isInit === 'N';
+});
+
+//웹소켓으로 백엔드에 전송
+const emitSocketData = (type: string, payload: object) => {
+  instance?.appContext.config.globalProperties.$socket.emit('message', {type, payload});
+};
 
 const toggleStartStop = (action: 'start' | 'stop') => {
   // 실행 여부 체크
