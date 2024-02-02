@@ -2,11 +2,11 @@
   <header class='header'>
     <nav>
       <!-- 왼쪽 메인 메뉴 -->
-      <div class='appHeaderLeft'>
+      <div class='appHeaderLeft' v-if="!appHeaderLeftHidden">
         <div class="borderLine">
           <span class="greenColor">U</span>MID
         </div>
-        <div class='toggleHeadBtn'>
+        <div class='toggleHeadBtn' @click="toggleAppHeaderLeft">
           <font-awesome-icon :icon="['fas', 'arrows-left-right-to-line']" />
           <span> menu toggle</span>
         </div>
@@ -30,6 +30,9 @@
           />
           <span class='icoText'>Data Base</span>
         </router-link>
+      </div>
+      <div v-else class="closeToggleBtn" @click="toggleAppHeaderLeft">
+        열기
       </div>
 
       <!--  좌측메뉴  -->
@@ -60,8 +63,13 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
+import {ref} from "vue";
 
 const route = useRoute();
+const appHeaderLeftHidden = ref(false);
+const toggleAppHeaderLeft = () => {
+  appHeaderLeftHidden.value = !appHeaderLeftHidden.value;
+};
 
 const isActive = (path: string) => {
   return route.path === path;
