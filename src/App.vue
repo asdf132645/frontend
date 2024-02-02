@@ -40,7 +40,7 @@ onMounted(() => {
 
 // 모든 tcp 통신으로 받은 응답값을 스토어에 저장하는 부분
 // 무조건 응답을 받는곳은 app.vue에서 정의
-// store에 저장하는 부분은 C:\workspace\frontend\src\common\lib\storeSetData\common.ts 여기에 무조건 정의
+// store에 저장하는 부분은 C:\workspace\frontend\src\common\lib\storeSetData\common.ts 여기에 무조건 정의하세요
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   const parsedData = JSON.parse(data);
@@ -53,10 +53,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     case 'INIT':
       startSys();
       break;
-    case 'START': //예외적으로 start를 응답으로 받으면 장비가 실행된 상태이기에 장비상태를 가지고온다. 예외적으로 담기만 하는 부분 러닝 인포는 담기만 함
+    case 'START': 
       runInfoGetTcpData();
       break;
-    case 'RUNNING_INFO':
+    case 'RUNNING_INFO'://예외적으로 start를 응답으로 받으면 장비가 실행된 상태이기에 장비상태를 가지고온다. 예외적으로 담기만 하는 부분 러닝 인포는 담기만 함
       await runningInfo(parseDataWarp);
       break;
   }
