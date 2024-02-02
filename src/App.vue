@@ -53,7 +53,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     case 'INIT':
       startSys();
       break;
-    case 'START': //예외적으로 start를 응답으로 받으면 장비가 실행된 상태이기에 장비상태를 가지고온다.
+    case 'START': //예외적으로 start를 응답으로 받으면 장비가 실행된 상태이기에 장비상태를 가지고온다. 예외적으로 담기만 하는 부분 러닝 인포는 담기만 함
       runInfoGetTcpData();
       break;
     case 'RUNNING_INFO':
