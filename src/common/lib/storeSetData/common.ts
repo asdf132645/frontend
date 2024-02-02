@@ -17,7 +17,7 @@ export const sysInfo = async (data: any) => {
 export const runningInfo = async (data: any) => {
     console.log('setRunningInfo',data);
     await store.dispatch('runningInfoModule/setRunningInfo',data);
-    // await store.dispatch('processInfoModule/setSingleProcessInfo', { key: 'cassetteNo', value: data.cassetNo });
+    await store.dispatch('processInfoModule/setSingleProcessInfo', { key: 'cassetteNo', value: data.cassetNo });
     await store.dispatch('processInfoModule/setSingleProcessInfo', { key: 'barcodeId', value: data.barcodeNo });
     await store.dispatch('processInfoModule/setSingleProcessInfo', { key: 'patientId', value: data.patientId });
     await store.dispatch('processInfoModule/setSingleProcessInfo', { key: 'patientName', value: data.patientNm });

@@ -25,7 +25,7 @@ interface RbcInfo {
     classInfo: ClassInfo[];
 }
 
-interface SlotInfo {
+export interface SlotInfo {
     slotNo: string;
     barcodeNo: string;
     patientId: string;

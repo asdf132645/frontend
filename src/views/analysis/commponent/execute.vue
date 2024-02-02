@@ -91,8 +91,11 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   wbcCount.value = newExecuteState.wbcDiffVal;
   stitchCount.value = newExecuteState.stitchCount;
 
+
   // deep 옵션을 사용하여 객체 내부의 변경을 감지
   const { isPause: newIsPause, isRunningState: newIsRunningState, userStop: newUserStop, isRecoveryRun: newIsRecoveryRun, isInit: newIsInit } = newEmbeddedStatusJobCmd || {};
+  console.log(newIsRecoveryRun)
+
   isPause.value = newIsPause;
   isRunningState.value = newIsRunningState;
   userStop.value = newUserStop;

@@ -25,6 +25,7 @@
 <script setup lang="ts">
 import {ref, onMounted, onBeforeUnmount, watch, computed} from 'vue';
 import { useStore } from "vuex";
+import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 
 // 스토어
 const store = useStore();
@@ -34,27 +35,38 @@ const circumference = 2 * Math.PI * radius;
 const dashoffset = ref(circumference);
 const wbcCount = ref(0);
 const progressMax = ref(0);
+const runningInfoModule = computed(() => store.state.runningInfoModule);
 
-watch(
-    () => store.state.runningInfoModule,
-    (newSlot) => {
-      const currentSlot = newSlot.find((item: any) => {
-        return item.stateCd === '03';
-      });
 
-      if (currentSlot) {
-        wbcCount.value = Number(currentSlot.wbcCount);
-        progressMax.value = Number(currentSlot.maxWbcCount);
+watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
+  // Convert iterable to an array using spread operator
+  const slotArray = JSON.parse(JSON.stringify(newSlot))
 
-        if (wbcCount.value > progressMax.value) {
-          wbcCount.value = progressMax.value;
-        }
 
-        const progressValue = ((wbcCount.value / progressMax.value) * 100).toFixed(2);
-        dashoffset.value = circumference * (1 - parseFloat(progressValue) / 100);
+  console.log(slotArray[0].runningInfo.slotInfo);
+
+  if (slotArray.length > 0) {
+    console.log(slotArray);
+
+    const currentSlot = slotArray[0].runningInfo.slotInfo.find((item: any) => {
+      // return item.stateCd === '03';
+      return item.stateCd === '02';
+    });
+
+    if (currentSlot) {
+      wbcCount.value = Number(currentSlot.wbcCount);
+      progressMax.value = Number(currentSlot.maxWbcCount);
+
+      if (wbcCount.value > progressMax.value) {
+        wbcCount.value = progressMax.value;
       }
+
+      const progressValue = ((wbcCount.value / progressMax.value) * 100).toFixed(2);
+      dashoffset.value = circumference * (1 - parseFloat(progressValue) / 100);
     }
-);
+  }
+});
+
 
 onMounted(() => {
   const interval = setInterval(() => {

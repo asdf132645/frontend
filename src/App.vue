@@ -9,7 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, getCurrentInstance, ref, createSlots} from 'vue';
+import {onMounted, getCurrentInstance, ref, createSlots, computed} from 'vue';
+import {useStore} from "vuex";
+// 스토어
+const store = useStore();
 import { tcpReq } from '@/common/tcpRequest/tcpReq';
 const instance = getCurrentInstance();
 import { sysInfo, runningInfo } from '@/common/lib/storeSetData/common';
@@ -18,16 +21,17 @@ const startSys = () => {
   instance?.appContext.config.globalProperties.$socket.emit('message', { type: 'SEND_DATA', payload: tcpReq.embedStatus.sysInfo });
 };
 
+
 const runInfoGetTcpData = () => {
   instance?.appContext.config.globalProperties.$socket.emit('message', { type: 'SEND_DATA', payload: tcpReq.embedStatus.runningInfo });
 };
-
 onMounted(() => {
   const socket = instance?.appContext.config.globalProperties.$socket;
   if (socket && !socket.connected) {
     socket.connect();
   }
   startSys();
+  runInfoGetTcpData();
 });
 
 
