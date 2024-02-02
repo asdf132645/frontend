@@ -8,6 +8,7 @@ interface ExecuteState {
 }
 
 interface ExecuteModule {
+    namespaced: true; // 네임스페이스 추가
     state: () => ExecuteState;
     mutations: {
         analysisTypeSet: (state: ExecuteState, value: string) => void;
@@ -22,6 +23,7 @@ interface ExecuteModule {
 }
 
 export const executeModule: ExecuteModule = {
+    namespaced: true, // 네임스페이스 추가
     state: () => ({
         analysisType: '',
         wbcDiffVal: '100',

@@ -1,46 +1,47 @@
-// wbcclassification.ts
+// wbcclassificationModule.ts
 import { Commit } from 'vuex';
 
-interface WBCClassificationState {
-    class: string;
-    count: number;
-    percent: number;
+interface Image {
+    fileName: string;
 }
 
-interface WBCClassificationModule {
-    state: () => WBCClassificationState;
+export interface WbcInfo {
+    id: string;
+    title: string;
+    name: string;
+    count: string | number;
+    percent?:string | number;
+    images?: Image[];
+}
+
+interface WbcClassificationState {
+    wbcInfo: WbcInfo | null;
+}
+
+interface WbcClassificationModule {
+    namespaced: true;
+    state: () => WbcClassificationState;
     mutations: {
-        setClass: (state: WBCClassificationState, value: string) => void;
-        setCount: (state: WBCClassificationState, value: number) => void;
-        setPercent: (state: WBCClassificationState, value: number) => void;
+        setWbcInfo: (state: WbcClassificationState, value: WbcInfo) => void;
     };
     actions: {
-        setWBCClassification: (context: { commit: Commit }, payload: WBCClassificationState) => void;
+        setWbcInfo: (context: { commit: Commit }, payload: WbcInfo) => void;
     };
 }
 
-export const classificationModule: WBCClassificationModule = {
+export const wbcClassificationModule: WbcClassificationModule = {
+    namespaced: true,
     state: () => ({
-        class: '',
-        count: 0,
-        percent: 0,
+        wbcInfo: null,
     }),
     mutations: {
-        setClass(state: WBCClassificationState, value: string): void {
-            state.class = value;
-        },
-        setCount(state: WBCClassificationState, value: number): void {
-            state.count = value;
-        },
-        setPercent(state: WBCClassificationState, value: number): void {
-            state.percent = value;
+        setWbcInfo(state: WbcClassificationState, value: WbcInfo): void {
+            state.wbcInfo = value;
         },
     },
     actions: {
-        setWBCClassification({ commit }: { commit: Commit }, payload: WBCClassificationState): void {
-            commit('setClass', payload.class);
-            commit('setCount', payload.count);
-            commit('setPercent', payload.percent);
+        setWbcInfo({ commit }: { commit: Commit }, payload: WbcInfo): void {
+            commit('setWbcInfo', payload);
         },
     },
 };

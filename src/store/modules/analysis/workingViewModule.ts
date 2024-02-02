@@ -20,6 +20,7 @@ interface WorkingViewState {
 }
 
 interface WorkingViewModule {
+    namespaced: true;
     state: () => WorkingViewState;
     mutations: {
         setEquipmentStatusCode: (state: WorkingViewState, value: string) => void;
@@ -34,6 +35,7 @@ interface WorkingViewModule {
 }
 
 export const workingViewModule: WorkingViewModule = {
+    namespaced: true,
     state: () => ({
         equipmentStatusCode: '',
         wbcCount: '',

@@ -17,6 +17,7 @@
     "vue-class-component": "^8.0.0-0",
     "vue-router": "4",
     "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0",
     "yarn": "^1.22.21"
   },
   "devDependencies": {

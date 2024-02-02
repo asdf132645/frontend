@@ -12,6 +12,7 @@ interface ProcessInfoState {
 }
 
 interface ProcessInfoModule {
+    namespaced: true;
     state: () => ProcessInfoState;
     mutations: {
         setCassetteNo: (state: ProcessInfoState, value: string) => void;
@@ -24,10 +25,12 @@ interface ProcessInfoModule {
     };
     actions: {
         setProcessInfo: (context: { commit: Commit }, payload: ProcessInfoState) => void;
+        setSingleProcessInfo: (context: { commit: Commit }, payload: { key: keyof ProcessInfoState; value: string | number }) => void;
     };
 }
 
 export const processInfoModule: ProcessInfoModule = {
+    namespaced: true,
     state: () => ({
         cassetteNo: '',
         barcodeId: '',
@@ -70,5 +73,11 @@ export const processInfoModule: ProcessInfoModule = {
             commit('setOrderDate', payload.orderDate);
             commit('setOilCount', payload.oilCount);
         },
+        setSingleProcessInfo({ commit }: { commit: Commit }, payload: { key: keyof ProcessInfoState; value: string | number }): void {
+            if (payload && payload.key && payload.value !== undefined) {
+                commit(`set${payload.key.charAt(0).toUpperCase() + payload.key.slice(1)}`, payload.value);
+            }
+        },
+
     },
 };

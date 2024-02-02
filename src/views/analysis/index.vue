@@ -1,16 +1,14 @@
 <template>
-  <Fragment>
     <div class="contentLeft">
       <Execute/>
       <ProcessInfo/>
       <orderList/>
     </div>
-    <div>
+    <div class="contentRight">
       <workingView/>
       <rbcclassification/>
       <wbcclassification/>
     </div>
-  </Fragment>
 </template>
 
 <script setup lang="ts">

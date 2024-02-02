@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, getCurrentInstance, computed, watch} from "vue";
+import {ref, getCurrentInstance, computed, watch, onMounted, nextTick} from "vue";
 
 import {useStore} from "vuex";
 import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
@@ -50,7 +50,13 @@ const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const executeState = computed(() => store.state.executeModule);
 const {analysisType:analysisTypeVal, wbcDiffVal:wbcCountVal, stitchCount: stitchCountVal} = executeState.value ?? {};
-const {isPause, isRunningState, userStop, isRecoveryRun, isInit} = embeddedStatusJobCmd.value ?? {};
+const isPause = ref(embeddedStatusJobCmd.value?.isPause);
+const isRunningState = ref(embeddedStatusJobCmd.value?.isRunningState);
+const userStop = ref(embeddedStatusJobCmd.value?.userStop);
+const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
+const isInit = ref(embeddedStatusJobCmd.value?.isInit);
+
+
 const analysisType = ref(analysisTypeVal);
 const wbcCount = ref(wbcCountVal);
 const stitchCount = ref(stitchCountVal);
@@ -60,42 +66,53 @@ const stitchCount = ref(stitchCountVal);
 //내부 변수
 const showStopBtn = ref(false);
 const btnStatus = ref('');
-//내부 변수
 
-onMounted(() => {
-  if (isPause) {
-    btnStatus.value = 'isPause';
-  } else if (isRunningState) {
-    btnStatus.value = 'isRunning';
-  } else if (userStop && !isRecoveryRun) {
-    btnStatus.value = 'start';
-  } else if (isInit === 'N') {
-    btnStatus.value = 'isInit';
-  } else {
-    btnStatus.value = 'start';
-  }
+onMounted(async () => {
+  await nextTick();
+  console.log('컴포넌트가 마운트되었습니다. embeddedStatusModule 상태:', store.state.embeddedStatusModule);
+  const newObj = { ...embeddedStatusJobCmd.value }
+  console.log('isInit 값:', newObj.isInit);
+  isInit.value = newObj.isInit;
+  isPause.value = newObj.isPause;
+  isRunningState.value = newObj.isRunningState;
+  userStop.value = newObj.userStop;
+  isRecoveryRun.value = newObj.isRecoveryRun;
+
 });
 
-// 스토어 변경 감시
-watch([embeddedStatusJobCmd, executeState], () => {
-  analysisType.value = executeState.value.analysisType;
-  wbcCount.value = executeState.value.wbcDiffVal;
-  stitchCount.value = executeState.value.stitchCount;
 
-  if (isPause) {
+// 스토어 변경 감시
+watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
+  console.log('감시시작')
+  const [newEmbeddedStatusJobCmd, newExecuteState] = newVals;
+
+  await nextTick();
+  analysisType.value = newExecuteState.analysisType;
+  wbcCount.value = newExecuteState.wbcDiffVal;
+  stitchCount.value = newExecuteState.stitchCount;
+
+  // deep 옵션을 사용하여 객체 내부의 변경을 감지
+  const { isPause: newIsPause, isRunningState: newIsRunningState, userStop: newUserStop, isRecoveryRun: newIsRecoveryRun, isInit: newIsInit } = newEmbeddedStatusJobCmd || {};
+  isPause.value = newIsPause;
+  isRunningState.value = newIsRunningState;
+  userStop.value = newUserStop;
+  isRecoveryRun.value = newIsRecoveryRun;
+  isInit.value = newIsInit;
+
+  if (isPause.value) {
     btnStatus.value = 'isPause';
-  } else if (isRunningState) {
+  } else if (isRunningState.value) {
     btnStatus.value = 'isRunning';
-  } else if (userStop && !isRecoveryRun) {
+  } else if (userStop.value && !isRecoveryRun.value) {
     btnStatus.value = 'start';
-  } else if (isInit === 'N') {
+  } else if (isInit.value === 'N') {
     btnStatus.value = 'isInit';
   } else {
     btnStatus.value = 'start';
   }
 
   // showStopBtn 설정
-  showStopBtn.value = isPause || (userStop && !isRecoveryRun) || (userStop && isRecoveryRun) || isInit === 'N';
+  showStopBtn.value = isPause.value || (userStop.value && !isRecoveryRun.value) || (userStop.value && isRecoveryRun.value) || isInit.value === 'N';
 });
 
 //웹소켓으로 백엔드에 전송
@@ -108,18 +125,18 @@ const toggleStartStop = (action: 'start' | 'stop') => {
   if (btnStatus.value === 'isRunning') {
     alert(messages.IDS_ERROR_ALREADY_RUNNING);
     return;
-  } else if (userStop) {
+  } else if (userStop.value) {
     alert(messages.IDS_RECOVER_GRIPPER_CONDITION);
     return;
   }
 
   if (action === 'start') {
-    if (isPause) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
+    if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
       emitSocketData('SEND_DATA', tcpReq.embedStatus.restart);
       return;
     }
     const startAction = tcpReq.embedStatus.startAction;
-    if (isInit) { // 초기화 여부 체크 초기화가 되어있는 상태이면 실행
+    if (isInit.value === 'Y') { // 초기화 여부 체크 초기화가 되어있는 상태이면 실행
       // 웹소켓으로 백엔드에 전송
       emitSocketData('SEND_DATA', {
         ...startAction,
@@ -131,21 +148,21 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     }
   } else {
     // 장비 중단
-    if (!isRunningState) {
+    if (!isRunningState.value) {
       alert(messages.IDS_ERROR_STOP_PROCESS);
       return;
     }
     emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
   }
   // 버튼 모양 바꾸는 조건문
-  if (isPause || userStop && !isRecoveryRun || userStop && isRecoveryRun || isInit === 'N') {
+  if (isPause.value || userStop.value && !isRecoveryRun.value || userStop.value && isRecoveryRun || isInit.value === 'N') {
     showStopBtn.value = true;
-  } else if (isRunningState) {
+  } else if (isRunningState.value) {
     showStopBtn.value = false;
   }
 };
 
-const sendInit = () => { // 초기화진행
+const sendInit = () => { // 장비 초기화 진행
   emitSocketData('SEND_DATA', tcpReq.embedStatus.init);
 }
 

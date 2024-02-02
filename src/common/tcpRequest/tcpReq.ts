@@ -1,18 +1,18 @@
 import {getCurrentDateTime} from "@/common/lib/utils/dateUtils";
 
 export const tcpReq = {
-    embedStatus: { // execute.vue 에서주로 사용 테스트페이지에서 사용하는 객체
+    embedStatus: {
         start: {
-            "jobCmd": "START",
-            "reqUserId": "",
-            "testType": "",
-            "wbcCount": "",
-            "reqDttm": ""
+            jobCmd: "START",
+            reqUserId: "admin",
+            testType: "",
+            wbcCount: "",
+            reqDttm: ""
         },
         startAction: {
             jobCmd: 'START',
-            reqUserId: '',
-            testType: '',
+            reqUserId: 'admin',
+            testType: '01',
             wbcCount: '',
             stitchCount: '',
             runningMode: 'this.settings.runningMode',
@@ -23,28 +23,37 @@ export const tcpReq = {
         },
         init:{
             jobCmd: 'INIT',
-            reqUserId: 'this.currentUser.userId',
+            reqUserId: 'admin',
             reqDttm: getCurrentDateTime(),
         },
         restart: {
             jobCmd: 'RESTART',
-            reqUserId: 'this.currentUser.userId',
+            reqUserId: 'admin',
             reqDttm: getCurrentDateTime(),
             bfSelectFiles: []
         },
         stop: {
             jobCmd: 'STOP',
-            reqUserId: 'self.currentUser.userId',
+            reqUserId: 'admin',
             reqDttm: getCurrentDateTime(),
             isEmergency: 'N',
             isUserStop: 'Y'
         },
         end: {
-            "jobCmd": "END",
-            "reqUserId": "",
-            "testType": "",
-            "wbcCount": "",
-            "reqDttm": ""
+            jobCmd: "END",
+            reqUserId: "admin",
+            testType: "",
+            wbcCount: "",
+            reqDttm: ""
+        },
+        runningInfo: {
+            jobCmd: "RUNNING_INFO",
+            reqUserId: "admin"
+        },
+        sysInfo:{
+            jobCmd: 'SYSINFO',
+            reqUserId: 'admin',
+            reqDttm: getCurrentDateTime(),
         },
     },
 };
