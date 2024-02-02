@@ -1,20 +1,26 @@
 <template>
-  <div>
+  <div class="mt1">
+    <h3 class="titleText"><span class="greenColor">O</span>rder <span class="greenColor">L</span>ist</h3>
     <table>
       <thead>
-        <tr>
-          <th>Barcode ID</th>
-          <th>Patient Name</th>
-          <th>Order Date</th>
-          <th>State</th>
-        </tr>
+      <tr>
+        <th>Barcode ID</th>
+        <th>Patient Name</th>
+        <th>Order Date</th>
+        <th>State</th>
+      </tr>
       </thead>
-      <tbody>
+      <tbody v-if="dspOrderList.length > 0">
       <tr v-for="(item, index) in dspOrderList" :key="index">
         <td>{{ item.barcodeId }}</td>
         <td>{{ item.patientName }}</td>
         <td>{{ item.orderDate }}</td>
-        <td>{{ getCommonCode('14',item.state) }}</td>
+        <td>{{ getCommonCode('14', item.state) }}</td>
+      </tr>
+      </tbody>
+      <tbody v-else>
+      <tr>
+        <td colspan="4">Data is empty.</td>
       </tr>
       </tbody>
     </table>

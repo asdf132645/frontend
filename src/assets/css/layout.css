@@ -15,6 +15,14 @@
     margin-top: 40px;
 }
 
+.mb1 {
+    margin-bottom: 10px;
+}
+
+.mb2 {
+    margin-bottom: 20px;
+}
+
 /* header-menu */
 .header {
     height: 5rem;
@@ -37,7 +45,12 @@
     margin-top: 7px;
     font-size: 0.8rem;
 }
-
+.toggleHeadBtn {
+    background: #35b0b6;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+}
 
 .appHeaderLeft {
     height: 100%;
@@ -50,34 +63,37 @@
 
 .leftMenu {
     text-align: left;
-    margin-left: 16%;
+    margin-left: 13%;
     padding-top: 47px;
 }
 
 .borderLine {
-    margin: auto;
-    margin-top: 50px;
-    padding-bottom: 50px;
-    border-bottom: 1px solid #6d6d6d;
+    margin: 0 auto;
+    padding-top: 25px;
+    padding-bottom: 25px;
     font-size: 1.9rem;
     font-weight: 700;
-    width: 80%;
-    margin-bottom: 50px;
+    width: 100%;
+    margin-bottom: 0px;
     color: #ffffff;
+    background: #29c7ca;
+    margin-left: 0;
 }
 
 .leftMenu > ul > li {
     display: inline-block;
     margin-left: 8px;
     color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 200;
+    font-family: sans-serif;
 }
 
 .display-flex > div {
-    /*display: inline-block;*/
-    /*width: 47%;*/
     vertical-align: middle;
     padding-top: 31px;
     color: #ffffff;
+    text-align: left;
 }
 
 .lastMenu {
@@ -97,7 +113,7 @@ span.icoText {
 }
 
 .greenColor {
-    color: #29c7ca;
+    color: #000;
 }
 
 /* header-menu-end */
@@ -135,11 +151,18 @@ main.content {
     margin: 7px 4px;
     padding: 10px;
 }
+
+.contentLeft > div{
+    background: #ffffff;
+    padding: 10px;
+}
+
 .contentRight > div:first-child {
     width: 22%;
 }
+
 h3.titleText {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 20px;
 }
@@ -183,30 +206,30 @@ p.startStopP {
     height: 120px;
     position: relative;
 }
-
+/*동그라미*/
 .progress-ring-circle {
     fill: transparent;
-    stroke: #3498db; /* 테두리 색상 */
-    /*stroke-dasharray: 0;*/
-    /*stroke-dashoffset: 0;*/
+    stroke-width: 4px;
+    stroke: #506496; /* 테두리 색상 */
+    stroke-dasharray: 200; /* 테두리 길이, 적절한 값으로 조절해보세요 */
+    stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.5s ease;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
     border-radius: 50%;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
 }
+.circular-progress-bar{
+    width: 100%;
+}
 
 .categories {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: flex-start;
     text-align: left;
 }
 
-ul.categoryNm {
-    width: 50%;
-    display: inline-block;
-}
 
 ul.classInfo {
     width: 50%;
@@ -215,7 +238,7 @@ ul.classInfo {
 
 ul.categoryNm {
     display: inline-block;
-    width: 10%;
+    width: 35%;
 }
 
 ul.classNm {
@@ -226,7 +249,22 @@ ul.classNm {
 
 ul.degree {
     display: inline-block;
+    width: 20%;
 }
 
-.degreeActive {color: #3498db;}
+.degreeActive {
+    color: #3498db;
+}
+
+.categories > ul > li {
+    padding-top: 10px;
+    font-size: 0.8rem;
+}
+.categories > ul > li > svg {
+    margin-right: 2px;
+}
+
+li.mb1.liTitle {
+    font-weight: 600;
+}
 /*main end*/

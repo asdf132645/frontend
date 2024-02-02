@@ -9,7 +9,7 @@ import {workingViewModule} from '@/store/modules/analysis/workingViewModule';
 import { embeddedStatusModule } from '@/store/modules/embeddedStatusModule';
 import { orderListModule } from '@/store/modules/analysis/orderListModule';
 import { runningInfoModule } from '@/store/modules/testPageCommon/ruuningInfo';
-import createPersistedState from 'vuex-persistedstate';
+// import createPersistedState from 'vuex-persistedstate';
 
 
 const store = createStore({
@@ -23,13 +23,7 @@ const store = createStore({
         embeddedStatusModule,
         orderListModule,
         runningInfoModule,
-    },
-    plugins: [
-        createPersistedState({
-            key: 'runningInfoModule',
-            paths: ['runningInfoModule.slotInfo'],
-        }),
-    ],
+    }
 
 });
 

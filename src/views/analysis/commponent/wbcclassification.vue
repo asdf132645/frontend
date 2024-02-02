@@ -4,20 +4,30 @@
       <span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification
     </h3>
     <div>
-      {{ dspWbcClassList }}
       <template v-for="(category, index) in dspWbcClassList" :key="index">
         <div class="categories">
           <ul class="categoryNm">
-            <li v-if="index === 0">클래스</li>
+            <li v-if="index === 0" class="mb1 liTitle">Class</li>
             <li>{{ getCategoryName(category) }}</li>
+            <li v-if="category === dspWbcClassList[dspWbcClassList.length - 1]">
+              total
+            </li>
           </ul>
           <ul class="classNm">
-            <li v-if="index === 0">카운트</li>
+            <li v-if="index === 0" class="mb1 liTitle">Count</li>
             <li>{{ category?.count }}</li>
+            <li v-if="category === dspWbcClassList[dspWbcClassList.length - 1]">
+              {{ totalCount || 0 }}
+            </li>
           </ul>
           <ul class="degree">
-            <li v-if="index === 0">%</li>
-            <li>{{ category?.percent }}</li>
+            <li v-if="index === 0" class="mb1 liTitle">%</li>
+            <li>
+              {{ totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0' }}
+            </li>
+            <li v-if="category === dspWbcClassList[dspWbcClassList.length - 1]">
+              100.00
+            </li>
           </ul>
         </div>
       </template>
@@ -28,7 +38,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
-import { WbcInfo } from "@/store/modules/analysis/wbcclassification";
+import { WbcInfo, basicWbcArr } from "@/store/modules/analysis/wbcclassification";
 
 interface SlotInfo {
   stateCd: string;
@@ -55,12 +65,13 @@ const pltCount = ref<string>("");
 const lowPowerPath = ref<any[]>([]);
 
 const updateDataArray = (newSlotInfo: WbcInfo[]) => {
-  dspWbcClassList.value = newSlotInfo;
-  dspBfClassList.value = newSlotInfo;
+  dspWbcClassList.value = newSlotInfo.length > 0 ? newSlotInfo : basicWbcArr;
+  dspBfClassList.value = dspWbcClassList.value;
 };
 onMounted(() => {
   const initialWbcClassList = store.state.wbcClassificationModule;
   updateDataArray(initialWbcClassList);
+  console.log(store.state.wbcClassificationModule)
 });
 
 watch(

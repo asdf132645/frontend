@@ -45,3 +45,91 @@ export const wbcClassificationModule: WbcClassificationModule = {
         },
     },
 };
+
+
+export const basicWbcArr = [
+    {
+        "id": "01",
+        "title": "NE",
+        "name": "Neutrophil",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "02",
+        "title": "LY",
+        "name": "Lymphocyte",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "03",
+        "title": "MO",
+        "name": "Monocyte",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "04",
+        "title": "EO",
+        "name": "Eosinophil",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "05",
+        "title": "BA",
+        "name": "Basophil",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "06",
+        "title": "BL",
+        "name": "Blast",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "07",
+        "title": "PC",
+        "name": "Plasma cell",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "08",
+        "title": "NR",
+        "name": "NRBC",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "09",
+        "title": "AR",
+        "name": "Artifact(Smudge)",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "10",
+        "title": "MC",
+        "name": "Malignant cell",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "11",
+        "title": "MT",
+        "name": "Mesothelial cell",
+        "count": "0",
+        "percent": "0"
+    },
+    {
+        "id": "12",
+        "title": "SM",
+        "name": "Smudge",
+        "count": "0",
+        "percent": "0"
+    }
+]

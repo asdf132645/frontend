@@ -5,17 +5,17 @@
       <template v-for="(category, index) in dspRbcClassList" :key="index">
         <div class='categories'>
           <ul class='categoryNm'>
-            <li v-if='index === 0'>Category</li>
+            <li v-if='index === 0' class="mb1 liTitle">Category</li>
             <li>{{ getCategoryName(category) }}</li>
           </ul>
           <ul class='classNm'>
-            <li v-if='index === 0'>Class</li>
+            <li v-if='index === 0' class="mb1 liTitle">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
               <li>{{ classInfo?.classNm }}</li>
             </template>
           </ul>
           <ul class='degree'>
-            <li v-if='index === 0'>Degree</li>
+            <li v-if='index === 0' class="mb1 liTitle">Degree</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
               <li>
                 <font-awesome-icon
@@ -35,25 +35,27 @@
 <script setup lang="ts">
 import {computed, ref, onMounted, watch} from "vue";
 import {useStore} from "vuex";
-import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
+import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 
 const store = useStore();
 const dspRbcClassList = ref<RbcInfo[]>([]);
 
 const updateDataArray = (newSlotInfo: RbcInfo[]) => {
-  // newSlotInfo를 이용하여 dspRbcClassList.value 업데이트
-  dspRbcClassList.value = newSlotInfo;
+  dspRbcClassList.value = newSlotInfo.length > 0 ? newSlotInfo : basicRbcArr;
 };
 
+onMounted(() => {
+  const initialRbcClassList = store.state.rbcClassificationModule;
+  updateDataArray(initialRbcClassList);
+});
+
 watch(
-    () => store.state.rbcClassificationModule,
+    () => store.state.rbcClassificationModule.value,
     (newSlotInfo) => {
       updateDataArray(newSlotInfo);
     },
-    { deep: true }
+    {deep: true}
 );
-
-
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;

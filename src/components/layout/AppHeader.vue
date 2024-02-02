@@ -6,6 +6,10 @@
         <div class="borderLine">
           <span class="greenColor">U</span>MID
         </div>
+        <div class='toggleHeadBtn'>
+          <font-awesome-icon :icon="['fas', 'arrows-left-right-to-line']" />
+          <span> menu toggle</span>
+        </div>
         <router-link to="/setting" :class='{ "leftActive": isActive("/setting") }'>
           <font-awesome-icon :icon="['fas', 'gear']"
                              style="font-size: 1rem;"
