@@ -1,6 +1,6 @@
 const path = require('path');
-const PurgeCSSPlugin = require('purgecss-webpack-plugin');
 const glob = require('glob-all');
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
 
 module.exports = {
   configureWebpack: {
@@ -23,16 +23,15 @@ module.exports = {
   // Vue 3에서 productionMode 설정 추가
   chainWebpack: (config) => {
     config.module
-      .rule('vue')
-      .use('vue-loader')
-      .tap(options => {
-        // Vue Loader 옵션에 productionMode 추가
-        options.compilerOptions = {
-          productionMode: true,
-          ...(options.compilerOptions || {}),
-        };
-        return options;
-      });
+        .rule('vue')
+        .use('vue-loader')
+        .tap(options => {
+          // Vue Loader 옵션에 productionMode 추가
+          options.compilerOptions = {
+            productionMode: true,
+            ...(options.compilerOptions || {}),
+          };
+          return options;
+        });
   },
 };
-// vue-cli-service build --mode production 최적화 빌드 방법

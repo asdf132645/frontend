@@ -9,6 +9,7 @@ import {workingViewModule} from '@/store/modules/analysis/workingViewModule';
 import { embeddedStatusModule } from '@/store/modules/embeddedStatusModule';
 import { orderListModule } from '@/store/modules/analysis/orderListModule';
 import { runningInfoModule } from '@/store/modules/testPageCommon/ruuningInfo';
+import {commonModule} from "@/store/modules/commonModule";
 // import createPersistedState from 'vuex-persistedstate';
 
 
@@ -23,6 +24,7 @@ const store = createStore({
         embeddedStatusModule,
         orderListModule,
         runningInfoModule,
+        commonModule,
     }
 
 });

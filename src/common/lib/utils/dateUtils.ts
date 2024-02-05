@@ -9,3 +9,17 @@ export function getCurrentDateTime(): string {
 
     return `${year}${month}${day}${hour}${minute}${second}`;
 }
+
+export const getCountToTime = (timeCount: number): string => {
+    const hour = Math.floor(timeCount / 3600);
+    const minutes = Math.floor((timeCount % 3600) / 60);
+    const seconds = Math.floor((timeCount % 3600) % 60);
+
+    return `${pad(hour, 2)}:${pad(minutes, 2)}:${pad(seconds, 2)}`;
+}
+
+const pad = (value: number, length: number): string => {
+    return String(value).padStart(length, '0');
+}
+
+

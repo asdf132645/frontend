@@ -39,10 +39,10 @@ const processInfoItem = ref<ProcessInfo>({
 
 // 스토어 변경 감시
 watch([processInfoModule.value], (newVal: ProcessInfo[]) => {
-  console.log(newVal)
+  // console.log(newVal)
   if (newVal.length > 0) {
     const firstItem = newVal[0]; // Assuming you want the first item in the array
-    console.log(firstItem)
+    // console.log(firstItem)
     processInfoItem.value = {
       cassetteNo: firstItem.cassetteNo,
       barcodeId: firstItem.barcodeId,

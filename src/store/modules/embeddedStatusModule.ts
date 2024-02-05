@@ -1,12 +1,18 @@
 // embeddedStatusModule.ts
+// sysInfo - 시스템 정보 확인
 import { Commit } from 'vuex';
+// 시스템 정보 타입
+export interface SystemInfo {
+    eqStatCd: string;
+    // 다른 sysInfo 속성들을 필요에 따라 추가해주세요.
+}
 
-interface EmbeddedStatusState {
+export interface EmbeddedStatusState {
     embeddedStatusJobCmd: string;
     userStop: boolean;
     isRecoveryRun: boolean;
     isPause: boolean,
-    sysInfo: object;
+    sysInfo:SystemInfo,
     isInit: string;
 }
 
@@ -18,7 +24,7 @@ interface EmbeddedStatusModule {
         setUserStop: (state: EmbeddedStatusState, value: boolean) => void;
         setIsRecoveryRun: (state: EmbeddedStatusState, value: boolean) => void;
         setIsPause: (state: EmbeddedStatusState, value: boolean) => void;
-        setSysInfo: (state: EmbeddedStatusState, value: object) => void;
+        setSysInfo: (state: EmbeddedStatusState, value: SystemInfo) => void;
         setIsInit: (state: EmbeddedStatusState, value: string) => void;
     };
     actions: {
@@ -33,7 +39,7 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
         userStop: false,
         isRecoveryRun: false,
         isPause: false,
-        sysInfo: {},
+        sysInfo: { eqStatCd: '' },
         isInit: '',
     }),
     mutations: {
@@ -49,7 +55,7 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
         setIsPause(state: EmbeddedStatusState, value: boolean): void {
             state.isPause = value;
         },
-        setSysInfo(state: EmbeddedStatusState, value: object): void {
+        setSysInfo(state: EmbeddedStatusState, value: SystemInfo): void {
             state.sysInfo = value;
         },
         setIsInit(state: EmbeddedStatusState, value: string): void {

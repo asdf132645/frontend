@@ -2,7 +2,10 @@
   <div class="mt2">
     <h3 class="titleText"><span class="greenColor">W</span>orking <span class="greenColor">V</span>iew </h3>
     <div>
-      <p>IDLE</p>
+      <p>{{ changeWqStatCd() }}</p>
+      <p>{{ wbcCount }}</p>
+      <p>Number of WBCs</p>
+      <p> {{ slideTime }} </p>
       <div class="circular-progress-bar">
         <svg class="progress-ring" width="120" height="120">
           <circle
@@ -26,31 +29,44 @@
 import {ref, onMounted, onBeforeUnmount, watch, computed} from 'vue';
 import { useStore } from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
+import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
+import {getCountToTime} from "@/common/lib/utils/dateUtils";
 
 // 스토어
 const store = useStore();
+const runningInfoModule = computed(() => store.state.runningInfoModule);
+const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+// 스토어
+
 const progress = ref(0);
 const radius = 50; // 반지름
 const circumference = 2 * Math.PI * radius;
 const dashoffset = ref(circumference);
 const wbcCount = ref(0);
 const progressMax = ref(0);
-const runningInfoModule = computed(() => store.state.runningInfoModule);
+const eqStatCd = ref('');
+const slideTime = ref('');
+const time = ref('');
+
+watch(() => embeddedStatusJobCmd.value, (newData: EmbeddedStatusState) => {
+  eqStatCd.value = newData.sysInfo.eqStatCd;
+});
+
 
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
-  // Convert iterable to an array using spread operator
   const slotArray = JSON.parse(JSON.stringify(newSlot))
 
+  if (slotArray[0].runningInfo?.changeSlide !== ''){
+    slideTime.value = getCountToTime(0);
+  }
 
-  console.log(slotArray[0].runningInfo.slotInfo);
 
   if (slotArray.length > 0) {
-    console.log(slotArray);
 
     const currentSlot = slotArray[0].runningInfo.slotInfo.find((item: any) => {
-      // return item.stateCd === '03';
-      return item.stateCd === '02';
+      return item.stateCd === '03';
+      // return item.stateCd === '02';
     });
 
     if (currentSlot) {
@@ -73,8 +89,31 @@ onMounted(() => {
     progress.value = (progress.value + 1) % 101;
   }, 50);
 
+  eqStatCd.value = '01';
+  slideTime.value = getCountToTime(0);
+  time.value = getCountToTime(0);
+
   onBeforeUnmount(() => {
     clearInterval(interval);
   });
 });
+
+const changeWqStatCd = (): string => {
+  switch (eqStatCd.value) {
+    case '01':
+      return 'IDLE';
+    case '02':
+      return 'READY';
+    case '03':
+      return 'ERROR';
+    case '04':
+      return 'RUNNING';
+    case '05':
+      return 'INITIALIZATION';
+    default:
+      return 'UNKNOWN';
+  }
+}
+
+
 </script>

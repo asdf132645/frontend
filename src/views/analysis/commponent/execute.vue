@@ -4,7 +4,7 @@
       <select v-model="analysisType">
         <option v-for="option in analysisOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <p class="startStopP" v-if="!showStopBtn">
+      <p class="startStopP" v-if="showStopBtn">
         <font-awesome-icon
             :icon="['fas', 'circle-play']"
             :class="{ 'startBtn': true, [btnStatus]: true }"
@@ -48,10 +48,11 @@ const instance = getCurrentInstance();
 // 스토어
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+const runInfo = computed(() => store.state.commonModule);
 const executeState = computed(() => store.state.executeModule);
 const {analysisType:analysisTypeVal, wbcDiffVal:wbcCountVal, stitchCount: stitchCountVal} = executeState.value ?? {};
-const isPause = ref(embeddedStatusJobCmd.value?.isPause);
-const isRunningState = ref(embeddedStatusJobCmd.value?.isRunningState);
+const isPause = ref(runInfo.value?.isPause);
+const isRunningState = ref(executeState.value?.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
@@ -69,21 +70,40 @@ const btnStatus = ref('');
 
 onMounted(async () => {
   await nextTick();
-  console.log('컴포넌트가 마운트되었습니다. embeddedStatusModule 상태:', store.state.embeddedStatusModule);
+  // console.log('컴포넌트가 마운트되었습니다. embeddedStatusModule 상태:', store.state.embeddedStatusModule);
   const newObj = { ...embeddedStatusJobCmd.value }
-  console.log('isInit 값:', newObj.isInit);
+  const runInfoObj = { ...runInfo.value };
+  // console.log('isInit 값:', newObj.isInit);
   isInit.value = newObj.isInit;
   isPause.value = newObj.isPause;
-  isRunningState.value = newObj.isRunningState;
   userStop.value = newObj.userStop;
   isRecoveryRun.value = newObj.isRecoveryRun;
 
+  isRunningState.value = runInfoObj.isRunningState;
+
+  showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
+
 });
+
+watch([runInfo.value], async (newVals) => {
+  await nextTick();
+  const [newRunInfo] = newVals;
+
+  const { isRunningState: newIsRunningState } = newRunInfo || {};
+  isRunningState.value = newIsRunningState;
+
+  if (isRunningState.value) {
+    btnStatus.value = 'isRunning';
+    showStopBtn.value = false;
+  }
+
+  showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
+})
 
 
 // 스토어 변경 감시
 watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
-  console.log('감시시작')
+  // console.log('감시시작')
   const [newEmbeddedStatusJobCmd, newExecuteState] = newVals;
 
   await nextTick();
@@ -93,20 +113,17 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
 
   // deep 옵션을 사용하여 객체 내부의 변경을 감지
-  const { isPause: newIsPause, isRunningState: newIsRunningState, userStop: newUserStop, isRecoveryRun: newIsRecoveryRun, isInit: newIsInit } = newEmbeddedStatusJobCmd || {};
-  console.log(newIsRecoveryRun)
+  const { isPause: newIsPause, userStop: newUserStop, isRecoveryRun: newIsRecoveryRun, isInit: newIsInit } = newEmbeddedStatusJobCmd || {};
+  // console.log(newIsRecoveryRun)
 
   isPause.value = newIsPause;
-  isRunningState.value = newIsRunningState;
   userStop.value = newUserStop;
   isRecoveryRun.value = newIsRecoveryRun;
   isInit.value = newIsInit;
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
-  } else if (isRunningState.value) {
-    btnStatus.value = 'isRunning';
-  } else if (userStop.value && !isRecoveryRun.value) {
+  }  else if (userStop.value && !isRecoveryRun.value) {
     btnStatus.value = 'start';
   } else if (isInit.value === 'N') {
     btnStatus.value = 'isInit';
@@ -114,8 +131,6 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     btnStatus.value = 'start';
   }
 
-  // showStopBtn 설정
-  showStopBtn.value = isPause.value || (userStop.value && !isRecoveryRun.value) || (userStop.value && isRecoveryRun.value) || isInit.value === 'N';
 });
 
 //웹소켓으로 백엔드에 전송
@@ -147,7 +162,11 @@ const toggleStartStop = (action: 'start' | 'stop') => {
         wbcCount: wbcCount.value,
         testType: analysisType.value
       });
-
+      const InfoData = {
+        startEmbedded: true,
+      }
+      // 시작 버튼이 눌리면 연속적으로 실행정보, 장비정보를 요청한다.
+      store.dispatch('commonModule/setCommonInfo', InfoData);
     }
   } else {
     // 장비 중단
@@ -157,12 +176,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     }
     emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
   }
-  // 버튼 모양 바꾸는 조건문
-  if (isPause.value || userStop.value && !isRecoveryRun.value || userStop.value && isRecoveryRun || isInit.value === 'N') {
-    showStopBtn.value = true;
-  } else if (isRunningState.value) {
-    showStopBtn.value = false;
-  }
+
 };
 
 const sendInit = () => { // 장비 초기화 진행

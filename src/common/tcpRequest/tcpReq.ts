@@ -55,5 +55,10 @@ export const tcpReq = {
             reqUserId: 'admin',
             reqDttm: getCurrentDateTime(),
         },
+        pause : {
+            jobCmd: 'PAUSE',
+            reqUserId: 'admin',
+            reqDttm: getCurrentDateTime(),
+        },
     },
 };

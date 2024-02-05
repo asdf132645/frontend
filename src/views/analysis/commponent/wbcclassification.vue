@@ -71,7 +71,7 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
 onMounted(() => {
   const initialWbcClassList = store.state.wbcClassificationModule;
   updateDataArray(initialWbcClassList);
-  console.log(store.state.wbcClassificationModule)
+  // console.log(store.state.wbcClassificationModule)
 });
 
 watch(

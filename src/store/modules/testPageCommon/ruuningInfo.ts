@@ -1,5 +1,5 @@
 // runningInfoModule.ts
-import { Commit } from 'vuex';
+import {Commit, Dispatch} from 'vuex';
 
 interface ClassInfo {
     classId: string;
@@ -54,7 +54,8 @@ export interface SlotInfo {
     rbcInfo: RbcInfo[];
 }
 
-interface RunningInfo {
+export interface RunningInfo {
+    changeSlide: string;
     resultCode: string;
     resultMsg: string;
     errorLevel: { level: string; message: string };
@@ -63,6 +64,7 @@ interface RunningInfo {
     iCasStat: number;
     oCasStat: number;
     cassetId: string;
+    isRunningState: boolean;
     slotInfo: SlotInfo[];
 }
 
@@ -78,6 +80,8 @@ interface RunningInfoModule {
     };
     actions: {
         setRunningInfo: (context: { commit: Commit }, payload: RunningInfo) => void;
+        updateRunningInfo: (context: { commit: Commit }, payload: { key: keyof RunningInfo; value: string | number }) => void;
+
     };
 }
 
@@ -95,5 +99,11 @@ export const runningInfoModule: RunningInfoModule = {
         setRunningInfo({ commit }: { commit: Commit }, payload: RunningInfo): void {
             commit('setRunningInfo', payload);
         },
+        updateRunningInfo({ commit }: { commit: Commit }, payload: { key: keyof RunningInfo; value: string | number }): void {
+            if (payload && payload.key && payload.value !== undefined) {
+                commit(`set${payload.key.charAt(0).toUpperCase() + payload.key.slice(1)}`, payload.value);
+            }
+        },
+
     },
 };

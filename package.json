@@ -12,6 +12,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.5",
     "axios": "^1.6.5",
     "core-js": "^3.8.3",
+    "glob-all": "^3.3.1",
     "socket.io-client": "^4.7.4",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
