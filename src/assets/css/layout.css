@@ -223,6 +223,19 @@ p.startStopP {
     width: 100%;
 }
 
+.rotate-animation {
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+/*동그라미 끝*/
 .categories {
     display: flex;
     justify-content: space-between;

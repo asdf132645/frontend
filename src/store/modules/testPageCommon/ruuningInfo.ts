@@ -1,5 +1,8 @@
 // runningInfoModule.ts
 import {Commit, Dispatch} from 'vuex';
+export interface ChangeSlideState {
+    changeSlide: string;
+}
 
 interface ClassInfo {
     classId: string;
@@ -61,8 +64,8 @@ export interface RunningInfo {
     errorLevel: { level: string; message: string };
     jobCmd: string;
     processingCode: string;
-    iCasStat: number;
-    oCasStat: number;
+    iCasStat: string;
+    oCasStat: string;
     cassetId: string;
     isRunningState: boolean;
     slotInfo: SlotInfo[];
@@ -70,6 +73,7 @@ export interface RunningInfo {
 
 interface RunningInfoState {
     runningInfo: RunningInfo | null;
+    changeSlideState: ChangeSlideState | null;
 }
 
 interface RunningInfoModule {
@@ -77,11 +81,12 @@ interface RunningInfoModule {
     state: () => RunningInfoState;
     mutations: {
         setRunningInfo: (state: RunningInfoState, value: RunningInfo) => void;
+        setChangeSlide: (state: RunningInfoState, value: string) => void;
     };
     actions: {
         setRunningInfo: (context: { commit: Commit }, payload: RunningInfo) => void;
         updateRunningInfo: (context: { commit: Commit }, payload: { key: keyof RunningInfo; value: string | number }) => void;
-
+        setChangeSlide: (context: { commit: Commit }, value: string) => void;
     };
 }
 
@@ -89,11 +94,23 @@ export const runningInfoModule: RunningInfoModule = {
     namespaced: true,
     state: () => ({
         runningInfo: null,
+        changeSlideState: null,
     }),
     mutations: {
         setRunningInfo(state: RunningInfoState, value: RunningInfo): void {
-            state.runningInfo = value;
+            // setRunningInfo에서 호출된 경우에만 값을 덮어쓰기
+            if (value) {
+                state.runningInfo = value;
+            }
         },
+        setChangeSlide(state: RunningInfoState, value: string): void {
+            if (state.changeSlideState) {
+                state.changeSlideState.changeSlide = value;
+            } else {
+                state.changeSlideState = { changeSlide: value };
+            }
+        },
+
     },
     actions: {
         setRunningInfo({ commit }: { commit: Commit }, payload: RunningInfo): void {
@@ -104,6 +121,8 @@ export const runningInfoModule: RunningInfoModule = {
                 commit(`set${payload.key.charAt(0).toUpperCase() + payload.key.slice(1)}`, payload.value);
             }
         },
-
+        setChangeSlide({ commit }: { commit: Commit }, value: string): void {
+            commit('setChangeSlide', value);
+        },
     },
 };

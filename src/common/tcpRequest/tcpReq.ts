@@ -60,5 +60,10 @@ export const tcpReq = {
             reqUserId: 'admin',
             reqDttm: getCurrentDateTime(),
         },
+        runIngComp: {
+            jobCmd: 'RUNNING_COMP',
+            reqUserId: 'admin',
+            reqDttm: getCurrentDateTime(),
+        }
     },
 };

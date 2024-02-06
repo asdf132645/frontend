@@ -6,6 +6,15 @@ interface ClassInfo {
     classNm: string;
     degree: string;
 }
+export interface BasicRbcInfo {
+    categoryId: string;
+    categoryNm: string;
+    classInfo: {
+        classId: string;
+        classNm: string;
+        degree: string;
+    }[];
+}
 
 export interface RbcInfo {
     categoryId: string;

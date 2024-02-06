@@ -10,7 +10,7 @@
         <svg class="progress-ring" width="120" height="120">
           <circle
               class="progress-ring-circle"
-              :class="{ 'completed': progress === 100 }"
+              :class="{ 'completed': progress === 100, 'rotate-animation': isAnimationEnabled }"
               :stroke-dasharray="circumference"
               :stroke-dashoffset="dashoffset"
               r="50"
@@ -39,6 +39,7 @@ const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 // 스토어
 
 const progress = ref(0);
+const timeNum = ref(0);
 const radius = 50; // 반지름
 const circumference = 2 * Math.PI * radius;
 const dashoffset = ref(circumference);
@@ -47,22 +48,54 @@ const progressMax = ref(0);
 const eqStatCd = ref('');
 const slideTime = ref('');
 const time = ref('');
+let countingInterval: number | null = null;
+const isAnimationEnabled = ref(false);
 
-watch(() => embeddedStatusJobCmd.value, (newData: EmbeddedStatusState) => {
+watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   eqStatCd.value = newData.sysInfo.eqStatCd;
-});
+},{deep: true});
+
+const startCounting = (): void => {
+  if (countingInterval) {
+    // 이미 실행 중인 interval이 있다면 중지
+    clearInterval(countingInterval);
+  }
+
+  countingInterval = setInterval(() => {
+    // 초를 1씩 증가
+    timeNum.value = (timeNum.value + 1) % 60;
+    // slideTime을 갱신
+    slideTime.value = getCountToTime(timeNum.value);
+  }, 1000);
+
+  onBeforeUnmount(() => {
+    if (countingInterval) {
+      clearInterval(countingInterval);
+    }
+  });
+};
+
 
 
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
 
-  if (slotArray[0].runningInfo?.changeSlide !== ''){
-    slideTime.value = getCountToTime(0);
+  if (slotArray[0].changeSlideState?.changeSlide.value === 'start') {
+    startCounting();
+    isAnimationEnabled.value = true;
+  } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
+    if (countingInterval !== null) {
+      // stop일 경우 실행 중인 interval을 중지
+      clearInterval(countingInterval);
+      countingInterval = null;
+    }
+    isAnimationEnabled.value = false;
+
   }
 
 
-  if (slotArray.length > 0) {
+  if (slotArray[0].runningInfo) {
 
     const currentSlot = slotArray[0].runningInfo.slotInfo.find((item: any) => {
       return item.stateCd === '03';

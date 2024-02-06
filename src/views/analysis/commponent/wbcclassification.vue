@@ -11,7 +11,7 @@
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
-              <li v-if="innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1">
+              <li v-if="(innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1) || (innerIndex === classList.length - 1)">
                 total
               </li>
             </ul>
@@ -29,7 +29,7 @@
                   totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
                 }}
               </li>
-              <li v-if="innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1">
+              <li v-if="(innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1) || (innerIndex === classList.length - 1)">
                 100.00
               </li>
             </ul>
@@ -44,7 +44,6 @@
 import {computed, ref, onMounted, watch} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-const runningInfoModule = computed(() => store.state.runningInfoModule);
 
 interface SlotInfo {
   stateCd: string;
@@ -76,7 +75,7 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
   if (Array.isArray(slotArray.wbcInfo)) {
     testType.value = slotArray.wbcInfo[0].testType;
     const wbcInfoArray = slotArray.wbcInfo.map((slot: any) => slot.wbcInfo);
-    dspWbcClassList.value = wbcInfoArray.length > 0 ? wbcInfoArray : [basicWbcArr];
+    dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicWbcArr];
     dspBfClassList.value = dspWbcClassList.value.flat(); // Flatten the array
   }else{
     dspWbcClassList.value = [basicWbcArr];

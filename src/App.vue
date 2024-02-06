@@ -24,7 +24,7 @@ let isRequestInProgress = false;
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 
 const instance = getCurrentInstance();
-import {sysInfoStore, runningInfoStore, wbcInfoStore} from '@/common/lib/storeSetData/common';
+import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 
@@ -65,34 +65,28 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       break;
     case 'START':
       runInfoPostWebSocket();
-      // 시작 버튼이 눌리면 연속적으로 실행정보, 장비정보를 요청한다.
-      await store.dispatch('commonModule/setCommonInfo', {
-        isRunningState: true,
-      });
+      await store.dispatch('commonModule/setCommonInfo', { isRunningState: true });
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
       break;
     case 'RUNNING_INFO':
       await runningInfoStore(parseDataWarp);
       await wbcInfoStore(parseDataWarp);
+      await rbcInfoStore(parseDataWarp);
       await runningInfoCheckStore(parseDataWarp);
       break;
     case 'STOP':
-      // 시작 버튼이 눌리면 연속적으로 실행정보, 장비정보를 요청한다.
-      await store.dispatch('commonModule/setCommonInfo', {
-        isRunningState: false,
-      });
+      await store.dispatch('commonModule/setCommonInfo', { isRunningState: false });
       isStartEmbeddedCalled.value = false;
       break;
   }
+
   console.log(JSON.stringify(parseDataWarp))
 
 });
 const startSysPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
-    instance?.appContext.config.globalProperties.$socket.emit('message', {
-      type: 'SEND_DATA',
-      payload: tcpReq.embedStatus.sysInfo
-    });
+    sendMessage(tcpReq.embedStatus.sysInfo);
     isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
   }
 };
@@ -100,10 +94,7 @@ const startSysPostWebSocket = async () => {
 const runInfoPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
-    instance?.appContext.config.globalProperties.$socket.emit('message', {
-      type: 'SEND_DATA',
-      payload: tcpReq.embedStatus.runningInfo
-    });
+    sendMessage(tcpReq.embedStatus.runningInfo);
     isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
   }
 };
@@ -117,27 +108,40 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     //슬라이드 변경시 데이터 저장
     if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {
       // running info 종료
-      instance?.appContext.config.globalProperties.$socket.emit('message', {
-        type: 'SEND_DATA',
-        payload: tcpReq.embedStatus.pause
-      });
+      sendMessage(tcpReq.embedStatus.pause);
     } else {
       if (currentSlot?.slotId !== runningSlotId.value) {
         // 실행중인 슬롯ID 변경
-        await store.dispatch('runningInfoModule/updateRunningInfo', {key: 'changeSlide', value: currentSlot?.slotId});
+        await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: currentSlot?.slotId});
         runningSlotId.value = String(currentSlot?.slotId);
       }
+    }
+
+    const regex = /[1,2,9]/g;
+    // 주문 내역 및 처리 결과 저장 -start
+    // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
+    if ((String(data?.iCasStat).search(regex) < 0) || data?.oCasStat === '111111111111') {
+      // runIngComp
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});
+      sendMessage(tcpReq.embedStatus.runIngComp);
     }
   }
 
 }
 setInterval(async () => {
-  if(isStartEmbeddedCalled.value === true){
-    await startSysPostWebSocket();
-    await new Promise(resolve => setTimeout(resolve, 3000)); // 1초 대기
-    await runInfoPostWebSocket();
-  }
-}, 5000);
+  // if(isStartEmbeddedCalled.value){
+  //   // await startSysPostWebSocket();
+  //   await runInfoPostWebSocket();
+  // }
+  await runInfoPostWebSocket();
+}, 500);
+
+const sendMessage = (payload: object) => {
+  instance?.appContext.config.globalProperties.$socket.emit('message', {
+    type: 'SEND_DATA',
+    payload: payload
+  });
+}
 
 
 </script>
