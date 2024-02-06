@@ -12,7 +12,7 @@
 // App.vue 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import {onMounted, getCurrentInstance, ref, createSlots, computed, watch} from 'vue';
+import {onMounted, getCurrentInstance, ref, computed, watch} from 'vue';
 import {useStore} from "vuex";
 // 스토어
 const store = useStore();
@@ -21,23 +21,22 @@ const commonDataGet = computed(() => store.state.commonModule);
 const isStartEmbeddedCalled = ref(false);
 let isRequestInProgress = false;
 
-watch([commonDataGet.value], async (newVals: any) => {
-  const newValsObj = JSON.parse(JSON.stringify(newVals))
-
-  if (newValsObj[0].startEmbedded && !isStartEmbeddedCalled.value) { // 수정된 부분
-    isStartEmbeddedCalled.value = true; // 추가된 부분
-    // 호출할 메서드 추가
-  }
-
-})
-
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
+
 const instance = getCurrentInstance();
-import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
+import {sysInfoStore, runningInfoStore, wbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 
+
 const runningSlotId = ref('');
+
+
+watch([commonDataGet.value], async (newVals: any) => {
+  const newValsObj = JSON.parse(JSON.stringify(newVals))
+  isStartEmbeddedCalled.value = newValsObj[0].startEmbedded;
+})
+
 onMounted(() => {
   const socket = instance?.appContext.config.globalProperties.$socket;
   if (socket && !socket.connected) {
@@ -73,6 +72,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       break;
     case 'RUNNING_INFO':
       await runningInfoStore(parseDataWarp);
+      await wbcInfoStore(parseDataWarp);
       await runningInfoCheckStore(parseDataWarp);
       break;
     case 'STOP':
@@ -80,15 +80,16 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await store.dispatch('commonModule/setCommonInfo', {
         isRunningState: false,
       });
+      isStartEmbeddedCalled.value = false;
       break;
   }
-  console.log(parseDataWarp)
+  console.log(JSON.stringify(parseDataWarp))
 
 });
 const startSysPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
-    await instance?.appContext.config.globalProperties.$socket.emit('message', {
+    instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: tcpReq.embedStatus.sysInfo
     });
@@ -99,7 +100,7 @@ const startSysPostWebSocket = async () => {
 const runInfoPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
-    await instance?.appContext.config.globalProperties.$socket.emit('message', {
+    instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: tcpReq.embedStatus.runningInfo
     });
@@ -130,17 +131,13 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   }
 
 }
-
 setInterval(async () => {
-  await startSysPostWebSocket();
-  // await runInfoPostWebSocket();
-}, 4000);
-
-setInterval(async () => {
-  // await startSysPostWebSocket();
-  await runInfoPostWebSocket();
+  if(isStartEmbeddedCalled.value === true){
+    await startSysPostWebSocket();
+    await new Promise(resolve => setTimeout(resolve, 3000)); // 1초 대기
+    await runInfoPostWebSocket();
+  }
 }, 5000);
-
 
 
 </script>

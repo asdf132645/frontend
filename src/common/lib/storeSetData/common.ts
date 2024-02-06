@@ -26,3 +26,7 @@ export const runningInfoStore = async (data: any) => {
     await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'wbcCount', value: data.maxWbcCount});
     await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'orderDate', value: data.orderDttm});
 }
+
+export const wbcInfoStore = async (data: any) => {
+    await store.dispatch('wbcClassificationModule/setWbcInfo', data.slotInfo);
+}

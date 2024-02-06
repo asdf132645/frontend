@@ -5,6 +5,7 @@ export interface CommonState {
     startEmbedded: boolean;
     eqStatCd: number;
     isRunningState: boolean;
+    totalCount: string;
 }
 
 interface CommonModule {
@@ -14,6 +15,7 @@ interface CommonModule {
         setStartEmbedded: (state: CommonState, value: boolean) => void;
         setEqStatCd: (state: CommonState, value: number) => void;
         setIsRunningState: (state: CommonState, value: boolean) => void;
+        setTotalCount: (state: CommonState, value: string) => void; // 추가
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -25,7 +27,8 @@ export const commonModule: CommonModule = {
     state: () => ({
         startEmbedded: false,
         eqStatCd: 0,
-        isRunningState: false, // 여기에 빠진 속성 추가
+        isRunningState: false,
+        totalCount: '', // 추가
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -36,6 +39,9 @@ export const commonModule: CommonModule = {
         },
         setIsRunningState(state: CommonState, value: boolean): void {
             state.isRunningState = value;
+        },
+        setTotalCount(state: CommonState, value: string): void { // 추가
+            state.totalCount = value;
         },
     },
     actions: {
@@ -50,6 +56,10 @@ export const commonModule: CommonModule = {
 
             if (payload.hasOwnProperty('isRunningState')) {
                 commit('setIsRunningState', payload.isRunningState);
+            }
+
+            if (payload.hasOwnProperty('totalCount')) { // 추가
+                commit('setTotalCount', payload.totalCount);
             }
         },
     },
