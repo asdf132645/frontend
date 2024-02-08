@@ -1,9 +1,14 @@
 // embeddedStatusModule.ts
 // sysInfo - 시스템 정보 확인
-import { Commit } from 'vuex';
+import {Commit} from 'vuex';
+
 // 시스템 정보 타입
 export interface SystemInfo {
     eqStatCd: string;
+    iCasStat: string;
+    oCasStat: string;
+    jobCmd: string;
+    siteCd: string;
     // 다른 sysInfo 속성들을 필요에 따라 추가해주세요.
 }
 
@@ -12,7 +17,7 @@ export interface EmbeddedStatusState {
     userStop: boolean;
     isRecoveryRun: boolean;
     isPause: boolean,
-    sysInfo:SystemInfo,
+    sysInfo: SystemInfo,
     isInit: string;
 }
 
@@ -39,7 +44,13 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
         userStop: false,
         isRecoveryRun: false,
         isPause: false,
-        sysInfo: { eqStatCd: '' },
+        sysInfo: {
+            eqStatCd: '',
+            iCasStat: '',
+            oCasStat: '',
+            jobCmd: '',
+            siteCd: '',
+        },
         isInit: '',
     }),
     mutations: {
@@ -63,7 +74,7 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
         },
     },
     actions: {
-        setEmbeddedStatusInfo({ commit }: { commit: Commit }, payload: EmbeddedStatusState): void {
+        setEmbeddedStatusInfo({commit}: { commit: Commit }, payload: EmbeddedStatusState): void {
             commit('setEmbeddedStatusJobCmd', payload.embeddedStatusJobCmd);
             commit('setUserStop', payload.userStop);
             commit('setIsRecoveryRun', payload.isRecoveryRun);

@@ -34,29 +34,57 @@
         </template>
       </template>
     </div>
+    <!--orders-->
+    <div>
+      <div class="categories">
+        <ul class="categoryNm">
+          <li>Others</li>
+        </ul>
+        <ul class="classNm">
+          <li>Platelets</li>
+          <li>Malaria</li>
+        </ul>
+        <ul class="degree">
+          <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 
 <script setup lang="ts">
-import {ref, onMounted, watch} from "vue";
+import {ref, onMounted, watch, computed} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
+import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 
 const store = useStore();
+const runningInfoModule = computed(() => store.state.runningInfoModule);
 const dspRbcClassList = ref<RbcInfo[][]>([]);
+const malariaCount = ref('');
+const maxRbcCount = ref('');
+const pltCount = ref('');
 
-
-const updateDataArray = (newSlotInfo: RbcInfo[]) => {
-  const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
-  if (Array.isArray(slotArray.rbcInfo)) {
-    const wbcInfoArray = slotArray.rbcInfo.map((slot: any) => slot.rbcInfo);
-    dspRbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
-  }else{
-    dspRbcClassList.value = [basicRbcArr];
+watch([runningInfoModule.value], (newVal: any) => {
+  if (newVal.length > 0) {
+    const firstItem = newVal[0].runningInfo;
+    if (firstItem) {
+      if (firstItem.jobCmd === 'RUNNING_INFO') {
+        const currentSlot = firstItem?.slotInfo.find(
+            (item: SlotInfo) => item.stateCd === "03"
+        );
+        if (currentSlot) {
+          malariaCount.value = currentSlot.malariaCount;
+          maxRbcCount.value = currentSlot.maxRbcCount;
+          pltCount.value = currentSlot.pltCount;
+        }
+      }
+    }
   }
+});
 
-};
 
 onMounted(() => {
   const initialRbcClassList = store.state.rbcClassificationModule;
@@ -71,6 +99,16 @@ watch(
     {deep: true}
 );
 
+const updateDataArray = (newSlotInfo: RbcInfo[]) => {
+  const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
+  if (Array.isArray(slotArray.rbcInfo)) {
+    const wbcInfoArray = slotArray.rbcInfo.map((slot: any) => slot.rbcInfo);
+    dspRbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
+  } else {
+    dspRbcClassList.value = [basicRbcArr];
+  }
+
+};
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 </script>
 <style>

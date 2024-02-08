@@ -1,4 +1,4 @@
-import {getCurrentDateTime} from "@/common/lib/utils/dateUtils";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 export const tcpReq = {
     embedStatus: {
@@ -19,23 +19,23 @@ export const tcpReq = {
             positionMargin: 'this.settings.positionMargin',
             wbcPositionMargin: 'this.settings.wbcPositionMargin',
             pltPositionMargin: 'this.settings.pltPositionMargin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
         },
         init:{
             jobCmd: 'INIT',
             reqUserId: 'admin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
         },
         restart: {
             jobCmd: 'RESTART',
             reqUserId: 'admin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
             bfSelectFiles: []
         },
         stop: {
             jobCmd: 'STOP',
             reqUserId: 'admin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
             isEmergency: 'N',
             isUserStop: 'Y'
         },
@@ -53,17 +53,17 @@ export const tcpReq = {
         sysInfo:{
             jobCmd: 'SYSINFO',
             reqUserId: 'admin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
         },
         pause : {
             jobCmd: 'PAUSE',
             reqUserId: 'admin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
         },
         runIngComp: {
             jobCmd: 'RUNNING_COMP',
             reqUserId: 'admin',
-            reqDttm: getCurrentDateTime(),
+            reqDttm: getDateTimeStr(),
         }
     },
 };

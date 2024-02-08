@@ -45,6 +45,7 @@
     margin-top: 7px;
     font-size: 0.8rem;
 }
+
 .toggleHeadBtn {
     background: #35b0b6;
     color: #fff;
@@ -129,15 +130,16 @@ main.content {
     text-align: left;
     background: #f1f3f2;
     display: inline-block;
-    width: 20%;
-    margin: 10px;
+    width: 25%;
+    margin: 10px 10px 0px 10px;
     padding: 10px;
     margin-top: 0;
+    height: 88vh;
 }
 
 .contentRight {
     display: inline-block;
-    width: 77%;
+    width: 72%;
     align-items: start;
     vertical-align: top;
     background: #f1f3f2;
@@ -148,23 +150,23 @@ main.content {
     vertical-align: top;
     width: 35.4%;
     background: #fff;
-    margin: 7px 4px;
+    margin: 7px 5px;
     padding: 10px;
 }
 
-.contentLeft > div{
+.contentLeft > div {
     background: #ffffff;
     padding: 10px;
 }
 
 .contentRight > div:first-child {
-    width: 22%;
+    width: 21%;
 }
 
 h3.titleText {
     font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .execute {
@@ -180,14 +182,15 @@ h3.titleText {
     background: #353942;
     color: #fff;
     border-radius: 5px;
-    padding: 5px;
+    padding: 8px;
     margin: 7px;
     font-size: 0.9rem;
+    cursor: pointer;
 }
 
 p.startStopP {
-    border: 1px solid #28c7c7;
-    padding: 10px;
+    border: 1px solid #484c59;
+    padding: 20px;
     margin-top: 5px;
     cursor: pointer;
     border-radius: 5px;
@@ -195,6 +198,14 @@ p.startStopP {
 
 .stopDiv {
     margin-left: 5px;
+    width: 50%;
+}
+
+.stopDiv > select {
+    width: 92%;
+    height: 24px;
+    margin-top: 10px;
+    border-radius: 5px;
 }
 
 .leftActive {
@@ -206,6 +217,7 @@ p.startStopP {
     height: 120px;
     position: relative;
 }
+
 /*동그라미*/
 .progress-ring-circle {
     fill: transparent;
@@ -219,7 +231,8 @@ p.startStopP {
     border-radius: 50%;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
 }
-.circular-progress-bar{
+
+.circular-progress-bar {
     width: 100%;
 }
 
@@ -235,6 +248,7 @@ p.startStopP {
         transform: rotate(360deg);
     }
 }
+
 /*동그라미 끝*/
 .categories {
     display: flex;
@@ -273,6 +287,7 @@ ul.degree {
     padding-top: 10px;
     font-size: 0.8rem;
 }
+
 .categories > ul > li > svg {
     margin-right: 2px;
 }
@@ -280,4 +295,124 @@ ul.degree {
 li.mb1.liTitle {
     font-weight: 600;
 }
+
+.startBtn.isInit {
+    color: #dedede;
+}
+
+ul.slideContent > li {
+    width: 100%;
+    height: 20px;
+    /*background: #dedede;*/
+    margin: 5px 0px;
+}
+
+ul.slideContent {
+    width: 45%;
+    display: inline-block;
+    margin: 5px;
+}
+
+.class-for-state-1 {
+    background: #37B9C8;
+}
+
+.class-for-state-0 {
+    background: #dedede;
+}
+
+@keyframes blinkBackground {
+    0% {
+        background-color: #dedede; /* 초기 배경 색상 */
+    }
+    50% {
+        background-color: #3498db; /* 깜빡거리는 중간 배경 색상 */
+    }
+    100% {
+        background-color: #dedede; /* 다시 초기 배경 색상 */
+    }
+}
+
+.class-for-state-2 {
+    animation: blinkBackground 1s infinite; /* 1초 간격으로 무한 반복됨 */
+}
+
+.class-for-state-3 {
+    background: #2A5A98;
+}
+
+.class-for-state-4 {
+    background: #A73A3A;
+}
+
+.out-for-state-0 {
+    background: #dedede;
+}
+
+.out-for-state-1 {
+    background: #37B9C8;
+}
+
+.outClassDefault {
+    background: #4D4F5C;
+}
+
+.orderListTable {
+    width: 100%;
+}
+
+.orderListTable th, .orderListTable td {
+    font-size: 0.8rem;
+    text-align: center;
+    vertical-align: middle;
+    padding: 5px;
+}
+
+.orderListTable th {
+    background: #353942;
+    color: #ffffff;
+}
+
+p.slideTime {
+    position: absolute;
+    top: 53px;
+    left: 40%;
+    font-size: 0.9rem;
+}
+
+.startDiv {
+    width: 50%;
+}
+
+.startDiv > select {
+    width: 100%;
+}
+
+p.startStopP:hover {
+    border: 1px solid #353942;
+    background-color: #353942;
+}
+ul.slideContent > p {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+ul.processInfoUl > li {
+    font-size: 0.8rem;
+    padding: 4px 0;
+    display: flex;
+    justify-content: space-between;
+}
+.contentRightChild {
+    min-height: 68vh;
+}
+span.proSpan {
+    font-weight: 600;
+}
+
+.contentBottom {
+    width: 97% !important;
+    height: 150px;
+    margin-top: 0!important;
+}
+
 /*main end*/

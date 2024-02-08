@@ -53,6 +53,7 @@ onMounted(() => {
 // 변수명에 WebSocket 을 뒤에 붙이는 이유는 웹 백엔드로 소켓으로 전달을 나타내기 위함
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+
   const parsedData = JSON.parse(data);
   const parseDataWarp = JSON.parse(parsedData.bufferData); // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
   // 시스템정보 스토어에 담기
@@ -65,7 +66,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       break;
     case 'START':
       runInfoPostWebSocket();
-      await store.dispatch('commonModule/setCommonInfo', { isRunningState: true });
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
       break;
     case 'RUNNING_INFO':
@@ -75,12 +76,18 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await runningInfoCheckStore(parseDataWarp);
       break;
     case 'STOP':
-      await store.dispatch('commonModule/setCommonInfo', { isRunningState: false });
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
       isStartEmbeddedCalled.value = false;
+      break;
+    case 'RUNNING_COMP':
+      await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
+      // 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
+      await store.dispatch('commonModule/setCommonInfo', { startEmbedded: false,});
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
       break;
   }
 
-  console.log(JSON.stringify(parseDataWarp))
+  // console.log(JSON.stringify(parseDataWarp))
 
 });
 const startSysPostWebSocket = async () => {
@@ -100,7 +107,7 @@ const runInfoPostWebSocket = async () => {
 };
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
-  // 스캔중일때는 pass
+  // 스캔중일때는 pass + 완료상태일때도
   if (String(data?.iCasStat) !== '999999999999') {
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
@@ -129,11 +136,10 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 
 }
 setInterval(async () => {
-  // if(isStartEmbeddedCalled.value){
-  //   // await startSysPostWebSocket();
-  //   await runInfoPostWebSocket();
-  // }
-  await runInfoPostWebSocket();
+  if (isStartEmbeddedCalled.value) {
+    await runInfoPostWebSocket();
+  }
+  await startSysPostWebSocket();
 }, 500);
 
 const sendMessage = (payload: object) => {

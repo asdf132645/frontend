@@ -4,8 +4,7 @@
     <div>
       <p>{{ changeWqStatCd() }}</p>
       <p>{{ wbcCount }}</p>
-      <p>Number of WBCs</p>
-      <p> {{ slideTime }} </p>
+
       <div class="circular-progress-bar">
         <svg class="progress-ring" width="120" height="120">
           <circle
@@ -20,22 +19,40 @@
               stroke-width="8"
           />
         </svg>
+        <p class="slideTime"> {{ slideTime }} </p>
       </div>
+      <p class="slideTime1">Number of WBCs</p>
+
+    </div>
+    <div class='slideCardWrap'>
+      <!-- input -->
+      <ul class='slideContent'>
+        <li v-for="item in slideCardData.input" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'input')"></li>
+        <p class="mt1">INPUT</p>
+      </ul>
+      <!-- output -->
+      <ul class='slideContent'>
+        <li v-for="item in slideCardData.output" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'output')"></li>
+        <p class="mt1">OUTPUT</p>
+      </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted, onBeforeUnmount, watch, computed} from 'vue';
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
+import {slideCard} from "@/common/defines/constFile/analysis";
 
 // 스토어
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
-const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+const commonDataGet = computed(() => store.state.commonModule);
+
+
 // 스토어
 
 const progress = ref(0);
@@ -50,10 +67,51 @@ const slideTime = ref('');
 const time = ref('');
 let countingInterval: number | null = null;
 const isAnimationEnabled = ref(false);
+const slideCardData = ref(slideCard);
+
+const updateInputState = (source: string, target: any[]): void => {
+  // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준
+  target.forEach((item, index) => {
+    item.slotState = source.charAt(index);
+    // console.log(source)
+  });
+}
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
+  const sysInfo = newData.sysInfo;
   eqStatCd.value = newData.sysInfo.eqStatCd;
-},{deep: true});
+  if (commonDataGet.value.isRunningState) {
+    updateInputState(sysInfo.iCasStat, slideCardData.value.input);
+    updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+  }
+  if(sysInfo.iCasStat === '300000000000'){ // 끝났을 경우 체크하는 곳
+    updateInputState(sysInfo.iCasStat, slideCardData.value.input);
+    updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+  }
+}, { deep: true });
+
+
+// 장비가 슬라이드 검사를 완료 할때 감시
+watch([commonDataGet.value], async (newVals: any) => {
+  const newValsObj = JSON.parse(JSON.stringify(newVals))
+  if (!newValsObj[0].startEmbedded) { // 슬라이드 검사가 끝난 후
+    if (countingInterval !== null) {
+      clearInterval(countingInterval);
+      countingInterval = null;
+    }
+    isAnimationEnabled.value = false;
+    slideTime.value = getCountToTime(0);
+    time.value = getCountToTime(0);
+  }
+  if (!newValsObj[0].isRunningState) {
+    if (countingInterval !== null) {
+      clearInterval(countingInterval);
+      countingInterval = null;
+    }
+    isAnimationEnabled.value = false;
+  }
+})
+
 
 const startCounting = (): void => {
   if (countingInterval) {
@@ -76,8 +134,6 @@ const startCounting = (): void => {
 };
 
 
-
-
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
 
@@ -91,7 +147,6 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
       countingInterval = null;
     }
     isAnimationEnabled.value = false;
-
   }
 
 
@@ -99,7 +154,6 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
     const currentSlot = slotArray[0].runningInfo.slotInfo.find((item: any) => {
       return item.stateCd === '03';
-      // return item.stateCd === '02';
     });
 
     if (currentSlot) {
@@ -118,6 +172,15 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
 
 onMounted(() => {
+  slideCardData.value.input.forEach(item => {
+    item.slotState = '0';
+  });
+
+  slideCardData.value.output.forEach(item => {
+    item.slotState = '0';
+  });
+
+
   const interval = setInterval(() => {
     progress.value = (progress.value + 1) % 101;
   }, 50);
@@ -148,5 +211,34 @@ const changeWqStatCd = (): string => {
   }
 }
 
+const getSlotStateClass = (state: string, type: string): string => {
+  // 각 상태에 따라 클래스명 반환
+  if(type === 'input'){
+    switch (state) {
+      case '0':
+        return 'class-for-state-0';
+      case '1':
+        return 'class-for-state-1';
+      case '2':
+        return 'class-for-state-2';
+      case '3':
+        return 'class-for-state-3';
+      case '4':
+        return 'class-for-state-4';
+      default:
+        return '';
+    }
+  }else{
+    switch (state) {
+      case '0':
+        return 'out-for-state-0';
+      case '1':
+        return 'out-for-state-1';
+      default:
+        return 'outClassDefault';
+    }
+  }
+
+}
 
 </script>

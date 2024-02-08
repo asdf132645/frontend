@@ -6,6 +6,7 @@ export interface CommonState {
     eqStatCd: number;
     isRunningState: boolean;
     totalCount: string;
+    embeddedNumber: string;
 }
 
 interface CommonModule {
@@ -15,7 +16,8 @@ interface CommonModule {
         setStartEmbedded: (state: CommonState, value: boolean) => void;
         setEqStatCd: (state: CommonState, value: number) => void;
         setIsRunningState: (state: CommonState, value: boolean) => void;
-        setTotalCount: (state: CommonState, value: string) => void; // 추가
+        setTotalCount: (state: CommonState, value: string) => void;
+        setEmbeddedNumber: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -29,6 +31,7 @@ export const commonModule: CommonModule = {
         eqStatCd: 0,
         isRunningState: false,
         totalCount: '', // 추가
+        embeddedNumber: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -42,6 +45,9 @@ export const commonModule: CommonModule = {
         },
         setTotalCount(state: CommonState, value: string): void { // 추가
             state.totalCount = value;
+        },
+        setEmbeddedNumber(state: CommonState, value: string): void { // 추가
+            state.embeddedNumber = value;
         },
     },
     actions: {
@@ -60,6 +66,9 @@ export const commonModule: CommonModule = {
 
             if (payload.hasOwnProperty('totalCount')) { // 추가
                 commit('setTotalCount', payload.totalCount);
+            }
+            if (payload.hasOwnProperty('embeddedNumber')) { // 추가
+                commit('setEmbeddedNumber', payload.embeddedNumber);
             }
         },
     },

@@ -12,19 +12,11 @@ export const sysInfoStore = async (data: any) => {
     };
 
     await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', embeddedInfoData);
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'oilCount', value: data.oilCount});
-
 };
 
 export const runningInfoStore = async (data: any) => {
     // console.log('setRunningInfo', data);
     await store.dispatch('runningInfoModule/setRunningInfo', data);
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'cassetteNo', value: data.cassetNo});
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'barcodeId', value: data.barcodeNo});
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'patientId', value: data.patientId});
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'patientName', value: data.patientNm});
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'wbcCount', value: data.maxWbcCount});
-    await store.dispatch('processInfoModule/setSingleProcessInfo', {key: 'orderDate', value: data.orderDttm});
 }
 
 export const wbcInfoStore = async (data: any) => {

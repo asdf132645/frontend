@@ -4,7 +4,6 @@
       <span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification
     </h3>
     <div>
-<!--      {{ dspWbcClassList }}-->
       <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories">
@@ -36,6 +35,26 @@
           </div>
         </template>
       </template>
+      <!--      nonrbc-->
+      <div class='mt1'>
+        <template v-for="(category, outerIndex) in nonRbcClassList" :key="outerIndex">
+          <div class="categories">
+            <ul class="categoryNm">
+              <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
+              <li>{{ getCategoryName(category) }}</li>
+            </ul>
+            <ul class="classNm">
+              <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+              <li>{{ category?.count }}</li>
+            </ul>
+            <ul class="degree">
+              <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+              <li>-</li>
+            </ul>
+          </div>
+        </template>
+      </div>
+
     </div>
   </div>
 </template>
@@ -61,14 +80,10 @@ interface RootState {
 const store = useStore<RootState>();
 const dspWbcClassList = ref<WbcInfo[][]>([]);
 const dspBfClassList = ref<WbcInfo[]>([]);
+const nonRbcClassList = ref<WbcInfo[]>([]);
 
 const testType = ref<string>("");
-const maxWbcCount = ref<string>("");
-const malariaCount = ref<string>("");
 const totalCount = ref<string>("");
-// 누락된 변수들
-const pltCount = ref<string>("");
-const lowPowerPath = ref<any[]>([]);
 
 const updateDataArray = (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
@@ -76,10 +91,20 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
     testType.value = slotArray.wbcInfo[0].testType;
     const wbcInfoArray = slotArray.wbcInfo.map((slot: any) => slot.wbcInfo);
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicWbcArr];
-    dspBfClassList.value = dspWbcClassList.value.flat(); // Flatten the array
-  }else{
+    dspBfClassList.value = dspWbcClassList.value.flat();
+
+    const nonRbcWbcInfoArray = wbcInfoArray
+        .flat()  // 중첩 배열을 평탄화
+        .filter((item: any) =>
+            ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'].includes(item?.title)
+        );
+
+    console.log(nonRbcWbcInfoArray);
+    nonRbcClassList.value = nonRbcWbcInfoArray;
+
+  } else {
     dspWbcClassList.value = [basicWbcArr];
-    dspBfClassList.value = dspWbcClassList.value.flat(); // Flatten the array
+    dspBfClassList.value = dspWbcClassList.value.flat();
   }
   if (slotArray && slotArray.wbcInfo) {
     const currentSlot = slotArray.wbcInfo.find(
@@ -95,7 +120,6 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
 onMounted(() => {
   const initialWbcClassList = store.state.wbcClassificationModule;
   updateDataArray(initialWbcClassList);
-  // console.log(store.state.wbcClassificationModule)
 });
 
 watch(
@@ -105,7 +129,6 @@ watch(
     },
     {deep: true}
 );
-
 
 
 const calculateWbcPercentages = (
@@ -134,25 +157,21 @@ const calculateWbcPercentages = (
 };
 
 
-
 const updateCounts = (currentSlot: SlotInfo) => {
   const wbcList = currentSlot.wbcInfo;
   let totalVal = "";
 
   if (testType.value === "01" || testType.value === "04") {
-    // Calculate total based on dspWbcClassList
     totalVal = calculateWbcPercentages(
         dspWbcClassList.value.flat(),
         wbcList
     ).toFixed(0);
   } else {
-    // Calculate total based on dspBfClassList
     totalVal = calculateWbcPercentages(dspBfClassList.value, wbcList).toFixed(0);
   }
 
   totalCount.value = totalVal;
 };
-
 
 
 const getCategoryName = (category: WbcInfo) => category?.name;
