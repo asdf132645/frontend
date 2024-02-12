@@ -1,4 +1,4 @@
-// index.ts
+// index.vue
 import {createStore} from "vuex";
 import {userModule} from "@/store/modules/userModule";
 import {executeModule} from '@/store/modules/analysis/executeModule';

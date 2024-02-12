@@ -154,7 +154,12 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       alert(messages.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      alert(messages.IDS_RECOVER_GRIPPER_CONDITION);
+      if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true){
+        instance?.appContext.config.globalProperties.$socket.emit('message', {
+          type: 'SEND_DATA',
+          payload: tcpReq.embedStatus.recovery
+        });
+      }
       return;
     }
 
@@ -179,6 +184,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       alert(messages.IDS_ERROR_STOP_PROCESS);
       return;
     }
+    store.dispatch('embeddedStatusModule/setUserStop', {userStop: false});
     emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
 
   }

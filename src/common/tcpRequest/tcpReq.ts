@@ -64,6 +64,12 @@ export const tcpReq = {
             jobCmd: 'RUNNING_COMP',
             reqUserId: 'admin',
             reqDttm: getDateTimeStr(),
+        },
+        recovery: {
+            jobCmd: 'RECOVERY',
+            reqUserId: 'admin',
+            reqDttm: getDateTimeStr(),
         }
+
     },
 };

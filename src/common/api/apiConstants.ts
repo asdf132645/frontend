@@ -22,5 +22,19 @@ export const apiConstants = {
             endpoint: 'wbc/getAllWbc',
             requiresToken: false,
         }
+    },
+    user:{
+        register:{
+            endpoint: 'user/register',
+            requiresToken: false,
+        },
+        login:{
+            endpoint:'user/login',
+            requiresToken: false,
+        },
+        userCheck:{
+            endpoint: 'user',
+            requiresToken: false,
+        }
     }
 };

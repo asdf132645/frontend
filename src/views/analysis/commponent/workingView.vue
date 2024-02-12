@@ -109,6 +109,8 @@ watch([commonDataGet.value], async (newVals: any) => {
       countingInterval = null;
     }
     isAnimationEnabled.value = false;
+    slideTime.value = getCountToTime(0);
+    time.value = getCountToTime(0);
   }
 })
 
