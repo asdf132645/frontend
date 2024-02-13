@@ -6,7 +6,7 @@
     <div>
       <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-          <div class="categories">
+          <div class="categories" v-if="shouldRenderCategory(category)">
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
@@ -62,7 +62,12 @@
 <script setup lang="ts">
 import {computed, ref, onMounted, watch} from "vue";
 import {useStore} from "vuex";
+const storeEm = useStore();
+
 import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
+
+const siteCd = ref('');
 
 interface SlotInfo {
   stateCd: string;
@@ -84,6 +89,13 @@ const nonRbcClassList = ref<WbcInfo[]>([]);
 
 const testType = ref<string>("");
 const totalCount = ref<string>("");
+
+watch([embeddedStatusJobCmd.value], async (newVal) => {
+  if (newVal.length > 0) {
+    const sysInfo = newVal[0].sysInfo;
+    siteCd.value = sysInfo.siteCd;
+  }
+})
 
 const updateDataArray = (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
@@ -117,6 +129,7 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
 };
 
 
+
 onMounted(() => {
   const initialWbcClassList = store.state.wbcClassificationModule;
   updateDataArray(initialWbcClassList);
@@ -135,10 +148,11 @@ const calculateWbcPercentages = (
     classList: WbcInfo[],
     wbcList: WbcInfo[]
 ) => {
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA"]:["AR", "NR", "GP", "PA", "MC", "MA", "SM"]
   const total = classList
       .filter(
           (category) =>
-              !["AR", "NR", "GP", "PA", "MC", "MA"].includes(category.title)
+              !includesStr.includes(category.title)
       )
       .reduce((acc, category) => {
         const matchingWbcItem = wbcList.find(
@@ -171,6 +185,15 @@ const updateCounts = (currentSlot: SlotInfo) => {
   }
 
   totalCount.value = totalVal;
+};
+
+const shouldRenderCategory = (category: WbcInfo) => {
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA"] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM"];
+  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA"] : ["NR", "AR", "MC", "MA", "SM"];
+
+  const targetArray = testType.value === '01' || testType.value === '04' ? includesStr : includesStr2;
+
+  return !targetArray.includes(category.title);
 };
 
 

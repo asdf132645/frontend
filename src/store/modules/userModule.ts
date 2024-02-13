@@ -2,31 +2,47 @@
 import { Commit } from 'vuex';
 
 interface UserState {
-    username: string;
+    id: number;
+    userId: string;
+    password: string;
+    name: string;
+    employeeNo: string;
+    userType: string;
+    subscriptionDate: string;
+    latestDate: string;
 }
 
 interface UserModule {
+    namespaced: true;
     state: () => UserState;
     mutations: {
-        usernameSet: (state: UserState, value: string) => void;
+        setUserMutation: (state: UserState, user: UserState) => void;
     };
     actions: {
-        setUsername: (context: { commit: Commit }, value: string) => void;
+        setUserAction: (context: { commit: Commit }, user: UserState) => void;
     };
 }
 
 export const userModule: UserModule = {
+    namespaced: true,
     state: () => ({
-        username: '',
+        id: 0,
+        userId: '',
+        password: '',
+        name: '',
+        employeeNo: '',
+        userType: '',
+        subscriptionDate: '',
+        latestDate: '',
     }),
     mutations: {
-        usernameSet(state: UserState, value: string): void {
-            state.username = value;
+        setUserMutation(state: UserState, user: UserState): void {
+            Object.assign(state, user);
         },
     },
     actions: {
-        setUsername({ commit }: { commit: Commit }, value: string): void {
-            commit('usernameSet', value);
+        setUserAction({ commit }: { commit: Commit }, user: UserState): void {
+            commit('setUserMutation', user);
         },
     },
 };

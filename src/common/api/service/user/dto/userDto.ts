@@ -13,3 +13,18 @@ export interface loginUser {
     userId: string;
     password: string;
 }
+
+export interface UserResponse {
+    success: boolean;
+    user?: {
+        id: number;
+        userId: string;
+        password: string;
+        name: string;
+        employeeNo: string;
+        userType: string;
+        subscriptionDate: string;
+        latestDate: string;
+        state?: string;
+    };
+}

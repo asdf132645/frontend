@@ -27,6 +27,7 @@ const instance = getCurrentInstance();
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
+import router from "@/router";
 
 
 const runningSlotId = ref('');
@@ -37,14 +38,31 @@ watch([commonDataGet.value], async (newVals: any) => {
   isStartEmbeddedCalled.value = newValsObj[0].startEmbedded;
 })
 
-onMounted(() => {
+onMounted(async () => {
+  // document.addEventListener('fullscreenchange', (event) => {
+
+  // });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      if (document.fullscreenElement === null) {
+        document.documentElement.requestFullscreen(); // 전체 화면으로 들어가도록 설정
+      }
+      return false; // 이벤트를 무시하고 아무 동작도 하지 않음
+    }
+  });
+
+
+  // 여기에 소켓 및 웹 소켓 로직 추가
   const socket = instance?.appContext.config.globalProperties.$socket;
   if (socket && !socket.connected) {
     socket.connect();
   }
-  startSysPostWebSocket();
-  runInfoPostWebSocket();
+
+  await startSysPostWebSocket();
+  await runInfoPostWebSocket();
 });
+
+
 
 
 // 모든 tcp 통신으로 받은 응답값을 스토어에 저장하는 부분

@@ -10,7 +10,7 @@
         </li>
         <li>
           <span class="loginTitle">password</span>
-          <input class="loginInput" type="text" v-model="password">
+          <input class="loginInput" type="password" v-model="password">
         </li>
       </ul>
       <div>
@@ -29,7 +29,11 @@
 import {ref} from "vue";
 import {login} from "@/common/api/service/user/userApi";
 import router from "@/router";
-
+import { UserResponse  } from '@/common/api/service/user/dto/userDto'
+import {ApiResponse} from "@/common/api/httpClient";
+import {useStore} from "vuex";
+// 스토어
+const store = useStore();
 const password = ref('');
 const idVal = ref('');
 
@@ -44,10 +48,15 @@ const loginUser = async () => {
   }
 
   try {
-    const result = await login(user);
-    if (result) {
+    const result: ApiResponse<UserResponse | undefined> = await login(user);
+    if (result?.data && Object.keys(result.data).length) {
       alert('login successful.');
+      await store.dispatch('userModule/setUserAction', result.data?.user);
+      sessionStorage.setItem('user', JSON.stringify(result.data.user));
+      document.documentElement.requestFullscreen();
       await router.push('/');
+    }else{
+      alert('Login failed');
     }
 
   } catch (e) {
