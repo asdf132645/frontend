@@ -110,8 +110,6 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
         .filter((item: any) =>
             ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'].includes(item?.title)
         );
-
-    console.log(nonRbcWbcInfoArray);
     nonRbcClassList.value = nonRbcWbcInfoArray;
 
   } else {

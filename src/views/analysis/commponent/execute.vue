@@ -17,10 +17,10 @@
     </div>
 
     <div class="stopDiv">
-      <select v-model="wbcCount">
+      <select v-model="wbcCount" :disabled="isRunningState">
         <option v-for="option in wbcCountOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <select v-model="stitchCount">
+      <select v-model="stitchCount" :disabled="isRunningState && analysisType === '04'">
         <option v-for="option in stitchCountOptions" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>
@@ -129,7 +129,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   if (isPause.value) {
     btnStatus.value = 'isPause';
   } else if (userStop.value && !isRecoveryRun.value) {
-    btnStatus.value = 'start';
+    btnStatus.value = 'onRecover';
   } else if (isInit.value === 'N' || isInit.value === '') {
     btnStatus.value = 'isInit';
   } else {
@@ -184,7 +184,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       alert(messages.IDS_ERROR_STOP_PROCESS);
       return;
     }
-    store.dispatch('embeddedStatusModule/setUserStop', {userStop: false});
+    store.dispatch('embeddedStatusModule/setUserStop', {userStop: true});
     emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
 
   }

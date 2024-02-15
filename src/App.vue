@@ -1,6 +1,6 @@
 <!-- App.vue -->
 <template>
-  <div id="app">
+  <div>
     <AppHeader/>
     <main class='content'>
       <router-view/>
@@ -14,24 +14,28 @@
 
 import {onMounted, getCurrentInstance, ref, computed, watch} from 'vue';
 import {useStore} from "vuex";
-// 스토어
-const store = useStore();
-const commonDataGet = computed(() => store.state.commonModule);
-
-const isStartEmbeddedCalled = ref(false);
-let isRequestInProgress = false;
-
-import {tcpReq} from '@/common/tcpRequest/tcpReq';
-
-const instance = getCurrentInstance();
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
-import router from "@/router";
+import {tcpReq} from '@/common/tcpRequest/tcpReq';
+import {useRoute} from 'vue-router';
+import  {messages} from './common/defines/constFile/constant';
 
-
+const store = useStore();
+const commonDataGet = computed(() => store.state.commonModule);
+const isStartEmbeddedCalled = ref(false);
+let isRequestInProgress = false;
+const route = useRoute();
+const instance = getCurrentInstance();
 const runningSlotId = ref('');
 
+
+// document.addEventListener('click', function (event: any) {
+//   const storedUser = sessionStorage.getItem('user');
+//   if((storedUser) && route.fullPath !== '/user/login'){
+//     document.documentElement.requestFullscreen();
+//   }
+// });
 
 watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals))
@@ -39,30 +43,18 @@ watch([commonDataGet.value], async (newVals: any) => {
 })
 
 onMounted(async () => {
-  // document.addEventListener('fullscreenchange', (event) => {
-
-  // });
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') {
-      if (document.fullscreenElement === null) {
-        document.documentElement.requestFullscreen(); // 전체 화면으로 들어가도록 설정
-      }
-      return false; // 이벤트를 무시하고 아무 동작도 하지 않음
+  const storedUser = sessionStorage.getItem('user');
+  if (storedUser) {
+    // 소켓 연결
+    const socket = instance?.appContext.config.globalProperties.$socket;
+    if (socket && !socket.connected) {
+      socket.connect();
     }
-  });
 
-
-  // 여기에 소켓 및 웹 소켓 로직 추가
-  const socket = instance?.appContext.config.globalProperties.$socket;
-  if (socket && !socket.connected) {
-    socket.connect();
+    await startSysPostWebSocket();
+    await runInfoPostWebSocket();
   }
-
-  await startSysPostWebSocket();
-  await runInfoPostWebSocket();
 });
-
-
 
 
 // 모든 tcp 통신으로 받은 응답값을 스토어에 저장하는 부분
@@ -97,11 +89,26 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
       isStartEmbeddedCalled.value = false;
       break;
-    case 'RUNNING_COMP':
+    case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
       await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
-      // 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
-      await store.dispatch('commonModule/setCommonInfo', { startEmbedded: false,});
-      await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
+      await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false,}); // 임베디드 상태가 죽음을 알려준다.
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
+      await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
+      break;
+    case 'PAUSE':
+      await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true});
+      break;
+    case 'RESTART':
+      await runningInfoStore(parseDataWarp);
+      await wbcInfoStore(parseDataWarp);
+      await rbcInfoStore(parseDataWarp);
+      await runningInfoCheckStore(parseDataWarp);
+      break;
+    case 'RECOVERY':
+      await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
+      break;
+    case 'ERROR_CLEAR':
+      alert(messages.IDS_MSG_FAILED);
       break;
   }
 
@@ -154,10 +161,13 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 
 }
 setInterval(async () => {
-  if (isStartEmbeddedCalled.value) {
-    await runInfoPostWebSocket();
+  const storedUser = sessionStorage.getItem('user');
+  if (storedUser) {
+    if (isStartEmbeddedCalled.value) {
+      await runInfoPostWebSocket();
+    }
+    await startSysPostWebSocket();
   }
-  await startSysPostWebSocket();
 }, 500);
 
 const sendMessage = (payload: object) => {

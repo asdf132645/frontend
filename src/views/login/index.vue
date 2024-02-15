@@ -1,25 +1,25 @@
 <template>
-  <div>
-    <p>LOGIN</p>
-    <span>Unique Idea Medical Device</span>
-    <div>
-      <ul>
-        <li>
-          <span class="loginTitle">ID</span>
-          <input class="loginInput" type="text" v-model="idVal">
-        </li>
-        <li>
-          <span class="loginTitle">password</span>
-          <input class="loginInput" type="password" v-model="password">
-        </li>
-      </ul>
-      <div>
-        <input type="checkbox">
-        <label>Save Login Profile</label>
-      </div>
-      <div class='loginBtn'>
-        <button type="button" @click="loginUser">Login</button>
-        <button type="button" @click="goJoinPage">Add User</button>
+  <div class='uimdLogin'>
+    <div class='loginContent'>
+      <p class="loginTitle"><span class="loginColorSpan">U</span>IMD</p>
+      <p class='loginP mt2'>Unique Idea Medical Device</p>
+      <div class="mt3 loginDiv">
+        <ul class="loginUl">
+          <li>
+            <input class="loginInput" type="text" v-model="idVal" placeholder="ID">
+          </li>
+          <li>
+            <input class="loginInput" type="password" v-model="password" placeholder="password">
+          </li>
+        </ul>
+        <div class="mt1 loginFooter">
+          <input type="checkbox">
+          <label class="loginLabel">Save Login Profile</label>
+        </div>
+        <div class='loginBtn'>
+          <button type="button" @click="loginUser">Login</button>
+          <button type="button" @click="goJoinPage">Add User</button>
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@ const loginUser = async () => {
       alert('login successful.');
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
-      document.documentElement.requestFullscreen();
+      await document.documentElement.requestFullscreen();
       await router.push('/');
     }else{
       alert('Login failed');

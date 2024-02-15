@@ -81,6 +81,10 @@
     margin-left: 0;
 }
 
+.loginColorSpan {
+    color: #29c7ca;
+}
+
 .leftMenu > ul > li {
     display: inline-block;
     margin-left: 8px;
@@ -90,13 +94,30 @@
     font-family: sans-serif;
 }
 
+.startBtn.onRecover {
+    color: #37b9c8;
+}
+
+.lastLiM {
+    cursor: pointer;
+}
+
 .display-flex > div {
     vertical-align: middle;
     padding-top: 31px;
     color: #ffffff;
     text-align: left;
 }
-
+.logOutBox {
+    position: absolute;
+    background: #fff;
+    color: #696969;
+    padding: 5px;
+    border: 1px solid #696969;
+    top: 64px;
+    width: 113px;
+    text-align: center;
+}
 .lastMenu {
     text-align: right;
     position: absolute;
@@ -392,19 +413,23 @@ p.startStopP:hover {
     border: 1px solid #353942;
     background-color: #353942;
 }
+
 ul.slideContent > p {
     font-size: 0.8rem;
     font-weight: 600;
 }
+
 ul.processInfoUl > li {
     font-size: 0.8rem;
     padding: 4px 0;
     display: flex;
     justify-content: space-between;
 }
+
 .contentRightChild {
     min-height: 68vh;
 }
+
 span.proSpan {
     font-weight: 600;
 }
@@ -412,7 +437,101 @@ span.proSpan {
 .contentBottom {
     width: 97% !important;
     height: 150px;
-    margin-top: 0!important;
+    margin-top: 0 !important;
 }
 
+.uimdLogin {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #172b4d;
+}
+
+.loginContent {
+    margin: 0 auto;
+    margin-top: 13%;
+}
+
+p.loginTitle {
+    color: #fff;
+    font-size: 3rem;
+}
+
+p.loginP {
+    color: #fff;
+}
+
+ul.loginUl {
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 50px;
+}
+
+.loginBtn > button {
+    background: #3498db;
+    border: none;
+    color: #fff;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.loginFooter {
+    text-align: left;
+    padding: 0px 10px 10px 10px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+    color: #818181;
+}
+
+ul.loginUl li {
+    color: #fff;
+    text-align: center;
+}
+
+input.loginInput {
+    width: 92%;
+    border: none;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 2px #dedede;
+}
+
+.loginDiv {
+    background: #f7fafc;
+    max-width: 553px;
+    margin: auto;
+    min-height: 300px;
+    border-radius: 5px;
+    margin-top: 35px;
+    padding: 30px 73px;
+
+}
+
+.runRed{
+    color: #ff003b;
+}
+
+.runBlue{
+    color: #2A5A98;
+}
+
+.blinking {
+    animation: blink 0.5s infinite alternate;
+}
+
+@keyframes blink {
+    0% {
+        color: #ffffff;
+    }
+    100% {
+        color: red;
+    }
+}
+.oliCount{
+    cursor: pointer;
+}
 /*main end*/

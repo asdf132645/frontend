@@ -7,6 +7,7 @@ export interface CommonState {
     isRunningState: boolean;
     totalCount: string;
     embeddedNumber: string;
+    isAlarm: boolean;
 }
 
 interface CommonModule {
@@ -18,6 +19,7 @@ interface CommonModule {
         setIsRunningState: (state: CommonState, value: boolean) => void;
         setTotalCount: (state: CommonState, value: string) => void;
         setEmbeddedNumber: (state: CommonState, value: string) => void;
+        setIsAlarm: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -32,6 +34,7 @@ export const commonModule: CommonModule = {
         isRunningState: false,
         totalCount: '', // 추가
         embeddedNumber: '',
+        isAlarm: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -43,11 +46,14 @@ export const commonModule: CommonModule = {
         setIsRunningState(state: CommonState, value: boolean): void {
             state.isRunningState = value;
         },
-        setTotalCount(state: CommonState, value: string): void { // 추가
+        setTotalCount(state: CommonState, value: string): void {
             state.totalCount = value;
         },
-        setEmbeddedNumber(state: CommonState, value: string): void { // 추가
+        setEmbeddedNumber(state: CommonState, value: string): void {
             state.embeddedNumber = value;
+        },
+        setIsAlarm(state: CommonState, value: boolean): void {
+            state.isAlarm = value;
         },
     },
     actions: {
@@ -64,11 +70,14 @@ export const commonModule: CommonModule = {
                 commit('setIsRunningState', payload.isRunningState);
             }
 
-            if (payload.hasOwnProperty('totalCount')) { // 추가
+            if (payload.hasOwnProperty('totalCount')) {
                 commit('setTotalCount', payload.totalCount);
             }
-            if (payload.hasOwnProperty('embeddedNumber')) { // 추가
+            if (payload.hasOwnProperty('embeddedNumber')) {
                 commit('setEmbeddedNumber', payload.embeddedNumber);
+            }
+            if (payload.hasOwnProperty('isAlarm')){
+                commit('setIsAlarm', payload.isAlarm);
             }
         },
     },

@@ -9,7 +9,9 @@ export interface SystemInfo {
     oCasStat: string;
     jobCmd: string;
     siteCd: string;
-    // 다른 sysInfo 속성들을 필요에 따라 추가해주세요.
+    isDoorOpen: string;
+    oilCount: string;
+    storageSize: string;
 }
 
 export interface EmbeddedStatusState {
@@ -50,6 +52,9 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
             oCasStat: '',
             jobCmd: '',
             siteCd: '',
+            isDoorOpen: '',
+            oilCount: '',
+            storageSize: '',
         },
         isInit: '',
     }),
@@ -75,12 +80,21 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
     },
     actions: {
         setEmbeddedStatusInfo({commit}: { commit: Commit }, payload: EmbeddedStatusState): void {
-            commit('setEmbeddedStatusJobCmd', payload.embeddedStatusJobCmd);
-            commit('setUserStop', payload.userStop);
-            commit('setIsRecoveryRun', payload.isRecoveryRun);
-            commit('setIsPause', payload.isPause);
-            commit('setSysInfo', payload.sysInfo);
-            commit('setIsInit', payload.isInit);
+            Object.keys(payload).forEach(key => {
+                if (key === 'embeddedStatusJobCmd') {
+                    commit('setEmbeddedStatusJobCmd', payload[key]);
+                } else if (key === 'userStop') {
+                    commit('setUserStop', payload[key]);
+                } else if (key === 'isRecoveryRun') {
+                    commit('setIsRecoveryRun', payload[key]);
+                } else if (key === 'isPause') {
+                    commit('setIsPause', payload[key]);
+                } else if (key === 'sysInfo') {
+                    commit('setSysInfo', payload[key]);
+                } else if (key === 'isInit') {
+                    commit('setIsInit', payload[key]);
+                }
+            });
         },
     },
 };
