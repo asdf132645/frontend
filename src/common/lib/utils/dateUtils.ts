@@ -22,5 +22,17 @@ const pad = (value: number, length: number): string => {
     return String(value).padStart(length, '0');
 }
 
+export const getStoredUser = () => {
+    const storedUserString = sessionStorage.getItem('user');
+    return storedUserString ? JSON.parse(storedUserString) : {};
+};
+
+export const reqUserId = () => {
+    return getStoredUser().userId || '';
+};
+
+export const getDefaultReqUserId = () => {
+    return reqUserId() || '';
+};
 
 

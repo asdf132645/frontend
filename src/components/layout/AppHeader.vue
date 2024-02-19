@@ -163,7 +163,13 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
 watch([runInfo.value], async (newVals: any) => {
   await nextTick();
   isAlarm.value = newVals[0].isAlarm;
+  if (isAlarm.value) {
+    setTimeout(() => {
+      isAlarm.value = false;
+    }, 5000);
+  }
 });
+
 
 
 const toggleAppHeaderLeft = () => {

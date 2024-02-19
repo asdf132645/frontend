@@ -42,6 +42,7 @@ import {useStore} from "vuex";
 import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
 import {messages} from '@/common/defines/constFile/constant';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
+import {reqUserId} from "@/common/lib/utils/dateUtils";
 
 const instance = getCurrentInstance();
 
@@ -55,11 +56,13 @@ const isRunningState = ref(executeState.value?.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
-
+const userId = reqUserId();
 
 const analysisType = ref();
 const wbcCount = ref();
 const stitchCount = ref();
+const bfSelectFiles = ref([]);
+
 // 스토어 end
 
 
@@ -88,8 +91,9 @@ watch([runInfo.value], async (newVals) => {
   await nextTick();
   const [newRunInfo] = newVals;
 
-  const {isRunningState: newIsRunningState} = newRunInfo || {};
+  const {isRunningState: newIsRunningState, bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
   isRunningState.value = newIsRunningState;
+  bfSelectFiles.value = newBfSelectFiles;
 
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
@@ -142,10 +146,12 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 const emitSocketData = (type: string, payload: object) => {
   instance?.appContext.config.globalProperties.$socket.emit('message', {type, payload});
 };
-
 const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
+
+      tcpReq.embedStatus.restart.bfSelectFiles = bfSelectFiles.value;
+      tcpReq.embedStatus.restart.reqUserId = userId;
       emitSocketData('SEND_DATA', tcpReq.embedStatus.restart);
       return;
     }
@@ -155,6 +161,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     } else if (userStop.value) {
       if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true){
+        tcpReq.embedStatus.recovery.reqUserId = userId;
         instance?.appContext.config.globalProperties.$socket.emit('message', {
           type: 'SEND_DATA',
           payload: tcpReq.embedStatus.recovery
@@ -164,14 +171,17 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     }
 
     const startAction = tcpReq.embedStatus.startAction;
+    Object.assign(startAction, {
+      testType: analysisType.value,
+      wbcCount: wbcCount.value,
+      stitchCount: stitchCount.value,
+      reqUserId: userId,
+    });
+
     if (isInit.value === 'Y') { // 초기화 여부 체크 초기화가 되어있는 상태이면 실행
       // 웹소켓으로 백엔드에 전송
-      emitSocketData('SEND_DATA', {
-        ...startAction,
-        stitchCount: stitchCount.value,
-        wbcCount: wbcCount.value,
-        testType: analysisType.value
-      });
+      emitSocketData('SEND_DATA', startAction);
+      console.log(startAction);
       const InfoData = {
         startEmbedded: true,
       }
@@ -185,6 +195,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     }
     store.dispatch('embeddedStatusModule/setUserStop', {userStop: true});
+    tcpReq.embedStatus.stop.reqUserId = userId;
     emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
 
   }
@@ -192,6 +203,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
 };
 
 const sendInit = () => { // 장비 초기화 진행
+  tcpReq.embedStatus.init.reqUserId = userId;
   emitSocketData('SEND_DATA', tcpReq.embedStatus.init);
 }
 

@@ -5,34 +5,44 @@
       <p>{{ changeWqStatCd() }}</p>
       <p>{{ wbcCount }}</p>
 
-      <div class="circular-progress-bar">
+      <div class="circular-progress-bar mt2">
         <svg class="progress-ring" width="120" height="120">
           <circle
-              class="progress-ring-circle"
-              :class="{ 'completed': progress === 100, 'rotate-animation': isAnimationEnabled }"
+              :cx="radius"
+              :cy="radius"
+              :r="radius - strokeWidth / 2"
+              :stroke-width="strokeWidth"
+              stroke="#ccc"
+              fill="none"
+          />
+          <circle
+              :cx="radius"
+              :cy="radius"
+              :r="radius - strokeWidth / 2"
+              :stroke-width="strokeWidth"
+              :stroke="progressColor"
+              fill="none"
               :stroke-dasharray="circumference"
               :stroke-dashoffset="dashoffset"
-              r="50"
-              cx="60"
-              cy="60"
-              :stroke="progress === 100 ? 'green' : 'blue'"
-              stroke-width="8"
           />
         </svg>
         <p class="slideTime"> {{ slideTime }} </p>
       </div>
-      <p class="slideTime1">Number of WBCs</p>
+      <p class="slideTime1 mt2">Number of WBCs</p>
+      <p> {{ totalSlideTime }} </p>
 
     </div>
     <div class='slideCardWrap'>
       <!-- input -->
       <ul class='slideContent'>
-        <li v-for="item in slideCardData.input" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'input')"></li>
+        <li v-for="item in slideCardData.input" :key="item.slotNo"
+            :class="getSlotStateClass(item.slotState,'input')"></li>
         <p class="mt1">INPUT</p>
       </ul>
       <!-- output -->
       <ul class='slideContent'>
-        <li v-for="item in slideCardData.output" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'output')"></li>
+        <li v-for="item in slideCardData.output" :key="item.slotNo"
+            :class="getSlotStateClass(item.slotState,'output')"></li>
         <p class="mt1">OUTPUT</p>
       </ul>
     </div>
@@ -55,28 +65,25 @@ const commonDataGet = computed(() => store.state.commonModule);
 
 // 스토어
 
-const progress = ref(0);
 const timeNum = ref(0);
-const radius = 50; // 반지름
-const circumference = 2 * Math.PI * radius;
-const dashoffset = ref(circumference);
-const wbcCount = ref(0);
-const progressMax = ref(0);
+const size = ref(120); // SVG 크기
+const strokeWidth = ref(6); // 프로그레스 바 두께
+const progressColor = ref('#00c2ff'); // 프로그레스 바 색상
+const radius = ref(size.value / 2);
+const circumference = ref(2 * Math.PI * (radius.value - strokeWidth.value / 2));
+const dashoffset = ref(circumference.value);
+const wbcCount = ref(0);// wbc 개수
+const maxWbcCount = ref(0); // wbc 총합
 const eqStatCd = ref('');
 const slideTime = ref('');
-const time = ref('');
+const totalSlideTime = ref('');
 let countingInterval: number | null = null;
-const isAnimationEnabled = ref(false);
+let countingIntervalTotal: number | null = null;
 const slideCardData = ref(slideCard);
-let totalElapsedTime = 0;
+let elapsedTimeCount = 0;
+let totalElapsedTimeCount = 0;
+let totalCountingStarted = false;
 
-const updateInputState = (source: string, target: any[]): void => {
-  // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준
-  target.forEach((item, index) => {
-    item.slotState = source.charAt(index);
-    // console.log(source)
-  });
-}
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
@@ -93,53 +100,25 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
       updateInputState(sysInfo.oCasStat, slideCardData.value.output);
     }
   }
-}, { deep: true });
+}, {deep: true});
+
 
 
 // 장비가 슬라이드 검사를 완료 할때 감시
 watch([commonDataGet.value], async (newVals: any) => {
-  const newValsObj = JSON.parse(JSON.stringify(newVals))
+  const newValsObj = JSON.parse(JSON.stringify(newVals));
+
   if (!newValsObj[0].startEmbedded) { // 슬라이드 검사가 끝난 후
-    if (countingInterval !== null) {
-      clearInterval(countingInterval);
-      countingInterval = null;
-    }
-    isAnimationEnabled.value = false;
-    slideTime.value = getCountToTime(0);
-    time.value = getCountToTime(0);
+    stopCounting();
+    stopTotalCounting();
   }
+
   if (!newValsObj[0].isRunningState) {
-    if (countingInterval !== null) {
-      clearInterval(countingInterval);
-      countingInterval = null;
-    }
-    isAnimationEnabled.value = false;
-    slideTime.value = getCountToTime(0);
-    time.value = getCountToTime(0);
+    stopCounting();
+    stopTotalCounting();
   }
-})
+});
 
-
-const startCounting = (): void => {
-  console.log('startCounting');
-  if (countingInterval) {
-    clearInterval(countingInterval);
-  }
-
-  totalElapsedTime = 0;
-
-  countingInterval = setInterval(() => {
-    totalElapsedTime += 1;
-    timeNum.value = totalElapsedTime % 60;
-    slideTime.value = getCountToTime(totalElapsedTime);
-  }, 1000);
-
-  onBeforeUnmount(() => {
-    if (countingInterval) {
-      clearInterval(countingInterval);
-    }
-  });
-};
 
 
 
@@ -148,14 +127,16 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
     startCounting();
-    isAnimationEnabled.value = true;
+    if (!totalCountingStarted) {
+      startTotalCounting();
+      totalCountingStarted = true;
+    }
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
     if (countingInterval !== null) {
       // stop일 경우 실행 중인 interval을 중지
       clearInterval(countingInterval);
       countingInterval = null;
     }
-    isAnimationEnabled.value = false;
   }
 
 
@@ -167,14 +148,14 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
     if (currentSlot) {
       wbcCount.value = Number(currentSlot.wbcCount);
-      progressMax.value = Number(currentSlot.maxWbcCount);
+      maxWbcCount.value = Number(currentSlot.maxWbcCount);
 
-      if (wbcCount.value > progressMax.value) {
-        wbcCount.value = progressMax.value;
+      if (wbcCount.value > maxWbcCount.value) {
+        wbcCount.value = maxWbcCount.value;
       }
 
-      const progressValue = ((wbcCount.value / progressMax.value) * 100).toFixed(2);
-      dashoffset.value = circumference * (1 - parseFloat(progressValue) / 100);
+      const percentage = (wbcCount.value / maxWbcCount.value) * 100;
+      dashoffset.value = circumference.value * (1 - percentage / 100);
     }
   }
 });
@@ -188,20 +169,77 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
-
-
-  const interval = setInterval(() => {
-    progress.value = (progress.value + 1) % 101;
-  }, 50);
-
+  totalCountingStarted = false;
   eqStatCd.value = '01';
   slideTime.value = getCountToTime(0);
-  time.value = getCountToTime(0);
+  totalSlideTime.value = getCountToTime(0);
+
+});
+
+const updateInputState = (source: string, target: any[]): void => {
+  // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준
+  target.forEach((item, index) => {
+    item.slotState = source.charAt(index);
+  });
+}
+
+const stopCounting = () => {
+  if (countingInterval !== null) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
+  slideTime.value = getCountToTime(0);
+};
+
+const startCounting = (): void => {
+  if (countingInterval) {
+    clearInterval(countingInterval);
+  }
+
+  elapsedTimeCount = 0;
+
+  countingInterval = setInterval(() => {
+    elapsedTimeCount += 1;
+    timeNum.value = elapsedTimeCount % 60;
+    slideTime.value = getCountToTime(elapsedTimeCount);
+  }, 1000);
 
   onBeforeUnmount(() => {
-    clearInterval(interval);
+    if (countingInterval) {
+      clearInterval(countingInterval);
+    }
   });
-});
+};
+
+const startTotalCounting = (): void => {
+  if (countingIntervalTotal) {
+    clearInterval(countingIntervalTotal);
+  }
+
+  totalElapsedTimeCount = 0;
+
+  countingIntervalTotal = setInterval(() => {
+    totalElapsedTimeCount += 1;
+    totalSlideTime.value = getCountToTime(totalElapsedTimeCount);
+  }, 1000);
+
+  onBeforeUnmount(() => {
+    if (countingIntervalTotal) {
+      clearInterval(countingIntervalTotal);
+    }
+  });
+};
+
+
+const stopTotalCounting = (): void => {
+  if (countingIntervalTotal !== null) {
+    clearInterval(countingIntervalTotal);
+    countingIntervalTotal = null;
+  }
+  totalSlideTime.value = getCountToTime(0);
+};
+
+
 
 const changeWqStatCd = (): string => {
   switch (eqStatCd.value) {
@@ -222,7 +260,7 @@ const changeWqStatCd = (): string => {
 
 const getSlotStateClass = (state: string, type: string): string => {
   // 각 상태에 따라 클래스명 반환
-  if(type === 'input'){
+  if (type === 'input') {
     switch (state) {
       case '0':
         return 'class-for-state-0';
@@ -237,7 +275,7 @@ const getSlotStateClass = (state: string, type: string): string => {
       default:
         return '';
     }
-  }else{
+  } else {
     switch (state) {
       case '0':
         return 'out-for-state-0';

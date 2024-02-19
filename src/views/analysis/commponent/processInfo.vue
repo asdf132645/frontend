@@ -16,9 +16,9 @@
           {{ siteCd === '0019' ? processInfoItem?.analyzedDttm : processInfoItem?.orderDate }}
         </span>
       </li>
-      <li v-if="processInfoItem?.oilCount !== prevOilCount">
+      <li>
         <span class="proSpan">Oil Count:</span>
-        <span class="proVal">{{ processInfoItem?.oilCount }}</span>
+        <span class="proVal">{{ prevOilCount }}</span>
       </li>
     </ul>
   </div>
@@ -26,7 +26,7 @@
 
 
 <script setup lang="ts">
-import {ref, computed, watch} from "vue";
+import {ref, computed, watch, onMounted} from "vue";
 import {useStore} from "vuex";
 // 스토어
 const store = useStore();
@@ -40,17 +40,23 @@ import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
-const prevOilCount = ref<number | null>(null);
+const prevOilCount = ref<string | null>(null);
 
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
     const sysInfo = newVal[0].sysInfo;
-    processInfoItem.value.oilCount = sysInfo.oilCount;
+    if(sysInfo.oilCount !== prevOilCount.value){
+      processInfoItem.value.oilCount = sysInfo.oilCount;
+      prevOilCount.value = sysInfo.oilCount
+    }
     siteCd.value = sysInfo.siteCd;
   }
 })
 
+onMounted(() => {
+  prevOilCount.value = embeddedStatusJobCmd.value[0]?.sysInfo.oilCount;
+});
 // 실행정보를 가지고 온다.
 watch([runningInfoModule.value], (newVal: any) => {
   if (newVal.length > 0) {
@@ -60,20 +66,17 @@ watch([runningInfoModule.value], (newVal: any) => {
         const currentSlot = firstItem?.slotInfo.find(
             (item: SlotInfo) => item.stateCd === "03"
         );
-        // if (currentSlot) {
-        processInfoItem.value = {
-          cassetteNo: 1,
-          barcodeId: currentSlot.barcodeNo,
-          patientId: currentSlot.patientId,
-          patientName: currentSlot.patientNm,
-          wbcCount: currentSlot.maxWbcCount,
-          orderDate: stringToDateTime(currentSlot.orderDttm),
-          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-        };
-        if (processInfoItem.value.oilCount !== prevOilCount.value) {
-          prevOilCount.value = processInfoItem.value.oilCount;
+        if (currentSlot) {
+          processInfoItem.value = {
+            cassetteNo: 1,
+            barcodeId: currentSlot.barcodeNo,
+            patientId: currentSlot.patientId,
+            patientName: currentSlot.patientNm,
+            wbcCount: currentSlot.maxWbcCount,
+            orderDate: stringToDateTime(currentSlot.orderDttm),
+            analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+          };
         }
-        // }
       }
     }
   }

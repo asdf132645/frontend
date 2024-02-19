@@ -47,10 +47,10 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
     const accumulatedRunningPath: RunningPathItem[] = [];
 
     slotInfo.forEach((item: any) => {
-      console.log(item.runningPath)
       if (item.stateCd === '03' && item.runningPath && item.runningPath.length > 0) {
         const runningPath: RunningPathItem[] = item.runningPath.map((pathItem: any) => ({
           ...pathItem,
+          // path: pathItem.path + '?' + getDateTimeStr(),
           path: pathItem.path,
           id: generateUniqueId()
         }));

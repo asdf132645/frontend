@@ -321,10 +321,10 @@ li.mb1.liTitle {
     color: #dedede;
 }
 
-ul.slideContent > li {
+ul.slideContent li {
     width: 100%;
     height: 20px;
-    /*background: #dedede;*/
+    background: #dedede;
     margin: 5px 0px;
 }
 
@@ -334,11 +334,11 @@ ul.slideContent {
     margin: 5px;
 }
 
-.class-for-state-1 {
+ul.slideContent .class-for-state-1 {
     background: #37B9C8;
 }
 
-.class-for-state-0 {
+ul.slideContent .class-for-state-0 {
     background: #dedede;
 }
 
@@ -354,27 +354,27 @@ ul.slideContent {
     }
 }
 
-.class-for-state-2 {
+ul.slideContent .class-for-state-2 {
     animation: blinkBackground 1s infinite; /* 1초 간격으로 무한 반복됨 */
 }
 
-.class-for-state-3 {
+ul.slideContent .class-for-state-3 {
     background: #2A5A98;
 }
 
-.class-for-state-4 {
+ul.slideContent .class-for-state-4 {
     background: #A73A3A;
 }
 
-.out-for-state-0 {
+ul.slideContent .out-for-state-0 {
     background: #dedede;
 }
 
-.out-for-state-1 {
+ul.slideContent .out-for-state-1 {
     background: #37B9C8;
 }
 
-.outClassDefault {
+ul.slideContent .outClassDefault {
     background: #4D4F5C;
 }
 

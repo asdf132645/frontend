@@ -8,6 +8,7 @@ export interface CommonState {
     totalCount: string;
     embeddedNumber: string;
     isAlarm: boolean;
+    bfSelectFiles: [],
 }
 
 interface CommonModule {
@@ -20,6 +21,7 @@ interface CommonModule {
         setTotalCount: (state: CommonState, value: string) => void;
         setEmbeddedNumber: (state: CommonState, value: string) => void;
         setIsAlarm: (state: CommonState, value: boolean) => void;
+        setBfSelectFiles: (state: CommonState, value: []) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -35,6 +37,7 @@ export const commonModule: CommonModule = {
         totalCount: '', // 추가
         embeddedNumber: '',
         isAlarm: false,
+        bfSelectFiles: [],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -54,6 +57,9 @@ export const commonModule: CommonModule = {
         },
         setIsAlarm(state: CommonState, value: boolean): void {
             state.isAlarm = value;
+        },
+        setBfSelectFiles(state: CommonState, value: []): void {
+            state.bfSelectFiles = value;
         },
     },
     actions: {
@@ -78,6 +84,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isAlarm')){
                 commit('setIsAlarm', payload.isAlarm);
+            }
+            if (payload.hasOwnProperty('bfSelectFiles')){
+                commit('setBfSelectFiles', payload.bfSelectFiles);
             }
         },
     },

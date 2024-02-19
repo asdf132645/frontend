@@ -37,15 +37,15 @@
       </template>
       <!--      nonrbc-->
       <div class='mt1'>
-        <template v-for="(category, outerIndex) in nonRbcClassList" :key="outerIndex">
+        <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
           <div class="categories">
             <ul class="categoryNm">
               <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-              <li>{{ getCategoryName(category) }}</li>
+              <li>{{ getCategoryName(nWbcItem) }}</li>
             </ul>
             <ul class="classNm">
               <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li>{{ category?.count }}</li>
+              <li>{{ nWbcItem?.count }} <span v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ maxWbcCount }} WBC</span></li>
             </ul>
             <ul class="degree">
               <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
@@ -62,11 +62,10 @@
 <script setup lang="ts">
 import {computed, ref, onMounted, watch} from "vue";
 import {useStore} from "vuex";
-const storeEm = useStore();
-
 import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 
+const storeEm = useStore();
+const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const siteCd = ref('');
 
 interface SlotInfo {
@@ -89,6 +88,7 @@ const nonRbcClassList = ref<WbcInfo[]>([]);
 
 const testType = ref<string>("");
 const totalCount = ref<string>("");
+const maxWbcCount = ref<string>('');
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
@@ -122,9 +122,11 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
     );
     if (currentSlot) {
       updateCounts(currentSlot);
+      maxWbcCount.value = currentSlot.maxWbcCount;
     }
   }
 };
+
 
 
 

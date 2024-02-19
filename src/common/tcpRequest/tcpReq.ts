@@ -1,17 +1,19 @@
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {getDateTimeStr, getStoredUser, reqUserId} from "@/common/lib/utils/dateUtils";
+import {ref, watch, watchEffect} from 'vue';
 
+console.log(reqUserId())
 export const tcpReq = {
     embedStatus: {
         start: {
             jobCmd: "START",
-            reqUserId: "admin",
+            reqUserId: reqUserId() || '',
             testType: "",
             wbcCount: "",
             reqDttm: ""
         },
         startAction: {
             jobCmd: 'START',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             testType: '01',
             wbcCount: '',
             stitchCount: '',
@@ -21,58 +23,58 @@ export const tcpReq = {
             pltPositionMargin: 'this.settings.pltPositionMargin',
             reqDttm: getDateTimeStr(),
         },
-        init:{
+        init: {
             jobCmd: 'INIT',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
         },
         restart: {
             jobCmd: 'RESTART',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
             bfSelectFiles: []
         },
         stop: {
             jobCmd: 'STOP',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
             isEmergency: 'N',
             isUserStop: 'Y'
         },
         end: {
             jobCmd: "END",
-            reqUserId: "admin",
+            reqUserId: reqUserId() || '',
             testType: "",
             wbcCount: "",
             reqDttm: ""
         },
         runningInfo: {
             jobCmd: "RUNNING_INFO",
-            reqUserId: "admin"
+            reqUserId: reqUserId() || '',
         },
-        sysInfo:{
+        sysInfo: {
             jobCmd: 'SYSINFO',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
         },
-        pause : {
+        pause: {
             jobCmd: 'PAUSE',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
         },
         runIngComp: {
             jobCmd: 'RUNNING_COMP',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
         },
         recovery: {
             jobCmd: 'RECOVERY',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
         },
-        settings:{
+        settings: {
             jobCmd: 'SETTINGS',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
             pbiaRootDir: 'D:/IA_Proc',
             oilCount: '',
@@ -81,11 +83,27 @@ export const tcpReq = {
             uiVersion: '',
             isNsNbIntegration: '',
         },
-        oilPrime:{
+        oilPrime: {
             jobCmd: 'OIL_PRIME',
-            reqUserId: 'admin',
+            reqUserId: reqUserId() || '',
             reqDttm: getDateTimeStr(),
         }
-
     },
 };
+const storedUser = ref(reqUserId());
+
+watch(() => {
+    return getStoredUser();
+}, (newUser) => {
+    storedUser.value = newUser;
+    console.log(newUser);
+    // 추가적인 동작을 여기에 추가
+}, { deep: true });
+
+
+
+
+
+
+
+
