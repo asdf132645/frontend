@@ -68,6 +68,7 @@ const time = ref('');
 let countingInterval: number | null = null;
 const isAnimationEnabled = ref(false);
 const slideCardData = ref(slideCard);
+let totalElapsedTime = 0;
 
 const updateInputState = (source: string, target: any[]): void => {
   // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준
@@ -84,9 +85,13 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     updateInputState(sysInfo.iCasStat, slideCardData.value.input);
     updateInputState(sysInfo.oCasStat, slideCardData.value.output);
   }
-  if(sysInfo.iCasStat === '300000000000'){ // 끝났을 경우 체크하는 곳
-    updateInputState(sysInfo.iCasStat, slideCardData.value.input);
-    updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+  const regex = /[1,2,9]/g;
+  const dataICasStat = String(sysInfo?.iCasStat);
+  if (String(sysInfo?.iCasStat) !== '999999999999') {
+    if ((dataICasStat.search(regex) < 0) || sysInfo?.oCasStat === '111111111111') { // 끝났을 경우 체크하는 곳
+      updateInputState(sysInfo.iCasStat, slideCardData.value.input);
+      updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+    }
   }
 }, { deep: true });
 
@@ -116,16 +121,17 @@ watch([commonDataGet.value], async (newVals: any) => {
 
 
 const startCounting = (): void => {
+  console.log('startCounting');
   if (countingInterval) {
-    // 이미 실행 중인 interval이 있다면 중지
     clearInterval(countingInterval);
   }
 
+  totalElapsedTime = 0;
+
   countingInterval = setInterval(() => {
-    // 초를 1씩 증가
-    timeNum.value = (timeNum.value + 1) % 60;
-    // slideTime을 갱신
-    slideTime.value = getCountToTime(timeNum.value);
+    totalElapsedTime += 1;
+    timeNum.value = totalElapsedTime % 60;
+    slideTime.value = getCountToTime(totalElapsedTime);
   }, 1000);
 
   onBeforeUnmount(() => {
@@ -136,10 +142,11 @@ const startCounting = (): void => {
 };
 
 
+
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
 
-  if (slotArray[0].changeSlideState?.changeSlide.value === 'start') {
+  if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
     startCounting();
     isAnimationEnabled.value = true;
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {

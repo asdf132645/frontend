@@ -69,6 +69,22 @@ export const tcpReq = {
             jobCmd: 'RECOVERY',
             reqUserId: 'admin',
             reqDttm: getDateTimeStr(),
+        },
+        settings:{
+            jobCmd: 'SETTINGS',
+            reqUserId: 'admin',
+            reqDttm: getDateTimeStr(),
+            pbiaRootDir: 'D:/IA_Proc',
+            oilCount: '',
+            isOilReset: '',
+            deviceType: '01',
+            uiVersion: '',
+            isNsNbIntegration: '',
+        },
+        oilPrime:{
+            jobCmd: 'OIL_PRIME',
+            reqUserId: 'admin',
+            reqDttm: getDateTimeStr(),
         }
 
     },

@@ -4,6 +4,10 @@ export interface ChangeSlideState {
     changeSlide: string;
 }
 
+export interface SlideBoolean {
+    slideIs: boolean;
+}
+
 interface ClassInfo {
     classId: string;
     classNm: string;
@@ -74,6 +78,7 @@ export interface RunningInfo {
 interface RunningInfoState {
     runningInfo: RunningInfo | null;
     changeSlideState: ChangeSlideState | null;
+    slideBooleanState: SlideBoolean | null;
 }
 
 interface RunningInfoModule {
@@ -82,11 +87,13 @@ interface RunningInfoModule {
     mutations: {
         setRunningInfo: (state: RunningInfoState, value: RunningInfo) => void;
         setChangeSlide: (state: RunningInfoState, value: string) => void;
+        setSlideBoolean: (state: RunningInfoState, value: boolean) => void;
     };
     actions: {
         setRunningInfo: (context: { commit: Commit }, payload: RunningInfo) => void;
         updateRunningInfo: (context: { commit: Commit }, payload: { key: keyof RunningInfo; value: string | number }) => void;
         setChangeSlide: (context: { commit: Commit }, value: string) => void;
+        setSlideBoolean: (context: { commit: Commit }, value: boolean) => void;
     };
 }
 
@@ -95,6 +102,7 @@ export const runningInfoModule: RunningInfoModule = {
     state: () => ({
         runningInfo: null,
         changeSlideState: null,
+        slideBooleanState: null,
     }),
     mutations: {
         setRunningInfo(state: RunningInfoState, value: RunningInfo): void {
@@ -110,6 +118,13 @@ export const runningInfoModule: RunningInfoModule = {
                 state.changeSlideState = { changeSlide: value };
             }
         },
+        setSlideBoolean(state: RunningInfoState, value: boolean): void {
+            if (state.slideBooleanState) {
+                state.slideBooleanState.slideIs = value;
+            } else {
+                state.slideBooleanState = { slideIs: value };
+            }
+        }
 
     },
     actions: {
@@ -123,6 +138,9 @@ export const runningInfoModule: RunningInfoModule = {
         },
         setChangeSlide({ commit }: { commit: Commit }, value: string): void {
             commit('setChangeSlide', value);
+        },
+        setSlideBoolean({ commit }: { commit: Commit }, value: boolean): void {
+            commit('setSlideBoolean', value);
         },
     },
 };

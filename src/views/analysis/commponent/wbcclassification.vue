@@ -10,14 +10,14 @@
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
-              <li v-if="(innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1) || (innerIndex === classList.length - 1)">
+              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
                 total
               </li>
             </ul>
             <ul class="classNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
               <li>{{ category?.count }}</li>
-              <li v-if="innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1">
+              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
                 {{ totalCount || 0 }}
               </li>
             </ul>
@@ -28,7 +28,7 @@
                   totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
                 }}
               </li>
-              <li v-if="(innerIndex === classList.length - 1 && outerIndex !== dspWbcClassList.length - 1) || (innerIndex === classList.length - 1)">
+              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
                 100.00
               </li>
             </ul>

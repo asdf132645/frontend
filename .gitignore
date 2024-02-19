@@ -1,7 +1,9 @@
 .DS_Store
 node_modules
 /dist
-
+dependencies.tar.gz
+frontend.egg
+npm_packages
 
 # local env files
 .env.local

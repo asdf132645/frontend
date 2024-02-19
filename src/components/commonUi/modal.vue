@@ -1,3 +1,4 @@
+<!-- 자식 모달 컴포넌트 -->
 <template>
   <div class="layer">
     <div class="layer-content">
@@ -13,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref, onMounted, defineEmits } from 'vue';
 
 const visible = ref(false);
 const emit = defineEmits(['update:closeLayer']);
@@ -25,6 +26,10 @@ const closeLayer = () => {
   visible.value = false;
   emit('update:closeLayer', false);
 };
+
+onMounted(() => {
+  emit('afterOpen'); // 모달이 열린 후에 이벤트를 부모 컴포넌트로 전달
+});
 </script>
 
 <style scoped>
@@ -42,6 +47,7 @@ const closeLayer = () => {
 }
 
 .layer-content {
+  text-align: left;
   background: #fff;
   padding: 20px;
   border-radius: 8px;
@@ -53,6 +59,9 @@ const closeLayer = () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-bottom: 1px solid #dedede;
+  padding-bottom: 15px;
 }
-
 </style>

@@ -70,7 +70,7 @@
       </div>
     </nav>
   </header>
-  <Modal v-if="visible" @update:closeLayer="closeLayer">
+  <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
     <!-- 헤더 슬롯에 들어갈 내용 -->
     <template #header>
       <h2>Immersion Oil</h2>
@@ -78,21 +78,46 @@
 
     <!-- 컨텐츠 슬롯에 들어갈 내용 -->
     <template #content>
-      <h5>Immersion Oil count Reset</h5>
-      <span class="colorGray">Reset Immersion Oil count after changing Oil pack</span>
       <div>
+        <h5 class="modalTitle">Immersion Oil count Reset</h5>
+        <span class="colorGray">Reset Immersion Oil count after changing Oil pack</span>
+        <div class="smallTitle">
+          <span>Estimated number of slides left</span>
+          <div class="border ml-5" style="width: 80px;">{{ oilCount }}</div>
+        </div>
 
+        <div>
+          <div ref="statusBarWrapper" class="statusBarWrapper">
+            <div ref="statusBar" class="statusBar"></div>
+          </div>
+          <div>
+            <button @click='onReset'>RESET</button>
+          </div>
+        </div>
       </div>
+
+      <div class='mt2'>
+        <h5 class="modalTitle">Prime Immersion Oil</h5>
+        <span class="colorGray">Prime oil to remove air from the oil hose</span>
+        <div>
+          <div class="statusBarWrapper">
+          </div>
+          <button @click='onPrime'>PRIME</button>
+        </div>
+      </div>
+
     </template>
   </Modal>
 </template>
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, nextTick, ref, watch} from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
+import {messages} from "@/common/defines/constFile/constant";
+import {sendOilPrimeWebSocket, sendSettingInfoWebSocket} from "@/common/lib/sendWebSocket/common";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -117,6 +142,10 @@ const oilCountData = ref('');
 const storagePercentData = ref('');
 const isAlarm = ref(false);
 const visible = ref(false);
+const maxOilCount = ref(1000);
+const statusBarWrapper = ref<HTMLDivElement | null>(null);
+const statusBar = ref<HTMLDivElement | null>(null);
+
 
 
 watch([embeddedStatusJobCmd.value], async (newVals: any) => {
@@ -216,6 +245,31 @@ const openLayer = () => {
 
 const closeLayer = (val: boolean) => {
   visible.value = val;
+};
+
+const onReset = () => {
+  alert(messages.IDS_MSG_SUCCESS);
+  getPercent();
+  sendSettingInfoWebSocket('Y', String(oilCount.value));
+}
+
+const getPercent = () => {
+  if (!statusBarWrapper.value || !statusBar.value) {
+    return;
+  }
+  const percent = Math.round((oilCount.value / maxOilCount.value) * 100);
+  const progressBarWidth = `${(percent / 100) * statusBarWrapper.value.offsetWidth}px`;
+
+  statusBar.value.style.width = progressBarWidth;
+}
+
+const onPrime = () => {
+  sendOilPrimeWebSocket();
+}
+
+const onModalOpen = () => {
+  // 모달이 열린 후에 실행되는 콜백 함수
+  getPercent();
 };
 
 </script>

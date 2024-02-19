@@ -19,7 +19,7 @@ import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {useRoute} from 'vue-router';
-import  {messages} from './common/defines/constFile/constant';
+import {messages} from '@/common/defines/constFile/constant';
 
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
@@ -78,6 +78,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       runInfoPostWebSocket();
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+      console.log('start')
       break;
     case 'RUNNING_INFO':
       await runningInfoStore(parseDataWarp);
@@ -94,6 +95,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false,}); // 임베디드 상태가 죽음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});
       break;
     case 'PAUSE':
       await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true});
@@ -112,8 +114,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       break;
   }
 
-  // console.log(JSON.stringify(parseDataWarp))
-
 });
 const startSysPostWebSocket = async () => {
   if (!isRequestInProgress) {
@@ -130,36 +130,42 @@ const runInfoPostWebSocket = async () => {
     isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
   }
 };
-
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   // 스캔중일때는 pass + 완료상태일때도
   if (String(data?.iCasStat) !== '999999999999') {
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
     );
-    //슬라이드 변경시 데이터 저장
-    if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {
-      // running info 종료
-      sendMessage(tcpReq.embedStatus.pause);
-    } else {
-      if (currentSlot?.slotId !== runningSlotId.value) {
-        // 실행중인 슬롯ID 변경
-        await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: currentSlot?.slotId});
-        runningSlotId.value = String(currentSlot?.slotId);
+      //슬라이드 변경시 데이터 저장
+      await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false})
+      if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {
+        // running info 종료
+        sendMessage(tcpReq.embedStatus.pause);
+      } else {
+        if (currentSlot?.slotId !== runningSlotId.value) {
+          await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+          runningSlotId.value = String(currentSlot?.slotId);
+          await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true})
+        }
       }
-    }
 
-    const regex = /[1,2,9]/g;
-    // 주문 내역 및 처리 결과 저장 -start
-    // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-    if ((String(data?.iCasStat).search(regex) < 0) || data?.oCasStat === '111111111111') {
-      // runIngComp
-      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});
-      sendMessage(tcpReq.embedStatus.runIngComp);
+      const regex = /[1,2,9]/g;
+      const dataICasStat = String(data?.iCasStat);
+
+      // 주문 내역 및 처리 결과 저장 -start
+      // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
+
+      if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
+        // runIngComp
+        sendMessage(tcpReq.embedStatus.runIngComp);
+      }
+
+
     }
-  }
 
 }
+
+
 setInterval(async () => {
   const storedUser = sessionStorage.getItem('user');
   if (storedUser) {

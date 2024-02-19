@@ -534,4 +534,18 @@ input.loginInput {
 .oliCount{
     cursor: pointer;
 }
+
+.statusBarWrapper{
+    width: 100%;
+    height: 20px;
+    margin-top: 5px;
+    background-color: #063E5F;
+}
+
+.statusBar{
+    width: 80%;
+    height: 20px;
+    margin-top: 5px;
+    background-color: #0080C1;
+}
 /*main end*/

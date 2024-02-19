@@ -13,15 +13,16 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue';
+import {ref, watch, computed} from 'vue';
 import { useStore } from 'vuex';
 import { RunningInfo, SlotInfo } from '@/store/modules/testPageCommon/ruuningInfo';
 import { getDateTimeStr } from '@/common/lib/utils/dateUtils';
 
 const store = useStore();
-const runningInfoModule = ref<RunningInfo[]>([]);
 const images = ref<RunningPathItem[]>([]);
 const currentImageIndex = ref(0);
+const runningInfoModule = computed(() => store.state.runningInfoModule);
+
 
 interface RunningPathItem {
   path: string;
@@ -36,27 +37,34 @@ interface RunningInfoWithId extends RunningInfo {
   };
 }
 
-onMounted(() => {
-  watchEffect(() => {
-    const firstItem = (runningInfoModule.value[0] as RunningInfoWithId)?.runningInfo;
 
-    if (firstItem?.slotInfo) {
-      const currentSlot = firstItem.slotInfo.find((item: any) => item.stateCd === '03'); // item: any로 변경
 
-      if (currentSlot && currentSlot.runningPath && currentSlot.runningPath.length > 0) {
-        const runningPath: RunningPathItem[] = currentSlot.runningPath.map((item: any) => ({
-          ...item,
-          path: item.path + '?' + getDateTimeStr(),
+watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
+  // const firstItem = (runningInfoModule.value[0] as RunningInfoWithId)?.runningInfo;
+  const firstItem = JSON.parse(JSON.stringify(newSlot))
+  const slotInfo = firstItem[0].runningInfo?.slotInfo;
+  if (slotInfo) {
+    const accumulatedRunningPath: RunningPathItem[] = [];
+
+    slotInfo.forEach((item: any) => {
+      console.log(item.runningPath)
+      if (item.stateCd === '03' && item.runningPath && item.runningPath.length > 0) {
+        const runningPath: RunningPathItem[] = item.runningPath.map((pathItem: any) => ({
+          ...pathItem,
+          path: pathItem.path,
           id: generateUniqueId()
         }));
 
-        images.value = runningPath;
-        currentImageIndex.value = 0; // 초기 이미지 인덱스를 0으로 설정
+        accumulatedRunningPath.push(...runningPath);
       }
-    }
-  });
-});
+    });
 
+    if (accumulatedRunningPath.length > 0) {
+      images.value = accumulatedRunningPath;
+      currentImageIndex.value = 0; // 초기 이미지 인덱스를 0으로 설정
+    }
+  }
+});
 
 
 function nextSlide() {

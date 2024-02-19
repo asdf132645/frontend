@@ -16,7 +16,10 @@
           {{ siteCd === '0019' ? processInfoItem?.analyzedDttm : processInfoItem?.orderDate }}
         </span>
       </li>
-      <li><span class="proSpan">Oil Count:</span> <span class="proVal">{{ processInfoItem?.oilCount }}</span></li>
+      <li v-if="processInfoItem?.oilCount !== prevOilCount">
+        <span class="proSpan">Oil Count:</span>
+        <span class="proVal">{{ processInfoItem?.oilCount }}</span>
+      </li>
     </ul>
   </div>
 </template>
@@ -37,6 +40,8 @@ import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
+const prevOilCount = ref<number | null>(null);
+
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
@@ -55,17 +60,20 @@ watch([runningInfoModule.value], (newVal: any) => {
         const currentSlot = firstItem?.slotInfo.find(
             (item: SlotInfo) => item.stateCd === "03"
         );
-        if (currentSlot) {
-          processInfoItem.value = {
-            cassetteNo: 1,
-            barcodeId: currentSlot.barcodeNo,
-            patientId: currentSlot.patientId,
-            patientName: currentSlot.patientNm,
-            wbcCount: currentSlot.maxWbcCount,
-            orderDate: stringToDateTime(currentSlot.orderDttm),
-            analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-          };
+        // if (currentSlot) {
+        processInfoItem.value = {
+          cassetteNo: 1,
+          barcodeId: currentSlot.barcodeNo,
+          patientId: currentSlot.patientId,
+          patientName: currentSlot.patientNm,
+          wbcCount: currentSlot.maxWbcCount,
+          orderDate: stringToDateTime(currentSlot.orderDttm),
+          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+        };
+        if (processInfoItem.value.oilCount !== prevOilCount.value) {
+          prevOilCount.value = processInfoItem.value.oilCount;
         }
+        // }
       }
     }
   }
