@@ -12,10 +12,10 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import AnalysisDatabase from "@/views/setting/commponent/analysisDatabase.vue";
-import LognAccount from "@/views/setting/commponent/lognAccount.vue";
-import Report from "@/views/setting/commponent/report.vue";
-import QualityCheck from "@/views/setting/commponent/qualityCheck.vue";
+import AnalysisDatabase from "@/views/setting/analysisDatabase/index.vue";
+import LognAccount from "@/views/setting/lognAccount/index.vue";
+import Report from "@/views/setting/report/index.vue";
+import QualityCheck from "@/views/setting/qualityCheck/index.vue";
 
 type TabComponents = {
   login: typeof LognAccount;

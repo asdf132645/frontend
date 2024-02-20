@@ -29,7 +29,7 @@ export function useHttpClient() {
         axios.defaults.withCredentials = true;
 
         try {
-            const response: HttpResponse<T> = await axios.get(`http://localhost:3002/${url}/${parameters}`, options);
+            const response: HttpResponse<T> = await axios.get(`http://192.168.0.131:3002/${url}/${parameters}`, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);
@@ -51,7 +51,28 @@ export function useHttpClient() {
         axios.defaults.withCredentials = true;
 
         try {
-            const response: HttpResponse<T> = await axios.post(`http://localhost:3002/${url}`, payload, options);
+            const response: HttpResponse<T> = await axios.post(`http://192.168.0.131:3002/${url}`, payload, options);
+            return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    };
+
+    const httpPut = async <T>(url: Endpoint, payload: GenericObject, parameters?: string): Promise<ApiResponse<T>> => {
+        return httpPutAct(url.endpoint, payload, parameters);
+    };
+
+    const httpPutAct = async <T>(url: string, payload: GenericObject, parameters?: string): Promise<ApiResponse<T>> => {
+        const options: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        axios.defaults.withCredentials = true;
+
+        try {
+            const response: HttpResponse<T> = await axios.put(`http://localhost:3002/${url}/${parameters}`, payload, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);
@@ -59,10 +80,15 @@ export function useHttpClient() {
     };
 
 
+
+
     return {
         httpGet,
         httpGetAct,
         httpPost,
         httpPostAct,
+        httpPut,
+        httpPutAct,
     };
+
 }

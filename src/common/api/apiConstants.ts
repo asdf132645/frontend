@@ -36,5 +36,17 @@ export const apiConstants = {
             endpoint: 'user',
             requiresToken: false,
         }
+    },
+    settings:{
+        cellImgAnalyzedPost:{
+            cellImgAdd:{
+                endpoint:'cellImgAnalyzed/cellImgAdd',
+                requiresToken: false,
+            },
+            cellImgGetPut:{
+                endpoint:'cellImgAnalyzed',
+                requiresToken: false,
+            }
+        }
     }
 };

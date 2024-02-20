@@ -28,6 +28,8 @@ const isStartEmbeddedCalled = ref(false);
 let isRequestInProgress = false;
 const instance = getCurrentInstance();
 const runningSlotId = ref('');
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 
 // 실제 배포시 사용해야함
@@ -50,17 +52,7 @@ watch([userModuleDataGet.value], async (newVals: any) => {
   }
 })
 
-onMounted(async () => {
-  if (userId.value && userId.value !== '') { // 로그인 체크
-    // 소켓 연결
-    const socket = instance?.appContext.config.globalProperties.$socket;
-    if (socket && !socket.connected) {
-      socket.connect();
-    }
-    await startSysPostWebSocket();
-    await runInfoPostWebSocket();
-  }
-});
+
 
 // 모든 tcp 통신으로 받은 응답값을 스토어에 저장하는 부분
 // 무조건 응답을 받는곳은 app.vue에서 정의
@@ -77,7 +69,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await sysInfoStore(parseDataWarp);
       break;
     case 'INIT':
-      startSysPostWebSocket();
+      await startSysPostWebSocket();
       break;
     case 'START':
       runInfoPostWebSocket();
@@ -172,14 +164,14 @@ const sendMessage = (payload: object) => {
 }
 
 
-setInterval(async () => {
-  if (userId.value && userId.value !== '') {
-    if (isStartEmbeddedCalled.value) {
-      await runInfoPostWebSocket();
-    }
-    await startSysPostWebSocket();
-  }
-}, 500);
+// setInterval(async () => {
+//   if (userId.value && userId.value !== '') {
+//     if (isStartEmbeddedCalled.value) {
+//       await runInfoPostWebSocket();
+//     }
+//     await startSysPostWebSocket();
+//   }
+// }, 500);
 
 
 </script>
