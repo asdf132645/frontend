@@ -1,19 +1,17 @@
-import {getDateTimeStr, getStoredUser, reqUserId} from "@/common/lib/utils/dateUtils";
-import {ref, watch, watchEffect} from 'vue';
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
-console.log(reqUserId())
 export const tcpReq = {
     embedStatus: {
         start: {
             jobCmd: "START",
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             testType: "",
             wbcCount: "",
             reqDttm: ""
         },
         startAction: {
             jobCmd: 'START',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             testType: '01',
             wbcCount: '',
             stitchCount: '',
@@ -25,56 +23,56 @@ export const tcpReq = {
         },
         init: {
             jobCmd: 'INIT',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
         },
         restart: {
             jobCmd: 'RESTART',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
             bfSelectFiles: []
         },
         stop: {
             jobCmd: 'STOP',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
             isEmergency: 'N',
             isUserStop: 'Y'
         },
         end: {
             jobCmd: "END",
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             testType: "",
             wbcCount: "",
             reqDttm: ""
         },
         runningInfo: {
             jobCmd: "RUNNING_INFO",
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
         },
         sysInfo: {
             jobCmd: 'SYSINFO',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
         },
         pause: {
             jobCmd: 'PAUSE',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
         },
         runIngComp: {
             jobCmd: 'RUNNING_COMP',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
         },
         recovery: {
             jobCmd: 'RECOVERY',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
         },
         settings: {
             jobCmd: 'SETTINGS',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
             pbiaRootDir: 'D:/IA_Proc',
             oilCount: '',
@@ -85,25 +83,11 @@ export const tcpReq = {
         },
         oilPrime: {
             jobCmd: 'OIL_PRIME',
-            reqUserId: reqUserId() || '',
+            reqUserId: '',
             reqDttm: getDateTimeStr(),
         }
     },
 };
-const storedUser = ref(reqUserId());
-
-watch(() => {
-    return getStoredUser();
-}, (newUser) => {
-    storedUser.value = newUser;
-    console.log(newUser);
-    // 추가적인 동작을 여기에 추가
-}, { deep: true });
-
-
-
-
-
 
 
 

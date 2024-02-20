@@ -19,16 +19,16 @@ import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constant';
-import {reqUserId} from "@/common/lib/utils/dateUtils";
 
 
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
+const userModuleDataGet = computed(() => store.state.userModule);
 const isStartEmbeddedCalled = ref(false);
 let isRequestInProgress = false;
 const instance = getCurrentInstance();
 const runningSlotId = ref('');
-const userId = reqUserId();
+const userId = ref('');
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -43,21 +43,24 @@ watch([commonDataGet.value], async (newVals: any) => {
   isStartEmbeddedCalled.value = newValsObj[0].startEmbedded;
 })
 
+watch([userModuleDataGet.value], async (newVals: any) => {
+  const newValsObj = JSON.parse(JSON.stringify(newVals))
+  if (newValsObj[0].userId && newValsObj[0].userId !== '') {
+    userId.value = newValsObj[0].userId;
+  }
+})
+
 onMounted(async () => {
-  const storedUser = sessionStorage.getItem('user');
-  if (storedUser) { // 로그인 체크
+  if (userId.value && userId.value !== '') { // 로그인 체크
     // 소켓 연결
     const socket = instance?.appContext.config.globalProperties.$socket;
     if (socket && !socket.connected) {
       socket.connect();
     }
-
     await startSysPostWebSocket();
     await runInfoPostWebSocket();
-
   }
 });
-
 
 // 모든 tcp 통신으로 받은 응답값을 스토어에 저장하는 부분
 // 무조건 응답을 받는곳은 app.vue에서 정의
@@ -78,10 +81,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       break;
     case 'START':
       runInfoPostWebSocket();
-      await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});
-      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',}); // 임베디드 상태가 죽음을 알려준다.
-      console.log('start')
       break;
     case 'RUNNING_INFO':
       await runningInfoStore(parseDataWarp);
@@ -119,76 +121,48 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
 });
 const startSysPostWebSocket = async () => {
-  if (!isRequestInProgress && userId === '') {
-    isRequestInProgress = true;
-    tcpReq.embedStatus.sysInfo.reqUserId = userId;
-    console.log(reqUserId())
-    sendMessage(tcpReq.embedStatus.sysInfo);
-    isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
-  }
+  isRequestInProgress = true;
+  tcpReq.embedStatus.sysInfo.reqUserId = userId.value;
+  sendMessage(tcpReq.embedStatus.sysInfo);
+  isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
 };
 
 const runInfoPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
-    const userId = reqUserId();
-    tcpReq.embedStatus.runningInfo.reqUserId = userId;
+    tcpReq.embedStatus.runningInfo.reqUserId = userId.value;
     sendMessage(tcpReq.embedStatus.runningInfo);
     isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
   }
 };
+
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
-  // 스캔중일때는 pass + 완료상태일때도
-  if (String(data?.iCasStat) !== '999999999999') {
+  if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
     );
     //슬라이드 변경시 데이터 저장
     await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false})
-    if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {
-      // running info 종료
-      tcpReq.embedStatus.pause.reqUserId = userId;
+    if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
+      tcpReq.embedStatus.pause.reqUserId = userId.value;
       sendMessage(tcpReq.embedStatus.pause);
     } else {
-      if (currentSlot?.slotId !== runningSlotId.value) {
+      if (currentSlot?.slotId !== runningSlotId.value) { // 슬라이드 체인지 시
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+        await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         runningSlotId.value = String(currentSlot?.slotId);
-        await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true})
       }
     }
-
     const regex = /[1,2,9]/g;
     const dataICasStat = String(data?.iCasStat);
-
     // 주문 내역 및 처리 결과 저장 -start
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-      // runIngComp
-
-      tcpReq.embedStatus.runIngComp.reqUserId = userId;
+      tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
       sendMessage(tcpReq.embedStatus.runIngComp);
     }
-
-
   }
-
 }
-
-
-setInterval(async () => {
-  const storedUserString = sessionStorage.getItem('user');
-  const storedUser = storedUserString ? JSON.parse(storedUserString) : {};
-
-  if (storedUser) {
-    if (storedUser.userId && storedUser.userId !== '') {
-      if (isStartEmbeddedCalled.value) {
-        await runInfoPostWebSocket();
-      }
-      await startSysPostWebSocket();
-    }
-  }
-}, 500);
 
 const sendMessage = (payload: object) => {
   instance?.appContext.config.globalProperties.$socket.emit('message', {
@@ -196,6 +170,16 @@ const sendMessage = (payload: object) => {
     payload: payload
   });
 }
+
+
+setInterval(async () => {
+  if (userId.value && userId.value !== '') {
+    if (isStartEmbeddedCalled.value) {
+      await runInfoPostWebSocket();
+    }
+    await startSysPostWebSocket();
+  }
+}, 500);
 
 
 </script>

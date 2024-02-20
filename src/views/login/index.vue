@@ -32,7 +32,6 @@ import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
-import {getStoredUser} from "@/common/lib/utils/dateUtils";
 // 스토어
 const store = useStore();
 const password = ref('');
@@ -50,19 +49,18 @@ const loginUser = async () => {
 
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
-    if (result?.data && Object.keys(result.data).length) {
+    if (result?.data?.user) {
       alert('login successful.');
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
-      await getStoredUser();
       await document.documentElement.requestFullscreen();
       await router.push('/');
     }else{
-      alert('Login failed');
+      alert('Login failed.');
     }
 
   } catch (e) {
-    alert('Login failed.')
+    alert('server Err.')
     console.log(e);
   }
 }

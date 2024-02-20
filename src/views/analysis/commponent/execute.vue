@@ -42,13 +42,13 @@ import {useStore} from "vuex";
 import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
 import {messages} from '@/common/defines/constFile/constant';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
-import {reqUserId} from "@/common/lib/utils/dateUtils";
 
 const instance = getCurrentInstance();
 
-// 스토어
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+const userModuleDataGet = computed(() => store.state.userModule);
+
 const runInfo = computed(() => store.state.commonModule);
 const executeState = computed(() => store.state.executeModule);
 const isPause = ref(runInfo.value?.isPause);
@@ -56,7 +56,7 @@ const isRunningState = ref(executeState.value?.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
-const userId = reqUserId();
+const userId = ref('');
 
 const analysisType = ref();
 const wbcCount = ref();
@@ -86,6 +86,14 @@ onMounted(async () => {
   wbcCount.value = '100';
   stitchCount.value = '';
 });
+
+watch([userModuleDataGet.value], async (newVals: any) => {
+  const newValsObj = JSON.parse(JSON.stringify(newVals))
+  if (newValsObj[0].userId && newValsObj[0].userId !== '') {
+    console.log(newValsObj[0].userId)
+    userId.value = newValsObj[0].userId;
+  }
+})
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
@@ -151,7 +159,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
 
       tcpReq.embedStatus.restart.bfSelectFiles = bfSelectFiles.value;
-      tcpReq.embedStatus.restart.reqUserId = userId;
+      tcpReq.embedStatus.restart.reqUserId = userId.value;
       emitSocketData('SEND_DATA', tcpReq.embedStatus.restart);
       return;
     }
@@ -161,7 +169,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     } else if (userStop.value) {
       if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true){
-        tcpReq.embedStatus.recovery.reqUserId = userId;
+        tcpReq.embedStatus.recovery.reqUserId = userId.value;
         instance?.appContext.config.globalProperties.$socket.emit('message', {
           type: 'SEND_DATA',
           payload: tcpReq.embedStatus.recovery
@@ -175,7 +183,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       testType: analysisType.value,
       wbcCount: wbcCount.value,
       stitchCount: stitchCount.value,
-      reqUserId: userId,
+      reqUserId: userId.value,
     });
 
     if (isInit.value === 'Y') { // 초기화 여부 체크 초기화가 되어있는 상태이면 실행
@@ -195,7 +203,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     }
     store.dispatch('embeddedStatusModule/setUserStop', {userStop: true});
-    tcpReq.embedStatus.stop.reqUserId = userId;
+    tcpReq.embedStatus.stop.reqUserId = userId.value;
     emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
 
   }
@@ -203,7 +211,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
 };
 
 const sendInit = () => { // 장비 초기화 진행
-  tcpReq.embedStatus.init.reqUserId = userId;
+  tcpReq.embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq.embedStatus.init);
 }
 
