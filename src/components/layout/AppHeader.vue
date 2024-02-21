@@ -187,7 +187,9 @@ const logout = () => {
   sessionStorage.removeItem('user');
   router.push('user/login');
   store.commit('resetStore');
-  document.exitFullscreen();
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  }
   logOutBox.value = false;
 }
 

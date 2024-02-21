@@ -1,6 +1,7 @@
 <template>
   <div>
-    <table>
+    <h3 class="mt2">Cell image analyzed</h3>
+    <table class="settingTable">
       <tbody>
       <tr>
         <th>Analysis type</th>
@@ -76,7 +77,7 @@
       <tr>
         <th>IA root path</th>
         <td colspan="2">
-          <input type="text" v-model="pbiaRootPath">
+          <input type="text" v-model="pbiaRootPath" @click='pickDirectory'>
         </td>
       </tr>
       <tr>
@@ -122,6 +123,14 @@
     </div>
     <button type="button" @click='createCellImgSet()'>Save Cell image analyzed</button>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -136,6 +145,11 @@ import {
   testTypeList,
   WbcPositionMarginList
 } from "@/common/defines/constFile/settings";
+import Alert from "@/components/commonUi/Alert.vue";
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+
 
 const testTypeCd = ref('01');
 const pbAnalysisType = ref('100');
@@ -236,7 +250,7 @@ const createCellImgSet = async () => {
     }
 
     if (result) {
-      alert('save successful');
+      showSuccessAlert('save successful');
     }
 
   } catch (e) {
@@ -254,6 +268,42 @@ const toggleAlarm = () => {
 
 const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
+};
+
+const handleFileChange = (event: Event) => {
+  const files = (event.target as HTMLInputElement).files;
+  console.log(event)
+  if (files && files.length > 0) {
+    const folderPath = files[0].webkitRelativePath.split('/')[0];
+    console.log('Folder Path:', files[0]);
+  }
+};
+
+const pickDirectory = async () => {
+  try {
+    const directoryHandle = await window.showDirectoryPicker();
+    console.log("Selected directory:", directoryHandle);
+
+    // 이제 선택한 디렉터리에 대한 다양한 작업을 수행할 수 있습니다.
+  } catch (error) {
+    console.error("Error picking directory:", error);
+  }
+
+}
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
 };
 
 

@@ -11,7 +11,9 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 // @ts-ignore
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import socketPlugin from '@/plugins/socketPlugin'; // 경로를 적절히 수정하세요
+import socketPlugin from '@/plugins/socketPlugin';
+/// <reference path="../types/webapi.d.ts" />
+
 
 library.add(fas);
 const app = createApp(App);

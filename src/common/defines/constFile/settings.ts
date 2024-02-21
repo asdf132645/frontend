@@ -139,3 +139,223 @@ export const wbcRunningCount = [{
     max: 3000,
     wbcCount: 250
 }];
+
+export const rbcClassList = {
+    rbcClassList: [{
+        categoryId: '01',
+        categoryNm: 'Size',
+        classInfo: [{
+            classId: '01',
+            classNm: 'Normal',
+            degree: '0'
+        }, {
+            classId: '02',
+            classNm: 'Macrocyte',
+            degree: '0'
+        }, {
+            classId: '03',
+            classNm: 'Microcyte',
+            degree: '0'
+        }, {
+            classId: '04',
+            classNm: 'Anisocytosis',
+            degree: '0'
+        }]
+    }, {
+        categoryId: '02',
+        categoryNm: 'Chromia',
+        classInfo: [{
+            classId: '01',
+            classNm: 'Normal',
+            degree: '0'
+        }, {
+            classId: '02',
+            classNm: 'Hyperchromic',
+            degree: '0'
+        }, {
+            classId: '03',
+            classNm: 'Hypochromic',
+            degree: '0'
+        }, {
+            classId: '04',
+            classNm: 'Polychromia',
+            degree: '0'
+        }]
+    }, {
+        categoryId: '03',
+        categoryNm: 'Shape',
+        classInfo: [{
+            classId: '01',
+            classNm: 'Normal',
+            degree: '0'
+        }, {
+            classId: '02',
+            classNm: 'Poikilocytosis',
+            degree: '0'
+        }, {
+            classId: '03',
+            classNm: 'Target Cell',
+            degree: '0'
+        }, {
+            classId: '04',
+            classNm: 'Burr Cell',
+            degree: '0'
+        }, {
+            classId: '05',
+            classNm: 'Acanthocyte',
+            degree: '0'
+        }, {
+            classId: '06',
+            classNm: 'Ovalocyte',
+            degree: '0'
+        }, {
+            classId: '07',
+            classNm: 'Schistocyte',
+            degree: '0'
+        }, {
+            classId: '08',
+            classNm: 'Sickle Cell',
+            degree: '0'
+        }, {
+            classId: '09',
+            classNm: 'Stomatocyte',
+            degree: '0'
+        }, {
+            classId: '10',
+            classNm: 'Tear Drop Cell',
+            degree: '0'
+        }, {
+            classId: '11',
+            classNm: 'Spherocyte',
+            degree: '0'
+        }]
+    },
+        // {
+        //   categoryId: '04',
+        //   categoryNm: 'Platelet',
+        //   classInfo: Object.freeze([{
+        //     classId: '01',
+        //     classNm: 'Giant Platelet',
+        //     degree: '0'
+        //   }])
+        // },
+        {
+        categoryId: '05',
+        categoryNm: 'Inclusion Body',
+        classInfo: [{
+            classId: '01',
+            classNm: 'Howell-Jolly Body',
+            degree: '0'
+        }, {
+            classId: '02',
+            classNm: 'Basophilic Stippling',
+            degree: '0'
+        }]
+    }],
+    malariaCount: 0,
+    currentRbcResults: null
+};
+
+export const defaultRbcDegree =  [{
+    categoryId: '01',
+    classId: '02',
+    degree1: 5,
+    degree2: 10,
+    degree3: 20
+}, {
+    categoryId: '01',
+    classId: '03',
+    degree1: 5,
+    degree2: 10,
+    degree3: 20
+}, {
+    categoryId: '01',
+    classId: '04',
+    degree1: 5,
+    degree2: 10,
+    degree3: 20
+}, {
+    categoryId: '02',
+    classId: '02',
+    degree1: 5,
+    degree2: 10,
+    degree3: 20
+}, {
+    categoryId: '02',
+    classId: '03',
+    degree1: 5,
+    degree2: 10,
+    degree3: 20
+}, {
+    categoryId: '02',
+    classId: '04',
+    degree1: 5,
+    degree2: 10,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '03',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '04',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '05',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '06',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '07',
+    degree1: 0.5,
+    degree2: 1,
+    degree3: 2
+}, {
+    categoryId: '03',
+    classId: '08',
+    degree1: 0.5,
+    degree2: 1,
+    degree3: 2
+}, {
+    categoryId: '03',
+    classId: '09',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '10',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '03',
+    classId: '11',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}, {
+    categoryId: '05',
+    classId: '01',
+    degree1: 1,
+    degree2: 2,
+    degree3: 3
+}, {
+    categoryId: '05',
+    classId: '02',
+    degree1: 2.5,
+    degree2: 5,
+    degree3: 20
+}]

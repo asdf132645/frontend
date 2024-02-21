@@ -47,6 +47,16 @@ export const apiConstants = {
                 endpoint:'cellImgAnalyzed',
                 requiresToken: false,
             }
+        },
+        rbcDegree:{
+            rbcDegreeAdd: {
+                endpoint: 'rbcDegree/rbcDegreeAdd',
+                requiresToken: false,
+            },
+            rbcDegree:{
+                endpoint: 'rbcDegree',
+                requiresToken: false,
+            }
         }
     }
 };

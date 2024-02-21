@@ -50,3 +50,25 @@ html {
 a{
     text-decoration-line: none;
 }
+
+input,
+select {
+    width: 100%;
+    padding: 5px;
+    font-size: 0.8rem;
+    border: 1px solid #333; /* 테두리 스타일 추가 */
+    border-radius: 5px;
+    background-color: #fff; /* 흰색 바탕 */
+    color: #333; /* 텍스트 색상 */
+    outline: none;
+}
+
+input::placeholder {
+    color: #aaa; /* 플레이스홀더 텍스트 색상 추가 */
+}
+
+input:hover,
+select:hover {
+    background-color: #f0f0f0; /* 마우스 호버 시 배경색 변경 */
+}
+

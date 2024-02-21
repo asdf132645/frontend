@@ -1,12 +1,9 @@
 <template>
   <div>
-    <ul>
-      <li @click="changeTab('login')">Login / Account</li>
-      <li @click="changeTab('analysis')">Analysis / Database</li>
-      <li @click="changeTab('report')">Report</li>
-      <li @click="changeTab('quality')">Quality Check</li>
+    <ul class="settingTabBtn">
+      <li v-for="tab in tabs" :key="tab" :class="{ activeTab: currentTab === tab }" @click="changeTab(tab)">{{ tab }}</li>
     </ul>
-    <component :is="currentTabComponent" />
+    <component class="settingWrap" :is="currentTabComponent" />
   </div>
 </template>
 
@@ -17,30 +14,19 @@ import LognAccount from "@/views/setting/lognAccount/index.vue";
 import Report from "@/views/setting/report/index.vue";
 import QualityCheck from "@/views/setting/qualityCheck/index.vue";
 
-type TabComponents = {
-  login: typeof LognAccount;
-  analysis: typeof AnalysisDatabase;
-  report: typeof Report;
-  quality: typeof QualityCheck;
-};
+const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check'] as const;
+const currentTab = ref<typeof tabs[number]>(tabs[0]);
 
-const currentTab = ref<'login' | 'analysis' | 'report' | 'quality'>('login');
-
-const changeTab = (tab: 'login' | 'analysis' | 'report' | 'quality') => {
+const changeTab = (tab: typeof tabs[number]) => {
   currentTab.value = tab;
   sessionStorage.setItem('selectedTab', tab);
 };
 
-const components: TabComponents = {
-  login: LognAccount,
-  analysis: AnalysisDatabase,
-  report: Report,
-  quality: QualityCheck,
-};
+const components = { 'Login/Account': LognAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Quality Check': QualityCheck };
 
 const storedTab = sessionStorage.getItem('selectedTab');
-if (storedTab && ['login', 'analysis', 'report', 'quality'].includes(storedTab)) {
-  currentTab.value = storedTab as 'login' | 'analysis' | 'report' | 'quality';
+if (storedTab && tabs.includes(storedTab as typeof tabs[number])) {
+  currentTab.value = storedTab as typeof tabs[number];
 }
 
 const currentTabComponent = computed(() => components[currentTab.value]);

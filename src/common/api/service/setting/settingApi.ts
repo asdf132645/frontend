@@ -4,6 +4,7 @@ import {
     CellImgAnalyzedRequest,
     CellImgAnalyzedResponse,
 } from '@/common/api/service/setting/dto/cellImgAnalyzedDto'
+import {RbcDegreeDto, RbcDegreeRes} from "@/common/api/service/setting/dto/rbcDegree";
 
 const httpClient = useHttpClient();
 
@@ -17,4 +18,16 @@ export const getCellImg = async (userId: string): Promise<ApiResponse<CellImgAna
 
 export const putCellImg = async (request: CellImgAnalyzedRequest, id: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
     return httpClient.httpPut(apiConstants.settings.cellImgAnalyzedPost.cellImgGetPut, request, id);
+};
+
+export const createRbcDegree = async (request: RbcDegreeDto): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.settings.rbcDegree.rbcDegreeAdd, request);
+};
+
+export const putRbcDegree = async (request: CellImgAnalyzedRequest, id: string): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.rbcDegree.rbcDegree, request, id);
+};
+
+export const getRbcDegree = async (userId: string): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.rbcDegree.rbcDegree, userId);
 };

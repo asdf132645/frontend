@@ -12,7 +12,7 @@
 // App.vue 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import {onMounted, getCurrentInstance, ref, computed, watch} from 'vue';
+import { getCurrentInstance, ref, computed, watch} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
@@ -28,8 +28,6 @@ const isStartEmbeddedCalled = ref(false);
 let isRequestInProgress = false;
 const instance = getCurrentInstance();
 const runningSlotId = ref('');
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 
 // 실제 배포시 사용해야함
