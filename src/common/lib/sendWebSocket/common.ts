@@ -2,9 +2,10 @@ import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCurrentInstance} from 'vue';
 
 const instance = getCurrentInstance();
-
-export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string) => {
+// appHeader page
+export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, userId: string) => {
     const settings = tcpReq.embedStatus.settings;
+    settings.reqUserId = userId;
 
     Object.assign(settings, {
         oilCount,
@@ -12,10 +13,31 @@ export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string) =
         uiVersion: 'uimd-pb-comm_v3',
         isNsNbIntegration: 'N', // 셋팅 페이지 개발 후 수정
     });
-
-    instance?.appContext.config.globalProperties.$socket.emit('message', { type: 'SEND_DATA', payload: settings });
+    sendMessage(settings);
 }
 
-export const sendOilPrimeWebSocket = () => {
-    instance?.appContext.config.globalProperties.$socket.emit('message', { type: 'SEND_DATA', payload: tcpReq.embedStatus.oilPrime });
+export const sendOilPrimeWebSocket = (userId: string) => {
+    tcpReq.embedStatus.oilPrime.reqUserId = userId;
+    sendMessage(tcpReq.embedStatus.oilPrime);
 }
+
+
+// 셋팅 page -> 디바이스 컨트롤 page
+export const onGripperOpenWebSocket = (userId: string) => {
+    tcpReq.embedStatus.gripperOpen.reqUserId = userId;
+    sendMessage(tcpReq.embedStatus.gripperOpen);
+}
+
+export const onCameraResetWebSocket = (userId: string) => {
+    tcpReq.embedStatus.cameraReset.reqUserId = userId;
+    sendMessage(tcpReq.embedStatus.cameraReset);
+}
+
+
+const sendMessage = (payload: object) => {
+    instance?.appContext.config.globalProperties.$socket.emit('message', {
+        type: 'SEND_DATA',
+        payload: payload
+    });
+}
+

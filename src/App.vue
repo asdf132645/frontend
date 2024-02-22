@@ -12,7 +12,7 @@
 // App.vue 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import { getCurrentInstance, ref, computed, watch} from 'vue';
+import {getCurrentInstance, ref, computed, watch, onMounted} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
@@ -29,6 +29,8 @@ let isRequestInProgress = false;
 const instance = getCurrentInstance();
 const runningSlotId = ref('');
 const userId = ref('');
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -38,6 +40,19 @@ const userId = ref('');
 //   }
 // });
 
+onMounted(async () => {
+  // console.log()
+  if(userId.value === ''){ // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
+    store.dispatch('userModule/setUserAction', getStoredUser);
+  }
+  if (getStoredUser.userId && getStoredUser.userId !== '') {
+    if (isStartEmbeddedCalled.value) {
+      await runInfoPostWebSocket();
+    }
+    await startSysPostWebSocket();
+  }
+});
+
 watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals))
   isStartEmbeddedCalled.value = newValsObj[0].startEmbedded;
@@ -46,7 +61,9 @@ watch([commonDataGet.value], async (newVals: any) => {
 watch([userModuleDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals))
   if (newValsObj[0].userId && newValsObj[0].userId !== '') {
-    userId.value = newValsObj[0].userId;
+    userId.value = String(newValsObj[0].userId);
+  }else{
+    console.log('없음')
   }
 })
 
@@ -90,16 +107,17 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false,}); // 임베디드 상태가 죽음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
-      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 모든 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
       break;
     case 'PAUSE':
-      await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true});
+      await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
       break;
     case 'RESTART':
       await runningInfoStore(parseDataWarp);
       await wbcInfoStore(parseDataWarp);
       await rbcInfoStore(parseDataWarp);
       await runningInfoCheckStore(parseDataWarp);
+      await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
       break;
     case 'RECOVERY':
       await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
@@ -161,7 +179,7 @@ const sendMessage = (payload: object) => {
   });
 }
 
-
+//
 // setInterval(async () => {
 //   if (userId.value && userId.value !== '') {
 //     if (isStartEmbeddedCalled.value) {

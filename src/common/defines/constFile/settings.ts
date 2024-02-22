@@ -259,103 +259,103 @@ export const rbcClassList = {
 export const defaultRbcDegree =  [{
     categoryId: '01',
     classId: '02',
-    degree1: 5,
-    degree2: 10,
-    degree3: 20
+    degree1: '5',
+    degree2: '10',
+    degree3: '20'
 }, {
     categoryId: '01',
     classId: '03',
-    degree1: 5,
-    degree2: 10,
-    degree3: 20
+    degree1: '5',
+    degree2: '10',
+    degree3: '20'
 }, {
     categoryId: '01',
     classId: '04',
-    degree1: 5,
-    degree2: 10,
-    degree3: 20
+    degree1: '5',
+    degree2: '10',
+    degree3: '20'
 }, {
     categoryId: '02',
     classId: '02',
-    degree1: 5,
-    degree2: 10,
-    degree3: 20
+    degree1: '5',
+    degree2: '10',
+    degree3: '20'
 }, {
     categoryId: '02',
     classId: '03',
-    degree1: 5,
-    degree2: 10,
-    degree3: 20
+    degree1: '5',
+    degree2: '10',
+    degree3: '20'
 }, {
     categoryId: '02',
     classId: '04',
-    degree1: 5,
-    degree2: 10,
-    degree3: 20
+    degree1: '5',
+    degree2: '10',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '03',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '04',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '05',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '06',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '07',
-    degree1: 0.5,
-    degree2: 1,
-    degree3: 2
+    degree1: '0.5',
+    degree2: '1',
+    degree3: '2'
 }, {
     categoryId: '03',
     classId: '08',
-    degree1: 0.5,
-    degree2: 1,
-    degree3: 2
+    degree1: '0.5',
+    degree2: '1',
+    degree3: '2'
 }, {
     categoryId: '03',
     classId: '09',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '10',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '03',
     classId: '11',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
 }, {
     categoryId: '05',
     classId: '01',
-    degree1: 1,
-    degree2: 2,
-    degree3: 3
+    degree1: '1',
+    degree2: '2',
+    degree3: '3'
 }, {
     categoryId: '05',
     classId: '02',
-    degree1: 2.5,
-    degree2: 5,
-    degree3: 20
-}]
+    degree1: '2.5',
+    degree2: '5',
+    degree3: '20'
+}];

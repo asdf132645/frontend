@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3 class="mt2">Cell image analyzed</h3>
     <table class="settingTable">
       <tbody>
       <tr>

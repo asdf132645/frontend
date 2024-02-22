@@ -145,8 +145,13 @@ const visible = ref(false);
 const maxOilCount = ref(1000);
 const statusBarWrapper = ref<HTMLDivElement | null>(null);
 const statusBar = ref<HTMLDivElement | null>(null);
+const userId = ref('');
+const userModuleDataGet = computed(() => store.state.userModule);
 
-
+onMounted(async () => {
+  const newUserId = JSON.parse(JSON.stringify(userModuleDataGet.value));
+  userId.value = newUserId.userId;
+});
 
 watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   await nextTick();
@@ -258,7 +263,7 @@ const closeLayer = (val: boolean) => {
 const onReset = () => {
   alert(messages.IDS_MSG_SUCCESS);
   getPercent();
-  sendSettingInfoWebSocket('Y', String(oilCount.value));
+  sendSettingInfoWebSocket('Y', String(oilCount.value), userId.value);
 }
 
 const getPercent = () => {
@@ -272,7 +277,7 @@ const getPercent = () => {
 }
 
 const onPrime = () => {
-  sendOilPrimeWebSocket();
+  sendOilPrimeWebSocket(userId.value);
 }
 
 const onModalOpen = () => {

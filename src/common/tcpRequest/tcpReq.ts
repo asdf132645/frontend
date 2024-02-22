@@ -85,6 +85,16 @@ export const tcpReq = {
             jobCmd: 'OIL_PRIME',
             reqUserId: '',
             reqDttm: getDateTimeStr(),
+        },
+        gripperOpen: {
+            jobCmd: 'GRIPPER_OPEN',
+            reqUserId: '',
+            reqDttm: getDateTimeStr(),
+        },
+        cameraReset: {
+            jobCmd: 'CAMERA_RESET',
+            reqUserId: '',
+            reqDttm: getDateTimeStr(),
         }
     },
 };

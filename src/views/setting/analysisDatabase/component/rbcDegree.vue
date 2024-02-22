@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="collapse-4">
+<!--      {{ rbcClassListArr }}-->
       <div class="mt-2" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
         <div>
           {{ category?.categoryNm }}
@@ -10,10 +11,16 @@
             <div>
               {{ classItem.classNm }}
             </div>
-            <div>
-              <input type="range" v-model="classItem.degree" :max="30" :step="0.5"
-                     @input="onChangeSlider(category.categoryId, classItem)">
-              <label>{{ classItem.degree }}</label>
+            <div class="">
+              <!-- Changed input type to text and added v-model for degree1, degree2, degree3 -->
+              <div>
+                <input type="text" v-model="classItem.degree1" />
+                <input type="text" v-model="classItem.degree2" />
+                <input type="text" v-model="classItem.degree3" />
+              </div>
+              <div>
+                [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]
+              </div>
             </div>
           </div>
         </div>
@@ -23,15 +30,15 @@
       <button @click="onResetDegree">Reset</button>
       <button type="button" @click="createRbcDegreeData">Save</button>
     </div>
-
   </div>
 </template>
 
 
+
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue';
-import {rbcClassList} from '@/common/defines/constFile/settings';
-import {CategoryDto, Category, ClassItem} from '@/common/api/service/setting/dto/rbcDegree';
+import {rbcClassList, defaultRbcDegree } from '@/common/defines/constFile/settings';
+import { Category, ClassItem} from '@/common/api/service/setting/dto/rbcDegree';
 import {createRbcDegree, getRbcDegree, putRbcDegree} from "@/common/api/service/setting/settingApi";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
@@ -41,31 +48,36 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const saveHttpType = ref('post');
 
 
-onMounted(() => {
+onMounted(async () => {
   // rbcClassListArr.value = rbcClassList;
   userId.value = getStoredUser.id;
-  getRbcDegreeData();
+  await getRbcDegreeData();
 });
 
-const onChangeSlider = (categoryId: string, classItem: ClassItem) => {
-  const categoryIndex = rbcClassListArr.value.findIndex((c: Category) => c.category_id === categoryId);
+const combindDegree = async () => {
+  rbcClassListArr.value = rbcClassList.rbcClassList.map((category: any) => {
+    return {
+      ...category,
+      classInfo: category.classInfo.map((classItem: any) => {
+        const defaultDegree = defaultRbcDegree.find(
+            (defaultItem) =>
+                defaultItem.categoryId === category.categoryId &&
+                defaultItem.classId === classItem.classId
+        );
 
-  if (categoryIndex !== -1) {
-    const classIndex = rbcClassListArr.value[categoryIndex].classInfo.findIndex((ci: ClassItem) => ci.class_id === classItem.class_id);
-
-    if (classIndex !== -1) {
-      rbcClassListArr.value[categoryIndex].classInfo[classIndex].degree = classItem.degree;
-    }
-  }
-};
-
-
-
-
+        return {
+          ...classItem,
+          degree1: defaultDegree?.degree1 || 0,
+          degree2: defaultDegree?.degree2 || 0,
+          degree3: defaultDegree?.degree3 || 0,
+        };
+      }),
+    };
+  });
+}
 
 const onResetDegree = () => {
-  // Your reset logic here
-  rbcClassListArr.value = rbcClassList.rbcClassList;
+  combindDegree();
 };
 
 const createRbcDegreeData = async () => {
@@ -78,7 +90,9 @@ const createRbcDegreeData = async () => {
         category_nm: category.categoryNm,
         class_id: classItem.classId,
         class_nm: classItem.classNm,
-        degree: classItem.degree,
+        degree1: classItem.degree1,
+        degree2: classItem.degree2,
+        degree3: classItem.degree3,
       });
     });
   });
@@ -94,6 +108,7 @@ const createRbcDegreeData = async () => {
     if (result) {
       // showSuccessAlert('Save successful');
       alert('Save successful');
+      saveHttpType.value = 'put';
     }
   } catch (e) {
     console.error(e);
@@ -103,65 +118,60 @@ const createRbcDegreeData = async () => {
 const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegree(String(userId.value));
-    if (result?.data?.categories.length === 0) {
-      console.log(null);
-      saveHttpType.value = 'post';
-      rbcClassListArr.value = rbcClassList.rbcClassList;
-      console.log(rbcClassListArr.value)
-    } else {
-      saveHttpType.value = 'put';
-      const data = result.data;
-      processData(data?.categories);
-    }
+    saveHttpType.value = 'put';
+    const data = result.data;
+    processData(data?.categories);
     console.log(result);
   } catch (e) {
     console.log(e);
+    saveHttpType.value = 'post';
+    await combindDegree();
   }
 };
 
 
 const processData = (data: any): void => {
+  console.log(data)
   const categoryMap = new Map();
 
-  // 들어오는 데이터를 반복하면서 categoryMap을 업데이트
   data.forEach((item: any) => {
     const categoryId = item.category_id;
     const classId = item.class_id;
 
     if (!categoryMap.has(categoryId)) {
-      // 새로운 카테고리 추가
       const newCategory = {
         categoryId: categoryId,
         categoryNm: item.category_nm,
         classInfo: [{
           classId: classId,
           classNm: item.class_nm,
-          degree: item.degree,
+          degree1: item.degree1,
+          degree2: item.degree2,
+          degree3: item.degree3,
         }],
       };
       categoryMap.set(categoryId, newCategory);
     } else {
-      // 기존 카테고리 업데이트
       const existingCategory = categoryMap.get(categoryId);
       const existingClassIndex = existingCategory.classInfo.findIndex((ci: any) => ci.classId === classId);
 
       if (existingClassIndex === -1) {
-        // 기존 카테고리에 새로운 클래스 추가
         existingCategory.classInfo.push({
           classId: classId,
           classNm: item.class_nm,
-          degree: item.degree,
+          degree1: item.degree1,
+          degree2: item.degree2,
+          degree3: item.degree3,
         });
       } else {
-        // 클래스가 이미 존재하는 경우 업데이트
         existingCategory.classInfo[existingClassIndex].degree = item.degree;
       }
     }
   });
 
-  // 업데이트된 데이터로 rbcClassListArr를 업데이트
   rbcClassListArr.value = Array.from(categoryMap.values());
 };
+
 
 
 </script>
