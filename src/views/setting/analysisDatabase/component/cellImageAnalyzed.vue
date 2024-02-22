@@ -284,7 +284,6 @@ const pickDirectory = async () => {
     const directoryHandle = await window.showDirectoryPicker();
     console.log("Selected directory:", directoryHandle);
 
-    // 이제 선택한 디렉터리에 대한 다양한 작업을 수행할 수 있습니다.
   } catch (error) {
     console.error("Error picking directory:", error);
   }

@@ -111,7 +111,7 @@ const getRbcDegreeData = async () => {
     } else {
       saveHttpType.value = 'put';
       const data = result.data;
-      processData(data.categories);
+      processData(data?.categories);
     }
     console.log(result);
   } catch (e) {
@@ -123,7 +123,7 @@ const getRbcDegreeData = async () => {
 const processData = (data: any): void => {
   const categoryMap = new Map();
 
-  // 들어오는 데이터를 반복하면서 categoryMap을 업데이트합니다.
+  // 들어오는 데이터를 반복하면서 categoryMap을 업데이트
   data.forEach((item: any) => {
     const categoryId = item.category_id;
     const classId = item.class_id;
@@ -153,13 +153,13 @@ const processData = (data: any): void => {
           degree: item.degree,
         });
       } else {
-        // 클래스가 이미 존재하는 경우 업데이트합니다.
+        // 클래스가 이미 존재하는 경우 업데이트
         existingCategory.classInfo[existingClassIndex].degree = item.degree;
       }
     }
   });
 
-  // 업데이트된 데이터로 rbcClassListArr를 업데이트합니다.
+  // 업데이트된 데이터로 rbcClassListArr를 업데이트
   rbcClassListArr.value = Array.from(categoryMap.values());
 };
 
