@@ -118,28 +118,6 @@ export const cbcList = [
     {cd: '39', testCd: '', testNm: 'ESR', isSelected: true}
 ];
 
-export const wbcRunningCount = [{
-    id: '01',
-    min: 0,
-    max: 700,
-    wbcCount: 50
-}, {
-    id: '02',
-    min: 701,
-    max: 1000,
-    wbcCount: 100
-}, {
-    id: '03',
-    min: 1001,
-    max: 2000,
-    wbcCount: 150
-}, {
-    id: '04',
-    min: 2001,
-    max: 3000,
-    wbcCount: 250
-}];
-
 export const rbcClassList = {
     rbcClassList: [{
         categoryId: '01',
@@ -559,4 +537,84 @@ export const normalRange = [{
         max: 100,
         unit: '%'
     },
+]
+
+export const imagePrintAndWbc = [
+    { text: 'Neutrophil', value: '01', code: '', checked: false },
+    { text: 'Neutrophil-Segmented', value: '71', code: '', checked: false },
+    { text: 'Neutrophil-Band', value: '72', code: '', checked: false },
+    { text: 'Metamyelocyte', value: '02', code: '',checked: false },
+    { text: 'Myelocyte', value: '03', code: '',checked: false },
+    { text: 'Promyelocyte', value: '04', code: '', checked: false },
+    { text: 'Lymphocyte', value: '05', code: '', checked: false },
+    { text: 'Reactive lymphocyte', value: '61', code: '', checked: false },
+    { text: 'Abnormal lymphocyte', value: '62', code: '', checked: false },
+    { text: 'Monocyte', value: '07', code: '',checked: false },
+    { text: 'Eosinophil', value: '08', code: '', checked: false },
+    { text: 'Basophil', value: '09', code: '' ,checked: false},
+    { text: 'Blast', value: '10', code: '' ,checked: false},
+    { text: 'Plasma cell', value: '11', code: '' ,checked: false},
+    { text: 'nRBC', value: '12', code: '' ,checked: false},
+    { text: 'Giant platelet', value: '13', code: '' ,checked: false},
+    { text: 'Platelet aggregation', value: '14', code: '' ,checked: false},
+    { text: 'Malaria', value: '16', code: '' ,checked: false},
+    { text: 'Artifact(Smudge)', value: '15', code: '' ,checked: false},
+    { text: 'rbcPrintModel', value: '99999', code: '' ,checked: false},
+]
+
+export const lisCodeRbcOption = [
+    { categoryId:'01',categoryNm:'Size',classId:'01',classNm:'Normal',code:'', },
+    { categoryId:'01',categoryNm:'Size',classId:'02',classNm:'Macrocyte',code:'', },
+    { categoryId:'01',categoryNm:'Size',classId:'03',classNm:'Microcyte',code:'', },
+    { categoryId:'01',categoryNm:'Size',classId:'04',classNm:'Anisocytosis',code:'', },
+    { categoryId:'02',categoryNm:'Chromia',classId:'01',classNm:'Normal',code:'', },
+    { categoryId:'02',categoryNm:'Chromia',classId:'02',classNm:'Hyperchromic',code:'', },
+    { categoryId:'02',categoryNm:'Chromia',classId:'03',classNm:'Hypochromic',code:'', },
+    { categoryId:'02',categoryNm:'Chromia',classId:'04',classNm:'Polychromia',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'01',classNm:'Normal',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'02',classNm:'Poikilocytosis',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'03',classNm:'Target Cell',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'04',classNm:'Burr Cell',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'05',classNm:'Acanthocyte',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'06',classNm:'Ovalocyte',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'07',classNm:'Schistocyte',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'08',classNm:'Sickle Cell',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'09',classNm:'Stomatocyte',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'10',classNm:'Tear Drop Cell',code:'', },
+    { categoryId:'03',categoryNm:'Shape',classId:'11',classNm:'Spherocyte',code:'', },
+    { categoryId:'05',categoryNm:'Inclusion Body',classId:'01',classNm:'Howell-Jolly Body',code:'', },
+    { categoryId:'05',categoryNm:'Inclusion Body',classId:'02',classNm:'Basophilic Stippling',code:'', },
+]
+
+export const minRunCountAndLisHotKey = [
+    { valType:'minGpCount', value:'0', },
+    { valType:'minPaCount', value:'0', },
+]
+
+export const wbcRunningCount = [{
+    id: '01',
+    min: 0,
+    max: 700,
+    wbcCount: 50
+}, {
+    id: '02',
+    min: 701,
+    max: 1000,
+    wbcCount: 100
+}, {
+    id: '03',
+    min: 1001,
+    max: 2000,
+    wbcCount: 150
+}, {
+    id: '04',
+    min: 2001,
+    max: 3000,
+    wbcCount: 250
+}];
+
+export const lishotKeyAndLisFilePathAndUrl =[
+    { type: 'lisFilePath', value:'' },
+    { type: 'url', value:'' },
+    { type: 'lisHotKey', value:'' },
 ]

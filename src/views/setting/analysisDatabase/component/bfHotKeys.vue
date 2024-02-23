@@ -84,7 +84,6 @@ const getBfHotKeyClasses = async () => {
         bfHotKeysItems.value = data;
         console.log(data);
       }
-      console.log(result);
     }
   } catch (e) {
     console.log(e);
