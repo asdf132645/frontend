@@ -595,3 +595,39 @@ table.settingTable td, table.settingTable th {
     transform: translate(-50%, -50%);
     cursor: pointer;
 }
+
+.degreeInput input {
+    display: inline-block;
+    max-width: 150px;
+    margin: 0px 5px;
+}
+
+.degreeInput input {
+    display: inline-block;
+    max-width: 100px;
+    margin: 0px 5px;
+}
+
+.rbcClassListArr {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.tab-buttons {
+    display: flex;
+}
+
+.tab-buttons button {
+    padding: 10px;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+}
+
+.tab-buttons button.active {
+    background-color: #ccc;
+}
+
+.tab-content > div {
+    display: none;
+}

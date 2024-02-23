@@ -57,6 +57,62 @@ export const apiConstants = {
                 endpoint: 'rbcDegree',
                 requiresToken: false,
             }
+        },
+        wbcCustomClass:{
+            create: {
+                endpoint: 'wbcCustomClass/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'wbcCustomClass/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'wbcCustomClass/get',
+                requiresToken: false,
+            }
+        },
+        wbcHotKeys: {
+            create: {
+                endpoint: 'wbcHotKeys/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'wbcHotKeys/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'wbcHotKeys/get',
+                requiresToken: false,
+            }
+        },
+        bfHotKeys: {
+            create: {
+                endpoint: 'bfHotKeys/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'bfHotKeys/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'bfHotKeys/get',
+                requiresToken: false,
+            }
+        },
+        normalRange: {
+            create: {
+                endpoint: 'normalRange/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'normalRange/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'normalRange/get',
+                requiresToken: false,
+            }
         }
     }
 };

@@ -1,29 +1,28 @@
 <template>
   <div>
     <div id="collapse-4">
-<!--      {{ rbcClassListArr }}-->
-      <div class="mt-2" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
+      <!--      {{ rbcClassListArr }}-->
+      <div class="mt2 rbcClassListArr" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
         <div>
           {{ category?.categoryNm }}
         </div>
-        <div>
-          <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
-            <div>
-              {{ classItem.classNm }}
-            </div>
-            <div class="">
-              <!-- Changed input type to text and added v-model for degree1, degree2, degree3 -->
-              <div>
-                <input type="text" v-model="classItem.degree1" />
-                <input type="text" v-model="classItem.degree2" />
-                <input type="text" v-model="classItem.degree3" />
-              </div>
-              <div>
-                [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]
-              </div>
+
+        <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
+          <div>
+            {{ classItem.classNm }}
+          </div>
+          <div class="mb1">
+            [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]
+          </div>
+          <div>
+            <div class='degreeInput mb2'>
+              <input type="number" v-model="classItem.degree1"/>
+              <input type="number" v-model="classItem.degree2"/>
+              <input type="number" v-model="classItem.degree3"/>
             </div>
           </div>
         </div>
+
       </div>
     </div>
     <div class="mt-2">
@@ -34,12 +33,11 @@
 </template>
 
 
-
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue';
-import {rbcClassList, defaultRbcDegree } from '@/common/defines/constFile/settings';
-import { Category, ClassItem} from '@/common/api/service/setting/dto/rbcDegree';
-import {createRbcDegree, getRbcDegree, putRbcDegree} from "@/common/api/service/setting/settingApi";
+import {rbcClassList, defaultRbcDegree} from '@/common/defines/constFile/settings';
+import {Category, ClassItem} from '@/common/api/service/setting/dto/rbcDegree';
+import {createRbcDegreeApi, getRbcDegreeApi, putRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 const userId = ref('');
@@ -100,9 +98,9 @@ const createRbcDegreeData = async () => {
   try {
     let result = {};
     if (saveHttpType.value === 'post') {
-      result = await createRbcDegree({categories: rbcDegreeList, userId: Number(userId.value),});
+      result = await createRbcDegreeApi({categories: rbcDegreeList, userId: Number(userId.value),});
     } else {
-      result = await putRbcDegree(rbcDegreeList, userId.value);
+      result = await putRbcDegreeApi(rbcDegreeList, userId.value);
     }
 
     if (result) {
@@ -117,7 +115,7 @@ const createRbcDegreeData = async () => {
 
 const getRbcDegreeData = async () => {
   try {
-    const result = await getRbcDegree(String(userId.value));
+    const result = await getRbcDegreeApi(String(userId.value));
     saveHttpType.value = 'put';
     const data = result.data;
     processData(data?.categories);
@@ -171,7 +169,6 @@ const processData = (data: any): void => {
 
   rbcClassListArr.value = Array.from(categoryMap.values());
 };
-
 
 
 </script>

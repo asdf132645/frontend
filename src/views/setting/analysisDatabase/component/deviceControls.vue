@@ -60,7 +60,7 @@ watch([runInfo.value], async (newVals) => {
 
 const onGripperOpen = () => {
   if(isRunningState.value){
-    alert(messages.IDS_ERROR_ALREADY_RUNNING);
+    showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
     return;
   }
   onGripperOpenWebSocket(userId.value);
@@ -68,7 +68,7 @@ const onGripperOpen = () => {
 
 const onCameraReset = () => {
   if(isRunningState.value){
-    alert(messages.IDS_ERROR_ALREADY_RUNNING);
+    showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
     return;
   }
   onCameraResetWebSocket(userId.value);
@@ -79,13 +79,6 @@ const showSuccessAlert = (message: string) => {
   alertType.value = 'success';
   alertMessage.value = message;
 };
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
-
 const hideAlert = () => {
   showAlert.value = false;
 };

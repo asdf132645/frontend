@@ -38,24 +38,3 @@ const selectedTabComponent = computed(() => {
 });
 
 </script>
-
-<style scoped>
-.tab-buttons {
-  display: flex;
-}
-
-.tab-buttons button {
-  padding: 10px;
-  margin: 0;
-  border: none;
-  cursor: pointer;
-}
-
-.tab-buttons button.active {
-  background-color: #ccc;
-}
-
-.tab-content > div {
-  display: none;
-}
-</style>

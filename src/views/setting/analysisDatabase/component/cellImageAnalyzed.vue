@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import {createCellImg, getCellImg, putCellImg} from "@/common/api/service/setting/settingApi";
+import {createCellImgApi, getCellImgApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
 import router from "@/router";
@@ -179,9 +179,8 @@ onMounted(async () => {
 
 const createCellImgGet = async () => {
   try {
-    const result = await getCellImg(String(userId.value));
+    const result = await getCellImgApi(String(userId.value));
     if (result) {
-      // alert('registration successful');
       if (!result?.data) {
         console.log(null)
         saveHttpType.value = 'post';
@@ -243,9 +242,9 @@ const createCellImgSet = async () => {
   try {
     let result = {};
     if (saveHttpType.value === 'post') {
-      result = await createCellImg(cellImgSet);
+      result = await createCellImgApi(cellImgSet);
     } else {
-      result = await putCellImg(cellImgSet, userId.value);
+      result = await putCellImgApi(cellImgSet, userId.value);
     }
 
     if (result) {

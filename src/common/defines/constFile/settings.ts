@@ -18,65 +18,65 @@ export const AnalysisList = [
 ];
 
 export const AnalysisList2 = [
-    { value: '50', text: '50' },
-    { value: '100', text: '100' },
-    { value: '150', text: '150' },
-    { value: '200', text: '200' },
-    { value: '250', text: '250' },
-    { value: '300', text: '300' },
-    { value: '350', text: '350' },
-    { value: '400', text: '400' },
-    { value: '450', text: '450' },
-    { value: '500', text: '500' }
+    {value: '50', text: '50'},
+    {value: '100', text: '100'},
+    {value: '150', text: '150'},
+    {value: '200', text: '200'},
+    {value: '250', text: '250'},
+    {value: '300', text: '300'},
+    {value: '350', text: '350'},
+    {value: '400', text: '400'},
+    {value: '450', text: '450'},
+    {value: '500', text: '500'}
 ]
 
 export const stitchCountList = [
-    { value: '1', text: '1' },
-    { value: '2', text: '2' },
-    { value: '3', text: '3' },
-    { value: '4', text: '4' },
-    { value: '5', text: '5' }
+    {value: '1', text: '1'},
+    {value: '2', text: '2'},
+    {value: '3', text: '3'},
+    {value: '4', text: '4'},
+    {value: '5', text: '5'}
 ]
 
 export const PositionMarginList = [
-    { value: '0', text: '0' },
-    { value: '1', text: '1' },
-    { value: '2', text: '2' },
-    { value: '3', text: '3' },
-    { value: '4', text: '4' },
-    { value: '5', text: '5' }
+    {value: '0', text: '0'},
+    {value: '1', text: '1'},
+    {value: '2', text: '2'},
+    {value: '3', text: '3'},
+    {value: '4', text: '4'},
+    {value: '5', text: '5'}
 ]
 
 export const WbcPositionMarginList = [
-    { value: '0', text: '0' },
-    { value: '1', text: '1' },
-    { value: '2', text: '2' },
-    { value: '3', text: '3' },
-    { value: '4', text: '4' },
-    { value: '5', text: '5' }
+    {value: '0', text: '0'},
+    {value: '1', text: '1'},
+    {value: '2', text: '2'},
+    {value: '3', text: '3'},
+    {value: '4', text: '4'},
+    {value: '5', text: '5'}
 ]
 
 export const PltPositionMarginList = [
-    { value: '0', text: '0' },
-    { value: '1', text: '1' },
-    { value: '2', text: '2' },
-    { value: '3', text: '3' },
-    { value: '4', text: '4' },
-    { value: '5', text: '5' }
+    {value: '0', text: '0'},
+    {value: '1', text: '1'},
+    {value: '2', text: '2'},
+    {value: '3', text: '3'},
+    {value: '4', text: '4'},
+    {value: '5', text: '5'}
 ]
 
 export const runningModeList = [
-    { value: '00', text: 'Normal' },
-    { value: '01', text: 'RBC dection' },
-    { value: '02', text: 'Hardware' }
+    {value: '00', text: 'Normal'},
+    {value: '01', text: 'RBC dection'},
+    {value: '02', text: 'Hardware'}
 ]
 
 export const searchUserType = [
-    { value: '00', text: 'User Id' },
-    { value: '01', text: 'User Name' }
+    {value: '00', text: 'User Id'},
+    {value: '01', text: 'User Name'}
 ];
 
-export const cbcList =  [
+export const cbcList = [
     {cd: '01', testCd: '', testNm: 'WBC Diff. Count', isSelected: true},
     {cd: '02', testCd: '', testNm: 'Seg.-neutrophils', isSelected: true},
     {cd: '03', testCd: '', testNm: 'Band-neutrophils', isSelected: true},
@@ -240,23 +240,23 @@ export const rbcClassList = {
         //   }])
         // },
         {
-        categoryId: '05',
-        categoryNm: 'Inclusion Body',
-        classInfo: [{
-            classId: '01',
-            classNm: 'Howell-Jolly Body',
-            degree: '0'
-        }, {
-            classId: '02',
-            classNm: 'Basophilic Stippling',
-            degree: '0'
-        }]
-    }],
+            categoryId: '05',
+            categoryNm: 'Inclusion Body',
+            classInfo: [{
+                classId: '01',
+                classNm: 'Howell-Jolly Body',
+                degree: '0'
+            }, {
+                classId: '02',
+                classNm: 'Basophilic Stippling',
+                degree: '0'
+            }]
+        }],
     malariaCount: 0,
     currentRbcResults: null
 };
 
-export const defaultRbcDegree =  [{
+export const defaultRbcDegree = [{
     categoryId: '01',
     classId: '02',
     degree1: '5',
@@ -359,3 +359,204 @@ export const defaultRbcDegree =  [{
     degree2: '5',
     degree3: '20'
 }];
+
+export const wbcHotKeys = [
+    {
+        id: '01', title: 'NE', name: 'Neutrophil', count: 0, percent: 0, key: '', order: 1
+    },
+    {
+        id: '02', title: 'ME', name: 'Metamyelocyte', count: 0, percent: 0, key: '', order: 4
+    },
+    {
+        id: '03', title: 'MY', name: 'Myelocyte', count: 0, percent: 0, key: '', order: 5
+    },
+    {
+        id: '04', title: 'PR', name: 'Promyelocyte', count: 0, percent: 0, key: '', order: 6
+    },
+    {
+        id: '05', title: 'LY', name: 'Lymphocyte', count: 0, percent: 0, key: '', order: 7
+    },
+    {
+        id: '07', title: 'MO', name: 'Monocyte', count: 0, percent: 0, key: '', order: 10
+    },
+    {
+        id: '08', title: 'EO', name: 'Eosinophil', count: 0, percent: 0, key: '', order: 11
+    },
+    {
+        id: '09', title: 'BA', name: 'Basophil', count: 0, percent: 0, key: '', order: 12
+    },
+    {
+        id: '10', title: 'BL', name: 'Blast', count: 0, percent: 0, key: '', order: 13
+    }, {
+        id: '11', title: 'PC', name: 'Plasma cell', count: 0, percent: 0, key: '', order: 14
+    }, {
+        id: '12', title: 'NR', name: 'nRBC', count: 0, percent: 0, key: '', order: 15
+    }, {
+        id: '13', title: 'GP', name: 'Giant platelet', count: 0, percent: 0, key: '', order: 16
+    }, {
+        id: '14', title: 'PA', name: 'Platelet aggregation', count: 0, percent: 0, key: '', order: 17
+    },
+    {
+        id: '15', title: 'AR', name: 'Artifact(Smudge)', count: 0, percent: 0, key: '', order: 19
+    },
+    {
+        id: '16', title: 'MA', name: 'Malaria', count: 0, percent: 0, key: '', order: 18
+    },
+    {
+        id: '61', title: 'LR', name: 'Reactive lymphocyte', count: 0, percent: 0, key: '', order: 8
+    },
+    {
+        id: '62', title: 'LA', name: 'Abnormal lymphocyte', count: 0, percent: 0, key: '', order: 9
+    },
+    {
+        id: '71', title: 'NS', name: 'Neutrophil-Segmented', count: 0, percent: 0, key: '', order: 2
+    }, {
+        id: '72', title: 'NB', name: 'Neutrophil-Band', count: 0, percent: 0, key: '', order: 3
+    },]
+
+export const bfHotKeys = [{
+    id: '01', title: 'NE', name: 'Neutrophil', count: 0, percent: 0, key: '', order: 1
+}, {
+    id: '02', title: 'LY', name: 'Lymphocyte', count: 0, percent: 0, key: '', order: 2
+}, {
+    id: '03', title: 'MO', name: 'Monocyte', count: 0, percent: 0, key: '', order: 3
+}, {
+    id: '04', title: 'EO', name: 'Eosinophil', count: 0, percent: 0, key: '', order: 4
+}, {
+    id: '05', title: 'BA', name: 'Basophil', count: 0, percent: 0, key: '', order: 5
+}, {
+    id: '06', title: 'BL', name: 'Blast', count: 0, percent: 0, key: '', order: 6
+}, {
+    id: '07', title: 'PC', name: 'Plasma cell', count: 0, percent: 0, key: '', order: 7
+}, {
+    id: '08', title: 'NR', name: 'NRBC', count: 0, percent: 0, key: '', order: 8
+}, {
+    id: '09', title: 'AR', name: 'Artifact(Smudge)', count: 0, percent: 0, key: '', order: 9
+}, {
+    id: '10', title: 'MC', name: 'Malignant cell', count: 0, percent: 0, key: '', order: 10
+}, {
+    id: '11', title: 'MT', name: 'Mesothelial cell', count: 0, percent: 0, key: '', order: 11
+}]
+
+export const normalRange = [{
+    title: 'NE',
+    name: 'Neutrophil',
+    classId: '01',
+    min: 42,
+    max: 85,
+    unit: '%'
+}, {
+    title: 'ME',
+    name: 'Metamyelocyte',
+    classId: '02',
+    min: 0,
+    max: 100,
+    unit: '%'
+}, {
+    title: 'MY',
+    name: 'Myelocyte',
+    classId: '03',
+    min: 0,
+    max: 100,
+    unit: '%'
+}, {
+    title: 'PR',
+    name: 'Promyelocyte',
+    classId: '04',
+    min: 0,
+    max: 100,
+    unit: '%'
+}, {
+    title: 'LY',
+    name: 'Lymphocyte',
+    classId: '05',
+    min: 11,
+    max: 49,
+    unit: '%'
+}, {
+    title: 'MO',
+    name: 'Monocyte',
+    classId: '07',
+    min: 0,
+    max: 9,
+    unit: '%'
+}, {
+    title: 'EO',
+    name: 'Eosinophil',
+    classId: '08',
+    min: 0,
+    max: 6,
+    unit: '%'
+}, {
+    title: 'BA',
+    name: 'Basophil',
+    classId: '09',
+    min: 0,
+    max: 2,
+    unit: '%'
+}, {
+    title: 'BL',
+    name: 'Blast',
+    classId: '10',
+    min: 0,
+    max: 100,
+    unit: '%'
+}, {
+    title: 'PC',
+    name: 'Plasma cell',
+    classId: '11',
+    min: 0,
+    max: 100,
+    unit: '%'
+}, {
+    title: 'NR',
+    name: 'nRBC',
+    classId: '12',
+    min: 0,
+    max: 100,
+    unit: 'Count'
+}, {
+    title: 'GP',
+    name: 'Giant platelet',
+    classId: '13',
+    min: 0,
+    max: 100,
+    unit: 'Count'
+}, {
+    title: 'PA',
+    name: 'Platelet aggregation',
+    classId: '14',
+    min: 0,
+    max: 100,
+    unit: 'Count'
+}, {
+    title: 'AR',
+    name: 'Artifact(Smudge)',
+    classId: '15',
+    min: 0,
+    max: 100,
+    unit: 'Count'
+}, {
+    title: 'MA',
+    name: 'Malaria',
+    classId: '16',
+    min: 0,
+    max: 100,
+    unit: 'Count'
+},
+    {
+        title: 'LR',
+        name: 'Reactive lymphocyte',
+        classId: '61',
+        min: 0,
+        max: 100,
+        unit: '%'
+    }, {
+        title: 'LA',
+        name: 'Abnormal lymphocyte',
+        classId: '62',
+        min: 0,
+        max: 100,
+        unit: '%'
+    },
+]
