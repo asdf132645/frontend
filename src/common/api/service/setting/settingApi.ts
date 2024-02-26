@@ -9,6 +9,11 @@ import {CreateWbcCustomClassDto, UpdateWbcCustomClassDto} from "@/common/api/ser
 import {CreateWbcHotKeysDto, UpdateWbcHotKeysDto} from "@/common/api/service/setting/dto/wbcHotKeysDto";
 import {CreateBfHotKeysDto, UpdateBfHotKeysDto} from "@/common/api/service/setting/dto/bfHotKeysDto";
 import {CreateNormalRange, NormalRangeUpdateDto } from "@/common/api/service/setting/dto/normalRangeDto";
+import {
+    CreateImagePrintDto, ImagePrintItem,
+    ImagePrintResDto,
+    UpdateImagePrintsDto
+} from "@/common/api/service/setting/dto/imagePrintDto";
 
 const httpClient = useHttpClient();
 
@@ -85,4 +90,16 @@ export const updateBfNormalRangeApi = async (request: NormalRangeUpdateDto, user
 
 export const getNormalRangeApi = async (userId: string): Promise<ApiResponse<CreateNormalRange | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.normalRange.get, userId);
+};
+
+export const createImagePrintApi = async (request: CreateImagePrintDto): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.settings.imagePrint.create, request);
+};
+
+export const updateImagePrintApi = async (request: UpdateImagePrintsDto, userId: string): Promise<ApiResponse<UpdateImagePrintsDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.imagePrint.update, request, userId);
+};
+
+export const getImagePrintApi = async (userId: string): Promise<ApiResponse<ImagePrintItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.imagePrint.get, userId);
 };

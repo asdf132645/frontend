@@ -614,7 +614,7 @@ table.settingTable td, table.settingTable th {
 }
 
 .tab-buttons {
-    display: flex;
+    margin: 20px 0;
 }
 
 .tab-buttons button {
@@ -628,6 +628,3 @@ table.settingTable td, table.settingTable th {
     background-color: #ccc;
 }
 
-.tab-content > div {
-    display: none;
-}

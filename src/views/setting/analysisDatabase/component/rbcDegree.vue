@@ -15,7 +15,7 @@
             [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]
           </div>
           <div>
-            <div class='degreeInput mb2'>
+            <div class='degreeInput mb1'>
               <input type="number" v-model="classItem.degree1"/>
               <input type="number" v-model="classItem.degree2"/>
               <input type="number" v-model="classItem.degree3"/>

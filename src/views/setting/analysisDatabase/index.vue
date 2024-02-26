@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div>
-      <button @click="activateTab('cellImageAnalyzed')">Cell Image Analyzed</button>
-      <button @click="activateTab('rbcDegree')">RBC Degree</button>
-      <button @click='activateTab("deviceControls")'>Device controls</button>
-      <button @click='activateTab("wbcCustomClass")'>WBC Custom Class</button>
-      <button @click='activateTab("wbcHotKeys")'>WBC Hot Keys</button>
-      <button @click='activateTab("bfHotKeys")'>BF Hot Keys</button>
-      <button @click='activateTab("normalRange")'>Normal Range</button>
+    <div class="tab-buttons">
+      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
+      <button @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
+      <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device controls</button>
+      <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">WBC Custom Class</button>
+      <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">WBC Hot Keys</button>
+      <button @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
+      <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
     </div>
 
-    <div>
+    <div class="tab-content">
       <component :is="activeTabComponent" />
     </div>
   </div>

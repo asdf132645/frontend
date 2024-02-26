@@ -113,6 +113,20 @@ export const apiConstants = {
                 endpoint: 'normalRange/get',
                 requiresToken: false,
             }
-        }
+        },
+        imagePrint: {
+            create: {
+                endpoint: 'imagePrint/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'imagePrint/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'imagePrint/get',
+                requiresToken: false,
+            }
+        },
     }
 };
