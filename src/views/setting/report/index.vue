@@ -3,8 +3,8 @@
     <div class="tab-buttons">
       <button @click="selectTab('ImagePrint')" :class="{ 'active': selectedTab === 'ImagePrint' }">Image Print</button>
       <button @click="selectTab('LisCode')" :class="{ 'active': selectedTab === 'LisCode' }">Lis Code</button>
-      <button @click="selectTab('CbcCode')" :class="{ 'active': selectedTab === 'CbcCode' }">cbc Code</button>
-      <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">File Path Set</button>
+      <button @click="selectTab('CbcCode')" :class="{ 'active': selectedTab === 'CbcCode' }">CBC Code</button>
+      <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">File Path Set & LisHotKey</button>
       <button @click="selectTab('countSet')" :class="{ 'active': selectedTab === 'countSet' }">Count Set</button>
     </div>
 

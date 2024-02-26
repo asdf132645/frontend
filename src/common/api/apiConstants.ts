@@ -128,5 +128,89 @@ export const apiConstants = {
                 requiresToken: false,
             }
         },
+        lisCode: {
+            create: {
+                endpoint: 'lisCode/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'lisCode/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'lisCode/get',
+                requiresToken: false,
+            }
+        },
+        lisCodeRbc: {
+            create: {
+                endpoint: 'lisCodeRbc/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'lisCodeRbc/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'lisCodeRbc/get',
+                requiresToken: false,
+            }
+        },
+        cbcCode: {
+            create: {
+                endpoint: 'cbcCode/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'cbcCode/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'cbcCode/get',
+                requiresToken: false,
+            }
+        },
+        filePathSet: {
+            create: {
+                endpoint: 'filePathSet/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'filePathSet/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'filePathSet/get',
+                requiresToken: false,
+            }
+        },
+        runCount: {
+            create: {
+                endpoint: 'runCount/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'runCount/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'runCount/get',
+                requiresToken: false,
+            }
+        },
+        minCount: {
+            create: {
+                endpoint: 'minCount/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'minCount/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'minCount/get',
+                requiresToken: false,
+            }
+        },
     }
 };
