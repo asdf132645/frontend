@@ -125,6 +125,17 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
   }
+  store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+    slotInfo: [
+      {
+        rbcInfo: {
+          dspWbcClassList: dspWbcClassList,
+          totalCount: totalCount.value,
+          maxWbcCount: maxWbcCount.value,
+        },
+      },
+    ]
+  });
 };
 
 

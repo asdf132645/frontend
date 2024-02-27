@@ -72,6 +72,14 @@ watch([runningInfoModule.value], (newVal: any) => {
             analyzedDttm: stringToDateTime(item.analyzedDttm),
             state: item.stateCd,
           }));
+
+          store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+            slotInfo: [
+              {
+                orderList: dspOrderList.value,
+              },
+            ]
+          });
         }
 
       }

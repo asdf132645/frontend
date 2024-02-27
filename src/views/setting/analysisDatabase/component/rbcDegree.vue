@@ -40,14 +40,14 @@ import {Category, ClassItem} from '@/common/api/service/setting/dto/rbcDegree';
 import {createRbcDegreeApi, getRbcDegreeApi, putRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
-const userId = ref('');
+
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
+const userId = ref('');
 const saveHttpType = ref('post');
 
 
 onMounted(async () => {
-  // rbcClassListArr.value = rbcClassList;
   userId.value = getStoredUser.id;
   await getRbcDegreeData();
 });

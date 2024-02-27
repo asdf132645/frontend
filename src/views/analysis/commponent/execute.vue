@@ -42,6 +42,7 @@ import {useStore} from "vuex";
 import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
 import {messages} from '@/common/defines/constFile/constant';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
+import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 
 const instance = getCurrentInstance();
 
@@ -64,36 +65,19 @@ const stitchCount = ref();
 const bfSelectFiles = ref([]);
 
 // 스토어 end
-
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
 
 //내부 변수
 const showStopBtn = ref(false);
 const btnStatus = ref('');
 
 onMounted(async () => {
+  userId.value = getStoredUser.id;
   await nextTick();
-  // console.log('컴포넌트가 마운트되었습니다. embeddedStatusModule 상태:', store.state.embeddedStatusModule);
-  const newObj = {...embeddedStatusJobCmd.value}
-  const runInfoObj = {...runInfo.value};
-  // console.log('isInit 값:', newObj.isInit);
-  isInit.value = newObj.isInit;
-  isPause.value = newObj.isPause;
-  userStop.value = newObj.userStop;
-  isRecoveryRun.value = newObj.isRecoveryRun;
-  isRunningState.value = runInfoObj.isRunningState;
-  showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
-  analysisType.value = '01';
-  wbcCount.value = '100';
-  stitchCount.value = '';
+  await cellImgGet();
+  initData();
 });
-
-watch([userModuleDataGet.value], async (newVals: any) => {
-  const newValsObj = JSON.parse(JSON.stringify(newVals))
-  if (newValsObj[0].userId && newValsObj[0].userId !== '') {
-    console.log(newValsObj[0].userId)
-    userId.value = newValsObj[0].userId;
-  }
-})
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
@@ -115,16 +99,9 @@ watch([runInfo.value], async (newVals) => {
 
 // 스토어 변경 감시
 watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
-  // console.log('감시시작')
   const [newEmbeddedStatusJobCmd, newExecuteState] = newVals;
 
   await nextTick();
-  // analysisType.value = newExecuteState.analysisType;
-  // wbcCount.value = newExecuteState.wbcDiffVal;
-  // stitchCount.value = newExecuteState.stitchCount;
-
-
-  // deep 옵션을 사용하여 객체 내부의 변경을 감지
   const {
     isPause: newIsPause,
     userStop: newUserStop,
@@ -168,7 +145,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       alert(messages.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true){
+      if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true) {
         tcpReq.embedStatus.recovery.reqUserId = userId.value;
         instance?.appContext.config.globalProperties.$socket.emit('message', {
           type: 'SEND_DATA',
@@ -213,6 +190,45 @@ const toggleStartStop = (action: 'start' | 'stop') => {
 const sendInit = () => { // 장비 초기화 진행
   tcpReq.embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq.embedStatus.init);
+}
+
+const initData = () => {
+  const newObj = {...embeddedStatusJobCmd.value}
+  const runInfoObj = {...runInfo.value};
+  // console.log('isInit 값:', newObj.isInit);
+  isInit.value = newObj.isInit;
+  isPause.value = newObj.isPause;
+  userStop.value = newObj.userStop;
+  isRecoveryRun.value = newObj.isRecoveryRun;
+  isRunningState.value = runInfoObj.isRunningState;
+  showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
+}
+
+const cellImgGet = async () => {
+  try {
+    const result = await getCellImgApi(String(userId.value));
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        analysisType.value = data.analysisType;
+        switch (analysisType.value) {
+          case '01':
+            wbcCount.value = data.cellAnalyzingCount;
+            break;
+          case '04':
+            wbcCount.value = data.pbAnalysisType2;
+            break;
+          default:
+            wbcCount.value = data.bfAnalysisType;
+        }
+        stitchCount.value = data.stitchCount
+      }
+    }
+
+  } catch (e) {
+
+    console.log(e);
+  }
 }
 
 </script>

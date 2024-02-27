@@ -76,6 +76,14 @@ watch([runningInfoModule.value], (newVal: any) => {
             orderDate: stringToDateTime(currentSlot.orderDttm),
             analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
           };
+
+          store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+            slotInfo: [
+              {
+                processInfo: processInfoItem.value,
+              },
+            ]
+          });
         }
       }
     }

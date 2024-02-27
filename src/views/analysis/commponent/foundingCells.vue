@@ -40,7 +40,6 @@ interface RunningInfoWithId extends RunningInfo {
 
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
-  // const firstItem = (runningInfoModule.value[0] as RunningInfoWithId)?.runningInfo;
   const firstItem = JSON.parse(JSON.stringify(newSlot))
   const slotInfo = firstItem[0].runningInfo?.slotInfo;
   if (slotInfo) {

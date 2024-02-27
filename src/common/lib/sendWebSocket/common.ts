@@ -3,7 +3,7 @@ import {getCurrentInstance} from 'vue';
 
 const instance = getCurrentInstance();
 // appHeader page
-export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, userId: string) => {
+export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, userId: string, isNsNbIntegration: string) => {
     const settings = tcpReq.embedStatus.settings;
     settings.reqUserId = userId;
 
@@ -11,7 +11,7 @@ export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, u
         oilCount,
         isOilReset,
         uiVersion: 'uimd-pb-comm_v3',
-        isNsNbIntegration: 'N', // 셋팅 페이지 개발 후 수정
+        isNsNbIntegration: isNsNbIntegration,
     });
     sendMessage(settings);
 }

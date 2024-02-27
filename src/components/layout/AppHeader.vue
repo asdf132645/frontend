@@ -118,6 +118,7 @@ import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
 import {messages} from "@/common/defines/constFile/constant";
 import {sendOilPrimeWebSocket, sendSettingInfoWebSocket} from "@/common/lib/sendWebSocket/common";
+import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -147,10 +148,13 @@ const statusBarWrapper = ref<HTMLDivElement | null>(null);
 const statusBar = ref<HTMLDivElement | null>(null);
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const isNsNbIntegration = ref('');
+const alarmCount = ref(0);
+
 
 onMounted(async () => {
-  const newUserId = JSON.parse(JSON.stringify(userModuleDataGet.value));
-  userId.value = newUserId.userId;
+  userId.value = getStoredUser.id;
+  await cellImgGet(getStoredUser.id);
 });
 
 watch([embeddedStatusJobCmd.value], async (newVals: any) => {
@@ -171,7 +175,7 @@ watch([runInfo.value], async (newVals: any) => {
   if (isAlarm.value) {
     setTimeout(() => {
       isAlarm.value = false;
-    }, 5000);
+    }, alarmCount.value);
   }
 });
 
@@ -263,7 +267,7 @@ const closeLayer = (val: boolean) => {
 const onReset = () => {
   alert(messages.IDS_MSG_SUCCESS);
   getPercent();
-  sendSettingInfoWebSocket('Y', String(oilCount.value), userId.value);
+  sendSettingInfoWebSocket('Y', String(oilCount.value), userId.value, isNsNbIntegration.value);
 }
 
 const getPercent = () => {
@@ -284,5 +288,26 @@ const onModalOpen = () => {
   // 모달이 열린 후에 실행되는 콜백 함수
   getPercent();
 };
+
+const cellImgGet = async (newUserId: string) => {
+  try {
+    const result = await getCellImgApi(String(newUserId));
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        isNsNbIntegration.value = data.isNsNbIntegration ? 'Y':'N';
+        alarmCount.value = Number(data.alarmCount) * 1000;
+        await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+          isNsNbIntegration: data.isNsNbIntegration ? 'Y':'N'
+        });
+      }
+    }
+
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+
 
 </script>

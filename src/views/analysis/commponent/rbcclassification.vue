@@ -7,8 +7,10 @@
       <div>
         <div v-for="(rowStart, rowIndex) in [0, 6, 12, 18, 24, 30]" :key="rowIndex" class="pl-2">
           <div class="row">
-            <div v-for="(lowPower, colIndex) in lowPowerPath.slice(rowStart, rowStart + 6)" :key="colIndex" class="col-2 p-1">
-              <img :src="lowPower.path" :id="lowPower.seqNo" ref="wholeSlideImg" class="wholeSlideImg" @click="onClickBfImg($event, lowPower)" style="width: 75px;" />
+            <div v-for="(lowPower, colIndex) in lowPowerPath.slice(rowStart, rowStart + 6)" :key="colIndex"
+                 class="col-2 p-1">
+              <img :src="lowPower.path" :id="lowPower.seqNo" ref="wholeSlideImg" class="wholeSlideImg"
+                   @click="onClickBfImg($event, lowPower)" style="width: 75px;"/>
             </div>
           </div>
         </div>
@@ -43,13 +45,28 @@
             <ul class="degree">
               <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
               <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                <li>
+                <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
                   <font-awesome-icon
                       :icon="['fas', 'circle']"
-                      v-for="(degree, degreeIndex) in 4"
-                      :key="degreeIndex"
-                      :class="{ 'degreeActive': degreeIndex < classInfo?.degree }"
+                      v-for="degreeIndex in 4" :key="degreeIndex"
+                      :class="{
+                        'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
+                        'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
+                      }"
                   />
+                </li>
+                <li v-else>
+                  <div v-if="classInfo.degree === '0'">
+                    <font-awesome-icon
+                        :icon="['fas', 'circle']"
+                    />
+                  </div>
+                  <div v-else>
+                    <font-awesome-icon
+                        :icon="['fas', 'circle']"
+                        class="degreeActive"
+                    />
+                  </div>
                 </li>
               </template>
             </ul>
@@ -83,6 +100,7 @@ import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
@@ -93,7 +111,10 @@ const pltCount = ref('');
 const testType = ref<string>("01");
 const bfSelectModeList = ref<any>([]);
 const wholeSlideImgRef = ref(null);
-
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
+const userId = ref('');
+const rbcDegreeStandard = ref<any>([]);
 
 watch([runningInfoModule.value], (newVal: any) => {
   if (newVal.length > 0) {
@@ -114,9 +135,11 @@ watch([runningInfoModule.value], (newVal: any) => {
 });
 
 
-onMounted(() => {
+onMounted(async () => {
+  userId.value = getStoredUser.id;
   const initialRbcClassList = store.state.rbcClassificationModule;
-  updateDataArray(initialRbcClassList);
+  await getRbcDegreeData();
+  await updateDataArray(initialRbcClassList);
 });
 
 watch(
@@ -127,30 +150,144 @@ watch(
     {deep: true}
 );
 const lowPowerPath = ref([]);
-const updateDataArray = (newSlotInfo: RbcInfo[]) => {
+const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;
     const wbcInfoArray = slotArray.rbcInfo.map((slot: any) => slot.rbcInfo);
-    dspRbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
-
-    if (slotArray.lowPowerPath) {  // Check if lowPowerPath exists
+    const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
+    //최종으로 슬라이드 정보를 업데이트
+    calcRbcDegree(wbcInfoArr[0])
+    if (slotArray.lowPowerPath) {
       lowPowerPath.value = slotArray.lowPowerPath.sort(function (a: any, b: any) {
         return a.seqNo - b.seqNo;
       });
-      // lowPowerPath.value.forEach(function(item: any) {
-      //   item.path = item.path + '?' + getDateTimeStr()
-      // });
     } else {
       lowPowerPath.value = [];
     }
 
 
   } else {
-    dspRbcClassList.value = [basicRbcArr];
+    //최종으로 슬라이드 정보를 업데이트
+    calcRbcDegree([basicRbcArr][0]);
   }
 
+
 };
+
+const calcRbcDegree = (rbcInfos: any) => {
+  let totalCount = 0;
+  let sizeTotal = 0;
+  let chromiaTotal = 0;
+  const rbcInfo = JSON.parse(JSON.stringify(rbcInfos));
+
+  rbcInfo.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      // size total
+      if (rbcCategory.categoryId === '01') {
+        if (rbcClass.classId !== '04') {
+          sizeTotal += Number(rbcClass.degree)
+        }
+      }
+
+      // chromia total
+      else if (rbcCategory.categoryId === '02') {
+        if (rbcClass.classId !== '04') {
+          chromiaTotal += Number(rbcClass.degree)
+        }
+      } else {
+        totalCount += Number(rbcClass.degree)
+      }
+    });
+  });
+
+  rbcInfo.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        if (
+            degreeStandard.category_id === rbcCategory.categoryId &&
+            degreeStandard.class_id === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.degree);
+          let percent = 0;
+
+          if (degreeStandard.category_id === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.category_id === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          // 0
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          // 3
+          else setDegree('3');
+        }
+      });
+    });
+  });
+
+
+  rbcInfo.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      // size
+      if (rbcCategory.categoryId === '01') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // chromia
+      if (rbcCategory.categoryId === '02') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // Poikilocytosis
+      if (rbcCategory.categoryId === '03') {
+        if (rbcClass.classId === '01') {
+          // normal
+          rbcCategory.classInfo[0].degree = '1'
+          // poikilo
+          rbcCategory.classInfo[1].degree = '0'
+        }
+
+        if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
+          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+
+          if (Number(rbcClass.degree) > poikiloDegree) {
+            rbcCategory.classInfo[0].degree = '0'
+            rbcCategory.classInfo[1].degree = rbcClass.degree
+          }
+        }
+      }
+    });
+  });
+  // console.log(rbcInfo)
+  dspRbcClassList.value[0] = rbcInfo;
+  store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+    slotInfo: [
+      {
+        wbcInfo: rbcInfo,
+      },
+    ]
+  });
+};
+
+
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 
 const onClickBfImg = (event: any, lowPower: any) => {
@@ -167,6 +304,16 @@ const onClickBfImg = (event: any, lowPower: any) => {
     }
   }
 }
+
+const getRbcDegreeData = async () => {
+  try {
+    const result = await getRbcDegreeApi(String(userId.value));
+    const data = result.data;
+    rbcDegreeStandard.value = data?.categories
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 </script>
 <style>

@@ -19,11 +19,14 @@ import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constant';
+import {getNormalRangeApi} from "@/common/api/service/setting/settingApi";
+import {normalRange} from "@/common/defines/constFile/settings";
+import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 
 
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
-const userModuleDataGet = computed(() => store.state.userModule);
+const dataBaseSetDataModule = computed(() => store.state.dataBaseSetDataModule);
 const isStartEmbeddedCalled = ref(false);
 let isRequestInProgress = false;
 const instance = getCurrentInstance();
@@ -31,6 +34,7 @@ const runningSlotId = ref('');
 const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
+const normalItems = ref<any>([]);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -42,14 +46,17 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 
 onMounted(async () => {
   // console.log()
-  if(userId.value === ''){ // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
+  if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     store.dispatch('userModule/setUserAction', getStoredUser);
   }
+  userId.value = getStoredUser.id;
+
   if (getStoredUser.userId && getStoredUser.userId !== '') {
     if (isStartEmbeddedCalled.value) {
       await runInfoPostWebSocket();
     }
     await startSysPostWebSocket();
+    await getNormalRange();
   }
 });
 
@@ -57,16 +64,6 @@ watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals))
   isStartEmbeddedCalled.value = newValsObj[0].startEmbedded;
 })
-
-watch([userModuleDataGet.value], async (newVals: any) => {
-  const newValsObj = JSON.parse(JSON.stringify(newVals))
-  if (newValsObj[0].userId && newValsObj[0].userId !== '') {
-    userId.value = String(newValsObj[0].userId);
-  }else{
-    console.log('없음')
-  }
-})
-
 
 
 // 모든 tcp 통신으로 받은 응답값을 스토어에 저장하는 부분
@@ -155,9 +152,14 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq.embedStatus.pause.reqUserId = userId.value;
       sendMessage(tcpReq.embedStatus.pause);
     } else {
+      console.log(runningSlotId.value)
       if (currentSlot?.slotId !== runningSlotId.value) { // 슬라이드 체인지 시
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+        // console.log(runningSlotId.value !== '')
+        if (runningSlotId.value !== '') {
+          await saveTestHistory(data);
+        }
         runningSlotId.value = String(currentSlot?.slotId);
       }
     }
@@ -168,7 +170,77 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
       tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
       sendMessage(tcpReq.embedStatus.runIngComp);
+      await saveTestHistory(data);
     }
+  }
+}
+
+const saveTestHistory = async (params: any) => {
+  //
+  const completeSlot = params.slotInfo.find(function (item: any) {
+    return item.slotId === runningSlotId.value && item.stateCd === '04'
+  });
+
+  if (completeSlot) {
+    completeSlot.userId = userId.value;
+    completeSlot.cassetId = params.cassetId;
+    // completeSlot.isNsNbIntegration = isNsNbIntegration
+
+    // PB 비정상 클래스 체크
+    completeSlot.isNormal = 'Y'
+
+    if (completeSlot.analysisType === '01') {
+      completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
+    }
+    const dbData = dataBaseSetDataModule.value.dataBaseSetData;
+    const newObj = {
+      slotNo: completeSlot.slotNo,
+      barcodeNo: completeSlot.barcodeNo,
+      patientId: completeSlot.patientId,
+      patientNm: completeSlot.patientNm,
+      gender: completeSlot.gender,
+      birthDay: completeSlot.birthDay,
+      wbcCount: completeSlot.wbcCount,
+      slotId: completeSlot.slotId,
+      orderDttm: completeSlot.orderDttm,
+      testType: completeSlot.testType,
+      analyzedDttm: completeSlot.analyzedDttm,
+      pltCount: completeSlot.pltCount,
+      malariaCount: completeSlot.malariaCount,
+      maxRbcCount: completeSlot.maxRbcCount,
+      stateCd: completeSlot.stateCd,
+      tactTime: completeSlot.tactTime,
+      maxWbcCount: completeSlot.maxWbcCount,
+      lowPowerPath: completeSlot.lowPowerPath,
+      runningPath: completeSlot.runningPath,
+      wbcInfo: dbData.slotInfo[0].wbcInfo,
+      rbcInfo: dbData.slotInfo[0].rbcInfo.dspWbcClassList[0],
+      bminfo: completeSlot.bminfo,
+      userId: userId.value,
+      cassetId: completeSlot.cassetId,
+      isNormal: completeSlot.isNormal,
+      processInfo: dbData.slotInfo[0].processInfo,
+      orderList: dbData.slotInfo[0].orderList
+    }
+
+    console.log(JSON.stringify(newObj))
+
+  }
+}
+
+
+const getNormalRange = async () => {
+  try {
+    const result = await getNormalRangeApi(String(userId.value));
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        normalItems.value = data;
+      }
+      console.log(result);
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
@@ -180,14 +252,14 @@ const sendMessage = (payload: object) => {
 }
 
 //
-// setInterval(async () => {
-//   if (userId.value && userId.value !== '') {
-//     if (isStartEmbeddedCalled.value) {
-//       await runInfoPostWebSocket();
-//     }
-//     await startSysPostWebSocket();
-//   }
-// }, 500);
+setInterval(async () => {
+  if (userId.value && userId.value !== '') {
+    if (isStartEmbeddedCalled.value) {
+      await runInfoPostWebSocket();
+    }
+    await startSysPostWebSocket();
+  }
+}, 500);
 
 
 </script>

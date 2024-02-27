@@ -120,7 +120,7 @@
         <Datepicker v-model="backupEndDate"></Datepicker>
       </div>
     </div>
-    <button type="button" @click='createCellImgSet()'>Save Cell image analyzed</button>
+    <button type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
   </div>
   <Alert
       v-if="showAlert"
@@ -174,10 +174,10 @@ const saveHttpType = ref('');
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
-  await createCellImgGet();
+  await cellImgGet();
 });
 
-const createCellImgGet = async () => {
+const cellImgGet = async () => {
   try {
     const result = await getCellImgApi(String(userId.value));
     if (result) {
@@ -217,7 +217,7 @@ const createCellImgGet = async () => {
   }
 }
 
-const createCellImgSet = async () => {
+const cellImgSet = async () => {
 
   const cellImgSet = {
     analysisType: testTypeCd.value,
