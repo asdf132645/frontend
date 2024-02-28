@@ -19,9 +19,12 @@ import AppHeader from "@/components/layout/AppHeader.vue";
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constant';
-import {getNormalRangeApi} from "@/common/api/service/setting/settingApi";
+import {createCbcCodeRbcApi, getNormalRangeApi, updateCbcCodeRbcApi} from "@/common/api/service/setting/settingApi";
 import {normalRange} from "@/common/defines/constFile/settings";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
+import {ApiResponse} from "@/common/api/httpClient";
+import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 
 
 const store = useStore();
@@ -195,6 +198,9 @@ const saveTestHistory = async (params: any) => {
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
     const newObj = {
       slotNo: completeSlot.slotNo,
+      state: false,
+      submit: 'Ready',
+      submitDate: '',
       barcodeNo: completeSlot.barcodeNo,
       patientId: completeSlot.patientId,
       patientNm: completeSlot.patientNm,
@@ -214,15 +220,15 @@ const saveTestHistory = async (params: any) => {
       lowPowerPath: completeSlot.lowPowerPath,
       runningPath: completeSlot.runningPath,
       wbcInfo: dbData.slotInfo[0].wbcInfo,
-      rbcInfo: dbData.slotInfo[0].rbcInfo.dspWbcClassList[0],
+      rbcInfo: dbData.slotInfo[0].rbcInfo,
       bminfo: completeSlot.bminfo,
       userId: userId.value,
       cassetId: completeSlot.cassetId,
       isNormal: completeSlot.isNormal,
       processInfo: dbData.slotInfo[0].processInfo,
-      orderList: dbData.slotInfo[0].orderList
+      orderList: dbData.slotInfo[0].orderList.filter((order: any) => order.barcodeId === completeSlot.barcodeNo),
     }
-
+    saveRunningInfo(newObj);
     console.log(JSON.stringify(newObj))
 
   }
@@ -244,6 +250,20 @@ const getNormalRange = async () => {
   }
 }
 
+const saveRunningInfo = async (runningInfo: RuningInfo) => {
+  try {
+    let result: ApiResponse<void>;
+    result = await createRunningApi({ userId: Number(userId.value), runingInfoDtoItems: runningInfo });
+
+    if (result) {
+      // showSuccessAlert('save successful');
+      alert('성공~')
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 const sendMessage = (payload: object) => {
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
@@ -251,7 +271,7 @@ const sendMessage = (payload: object) => {
   });
 }
 
-//
+
 setInterval(async () => {
   if (userId.value && userId.value !== '') {
     if (isStartEmbeddedCalled.value) {

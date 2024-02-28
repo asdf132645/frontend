@@ -281,7 +281,7 @@ const calcRbcDegree = (rbcInfos: any) => {
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
-        wbcInfo: rbcInfo,
+        rbcInfo: rbcInfo,
       },
     ]
   });

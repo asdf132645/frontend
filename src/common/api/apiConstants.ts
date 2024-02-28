@@ -212,5 +212,19 @@ export const apiConstants = {
                 requiresToken: false,
             }
         },
+        runningInfo: {
+            create: {
+                endpoint: 'runningInfo/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'runningInfo/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'runningInfo/get',
+                requiresToken: false,
+            }
+        },
     }
 };

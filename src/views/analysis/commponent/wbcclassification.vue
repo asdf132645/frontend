@@ -128,8 +128,8 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
-        rbcInfo: {
-          dspWbcClassList: dspWbcClassList,
+        wbcInfo: {
+          wbcInfo: dspWbcClassList,
           totalCount: totalCount.value,
           maxWbcCount: maxWbcCount.value,
         },
