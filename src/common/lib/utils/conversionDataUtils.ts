@@ -1,4 +1,5 @@
 import { commonCodeList } from '@/common/defines/constFile/commonCodeList';
+import {testType} from "@/common/defines/constFile/dataBase";
 interface CommonCode {
     grpCd: string;
     cd: string;
@@ -28,5 +29,10 @@ export function stringToDateTime(str: string): string {
 
     return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 }
+
+export const getTestTypeText = (value: string) => {
+    const matchingOption = testType.find(option => option.value === value);
+    return matchingOption ? matchingOption.text : '';
+};
 
 

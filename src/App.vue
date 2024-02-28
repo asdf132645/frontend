@@ -25,6 +25,7 @@ import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
+import {parseDateString} from "@/common/lib/utils/dateUtils";
 
 
 const store = useStore();
@@ -208,9 +209,9 @@ const saveTestHistory = async (params: any) => {
       birthDay: completeSlot.birthDay,
       wbcCount: completeSlot.wbcCount,
       slotId: completeSlot.slotId,
-      orderDttm: completeSlot.orderDttm,
+      orderDttm: parseDateString(completeSlot.orderDttm),
       testType: completeSlot.testType,
-      analyzedDttm: completeSlot.analyzedDttm,
+      analyzedDttm: parseDateString(completeSlot.analyzedDttm),
       pltCount: completeSlot.pltCount,
       malariaCount: completeSlot.malariaCount,
       maxRbcCount: completeSlot.maxRbcCount,
@@ -272,14 +273,14 @@ const sendMessage = (payload: object) => {
 }
 
 
-setInterval(async () => {
-  if (userId.value && userId.value !== '') {
-    if (isStartEmbeddedCalled.value) {
-      await runInfoPostWebSocket();
-    }
-    await startSysPostWebSocket();
-  }
-}, 500);
+// setInterval(async () => {
+//   if (userId.value && userId.value !== '') {
+//     if (isStartEmbeddedCalled.value) {
+//       await runInfoPostWebSocket();
+//     }
+//     await startSysPostWebSocket();
+//   }
+// }, 500);
 
 
 </script>

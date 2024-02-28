@@ -51,9 +51,9 @@ interface RuningInfo {
     birthDay: string;
     wbcCount: string;
     slotId: string;
-    orderDttm: string;
+    orderDttm: Date;
     testType: string;
-    analyzedDttm: string;
+    analyzedDttm: Date;
     pltCount: string;
     malariaCount: string;
     maxRbcCount: string;
@@ -72,4 +72,21 @@ interface RuningInfo {
     orderList: Order[];
 }
 
-export { RuningInfo, WbcInfo, RbcInfo, ClassInfo, ProcessInfo, Order };
+interface RunningInfoRes {
+    data: RuningInfo[];
+    total: number;
+    page: number;
+}
+
+interface RuningInfoApiRequest {
+    page: number;
+    pageSize: number;
+    startDay: string;
+    endDay: string;
+    barcodeNo?: string | undefined;
+    patientId?: string | undefined;
+    patientNm?: string | undefined;
+}
+
+
+export { RuningInfo, WbcInfo, RbcInfo, ClassInfo, ProcessInfo, Order, RunningInfoRes, RuningInfoApiRequest };

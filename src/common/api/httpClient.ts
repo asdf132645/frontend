@@ -15,11 +15,11 @@ interface HttpResponse<T> {
 
 export function useHttpClient() {
 
-    const httpGet = async <T>(url: Endpoint, parameters: string): Promise<ApiResponse<T>> => {
-        return httpGetAct(url.endpoint, parameters);
+    const httpGet = async <T>(url: Endpoint, parameters: string, type?: boolean): Promise<ApiResponse<T>> => {
+        return httpGetAct(url.endpoint, parameters, type);
     };
 
-    const httpGetAct = async <T>(url: string, parameters: string): Promise<ApiResponse<T>> => {
+    const httpGetAct = async <T>(url: string, parameters: string, type?: boolean): Promise<ApiResponse<T>> => {
         const options: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -27,9 +27,15 @@ export function useHttpClient() {
         };
 
         axios.defaults.withCredentials = true;
-
+        let slush = '';
+        if(type){
+            slush = '?';
+        }else{
+            slush = '/';
+        }
+        console.log(type !== undefined)
         try {
-            const response: HttpResponse<T> = await axios.get(`http://192.168.0.131:3002/${url}/${parameters}`, options);
+            const response: HttpResponse<T> = await axios.get(`http://192.168.0.131:3002/${url}${slush}${parameters}`, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);

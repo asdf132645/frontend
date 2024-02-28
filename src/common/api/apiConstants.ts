@@ -222,7 +222,7 @@ export const apiConstants = {
                 requiresToken: false,
             },
             get:{
-                endpoint: 'runningInfo/get',
+                endpoint: 'runningInfo/getAll',
                 requiresToken: false,
             }
         },

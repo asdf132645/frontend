@@ -1,9 +1,10 @@
 // router/index.vue
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
 import JoinView from '@/views/join/index.vue';
 import loginView from '@/views/login/index.vue';
 import setting from '@/views/setting/index.vue'
+import Database from '@/views/datebase/index.vue';
 
 import {useStore} from "vuex";
 
@@ -35,6 +36,11 @@ const router = createRouter({
             name: 'setting',
             component: setting,
         },
+        {
+            path: '/database',
+            name: 'database',
+            component: Database,
+        }
     ],
 });
 

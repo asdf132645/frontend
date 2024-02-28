@@ -1,6 +1,6 @@
 import {apiConstants} from "@/common/api/apiConstants";
 import {useHttpClient, ApiResponse} from '@/common/api/httpClient';
-import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
+import {RuningInfo, RuningInfoApiRequest, RunningInfoRes} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 const httpClient = useHttpClient();
 
 export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: RuningInfo }): Promise<ApiResponse<void>> => {
@@ -11,6 +11,11 @@ export const updateRunningApi = async (request: RuningInfo, userId: string): Pro
     return httpClient.httpPut(apiConstants.settings.runningInfo.update, request, userId);
 };
 
-export const getRunningApi = async (userId: string): Promise<ApiResponse<RuningInfo | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.get, userId);
+export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiResponse<RunningInfoRes | undefined>> => {
+    const queryString = Object.entries(req)
+        .filter(([key, value]) => value !== undefined)  // undefined 값은 제외
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .join('&');
+
+    return httpClient.httpGet(apiConstants.settings.runningInfo.get,`${queryString}`, true);
 };

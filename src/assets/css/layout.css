@@ -145,14 +145,14 @@ main.content {
     margin-left: 11.5%;
     margin-top: 7px;
     margin-right: 7px;
+    padding: 5px 20px;
 }
 
 .contentLeft {
     text-align: left;
     background: #f1f3f2;
     display: inline-block;
-    width: 25%;
-    margin: 10px 10px 0px 10px;
+    width: 26.7%;
     padding: 10px;
     margin-top: 0;
     height: 88vh;
@@ -627,4 +627,29 @@ table.settingTable td, table.settingTable th {
 .tab-buttons button.active {
     background-color: #ccc;
 }
+.filterListDiv > div > select, .filterListDiv > div > input, .filterListDiv > div > div {
+    display: inline-block;
+    width: 20%;
+    margin-right: 15px;
+}
 
+table.defaultTable thead th {
+    background: #dedede;
+}
+
+table.defaultTable thead th, table.defaultTable tbody td {
+    padding: 10px;
+    font-size: 0.8rem;
+}
+
+table.defaultTable tbody td {
+    border-bottom: 1px solid #dedede;
+}
+
+.listBox {
+    width: 35%;
+}
+
+.listBoxTable {
+    width: 65%;
+}
