@@ -38,10 +38,10 @@
           </div>
         </div>
       </div>
-      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData"/>
+      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @selectItem="selectItem"/>
     </div>
     <div class='listBox'>
-      <ListInfo :dbData="dbGetData"/>
+      <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
       <ListWbcImg :dbData="dbGetData"/>
     </div>
   </div>
@@ -70,17 +70,61 @@ const endDate = ref(new Date());
 const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
+const selectedItem = ref({});
+
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
-  await getDbData();
+  // 이전 조회 결과 및 검색 조건 불러오기
+  // const lastQuery = loadLastQuery();
+  const lastSearchParams = loadLastSearchParams();
+  console.log(Object.keys(lastSearchParams).length)
+// 이전 검색 조건 적용
+  if(Object.keys(lastSearchParams).length !== 0){
+    searchType.value = lastSearchParams.searchType || 'barcodeNo';
+    searchText.value = lastSearchParams.searchText || '';
+    startDate.value = new Date(lastSearchParams.startDate) || new Date();
+    endDate.value = new Date(lastSearchParams.endDate) || new Date();
+    page.value = lastSearchParams.page || 1;
+
+    const numberOfCalls = Number(lastSearchParams.page) || 1;
+    for (let i = 1; i <= numberOfCalls; i++) {
+      await getDbData('mounted', i);
+    }
+  }else{
+    await getDbData('mounted', 1);
+  }
+
+
 });
 
-const getDbData = async () => {
+const selectItem = (item: any) => {
+  selectedItem.value = item;
+};
+
+const saveLastSearchParams = () => {
+  const lastSearchParams = {
+    page: page.value ,
+    searchType: searchType.value,
+    searchText: searchText.value,
+    startDate: formatDate(startDate.value),
+    endDate: formatDate(endDate.value),
+  };
+  // console.log(startDate.value);
+  sessionStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
+};
+
+const loadLastSearchParams = () => {
+  const storedSearchParams = sessionStorage.getItem('lastSearchParams');
+  return storedSearchParams ? JSON.parse(storedSearchParams) : {};
+};
+
+
+const getDbData = async (type: string, pageNum?: number) => {
   try {
     const result = await getRunningApi({
-      page: page.value,
-      pageSize: 25,
+      page: type !== 'mounted'? page.value : Number(pageNum),
+      pageSize: 18,
       startDay: formatDate(startDate.value),
       endDay: formatDate(endDate.value),
       barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
@@ -92,9 +136,21 @@ const getDbData = async () => {
       const newData = result.data.data;
 
       if (newData.length === 0) {
-        page.value -= 1;
+        if (page.value === 1) {
+          page.value = 1;
+        } else {
+          page.value -= 1;
+        }
+
       } else {
-        dbGetData.value = [...dbGetData.value, ...newData];
+        if (type === 'search') {
+          dbGetData.value = newData;
+        } else {
+          dbGetData.value = [...dbGetData.value, ...newData];
+        }
+
+        // 마지막 조회 결과 저장
+        saveLastSearchParams();
       }
     }
   } catch (e) {
@@ -104,12 +160,12 @@ const getDbData = async () => {
 };
 
 const search = () => {
-  getDbData();
+  getDbData('search');
 };
 
 const loadMoreData = async () => {
   page.value += 1;
-  await getDbData();
+  await getDbData('loadMoreData');
 };
 
 </script>

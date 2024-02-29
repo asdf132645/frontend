@@ -70,6 +70,11 @@ interface RuningInfo {
     isNormal: string;
     processInfo: ProcessInfo;
     orderList: Order[];
+    signedState?:string;
+    signedOfDate?: Date;
+    signedUserId?:string;
+    classificationResult?: any[];
+    isNsNbIntegration?: string;
 }
 
 interface RunningInfoRes {

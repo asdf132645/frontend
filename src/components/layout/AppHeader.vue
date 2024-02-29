@@ -300,6 +300,7 @@ const cellImgGet = async (newUserId: string) => {
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           isNsNbIntegration: data.isNsNbIntegration ? 'Y':'N'
         });
+        sessionStorage.setItem('isNsNbIntegration',isNsNbIntegration.value);
       }
     }
 

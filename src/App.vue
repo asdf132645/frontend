@@ -196,6 +196,8 @@ const saveTestHistory = async (params: any) => {
     if (completeSlot.analysisType === '01') {
       completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
     }
+
+    const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
     const newObj = {
       slotNo: completeSlot.slotNo,
@@ -228,6 +230,11 @@ const saveTestHistory = async (params: any) => {
       isNormal: completeSlot.isNormal,
       processInfo: dbData.slotInfo[0].processInfo,
       orderList: dbData.slotInfo[0].orderList.filter((order: any) => order.barcodeId === completeSlot.barcodeNo),
+      signedState:'',
+      signedOfDate: '',
+      signedUserId:'',
+      classificationResult: [],
+      isNsNbIntegration: isNsNbIntegration,
     }
     saveRunningInfo(newObj);
     console.log(JSON.stringify(newObj))
@@ -273,14 +280,14 @@ const sendMessage = (payload: object) => {
 }
 
 
-// setInterval(async () => {
-//   if (userId.value && userId.value !== '') {
-//     if (isStartEmbeddedCalled.value) {
-//       await runInfoPostWebSocket();
-//     }
-//     await startSysPostWebSocket();
-//   }
-// }, 500);
+setInterval(async () => {
+  if (userId.value && userId.value !== '') {
+    if (isStartEmbeddedCalled.value) {
+      await runInfoPostWebSocket();
+    }
+    await startSysPostWebSocket();
+  }
+}, 500);
 
 
 </script>

@@ -17,10 +17,16 @@
       <th>Edit</th>
     </tr>
     </thead>
-    <tbody>
-    <tr v-for="item in dbData" :key="item.id">
+    <tbody v-if="dbData.length !== 0">
+    <tr
+        v-for="(item, idx) in dbData"
+        :key="item.id"
+        :class="{ selectedTr: selectedItemId === item.id }"
+        @click="selectItem(item)"
+        ref="firstRow"
+    >
       <td>
-        {{ item.id }}
+        {{ idx + 1 }}
       </td>
       <td>
         <input type="checkbox"/>
@@ -61,28 +67,53 @@
         edit
       </td>
     </tr>
-    <div ref="loadMoreRef" style="height: 10px;"></div>
+    <tr>
+      <div ref="loadMoreRef" style="height: 10px;"></div>
+    </tr>
+    </tbody>
+    <tbody v-else>
+    <tr class="text-center">
+      <td colspan="13"> NO Data</td>
+    </tr>
     </tbody>
   </table>
 </template>
 
 <script setup>
-import { getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
-import { ref, onMounted, defineProps, defineEmits } from 'vue';
+import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {ref, onMounted, watchEffect, defineProps, defineEmits} from 'vue';
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
 const emits = defineEmits();
-
+const selectedItemId = ref('');
 onMounted(() => {
+  if (props.dbData.length === 0) {
+    return;
+  }
   const observer = new IntersectionObserver(handleIntersection, {
     root: null,
     rootMargin: '0px',
     threshold: 0.5,
   });
-
   observer.observe(loadMoreRef.value);
 });
+
+watchEffect(() => {
+  if (props.dbData.length > 0) {
+    // 첫 번째 행을 클릭
+    const dbBaseTrClickId = sessionStorage.getItem('dbBaseTrClickId') || 0;
+    let id = '';
+    if(dbBaseTrClickId === 0){
+      id = dbBaseTrClickId;
+    }else{
+      id = dbBaseTrClickId - 1;
+    }
+    selectItem(props.dbData[id]);
+  }
+});
+
+
 
 const handleIntersection = (entries, observer) => {
   entries.forEach((entry) => {
@@ -91,6 +122,17 @@ const handleIntersection = (entries, observer) => {
     }
   });
 };
+
+const selectItem = (item) => {
+  // 부모로 전달
+  if(!item){
+    return;
+  }
+  emits('selectItem', item);
+  selectedItemId.value = item.id;
+  sessionStorage.setItem('dbBaseTrClickId',item.id);
+};
+
 
 </script>
 

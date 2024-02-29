@@ -648,8 +648,19 @@ table.defaultTable tbody td {
 
 .listBox {
     width: 35%;
+    display: inline-block;
+    vertical-align: top;
 }
 
 .listBoxTable {
     width: 65%;
+    display: inline-block;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.selectedTr {
+    background-color: #e6f7ff;
 }

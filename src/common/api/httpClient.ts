@@ -33,7 +33,7 @@ export function useHttpClient() {
         }else{
             slush = '/';
         }
-        console.log(type !== undefined)
+        // console.log(type !== undefined)
         try {
             const response: HttpResponse<T> = await axios.get(`http://192.168.0.131:3002/${url}${slush}${parameters}`, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
