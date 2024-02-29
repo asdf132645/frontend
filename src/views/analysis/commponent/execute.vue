@@ -77,6 +77,13 @@ onMounted(async () => {
   await nextTick();
   await cellImgGet();
   initData();
+  if (isRunningState.value) {
+    btnStatus.value = 'isRunning';
+    showStopBtn.value = false;
+  } else {
+    btnStatus.value = 'start';
+    showStopBtn.value = true;
+  }
 });
 
 watch([runInfo.value], async (newVals) => {

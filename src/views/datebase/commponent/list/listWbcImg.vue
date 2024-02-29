@@ -2,7 +2,7 @@
   <div class='mt3'>
     <h3>WBC Images</h3>
     <div>
-      {{ dbData[0].wbcInfo }}
+      {{ dbData[0]?.wbcInfo }}
     </div>
   </div>
 </template>

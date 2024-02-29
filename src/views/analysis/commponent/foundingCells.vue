@@ -43,7 +43,7 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const firstItem = JSON.parse(JSON.stringify(newSlot))
   const slotInfo = firstItem[0].runningInfo?.slotInfo;
   if (slotInfo) {
-    const accumulatedRunningPath: RunningPathItem[] = [];
+    let accumulatedRunningPath: any = {};
 
     slotInfo.forEach((item: any) => {
       if (item.stateCd === '03' && item.runningPath && item.runningPath.length > 0) {
@@ -54,12 +54,12 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
           id: generateUniqueId()
         }));
 
-        accumulatedRunningPath.push(...runningPath);
+        accumulatedRunningPath = runningPath;
       }
     });
 
     if (accumulatedRunningPath.length > 0) {
-      images.value = accumulatedRunningPath;
+      images.value.push(accumulatedRunningPath);
       currentImageIndex.value = 0; // 초기 이미지 인덱스를 0으로 설정
     }
   }

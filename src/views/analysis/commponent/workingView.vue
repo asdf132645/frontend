@@ -111,6 +111,8 @@ watch([commonDataGet.value], async (newVals: any) => {
   if (!newValsObj[0].startEmbedded) { // 슬라이드 검사가 끝난 후
     stopCounting();
     stopTotalCounting();
+  }else{
+    startTotalCounting();
   }
 
   if (!newValsObj[0].isRunningState) {
@@ -127,10 +129,6 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
     startCounting();
-    if (!totalCountingStarted) {
-      startTotalCounting();
-      totalCountingStarted = true;
-    }
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
     if (countingInterval !== null) {
       // stop일 경우 실행 중인 interval을 중지
