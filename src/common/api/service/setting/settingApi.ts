@@ -187,3 +187,7 @@ export const updateMinCountApi = async (request: UpdateMinCountDto, userId: stri
 export const getMinCountApi = async (userId: string): Promise<ApiResponse<minCountItem[] | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.minCount.get, userId);
 };
+
+export const getDrivesApi = async (): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.folder.get, '');
+};

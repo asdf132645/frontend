@@ -298,9 +298,11 @@ const cellImgGet = async (newUserId: string) => {
         isNsNbIntegration.value = data.isNsNbIntegration ? 'Y':'N';
         alarmCount.value = Number(data.alarmCount) * 1000;
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-          isNsNbIntegration: data.isNsNbIntegration ? 'Y':'N'
+          isNsNbIntegration: data?.isNsNbIntegration ? 'Y':'N'
         });
+        // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration',isNsNbIntegration.value);
+        sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
       }
     }
 

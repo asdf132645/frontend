@@ -1,12 +1,10 @@
 <template>
   <div class="mt1">
     <transition name="fade" mode="out-in">
-      <div :key="currentImageIndex" class="slider" v-if="images.length > 0">
-        <img :src="images[currentImageIndex].path" alt="Slide" />
+      <div class="slider" v-if="images.length > 0">
+        <img v-for="type in images" :key="type.id" :src="getImageUrl(type)" alt="Slide" />
       </div>
     </transition>
-    <button @click="prevSlide">prev</button>
-    <button @click="nextSlide">next</button>
   </div>
 </template>
 
@@ -20,21 +18,12 @@ import { getDateTimeStr } from '@/common/lib/utils/dateUtils';
 
 const store = useStore();
 const images = ref<RunningPathItem[]>([]);
-const currentImageIndex = ref(0);
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 
 
 interface RunningPathItem {
   path: string;
   id: string;
-}
-
-interface RunningInfoWithId extends RunningInfo {
-  runningInfo: {
-    slotInfo: {
-      runningPath: RunningPathItem[];
-    }[];
-  };
 }
 
 
@@ -60,23 +49,26 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
     if (accumulatedRunningPath.length > 0) {
       images.value.push(accumulatedRunningPath);
-      currentImageIndex.value = 0; // 초기 이미지 인덱스를 0으로 설정
     }
   }
 });
 
-
-function nextSlide() {
-  currentImageIndex.value = (currentImageIndex.value + 1) % images.value.length;
-}
-
-function prevSlide() {
-  currentImageIndex.value = (currentImageIndex.value - 1 + images.value.length) % images.value.length;
-}
-
 function generateUniqueId() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
+
+function getImageUrl(type: RunningPathItem | undefined): string {
+  if (!type) {
+    return ''; // or any default value you prefer
+  }
+
+  const folderPath = encodeURIComponent(type.path.replace(/\/[^\/]+$/, '')); // Remove the last part (image name)
+  const imageName = encodeURIComponent(type.path.match(/\/([^\/]+)$/)?.[1] || ''); // Extract the last part (image name)
+  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+}
+
+
+
 </script>
 
 <style scoped>

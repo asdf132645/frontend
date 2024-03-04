@@ -641,3 +641,6 @@ export const lisHotKeyAndLisFilePathAndUrl =[
     { lisHotKey: '', lisFilePath:'', cbcFilePath:'' },
 ]
 
+export const barcodeImgDir = {
+    barcodeDirName: '00_Barcode_Image'
+}

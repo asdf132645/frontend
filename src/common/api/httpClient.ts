@@ -14,6 +14,7 @@ interface HttpResponse<T> {
 }
 
 export function useHttpClient() {
+    const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
     const httpGet = async <T>(url: Endpoint, parameters: string, type?: boolean): Promise<ApiResponse<T>> => {
         return httpGetAct(url.endpoint, parameters, type);
@@ -35,7 +36,7 @@ export function useHttpClient() {
         }
         // console.log(type !== undefined)
         try {
-            const response: HttpResponse<T> = await axios.get(`http://192.168.0.131:3002/${url}${slush}${parameters}`, options);
+            const response: HttpResponse<T> = await axios.get(`${apiBaseUrl}/${url}${slush}${parameters}`, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);
@@ -57,7 +58,7 @@ export function useHttpClient() {
         axios.defaults.withCredentials = true;
 
         try {
-            const response: HttpResponse<T> = await axios.post(`http://192.168.0.131:3002/${url}`, payload, options);
+            const response: HttpResponse<T> = await axios.post(`${apiBaseUrl}/${url}`, payload, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);

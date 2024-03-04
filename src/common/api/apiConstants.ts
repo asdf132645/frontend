@@ -226,5 +226,11 @@ export const apiConstants = {
                 requiresToken: false,
             }
         },
+        folder: {
+            get:{
+                endpoint: 'folder/drives',
+                requiresToken: false,
+            }
+        }
     }
 };

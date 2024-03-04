@@ -14,7 +14,9 @@
         <li>NS, NB Integration : <span>{{ selectedItem?.isNsNbIntegration }}</span>  </li>
         <li>Patient ID : <span>{{ selectedItem?.patientId }}</span>  </li>
         <li>Patient name : <span>{{ selectedItem?.patientNm }}</span>  </li>
-        <li>바코드 이미지 구역 셋팅 페이지 디렉터리 개발 후 추가예정</li>
+        <li>
+          <img :src="getImageUrl('barcode_image.jpg')"/>
+        </li>
       </ul>
     </div>
     <div>
@@ -38,11 +40,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup >
 import { ref, defineProps } from 'vue';
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const props = defineProps(['selectedItem']);
+const pbiaRootPath = sessionStorage.getItem('pbiaRootPath')
 
 const showClassificationResults = (classificationResult) => {
   return (
@@ -50,9 +54,10 @@ const showClassificationResults = (classificationResult) => {
       classificationResult.length > 0 &&
       !['12_NR', '13_GP', '14_PA', '15_AR', '16_MA', '17_SM'].includes(result.dirName)
   );
+
 };
+function getImageUrl(imageName){
+  return `http://localhost:3002/images?folder=${pbiaRootPath + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
+}
 
-
-</script>
-<script setup lang="ts">
 </script>

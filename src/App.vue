@@ -204,6 +204,7 @@ const saveTestHistory = async (params: any) => {
       state: false,
       submit: 'Ready',
       submitDate: '',
+      traySlot: '1-'+completeSlot.slotNo,
       barcodeNo: completeSlot.barcodeNo,
       patientId: completeSlot.patientId,
       patientNm: completeSlot.patientNm,

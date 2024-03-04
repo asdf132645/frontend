@@ -42,7 +42,7 @@
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <ListWbcImg :dbData="dbGetData"/>
+      <ListWbcImg :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
   </div>
 </template>

@@ -43,7 +43,8 @@ interface RuningInfo {
     state?: boolean;
     submit?: string;
     submitDate?: string;
-    slotNo: string;
+    slotNo?: string;
+    traySlot?:string;
     barcodeNo: string;
     patientId: string;
     patientNm: string;

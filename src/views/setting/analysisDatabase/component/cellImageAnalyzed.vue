@@ -76,7 +76,9 @@
       <tr>
         <th>IA root path</th>
         <td colspan="2">
-          <input type="text" v-model="pbiaRootPath" @click='pickDirectory'>
+          <select v-model='pbiaRootPath'>
+            <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+          </select>
         </td>
       </tr>
       <tr>
@@ -133,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import {createCellImgApi, getCellImgApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
+import {createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
 import router from "@/router";
@@ -170,12 +172,40 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const saveHttpType = ref('');
-
+const drive = ref<any>([]);
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
   await cellImgGet();
+  await driveGet();
 });
+
+const driveGet = async () => {
+  try {
+    const result = await getDrivesApi();
+    if (result) {
+      if (!result?.data) {
+        console.log(null)
+        saveHttpType.value = 'post';
+      } else {
+        saveHttpType.value = 'put';
+
+        const data = result.data;
+        for (const dataKey in data) {
+          data[dataKey] = data[dataKey] + '\\ia_proc';
+        }
+        drive.value = data;
+
+      }
+      console.log(result)
+
+    }
+
+  } catch (e) {
+
+    console.log(e);
+  }
+}
 
 const cellImgGet = async () => {
   try {
@@ -197,7 +227,7 @@ const cellImgGet = async () => {
         pbAnalysisType2.value = data.pbAnalysisType2;
         stitchCount.value = data.stitchCount;
         bfAnalysisType.value = data.bfAnalysisType;
-        pbiaRootPath.value = data.pbiaRootPath;
+        pbiaRootPath.value = data.pbiaRootPath
         isNsNbIntegration.value = data.isNsNbIntegration;
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;
@@ -277,16 +307,6 @@ const handleFileChange = (event: Event) => {
   }
 };
 
-const pickDirectory = async () => {
-  try {
-    const directoryHandle = await window.showDirectoryPicker();
-    console.log("Selected directory:", directoryHandle);
-
-  } catch (error) {
-    console.error("Error picking directory:", error);
-  }
-
-}
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
