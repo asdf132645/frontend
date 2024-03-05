@@ -23,6 +23,7 @@
         :key="item.id"
         :class="{ selectedTr: selectedItemId === item.id }"
         @click="selectItem(item)"
+        @dblclick='rowDbClick(item)'
         ref="firstRow"
     >
       <td>
@@ -82,6 +83,7 @@
 <script setup>
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {ref, onMounted, watchEffect, defineProps, defineEmits} from 'vue';
+import router from "@/router";
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -125,6 +127,7 @@ const handleIntersection = (entries, observer) => {
 
 const selectItem = (item) => {
   // 부모로 전달
+  console.log(item)
   if(!item){
     return;
   }
@@ -133,6 +136,14 @@ const selectItem = (item) => {
   sessionStorage.setItem('dbBaseTrClickId',item.id);
 };
 
+const rowDbClick = (item) => {
+  const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
+  console.log(wbcInfoData)
+  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
+  sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
+  sessionStorage.setItem('selectItems', JSON.stringify(item));
+  router.push('/databaseWbc')
+}
 
 </script>
 

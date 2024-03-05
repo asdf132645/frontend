@@ -2,36 +2,55 @@
   <div class="mt3">
     <h3>WBC Images</h3>
     <div v-if="allImages.length > 0" class="image-container">
-      <img v-for="image in allImages" :key="image.id" :src="getImageUrl(image.path)" alt="Image" />
+      <div v-for="imageSet in allImages" :key="imageSet.id">
+        <img v-for="image in imageSet.images" :key="image.fileName" :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)" alt="Image" />
+      </div>
     </div>
     <div v-else>No images available</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineProps, onMounted, ref, watch } from 'vue';
 
 const props = defineProps(['dbData', 'selectedItem']);
-const pbiaRootPath = sessionStorage.getItem('pbiaRootPath')
+const pbiaRootPath = sessionStorage.getItem('pbiaRootPath');
 
-const allImages = props.dbData.reduce((acc: any, item: any) => {
-  if (item.images && item.images.length > 0) {
-    acc.push(...item.images);
-  }
-  return acc;
-}, []);
+const allImages = ref([]);
 
-function getImageUrl(imageName: any): string {
-  const { selectedItem } = props;
-  const slotId = selectedItem?.slotId || '';
-  const slotNo = selectedItem?.slotNo || '';
-  const title = selectedItem?.wbcInfo?.wbcInfo[0]?.title || '';
+onMounted(() => {
+  createAllImages();
+});
 
-  const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${slotNo}_${title}`;
-  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+watch(() => props.selectedItem, () => {
+  createAllImages();
+});
+
+function createAllImages(): void {
+  allImages.value = props.selectedItem?.wbcInfo?.wbcInfo[0]?.reduce((acc: any, item: any) => {
+    if (item.images && item.images.length > 0) {
+      acc.push({
+        id: item.id,
+        images: item.images,
+        title: item.title,
+      });
+    }
+    return acc;
+  }, []) || [];
 }
 
+function getImageUrl(imageName: any, id: string, title:string): string {
+  const { selectedItem } = props;
 
+  // 이미지 정보가 없다면 빈 문자열 반환
+  if (!selectedItem?.wbcInfo?.wbcInfo || selectedItem?.wbcInfo?.wbcInfo.length === 0) {
+    return '';
+  }
+
+  const slotId = selectedItem.slotId || '';
+  const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+}
 </script>
 
 <style scoped>

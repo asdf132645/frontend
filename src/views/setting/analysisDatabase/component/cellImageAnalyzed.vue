@@ -185,11 +185,7 @@ const driveGet = async () => {
     const result = await getDrivesApi();
     if (result) {
       if (!result?.data) {
-        console.log(null)
-        saveHttpType.value = 'post';
       } else {
-        saveHttpType.value = 'put';
-
         const data = result.data;
         for (const dataKey in data) {
           data[dataKey] = data[dataKey] + '\\ia_proc';

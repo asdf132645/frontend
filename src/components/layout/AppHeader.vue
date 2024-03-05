@@ -193,7 +193,7 @@ const logOutBoxOn = () => {
   logOutBox.value = !logOutBox.value;
 }
 const logout = () => {
-  sessionStorage.removeItem('user');
+  sessionStorage.clear();
   router.push('user/login');
   store.commit('resetStore');
   if (document.fullscreenElement) {

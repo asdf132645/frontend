@@ -41,6 +41,7 @@
       <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @selectItem="selectItem"/>
     </div>
     <div class='listBox'>
+<!--      {{ selectedItem }}-->
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
       <ListWbcImg :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
