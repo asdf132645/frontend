@@ -35,6 +35,10 @@ export const apiConstants = {
         userCheck:{
             endpoint: 'user',
             requiresToken: false,
+        },
+        getUsers:{
+            endpoint:'user/getUsers',
+            requiresToken: false,
         }
     },
     settings:{
