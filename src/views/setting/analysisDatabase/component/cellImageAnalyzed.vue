@@ -173,6 +173,7 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const saveHttpType = ref('');
 const drive = ref<any>([]);
+const cellimgId = ref('');
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
@@ -191,7 +192,6 @@ const driveGet = async () => {
           data[dataKey] = data[dataKey] + '\\ia_proc';
         }
         drive.value = data;
-
       }
       console.log(result)
 
@@ -215,6 +215,7 @@ const cellImgGet = async () => {
 
         const data = result.data;
 
+        cellimgId.value = String(data.id);
         testTypeCd.value = data.analysisType;
         pbAnalysisType.value = data.cellAnalyzingCount;
         wbcPositionMargin.value = data.wbcPositionMargin;
@@ -270,11 +271,12 @@ const cellImgSet = async () => {
     if (saveHttpType.value === 'post') {
       result = await createCellImgApi(cellImgSet);
     } else {
-      result = await putCellImgApi(cellImgSet, userId.value);
+      result = await putCellImgApi(cellImgSet, cellimgId.value);
     }
 
     if (result) {
-      showSuccessAlert('save successful');
+      const text = saveHttpType.value === 'post' ? 'save successful' : 'update successful'
+      showSuccessAlert(text);
     }
 
   } catch (e) {
@@ -292,15 +294,6 @@ const toggleAlarm = () => {
 
 const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
-};
-
-const handleFileChange = (event: Event) => {
-  const files = (event.target as HTMLInputElement).files;
-  console.log(event)
-  if (files && files.length > 0) {
-    const folderPath = files[0].webkitRelativePath.split('/')[0];
-    console.log('Folder Path:', files[0]);
-  }
 };
 
 const showSuccessAlert = (message: string) => {

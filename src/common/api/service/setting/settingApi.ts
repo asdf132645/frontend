@@ -31,11 +31,11 @@ export const createCellImgApi = async (request: CellImgAnalyzedRequest): Promise
 };
 
 export const getCellImgApi = async (userId: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGetPut, userId);
+    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGet, userId);
 };
 
 export const putCellImgApi = async (request: CellImgAnalyzedRequest, id: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.cellImgAnalyzedPost.cellImgGetPut, request, id);
+    return httpClient.httpPut(apiConstants.settings.cellImgAnalyzedPost.cellImgPut, request, id);
 };
 
 export const createRbcDegreeApi = async (request: RbcDegreeDto): Promise<ApiResponse<void>> => {

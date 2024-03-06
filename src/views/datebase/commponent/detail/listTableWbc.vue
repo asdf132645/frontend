@@ -19,6 +19,34 @@
         <font-awesome-icon :icon="['fas', 'lock-open']"/>
       </p>
     </div>
+    <div v-for="(item, idx) in wbcInfo" :key="item.id" class="wbcClassDbDiv">
+      <div v-if="idx === 0">
+        <p>Class</p>
+        <p>Count</p>
+        <p>%</p>
+      </div>
+      <div class="circle">
+        <p>{{ item?.name }}</p>
+        <p>{{ item?.count }}</p>
+        <p> {{ item?.percent }} </p>
+      </div>
+    </div>
+    <template v-for="(nWbcItem, outerIndex) in selectItems.wbcInfo.nonRbcClassList" :key="outerIndex">
+      <div class="categories">
+        <ul class="categoryNm">
+          <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
+          <li>{{ getCategoryName(nWbcItem) }}</li>
+        </ul>
+        <ul class="classNm">
+          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+          <li>{{ nWbcItem?.count }} <span v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span></li>
+        </ul>
+        <ul class="degree">
+          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+          <li>-</li>
+        </ul>
+      </div>
+    </template>
   </div>
   <div class="databaseWbcLeft">
     <div>
@@ -32,7 +60,6 @@
     </div>
     <div>
       <ul class="wbcInfoDbUl">
-        <!--        {{ wbcInfo }}-->
         <li v-for="item in wbcInfo" :key="item.id">
           <div class="circle">
             <p>{{ item.title }}</p>
@@ -51,9 +78,8 @@
                 :class="{ 'border-changed': image.changed }">
               <img
                   :src="getImageUrl(image.fileName, item.id, item.title)"
-                  :alt="image.fileName"
+                  @dragover.prevent="onDragOver()"
                   @dragstart="onDragStart(Number(itemIndex), Number(imageIndex))"
-                  @dragover.prevent="onDragOver(Number(itemIndex))"
                   @drop="onDrop(Number(itemIndex))"
                   draggable="true"
               />
@@ -68,20 +94,41 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
 
+const originalDbData = sessionStorage.getItem("originalDbData");
+const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const pbiaRootPath = sessionStorage.getItem("pbiaRootPath");
 
-onMounted(() => {
-  wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
-});
+const userId = ref('');
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
+
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 
+onMounted(() => {
+  userId.value = getStoredUser.id;
+  wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
+  if(selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0){
+    wbcInfo.value = selectItems.value.wbcInfoAfter;
+  }else{
+    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0]
+  }
+
+});
+
+
+function onDragOver (){
+  //
+}
 
 function onDragStart(itemIndex: number, imageIndex: number) {
   // 드래그 시작 시 인덱스 저장
@@ -93,7 +140,7 @@ function onDragStart(itemIndex: number, imageIndex: number) {
 function onDrop(targetItemIndex: number) {
   //targetItemIndex -> 옮겨져야하는 index
   if ((draggedItemIndex.value !== null && draggedImageIndex.value !== null) && (draggedItemIndex.value !== targetItemIndex)) {
-    const draggedItem = wbcInfo.value[draggedItemIndex.value]; // 옮기는 기존 배열
+    const draggedItem = wbcInfo.value[draggedItemIndex.value];
     const draggedImage = draggedItem.images[draggedImageIndex.value]; // 드래그 후 옮기는 이미지
 
     // 드래그된 이미지를 원래 위치에서 제거
@@ -107,12 +154,11 @@ function onDrop(targetItemIndex: number) {
 
 
     // Count 업데이트
-
     const newCount = parseInt(wbcInfo.value[targetItemIndex].count) + 1;
     wbcInfo.value[targetItemIndex].count = newCount.toString();
 
     // 이미지 이동 함수 호출
-    moveImage(targetItemIndex);
+    moveImage(targetItemIndex, draggedImage.fileName, draggedItem, wbcInfo.value[targetItemIndex]);
 
 
     // 드래그 인덱스 초기화
@@ -121,9 +167,6 @@ function onDrop(targetItemIndex: number) {
   }
 }
 
-function onDragOver(targetItemIndex: number) {
-  //
-}
 
 
 function getImageUrl(imageName: any, id: string, title: string): string {
@@ -141,27 +184,39 @@ function getBarcodeImageUrl(imageName: string): string {
   return `http://localhost:3002/images?folder=${pbiaRootPath + "/" + selectItems.value.slotId + "/" + barcodeImgDir.barcodeDirName + "/"}&imageName=${imageName}`;
 }
 
-async function moveImage(targetItemIndex: number) {
+async function moveImage(targetItemIndex: number, fileName: string, draggedItem: any, targetItem: any) {
   // sourceFolder -> 원본 폴더 , destinationFolder -> 대상 폴더
-  const sourceFolder = `${pbiaRootPath}/${selectItems.value?.slotId}/01_WBC_Classification/${draggedItemIndex.value + 1}_${wbcInfo.value[draggedItemIndex.value].title}`;
-  const destinationFolder = `${pbiaRootPath}/${selectItems.value?.slotId}/01_WBC_Classification/${targetItemIndex + 1}_${wbcInfo.value[targetItemIndex].title}`;
-  const imageName = wbcInfo.value[draggedItemIndex.value].images[draggedImageIndex.value].fileName;
+  const sourceFolder = `${pbiaRootPath}/${selectItems.value?.slotId}/01_WBC_Classification/${draggedItem.id}_${draggedItem.title}`;
+  const destinationFolder = `${pbiaRootPath}/${selectItems.value?.slotId}/01_WBC_Classification/${targetItem.id}_${targetItem.title}`;
 
   try {
-    const response = await fetch(`http://localhost:3002/images/move?sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${imageName}`, {
-      method: 'POST',
-    });
-
-    if (response.ok) {
-      console.log('이미지 움직이기 성공');
-      onMounted();
+    const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`)
+    if (response) {
+      await updateOriginalDb();
+      await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb.value});
     } else {
-      console.error('실패함 움직이기:', response.statusText);
+      console.error('실패함 움직이기');
     }
   } catch (error) {
     console.error('Error:', error);
   }
 }
+async function updateOriginalDb() {
+  selectItems.value.wbcInfoAfter = wbcInfo.value;
+  sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
+  sessionStorage.setItem("selectItemWbc", JSON.stringify(wbcInfo.value));
+
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  // 필터링된 항목이 존재하면 wbcInfoAfter 업데이트
+  if (filteredItems.length > 0) {
+    filteredItems.forEach((filteredItem:any) => {
+      filteredItem.wbcInfoAfter = wbcInfo.value;
+    });
+  }
+  originalDb.value = filteredItems;
+}
+
+const getCategoryName = (category: WbcInfo) => category?.name;
 
 
 

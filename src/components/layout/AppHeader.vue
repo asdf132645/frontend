@@ -112,7 +112,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onMounted, onUpdated, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
@@ -125,8 +125,8 @@ const appHeaderLeftHidden = ref(false);
 const formattedDate = new Date().toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
 const formattedTime = new Date().toLocaleTimeString('en-US');
 const store = useStore();
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
+const storedUser = ref<any>({});
+const getStoredUser = ref<any>({});
 const logOutBox = ref(false);
 
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
@@ -151,10 +151,10 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = ref('');
 const alarmCount = ref(0);
 
-
-onMounted(async () => {
-  userId.value = getStoredUser.id;
-  await cellImgGet(getStoredUser.id);
+watch(userModuleDataGet.value, (newUserId, oldUserId) => {
+  cellImgGet(newUserId.id);
+  console.log('getStoredUser.value.id', userModuleDataGet.value.id)
+  userId.value = newUserId.id;
 });
 
 watch([embeddedStatusJobCmd.value], async (newVals: any) => {
@@ -303,6 +303,7 @@ const cellImgGet = async (newUserId: string) => {
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration',isNsNbIntegration.value);
         sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
+        console.log(data?.pbiaRootPath)
       }
     }
 

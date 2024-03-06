@@ -26,47 +26,25 @@
         @dblclick='rowDbClick(item)'
         ref="firstRow"
     >
-      <td>
-        {{ idx + 1 }}
-      </td>
+      <td> {{ idx + 1 }}</td>
       <td>
         <input type="checkbox"/>
       </td>
-      <td>
-        {{ getTestTypeText(item?.testType) }}
-      </td>
+      <td> {{ getTestTypeText(item?.testType) }} </td>
       <td>
         <font-awesome-icon
             :icon="['fas', `${!item?.state ? 'lock-open' : 'lock' }`]"
         />
       </td>
-      <td>
-        {{ item?.traySlot }}
-      </td>
-      <td>
-        {{ item?.barcodeNo }}
-      </td>
-      <td>
-        {{ item?.patientId }}
-      </td>
-      <td>
-        {{ item?.patientNm }}
-      </td>
-      <td>
-        {{ item?.analyzedDttm }}
-      </td>
-      <td>
-        {{ item?.tactTime }}
-      </td>
-      <td>
-        {{ item?.submit }}
-      </td>
-      <td>
-        {{ item?.submitDate }}
-      </td>
-      <td>
-        edit
-      </td>
+      <td> {{ item?.traySlot }} </td>
+      <td> {{ item?.barcodeNo }} </td>
+      <td> {{ item?.patientId }} </td>
+      <td> {{ item?.patientNm }} </td>
+      <td> {{ item?.analyzedDttm }} </td>
+      <td> {{ item?.tactTime }} </td>
+      <td> {{ item?.submit }} </td>
+      <td> {{ item?.submitDate }} </td>
+      <td> edit </td>
     </tr>
     <tr>
       <div ref="loadMoreRef" style="height: 10px;"></div>
@@ -105,13 +83,8 @@ watchEffect(() => {
   if (props.dbData.length > 0) {
     // 첫 번째 행을 클릭
     const dbBaseTrClickId = sessionStorage.getItem('dbBaseTrClickId') || 0;
-    let id = '';
-    if(dbBaseTrClickId === 0){
-      id = dbBaseTrClickId;
-    }else{
-      id = dbBaseTrClickId - 1;
-    }
-    selectItem(props.dbData[id]);
+    const filteredItems = props.dbData.filter(item => item.id === Number(dbBaseTrClickId));
+    selectItem(filteredItems[0]);
   }
 });
 
@@ -127,7 +100,6 @@ const handleIntersection = (entries, observer) => {
 
 const selectItem = (item) => {
   // 부모로 전달
-  console.log(item)
   if(!item){
     return;
   }
@@ -140,8 +112,10 @@ const rowDbClick = (item) => {
   const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   console.log(wbcInfoData)
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
+  // 스토어 사용 못하는 이유 -> 새로고침 등 여러가지 행동에 데이터가 날라가면 안되서 세션스토리지 사용
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
+  sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
   router.push('/databaseWbc')
 }
 

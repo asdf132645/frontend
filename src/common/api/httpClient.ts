@@ -65,11 +65,11 @@ export function useHttpClient() {
         }
     };
 
-    const httpPut = async <T>(url: Endpoint, payload: GenericObject, parameters?: string): Promise<ApiResponse<T>> => {
-        return httpPutAct(url.endpoint, payload, parameters);
+    const httpPut = async <T>(url: Endpoint, payload: GenericObject, parameters?: string, type?: boolean): Promise<ApiResponse<T>> => {
+        return httpPutAct(url.endpoint, payload, parameters, type);
     };
 
-    const httpPutAct = async <T>(url: string, payload: GenericObject, parameters?: string): Promise<ApiResponse<T>> => {
+    const httpPutAct = async <T>(url: string, payload: GenericObject, parameters?: string, type?: boolean): Promise<ApiResponse<T>> => {
         const options: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -77,9 +77,14 @@ export function useHttpClient() {
         };
 
         axios.defaults.withCredentials = true;
-
+        let slush = '';
+        if(type){
+            slush = '';
+        }else{
+            slush = '/';
+        }
         try {
-            const response: HttpResponse<T> = await axios.put(`http://localhost:3002/${url}/${parameters}`, payload, options);
+            const response: HttpResponse<T> = await axios.put(`http://localhost:3002/${url}${slush}${parameters}`, payload, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);

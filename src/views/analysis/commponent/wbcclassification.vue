@@ -82,7 +82,7 @@ interface RootState {
 }
 
 const store = useStore<RootState>();
-const dspWbcClassList = ref<WbcInfo[][]>([]);
+const dspWbcClassList = ref<any>([]);
 const dspBfClassList = ref<WbcInfo[]>([]);
 const nonRbcClassList = ref<WbcInfo[]>([]);
 
@@ -125,11 +125,13 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
   }
+  updatePercentages();
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
         wbcInfo: {
           wbcInfo: dspWbcClassList,
+          nonRbcClassList: nonRbcClassList,
           totalCount: totalCount.value,
           maxWbcCount: maxWbcCount.value,
         },
@@ -196,6 +198,7 @@ const updateCounts = (currentSlot: SlotInfo) => {
   }
 
   totalCount.value = totalVal;
+  updatePercentages();
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
@@ -206,6 +209,20 @@ const shouldRenderCategory = (category: WbcInfo) => {
 
   return !targetArray.includes(category.title);
 };
+
+const updatePercentages = () => {
+  const percent = dspWbcClassList.value.map((classList: any) => {
+    return classList.map((category: any) => {
+      // Calculate and update percentage
+      return {
+        ...category,
+        percent: totalCount.value && totalCount.value !== '0' ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(0) : '0'
+      };
+    });
+  });
+  dspWbcClassList.value = percent;
+};
+
 
 
 const getCategoryName = (category: WbcInfo) => category?.name;

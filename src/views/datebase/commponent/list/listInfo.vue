@@ -15,7 +15,7 @@
         <li>Patient ID : <span>{{ selectedItem?.patientId }}</span>  </li>
         <li>Patient name : <span>{{ selectedItem?.patientNm }}</span>  </li>
         <li>
-          <img :src="getImageUrl('barcode_image.jpg')"/>
+          <img :src="pilePath"/>
         </li>
       </ul>
     </div>
@@ -41,12 +41,28 @@
 </template>
 
 <script setup >
-import { ref, defineProps } from 'vue';
+import {ref, defineProps, onMounted, watchEffect, watch, nextTick} from 'vue';
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const props = defineProps(['selectedItem']);
-const pbiaRootPath = sessionStorage.getItem('pbiaRootPath')
+const pbiaRootPath = ref('');
+const pilePath = ref('');
+
+
+onMounted(() => {
+  // pbiaRootPath가 존재하면 getImageUrl 함수 호출
+  pbiaRootPath.value = sessionStorage.getItem('pbiaRootPath');
+  if (pbiaRootPath.value) {
+    pilePath.value = getImageUrl('barcode_image.jpg');
+  }
+});
+watch(() => props.selectedItem, (newSelectedItem) => {
+  if (pbiaRootPath.value) {
+    pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
+  }
+});
+
 
 const showClassificationResults = (classificationResult) => {
   return (
@@ -57,7 +73,7 @@ const showClassificationResults = (classificationResult) => {
 
 };
 function getImageUrl(imageName){
-  return `http://localhost:3002/images?folder=${pbiaRootPath + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
+  return `http://localhost:3002/images?folder=${pbiaRootPath.value + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
 }
 
 </script>

@@ -108,6 +108,7 @@
     color: #ffffff;
     text-align: left;
 }
+
 .logOutBox {
     position: absolute;
     background: #fff;
@@ -118,6 +119,7 @@
     width: 113px;
     text-align: center;
 }
+
 .lastMenu {
     text-align: right;
     position: absolute;
@@ -509,11 +511,11 @@ input.loginInput {
 
 }
 
-.runRed{
+.runRed {
     color: #ff003b;
 }
 
-.runBlue{
+.runBlue {
     color: #2A5A98;
 }
 
@@ -529,18 +531,19 @@ input.loginInput {
         color: red;
     }
 }
-.oliCount{
+
+.oliCount {
     cursor: pointer;
 }
 
-.statusBarWrapper{
+.statusBarWrapper {
     width: 100%;
     height: 20px;
     margin-top: 5px;
     background-color: #063E5F;
 }
 
-.statusBar{
+.statusBar {
     width: 80%;
     height: 20px;
     margin-top: 5px;
@@ -627,6 +630,7 @@ table.settingTable td, table.settingTable th {
 .tab-buttons button.active {
     background-color: #ccc;
 }
+
 .filterListDiv > div > select, .filterListDiv > div > input, .filterListDiv > div > div {
     display: inline-block;
     width: 20%;
@@ -657,7 +661,7 @@ table.defaultTable tbody td {
     display: inline-block;
 }
 
-.text-center{
+.text-center {
     text-align: center;
 }
 
@@ -686,7 +690,7 @@ ul.wbcInfoDbUl {
 
 ul.wbcImgWrap > li {
     display: inline-block;
-    padding: 5px;
+    margin: 5px;
 }
 
 ul.wbcImgWrap > li > img {
@@ -706,6 +710,18 @@ ul.wbcImgWrap > li > img {
     vertical-align: top;
 }
 
-li.border-changed {
-    border: 1px solid #e6614a;
+.border-changed {
+    border: 2px solid #3fff00;
 }
+
+.wbcClassDbDiv > div > p {
+    display: inline-block;
+    width: 33%;
+    text-align: left;
+}
+
+.wbcClassDbDiv {
+    list-style: none;
+}
+
+
