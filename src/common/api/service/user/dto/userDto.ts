@@ -16,15 +16,18 @@ export interface loginUser {
 
 export interface UserResponse {
     success: boolean;
-    user?: {
-        id: number;
-        userId: string;
-        password: string;
-        name: string;
-        employeeNo: string;
-        userType: string;
-        subscriptionDate: string;
-        latestDate: string;
-        state?: string;
-    };
+    user?: User;
+    users?: User[];
+}
+
+export interface User {
+    id: number;
+    userId: string;
+    password: string;
+    name: string;
+    employeeNo: string;
+    userType: string;
+    subscriptionDate: string;
+    latestDate: string;
+    state?: string;
 }
