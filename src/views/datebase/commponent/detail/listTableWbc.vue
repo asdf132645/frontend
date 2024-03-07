@@ -57,8 +57,8 @@
       <button @click="rollbackChanges">Rollback</button>
     </div>
     <div>
-      <font-awesome-icon :icon="['fas', 'plus-minus']"/>
       <div>
+        <font-awesome-icon :icon="['fas', 'plus-minus']"/>
         <input
             type="range"
             min="150"
@@ -66,14 +66,9 @@
             v-model="imageSize"
             @input="changeImageSize"
         />
-        <div>
-          <select v-model="selectSizeTitle">
-            <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
-          </select>
-        </div>
       </div>
-      <font-awesome-icon :icon="['fas', 'sun']"/>
       <div>
+        <font-awesome-icon :icon="['fas', 'sun']"/>
         <input
             type="range"
             min="50"
@@ -81,14 +76,42 @@
             v-model="imgBrightness"
             @input="changeImgBrightness"
         />
-        {{ imgBrightness }}
       </div>
-      <font-awesome-icon :icon="['fas', 'palette']"/>
+      <div>
+        <font-awesome-icon :icon="['fas', 'palette']"/>
+        <input
+            type="range"
+            min="0"
+            max="255"
+            v-model="imageRgb[0]"
+            @input="changeImageRgb"
+        />
+        <input
+            type="range"
+            min="0"
+            max="255"
+            v-model="imageRgb[1]"
+            @input="changeImageRgb"
+        />
+        <input
+            type="range"
+            min="0"
+            max="255"
+            v-model="imageRgb[2]"
+            @input="changeImageRgb"
+        />
+        <button @click="rgbReset">reset</button>
+        <div>
+          <select v-model="selectSizeTitle">
+            <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
+          </select>
+        </div>
+      </div>
       <font-awesome-icon :icon="['fas', 'file-excel']"/>
     </div>
     <div>
       <ul class="wbcInfoDbUl">
-        <li v-for="(item) in wbcInfo" :key="item.id">
+        <li v-for="(item) in wbcInfo" :key="item.id" @click="scrollToElement(item.id)">
           <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
             <p>{{ item?.title }}</p>
             <p>{{ item?.count }}</p>
@@ -96,19 +119,20 @@
         </li>
       </ul>
       <ul class="cellImgBox">
-        <li v-for="(item, itemIndex) in wbcInfo" :key="item.id">
+        <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
           <div>
             <p>{{ item?.title }}</p>
             <p>{{ item?.count }}</p>
           </div>
-          <ul :class="'wbcImgWrap '+ item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
+          <ul :class="'wbcImgWrap '+ item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)" >
             <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                 :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
                 @click="selectImage(itemIndex, imageIndex)"
             >
               <img :src="getImageUrl(image.fileName, item.id, item.title)"
-                   :width="image.width ? image.width:'150px' "
-                   :height="image.height ? image.height:'150px' "
+                   :width="image.width ? image.width : '150px'"
+                   :height="image.height ? image.height : '150px'"
+                   :style="{ filter: image.filter }"
                    @dragstart="onDragStart(itemIndex, imageIndex)"
                    draggable="true"
                    class="cellImg"
@@ -150,7 +174,10 @@ const shiftClickImages = ref<any>([]);
 const rollbackHistory: any = [];
 const imageSize = ref(150);
 const imgBrightness = ref(100);
+const imageRgb = ref([0,0,0]);
 const selectSizeTitle = ref('')
+const refsArray = ref<any[]>([]);
+
 
 onMounted(() => {
   initData();
@@ -163,45 +190,77 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
 
-function changeImgBrightness(event: any) {
- //
-  console.log(event?.target?.value)
-  const imageElements = document.querySelectorAll('.cellImg');
-  if (imageElements) {
-    // 이미지의 스타일을 업데이트하여 밝기 효과를 시각적으로 나타냄
-    imageElements.forEach(imageElement => {
-      imageElement.style.filter = `brightness(${event?.target?.value}%)`;
-    });
+const setRef = (itemId: number) => {
+  return (el: HTMLElement | null) => {
+    refsArray.value[itemId] = el;
+  };
+};
 
+const scrollToElement = (itemId: number) => {
+  const targetElement = refsArray.value[itemId];
+  if (targetElement) {
+    targetElement.scrollIntoView({ behavior: 'smooth' });
   }
+};
 
+
+
+
+
+function rgbReset() {
+  imageRgb.value = [0,0,0];
+  changeImageRgb();
 }
 
-function changeImageSize(event: any) {
+function changeImageRgb() {
+  //
   const selectedSizeTitle = selectSizeTitle.value;
-
   if (!selectedSizeTitle) {
     alert('No selected size title.');
     imageSize.value = 150;
     return;
   }
+  const red = imageRgb.value[0];
+  const green = imageRgb.value[1];
+  const blue = imageRgb.value[2];
+
   // 선택된 크기 타이틀과 일치하는 이미지들에 대해 크기 조절
   wbcInfo.value.forEach((item: any) => {
     if (item.title === selectedSizeTitle) {
       item.images.forEach((image: any) => {
-        // 현재 이미지의 width와 height
-        let currentWidth = event?.target?.value;
-        let currentHeight = event?.target?.value;
-
-        // 크기를 더하거나 빼는 값
-        const sizeChange = 60;
-
-        // 이미지의 width와 height를 조절
-        image.width = Number(currentWidth) + Number(sizeChange);
-        image.height = Number(currentHeight) + Number(sizeChange);
+        // 각 색상 채널 개별적으로 조절
+        image.filter = `opacity(0.85) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
       });
     }
   });
+
+}
+
+function changeImgBrightness(event: any) {
+  const imageElements = document.querySelectorAll('.cellImg');
+  if (imageElements) {
+    imageElements.forEach(imageElement => {
+      imageElement.style.filter = `brightness(${event?.target?.value}%)`;
+    });
+  }
+}
+
+function changeImageSize(event: any) {
+  const imageElements = document.querySelectorAll('.cellImg');
+  if (imageElements) {
+    imageElements.forEach(imageElement => {
+      // 현재 이미지의 width와 height
+      let currentWidth = event?.target?.value;
+      let currentHeight = event?.target?.value;
+
+      // 크기를 더하거나 빼는 값
+      const sizeChange = 60;
+
+      // 이미지의 width와 height를 조절
+      imageElement.width = Number(currentWidth) + Number(sizeChange);
+      imageElement.height = Number(currentHeight) + Number(sizeChange);
+    });
+  }
 }
 
 
@@ -412,11 +471,12 @@ async function updateOriginalDb() {
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   const clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
 
-  // 각 이미지 객체에서 width와 height 속성을 삭제
+  // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
       delete image.width;
       delete image.height;
+      delete image.filter;
     });
   });
 
