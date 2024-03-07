@@ -691,11 +691,16 @@ ul.wbcInfoDbUl {
 ul.wbcImgWrap > li {
     display: inline-block;
     margin: 5px;
+    cursor: pointer;
+}
+.selected-image{
+    border: 2px solid #ff00eb!important;
+    margin: 3px!important;
 }
 
 ul.wbcImgWrap > li > img {
-    max-width: 150px;
-    max-height: 150px;
+    /*max-width: 150px;*/
+    /*max-height: 150px;*/
 }
 
 .databaseWbcRight {
@@ -712,6 +717,7 @@ ul.wbcImgWrap > li > img {
 
 .border-changed {
     border: 2px solid #3fff00;
+    margin: 3px!important;
 }
 
 .wbcClassDbDiv > div > p {

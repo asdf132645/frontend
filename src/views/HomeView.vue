@@ -39,7 +39,6 @@ const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
-const userStoreGet = computed(() => store.state.userModule);
 const userModuleDataGet = computed(() => store.state.userModule);
 
 

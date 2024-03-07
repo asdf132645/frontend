@@ -28,12 +28,7 @@ export function useHttpClient() {
         };
 
         axios.defaults.withCredentials = true;
-        let slush = '';
-        if(type){
-            slush = '?';
-        }else{
-            slush = '/';
-        }
+        const slush = type ? '?' : '/';
         // console.log(type !== undefined)
         try {
             const response: HttpResponse<T> = await axios.get(`${apiBaseUrl}/${url}${slush}${parameters}`, options);
@@ -77,12 +72,7 @@ export function useHttpClient() {
         };
 
         axios.defaults.withCredentials = true;
-        let slush = '';
-        if(type){
-            slush = '';
-        }else{
-            slush = '/';
-        }
+        const slush = type ? '' : '/';
         try {
             const response: HttpResponse<T> = await axios.put(`http://localhost:3002/${url}${slush}${parameters}`, payload, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
