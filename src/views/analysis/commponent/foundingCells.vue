@@ -58,14 +58,15 @@ function generateUniqueId() {
 }
 
 function getImageUrl(type: RunningPathItem | undefined): string {
-  if (!type) {
+  if (!type || !type.path) {
     return ''; // or any default value you prefer
   }
 
-  const folderPath = encodeURIComponent(type.path.replace(/\/[^\/]+$/, '')); // Remove the last part (image name)
-  const imageName = encodeURIComponent(type.path.match(/\/([^\/]+)$/)?.[1] || ''); // Extract the last part (image name)
+  const folderPath = encodeURIComponent(type.path.replace(/\/[^\/]+$/, ''));
+  const imageName = encodeURIComponent(type.path.match(/\/([^\/]+)$/)?.[1] || '');
   return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
 }
+
 
 
 

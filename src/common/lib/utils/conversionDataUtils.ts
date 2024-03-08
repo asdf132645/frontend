@@ -35,4 +35,7 @@ export const getTestTypeText = (value: string) => {
     return matchingOption ? matchingOption.text : '';
 };
 
-
+export const getBarcodeImageUrl = (imageName: string, pbiaRootPath: string, slotId: string, barcodeDirName: string): string => {
+    const baseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+    return `${baseUrl}/images?folder=${pbiaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}`;
+}

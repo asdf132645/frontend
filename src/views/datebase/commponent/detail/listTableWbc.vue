@@ -1,6 +1,6 @@
 <template>
   <div class="databaseWbcRight">
-    <img :src="getBarcodeImageUrl('barcode_image.jpg')"/>
+    <img :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
     <h3>WBC Classification</h3>
     <div>
       <ul>
@@ -16,7 +16,7 @@
       </ul>
       <p>
         <font-awesome-icon :icon="['fas', 'lock']"/>
-        <font-awesome-icon :icon="['fas', 'lock-open']"/>
+        <!--        <font-awesome-icon :icon="['fas', 'lock-open']"/>-->
       </p>
     </div>
     <div v-for="(item, idx) in wbcInfo" :key="item.id" class="wbcClassDbDiv">
@@ -51,10 +51,17 @@
       </div>
     </template>
   </div>
+
   <div class="databaseWbcLeft">
     <div>
-      <button type="button">Cell marking</button>
+      <button type="button" @click="drawCellMarker">
+        <font-awesome-icon
+            :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+        />
+        Cell marking
+      </button>
       <button @click="rollbackChanges">Rollback</button>
+
     </div>
     <div>
       <div>
@@ -76,6 +83,7 @@
             v-model="imgBrightness"
             @input="changeImgBrightness"
         />
+        {{ imgBrightness }}
       </div>
       <div>
         <font-awesome-icon :icon="['fas', 'palette']"/>
@@ -123,20 +131,25 @@
           <div>
             <p>{{ item?.title }}</p>
             <p>{{ item?.count }}</p>
+            <input type="checkbox" @input="allCheckChange($event,item.title)">
           </div>
-          <ul :class="'wbcImgWrap '+ item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)" >
+          <ul :class="'wbcImgWrap '+ item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
             <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                 :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
                 @click="selectImage(itemIndex, imageIndex)"
             >
-              <img :src="getImageUrl(image.fileName, item.id, item.title)"
-                   :width="image.width ? image.width : '150px'"
-                   :height="image.height ? image.height : '150px'"
-                   :style="{ filter: image.filter }"
-                   @dragstart="onDragStart(itemIndex, imageIndex)"
-                   draggable="true"
-                   class="cellImg"
-              />
+              <div style="position: relative">
+                <img :src="getImageUrl(image.fileName, item.id, item.title)"
+                     :width="image.width ? image.width : '150px'"
+                     :height="image.height ? image.height : '150px'"
+                     :style="{ filter: image.filter }"
+                     @dragstart="onDragStart(itemIndex, imageIndex)"
+                     draggable="true"
+                     class="cellImg"
+                     ref="cellRef"
+                />
+                <div class="center-point" :style="image.coordinates"></div>
+              </div>
             </li>
           </ul>
         </li>
@@ -152,6 +165,8 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {useStore} from "vuex";
+import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -174,10 +189,12 @@ const shiftClickImages = ref<any>([]);
 const rollbackHistory: any = [];
 const imageSize = ref(150);
 const imgBrightness = ref(100);
-const imageRgb = ref([0,0,0]);
+const imageRgb = ref([0, 0, 0]);
 const selectSizeTitle = ref('')
 const refsArray = ref<any[]>([]);
-
+const allCheck = ref('');
+const cellRef = ref(null);
+const cellMarkerIcon = ref(false);
 
 onMounted(() => {
   initData();
@@ -190,6 +207,80 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
 
+
+const drawCellMarker = async () => {
+  cellMarkerIcon.value = !cellMarkerIcon.value
+
+  if (cellMarkerIcon.value) {
+    let url = '';
+    if (selectItems.value.testType === '01' || selectItems.value.testType === '04') {
+      url = `${pbiaRootPath}/${selectItems.value.slotId}/01_WBC_Classification/${selectItems.value.slotId}.json`
+    } else {
+      url = `${pbiaRootPath}/${selectItems.value.slotId}/05_BF_Classification/${selectItems.value.slotId}.json`
+    }
+    const response = await readJsonFile({fullPath: url});
+
+    if (response && response.success) {
+      const jsonImageDat = response.data;
+      wbcInfo.value.forEach((item: any) => {
+        item.images.forEach((image: any) => {
+          const imageElement: any = cellRef.value;
+          const foundItem = jsonImageDat.find((item: any) => item?.FILE_NM === image?.fileName);
+          if (foundItem) {
+            const widthRatio = (imageElement[0]?.width || 150) / Number(foundItem.ORG_WIDTH) * 100;
+            const heightRatio = (imageElement[0]?.height || 150) / Number(foundItem.ORG_HEIGHT) * 100;
+
+            const rectWidth = (Number(foundItem.POSX2) - Number(foundItem.POSX1)) * (widthRatio / 100);
+            const rectHeight = (Number(foundItem.POSY2) - Number(foundItem.POSY1)) * (heightRatio / 100);
+
+            const left = imageElement[0]?.offsetLeft + (Number(foundItem.POSX1) * (widthRatio / 100)) + (rectWidth / 2) + 'px';
+            const top = imageElement[0]?.offsetTop + (Number(foundItem.POSY1) * (heightRatio / 100)) + (rectHeight / 2) + 'px';
+
+            image.coordinates = {
+              position: 'absolute',
+              left,
+              top,
+              width: '5px',
+              height: '5px',
+              background: '#10ff00'
+            };
+          }
+        });
+      });
+    }
+  }else{
+    wbcInfo.value.forEach((item: any) => {
+      item.images.forEach((image: any) => {
+        image.coordinates = {
+          display: 'none'
+        };
+      });
+    });
+  }
+}
+
+const allCheckChange = (event: any, title: string) => {
+  allCheck.value = event.target.checked ? title : '';
+  console.log(allCheck.value)
+  allCheckInsert();
+}
+
+const allCheckInsert = () => {
+  // 선택된 이미지 초기화
+  selectedClickImages.value = [];
+  for (const idx in wbcInfo.value) {
+    if (allCheck.value === wbcInfo.value[idx].title) {
+      for (const idxKey in wbcInfo.value[idx].images) {
+        selectedClickImages.value.push({
+          id: wbcInfo.value[idx].id,
+          title: wbcInfo.value[idx].title,
+          ...wbcInfo.value[idx].images[idxKey],
+        });
+      }
+    }
+  }
+}
+
 const setRef = (itemId: number) => {
   return (el: HTMLElement | null) => {
     refsArray.value[itemId] = el;
@@ -199,30 +290,26 @@ const setRef = (itemId: number) => {
 const scrollToElement = (itemId: number) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
-    targetElement.scrollIntoView({ behavior: 'smooth' });
+    targetElement.scrollIntoView({behavior: 'smooth'});
   }
 };
 
 
-
-
-
 function rgbReset() {
-  imageRgb.value = [0,0,0];
+  imageRgb.value = [0, 0, 0];
   changeImageRgb();
 }
 
 function changeImageRgb() {
-  //
   const selectedSizeTitle = selectSizeTitle.value;
   if (!selectedSizeTitle) {
     alert('No selected size title.');
-    imageSize.value = 150;
+    rgbReset();
     return;
   }
-  const red = imageRgb.value[0];
-  const green = imageRgb.value[1];
-  const blue = imageRgb.value[2];
+  const red = 255 - imageRgb.value[0];
+  const green = 255 - imageRgb.value[1];
+  const blue = 255 - imageRgb.value[2];
 
   // 선택된 크기 타이틀과 일치하는 이미지들에 대해 크기 조절
   wbcInfo.value.forEach((item: any) => {
@@ -237,18 +324,22 @@ function changeImageRgb() {
 }
 
 function changeImgBrightness(event: any) {
-  const imageElements = document.querySelectorAll('.cellImg');
-  if (imageElements) {
-    imageElements.forEach(imageElement => {
-      imageElement.style.filter = `brightness(${event?.target?.value}%)`;
+  const red = imageRgb.value[0];
+  const green = imageRgb.value[1];
+  const blue = imageRgb.value[2];
+
+  wbcInfo.value.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      // 각 색상 채널 개별적으로 조절
+      image.filter = `opacity(0.85) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${event?.target?.value}%)`;
     });
-  }
+  });
 }
 
 function changeImageSize(event: any) {
-  const imageElements = document.querySelectorAll('.cellImg');
-  if (imageElements) {
-    imageElements.forEach(imageElement => {
+  wbcInfo.value.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      console.log(event?.target)
       // 현재 이미지의 width와 height
       let currentWidth = event?.target?.value;
       let currentHeight = event?.target?.value;
@@ -257,10 +348,10 @@ function changeImageSize(event: any) {
       const sizeChange = 60;
 
       // 이미지의 width와 height를 조절
-      imageElement.width = Number(currentWidth) + Number(sizeChange);
-      imageElement.height = Number(currentHeight) + Number(sizeChange);
+      image.width = Number(currentWidth) + Number(sizeChange);
+      image.height = Number(currentHeight) + Number(sizeChange);
     });
-  }
+  });
 }
 
 
@@ -272,6 +363,7 @@ function addToRollbackHistory() {
   rollbackHistory.push(JSON.parse(JSON.stringify(wbcInfo.value)));
 }
 
+// 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
   addToRollbackHistory();
@@ -368,10 +460,12 @@ function selectImage(itemIndex: any, imageIndex: any) {
   if (isShiftKeyPressed.value) {
     // 현재 선택한 이미지
     shiftClickImages.value.push(imageIndex);
-        // 시작과 끝 인덱스 결정
-    let startIndex, endIndex;
-    startIndex = shiftClickImages.value[0];
-    endIndex = shiftClickImages.value[shiftClickImages.value.length - 1];
+    // 시작과 끝 인덱스 결정
+    const start = shiftClickImages.value[0];
+    const end = shiftClickImages.value[shiftClickImages.value.length - 1];
+    const startIndex = start > end ? end : start;
+    const endIndex = start > end ? start : end;
+
     // 선택된 이미지 초기화
     selectedClickImages.value = [];
     // 범위 내의 이미지 선택
@@ -383,7 +477,7 @@ function selectImage(itemIndex: any, imageIndex: any) {
       });
     }
   } else { // 쉬프트 키를 누르지 않은 경우
-    if(!isCtrlKeyPressed.value){
+    if (!isCtrlKeyPressed.value) {
       return
     }
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
@@ -428,8 +522,7 @@ async function originalOnDrop(targetItemIndex: number) {
 
 async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean) {
   const {slotId} = selectItems.value;
-  let arrType = type ? selectedClickImages.value : selectedImagesToMove;
-  console.log(arrType)
+  const arrType = selectedImagesToMove;
   try {
     // 선택된 이미지 배열에 대해 반복
     for (const selectedImage of arrType) {
@@ -477,6 +570,7 @@ async function updateOriginalDb() {
       delete image.width;
       delete image.height;
       delete image.filter;
+      delete image.changed;
     });
   });
 
@@ -494,7 +588,7 @@ async function updateOriginalDb() {
   }
   originalDb.value = filteredItems;
 
-  // width와 height를 제외한 데이터로 updateRunningApi 호출
+  //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDb.value);
 }
 
@@ -526,10 +620,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   const slotId = selectItems.value?.slotId || "";
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
-}
 
-function getBarcodeImageUrl(imageName: string): string {
-  return `http://localhost:3002/images?folder=${pbiaRootPath + "/" + selectItems.value.slotId + "/" + barcodeImgDir.barcodeDirName + "/"}&imageName=${imageName}`;
 }
 
 const getCategoryName = (category: WbcInfo) => category?.name;

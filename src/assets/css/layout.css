@@ -730,4 +730,7 @@ ul.wbcImgWrap > li > img {
     list-style: none;
 }
 
+.wbcImgWrap {
+    text-align: left;
+}
 

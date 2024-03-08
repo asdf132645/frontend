@@ -52,6 +52,9 @@ const userModuleDataGet = computed(() => store.state.userModule);
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
+  if(newUserId.id === ''){
+    return;
+  }
   cellImgGet(newUserId.id);
   userId.value = newUserId.id;
 });
@@ -142,6 +145,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 });
 const startSysPostWebSocket = async () => {
   isRequestInProgress = true;
+  if(userId.value === ''){
+
+  }
   tcpReq.embedStatus.sysInfo.reqUserId = userId.value;
   sendMessage(tcpReq.embedStatus.sysInfo);
   isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
@@ -183,6 +189,9 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     // 주문 내역 및 처리 결과 저장 -start
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
+      if(userId.value === ''){
+        return;
+      }
       tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
       sendMessage(tcpReq.embedStatus.runIngComp);
       await saveTestHistory(data);

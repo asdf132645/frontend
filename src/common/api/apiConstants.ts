@@ -246,6 +246,12 @@ export const apiConstants = {
             endpoint: 'images/move',
             requiresToken: false,
         }
+    },
+    jsonReader: {
+        get: {
+            endpoint: 'jsonReader/send',
+            requiresToken: false,
+        }
     }
 
 };
