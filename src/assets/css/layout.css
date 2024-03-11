@@ -666,7 +666,7 @@ table.defaultTable tbody td {
 }
 
 .selectedTr {
-    background-color: #e6f7ff;
+    border: 3px solid #29c7ca;
 }
 
 ul.wbcInfoDbUl > li {
@@ -732,5 +732,9 @@ ul.wbcImgWrap > li > img {
 
 .wbcImgWrap {
     text-align: left;
+    min-height: 150px;
 }
 
+.submittedTr {
+    background: #94c3ff;
+}

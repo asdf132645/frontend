@@ -142,7 +142,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         } else {
           page.value -= 1;
         }
-
+        dbGetData.value = newData;
       } else {
         if (type === 'search') {
           dbGetData.value = newData;

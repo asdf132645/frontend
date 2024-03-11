@@ -565,7 +565,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
-  const slotId = selectItems.value?.slotId || "";
+  const slotId = selectItems.value.slotId || "";
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
 

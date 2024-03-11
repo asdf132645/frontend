@@ -21,7 +21,7 @@
     <tr
         v-for="(item, idx) in dbData"
         :key="item.id"
-        :class="{ selectedTr: selectedItemId === item.id }"
+        :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit' }"
         @click="selectItem(item)"
         @dblclick='rowDbClick(item)'
         ref="firstRow"
@@ -44,7 +44,7 @@
       <td> {{ item?.tactTime }} </td>
       <td> {{ item?.submit }} </td>
       <td> {{ item?.signedOfDate }} </td>
-      <td> edit </td>
+      <td @click="editData"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </td>
     </tr>
     <tr>
       <div ref="loadMoreRef" style="height: 10px;"></div>
@@ -120,5 +120,8 @@ const rowDbClick = (item) => {
   router.push('/databaseWbc')
 }
 
+const editData = async () => {
+  //
+}
 </script>
 

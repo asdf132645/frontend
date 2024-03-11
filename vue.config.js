@@ -3,11 +3,14 @@ const glob = require('glob-all');
 const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
 
 module.exports = {
+  devServer: {
+    port: 8080, // 또는 원하는 포트 번호
+  },
   configureWebpack: {
     resolve: {
       alias: {
         '@': path.join(__dirname, 'src/')
-      }
+      },
     },
     plugins: [
       new PurgeCSSPlugin({
