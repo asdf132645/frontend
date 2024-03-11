@@ -32,6 +32,7 @@ import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
+import {useEventBus} from "@/eventBus/eventBus";
 // 스토어
 const store = useStore();
 const password = ref('');
@@ -58,7 +59,6 @@ const loginUser = async () => {
     }else{
       alert('Login failed.');
     }
-
   } catch (e) {
     alert('server Err.')
     console.log(e);

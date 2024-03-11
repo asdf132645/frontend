@@ -47,8 +47,12 @@ export const apiConstants = {
                 endpoint:'cellImgAnalyzed/cellImgAdd',
                 requiresToken: false,
             },
-            cellImgGetPut:{
+            cellImgGet:{
                 endpoint:'cellImgAnalyzed',
+                requiresToken: false,
+            },
+            cellImgPut:{
+                endpoint:'cellImgAnalyzed/update',
                 requiresToken: false,
             }
         },
@@ -235,6 +239,19 @@ export const apiConstants = {
                 endpoint: 'folder/drives',
                 requiresToken: false,
             }
+        },
+    },
+    images:{
+        move: {
+            endpoint: 'images/move',
+            requiresToken: false,
+        }
+    },
+    jsonReader: {
+        get: {
+            endpoint: 'jsonReader/send',
+            requiresToken: false,
         }
     }
+
 };

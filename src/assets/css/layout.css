@@ -108,6 +108,7 @@
     color: #ffffff;
     text-align: left;
 }
+
 .logOutBox {
     position: absolute;
     background: #fff;
@@ -118,6 +119,7 @@
     width: 113px;
     text-align: center;
 }
+
 .lastMenu {
     text-align: right;
     position: absolute;
@@ -509,11 +511,11 @@ input.loginInput {
 
 }
 
-.runRed{
+.runRed {
     color: #ff003b;
 }
 
-.runBlue{
+.runBlue {
     color: #2A5A98;
 }
 
@@ -529,18 +531,19 @@ input.loginInput {
         color: red;
     }
 }
-.oliCount{
+
+.oliCount {
     cursor: pointer;
 }
 
-.statusBarWrapper{
+.statusBarWrapper {
     width: 100%;
     height: 20px;
     margin-top: 5px;
     background-color: #063E5F;
 }
 
-.statusBar{
+.statusBar {
     width: 80%;
     height: 20px;
     margin-top: 5px;
@@ -627,6 +630,7 @@ table.settingTable td, table.settingTable th {
 .tab-buttons button.active {
     background-color: #ccc;
 }
+
 .filterListDiv > div > select, .filterListDiv > div > input, .filterListDiv > div > div {
     display: inline-block;
     width: 20%;
@@ -657,10 +661,76 @@ table.defaultTable tbody td {
     display: inline-block;
 }
 
-.text-center{
+.text-center {
     text-align: center;
 }
 
 .selectedTr {
     background-color: #e6f7ff;
 }
+
+ul.wbcInfoDbUl > li {
+    display: inline-block;
+    border: 1px solid #dedede;
+    border-radius: 100%;
+    height: 50px;
+    width: 50px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+
+.circle {
+    text-align: center;
+    padding-top: 13px;
+}
+
+ul.wbcInfoDbUl {
+    position: relative;
+}
+
+ul.wbcImgWrap > li {
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+}
+.selected-image{
+    border: 2px solid #ff00eb!important;
+    margin: 3px!important;
+}
+
+ul.wbcImgWrap > li > img {
+    /*max-width: 150px;*/
+    /*max-height: 150px;*/
+}
+
+.databaseWbcRight {
+    display: inline-block;
+    width: 25%;
+    vertical-align: top;
+}
+
+.databaseWbcLeft {
+    display: inline-block;
+    width: 70%;
+    vertical-align: top;
+}
+
+.border-changed {
+    border: 2px solid #3fff00;
+    margin: 3px!important;
+}
+
+.wbcClassDbDiv > div > p {
+    display: inline-block;
+    width: 33%;
+    text-align: left;
+}
+
+.wbcClassDbDiv {
+    list-style: none;
+}
+
+.wbcImgWrap {
+    text-align: left;
+}
+

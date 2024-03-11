@@ -112,7 +112,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onMounted, onUpdated, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
@@ -151,10 +151,16 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = ref('');
 const alarmCount = ref(0);
 
-
 onMounted(async () => {
-  userId.value = getStoredUser.id;
-  await cellImgGet(getStoredUser.id);
+  if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
+    await store.dispatch('userModule/setUserAction', getStoredUser);
+  }
+});
+
+watch(userModuleDataGet.value, (newUserId, oldUserId) => {
+  cellImgGet(newUserId.id);
+  console.log('getStoredUser.value.id', userModuleDataGet.value.id)
+  userId.value = newUserId.id;
 });
 
 watch([embeddedStatusJobCmd.value], async (newVals: any) => {
@@ -193,7 +199,7 @@ const logOutBoxOn = () => {
   logOutBox.value = !logOutBox.value;
 }
 const logout = () => {
-  sessionStorage.removeItem('user');
+  sessionStorage.clear();
   router.push('user/login');
   store.commit('resetStore');
   if (document.fullscreenElement) {
@@ -303,6 +309,7 @@ const cellImgGet = async (newUserId: string) => {
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration',isNsNbIntegration.value);
         sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
+        console.log(data?.pbiaRootPath)
       }
     }
 
