@@ -132,10 +132,10 @@ const getDbData = async (type: string, pageNum?: number) => {
       patientId: searchType.value === 'patientId' ? searchText.value : undefined,
       patientNm: searchType.value === 'patientNm' ? searchText.value : undefined,
     });
-
+    console.log(result)
     if (result && result.data) {
-      const newData = result.data.data;
 
+      const newData = result.data.data;
       if (newData.length === 0) {
         if (page.value === 1) {
           page.value = 1;

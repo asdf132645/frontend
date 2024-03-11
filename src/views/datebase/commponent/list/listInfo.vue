@@ -22,10 +22,10 @@
     <div>
       <h3>Result information</h3>
       <ul>
-        <li>Analyzed date : {{ stringToDateTime(selectedItem?.analyzedDttm) }}<span></span></li>
-        <li>Signed state : {{ stringToDateTime(selectedItem?.signedState) }}<span></span></li>
-        <li>Signed of date : {{ stringToDateTime(selectedItem?.signedOfDate) }}<span></span></li>
-        <li>Signed user ID : {{ stringToDateTime(selectedItem?.signedUserId) }}<span></span></li>
+        <li>Analyzed date : <span>{{ selectedItem?.analyzedDttm }}</span></li>
+        <li>Signed state : <span>{{ selectedItem?.signedState }}</span></li>
+        <li>Signed of date : <span>{{ selectedItem?.signedOfDate }}</span></li>
+        <li>Signed user ID : <span>{{ selectedItem?.signedUserId }}</span></li>
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">
           <div v-if="showClassificationResults(selectedItem?.classificationResult)">
             <div v-for="result in selectedItem.classificationResult" :key="result.title">

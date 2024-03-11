@@ -125,8 +125,8 @@ const appHeaderLeftHidden = ref(false);
 const formattedDate = new Date().toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
 const formattedTime = new Date().toLocaleTimeString('en-US');
 const store = useStore();
-const storedUser = ref<any>({});
-const getStoredUser = ref<any>({});
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
 
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
@@ -150,6 +150,12 @@ const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = ref('');
 const alarmCount = ref(0);
+
+onMounted(async () => {
+  if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
+    await store.dispatch('userModule/setUserAction', getStoredUser);
+  }
+});
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   cellImgGet(newUserId.id);

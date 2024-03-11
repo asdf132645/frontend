@@ -40,7 +40,7 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
-
+const resSucess = ref(false);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -309,7 +309,7 @@ setInterval(async () => {
     }
     await startSysPostWebSocket();
   }
-}, 500);
+}, 900);
 
 
 const cellImgGet = async (newUserId: string) => {

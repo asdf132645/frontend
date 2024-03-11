@@ -1,55 +1,6 @@
 <template>
   <div class="databaseWbcRight">
-    <img :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
-    <h3>WBC Classification</h3>
-    <div>
-      <ul>
-        <li>
-          <font-awesome-icon :icon="['fas', 'comment-dots']"/>
-        </li>
-        <li>
-          <font-awesome-icon :icon="['fas', 'square-check']"/>
-        </li>
-        <li>
-          <font-awesome-icon :icon="['fas', 'upload']"/>
-        </li>
-      </ul>
-      <p>
-        <font-awesome-icon :icon="['fas', 'lock']"/>
-        <!--        <font-awesome-icon :icon="['fas', 'lock-open']"/>-->
-      </p>
-    </div>
-    <div v-for="(item, idx) in wbcInfo" :key="item.id" class="wbcClassDbDiv">
-      <div v-if="idx === 0">
-        <p>Class</p>
-        <p>Count</p>
-        <p>%</p>
-      </div>
-      <div class="circle">
-        <p>{{ item?.name }}</p>
-        <p>{{ item?.count }}</p>
-        <p> {{ item?.percent }} </p>
-      </div>
-    </div>
-    <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
-      <div class="categories">
-        <ul class="categoryNm">
-          <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-          <li>{{ getCategoryName(nWbcItem) }}</li>
-        </ul>
-        <ul class="classNm">
-          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-          <li>
-            {{ nWbcItem?.count }}
-            <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
-          </li>
-        </ul>
-        <ul class="degree">
-          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-          <li>-</li>
-        </ul>
-      </div>
-    </template>
+    <WbcClass  :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb"/>
   </div>
 
   <div class="databaseWbcLeft">
@@ -160,13 +111,11 @@
 
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {useStore} from "vuex";
-import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import WbcClass from "@/views/datebase/commponent/detail/databaseWbcRight/wbcClass.vue";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -399,7 +348,7 @@ async function onDropCircle(item: any) {
 
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;
-  // 클릭한 요소 또는 그 조상 중에 .wbcImgWrap 클래스를 가지고 있지 않으면
+  // 클릭한 요소 또는 그 부모 중에 .wbcImgWrap 클래스를 가지고 있지 않으면
   if (!target.closest('.wbcImgWrap')) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
@@ -408,12 +357,12 @@ function handleBodyClick(event: Event) {
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  // Shift 키가 눌렸는지 확인
+  // 쉬프트 키가 눌렸는지 확인
   if (event.shiftKey) {
     isShiftKeyPressed.value = true;
   }
 
-  // Ctrl 키가 눌렸는지 확인
+  // 컨트롤 키가 눌렸는지 확인
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
   }
@@ -455,7 +404,6 @@ function onDragStart(itemIndex: any, imageIndex: any) {
 }
 
 function selectImage(itemIndex: any, imageIndex: any) {
-  console.log(selectedClickImages.value)
   // 쉬프트 키를 누른 경우
   if (isShiftKeyPressed.value) {
     // 현재 선택한 이미지
@@ -623,7 +571,6 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
 }
 
-const getCategoryName = (category: WbcInfo) => category?.name;
 
 async function rollbackChanges() {
   if (rollbackHistory.length > 0) {

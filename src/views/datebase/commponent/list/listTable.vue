@@ -43,7 +43,7 @@
       <td> {{ item?.analyzedDttm }} </td>
       <td> {{ item?.tactTime }} </td>
       <td> {{ item?.submit }} </td>
-      <td> {{ item?.submitDate }} </td>
+      <td> {{ item?.signedOfDate }} </td>
       <td> edit </td>
     </tr>
     <tr>
@@ -69,6 +69,7 @@ const emits = defineEmits();
 const selectedItemId = ref('');
 onMounted(() => {
   if (props.dbData.length === 0) {
+    console.log(props.dbData)
     return;
   }
   const observer = new IntersectionObserver(handleIntersection, {
