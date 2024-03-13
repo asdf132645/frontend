@@ -744,3 +744,20 @@ ul.wbcImgWrap > li > img {
     overflow-y: auto;
     display: block;
 }
+
+.reportDiv > div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.wbcDiv {
+    width: 30%;
+}
+
+.reportDetail {
+    width: 70%;
+}
+
+.reportTitle {
+    text-align: left;
+}

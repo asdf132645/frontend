@@ -1,5 +1,5 @@
 <template>
-  <img :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
+  <img v-if="type !== 'report'" :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
   <h3>WBC Classification</h3>
   <div>
     <ul>
@@ -54,7 +54,7 @@
       </ul>
     </div>
   </template>
-  <div>
+  <div v-if="type !== 'report'">
     <button @click="beforeChang">Before</button>
     <button @click="afterChang">After</button>
   </div>
@@ -70,7 +70,7 @@ import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
 import Button from "@/components/commonUi/Button.vue";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'originalDb']);
+const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const getCategoryName = (category: WbcInfo) => category?.name;

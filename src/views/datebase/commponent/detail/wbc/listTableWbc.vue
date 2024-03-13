@@ -3,7 +3,7 @@
     <ul>
       <li>RBC</li>
       <li>WBC</li>
-      <li>REPORT</li>
+      <li @click="reportGo">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
     <div>
@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="databaseWbcRight">
-    <WbcClass  :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb"/>
+    <WbcClass  :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
   </div>
 
   <div class="databaseWbcLeft">
@@ -127,8 +127,9 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import WbcClass from "@/views/datebase/commponent/detail/databaseWbcRight/wbcClass.vue";
+import WbcClass from "@/views/datebase/commponent/detail/wbc/databaseWbcRight/wbcClass.vue";
 import * as XLSX from 'xlsx';
+import router from "@/router";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -169,24 +170,12 @@ onMounted(() => {
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
+
+const reportGo = () => {
+  router.push('/report')
+}
+
 type CellType = "NES" | "NEB" | "ME" | "MY" | "PR" | "LY" | "LR" | "LA" | "MO" | "EO" | "BA" | "BL" | "PC" | "NR" | "GP" | "PA" | "AR";
-
-interface Cell {
-  id: string;
-  name: string;
-  count: string;
-  title: string;
-  images: { fileName: string }[];
-}
-
-interface GroundTruth {
-  groundTruth: Cell[];
-}
-
-interface Predicted {
-  predicted: { percent: string }[];
-}
-
 interface Metrics {
   NES: number;
   NEB: number;
@@ -316,23 +305,7 @@ const excelDownload = () => {
   //True Negatives (TN): 대각선을 제외한 모든 요소의 합  -> Total 에서 TP, FP, FN을 빼면 나오는 수
   //False Positives (FP): 각 열의 합에서 TP를 뺀 값들의 합 -> FP = confusionMatrix[CellType][predictedType] - TP
 
-  // True Positives (TP) 계산
-  // cellTypes.forEach((type) => {
-  //   metrics.TruePositives += confusionMatrix[type][type];
-  // });
-  //
-  // // True Negatives (TN) 계산
-  // metrics.TrueNegatives = metrics.Total - metrics.TruePositives;
-  //
-  // // False Positives (FP) 및 False Negatives (FN) 계산
-  // cellTypes.forEach((trueType) => {
-  //   cellTypes.forEach((predictedType) => {
-  //     if (trueType !== predictedType) {
-  //       metrics.FalsePositives += confusionMatrix[predictedType][trueType];
-  //       metrics.FalseNegatives += confusionMatrix[trueType][predictedType];
-  //     }
-  //   });
-  // });
+
   // True Positives (TP), True Negatives (TN), False Positives (FP), False Negatives (FN) 계산
   let truePositives = 0;
   let trueNegatives = 0; // 수정: trueNegatives 변수 추가
