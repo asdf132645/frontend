@@ -173,7 +173,6 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     if (isInit.value === 'Y') { // 초기화 여부 체크 초기화가 되어있는 상태이면 실행
       // 웹소켓으로 백엔드에 전송
       emitSocketData('SEND_DATA', startAction);
-      console.log(startAction);
       const InfoData = {
         startEmbedded: true,
       }

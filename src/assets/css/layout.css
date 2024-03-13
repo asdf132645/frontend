@@ -736,5 +736,11 @@ ul.wbcImgWrap > li > img {
 }
 
 .submittedTr {
-    background: #94c3ff;
+    background: #b8eeff;
+}
+
+.dbDataTable {
+    height: 500px;
+    overflow-y: auto;
+    display: block;
 }

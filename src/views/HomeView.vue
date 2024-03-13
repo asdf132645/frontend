@@ -40,7 +40,7 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
-const resSucess = ref(false);
+
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -62,6 +62,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 onMounted(async () => {
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
+    userId.value = userModuleDataGet.value.id
   }
   if (userId.value && userId.value !== '') {
     if (isStartEmbeddedCalled.value) {
@@ -173,7 +174,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq.embedStatus.pause.reqUserId = userId.value;
       sendMessage(tcpReq.embedStatus.pause);
     } else {
-      // console.log(runningSlotId.value)
       if (currentSlot?.slotId !== runningSlotId.value) { // 슬라이드 체인지 시
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
@@ -204,7 +204,6 @@ const saveTestHistory = async (params: any) => {
   const completeSlot = params.slotInfo.find(function (item: any) {
     return item.slotId === runningSlotId.value && item.stateCd === '04'
   });
-
   if (completeSlot) {
     completeSlot.userId = userId.value;
     completeSlot.cassetId = params.cassetId;
@@ -219,6 +218,13 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
+    const newWbcInfo = {
+      wbcInfo: [completeSlot?.wbcInfo],
+      nonRbcClassList: dbData.slotInfo[0].wbcInfo.nonRbcClassList,
+      totalCount: dbData.slotInfo[0].wbcInfo.totalCount,
+      maxWbcCount: dbData.slotInfo[0].wbcInfo.maxWbcCount,
+    }
+
     const newObj = {
       slotNo: completeSlot.slotNo,
       state: false,
@@ -243,7 +249,7 @@ const saveTestHistory = async (params: any) => {
       maxWbcCount: completeSlot.maxWbcCount,
       lowPowerPath: completeSlot.lowPowerPath,
       runningPath: completeSlot.runningPath,
-      wbcInfo: dbData.slotInfo[0].wbcInfo,
+      wbcInfo: newWbcInfo,
       wbcInfoAfter: [],
       rbcInfo: dbData.slotInfo[0].rbcInfo,
       bminfo: completeSlot.bminfo,
@@ -259,7 +265,6 @@ const saveTestHistory = async (params: any) => {
       isNsNbIntegration: isNsNbIntegration,
     }
     saveRunningInfo(newObj);
-    console.log(JSON.stringify(newObj))
 
   }
 }
@@ -273,7 +278,7 @@ const getNormalRange = async () => {
         const data = result.data;
         normalItems.value = data;
       }
-      console.log(result);
+      // console.log(result);
     }
   } catch (e) {
     console.log(e);
@@ -309,7 +314,7 @@ setInterval(async () => {
     }
     await startSysPostWebSocket();
   }
-}, 900);
+}, 800);
 
 
 const cellImgGet = async (newUserId: string) => {
@@ -319,7 +324,6 @@ const cellImgGet = async (newUserId: string) => {
       if (result?.data) {
         const data = result.data;
         sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
-        console.log(data?.pbiaRootPath)
       }
     }
 

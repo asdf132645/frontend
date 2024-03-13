@@ -26,8 +26,6 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
 
                     if (['01', '71'].includes(wbcItem.id)) {
                         percent = (neutrophilCount / totalCount) * 100;
-
-                        console.log(`${neutrophilCount}:${totalCount}:${percent}`);
                         if (percent < range.min || percent > range.max) {
                             console.log(`SET [NE] Abnormal : ${wbcItem.title}`);
                             resultObj.isNormal = 'N';

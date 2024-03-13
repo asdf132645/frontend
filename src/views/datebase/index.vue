@@ -38,10 +38,9 @@
           </div>
         </div>
       </div>
-      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @selectItem="selectItem"/>
+      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem"/>
     </div>
     <div class='listBox'>
-<!--      {{ selectedItem }}-->
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
       <ListWbcImg :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
@@ -75,12 +74,17 @@ const selectedItem = ref({});
 
 
 onMounted(async () => {
+  await initDbData();
+});
+
+const initDbData = async () => {
   userId.value = getStoredUser.id;
+  dbGetData.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();
   const lastSearchParams = loadLastSearchParams();
   console.log(Object.keys(lastSearchParams).length)
-// 이전 검색 조건 적용
+  // 이전 검색 조건 적용
   if(Object.keys(lastSearchParams).length !== 0){
     searchType.value = lastSearchParams.searchType || 'barcodeNo';
     searchText.value = lastSearchParams.searchText || '';
@@ -95,9 +99,7 @@ onMounted(async () => {
   }else{
     await getDbData('mounted', 1);
   }
-
-
-});
+}
 
 const selectItem = (item: any) => {
   selectedItem.value = item;
@@ -125,7 +127,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   try {
     const result = await getRunningApi({
       page: type !== 'mounted'? page.value : Number(pageNum),
-      pageSize: 18,
+      pageSize: 15,
       startDay: formatDate(startDate.value),
       endDay: formatDate(endDate.value),
       barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
@@ -142,7 +144,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         } else {
           page.value -= 1;
         }
-        dbGetData.value = newData;
+        // dbGetData.value = newData;
       } else {
         if (type === 'search') {
           dbGetData.value = newData;

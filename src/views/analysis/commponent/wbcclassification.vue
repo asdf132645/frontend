@@ -126,11 +126,18 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
     }
   }
   updatePercentages();
+  const wbcInfoArr = [];
+  for (const slotArrayKey in slotArray.wbcInfo) {
+    wbcInfoArr.push({
+      wbcInfo: dspWbcClassList.value[slotArrayKey],
+      barcodeId: slotArray.wbcInfo[slotArrayKey].barcodeNo
+    })
+  }
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
         wbcInfo: {
-          wbcInfo: dspWbcClassList,
+          wbcInfo: wbcInfoArr,
           nonRbcClassList: nonRbcClassList,
           totalCount: totalCount.value,
           maxWbcCount: maxWbcCount.value,

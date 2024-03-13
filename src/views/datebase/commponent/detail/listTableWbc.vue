@@ -1,4 +1,16 @@
 <template>
+  <div>
+    <ul>
+      <li>RBC</li>
+      <li>WBC</li>
+      <li>REPORT</li>
+      <li>LIS-CBC</li>
+    </ul>
+    <div>
+      <button @click="moveWbc('up')">up</button>
+      <button @click="moveWbc('down')">down</button>
+    </div>
+  </div>
   <div class="databaseWbcRight">
     <WbcClass  :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb"/>
   </div>
@@ -66,7 +78,7 @@
           </select>
         </div>
       </div>
-      <font-awesome-icon :icon="['fas', 'file-excel']"/>
+      <font-awesome-icon @click="excelDownload" :icon="['fas', 'file-excel']"/>
     </div>
     <div>
       <ul class="wbcInfoDbUl">
@@ -116,6 +128,7 @@ import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import WbcClass from "@/views/datebase/commponent/detail/databaseWbcRight/wbcClass.vue";
+import * as XLSX from 'xlsx';
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -124,6 +137,7 @@ const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const pbiaRootPath = sessionStorage.getItem("pbiaRootPath");
+const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
@@ -155,7 +169,272 @@ onMounted(() => {
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
+type CellType = "NES" | "NEB" | "ME" | "MY" | "PR" | "LY" | "LR" | "LA" | "MO" | "EO" | "BA" | "BL" | "PC" | "NR" | "GP" | "PA" | "AR";
 
+interface Cell {
+  id: string;
+  name: string;
+  count: string;
+  title: string;
+  images: { fileName: string }[];
+}
+
+interface GroundTruth {
+  groundTruth: Cell[];
+}
+
+interface Predicted {
+  predicted: { percent: string }[];
+}
+
+interface Metrics {
+  NES: number;
+  NEB: number;
+  ME: number;
+  MY: number;
+  PR: number;
+  LY: number;
+  LR: number;
+  LA: number;
+  MO: number;
+  EO: number;
+  BA: number;
+  BL: number;
+  PC: number;
+  NR: number;
+  GP: number;
+  PA: number;
+  AR: number;
+  Total: number;
+  Recall: number;
+  Precision: number;
+  F1Score: number;
+  TruePositives: number;
+  TrueNegatives: number;
+  FalsePositives: number;
+  FalseNegatives: number;
+  Accuracy: number;
+}
+
+const calculateRecall = (truePositives: number, totalPositives: number): number => {
+  return totalPositives === 0 ? 0 : truePositives / totalPositives;
+};
+
+const calculatePrecision = (truePositives: number, falsePositives: number): number => {
+  return (truePositives + falsePositives) === 0 ? 0 : truePositives / (truePositives + falsePositives);
+};
+
+const calculateF1Score = (recall: number, precision: number): number => {
+  return (recall + precision) === 0 ? 0 : 2 * (recall * precision) / (recall + precision);
+};
+
+
+const excelDownload = () => {
+  const groundTruth = selectItems.value.wbcInfoAfter; // 실제 정답 데이터
+  const predicted = selectItems.value.wbcInfo.wbcInfo[0]; // AI가 예측한 데이터
+  console.log('groundTruth:',JSON.stringify(groundTruth))
+  console.log('predicted:',JSON.stringify(predicted))
+  const confusionMatrix: Record<CellType, Record<CellType, number>> = {
+    NES: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    NEB: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    ME: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    MY: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    PR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    LY: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    LR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    LA: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    MO: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    EO: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    BA: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    BL: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    PC: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    NR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    GP: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    PA: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    AR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+  };
+  const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
+
+  // 오차 행렬 초기화
+  cellTypes.forEach((trueType) => {
+    confusionMatrix[trueType] = {};
+    cellTypes.forEach((predictedType) => {
+      confusionMatrix[trueType][predictedType] = 0;
+    });
+  });
+
+  // 오차 행렬 업데이트
+  groundTruth.forEach((cell, index) => {
+    const trueType = cell.title as CellType;
+    const predictedType = predicted[index].title as CellType;
+
+    if (cellTypes.includes(trueType) && cellTypes.includes(predictedType)) {
+      confusionMatrix[trueType][predictedType]++;
+    } else {
+      console.warn(`Invalid cell title: trueType - ${trueType}, predictedType - ${predictedType}`);
+    }
+  });
+
+
+  const metrics: Metrics = {
+    NES: confusionMatrix.NES.NES,
+    NEB: confusionMatrix.NEB.NEB,
+    ME: confusionMatrix.ME.ME,
+    MY: confusionMatrix.MY.MY,
+    PR: confusionMatrix.PR.PR,
+    LY: confusionMatrix.LY.LY,
+    LR: confusionMatrix.LR.LR,
+    LA: confusionMatrix.LA.LA,
+    MO: confusionMatrix.MO.MO,
+    EO: confusionMatrix.EO.EO,
+    BA: confusionMatrix.BA.BA,
+    BL: confusionMatrix.BL.BL,
+    PC: confusionMatrix.PC.PC,
+    NR: confusionMatrix.NR.NR,
+    GP: confusionMatrix.GP.GP,
+    PA: confusionMatrix.PA.PA,
+    AR: confusionMatrix.AR.AR,
+    Total: 0,
+    Recall: 0,
+    Precision: 0,
+    F1Score: 0,
+    TruePositives: 0,
+    TrueNegatives: 0,
+    FalsePositives: 0,
+    FalseNegatives: 0,
+    Accuracy: 0,
+  };
+
+  // 오차 행렬의 Total 값 계산
+  cellTypes.forEach((trueType) => {
+    cellTypes.forEach((predictedType) => {
+      metrics.Total += confusionMatrix[trueType][predictedType];
+    });
+  });
+
+  //True Positives (TP): 대각선 요소들의 합 -> TP = confusionMatrix[trueType][trueType]
+  //True Negatives (TN): 대각선을 제외한 모든 요소의 합  -> Total 에서 TP, FP, FN을 빼면 나오는 수
+  //False Positives (FP): 각 열의 합에서 TP를 뺀 값들의 합 -> FP = confusionMatrix[CellType][predictedType] - TP
+
+  // True Positives (TP) 계산
+  // cellTypes.forEach((type) => {
+  //   metrics.TruePositives += confusionMatrix[type][type];
+  // });
+  //
+  // // True Negatives (TN) 계산
+  // metrics.TrueNegatives = metrics.Total - metrics.TruePositives;
+  //
+  // // False Positives (FP) 및 False Negatives (FN) 계산
+  // cellTypes.forEach((trueType) => {
+  //   cellTypes.forEach((predictedType) => {
+  //     if (trueType !== predictedType) {
+  //       metrics.FalsePositives += confusionMatrix[predictedType][trueType];
+  //       metrics.FalseNegatives += confusionMatrix[trueType][predictedType];
+  //     }
+  //   });
+  // });
+  // True Positives (TP), True Negatives (TN), False Positives (FP), False Negatives (FN) 계산
+  let truePositives = 0;
+  let trueNegatives = 0; // 수정: trueNegatives 변수 추가
+  let falsePositives = 0;
+  let falseNegatives = 0;
+  let total = 0;
+
+  cellTypes.forEach((trueType) => {
+    cellTypes.forEach((predictedType) => {
+      const count = confusionMatrix[trueType][predictedType];
+      total += count;
+
+      if (trueType === predictedType) {
+        truePositives += count;
+      } else {
+        falsePositives += count;
+        falseNegatives += confusionMatrix[predictedType][trueType];
+      }
+    });
+    trueNegatives += total - truePositives; // 수정: trueNegatives 계산
+  });
+
+  // Recall, Precision, F1-Score 계산
+  const recall = calculateRecall(truePositives, truePositives + falseNegatives);
+  const precision = calculatePrecision(truePositives, falsePositives);
+  const f1Score = calculateF1Score(recall, precision);
+
+  // 소수점까지 나타내기
+  const formattedRecall = Number(recall.toFixed(2));
+  const formattedPrecision = Number(precision.toFixed(2));
+  const formattedF1Score = Number(f1Score.toFixed(2));
+
+  // Accuracy 계산
+  const accuracy = (truePositives + trueNegatives) / total;
+  const formattedAccuracy = Number(accuracy.toFixed(2));
+
+  const excelData = formatDataForExcel(confusionMatrix, {
+    ...metrics,
+    Total: total,
+    Recall: formattedRecall,
+    Precision: formattedPrecision,
+    F1Score: formattedF1Score,
+    Accuracy: formattedAccuracy,
+  });
+
+  const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(excelData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'ConfusionMatrix');
+  XLSX.writeFile(wb, 'confusion_matrix.xlsx');
+
+
+}
+
+const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, number>>, metrics: Metrics): any[] => {
+  const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
+
+  const excelData: any[] = [];
+  const headerRow: any[] = [''].concat(cellTypes).concat(['Total', 'Recall', 'Precision', 'F1-Score']);
+
+  excelData.push(headerRow);
+
+  cellTypes.forEach((trueType) => {
+    const row: any[] = [trueType];
+    cellTypes.forEach((predictedType) => {
+      row.push(confusionMatrix[trueType][predictedType]);
+    });
+    row.push(metrics[`${trueType}`], metrics.Recall, metrics.Precision, metrics.F1Score);
+    excelData.push(row);
+  });
+
+  const totalRow: any[] = ['Total'];
+  cellTypes.forEach((type) => {
+    totalRow.push(metrics[`${type}`]);
+  });
+  totalRow.push(metrics.Total, 'Accuracy', metrics.Accuracy);
+
+  excelData.push(totalRow);
+
+  return excelData;
+};
+
+const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
+  wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
+      ? selectItemsNewVal.wbcInfoAfter
+      : selectItemsNewVal.wbcInfo.wbcInfo[0];
+
+  // 추가 작업이 필요하다면 여기에 추가 코드를 작성
+};
+
+const moveWbc = async (direction: any) => {
+  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
+  const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
+
+  if (nextDbIndex >= 0 && nextDbIndex < originalDb.value.length) {
+    selectItems.value = originalDb.value[nextDbIndex];
+    sessionStorage.setItem('selectItems', JSON.stringify(originalDb.value[nextDbIndex]));
+    sessionStorage.setItem('selectItemWbc', JSON.stringify(originalDb.value[nextDbIndex].wbcInfo.wbcInfo));
+    sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
+    clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
+    await updateUpDown(originalDb.value[nextDbIndex].wbcInfo.wbcInfo[0], originalDb.value[nextDbIndex]);
+  }
+}
 
 const drawCellMarker = async () => {
   cellMarkerIcon.value = !cellMarkerIcon.value
@@ -382,7 +661,7 @@ function handleKeyUp(event: KeyboardEvent) {
 }
 
 
-function initData() {
+async function initData () {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;

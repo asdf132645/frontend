@@ -15,7 +15,6 @@ export const sysInfoStore = async (data: any) => {
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', embeddedInfoData);
     }else {
         alert(data?.resultMsg);
-        console.log(data?.resultMsg);
     }
 };
 

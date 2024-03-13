@@ -71,8 +71,8 @@ import {messages} from "@/common/defines/constFile/constant";
 import Button from "@/components/commonUi/Button.vue";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb']);
-const userModuleDataGet = computed(() => store.state.userModule);
 const store = useStore();
+const userModuleDataGet = computed(() => store.state.userModule);
 const getCategoryName = (category: WbcInfo) => category?.name;
 const pbiaRootPath = sessionStorage.getItem("pbiaRootPath");
 const userId = ref('');
@@ -93,7 +93,6 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  console.log(newItem);
   wbcInfoChangeVal.value = newItem;
 });
 

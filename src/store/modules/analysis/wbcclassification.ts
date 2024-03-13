@@ -6,6 +6,7 @@ interface Image {
 }
 
 export interface WbcInfo {
+    barcodeID?: string;
     id: string;
     title: string;
     name: string;

@@ -6,7 +6,7 @@
         <div class="borderLine">
           <span class="greenColor">U</span>MID
         </div>
-        <div class='toggleHeadBtn' @click="toggleAppHeaderLeft">
+        <div class='toggleHeadBtn'>
           <font-awesome-icon :icon="['fas', 'arrows-left-right-to-line']"/>
           <span> menu toggle</span>
         </div>
@@ -30,9 +30,6 @@
           />
           <span class='icoText'>Data Base</span>
         </router-link>
-      </div>
-      <div v-else class="closeToggleBtn" @click="toggleAppHeaderLeft">
-        열기
       </div>
 
       <!--  좌측메뉴  -->
@@ -159,7 +156,6 @@ onMounted(async () => {
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   cellImgGet(newUserId.id);
-  console.log('getStoredUser.value.id', userModuleDataGet.value.id)
   userId.value = newUserId.id;
 });
 
@@ -185,11 +181,6 @@ watch([runInfo.value], async (newVals: any) => {
   }
 });
 
-
-
-const toggleAppHeaderLeft = () => {
-  appHeaderLeftHidden.value = !appHeaderLeftHidden.value;
-};
 
 const isActive = (path: string) => {
   return route.path === path;
@@ -309,7 +300,6 @@ const cellImgGet = async (newUserId: string) => {
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration',isNsNbIntegration.value);
         sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
-        console.log(data?.pbiaRootPath)
       }
     }
 
