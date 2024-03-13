@@ -206,7 +206,7 @@ const dbDataSet = async () => {
 
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: localDbData
+      runingInfoDtoItems: [localDbData[indexToUpdate]]
     })
     if (response) {
       alert('success');

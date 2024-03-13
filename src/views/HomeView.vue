@@ -150,7 +150,7 @@ const startSysPostWebSocket = async () => {
 
   }
   tcpReq.embedStatus.sysInfo.reqUserId = userId.value;
-  sendMessage(tcpReq.embedStatus.sysInfo);
+  await sendMessage(tcpReq.embedStatus.sysInfo);
   isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
 };
 
@@ -158,7 +158,7 @@ const runInfoPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
     tcpReq.embedStatus.runningInfo.reqUserId = userId.value;
-    sendMessage(tcpReq.embedStatus.runningInfo);
+    await sendMessage(tcpReq.embedStatus.runningInfo);
     isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
   }
 };
@@ -172,7 +172,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false})
     if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
       tcpReq.embedStatus.pause.reqUserId = userId.value;
-      sendMessage(tcpReq.embedStatus.pause);
+      await sendMessage(tcpReq.embedStatus.pause);
     } else {
       if (currentSlot?.slotId !== runningSlotId.value) { // 슬라이드 체인지 시
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
@@ -193,7 +193,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         return;
       }
       tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
-      sendMessage(tcpReq.embedStatus.runIngComp);
+      await sendMessage(tcpReq.embedStatus.runIngComp);
       await saveTestHistory(data);
     }
   }
@@ -299,7 +299,7 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
   }
 };
 
-const sendMessage = (payload: object) => {
+const sendMessage = async (payload: object) => {
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: payload
