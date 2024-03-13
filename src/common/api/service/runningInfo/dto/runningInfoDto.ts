@@ -92,6 +92,8 @@ interface RuningInfoApiRequest {
     barcodeNo?: string | undefined;
     patientId?: string | undefined;
     patientNm?: string | undefined;
+    title?: string[] | [];
+    nrCount?: number;
 }
 
 

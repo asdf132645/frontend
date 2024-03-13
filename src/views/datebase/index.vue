@@ -18,23 +18,29 @@
           <span>Class Filter</span>
           <div>
             <span>NR count</span>
-            <input type="text"/>
+            <input type="text" v-model="nrCount"/>
           </div>
           <div>
             <span>WBC Total</span>
-            <select>
+            <select v-model="wbcCountOrder">
+              <option value="all">Do Not Select</option>
               <option>DESC</option>
               <option>ASC</option>
             </select>
           </div>
           <div>
-            <ul>
-              <li></li>
+            <span>WBC Info Filter</span>
+            <ul class="wbcInfoFilter">
+              <li v-for="(item, idx) in titleItem" :key="idx">
+                <input type="checkbox" :id="'checkbox_' + idx" v-model="item.checked" @change="updateFilter">
+                <label :for="'checkbox_' + idx">{{ item.title }}</label>
+              </li>
             </ul>
           </div>
           <div>
-            <label><input type="checkbox"/> Diff</label>
-            <label><input type="checkbox"/> PBS</label>
+            <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>ALL</label>
+            <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/> Diff</label>
+            <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/> PBS</label>
           </div>
         </div>
       </div>
@@ -71,19 +77,33 @@ const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
 const selectedItem = ref({});
+const titleItem =  ref<any>([]);
+const titleItemArr = ref([]);
+const nrCount = ref(0);
+const testType = ref('');
+const wbcCountOrder = ref('');
 
 
 onMounted(async () => {
   await initDbData();
 });
 
+const changeTestType = (value: any) => {
+  testType.value = testType.value === value ? '' : value;
+}
+
+const updateFilter = () => {
+  const selectedItems = titleItem.value?.filter(item => item.checked).map(item => item.title);
+  titleItemArr.value = selectedItems;
+}
+
 const initDbData = async () => {
   userId.value = getStoredUser.id;
   dbGetData.value = [];
+  titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();
   const lastSearchParams = loadLastSearchParams();
-  console.log(Object.keys(lastSearchParams).length)
   // 이전 검색 조건 적용
   if(Object.keys(lastSearchParams).length !== 0){
     searchType.value = lastSearchParams.searchType || 'barcodeNo';
@@ -124,17 +144,33 @@ const loadLastSearchParams = () => {
 
 
 const getDbData = async (type: string, pageNum?: number) => {
+  if(type === 'search'){
+    page.value = 1;
+  }
+  const requestData: any = {
+    page: type !== 'mounted'? page.value : Number(pageNum),
+    pageSize: 15,
+    startDay: formatDate(startDate.value),
+    endDay: formatDate(endDate.value),
+    barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
+    patientId: searchType.value === 'patientId' ? searchText.value : undefined,
+    patientNm: searchType.value === 'patientNm' ? searchText.value : undefined,
+    nrCount: nrCount.value,
+  };
+  if (titleItemArr.value.length !== 0) {
+    requestData.title = titleItemArr.value;
+  }
+
+  if(testType.value !== '00' && testType.value !== ''){
+    requestData.testType = testType.value;
+  }
+
+  if(wbcCountOrder.value !== '' && wbcCountOrder.value !== 'ALL'){
+    requestData.wbcCountOrder = wbcCountOrder.value;
+  }
+
   try {
-    const result = await getRunningApi({
-      page: type !== 'mounted'? page.value : Number(pageNum),
-      pageSize: 15,
-      startDay: formatDate(startDate.value),
-      endDay: formatDate(endDate.value),
-      barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
-      patientId: searchType.value === 'patientId' ? searchText.value : undefined,
-      patientNm: searchType.value === 'patientNm' ? searchText.value : undefined,
-    });
-    console.log(result)
+    const result = await getRunningApi(requestData);
     if (result && result.data) {
 
       const newData = result.data.data;
@@ -144,13 +180,16 @@ const getDbData = async (type: string, pageNum?: number) => {
         } else {
           page.value -= 1;
         }
-        // dbGetData.value = newData;
+        if(newData.length === 0 && String(result.data?.page) === '1'){
+          dbGetData.value = newData;
+        }
       } else {
         if (type === 'search') {
           dbGetData.value = newData;
         } else {
           dbGetData.value = [...dbGetData.value, ...newData];
         }
+        titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0]
 
         // 마지막 조회 결과 저장
         saveLastSearchParams();

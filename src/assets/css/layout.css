@@ -761,3 +761,17 @@ ul.wbcImgWrap > li > img {
 .reportTitle {
     text-align: left;
 }
+
+ul.wbcInfoFilter > li {
+    display: inline-block;
+}
+
+ul.wbcInfoFilter > li > input, ul.wbcInfoFilter > li > label {
+    display: inline-block;
+    width: 39%;
+    font-size: 0.8rem;
+}
+
+ul.wbcInfoFilter {
+    text-align: left;
+}

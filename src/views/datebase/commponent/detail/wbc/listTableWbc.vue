@@ -495,7 +495,6 @@ const scrollToElement = (itemId: number) => {
   }
 };
 
-
 function rgbReset() {
   imageRgb.value = [0, 0, 0];
   changeImageRgb();
@@ -632,7 +631,6 @@ function handleKeyUp(event: KeyboardEvent) {
     isCtrlKeyPressed.value = false;
   }
 }
-
 
 async function initData () {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;

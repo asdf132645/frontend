@@ -45,8 +45,8 @@
       <td> {{ item?.tactTime }}</td>
       <td> {{ item?.submit }}</td>
       <td> {{ item?.signedOfDate }}</td>
-      <td @click="editData(item)">
-        <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
+      <td>
+        <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']"  @click="editData(item)"/>
       </td>
     </tr>
     <tr>
