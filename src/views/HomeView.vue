@@ -151,7 +151,6 @@ const startSysPostWebSocket = async () => {
   }
   tcpReq.embedStatus.sysInfo.reqUserId = userId.value;
   await sendMessage(tcpReq.embedStatus.sysInfo);
-  isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
 };
 
 const runInfoPostWebSocket = async () => {
@@ -159,19 +158,24 @@ const runInfoPostWebSocket = async () => {
     isRequestInProgress = true;
     tcpReq.embedStatus.runningInfo.reqUserId = userId.value;
     await sendMessage(tcpReq.embedStatus.runningInfo);
-    isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
   }
 };
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
+
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
     );
+    if(data?.iCasStat.indexOf("2") !== -1){
+      await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
+
+    }
     //슬라이드 변경시 데이터 저장
     await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false})
     if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
       tcpReq.embedStatus.pause.reqUserId = userId.value;
+      isRequestInProgress = true;
       await sendMessage(tcpReq.embedStatus.pause);
     } else {
       if (currentSlot?.slotId !== runningSlotId.value) { // 슬라이드 체인지 시
@@ -193,6 +197,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         return;
       }
       tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
+      isRequestInProgress = true;
       await sendMessage(tcpReq.embedStatus.runIngComp);
       await saveTestHistory(data);
     }
@@ -291,8 +296,8 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
     result = await createRunningApi({ userId: Number(userId.value), runingInfoDtoItems: runningInfo });
 
     if (result) {
-      // showSuccessAlert('save successful');
-      alert('성공~')
+      console.log('save successful');
+      // alert('성공~')
     }
   } catch (e) {
     console.error(e);
@@ -304,6 +309,7 @@ const sendMessage = async (payload: object) => {
     type: 'SEND_DATA',
     payload: payload
   });
+  isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
 }
 
 

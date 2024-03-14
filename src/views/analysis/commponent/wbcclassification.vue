@@ -66,6 +66,8 @@ import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
+const commonDataGet = computed(() => storeEm.state.commonModule);
+
 const siteCd = ref('');
 
 interface SlotInfo {
@@ -89,7 +91,7 @@ const nonRbcClassList = ref<WbcInfo[]>([]);
 const testType = ref<string>("");
 const totalCount = ref<string>("");
 const maxWbcCount = ref<string>('');
-
+const slideProceeding = ref('0');
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
     const sysInfo = newVal[0].sysInfo;
@@ -97,11 +99,20 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
   }
 })
 
+watch([commonDataGet.value], async (newVals: any) => {
+  if(newVals){
+    slideProceeding.value = newVals.slideProceeding;
+  }
+})
+
 const updateDataArray = (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (Array.isArray(slotArray.wbcInfo)) {
     testType.value = slotArray.wbcInfo[0].testType;
-    const wbcInfoArray = slotArray.wbcInfo.map((slot: any) => slot.wbcInfo);
+    if(!slotArray.wbcInfo[commonDataGet.value.slideProceeding]){
+      return
+    }
+    const wbcInfoArray = [slotArray.wbcInfo[commonDataGet.value.slideProceeding].wbcInfo];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicWbcArr];
     dspBfClassList.value = dspWbcClassList.value.flat();
 

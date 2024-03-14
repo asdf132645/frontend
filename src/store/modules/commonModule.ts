@@ -1,5 +1,5 @@
 // commonModule.ts
-import { Commit } from 'vuex';
+import {Commit} from 'vuex';
 
 export interface CommonState {
     startEmbedded: boolean;
@@ -9,6 +9,7 @@ export interface CommonState {
     embeddedNumber: string;
     isAlarm: boolean;
     bfSelectFiles: [],
+    slideProceeding: string,
 }
 
 interface CommonModule {
@@ -22,6 +23,7 @@ interface CommonModule {
         setEmbeddedNumber: (state: CommonState, value: string) => void;
         setIsAlarm: (state: CommonState, value: boolean) => void;
         setBfSelectFiles: (state: CommonState, value: []) => void;
+        setSlideProceeding: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -34,10 +36,11 @@ export const commonModule: CommonModule = {
         startEmbedded: false,
         eqStatCd: 0,
         isRunningState: false,
-        totalCount: '', // 추가
+        totalCount: '',
         embeddedNumber: '',
         isAlarm: false,
         bfSelectFiles: [],
+        slideProceeding: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -61,9 +64,12 @@ export const commonModule: CommonModule = {
         setBfSelectFiles(state: CommonState, value: []): void {
             state.bfSelectFiles = value;
         },
+        setSlideProceeding(state: CommonState, value: string): void {
+            state.slideProceeding = value;
+        }
     },
     actions: {
-        setCommonInfo({ commit }: { commit: Commit }, payload: CommonState): void {
+        setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
             if (payload.hasOwnProperty('startEmbedded')) {
                 commit('setStartEmbedded', payload.startEmbedded);
             }
@@ -82,11 +88,14 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('embeddedNumber')) {
                 commit('setEmbeddedNumber', payload.embeddedNumber);
             }
-            if (payload.hasOwnProperty('isAlarm')){
+            if (payload.hasOwnProperty('isAlarm')) {
                 commit('setIsAlarm', payload.isAlarm);
             }
-            if (payload.hasOwnProperty('bfSelectFiles')){
+            if (payload.hasOwnProperty('bfSelectFiles')) {
                 commit('setBfSelectFiles', payload.bfSelectFiles);
+            }
+            if (payload.hasOwnProperty('slideProceeding')) {
+                commit('setSlideProceeding', payload.slideProceeding);
             }
         },
     },

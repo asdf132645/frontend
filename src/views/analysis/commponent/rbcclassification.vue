@@ -99,7 +99,6 @@ import {ref, onMounted, watch, computed} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 
 const store = useStore();
@@ -115,6 +114,8 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
+const commonDataGet = computed(() => store.state.commonModule);
+
 
 watch([runningInfoModule.value], (newVal: any) => {
   if (newVal.length > 0) {
@@ -154,8 +155,12 @@ const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;
-    const wbcInfoArray = slotArray.rbcInfo.map((slot: any) => slot.rbcInfo);
+    if(!slotArray.rbcInfo[commonDataGet.value.slideProceeding]){
+      return
+    }
+    const wbcInfoArray = [slotArray.rbcInfo[commonDataGet.value.slideProceeding].rbcInfo];
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
+    console.log(wbcInfoArray)
     //최종으로 슬라이드 정보를 업데이트
     calcRbcDegree(wbcInfoArr[0])
     if (slotArray.lowPowerPath) {
