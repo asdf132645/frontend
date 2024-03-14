@@ -1,6 +1,6 @@
 <template>
   <Fragment>
-      <Analysis/>
+    <Analysis/>
   </Fragment>
 </template>
 
@@ -52,7 +52,7 @@ const userModuleDataGet = computed(() => store.state.userModule);
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
-  if(newUserId.id === ''){
+  if (newUserId.id === '') {
     return;
   }
   cellImgGet(newUserId.id);
@@ -64,12 +64,14 @@ onMounted(async () => {
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
-  if (userId.value && userId.value !== '') {
-    if (isStartEmbeddedCalled.value) {
-      await runInfoPostWebSocket();
+  if (!commonDataGet.value.isRunningState) {
+    if (userId.value && userId.value !== '') {
+      if (isStartEmbeddedCalled.value) {
+        await runInfoPostWebSocket();
+      }
+      await startSysPostWebSocket();
+      await getNormalRange();
     }
-    await startSysPostWebSocket();
-    await getNormalRange();
   }
 
 
@@ -89,7 +91,7 @@ watch([commonDataGet.value], async (newVals: any) => {
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
 
   const parsedData = JSON.parse(data);
-  if(parsedData.bufferData === 'err'){
+  if (parsedData.bufferData === 'err') {
     // alert('활성화된 TCP 클라이언트 연결 없음');
     return
   }
@@ -123,7 +125,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false,}); // 임베디드 상태가 죽음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
-      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 모든 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
       break;
     case 'PAUSE':
       await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
@@ -146,7 +148,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 });
 const startSysPostWebSocket = async () => {
   isRequestInProgress = true;
-  if(userId.value === ''){
+  if (userId.value === '') {
 
   }
   tcpReq.embedStatus.sysInfo.reqUserId = userId.value;
@@ -167,7 +169,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
     );
-    if(data?.iCasStat.indexOf("2") !== -1){
+    if (data?.iCasStat.indexOf("2") !== -1) {
       await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
 
     }
@@ -193,7 +195,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     // 주문 내역 및 처리 결과 저장 -start
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-      if(userId.value === ''){
+      if (userId.value === '') {
         return;
       }
       tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
@@ -235,7 +237,7 @@ const saveTestHistory = async (params: any) => {
       state: false,
       submit: 'Ready',
       submitDate: '',
-      traySlot: '1-'+completeSlot.slotNo,
+      traySlot: '1-' + completeSlot.slotNo,
       barcodeNo: completeSlot.barcodeNo,
       patientId: completeSlot.patientId,
       patientNm: completeSlot.patientNm,
@@ -263,9 +265,9 @@ const saveTestHistory = async (params: any) => {
       isNormal: completeSlot.isNormal,
       processInfo: dbData.slotInfo[0].processInfo,
       orderList: dbData.slotInfo[0].orderList.filter((order: any) => order.barcodeId === completeSlot.barcodeNo),
-      signedState:'',
+      signedState: '',
       signedOfDate: '',
-      signedUserId:'',
+      signedUserId: '',
       classificationResult: [],
       isNsNbIntegration: isNsNbIntegration,
     }
@@ -293,7 +295,7 @@ const getNormalRange = async () => {
 const saveRunningInfo = async (runningInfo: RuningInfo) => {
   try {
     let result: ApiResponse<void>;
-    result = await createRunningApi({ userId: Number(userId.value), runingInfoDtoItems: runningInfo });
+    result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
     if (result) {
       console.log('save successful');
@@ -329,7 +331,7 @@ const cellImgGet = async (newUserId: string) => {
     if (result) {
       if (result?.data) {
         const data = result.data;
-        sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
+        sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
       }
     }
 

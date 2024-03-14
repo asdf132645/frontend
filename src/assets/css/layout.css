@@ -775,3 +775,7 @@ ul.wbcInfoFilter > li > input, ul.wbcInfoFilter > li > label {
 ul.wbcInfoFilter {
     text-align: left;
 }
+
+.disabledLink {
+    color: #939393 !important;
+}

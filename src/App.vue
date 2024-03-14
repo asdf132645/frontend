@@ -3,7 +3,9 @@
   <div>
     <AppHeader/>
     <main class='content'>
-      <router-view/>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
     </main>
   </div>
 </template>

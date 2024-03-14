@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import {ref, watch, computed} from 'vue';
 import { useStore } from 'vuex';
-import { RunningInfo, SlotInfo } from '@/store/modules/testPageCommon/ruuningInfo';
-import { getDateTimeStr } from '@/common/lib/utils/dateUtils';
+import { SlotInfo } from '@/store/modules/testPageCommon/ruuningInfo';
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const store = useStore();
 const images = ref<RunningPathItem[]>([]);
@@ -57,15 +57,27 @@ function generateUniqueId() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-function getImageUrl(type: RunningPathItem | undefined): string {
-  if (!type || !type.path) {
-    return ''; // or any default value you prefer
+function getImageUrl(types: RunningPathItem[] | undefined): string[] {
+  if (!types || types.length === 0) {
+    return [];
   }
 
-  const folderPath = encodeURIComponent(type.path.replace(/\/[^\/]+$/, ''));
-  const imageName = encodeURIComponent(type.path.match(/\/([^\/]+)$/)?.[1] || '');
-  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+  // 이미지의 URL들을 담을 배열
+  const imageUrls: string[] = [];
+
+  // 각 이미지의 URL을 가져와서 배열에 추가
+  const folderPath = types[0].path.match(/^(.*\\)\d+_Real_Time\\/)?.[0];
+
+  // 파일 경로에서 파일 이름 부분 추출
+  const fileName = types[0].path.match(/[^\\]*$/);
+
+  // 이미지의 URL 생성 후 배열에 추가
+  const imageUrl = `http://localhost:3002/images?folder=${folderPath}&imageName=${fileName}`;
+  imageUrls.unshift(imageUrl);
+
+  return imageUrls;
 }
+
 
 
 
@@ -81,6 +93,11 @@ function getImageUrl(type: RunningPathItem | undefined): string {
 }
 .slider {
   position: relative;
+  overflow: hidden;
+  max-height: 135px;
+}
+.slider img {
+  width: 12%;
 }
 button {
   margin-top: 10px;

@@ -10,6 +10,7 @@ import { orderListModule } from '@/store/modules/analysis/orderListModule';
 import { runningInfoModule } from '@/store/modules/testPageCommon/ruuningInfo';
 import {commonModule} from "@/store/modules/commonModule";
 import {dataBaseSetDataModule} from "@/store/modules/dataBaseSetData/dataBaseSetDataModule";
+import {timeModule} from "@/store/modules/timeModule";
 // import createPersistedState from 'vuex-persistedstate';
 
 
@@ -25,6 +26,7 @@ const store = createStore({
         runningInfoModule,
         commonModule,
         dataBaseSetDataModule,
+        timeModule,
     }
 
 });

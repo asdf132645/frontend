@@ -10,6 +10,7 @@ export interface CommonState {
     isAlarm: boolean;
     bfSelectFiles: [],
     slideProceeding: string,
+    totalSlideTime: string,
 }
 
 interface CommonModule {
@@ -24,6 +25,7 @@ interface CommonModule {
         setIsAlarm: (state: CommonState, value: boolean) => void;
         setBfSelectFiles: (state: CommonState, value: []) => void;
         setSlideProceeding: (state: CommonState, value: string) => void;
+        setTotalSlideTime: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -41,6 +43,7 @@ export const commonModule: CommonModule = {
         isAlarm: false,
         bfSelectFiles: [],
         slideProceeding: '',
+        totalSlideTime: '00:00:00',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -66,6 +69,9 @@ export const commonModule: CommonModule = {
         },
         setSlideProceeding(state: CommonState, value: string): void {
             state.slideProceeding = value;
+        },
+        setTotalSlideTime(state: CommonState, value: string): void {
+            state.totalSlideTime = value;
         }
     },
     actions: {
@@ -96,6 +102,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('slideProceeding')) {
                 commit('setSlideProceeding', payload.slideProceeding);
+            }
+            if (payload.hasOwnProperty('totalSlideTime')) {
+                commit('setTotalSlideTime', payload.totalSlideTime);
             }
         },
     },
