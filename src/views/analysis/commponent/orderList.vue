@@ -1,5 +1,5 @@
 <template>
-  <div class="mt1">
+  <div>
     <h3 class="titleText"><span class="greenColor">O</span>rder <span class="greenColor">L</span>ist</h3>
     <table class="orderListTable">
       <thead>

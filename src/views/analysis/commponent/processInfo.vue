@@ -1,5 +1,5 @@
 <template>
-  <div class="mt1">
+  <div>
     <h3 class="titleText"><span class="greenColor">P</span>rocessing <span class="greenColor">I</span>nformation </h3>
     <ul class="processInfoUl">
       <li><span class="proSpan">Cassette No:</span> <span class="proVal">{{ processInfoItem?.cassetteNo }}</span></li>

@@ -96,10 +96,11 @@
             <p>{{ item?.count }}</p>
             <input type="checkbox" @input="allCheckChange($event,item.title)">
           </div>
-          <ul :class="'wbcImgWrap '+ item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
+          <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
             <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                 :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
                 @click="selectImage(itemIndex, imageIndex)"
+                @dblclick="openModal(image, item)"
             >
               <div style="position: relative">
                 <img :src="getImageUrl(image.fileName, item.id, item.title)"
@@ -118,6 +119,18 @@
         </li>
       </ul>
     </div>
+    <!-- 모달 창 -->
+    <div class="wbcModal" v-if="modalOpen">
+      <div class="wbc-modal-content">
+        <span class="wbcClose" @click="closeModal">&times;</span>
+        <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }" class="modal-image" />
+        <div class="buttons">
+          <button @click="zoomIn">+</button>
+          <button @click="zoomOut">-</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -159,6 +172,30 @@ const refsArray = ref<any[]>([]);
 const allCheck = ref('');
 const cellRef = ref(null);
 const cellMarkerIcon = ref(false);
+
+const modalOpen = ref(false);
+const selectedImageSrc = ref('');
+const modalImageWidth = ref('150px');
+const modalImageHeight = ref('150px');
+
+const openModal = (image: any, item: any) => {
+  modalOpen.value = true;
+  selectedImageSrc.value = getImageUrl(image.fileName, item.id, item.title);
+};
+
+const closeModal = () => {
+  modalOpen.value = false;
+};
+
+const zoomIn = () => {
+  modalImageWidth.value = `${parseFloat(modalImageWidth.value) + 50}px`;
+  modalImageHeight.value = `${parseFloat(modalImageHeight.value) + 50}px`;
+};
+
+const zoomOut = () => {
+  modalImageWidth.value = `${parseFloat(modalImageWidth.value) - 50}px`;
+  modalImageHeight.value = `${parseFloat(modalImageHeight.value) - 50}px`;
+};
 
 onMounted(() => {
   initData();
@@ -503,7 +540,7 @@ function rgbReset() {
 function changeImageRgb() {
   const selectedSizeTitle = selectSizeTitle.value;
   if (!selectedSizeTitle) {
-    alert('No selected size title.');
+    // alert('No selected size title.');
     rgbReset();
     return;
   }

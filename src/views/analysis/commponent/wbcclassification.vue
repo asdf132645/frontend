@@ -1,5 +1,5 @@
 <template>
-  <div class="mt2">
+  <div>
     <h3 class="titleText">
       <span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification
     </h3>

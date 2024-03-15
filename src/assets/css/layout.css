@@ -25,7 +25,6 @@
 
 /* header-menu */
 .header {
-    height: 5rem;
     width: 100%;
     display: block;
     background: #353942;
@@ -34,11 +33,13 @@
 .appHeaderLeft > a {
     font-size: 1rem;
     color: #ffffff;
-    display: block;
     margin-top: 0px;
     text-align: left;
     padding-left: 30px;
     padding: 30px;
+    display: inline-block;
+    vertical-align: top;
+    height: 20px;
 }
 
 .appHeaderLeft > a > p {
@@ -55,17 +56,22 @@
 
 .appHeaderLeft {
     height: 100%;
-    position: absolute;
-    background: #353942;
-    width: 12%;
-    text-align: center;
+    background: #242b35;
+    text-align: left;
     border-right: 1px solid #dedede;
+    border-bottom: 1px solid #494949;
 }
 
 .leftMenu {
     text-align: left;
     margin-left: 13%;
-    padding-top: 47px;
+    display: inline-block;
+}
+
+.small-icon-menu {
+    display: inline-block;
+    width: 53%;
+    text-align: right;
 }
 
 .borderLine {
@@ -73,12 +79,14 @@
     padding-top: 25px;
     padding-bottom: 25px;
     font-size: 1.9rem;
-    font-weight: 700;
-    width: 100%;
+    font-weight: 500;
+    width: 9%;
     margin-bottom: 0px;
+    display: inline-block;
     color: #ffffff;
-    background: #29c7ca;
+    background: #000000;
     margin-left: 0;
+    text-align: center;
 }
 
 .loginColorSpan {
@@ -88,10 +96,12 @@
 .leftMenu > ul > li {
     display: inline-block;
     margin-left: 8px;
+    padding-left: 8px;
     color: #ffffff;
     font-size: 1.1rem;
     font-weight: 200;
     font-family: sans-serif;
+    border-left: 1px solid #dedede;
 }
 
 .startBtn.onRecover {
@@ -125,10 +135,12 @@
     position: absolute;
     right: 0;
     top: 0;
-    background: #e6614a;
+    background: #242b35;
     height: 3.39rem;
     padding: 0 33px;
     padding-top: 26px !important;
+    color: #fff;
+    border-left: 1px solid #515a67;
 }
 
 span.icoText {
@@ -137,27 +149,21 @@ span.icoText {
 }
 
 .greenColor {
-    color: #000;
+    color: #ffffff;
 }
 
 /* header-menu-end */
 
 /*main*/
-main.content {
-    margin-left: 11.5%;
-    margin-top: 7px;
-    margin-right: 7px;
-    padding: 5px 20px;
-}
 
 .contentLeft {
     text-align: left;
-    background: #f1f3f2;
+    background: #242b35;
     display: inline-block;
-    width: 26.7%;
-    padding: 10px;
+    width: 28%;
+    padding: 0;
     margin-top: 0;
-    height: 88vh;
+    height: 91vh;
 }
 
 .contentRight {
@@ -165,25 +171,27 @@ main.content {
     width: 72%;
     align-items: start;
     vertical-align: top;
-    background: #f1f3f2;
+    background: #242b35;
+    height: 91vh;
 }
 
 .contentRight > div {
     display: inline-block;
     vertical-align: top;
-    width: 35.4%;
-    background: #fff;
-    margin: 7px 5px;
+    width: 36%;
+    background: #252629;
     padding: 10px;
+    margin: 0px 1px;
 }
 
 .contentLeft > div {
-    background: #ffffff;
+    background: #252629;
     padding: 10px;
+    margin-top: 2px;
 }
 
 .contentRight > div:first-child {
-    width: 21%;
+    width: 23%;
 }
 
 h3.titleText {
@@ -195,24 +203,26 @@ h3.titleText {
 .execute {
     text-align: center;
     background: #fff;
-    /*border: 1px solid #28c7c7;*/
+    /* border: 1px solid #28c7c7; */
     padding: 19px;
     display: flex;
     justify-content: space-between;
+    margin-top: 0px !important;
 }
 
 .initBtn {
-    background: #353942;
+    background: #212121;
     color: #fff;
     border-radius: 5px;
-    padding: 8px;
-    margin: 7px;
+    padding: 16px;
+    margin: 12px 0 0 2px;
     font-size: 0.9rem;
     cursor: pointer;
+    border: 1px solid;
 }
 
 p.startStopP {
-    border: 1px solid #484c59;
+    border: 1px solid #ffffff;
     padding: 20px;
     margin-top: 5px;
     cursor: pointer;
@@ -225,12 +235,13 @@ p.startStopP {
 }
 
 .stopDiv > select {
-    margin-top: 10px;
+    margin-top: 0px;
     border-radius: 5px;
 }
 
 .leftActive {
-    background: #484c59;
+    border-bottom: 1px solid #fff;
+    height: 19px !important;
 }
 
 .circular-progress-bar {
@@ -380,6 +391,7 @@ ul.slideContent .outClassDefault {
 
 .orderListTable {
     width: 100%;
+    height: 49vh;
 }
 
 .orderListTable th, .orderListTable td {
@@ -390,7 +402,7 @@ ul.slideContent .outClassDefault {
 }
 
 .orderListTable th {
-    background: #353942;
+    background: #212121;
     color: #ffffff;
 }
 
@@ -411,7 +423,7 @@ p.slideTime {
 
 p.startStopP:hover {
     border: 1px solid #353942;
-    background-color: #353942;
+    background-color: #fff;
 }
 
 ul.slideContent > p {
@@ -435,9 +447,9 @@ span.proSpan {
 }
 
 .contentBottom {
-    width: 97% !important;
-    height: 150px;
-    margin-top: 0 !important;
+    width: 98.2% !important;
+    height: 172px;
+    margin-top: 2px !important;
 }
 
 .uimdLogin {
@@ -693,9 +705,10 @@ ul.wbcImgWrap > li {
     margin: 5px;
     cursor: pointer;
 }
-.selected-image{
-    border: 2px solid #ff00eb!important;
-    margin: 3px!important;
+
+.selected-image {
+    border: 2px solid #ff00eb !important;
+    margin: 3px !important;
 }
 
 ul.wbcImgWrap > li > img {
@@ -717,7 +730,7 @@ ul.wbcImgWrap > li > img {
 
 .border-changed {
     border: 2px solid #3fff00;
-    margin: 3px!important;
+    margin: 3px !important;
 }
 
 .wbcClassDbDiv > div > p {
@@ -778,4 +791,35 @@ ul.wbcInfoFilter {
 
 .disabledLink {
     color: #939393 !important;
+}
+
+.wbcModal {
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    background: rgb(49 49 49 / 88%);
+    padding-top: 10%;
+}
+
+span.wbcClose {
+    position: absolute;
+    top: 0;
+    color: #fff;
+    font-size: 4rem;
+    right: 20px;
+    cursor: pointer;
+}
+
+.buttons button {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+select.stopDivSelect {
+    margin-top: 5px;
 }

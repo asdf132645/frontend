@@ -1,5 +1,5 @@
 <template>
-  <div class="mt2">
+  <div>
     <h3 class="titleText"><span class="greenColor">W</span>orking <span class="greenColor">V</span>iew </h3>
     <div>
       <p>{{ changeWqStatCd() }}</p>

@@ -20,7 +20,7 @@ import AppHeader from "@/components/layout/AppHeader.vue";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #ffffff;
   width: 100%;
 }
 </style>

@@ -6,10 +6,9 @@
         <div class="borderLine">
           <span class="greenColor">U</span>MID
         </div>
-        <div class='toggleHeadBtn'>
-          <font-awesome-icon :icon="['fas', 'arrows-left-right-to-line']"/>
-          <span> menu toggle</span>
-        </div>
+<!--        <div class='toggleHeadBtn'>-->
+<!--          <span></span>-->
+<!--        </div>-->
         <router-link :to="noRouterPush ? '#' : '/setting'" :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
           <font-awesome-icon :icon="['fas', 'gear']" style="font-size: 1rem;" />
           <span class='icoText'>Setting</span>
@@ -28,41 +27,43 @@
           />
           <span class='icoText'>Data Base</span>
         </router-link>
-      </div>
 
-      <!--  좌측메뉴  -->
-      <div class="display-flex">
-        <div class="leftMenu">
-          <ul>
-            <li class="alarm">
-              <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
-            </li>
-            <li>
-              <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
-              <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
-            </li>
-            <li>
-              <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
-            </li>
-            <li class="oliCount" @click="openLayer">oliCount: {{ oilCountData || 0 }}</li>
-            <li>storage: {{ storagePercentData || 0 }}</li>
-          </ul>
-        </div>
-        <div class="lastMenu">
-          <ul>
-            <li>Logged: {{ formattedDate }}</li>
-            <li class="lastLiM">
+        <!--  좌측메뉴  -->
+        <div class="small-icon-menu">
+          <div class="leftMenu">
+            <ul>
+              <li class="alarm">
+                <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
+              </li>
+              <li>
+                <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
+                <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
+              </li>
+              <li>
+                <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
+              </li>
+              <li class="oliCount" @click="openLayer">oliCount: {{ oilCountData || 0 }}</li>
+              <li>storage: {{ storagePercentData || 0 }}</li>
+            </ul>
+          </div>
+          <div class="lastMenu">
+            <ul>
+              <li>Logged: {{ formattedDate }}</li>
+              <li class="lastLiM">
               <span class="userBox" @click='logOutBoxOn'>
                 {{ formattedTime }}
                 <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ storedUser && getStoredUser?.userId }}
               </span>
-              <div class='logOutBox' v-if='logOutBox' @click='logout'>
-                LOGOUT
-              </div>
-            </li>
-          </ul>
+                <div class='logOutBox' v-if='logOutBox' @click='logout'>
+                  LOGOUT
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+
+
     </nav>
   </header>
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
@@ -107,7 +108,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, nextTick, onMounted, onUpdated, ref, watch} from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';

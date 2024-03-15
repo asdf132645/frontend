@@ -1,5 +1,5 @@
 <template>
-  <div class="mt2">
+  <div>
     <div v-if="testType !== '01' && testType !== '04'">
       <h3 class="titleText">
         <span class="greenColor">Whole</span> Slide Image
