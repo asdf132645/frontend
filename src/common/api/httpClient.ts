@@ -14,7 +14,7 @@ interface HttpResponse<T> {
 }
 
 export function useHttpClient() {
-    const apiBaseUrl = process.env.APP_API_BASE_URL;
+    const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
     const httpGet = async <T>(url: Endpoint, parameters: string, type?: boolean): Promise<ApiResponse<T>> => {
         return httpGetAct(url.endpoint, parameters, type);
