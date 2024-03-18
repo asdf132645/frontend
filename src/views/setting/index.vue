@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="settingWrapDiv">
     <ul class="settingTabBtn">
       <li v-for="tab in tabs" :key="tab" :class="{ activeTab: currentTab === tab }" @click="changeTab(tab)">{{ tab }}</li>
     </ul>

@@ -114,15 +114,15 @@
       </tbody>
     </table>
 
-    <div>
-      <h5>Backup and Restore</h5>
-      <div>
+    <div class="backupDiv">
+      <div class="backupDivChild">
+        <h5 class="mb1">Backup and Restore</h5>
         <input type="text" readonly v-model='backupPath'>
         <Datepicker v-model="backupStartDate"></Datepicker>
         <Datepicker v-model="backupEndDate"></Datepicker>
       </div>
     </div>
-    <button type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
+    <button class="cellImgSet" type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
   </div>
   <Alert
       v-if="showAlert"

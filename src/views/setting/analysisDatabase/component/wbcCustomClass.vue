@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul>
+    <ul class="customClass">
       <li v-for="item in wbcCustomItems" :key="item.id">
         <span>ID: {{ item!.customNum }}</span>
         <span><input v-model="item.abbreviation" type="text" maxlength="15" placeholder="abbreviation"/></span>
