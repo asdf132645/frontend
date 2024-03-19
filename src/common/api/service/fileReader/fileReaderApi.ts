@@ -5,3 +5,7 @@ const httpClient = useHttpClient();
 export const readJsonFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
     return httpClient.httpPost(apiConstants.jsonReader.get, request);
 };
+
+export const pdfPost = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.pdf.post, request, 'blob');
+};

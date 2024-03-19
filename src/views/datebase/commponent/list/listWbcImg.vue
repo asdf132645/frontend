@@ -1,6 +1,6 @@
 <template>
   <div class="mt3">
-    <h3>WBC Images</h3>
+    <h3 class="mb1">WBC Images</h3>
     <div v-if="allImages.length > 0" class="image-container">
       <div v-for="imageSet in allImages" :key="imageSet.id">
         <img v-for="image in imageSet.images" :key="image.fileName" :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)" alt="Image" />
@@ -57,6 +57,8 @@ function getImageUrl(imageName: any, id: string, title:string): string {
 .image-container {
   display: flex;
   flex-wrap: wrap;
+  max-height: 348px;
+  overflow: auto;
 }
 
 .image-container img {

@@ -17,6 +17,21 @@
       <th>Edit</th>
     </tr>
     </thead>
+    <colgroup>
+      <col width="5%"/>
+      <col width="5%"/>
+      <col width="5%"/>
+      <col width="5%"/>
+      <col width="7%"/>
+      <col width="8%"/>
+      <col width="8%"/>
+      <col width="8%"/>
+      <col width="15%"/>
+      <col width="7%"/>
+      <col width="7%"/>
+      <col width="20%"/>
+      <col width="3%"/>
+    </colgroup>
     <tbody v-if="dbData.length !== 0">
     <tr
         v-for="(item, idx) in dbData"

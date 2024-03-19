@@ -3,8 +3,8 @@
 
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
-      <h3>Order information</h3>
-      <ul>
+      <h3 class="orderTitle">Order information</h3>
+      <ul class="orderListUl">
         <li>Order ID : <span>{{ selectedItem?.slotId }}</span>  </li>
         <li>LIS status : <span>No data sent or receuved from LIS</span>  </li>
         <li>Type of order : <span>No data sent or receuved from LIS</span>
@@ -15,12 +15,12 @@
         <li>Patient ID : <span>{{ selectedItem?.patientId }}</span>  </li>
         <li>Patient name : <span>{{ selectedItem?.patientNm }}</span>  </li>
         <li>
-          <img :src="pilePath"/>
+          <img :src="pilePath" style="width: 235px"/>
         </li>
       </ul>
     </div>
     <div>
-      <h3>Result information</h3>
+      <h3 class="mt2 mb1">Result information</h3>
       <ul>
         <li>Analyzed date : <span>{{ selectedItem?.analyzedDttm }}</span></li>
         <li>Signed state : <span>{{ selectedItem?.signedState }}</span></li>

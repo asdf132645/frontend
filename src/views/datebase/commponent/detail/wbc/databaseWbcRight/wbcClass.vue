@@ -1,8 +1,9 @@
 <template>
-  <img v-if="type !== 'report'" :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
-  <h3>WBC Classification</h3>
-  <div>
-    <ul>
+  <img v-if="type !== 'report'"
+       :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
+  <div class="mt2 mb2">
+    <h3 class="wbcClassInfoLeft">WBC Classification</h3>
+    <ul class="leftWbcInfo">
       <li>
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
         <div v-if="memoModal">
@@ -17,46 +18,49 @@
       <li>
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
+      <li>
+        <font-awesome-icon :icon="['fas', 'lock']"/>
+        <!--        <font-awesome-icon :icon="['fas', 'lock-open']"/>-->
+      </li>
     </ul>
-    <p>
-      <font-awesome-icon :icon="['fas', 'lock']"/>
-      <!--        <font-awesome-icon :icon="['fas', 'lock-open']"/>-->
-    </p>
   </div>
-  <div v-for="(item, idx) in wbcInfoChangeVal" :key="item.id" class="wbcClassDbDiv">
-    <div v-if="idx === 0">
-      <p>Class</p>
-      <p>Count</p>
-      <p>%</p>
-    </div>
-    <div class="circle">
-      <p>{{ item?.name }}</p>
-      <p>{{ item?.count }}</p>
-      <p> {{ item?.percent }} </p>
-    </div>
-  </div>
-  <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-    <div class="categories">
-      <ul class="categoryNm">
-        <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-        <li>{{ getCategoryName(nWbcItem) }}</li>
+  <div class="wbcClassScroll">
+
+    <div v-for="(item, idx) in wbcInfoChangeVal" :key="item.id" class="wbcClassDbDiv">
+      <ul class="nth1Child" v-if="idx === 0">
+        <li>Class</li>
+        <li>Count</li>
+        <li>%</li>
       </ul>
-      <ul class="classNm">
-        <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-        <li>
-          {{ nWbcItem?.count }}
-          <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
-        </li>
-      </ul>
-      <ul class="degree">
-        <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-        <li>-</li>
+      <ul class="nth1Child">
+        <li>{{ item?.name }}</li>
+        <li>{{ item?.count }}</li>
+        <li> {{ item?.percent || '-' }} </li>
       </ul>
     </div>
-  </template>
-  <div v-if="type !== 'report'">
-    <button @click="beforeChang">Before</button>
-    <button @click="afterChang">After</button>
+    <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
+      <div class="categories">
+        <ul class="categoryNm">
+          <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
+          <li>{{ getCategoryName(nWbcItem) }}</li>
+        </ul>
+        <ul class="classNm">
+          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+          <li>
+            {{ nWbcItem?.count }}
+            <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
+          </li>
+        </ul>
+        <ul class="degree">
+          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+          <li>-</li>
+        </ul>
+      </div>
+    </template>
+    <div v-if="type !== 'report'">
+      <button @click="beforeChang">Before</button>
+      <button @click="afterChang">After</button>
+    </div>
   </div>
 </template>
 
@@ -110,7 +114,7 @@ const onCommit = async () => {
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
         // id가 일치하는 경우 해당 항목의 submit 값을 변경
-        const updatedItem = { ...item, signedState: 'Submit', signedOfDate: new Date(), signedUserId: item.id };
+        const updatedItem = {...item, signedState: 'Submit', signedOfDate: new Date(), signedUserId: item.id};
         // updatedItem의 내용을 변경
         updatedItem.submit = 'Submit'; // 예시로 필드를 추가하거나 변경
         return updatedItem;
@@ -120,7 +124,7 @@ const onCommit = async () => {
 }
 
 
-const memoChange = async () =>{
+const memoChange = async () => {
   const updatedRuningInfo = props.originalDb.map((item: any) => {
     if (item.id === props.selectItems.id) {
       // id가 일치하는 경우 해당 항목의 submit 값을 변경
@@ -133,7 +137,7 @@ const memoChange = async () =>{
   memoModal.value = false;
 }
 
-const  memoOpen = () =>{
+const memoOpen = () => {
   memo.value = props.selectItems.memo;
   memoModal.value = !memoModal.value;
 }
@@ -144,7 +148,10 @@ const memoCancel = () => {
 
 const resRunningItem = async (updatedRuningInfo: any) => {
   try {
-    const response = await updateRunningApi({userId: Number(userModuleDataGet.value.id), runingInfoDtoItems: updatedRuningInfo})
+    const response = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: updatedRuningInfo
+    })
     if (response) {
       alert('success');
     } else {
@@ -156,12 +163,12 @@ const resRunningItem = async (updatedRuningInfo: any) => {
 }
 
 const beforeChang = () => {
-  wbcInfoChangeVal.value = props.wbcInfo;
+  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0];
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
 }
 
 const afterChang = () => {
-  wbcInfoChangeVal.value = props.wbcInfo.wbcInfoAfter;
+  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter;
   nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
 }
 

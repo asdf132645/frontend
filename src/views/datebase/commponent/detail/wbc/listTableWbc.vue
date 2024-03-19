@@ -1,136 +1,138 @@
 <template>
-  <div>
+  <div class="wbcMenu">
     <ul>
-      <li @click="rbcGo">RBC</li>
-      <li>WBC</li>
-      <li @click="reportGo">REPORT</li>
+      <li>RBC</li>
+      <li @click="pageGo('/databaseWbc')">WBC</li>
+      <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
-    <div>
-      <button @click="moveWbc('up')">up</button>
-      <button @click="moveWbc('down')">down</button>
+    <div class="wbcMenuBottom">
+      <button @click="moveWbc('up')"><font-awesome-icon :icon="['fas', 'circle-up']" /></button>
+      <button @click="moveWbc('down')"><font-awesome-icon :icon="['fas', 'circle-down']" /></button>
     </div>
   </div>
-  <div class="databaseWbcRight">
-    <WbcClass  :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
-  </div>
 
-  <div class="databaseWbcLeft">
-    <div>
-      <button type="button" @click="drawCellMarker">
-        <font-awesome-icon
-            :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-        />
-        Cell marking
-      </button>
-      <button @click="rollbackChanges">Rollback</button>
+  <div class="wbcContent">
+    <div class="databaseWbcRight">
+      <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+    </div>
 
-    </div>
-    <div>
-      <div>
-        <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-        <input
-            type="range"
-            min="150"
-            max="600"
-            v-model="imageSize"
-            @input="changeImageSize"
-        />
-      </div>
-      <div>
-        <font-awesome-icon :icon="['fas', 'sun']"/>
-        <input
-            type="range"
-            min="50"
-            max="600"
-            v-model="imgBrightness"
-            @input="changeImgBrightness"
-        />
-        {{ imgBrightness }}
-      </div>
-      <div>
-        <font-awesome-icon :icon="['fas', 'palette']"/>
-        <input
-            type="range"
-            min="0"
-            max="255"
-            v-model="imageRgb[0]"
-            @input="changeImageRgb"
-        />
-        <input
-            type="range"
-            min="0"
-            max="255"
-            v-model="imageRgb[1]"
-            @input="changeImageRgb"
-        />
-        <input
-            type="range"
-            min="0"
-            max="255"
-            v-model="imageRgb[2]"
-            @input="changeImageRgb"
-        />
-        <button @click="rgbReset">reset</button>
-        <div>
-          <select v-model="selectSizeTitle">
-            <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
-          </select>
-        </div>
-      </div>
-      <font-awesome-icon @click="excelDownload" :icon="['fas', 'file-excel']"/>
-    </div>
-    <div>
-      <ul class="wbcInfoDbUl">
-        <li v-for="(item) in wbcInfo" :key="item.id" @click="scrollToElement(item.id)">
-          <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
-            <p>{{ item?.title }}</p>
-            <p>{{ item?.count }}</p>
-          </div>
-        </li>
-      </ul>
-      <ul class="cellImgBox">
-        <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
+    <div class="databaseWbcLeft">
+      <div class="imgMenuSetDiv">
+        <button type="button" @click="drawCellMarker">
+          <font-awesome-icon
+              :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+          />
+          Cell marking
+        </button>
+        <button @click="rollbackChanges">Rollback</button>
+        <button @click="imgSetOpen">img Setting</button>
+        <button @click="excelDownload"> <font-awesome-icon :icon="['fas', 'file-excel']"/></button>
+        <div class="imgSet" v-if="imgSet">
           <div>
-            <p>{{ item?.title }}</p>
-            <p>{{ item?.count }}</p>
-            <input type="checkbox" @input="allCheckChange($event,item.title)">
+            <font-awesome-icon :icon="['fas', 'plus-minus']"/> Size
+            <input
+                type="range"
+                min="150"
+                max="600"
+                v-model="imageSize"
+                @input="changeImageSize"
+            />
           </div>
-          <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
-            <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
-                :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
-                @click="selectImage(itemIndex, imageIndex)"
-                @dblclick="openModal(image, item)"
-            >
-              <div style="position: relative">
-                <img :src="getImageUrl(image.fileName, item.id, item.title)"
-                     :width="image.width ? image.width : '150px'"
-                     :height="image.height ? image.height : '150px'"
-                     :style="{ filter: image.filter }"
-                     @dragstart="onDragStart(itemIndex, imageIndex)"
-                     draggable="true"
-                     class="cellImg"
-                     ref="cellRef"
-                />
-                <div class="center-point" :style="image.coordinates"></div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <!-- 모달 창 -->
-    <div class="wbcModal" v-if="modalOpen">
-      <div class="wbc-modal-content">
-        <span class="wbcClose" @click="closeModal">&times;</span>
-        <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }" class="modal-image" />
-        <div class="buttons">
-          <button @click="zoomIn">+</button>
-          <button @click="zoomOut">-</button>
+          <div>
+            <font-awesome-icon :icon="['fas', 'sun']"/> Brightness
+            <input
+                type="range"
+                min="50"
+                max="600"
+                v-model="imgBrightness"
+                @input="changeImgBrightness"
+            />
+          </div>
+          <div>
+            <font-awesome-icon :icon="['fas', 'palette']"/> RGB
+            <input
+                type="range"
+                min="0"
+                max="255"
+                v-model="imageRgb[0]"
+                @input="changeImageRgb"
+            />
+            <input
+                type="range"
+                min="0"
+                max="255"
+                v-model="imageRgb[1]"
+                @input="changeImageRgb"
+            />
+            <input
+                type="range"
+                min="0"
+                max="255"
+                v-model="imageRgb[2]"
+                @input="changeImageRgb"
+            />
+            RGB Select a Class
+            <select v-model="selectSizeTitle" class="selectSizeTitle">
+              <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
+            </select>
+            <button class="resetBtn" @click="rgbReset">RGB Reset</button>
+          </div>
+
         </div>
       </div>
-    </div>
 
+      <div>
+        <ul class="wbcInfoDbUl">
+          <li v-for="(item) in wbcInfo" :key="item.id" @click="scrollToElement(item.id)">
+            <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
+              <p>{{ item?.title }}</p>
+              <p>{{ item?.count }}</p>
+            </div>
+          </li>
+        </ul>
+        <ul class="cellImgBox">
+          <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
+            <div>
+              <p class="mt1"><input type="checkbox" @input="allCheckChange($event,item.title)">{{ item?.title }} ({{ item?.count }})</p>
+            </div>
+            <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
+              <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
+                  :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
+                  @click="selectImage(itemIndex, imageIndex)"
+                  @dblclick="openModal(image, item)"
+              >
+                <div style="position: relative">
+                  <img :src="getImageUrl(image.fileName, item.id, item.title)"
+                       :width="image.width ? image.width : '150px'"
+                       :height="image.height ? image.height : '150px'"
+                       :style="{ filter: image.filter }"
+                       @dragstart="onDragStart(itemIndex, imageIndex)"
+                       draggable="true"
+                       class="cellImg"
+                       ref="cellRef"
+                  />
+                  <div class="center-point" :style="image.coordinates"></div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <!-- 모달 창 -->
+      <div class="wbcModal" v-if="modalOpen">
+        <div class="wbc-modal-content">
+          <span class="wbcClose" @click="closeModal">&times;</span>
+          <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
+               class="modal-image"/>
+          <div class="buttons">
+            <button @click="zoomIn">+</button>
+            <button @click="zoomOut">-</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -167,7 +169,7 @@ const rollbackHistory: any = [];
 const imageSize = ref(150);
 const imgBrightness = ref(100);
 const imageRgb = ref([0, 0, 0]);
-const selectSizeTitle = ref('')
+const selectSizeTitle = ref('ME')
 const refsArray = ref<any[]>([]);
 const allCheck = ref('');
 const cellRef = ref(null);
@@ -177,6 +179,7 @@ const modalOpen = ref(false);
 const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
+const imgSet = ref(false);
 
 const openModal = (image: any, item: any) => {
   modalOpen.value = true;
@@ -186,6 +189,10 @@ const openModal = (image: any, item: any) => {
 const closeModal = () => {
   modalOpen.value = false;
 };
+
+const imgSetOpen = () => {
+  imgSet.value = !imgSet.value
+}
 
 const zoomIn = () => {
   modalImageWidth.value = `${parseFloat(modalImageWidth.value) + 50}px`;
@@ -208,15 +215,29 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
 
-const rbcGo = () => {
-  router.push('/databaseRbc')
+const pageGo = (path: string) => {
+  router.push(path)
 }
 
-const reportGo = () => {
-  router.push('/report')
-}
+type CellType =
+    "NES"
+    | "NEB"
+    | "ME"
+    | "MY"
+    | "PR"
+    | "LY"
+    | "LR"
+    | "LA"
+    | "MO"
+    | "EO"
+    | "BA"
+    | "BL"
+    | "PC"
+    | "NR"
+    | "GP"
+    | "PA"
+    | "AR";
 
-type CellType = "NES" | "NEB" | "ME" | "MY" | "PR" | "LY" | "LR" | "LA" | "MO" | "EO" | "BA" | "BL" | "PC" | "NR" | "GP" | "PA" | "AR";
 interface Metrics {
   NES: number;
   NEB: number;
@@ -262,26 +283,332 @@ const calculateF1Score = (recall: number, precision: number): number => {
 const excelDownload = () => {
   const groundTruth = selectItems.value.wbcInfoAfter; // 실제 정답 데이터
   const predicted = selectItems.value.wbcInfo.wbcInfo[0]; // AI가 예측한 데이터
-  console.log('groundTruth:',JSON.stringify(groundTruth))
-  console.log('predicted:',JSON.stringify(predicted))
+  console.log('groundTruth:', JSON.stringify(groundTruth))
+  console.log('predicted:', JSON.stringify(predicted))
   const confusionMatrix: Record<CellType, Record<CellType, number>> = {
-    NES: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    NEB: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    ME: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    MY: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    PR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    LY: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    LR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    LA: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    MO: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    EO: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    BA: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    BL: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    PC: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    NR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    GP: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    PA: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
-    AR: { NES: 0, NEB: 0, ME: 0, MY: 0, PR: 0, LY: 0, LR: 0, LA: 0, MO: 0, EO: 0, BA: 0, BL: 0, PC: 0, NR: 0, GP: 0, PA: 0, AR: 0 },
+    NES: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    NEB: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    ME: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    MY: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    PR: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    LY: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    LR: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    LA: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    MO: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    EO: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    BA: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    BL: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    PC: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    NR: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    GP: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    PA: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
+    AR: {
+      NES: 0,
+      NEB: 0,
+      ME: 0,
+      MY: 0,
+      PR: 0,
+      LY: 0,
+      LR: 0,
+      LA: 0,
+      MO: 0,
+      EO: 0,
+      BA: 0,
+      BL: 0,
+      PC: 0,
+      NR: 0,
+      GP: 0,
+      PA: 0,
+      AR: 0
+    },
   };
   const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
 
@@ -433,7 +760,6 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
 
-  // 추가 작업이 필요하다면 여기에 추가 코드를 작성
 };
 
 const moveWbc = async (direction: any) => {
@@ -490,7 +816,7 @@ const drawCellMarker = async () => {
         });
       });
     }
-  }else{
+  } else {
     wbcInfo.value.forEach((item: any) => {
       item.images.forEach((image: any) => {
         image.coordinates = {
@@ -673,7 +999,7 @@ function handleKeyUp(event: KeyboardEvent) {
   }
 }
 
-async function initData () {
+async function initData() {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;

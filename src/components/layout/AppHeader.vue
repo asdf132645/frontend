@@ -6,11 +6,12 @@
         <div class="borderLine">
           <span class="greenColor">U</span>MID
         </div>
-<!--        <div class='toggleHeadBtn'>-->
-<!--          <span></span>-->
-<!--        </div>-->
-        <router-link :to="noRouterPush ? '#' : '/setting'" :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
-          <font-awesome-icon :icon="['fas', 'gear']" style="font-size: 1rem;" />
+        <!--        <div class='toggleHeadBtn'>-->
+        <!--          <span></span>-->
+        <!--        </div>-->
+        <router-link :to="noRouterPush ? '#' : '/setting'"
+                     :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
+          <font-awesome-icon :icon="['fas', 'gear']" style="font-size: 1rem;"/>
           <span class='icoText'>Setting</span>
         </router-link>
 
@@ -30,22 +31,6 @@
 
         <!--  좌측메뉴  -->
         <div class="small-icon-menu">
-          <div class="leftMenu">
-            <ul>
-              <li class="alarm">
-                <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
-              </li>
-              <li>
-                <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
-                <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
-              </li>
-              <li>
-                <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
-              </li>
-              <li class="oliCount" @click="openLayer">oliCount: {{ oilCountData || 0 }}</li>
-              <li>storage: {{ storagePercentData || 0 }}</li>
-            </ul>
-          </div>
           <div class="lastMenu">
             <ul>
               <li>Logged: {{ formattedDate }}</li>
@@ -62,7 +47,22 @@
           </div>
         </div>
       </div>
-
+      <div class="leftMenu" v-if="router.currentRoute.value.path === '/analysis'">
+        <ul>
+          <li class="alarm">
+            <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
+          </li>
+          <li>
+            <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
+            <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
+          </li>
+          <li>
+            <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
+          </li>
+          <li class="oliCount" @click="openLayer">oliCount: {{ oilCountData || 0 }}</li>
+          <li class="storage">storage: {{ storagePercentData || 0 }}</li>
+        </ul>
+      </div>
 
     </nav>
   </header>
@@ -178,7 +178,7 @@ watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals));
   if (newValsObj[0].isRunningState) {
     noRouterPush.value = true;
-  }else{
+  } else {
     noRouterPush.value = false;
   }
 });
@@ -304,14 +304,14 @@ const cellImgGet = async (newUserId: string) => {
     if (result) {
       if (result?.data) {
         const data = result.data;
-        isNsNbIntegration.value = data.isNsNbIntegration ? 'Y':'N';
+        isNsNbIntegration.value = data.isNsNbIntegration ? 'Y' : 'N';
         alarmCount.value = Number(data.alarmCount) * 1000;
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-          isNsNbIntegration: data?.isNsNbIntegration ? 'Y':'N'
+          isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
-        sessionStorage.setItem('isNsNbIntegration',isNsNbIntegration.value);
-        sessionStorage.setItem('pbiaRootPath',data?.pbiaRootPath);
+        sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
+        sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
       }
     }
 
@@ -319,7 +319,6 @@ const cellImgGet = async (newUserId: string) => {
     console.log(e);
   }
 }
-
 
 
 </script>

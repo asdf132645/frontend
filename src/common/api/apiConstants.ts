@@ -252,6 +252,12 @@ export const apiConstants = {
             endpoint: 'jsonReader/send',
             requiresToken: false,
         }
+    },
+    pdf:{
+        post:{
+            endpoint: 'pdf/generate',
+            requiresToken: false,
+        }
     }
 
 };

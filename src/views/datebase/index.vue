@@ -1,6 +1,11 @@
 <template>
   <div>
-    <h3>Classification List</h3>
+    <h3 class="titleH3">
+      Classification List
+      <button @click="classListToggleEvent">
+        <font-awesome-icon :icon="['fas', 'list-check']"/>
+      </button>
+    </h3>
     <div class='listBoxTable'>
       <div class="filterListDiv">
         <div>
@@ -12,15 +17,14 @@
           <input type="text" v-model='searchText'/>
           <Datepicker v-model="startDate"></Datepicker>
           <Datepicker v-model="endDate"></Datepicker>
-          <button @click="search">Search</button>
+          <button class="searchClass" @click="search">Search</button>
         </div>
-        <div>
-          <span>Class Filter</span>
-          <div>
+        <div class="filterDivBox" v-if="classListToggle">
+          <div class="nrCount">
             <span>NR count</span>
             <input type="text" v-model="nrCount"/>
           </div>
-          <div>
+          <div class="wbcTotal">
             <span>WBC Total</span>
             <select v-model="wbcCountOrder">
               <option value="all">Do Not Select</option>
@@ -28,7 +32,7 @@
               <option>ASC</option>
             </select>
           </div>
-          <div>
+          <div class="wbcInfoFilter">
             <span>WBC Info Filter</span>
             <ul class="wbcInfoFilter">
               <li v-for="(item, idx) in titleItem" :key="idx">
@@ -37,10 +41,12 @@
               </li>
             </ul>
           </div>
-          <div>
-            <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>ALL</label>
-            <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/> Diff</label>
-            <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/> PBS</label>
+          <div class="lastTestType">
+            <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/><span>ALL</span></label>
+            <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
+              <span>Diff</span></label>
+            <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
+              <span>PBS</span></label>
           </div>
         </div>
       </div>
@@ -77,17 +83,20 @@ const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
 const selectedItem = ref({});
-const titleItem =  ref<any>([]);
+const titleItem = ref<any>([]);
 const titleItemArr = ref([]);
 const nrCount = ref(0);
 const testType = ref('');
 const wbcCountOrder = ref('');
-
+const classListToggle = ref(false);
 
 onMounted(async () => {
   await initDbData();
 });
 
+const classListToggleEvent = () => {
+  classListToggle.value = !classListToggle.value;
+}
 const changeTestType = (value: any) => {
   testType.value = testType.value === value ? '' : value;
 }
@@ -105,7 +114,7 @@ const initDbData = async () => {
   // const lastQuery = loadLastQuery();
   const lastSearchParams = loadLastSearchParams();
   // 이전 검색 조건 적용
-  if(Object.keys(lastSearchParams).length !== 0){
+  if (Object.keys(lastSearchParams).length !== 0) {
     searchType.value = lastSearchParams.searchType || 'barcodeNo';
     searchText.value = lastSearchParams.searchText || '';
     startDate.value = new Date(lastSearchParams.startDate) || new Date();
@@ -116,7 +125,7 @@ const initDbData = async () => {
     for (let i = 1; i <= numberOfCalls; i++) {
       await getDbData('mounted', i);
     }
-  }else{
+  } else {
     await getDbData('mounted', 1);
   }
 }
@@ -127,7 +136,7 @@ const selectItem = (item: any) => {
 
 const saveLastSearchParams = () => {
   const lastSearchParams = {
-    page: page.value ,
+    page: page.value,
     searchType: searchType.value,
     searchText: searchText.value,
     startDate: formatDate(startDate.value),
@@ -144,12 +153,12 @@ const loadLastSearchParams = () => {
 
 
 const getDbData = async (type: string, pageNum?: number) => {
-  if(type === 'search'){
+  if (type === 'search') {
     page.value = 1;
   }
   const requestData: any = {
-    page: type !== 'mounted'? page.value : Number(pageNum),
-    pageSize: 15,
+    page: type !== 'mounted' ? page.value : Number(pageNum),
+    pageSize: 20,
     startDay: formatDate(startDate.value),
     endDay: formatDate(endDate.value),
     barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
@@ -161,11 +170,11 @@ const getDbData = async (type: string, pageNum?: number) => {
     requestData.title = titleItemArr.value;
   }
 
-  if(testType.value !== '00' && testType.value !== ''){
+  if (testType.value !== '00' && testType.value !== '') {
     requestData.testType = testType.value;
   }
 
-  if(wbcCountOrder.value !== '' && wbcCountOrder.value !== 'ALL'){
+  if (wbcCountOrder.value !== '' && wbcCountOrder.value !== 'all') {
     requestData.wbcCountOrder = wbcCountOrder.value;
   }
 
@@ -180,7 +189,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         } else {
           page.value -= 1;
         }
-        if(newData.length === 0 && String(result.data?.page) === '1'){
+        if (newData.length === 0 && String(result.data?.page) === '1') {
           dbGetData.value = newData;
         }
       } else {
