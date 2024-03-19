@@ -30,4 +30,5 @@ export interface User {
     subscriptionDate: string;
     latestDate: string;
     state?: string;
+    [key: string]:any;
 }
