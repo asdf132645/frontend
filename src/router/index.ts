@@ -5,8 +5,9 @@ import JoinView from '@/views/join/index.vue';
 import loginView from '@/views/login/index.vue';
 import setting from '@/views/setting/index.vue'
 import Database from '@/views/datebase/index.vue';
+import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listTableRbc.vue';
 import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listTableWbc.vue';
-import Report from  '@/views/datebase/commponent/detail/report/report.vue'
+import Report from  '@/views/datebase/commponent/detail/report/report.vue';
 
 import {useStore} from "vuex";
 
@@ -47,8 +48,12 @@ const router = createRouter({
             path: '/databaseWbc',
             name: 'databaseWbc',
             component: DatabaseWbc,
-        }
-        ,
+        },
+        {
+            path: '/databaseRbc',
+            name: 'databaseRbc',
+            component: DatabaseRbc,
+        },
         {
             path: '/report',
             name: 'report',
