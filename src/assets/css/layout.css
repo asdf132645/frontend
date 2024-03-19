@@ -23,13 +23,23 @@
     margin-bottom: 20px;
 }
 
+.pl0{
+    padding-left: 0!important;
+}
+
 /* header-menu */
 .header {
     width: 100%;
     display: block;
     background: #353942;
 }
-
+.printStart {
+    margin-left: 10px;
+    border: 1px solid #fff;
+    padding: 5px;
+    vertical-align: middle;
+    cursor: pointer;
+}
 .appHeaderLeft > a {
     font-size: 1rem;
     color: #ffffff;
@@ -849,6 +859,7 @@ ul.cellImgBox {
     overflow-x: hidden;
     text-align: left;
     padding-left: 20px;
+    background: #252629;
 }
 
 .wbcClassScroll {
@@ -927,17 +938,55 @@ button.searchClass {
 }
 
 .wbcDiv {
-    width: 30%;
+    width: 20%;
 }
 
 .reportDetail {
-    width: 70%;
+    width: 60%;
+    background: #ffffff;
+    margin-left: 10px;
+    color: #696969;
+    font-size: 0.8rem;
+}
+
+table.reportTable {
+    text-align: left;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 0.8rem;
 }
 
 .reportTitle {
     text-align: left;
+    background: #6f7e95;
+    padding: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+}
+h3.reportH3 {
+    text-align: left;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-bottom: 1px solid #979797;
+}
+.categories.report {
+    padding: 5px 5px;
+}
+.reportDivBottom {
+    padding: 0px 10px;
+}
+table.reportTable tr {
+    border-bottom: 1px solid #babec5;
 }
 
+table.reportTable tr td {
+    padding: 10px 10px;
+}
+
+table.reportTable tr th {
+    padding: 10px 10px;
+}
 ul.wbcInfoFilter > li {
     display: inline-block;
 }
@@ -1081,7 +1130,7 @@ select.selectSizeTitle {
 
 .wbcMenu::before {
     content: "";
-    height: 90%;
+    height: 91%;
     background: #252629;
     position: absolute;
     top: 80px;
@@ -1093,4 +1142,64 @@ select.selectSizeTitle {
     position: absolute;
     margin-top: 20px;
     width: 6%;
+}
+
+.reportSection {
+    display: inline-block;
+    width: 95%;
+    min-height: 89vh;
+}
+
+.reportDiv {
+    padding-left: 3%;
+}
+
+.printSection {
+    position: absolute;
+    top: 0;
+    background: #fff;
+    margin: auto;
+    left: 29%;
+    max-width: 980px;
+    color: #000;
+}
+
+.printSection {
+    position: absolute;
+    top: 0;
+    background: #fff;
+    margin: auto;
+    left: 29%;
+    max-width: 980px;
+    color: #000;
+}
+
+.reportContent > table tr th, .reportContent > table tr td {
+    text-align: left;
+    padding: 5px;
+}
+
+.reportContent table {
+    width: 100%;
+}
+
+h3.printDetailTitle {
+    margin: 40px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+button.printCloseBtn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 7px 25px;
+    top: 5px;
+    cursor: pointer;
+}
+
+ul.cellImgBox.print {
+    background: #fff;
 }

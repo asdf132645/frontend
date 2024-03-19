@@ -39,16 +39,20 @@ export function useHttpClient() {
     };
 
 
-    const httpPost = async <T>(url: Endpoint, payload: GenericObject): Promise<ApiResponse<T>> => {
-        return httpPostAct(url.endpoint, payload);
+    const httpPost = async <T>(url: Endpoint, payload: GenericObject, contentType?: string): Promise<ApiResponse<T>> => {
+        return httpPostAct(url.endpoint, payload, contentType);
     };
 
-    const httpPostAct = async <T>(url: string, payload: GenericObject): Promise<ApiResponse<T>> => {
+    const httpPostAct = async <T>(url: string, payload: GenericObject, contentType?: string): Promise<ApiResponse<T>> => {
+
         const options: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
             },
         };
+        if (contentType === 'blob'){
+            options.responseType = 'blob';
+        }
 
         axios.defaults.withCredentials = true;
 

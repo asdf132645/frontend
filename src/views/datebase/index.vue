@@ -174,7 +174,7 @@ const getDbData = async (type: string, pageNum?: number) => {
     requestData.testType = testType.value;
   }
 
-  if (wbcCountOrder.value !== '' && wbcCountOrder.value !== 'ALL') {
+  if (wbcCountOrder.value !== '' && wbcCountOrder.value !== 'all') {
     requestData.wbcCountOrder = wbcCountOrder.value;
   }
 

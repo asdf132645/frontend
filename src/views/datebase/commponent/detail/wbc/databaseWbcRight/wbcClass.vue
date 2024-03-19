@@ -26,7 +26,6 @@
   </div>
   <div class="wbcClassScroll">
 
-
     <div v-for="(item, idx) in wbcInfoChangeVal" :key="item.id" class="wbcClassDbDiv">
       <ul class="nth1Child" v-if="idx === 0">
         <li>Class</li>
@@ -164,12 +163,12 @@ const resRunningItem = async (updatedRuningInfo: any) => {
 }
 
 const beforeChang = () => {
-  wbcInfoChangeVal.value = props.wbcInfo;
+  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0];
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
 }
 
 const afterChang = () => {
-  wbcInfoChangeVal.value = props.wbcInfo.wbcInfoAfter;
+  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter;
   nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
 }
 

@@ -2,8 +2,8 @@
   <div class="wbcMenu">
     <ul>
       <li>RBC</li>
-      <li>WBC</li>
-      <li @click="reportGo">REPORT</li>
+      <li @click="pageGo('/databaseWbc')">WBC</li>
+      <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
     <div class="wbcMenuBottom">
@@ -215,8 +215,8 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
 
-const reportGo = () => {
-  router.push('/report')
+const pageGo = (path: string) => {
+  router.push(path)
 }
 
 type CellType =
@@ -760,7 +760,6 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
 
-  // 추가 작업이 필요하다면 여기에 추가 코드를 작성
 };
 
 const moveWbc = async (direction: any) => {
