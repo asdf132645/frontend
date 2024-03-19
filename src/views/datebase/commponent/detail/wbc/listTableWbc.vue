@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul>
-      <li>RBC</li>
+      <li @click="rbcGo">RBC</li>
       <li>WBC</li>
       <li @click="reportGo">REPORT</li>
       <li>LIS-CBC</li>
@@ -207,6 +207,10 @@ onMounted(() => {
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
+
+const rbcGo = () => {
+  router.push('/databaseRbc')
+}
 
 const reportGo = () => {
   router.push('/report')
