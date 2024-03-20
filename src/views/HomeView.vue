@@ -271,6 +271,8 @@ const saveTestHistory = async (params: any) => {
       signedUserId: '',
       classificationResult: [],
       isNsNbIntegration: isNsNbIntegration,
+      memo: '',
+      rbcMemo:'',
     }
     saveRunningInfo(newObj);
 

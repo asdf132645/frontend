@@ -285,13 +285,10 @@ const selectItem = (item) => {
 };
 
 const rowDbClick = (item) => {
-  const rbcInfoData = calcRbcDegree(item?.rbcInfo);
-  // console.log('rbcInfoData');
-  // console.log(rbcInfoData);
   const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
   // 스토어 사용 못하는 이유 -> 새로고침 등 여러가지 행동에 데이터가 날라가면 안되서 세션스토리지 사용
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoData));
+  sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
@@ -309,79 +306,6 @@ const getRbcDegreeData = async () => {
   }
 };
 
-const calcRbcDegree = (rbcInfos) => {
-  let totalCount = 0;
-  let sizeTotal = 0;
-  let chromiaTotal = 0;
-  const rbcInfo = JSON.parse(JSON.stringify(rbcInfos));
-  console.log('rbcInfo')
-  console.log(rbcInfo)
-
-  rbcInfo.forEach((rbcCategory) => {
-    rbcCategory.classInfo.forEach((rbcClass) => {
-      // size total
-      if (rbcCategory.categoryId === '01') {
-        if (rbcClass.classId !== '04') {
-          sizeTotal += Number(rbcClass.degree)
-        }
-      }
-      // chromia total
-      else if (rbcCategory.categoryId === '02') {
-        if (rbcClass.classId !== '04') {
-          chromiaTotal += Number(rbcClass.degree)
-        }
-      }
-
-      // else total
-      else {
-        totalCount += Number(rbcClass.degree)
-      }
-    });
-  });
-
-  rbcInfo.forEach((rbcCategory) => {
-    rbcCategory.classInfo.forEach((rbcClass) => {
-      rbcDegreeStandard.value.forEach((degreeStandard) => {
-        console.log('rbcDegreeStandard')
-        console.log(rbcDegreeStandard)
-        if (
-            degreeStandard.category_id === rbcCategory.categoryId &&
-            degreeStandard.class_id === rbcClass.classId
-        ) {
-          const degreeCount = Number(rbcClass.degree);
-          let percent = 0;
-
-          if (degreeStandard.category_id === '01') { // size total
-            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
-
-          } else if (degreeStandard.category_id === '02') { // chromia total
-            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
-          } else { // shape, inclusion body total
-            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
-          }
-
-          if (isNaN(percent)) {
-            percent = 0;
-          }
-
-          const setDegree = (value) => (rbcClass.degree = value);
-          // 0
-          if (percent < Number(degreeStandard.degree1)) setDegree('0');
-          // 1
-          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
-          // 2
-          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
-          // 3
-          else setDegree('3');
-        }
-      });
-    });
-    
-  });
-
-  return rbcInfo;
-
-};
   
 
 const closeLayer = (val) => {

@@ -1,75 +1,72 @@
 <template>
   <div>
-    <h3 style="text-align:left">RBC Classification</h3>
-    <div>
-        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
-        <div v-if="memoModal">
-          <textarea v-model="memo"></textarea>
-          <button @click="memoChange">ok</button>
-          <button @click="memoCancel">cancel</button>
-        </div>
+    <div class="mt2 mb2">
+      <h3 class="wbcClassInfoLeft">RBC Classification</h3>
+      <ul class="leftWbcInfo">
+        <li style="position: relative">
+          <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
+          <div v-if="memoModal" class="memoModal">
+            <textarea v-model="memo"></textarea>
+            <button @click="memoChange">ok</button>
+            <button @click="memoCancel">cancel</button>
+          </div>
+        </li>
+      </ul>
     </div>
-    <table class="table-container">
-      <thead>
-        <tr>
-          <th class="rbc-head">Category</th>
-          <th class="rbc-head">Class</th>
-          <th class="rbc-head">Degree</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Loop through rbcInfoChangeVal -->
-        <tr v-for="rbcVal in rbcInfoChangeVal" :key="rbcVal.categoryId">
-          <td class="rbc-container">{{ rbcVal.categoryNm }}</td>
-          <td class="rbc-container">
-            <!-- Loop through classInfo -->
-            <div v-for="item in rbcVal.classInfo" :key="item.classId">{{ item.classNm }}</div>
-          </td>
-          <td class="rbc-container">
-            <!-- Loop through classInfo and display degrees -->
-            <div v-for="item in rbcVal.classInfo" :key="item.classId">
+    <template v-for="(classList, outerIndex) in [rbcInfoChangeVal]" :key="outerIndex">
+      <template v-for="(category, innerIndex) in classList" :key="innerIndex">
+        <div class="categories">
+          <ul class="categoryNm">
+            <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
+            <li>{{ getCategoryName(category) }}</li>
+          </ul>
+          <ul class="classNm">
+            <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
+            <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+              <li>{{ classInfo?.classNm }}</li>
+            </template>
+          </ul>
+          <ul class="degree">
+            <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
+            <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+              <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
                 <font-awesome-icon
-                    v-if="item.classNm === 'Normal'"
-                    :icon="['fas', 'circle']"
-                    :class="{
-                        'degreeActive': Number(item.degree) >= 1,
-                        'degree0-img': Number(item.degree) === 0
-                    }"
-                />
-                <!-- For other classNm, render 4 circles -->
-                <font-awesome-icon
-                    v-else
                     :icon="['fas', 'circle']"
                     v-for="degreeIndex in 4" :key="degreeIndex"
                     :class="{
-                        'degreeActive': degreeIndex < Number(item?.degree) + 2 || 0,
-                        'degree0-img': degreeIndex >= Number(item?.degree) + 1 || 0
-                    }"
+                        'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
+                        'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
+                      }"
                 />
-            </div>
-          </td>
-        </tr>
-        <!-- Add a row for other details -->
-        <tr>
-          <td class="rbc-container">Others</td>
-          <td class="rbc-container">
-            <!-- Display pltLabel and malariaLabel -->
-            <div>{{ pltLabel }}</div>
-            <div>{{ malariaLabel }}</div>
-          </td>
-          <td class="rbc-container">
-            <!-- Display pltCount and malariaCount -->
-            <div>{{ pltCount || 0 }} PLT / 1000 RBC</div>
-            <div>{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              </li>
+              <li v-else>
+                <div v-if="classInfo.degree === '0'">
+                  <font-awesome-icon
+                      :icon="['fas', 'circle']"
+                  />
+                </div>
+                <div v-else>
+                  <font-awesome-icon
+                      :icon="['fas', 'circle']"
+                      class="degreeActive"
+                  />
+                </div>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </template>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watch, onMounted } from 'vue';
+import {ref, defineProps, watch, onMounted, computed} from 'vue';
+import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {useStore} from "vuex";
+import Button from "@/components/commonUi/Button.vue";
+const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 
 const props = defineProps(['rbcInfo', 'selectItems', 'originalDb']);
 const rbcInfoChangeVal = ref([]);
@@ -79,6 +76,10 @@ const pltLabel = 'Platelets';
 const malariaLabel = 'Malaria';
 const memo = ref('');
 const memoModal = ref(false);
+const store = useStore();
+
+const userModuleDataGet = computed(() => store.state.userModule);
+
 
 onMounted(() => {
     pltCount.value = props.selectItems?.pltCount;
@@ -96,6 +97,48 @@ watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
 });
+
+const memoOpen = () => {
+  memo.value = memo.value !== '' ? memo.value : props.selectItems.rbcMemo;
+  memoModal.value = !memoModal.value;
+}
+
+const memoCancel = () => {
+  memoModal.value = false;
+}
+
+const memoChange = async () => {
+  const updatedRuningInfo = props.originalDb.map((item: any) => {
+    if (item.id === props.selectItems.id) {
+      // id가 일치하는 경우 해당 항목의 submit 값을 변경
+      // updatedItem의 내용을 변경
+      return {...item, rbcMemo: memo.value};
+    }
+    return item;
+  });
+  await resRunningItem(updatedRuningInfo);
+  memoModal.value = false;
+}
+
+const resRunningItem = async (updatedRuningInfo: any) => {
+  try {
+    const response = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: updatedRuningInfo
+    })
+    if (response) {
+      alert('success');
+      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === props.selectItems.id);
+      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
+      sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
+      memo.value = filteredItems[0].rbcMemo;
+    } else {
+      console.error('백엔드가 디비에 저장 실패함');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
 
 </script>
 

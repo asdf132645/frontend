@@ -1270,6 +1270,7 @@ table.tableClass {
     min-width: 300px;
     background: #313131;
     padding: 10px 15px 10px 10px;
+    z-index: 9999999;
 }
 
 .memoModal textarea {
