@@ -10,7 +10,7 @@ import Analysis from "@/views/analysis/index.vue";
 // homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import {getCurrentInstance, ref, computed, watch, onMounted, onUpdated, onUnmounted} from 'vue';
+import {getCurrentInstance, ref, computed, watch, onMounted} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
@@ -64,6 +64,7 @@ onMounted(async () => {
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
+  // console.log(process.env.APP_API_BASE_URL)
   if (!commonDataGet.value.isRunningState) {
     if (userId.value && userId.value !== '') {
       if (isStartEmbeddedCalled.value) {

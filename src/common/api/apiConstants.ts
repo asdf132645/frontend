@@ -232,6 +232,10 @@ export const apiConstants = {
             get:{
                 endpoint: 'runningInfo/getAll',
                 requiresToken: false,
+            },
+            delete:{
+                endpoint: 'runningInfo/delete',
+                requiresToken: false,
             }
         },
         folder: {

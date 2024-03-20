@@ -15,6 +15,7 @@ import { defineProps, onMounted, ref, watch } from 'vue';
 
 const props = defineProps(['dbData', 'selectedItem']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath');
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const allImages = ref([]);
 
@@ -49,7 +50,7 @@ function getImageUrl(imageName: any, id: string, title:string): string {
 
   const slotId = selectedItem.slotId || '';
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 }
 </script>
 

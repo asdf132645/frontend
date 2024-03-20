@@ -62,7 +62,7 @@
       <td> {{ item?.submit }}</td>
       <td> {{ item?.signedOfDate }}</td>
       <td>
-        <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']"  @click="editData(item)"/>
+        <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
       </td>
     </tr>
     <tr>
@@ -75,11 +75,12 @@
     </tr>
     </tbody>
   </table>
-  <div v-if="contextMenu.visible" :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }" class="context-menu">
+  <div v-if="contextMenu.visible" :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
+       class="context-menu">
     <ul>
-      <li>Print</li>
-      <li>Classification</li>
-      <li>Edit order data</li>
+      <li @click="printStart">Print</li>
+      <li @click="classificationRowDbClick">Classification</li>
+      <li @click="editOrderData">Edit order data</li>
       <li @click="deleteRow">Delete</li>
       <li>export XLSX</li>
     </ul>
@@ -93,7 +94,7 @@
     <!-- 컨텐츠 슬롯에 들어갈 내용 -->
     <template #content>
       <div>
-        <ul>
+        <ul class="editOrder">
           <li>
             <span>PB/BF</span>
             <input type="text" v-model="itemObj.testType"/>
@@ -104,15 +105,15 @@
           </li>
           <li>
             <span>BARCODE ID</span>
-            <input type="text" v-model="itemObj.barcodeNo"/>
+            <input type="text" v-model="itemObj.barcodeNo" placeholder="BARCODE ID"/>
           </li>
           <li>
             <span>PATIENT ID</span>
-            <input type="text" v-model="itemObj.patientId"/>
+            <input type="text" v-model="itemObj.patientId" placeholder="PATIENT ID"/>
           </li>
           <li>
             <span>PATIENT NAME</span>
-            <input type="text" v-model="itemObj.patientNm"/>
+            <input type="text" v-model="itemObj.patientNm" placeholder="PATIENT NAME"/>
           </li>
           <li>
             <span>Analyzed date</span>
@@ -132,17 +133,23 @@
       </div>
     </template>
   </Modal>
+  <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
+         :selectItemWbc="selectItemWbc" @printClose="printClose"/>
 </template>
 
 <script setup>
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {ref, onMounted, watchEffect, defineProps, defineEmits, computed, nextTick} from 'vue';
+import {ref, onMounted, watchEffect, defineProps, defineEmits, computed, nextTick, onUnmounted} from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
+<<<<<<< HEAD
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+=======
+import Print from "@/views/datebase/commponent/detail/report/print.vue";
+>>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -157,10 +164,17 @@ const contextMenu = ref({
   x: 0,
   y: 0
 });
+<<<<<<< HEAD
 const rbcDegreeStandard = ref([]);
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
+=======
+const rightClickItem = ref({});
+const printOnOff = ref(false);
+const printContent = ref(null);
+const selectItemWbc = ref([]);
+>>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
 
 
 onMounted(async() => {
@@ -190,7 +204,11 @@ watchEffect(async () => {
     }
   }
 });
+const printClose = () => {
+  printOnOff.value = false;
+}
 
+<<<<<<< HEAD
 const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi(String(userId.value));
@@ -200,15 +218,54 @@ const getRbcDegreeData = async () => {
     rbcDegreeStandard.value = data?.categories
   } catch (e) {
     console.log(e);
+=======
+const printStart = () => {
+  printOnOff.value = true;
+  resetContextMenu();
+}
+const editOrderData = () => {
+  editData(rightClickItem.value);
+  resetContextMenu();
+};
+
+const classificationRowDbClick = () => {
+  rowDbClick(rightClickItem.value);
+  resetContextMenu();
+}
+
+const resetContextMenu = () => {
+  contextMenu.value.x = 0;
+  contextMenu.value.y = 0;
+  contextMenu.value.visible = false;
+}
+
+const handleOutsideClick = (event) => {
+  const contextMenuElement = document.querySelector('.context-menu');
+  if (contextMenuElement && !contextMenuElement.contains(event.target)) {
+    resetContextMenu();
+>>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
   }
 };
 
 
+<<<<<<< HEAD
+=======
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick);
+});
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
+>>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
 const rowRightClick = (item, event) => {
-  if (props.dbData.filter(item => item.checked).length === 0){
+  if (props.dbData.filter(item => item.checked).length === 0) {
     alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
+  rightClickItem.value = item;
+  const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
+  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
+  selectItemWbc.value = sortedArray;
   if (event) {
     contextMenu.value.x = event.clientX;
     contextMenu.value.y = event.clientY;
@@ -244,12 +301,8 @@ const selectItem = (item) => {
   // 선택된 행이 화면에 보이도록 스크롤 조정
   const selectedRow = document.querySelector(`[data-row-id="${item.id}"]`);
   if (selectedRow) {
-    selectedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
-
-  contextMenu.value.x = 0;
-  contextMenu.value.y = 0;
-  contextMenu.value.visible = false;
 };
 
 const rowDbClick = (item) => {
@@ -393,8 +446,30 @@ const openLayer = () => {
   visible.value = true;
 };
 
-const deleteRow = () => {
-  console.log(props.dbData.filter(item => item.checked));
+const deleteRow = async () => {
+  try {
+    const selectedItems = props.dbData.filter(item => item.checked);
+    if (selectedItems.length === 0) {
+      alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+      return;
+    }
+
+    const idsToDelete = selectedItems.map(item => item.id);
+    const response = await deleteRunningApi(idsToDelete);
+
+    if (response.success) {
+      alert('Items deleted successfully');
+      emits('initData'); // 데이터 다시 불러오기
+      resetContextMenu();
+    } else {
+      console.error('Failed to delete items');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
+
+
+
 </script>
 

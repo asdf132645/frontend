@@ -15,6 +15,7 @@ import {ref, watch, computed} from 'vue';
 import { useStore } from 'vuex';
 import { SlotInfo } from '@/store/modules/testPageCommon/ruuningInfo';
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const store = useStore();
 const images = ref<RunningPathItem[]>([]);
@@ -72,7 +73,7 @@ function getImageUrl(types: RunningPathItem[] | undefined): string[] {
   const fileName = types[0].path.match(/[^\\]*$/);
 
   // 이미지의 URL 생성 후 배열에 추가
-  const imageUrl = `http://localhost:3002/images?folder=${folderPath}&imageName=${fileName}`;
+  const imageUrl = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${fileName}`;
   imageUrls.unshift(imageUrl);
 
   return imageUrls;

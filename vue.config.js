@@ -1,4 +1,5 @@
-const path = require('path');
+const path = require('path'); // path 모듈 불러오기
+const Dotenv = require('dotenv-webpack');
 const glob = require('glob-all');
 const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
 
@@ -20,6 +21,7 @@ module.exports = {
         ]),
         // 기타 설정 옵션
       }),
+      new Dotenv(), // .env 파일 로드를 위한 설정 추가
     ],
   },
   // Vue 컴파일러 설정

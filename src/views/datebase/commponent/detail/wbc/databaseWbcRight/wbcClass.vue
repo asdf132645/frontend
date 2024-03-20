@@ -4,9 +4,9 @@
   <div class="mt2 mb2">
     <h3 class="wbcClassInfoLeft">WBC Classification</h3>
     <ul class="leftWbcInfo">
-      <li>
+      <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
-        <div v-if="memoModal">
+        <div v-if="memoModal" class="memoModal">
           <textarea v-model="memo"></textarea>
           <button @click="memoChange">ok</button>
           <button @click="memoCancel">cancel</button>
@@ -19,14 +19,21 @@
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
       <li>
-        <font-awesome-icon :icon="['fas', 'lock']"/>
-        <!--        <font-awesome-icon :icon="['fas', 'lock-open']"/>-->
+        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent"/>
+        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent"/>
       </li>
     </ul>
   </div>
   <div class="wbcClassScroll">
-
-    <div v-for="(item, idx) in wbcInfoChangeVal" :key="item.id" class="wbcClassDbDiv">
+    <div
+        v-for="(item, idx) in wbcInfoChangeVal"
+        :key="item.id"
+        class="wbcClassDbDiv"
+        draggable="true"
+        @dragstart="startDrag(idx, $event)"
+        @dragover.prevent
+        @drop="drop(idx, $event)"
+    >
       <ul class="nth1Child" v-if="idx === 0">
         <li>Class</li>
         <li>Count</li>
@@ -35,7 +42,7 @@
       <ul class="nth1Child">
         <li>{{ item?.name }}</li>
         <li>{{ item?.count }}</li>
-        <li> {{ item?.percent || '-' }} </li>
+        <li> {{ item?.percent || '-' }}</li>
       </ul>
     </div>
     <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
@@ -57,7 +64,7 @@
         </ul>
       </div>
     </template>
-    <div v-if="type !== 'report'">
+    <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChang">Before</button>
       <button @click="afterChang">After</button>
     </div>
@@ -78,6 +85,8 @@ const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const getCategoryName = (category: WbcInfo) => category?.name;
+const selectItemsData = sessionStorage.getItem("selectItems");
+const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const pbiaRootPath = sessionStorage.getItem("pbiaRootPath");
 const userId = ref('');
 const memo = ref('');
@@ -85,6 +94,11 @@ const memoModal = ref(false);
 const wbcInfoChangeVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
 const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM', 'LR', 'LA', 'NS', 'NB'];
+const toggleLock = ref(false);
+const dragIndex = ref(-1);
+const dragOffsetY = ref(0);
+const originalDbData = sessionStorage.getItem("originalDbData");
+const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 
 onMounted(() => {
   memo.value = props.selectItems.memo;
@@ -100,6 +114,29 @@ watch(() => props.wbcInfo, (newItem) => {
   wbcInfoChangeVal.value = newItem;
 });
 
+const startDrag = (index: any, event: any) => {
+  dragIndex.value = index;
+  dragOffsetY.value = event.clientY - event.target.getBoundingClientRect().top;
+};
+
+const drop = (index: any, event: any) => {
+  if(!toggleLock.value){
+    return;
+  }
+  event.preventDefault();
+  if (dragIndex.value !== -1) {
+    const movedItem = wbcInfoChangeVal.value.splice(dragIndex.value, 1)[0];
+    wbcInfoChangeVal.value.splice(index, 0, movedItem);
+    dragIndex.value = -1;
+    updateOriginalDb();
+  }
+};
+
+
+
+const toggleLockEvent = () => {
+  toggleLock.value = !toggleLock.value;
+}
 
 const commitConfirmed = () => {
   const userConfirmed = confirm(messages.IDS_MSG_CONFIRM_SLIDE);
@@ -138,7 +175,7 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
-  memo.value = props.selectItems.memo;
+  memo.value = memo.value !== '' ? memo.value : props.selectItems.memo;
   memoModal.value = !memoModal.value;
 }
 
@@ -154,6 +191,10 @@ const resRunningItem = async (updatedRuningInfo: any) => {
     })
     if (response) {
       alert('success');
+      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItems.value.id);
+      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
+      sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
+      memo.value = filteredItems[0].memo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -170,6 +211,52 @@ const beforeChang = () => {
 const afterChang = () => {
   wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter;
   nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+}
+
+async function updateOriginalDb() {
+  // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
+  let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfoChangeVal.value));
+
+  // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
+  clonedWbcInfo.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      delete image.width;
+      delete image.height;
+      delete image.filter;
+      delete image.changed;
+    });
+    item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
+  });
+
+  // wbcInfoAfter 업데이트 및 sessionStorage에 저장
+  selectItems.value.wbcInfoAfter = clonedWbcInfo;
+  sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
+  sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+
+  // originalDb 업데이트
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  if (filteredItems.length > 0) {
+    filteredItems.forEach((filteredItem: any) => {
+      filteredItem.wbcInfoAfter = clonedWbcInfo;
+    });
+  }
+  originalDb.value = filteredItems;
+
+  //updateRunningApi 호출
+  await updateRunningApiPost(clonedWbcInfo, originalDb.value);
+}
+
+async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
+  try {
+    const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
+    if (response) {
+
+    } else {
+      console.error('백엔드가 디비에 저장 실패함');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
 </script>
