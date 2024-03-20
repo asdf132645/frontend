@@ -108,11 +108,17 @@
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
-                  :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
+                  :class="{
+                    'border-changed': isBorderChanged(image),
+                    'selected-image': isSelected(image)
+                  }"
                   @click="selectImage(itemIndex, imageIndex)"
                   @dblclick="openModal(image, item)"
               >
                 <div style="position: relative">
+                  <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
+                    <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon :icon="['fas', 'arrow-right']" />  {{ image.title }}</span>
+                  </div>
                   <img :src="getImageUrl(image.fileName, item.id, item.title)"
                        :width="image.width ? image.width : '150px'"
                        :height="image.height ? image.height : '150px'"
@@ -198,6 +204,39 @@ const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
+function isBorderChanged(image: any) {
+  const prefix = image.fileName.split('_')[0];
+
+  const replacements = {
+    'NES': 'NS',
+    'NEB': 'NB'
+  };
+
+  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+    return acc.replace(key, replacements[key]);
+  }, prefix);
+
+  return image.title !== modifiedPrefix;
+}
+
+function replaceFileNamePrefix(fileName: string) {
+  const replacements = {
+    'NES': 'NS',
+    'NEB': 'NB'
+  };
+
+  const prefix = fileName.split('_')[0];
+
+  // 대체 규칙에 따라 prefix를 변경
+  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+    return acc.replace(key, replacements[key]);
+  }, prefix);
+
+  // 변경된 prefix 반환
+  return modifiedPrefix;
+}
+
 
 const openModal = (image: any, item: any) => {
   modalOpen.value = true;
@@ -635,8 +674,23 @@ async function initData() {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
+    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+      const title = item.title;
+      const correspondingItem = selectItems.value.wbcInfoAfter.find((afterItem: any) => afterItem.title === title);
+      if (correspondingItem) {
+        correspondingItem.images.forEach((item: any) => {
+          item.title = title;
+
+        })
+      }
+    });
   } else {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0]
+    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
+    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+      item.images.forEach((itemImg: any) => {
+        itemImg.title = item.title;
+      })
+    });
   }
 }
 
@@ -733,8 +787,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         // 드래그된 이미지를 원래 위치에서 제거
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
         draggedItem.images.splice(draggedImageIndex, 1);
-        // 변경되면 테두리 표시
-        selectedImage.changed = true;
         // 드롭된 위치에 이미지를 삽입
         wbcInfo.value[targetItemIndex].images.push(selectedImage);
         // Count 업데이트 옮겨진 곳
@@ -743,6 +795,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         // 옮기는 곳
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+        wbcInfo.value.forEach((item: any) => {
+          item.images.forEach((itemImg: any) => {
+            itemImg.title = item.title;
+          })
+        });
       } else {
         console.error('이미지 이동 실패:', fileName);
       }
@@ -767,7 +824,6 @@ async function updateOriginalDb() {
       delete image.width;
       delete image.height;
       delete image.filter;
-      delete image.changed;
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
@@ -794,7 +850,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response) {
-      initDataRefresh(wbcInfo);
+      // initDataRefresh(wbcInfo);
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }

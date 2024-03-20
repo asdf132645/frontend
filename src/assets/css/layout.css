@@ -820,7 +820,11 @@ ul.wbcInfoDbUl > li {
     text-align: center;
     padding-top: 7px;
 }
-
+.titleImg {
+    position: absolute;
+    color: #00000094;
+    background: none;
+}
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;
