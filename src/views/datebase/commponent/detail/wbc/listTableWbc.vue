@@ -1,7 +1,7 @@
 <template>
   <div class="wbcMenu">
     <ul>
-      <li>RBC</li>
+      <li @click="pageGo('/databaseRbc')">RBC</li>
       <li @click="pageGo('/databaseWbc')">WBC</li>
       <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>

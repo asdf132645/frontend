@@ -1,15 +1,17 @@
 <template>
-  <div>
+  <div class="wbcMenu">
     <ul>
-      <li>RBC</li>
-      <li @click="wbcGo">WBC</li>
-      <li @click="reportGo">REPORT</li>
+      <li @click="pageGo('/databaseRbc')">RBC</li>
+      <li @click="pageGo('/databaseWbc')">WBC</li>
+      <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
-    <div>
-      <button @click="moveRbc('up')">up</button>
-      <button @click="moveRbc('down')">down</button>
+    <div class="wbcMenuBottom">
+      <button @click="moveWbc('up')"><font-awesome-icon :icon="['fas', 'circle-up']" /></button>
+      <button @click="moveWbc('down')"><font-awesome-icon :icon="['fas', 'circle-down']" /></button>
     </div>
+  </div>
+  <div>
     <div style="display:flex">
       <div style="flex:1">
         <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" />

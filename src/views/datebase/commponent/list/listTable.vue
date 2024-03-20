@@ -225,9 +225,11 @@ const selectItem = (item) => {
 };
 
 const rowDbClick = (item) => {
+  const rbcInfoData = item?.rbcInfo;
   const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
   // 스토어 사용 못하는 이유 -> 새로고침 등 여러가지 행동에 데이터가 날라가면 안되서 세션스토리지 사용
+  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoData));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
