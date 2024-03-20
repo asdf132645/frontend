@@ -972,6 +972,7 @@ h3.reportH3 {
     font-size: 0.9rem;
     padding: 10px;
     border-bottom: 1px solid #979797;
+    font-weight: 600;
 }
 .categories.report {
     padding: 5px 5px;
@@ -982,7 +983,10 @@ h3.reportH3 {
 table.reportTable tr {
     border-bottom: 1px solid #babec5;
 }
-
+.wbcLeft {
+    width: 48%;
+    display: inline-block;
+}
 table.reportTable tr td {
     padding: 10px 10px;
 }
@@ -1236,4 +1240,36 @@ ul.cellImgBox.print {
 .beforeAfterBtn {
     text-align: center;
     margin-top: 10px;
+}
+
+table.tableClass td, table.tableClass th {
+    text-align: left;
+    padding: 5px;
+}
+table.tableClass {
+    width: 100%;
+}
+
+.memoModal {
+    position: absolute;
+    left: 0;
+    min-width: 300px;
+    background: #313131;
+    padding: 10px 15px 10px 10px;
+}
+
+.memoModal textarea {
+    width: 100%;
+    max-width: 300px;
+    height: 150px;
+}
+
+.memoModal button {
+    background: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin-left: 9px;
+    min-width: 50px;
+    cursor: pointer;
 }

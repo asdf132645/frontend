@@ -67,44 +67,51 @@
           </tbody>
         </table>
         <div class="reportDivBottom">
-          <h3 class="reportH3 mb1 pl0">WBC classification result</h3>
-          <table class="tableClass">
-            <thead>
-            <tr>
-              <th>Class</th>
-              <th>Count</th>
-              <th>%</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item) in selectItems?.wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
-              <td>{{ item?.name }}</td>
-              <td>{{ item?.count }}</td>
-              <td> {{ item?.percent || '-' }}</td>
-            </tr>
-            </tbody>
-          </table>
-          <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
-            <div class="categories report" v-if="nWbcItem?.count !== '0'">
-              <ul class="categoryNm">
-                <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-                <li>{{ getCategoryName(nWbcItem) }}</li>
-              </ul>
-              <ul class="classNm">
-                <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-                <li>
-                  {{ nWbcItem?.count }}
-                  <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
-                      selectItems?.wbcInfo?.maxWbcCount
-                    }} WBC</span>
-                </li>
-              </ul>
-              <ul class="degree">
-                <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-                <li>-</li>
-              </ul>
-            </div>
-          </template>
+         <div class="wbcLeft">
+           <h3 class="reportH3 mb1 pl0">WBC classification result</h3>
+           <table class="tableClass">
+             <colgroup>
+               <col width="40%">
+               <col width="20%">
+               <col width="20%">
+             </colgroup>
+             <thead>
+             <tr>
+               <th>Class</th>
+               <th>Count</th>
+               <th>%</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr v-for="(item) in selectItems?.wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
+               <td>{{ item?.name }}</td>
+               <td>{{ item?.count }}</td>
+               <td> {{ item?.percent || '-' }}</td>
+             </tr>
+             </tbody>
+           </table>
+           <table class="tableClass">
+             <colgroup>
+               <col width="37%">
+               <col width="20%">
+               <col width="20%">
+               <col width="20%">
+             </colgroup>
+             <tbody>
+             <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
+               <tr>
+                 <td>{{ getCategoryName(nWbcItem) }}</td>
+                 <td>
+                   {{ nWbcItem?.count }}
+                   <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
+                 </td>
+                 <td v-if="outerIndex === 0"></td>
+                 <td>-</td>
+               </tr>
+             </template>
+             </tbody>
+           </table>
+         </div>
         </div>
       </div>
     </div>

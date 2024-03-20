@@ -4,9 +4,9 @@
   <div class="mt2 mb2">
     <h3 class="wbcClassInfoLeft">WBC Classification</h3>
     <ul class="leftWbcInfo">
-      <li>
+      <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
-        <div v-if="memoModal">
+        <div v-if="memoModal" class="memoModal">
           <textarea v-model="memo"></textarea>
           <button @click="memoChange">ok</button>
           <button @click="memoCancel">cancel</button>
@@ -175,7 +175,7 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
-  memo.value = props.selectItems.memo;
+  memo.value = memo.value !== '' ? memo.value : props.selectItems.memo;
   memoModal.value = !memoModal.value;
 }
 
@@ -191,6 +191,10 @@ const resRunningItem = async (updatedRuningInfo: any) => {
     })
     if (response) {
       alert('success');
+      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItems.value.id);
+      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
+      sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
+      memo.value = filteredItems[0].memo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
