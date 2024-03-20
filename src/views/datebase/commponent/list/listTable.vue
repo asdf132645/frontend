@@ -146,6 +146,7 @@ import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningIn
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
+import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -296,6 +297,17 @@ const rowDbClick = (item) => {
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
   router.push('/databaseWbc')
 }
+
+
+const getRbcDegreeData = async () => {
+  try {
+    const result = await getRbcDegreeApi(String(userId.value));
+    const data = result.data;
+    rbcDegreeStandard.value = data?.categories
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 const calcRbcDegree = (rbcInfos) => {
   let totalCount = 0;
