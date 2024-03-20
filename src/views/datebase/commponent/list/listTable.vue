@@ -145,11 +145,7 @@ import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
-<<<<<<< HEAD
-import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
-=======
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
->>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -164,17 +160,14 @@ const contextMenu = ref({
   x: 0,
   y: 0
 });
-<<<<<<< HEAD
 const rbcDegreeStandard = ref([]);
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
-=======
 const rightClickItem = ref({});
 const printOnOff = ref(false);
 const printContent = ref(null);
 const selectItemWbc = ref([]);
->>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
 
 
 onMounted(async() => {
@@ -208,17 +201,6 @@ const printClose = () => {
   printOnOff.value = false;
 }
 
-<<<<<<< HEAD
-const getRbcDegreeData = async () => {
-  try {
-    const result = await getRbcDegreeApi(String(userId.value));
-    console.log('result')
-    console.log(result)
-    const data = result.data;
-    rbcDegreeStandard.value = data?.categories
-  } catch (e) {
-    console.log(e);
-=======
 const printStart = () => {
   printOnOff.value = true;
   resetContextMenu();
@@ -243,20 +225,16 @@ const handleOutsideClick = (event) => {
   const contextMenuElement = document.querySelector('.context-menu');
   if (contextMenuElement && !contextMenuElement.contains(event.target)) {
     resetContextMenu();
->>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
   }
 };
 
 
-<<<<<<< HEAD
-=======
 onMounted(() => {
   document.addEventListener('click', handleOutsideClick);
 });
 onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
 });
->>>>>>> 41dd7d8028dc25a8771d5dfab1eacb823da3fe51
 const rowRightClick = (item, event) => {
   if (props.dbData.filter(item => item.checked).length === 0) {
     alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
