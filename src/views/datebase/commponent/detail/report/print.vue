@@ -161,8 +161,7 @@ const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
 
 onMounted(async () => {
-  wbcInfo.value = JSON.parse(props.selectItemWbc);
-  console.log(JSON.stringify(wbcInfo.value))
+  wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
   userId.value = getStoredUser.id || userModuleDataGet.value.userId;
   await getImagePrintData();
   await printPage();

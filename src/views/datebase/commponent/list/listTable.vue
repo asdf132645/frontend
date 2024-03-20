@@ -62,7 +62,7 @@
       <td> {{ item?.submit }}</td>
       <td> {{ item?.signedOfDate }}</td>
       <td>
-        <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']"  @click="editData(item)"/>
+        <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
       </td>
     </tr>
     <tr>
@@ -75,11 +75,12 @@
     </tr>
     </tbody>
   </table>
-  <div v-if="contextMenu.visible" :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }" class="context-menu">
+  <div v-if="contextMenu.visible" :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
+       class="context-menu">
     <ul>
-      <li>Print</li>
-      <li>Classification</li>
-      <li>Edit order data</li>
+      <li @click="printStart">Print</li>
+      <li @click="classificationRowDbClick">Classification</li>
+      <li @click="editOrderData">Edit order data</li>
       <li @click="deleteRow">Delete</li>
       <li>export XLSX</li>
     </ul>
@@ -132,16 +133,19 @@
       </div>
     </template>
   </Modal>
+  <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
+         :selectItemWbc="selectItemWbc" @printClose="printClose"/>
 </template>
 
 <script setup>
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {ref, onMounted, watchEffect, defineProps, defineEmits, computed, nextTick} from 'vue';
+import {ref, onMounted, watchEffect, defineProps, defineEmits, computed, nextTick, onUnmounted} from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
+import Print from "@/views/datebase/commponent/detail/report/print.vue";
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -156,6 +160,10 @@ const contextMenu = ref({
   x: 0,
   y: 0
 });
+const rightClickItem = ref({});
+const printOnOff = ref(false);
+const printContent = ref(null);
+const selectItemWbc = ref([]);
 
 
 watchEffect(async () => {
@@ -175,12 +183,53 @@ watchEffect(async () => {
     }
   }
 });
+const printClose = () => {
+  printOnOff.value = false;
+}
 
+const printStart = () => {
+  printOnOff.value = true;
+  resetContextMenu();
+}
+const editOrderData = () => {
+  editData(rightClickItem.value);
+  resetContextMenu();
+};
+
+const classificationRowDbClick = () => {
+  rowDbClick(rightClickItem.value);
+  resetContextMenu();
+}
+
+const resetContextMenu = () => {
+  contextMenu.value.x = 0;
+  contextMenu.value.y = 0;
+  contextMenu.value.visible = false;
+}
+
+const handleOutsideClick = (event) => {
+  const contextMenuElement = document.querySelector('.context-menu');
+  if (contextMenuElement && !contextMenuElement.contains(event.target)) {
+    resetContextMenu();
+  }
+};
+
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick);
+});
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
 const rowRightClick = (item, event) => {
-  if (props.dbData.filter(item => item.checked).length === 0){
+  if (props.dbData.filter(item => item.checked).length === 0) {
     alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
+  rightClickItem.value = item;
+  const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
+  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
+  selectItemWbc.value = sortedArray;
   if (event) {
     contextMenu.value.x = event.clientX;
     contextMenu.value.y = event.clientY;
@@ -216,12 +265,8 @@ const selectItem = (item) => {
   // 선택된 행이 화면에 보이도록 스크롤 조정
   const selectedRow = document.querySelector(`[data-row-id="${item.id}"]`);
   if (selectedRow) {
-    selectedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
-
-  contextMenu.value.x = 0;
-  contextMenu.value.y = 0;
-  contextMenu.value.visible = false;
 };
 
 const rowDbClick = (item) => {
@@ -288,8 +333,30 @@ const openLayer = () => {
   visible.value = true;
 };
 
-const deleteRow = () => {
-  console.log(props.dbData.filter(item => item.checked));
+const deleteRow = async () => {
+  try {
+    const selectedItems = props.dbData.filter(item => item.checked);
+    if (selectedItems.length === 0) {
+      alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+      return;
+    }
+
+    const idsToDelete = selectedItems.map(item => item.id);
+    const response = await deleteRunningApi(idsToDelete);
+
+    if (response.success) {
+      alert('Items deleted successfully');
+      emits('initData'); // 데이터 다시 불러오기
+      resetContextMenu();
+    } else {
+      console.error('Failed to delete items');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
+
+
+
 </script>
 

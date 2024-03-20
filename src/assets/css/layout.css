@@ -389,6 +389,8 @@ ul.nth1Child li {
     display: inline-block;
     font-size: 0.8rem;
     padding: 5px 0;
+    cursor: move;
+    user-select: none;
 }
 
 ul.nth1Child {
@@ -842,9 +844,10 @@ ul.wbcImgWrap > li > img {
 
 .databaseWbcRight {
     display: inline-block;
-    width: 25%;
+    width: 24%;
     vertical-align: top;
     text-align: left;
+    margin-right: 10px;
 }
 
 .databaseWbcLeft {
@@ -1219,4 +1222,18 @@ ul.cellImgBox.print {
 
 .context-menu li:hover{
     background: #dedede;
+}
+
+.beforeAfterBtn button {
+    background: none;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.beforeAfterBtn {
+    text-align: center;
+    margin-top: 10px;
 }

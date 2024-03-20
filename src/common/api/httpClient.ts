@@ -85,6 +85,29 @@ export function useHttpClient() {
         }
     };
 
+    const httpDelete = async <T>(url: Endpoint, payload: GenericObject, type?: boolean): Promise<ApiResponse<T>> => {
+        return httpDeleteAct(url.endpoint, payload, type);
+    };
+
+    const httpDeleteAct = async <T>(url: string, payload: GenericObject, type?: boolean): Promise<ApiResponse<T>> => {
+        const options: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        axios.defaults.withCredentials = true;
+        const slush = type ? '?' : '/';
+        try {
+            const response: HttpResponse<T> = await axios.delete(`${apiBaseUrl}/${url}${slush}`, { ...options, data: payload });
+            return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    };
+
+
+
 
 
 
@@ -95,6 +118,8 @@ export function useHttpClient() {
         httpPostAct,
         httpPut,
         httpPutAct,
+        httpDelete,
+        httpDeleteAct,
     };
 
 }
