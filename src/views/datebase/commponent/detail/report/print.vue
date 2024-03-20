@@ -148,6 +148,8 @@ import {getImagePrintApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 
 const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
 const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
@@ -184,7 +186,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
   const slotId = props.selectItems.slotId || "";
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
 
@@ -198,7 +200,7 @@ const printPage = async () => {
     }
 
     // HTML 컨텐츠를 PDF로 변환하는 요청을 보냄
-    const response = await fetch('http://localhost:3002/pdf/convert', {
+    const response = await fetch(`${apiBaseUrl}/pdf/convert`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

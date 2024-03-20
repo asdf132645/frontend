@@ -197,6 +197,7 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const openModal = (image: any, item: any) => {
   modalOpen.value = true;
@@ -816,7 +817,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
   const slotId = selectItems.value.slotId || "";
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
 

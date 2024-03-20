@@ -94,7 +94,7 @@
     <!-- 컨텐츠 슬롯에 들어갈 내용 -->
     <template #content>
       <div>
-        <ul>
+        <ul class="editOrder">
           <li>
             <span>PB/BF</span>
             <input type="text" v-model="itemObj.testType"/>
@@ -105,15 +105,15 @@
           </li>
           <li>
             <span>BARCODE ID</span>
-            <input type="text" v-model="itemObj.barcodeNo"/>
+            <input type="text" v-model="itemObj.barcodeNo" placeholder="BARCODE ID"/>
           </li>
           <li>
             <span>PATIENT ID</span>
-            <input type="text" v-model="itemObj.patientId"/>
+            <input type="text" v-model="itemObj.patientId" placeholder="PATIENT ID"/>
           </li>
           <li>
             <span>PATIENT NAME</span>
-            <input type="text" v-model="itemObj.patientNm"/>
+            <input type="text" v-model="itemObj.patientNm" placeholder="PATIENT NAME"/>
           </li>
           <li>
             <span>Analyzed date</span>

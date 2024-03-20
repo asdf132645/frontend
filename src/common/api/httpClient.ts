@@ -78,7 +78,7 @@ export function useHttpClient() {
         axios.defaults.withCredentials = true;
         const slush = type ? '' : '/';
         try {
-            const response: HttpResponse<T> = await axios.put(`http://localhost:3002/${url}${slush}${parameters}`, payload, options);
+            const response: HttpResponse<T> = await axios.put(`${apiBaseUrl}/${url}${slush}${parameters}`, payload, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
         } catch (e) {
             return Promise.reject(e);

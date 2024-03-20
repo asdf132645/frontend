@@ -783,9 +783,16 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox {
-    margin-top: 10px;
+    position: absolute;
+    background: #000;
+    max-width: 917px;
+    padding: 10px;
+    border: 1px solid #fff;
+    top: 0;
 }
-
+.filterListDiv {
+    position: relative;
+}
 .selectedTr {
     border: 3px solid #6effc9;
 }
@@ -1272,4 +1279,24 @@ table.tableClass {
     margin-left: 9px;
     min-width: 50px;
     cursor: pointer;
+}
+.layer-body {
+    color: #000;
+    font-size: 0.8rem;
+}
+ul.editOrder li {
+    margin-bottom: 10px;
+}
+
+ul.editOrder li input {margin-top: 5px;}
+
+ul.wbcHotKeysItems li {
+    display: inline-block;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 0.8rem;
+}
+
+ul.wbcHotKeysItems {
+    text-align: left;
 }

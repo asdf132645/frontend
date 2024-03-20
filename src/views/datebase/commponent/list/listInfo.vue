@@ -72,8 +72,10 @@ const showClassificationResults = (classificationResult) => {
   );
 
 };
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
 function getImageUrl(imageName){
-  return `http://localhost:3002/images?folder=${pbiaRootPath.value + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${pbiaRootPath.value + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
 }
 
 </script>

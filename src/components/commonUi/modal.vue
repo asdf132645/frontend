@@ -63,5 +63,6 @@ onMounted(() => {
   font-weight: 600;
   border-bottom: 1px solid #dedede;
   padding-bottom: 15px;
+  color: #4f4f4f;
 }
 </style>

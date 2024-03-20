@@ -8,6 +8,8 @@
 <script setup lang="ts">
 import { defineProps, onMounted } from 'vue';
 import OpenSeadragon from 'openseadragon';
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
@@ -30,7 +32,7 @@ const initElement = async () => {
       showNavigator: true,
       sequenceMode: true,
       defaultZoomLevel: 1,
-      prefixUrl:'http://localhost:3002/folders?folderPath=C:/workspace/uimdFe/images/',
+      prefixUrl:`${apiBaseUrl}/folders?folderPath=C:/workspace/uimdFe/images/`,
       tileSources: tilesInfo,
       // tileSources: `http://localhost:3002/images?drivesFolder=${folderPath}/RBC_Image_0_files/0/0_0.jpg`,
       gestureSettingsMouse: { clickToZoom: false }
@@ -41,7 +43,7 @@ const initElement = async () => {
 };
 
 const fetchTilesInfo = async (folderPath: string) => {
-  const url = `http://localhost:3002/folders?folderPath=${folderPath}`;
+  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -59,7 +61,7 @@ const fetchTilesInfo = async (folderPath: string) => {
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",
-          Url: `http://localhost:3002/folders?folderPath=${folderPath}/${fileName}/`,
+          Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
           Format: "jpg",
           Overlap: "1",
           TileSize: "1024",
