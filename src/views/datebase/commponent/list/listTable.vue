@@ -41,10 +41,11 @@
         @dblclick='rowDbClick(item)'
         ref="firstRow"
         v-bind:data-row-id="item.id"
+        @contextmenu.prevent="rowRightClick(item, $event)"
     >
       <td> {{ idx + 1 }}</td>
       <td>
-        <input type="checkbox"/>
+        <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
       </td>
       <td> {{ getTestTypeText(item?.testType) }}</td>
       <td>
@@ -74,6 +75,15 @@
     </tr>
     </tbody>
   </table>
+  <div v-if="contextMenu.visible" :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }" class="context-menu">
+    <ul>
+      <li>Print</li>
+      <li>Classification</li>
+      <li>Edit order data</li>
+      <li @click="deleteRow">Delete</li>
+      <li>export XLSX</li>
+    </ul>
+  </div>
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
     <!-- 헤더 슬롯에 들어갈 내용 -->
     <template #header>
@@ -86,7 +96,7 @@
         <ul>
           <li>
             <span>PB/BF</span>
-            <input type="text" v-model="itemObj.testType" readonly/>
+            <input type="text" v-model="itemObj.testType"/>
           </li>
           <li>
             <span>Tray Slot</span>
@@ -131,6 +141,7 @@ import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
+import {messages} from "@/common/defines/constFile/constant";
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -140,6 +151,12 @@ const visible = ref(false);
 const itemObj = ref({});
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
+const contextMenu = ref({
+  visible: false,
+  x: 0,
+  y: 0
+});
+
 
 watchEffect(async () => {
   if (props.dbData.length > 0) {
@@ -158,6 +175,25 @@ watchEffect(async () => {
     }
   }
 });
+
+const rowRightClick = (item, event) => {
+  if (props.dbData.filter(item => item.checked).length === 0){
+    alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+    return;
+  }
+  if (event) {
+    contextMenu.value.x = event.clientX;
+    contextMenu.value.y = event.clientY;
+    contextMenu.value.visible = true;
+  }
+  // console.log('우클릭된 아이템:', props.dbData.filter(item => item.checked).length);
+};
+
+const handleCheckboxChange = (item) => {
+  if (!item.hasOwnProperty('checked')) { // 체크드 하는 부분이 없으면 넣어줘야 갱신 가능
+    item.checked = false;
+  }
+};
 
 
 const handleIntersection = (entries, observer) => {
@@ -182,6 +218,10 @@ const selectItem = (item) => {
   if (selectedRow) {
     selectedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+
+  contextMenu.value.x = 0;
+  contextMenu.value.y = 0;
+  contextMenu.value.visible = false;
 };
 
 const rowDbClick = (item) => {
@@ -245,5 +285,9 @@ const editData = async (item) => {
 const openLayer = () => {
   visible.value = true;
 };
+
+const deleteRow = () => {
+  console.log(props.dbData.filter(item => item.checked));
+}
 </script>
 

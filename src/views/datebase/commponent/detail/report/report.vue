@@ -68,7 +68,7 @@
         </table>
         <div class="reportDivBottom">
           <h3 class="reportH3 mb1 pl0">WBC classification result</h3>
-          <table>
+          <table class="tableClass">
             <thead>
             <tr>
               <th>Class</th>

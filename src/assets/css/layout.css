@@ -1203,3 +1203,20 @@ button.printCloseBtn {
 ul.cellImgBox.print {
     background: #fff;
 }
+
+.context-menu {
+    position: absolute;
+    background: #fff;
+    color: #000;
+    padding: 0px 10px;
+    border-radius: 5px;
+    border: 1px solid #000;
+}
+.context-menu li {
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.context-menu li:hover{
+    background: #dedede;
+}
