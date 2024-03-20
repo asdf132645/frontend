@@ -1,6 +1,14 @@
 <template>
   <div>
     <h3 style="text-align:left">RBC Classification</h3>
+    <div>
+        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
+        <div v-if="memoModal">
+          <textarea v-model="memo"></textarea>
+          <button @click="memoChange">ok</button>
+          <button @click="memoCancel">cancel</button>
+        </div>
+    </div>
     <table class="table-container">
       <thead>
         <tr>
@@ -19,7 +27,26 @@
           </td>
           <td class="rbc-container">
             <!-- Loop through classInfo and display degrees -->
-            <div v-for="item in rbcVal.classInfo" :key="item.classId">{{ item.degree }}</div>
+            <div v-for="item in rbcVal.classInfo" :key="item.classId">
+                <font-awesome-icon
+                    v-if="item.classNm === 'Normal'"
+                    :icon="['fas', 'circle']"
+                    :class="{
+                        'degreeActive': Number(item.degree) >= 1,
+                        'degree0-img': Number(item.degree) === 0
+                    }"
+                />
+                <!-- For other classNm, render 4 circles -->
+                <font-awesome-icon
+                    v-else
+                    :icon="['fas', 'circle']"
+                    v-for="degreeIndex in 4" :key="degreeIndex"
+                    :class="{
+                        'degreeActive': degreeIndex < Number(item?.degree) + 2 || 0,
+                        'degree0-img': degreeIndex >= Number(item?.degree) + 1 || 0
+                    }"
+                />
+            </div>
           </td>
         </tr>
         <!-- Add a row for other details -->
@@ -50,21 +77,28 @@ const pltCount = ref('');
 const malariaCount = ref('');
 const pltLabel = 'Platelets';
 const malariaLabel = 'Malaria';
+const memo = ref('');
+const memoModal = ref(false);
 
 onMounted(() => {
-  pltCount.value = props.selectItems?.pltCount;
-  malariaCount.value = props.selectItems?.malariaCount;
+    pltCount.value = props.selectItems?.pltCount;
+    malariaCount.value = props.selectItems?.malariaCount;
+    memo.value = props.selectItems.rbcMemo;
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  rbcInfoChangeVal.value = newItem;
+    rbcInfoChangeVal.value = newItem;
+    // console.log('rbcInfoChangeVal')
+    // console.log(rbcInfoChangeVal.value)
 });
 
 watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
 });
+
 </script>
+
 
 <style scoped>
 .table-container {

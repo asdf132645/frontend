@@ -1,29 +1,52 @@
 <template>
   <div class="rbc-container">
-    <div>tab and detail setting</div>
-    <div style="width: 100%; height: 800px;" id="tiling-viewer" ref="image"></div>
+    <button @click="toggleMagnification(true)">Low magnification</button>
+    <button @click="toggleMagnification(false)">Malaria</button>
+    <div v-if="showMagnification" style="width: 100%; height: 800px;" id="tiling-viewer" ref="image"></div>
+    <div v-else>Malairia</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted } from 'vue';
+import { defineProps, onMounted, ref, watch } from 'vue';
 import OpenSeadragon from 'openseadragon';
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
+const showMagnification = ref(true);
+let viewer = null;
 
 onMounted(() => {
   initElement();
 });
 
+watch(showMagnification, (newValue) => {
+  if (newValue) {
+    // Show magnification
+    initElement();
+  } else {
+    // Hide magnification
+    if (viewer) {
+      viewer.destroy();
+      viewer = null;
+    }
+  }
+});
+
+const toggleMagnification = (value: boolean) => {
+  showMagnification.value = value;
+}
+
 const initElement = async () => {
+  if (viewer) {
+    viewer.destroy();
+    viewer = null;
+  }
+
   const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/02_RBC_Image`;
-  console.log(folderPath)
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
-    console.log('tilesInfo')
-    console.log(tilesInfo)
-    const viewer = OpenSeadragon({
+    viewer = OpenSeadragon({
       id: "tiling-viewer",
       animationTime: 0.4,
       navigatorSizeRatio: 0.25,
@@ -32,7 +55,6 @@ const initElement = async () => {
       defaultZoomLevel: 1,
       prefixUrl:'http://localhost:3002/folders?folderPath=C:/workspace/uimdFe/images/',
       tileSources: tilesInfo,
-      // tileSources: `http://localhost:3002/images?drivesFolder=${folderPath}/RBC_Image_0_files/0/0_0.jpg`,
       gestureSettingsMouse: { clickToZoom: false }
     });
   } catch (err) {
@@ -53,9 +75,6 @@ const fetchTilesInfo = async (folderPath: string) => {
 
   for (const fileName of fileNames) {
     if (fileName.endsWith('_files')) {
-      console.log('-----')
-      console.log(fileName)
-      // RBC_Image_n_files
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",

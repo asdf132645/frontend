@@ -30,13 +30,13 @@
   import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
   import router from '@/router';
 
-  const selectItemRbc = sessionStorage.getItem('selectItemRbc');
-  const originalDbData = sessionStorage.getItem('originalDbData');
+  const selectItemRbc = sessionStorage.getItem("selectItemRbc");
+  const originalDbData = sessionStorage.getItem("originalDbData");
   const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
-  const selectItemsData = sessionStorage.getItem('selectItems');
+  const selectItemsData = sessionStorage.getItem("selectItems");
   const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
-  const pbiaRootPath = sessionStorage.getItem('pbiaRootPath');
-  const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
+  const pbiaRootPath = sessionStorage.getItem("pbiaRootPath");
+  const clickid = ref(sessionStorage.getItem("dbBaseTrClickId"));
   
   const rbcInfo = ref(null);
 
