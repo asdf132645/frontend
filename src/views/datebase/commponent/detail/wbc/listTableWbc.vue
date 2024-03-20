@@ -430,7 +430,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
-
+  await initData();
 };
 
 const moveWbc = async (direction: any) => {

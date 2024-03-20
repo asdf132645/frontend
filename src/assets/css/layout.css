@@ -825,6 +825,9 @@ ul.wbcInfoDbUl > li {
     color: #00000094;
     background: none;
 }
+.hh3title {
+    font-weight: 600;
+}
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;

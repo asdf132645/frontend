@@ -3,7 +3,7 @@
 
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
-      <h3 class="orderTitle">Order information</h3>
+      <h3 class="orderTitle hh3title">Order information</h3>
       <ul class="orderListUl">
         <li>Order ID : <span>{{ selectedItem?.slotId }}</span>  </li>
         <li>LIS status : <span>No data sent or receuved from LIS</span>  </li>
@@ -20,7 +20,7 @@
       </ul>
     </div>
     <div>
-      <h3 class="mt2 mb1">Result information</h3>
+      <h3 class="mt2 mb1 hh3title">Result information</h3>
       <ul>
         <li>Analyzed date : <span>{{ selectedItem?.analyzedDttm }}</span></li>
         <li>Signed state : <span>{{ selectedItem?.signedState }}</span></li>
