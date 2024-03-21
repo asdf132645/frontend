@@ -389,6 +389,8 @@ ul.nth1Child li {
     display: inline-block;
     font-size: 0.8rem;
     padding: 5px 0;
+    cursor: move;
+    user-select: none;
 }
 
 ul.nth1Child {
@@ -781,9 +783,16 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox {
-    margin-top: 10px;
+    position: absolute;
+    background: #000;
+    max-width: 917px;
+    padding: 10px;
+    border: 1px solid #fff;
+    top: 0;
 }
-
+.filterListDiv {
+    position: relative;
+}
 .selectedTr {
     border: 3px solid #6effc9;
 }
@@ -811,7 +820,14 @@ ul.wbcInfoDbUl > li {
     text-align: center;
     padding-top: 7px;
 }
-
+.titleImg {
+    position: absolute;
+    color: #00000094;
+    background: none;
+}
+.hh3title {
+    font-weight: 600;
+}
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;
@@ -842,9 +858,10 @@ ul.wbcImgWrap > li > img {
 
 .databaseWbcRight {
     display: inline-block;
-    width: 25%;
+    width: 24%;
     vertical-align: top;
     text-align: left;
+    margin-right: 10px;
 }
 
 .databaseWbcLeft {
@@ -969,6 +986,7 @@ h3.reportH3 {
     font-size: 0.9rem;
     padding: 10px;
     border-bottom: 1px solid #979797;
+    font-weight: 600;
 }
 .categories.report {
     padding: 5px 5px;
@@ -979,7 +997,10 @@ h3.reportH3 {
 table.reportTable tr {
     border-bottom: 1px solid #babec5;
 }
-
+.wbcLeft {
+    width: 48%;
+    display: inline-block;
+}
 table.reportTable tr td {
     padding: 10px 10px;
 }
@@ -1202,4 +1223,88 @@ button.printCloseBtn {
 
 ul.cellImgBox.print {
     background: #fff;
+}
+
+.context-menu {
+    position: absolute;
+    background: #fff;
+    color: #000;
+    padding: 0px 10px;
+    border-radius: 5px;
+    border: 1px solid #000;
+}
+.context-menu li {
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.context-menu li:hover{
+    background: #dedede;
+}
+
+.beforeAfterBtn button {
+    background: none;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.beforeAfterBtn {
+    text-align: center;
+    margin-top: 10px;
+}
+
+table.tableClass td, table.tableClass th {
+    text-align: left;
+    padding: 5px;
+}
+table.tableClass {
+    width: 100%;
+}
+
+.memoModal {
+    position: absolute;
+    left: 0;
+    min-width: 300px;
+    background: #313131;
+    padding: 10px 15px 10px 10px;
+    z-index: 9999999;
+}
+
+.memoModal textarea {
+    width: 100%;
+    max-width: 300px;
+    height: 150px;
+}
+
+.memoModal button {
+    background: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin-left: 9px;
+    min-width: 50px;
+    cursor: pointer;
+}
+.layer-body {
+    color: #000;
+    font-size: 0.8rem;
+}
+ul.editOrder li {
+    margin-bottom: 10px;
+}
+
+ul.editOrder li input {margin-top: 5px;}
+
+ul.wbcHotKeysItems li {
+    display: inline-block;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 0.8rem;
+}
+
+ul.wbcHotKeysItems {
+    text-align: left;
 }

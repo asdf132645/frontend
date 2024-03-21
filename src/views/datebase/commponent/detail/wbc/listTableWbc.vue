@@ -7,8 +7,12 @@
       <li>LIS-CBC</li>
     </ul>
     <div class="wbcMenuBottom">
-      <button @click="moveWbc('up')"><font-awesome-icon :icon="['fas', 'circle-up']" /></button>
-      <button @click="moveWbc('down')"><font-awesome-icon :icon="['fas', 'circle-down']" /></button>
+      <button @click="moveWbc('up')">
+        <font-awesome-icon :icon="['fas', 'circle-up']"/>
+      </button>
+      <button @click="moveWbc('down')">
+        <font-awesome-icon :icon="['fas', 'circle-down']"/>
+      </button>
     </div>
   </div>
 
@@ -27,10 +31,13 @@
         </button>
         <button @click="rollbackChanges">Rollback</button>
         <button @click="imgSetOpen">img Setting</button>
-        <button @click="excelDownload"> <font-awesome-icon :icon="['fas', 'file-excel']"/></button>
+        <button @click="excelDownload">
+          <font-awesome-icon :icon="['fas', 'file-excel']"/>
+        </button>
         <div class="imgSet" v-if="imgSet">
           <div>
-            <font-awesome-icon :icon="['fas', 'plus-minus']"/> Size
+            <font-awesome-icon :icon="['fas', 'plus-minus']"/>
+            Size
             <input
                 type="range"
                 min="150"
@@ -40,7 +47,8 @@
             />
           </div>
           <div>
-            <font-awesome-icon :icon="['fas', 'sun']"/> Brightness
+            <font-awesome-icon :icon="['fas', 'sun']"/>
+            Brightness
             <input
                 type="range"
                 min="50"
@@ -50,7 +58,8 @@
             />
           </div>
           <div>
-            <font-awesome-icon :icon="['fas', 'palette']"/> RGB
+            <font-awesome-icon :icon="['fas', 'palette']"/>
+            RGB
             <input
                 type="range"
                 min="0"
@@ -94,15 +103,22 @@
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div>
-              <p class="mt1"><input type="checkbox" @input="allCheckChange($event,item.title)">{{ item?.title }} ({{ item?.count }})</p>
+              <p class="mt1"><input type="checkbox" @input="allCheckChange($event,item.title)">{{ item?.title }}
+                ({{ item?.count }})</p>
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
-                  :class="{ 'border-changed': image.changed, 'selected-image': isSelected(image) }"
+                  :class="{
+                    'border-changed': isBorderChanged(image),
+                    'selected-image': isSelected(image)
+                  }"
                   @click="selectImage(itemIndex, imageIndex)"
                   @dblclick="openModal(image, item)"
               >
                 <div style="position: relative">
+                  <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
+                    <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon :icon="['fas', 'arrow-right']" />  {{ image.title }}</span>
+                  </div>
                   <img :src="getImageUrl(image.fileName, item.id, item.title)"
                        :width="image.width ? image.width : '150px'"
                        :height="image.height ? image.height : '150px'"
@@ -145,6 +161,13 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import WbcClass from "@/views/datebase/commponent/detail/wbc/databaseWbcRight/wbcClass.vue";
 import * as XLSX from 'xlsx';
 import router from "@/router";
+import {
+  calculateF1Score,
+  calculatePrecision,
+  calculateRecall, CellType,
+  confusionMatrixVal,
+  MetricsVal
+} from "@/common/defines/constFile/classification";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -180,6 +203,40 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
+function isBorderChanged(image: any) {
+  const prefix = image.fileName.split('_')[0];
+
+  const replacements = {
+    'NES': 'NS',
+    'NEB': 'NB'
+  };
+
+  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+    return acc.replace(key, replacements[key]);
+  }, prefix);
+
+  return image.title !== modifiedPrefix;
+}
+
+function replaceFileNamePrefix(fileName: string) {
+  const replacements = {
+    'NES': 'NS',
+    'NEB': 'NB'
+  };
+
+  const prefix = fileName.split('_')[0];
+
+  // 대체 규칙에 따라 prefix를 변경
+  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+    return acc.replace(key, replacements[key]);
+  }, prefix);
+
+  // 변경된 prefix 반환
+  return modifiedPrefix;
+}
+
 
 const openModal = (image: any, item: any) => {
   modalOpen.value = true;
@@ -219,397 +276,13 @@ const pageGo = (path: string) => {
   router.push(path)
 }
 
-type CellType =
-    "NES"
-    | "NEB"
-    | "ME"
-    | "MY"
-    | "PR"
-    | "LY"
-    | "LR"
-    | "LA"
-    | "MO"
-    | "EO"
-    | "BA"
-    | "BL"
-    | "PC"
-    | "NR"
-    | "GP"
-    | "PA"
-    | "AR";
-
-interface Metrics {
-  NES: number;
-  NEB: number;
-  ME: number;
-  MY: number;
-  PR: number;
-  LY: number;
-  LR: number;
-  LA: number;
-  MO: number;
-  EO: number;
-  BA: number;
-  BL: number;
-  PC: number;
-  NR: number;
-  GP: number;
-  PA: number;
-  AR: number;
-  Total: number;
-  Recall: number;
-  Precision: number;
-  F1Score: number;
-  TruePositives: number;
-  TrueNegatives: number;
-  FalsePositives: number;
-  FalseNegatives: number;
-  Accuracy: number;
-}
-
-const calculateRecall = (truePositives: number, totalPositives: number): number => {
-  return totalPositives === 0 ? 0 : truePositives / totalPositives;
-};
-
-const calculatePrecision = (truePositives: number, falsePositives: number): number => {
-  return (truePositives + falsePositives) === 0 ? 0 : truePositives / (truePositives + falsePositives);
-};
-
-const calculateF1Score = (recall: number, precision: number): number => {
-  return (recall + precision) === 0 ? 0 : 2 * (recall * precision) / (recall + precision);
-};
-
 
 const excelDownload = () => {
   const groundTruth = selectItems.value.wbcInfoAfter; // 실제 정답 데이터
   const predicted = selectItems.value.wbcInfo.wbcInfo[0]; // AI가 예측한 데이터
   console.log('groundTruth:', JSON.stringify(groundTruth))
   console.log('predicted:', JSON.stringify(predicted))
-  const confusionMatrix: Record<CellType, Record<CellType, number>> = {
-    NES: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    NEB: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    ME: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    MY: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    PR: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    LY: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    LR: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    LA: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    MO: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    EO: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    BA: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    BL: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    PC: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    NR: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    GP: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    PA: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-    AR: {
-      NES: 0,
-      NEB: 0,
-      ME: 0,
-      MY: 0,
-      PR: 0,
-      LY: 0,
-      LR: 0,
-      LA: 0,
-      MO: 0,
-      EO: 0,
-      BA: 0,
-      BL: 0,
-      PC: 0,
-      NR: 0,
-      GP: 0,
-      PA: 0,
-      AR: 0
-    },
-  };
+  const confusionMatrix: Record<CellType, Record<CellType, number>> = confusionMatrixVal;
   const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
 
   // 오차 행렬 초기화
@@ -619,21 +292,7 @@ const excelDownload = () => {
       confusionMatrix[trueType][predictedType] = 0;
     });
   });
-
-  // 오차 행렬 업데이트
-  groundTruth.forEach((cell, index) => {
-    const trueType = cell.title as CellType;
-    const predictedType = predicted[index].title as CellType;
-
-    if (cellTypes.includes(trueType) && cellTypes.includes(predictedType)) {
-      confusionMatrix[trueType][predictedType]++;
-    } else {
-      console.warn(`Invalid cell title: trueType - ${trueType}, predictedType - ${predictedType}`);
-    }
-  });
-
-
-  const metrics: Metrics = {
+  const metricsArrVal: MetricsVal = {
     NES: confusionMatrix.NES.NES,
     NEB: confusionMatrix.NEB.NEB,
     ME: confusionMatrix.ME.ME,
@@ -661,7 +320,26 @@ const excelDownload = () => {
     FalseNegatives: 0,
     Accuracy: 0,
   };
+  // 오차 행렬 업데이트
+  groundTruth.forEach((cell: any, index: any) => {
+    const trueType = cell.title as CellType;
+    const trueImages = cell.images.map((image: any) => image.fileName);
+    const predictedType = predicted[index].title as CellType;
+    const predictedImages = predicted[index].images.map((image: any) => image.fileName);
 
+    if (cellTypes.includes(trueType) && cellTypes.includes(predictedType)) {
+      // 정답과 예측값이 같으면 대각선에 해당하므로 해당 셀에 값을 증가
+      if (trueImages.some((image) => predictedImages.includes(image))) {
+        confusionMatrix[trueType][predictedType]++;
+      }
+    } else {
+      console.warn(`Invalid cell title: trueType - ${trueType}, predictedType - ${predictedType}`);
+    }
+  });
+
+
+  const metrics: MetricsVal = metricsArrVal;
+  console.log(metricsArrVal);
   // 오차 행렬의 Total 값 계산
   cellTypes.forEach((trueType) => {
     cellTypes.forEach((predictedType) => {
@@ -669,12 +347,6 @@ const excelDownload = () => {
     });
   });
 
-  //True Positives (TP): 대각선 요소들의 합 -> TP = confusionMatrix[trueType][trueType]
-  //True Negatives (TN): 대각선을 제외한 모든 요소의 합  -> Total 에서 TP, FP, FN을 빼면 나오는 수
-  //False Positives (FP): 각 열의 합에서 TP를 뺀 값들의 합 -> FP = confusionMatrix[CellType][predictedType] - TP
-
-
-  // True Positives (TP), True Negatives (TN), False Positives (FP), False Negatives (FN) 계산
   let truePositives = 0;
   let trueNegatives = 0; // 수정: trueNegatives 변수 추가
   let falsePositives = 0;
@@ -724,10 +396,9 @@ const excelDownload = () => {
   XLSX.utils.book_append_sheet(wb, ws, 'ConfusionMatrix');
   XLSX.writeFile(wb, 'confusion_matrix.xlsx');
 
-
 }
 
-const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, number>>, metrics: Metrics): any[] => {
+const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, number>>, metrics: MetricsVal): any[] => {
   const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
 
   const excelData: any[] = [];
@@ -759,7 +430,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
-
+  await initData();
 };
 
 const moveWbc = async (direction: any) => {
@@ -1003,8 +674,23 @@ async function initData() {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
+    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+      const title = item.title;
+      const correspondingItem = selectItems.value.wbcInfoAfter.find((afterItem: any) => afterItem.title === title);
+      if (correspondingItem) {
+        correspondingItem.images.forEach((item: any) => {
+          item.title = title;
+
+        })
+      }
+    });
   } else {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0]
+    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
+    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+      item.images.forEach((itemImg: any) => {
+        itemImg.title = item.title;
+      })
+    });
   }
 }
 
@@ -1101,8 +787,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         // 드래그된 이미지를 원래 위치에서 제거
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
         draggedItem.images.splice(draggedImageIndex, 1);
-        // 변경되면 테두리 표시
-        selectedImage.changed = true;
         // 드롭된 위치에 이미지를 삽입
         wbcInfo.value[targetItemIndex].images.push(selectedImage);
         // Count 업데이트 옮겨진 곳
@@ -1111,6 +795,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         // 옮기는 곳
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+        wbcInfo.value.forEach((item: any) => {
+          item.images.forEach((itemImg: any) => {
+            itemImg.title = item.title;
+          })
+        });
       } else {
         console.error('이미지 이동 실패:', fileName);
       }
@@ -1127,7 +816,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
 
 async function updateOriginalDb() {
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
-  const clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
+  let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
 
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
@@ -1135,8 +824,8 @@ async function updateOriginalDb() {
       delete image.width;
       delete image.height;
       delete image.filter;
-      delete image.changed;
     });
+    item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
@@ -1161,7 +850,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response) {
-      initDataRefresh(wbcInfo);
+      // initDataRefresh(wbcInfo);
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -1184,7 +873,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
   const slotId = selectItems.value.slotId || "";
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `http://localhost:3002/images?folder=${folderPath}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
 

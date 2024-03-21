@@ -160,7 +160,6 @@ const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
     }
     const wbcInfoArray = [slotArray.rbcInfo[commonDataGet.value.slideProceeding].rbcInfo];
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
-    console.log(wbcInfoArray)
     //최종으로 슬라이드 정보를 업데이트
     calcRbcDegree(wbcInfoArr[0])
     if (slotArray.lowPowerPath) {

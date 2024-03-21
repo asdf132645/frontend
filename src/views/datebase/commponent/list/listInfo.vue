@@ -3,7 +3,7 @@
 
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
-      <h3 class="orderTitle">Order information</h3>
+      <h3 class="orderTitle hh3title">Order information</h3>
       <ul class="orderListUl">
         <li>Order ID : <span>{{ selectedItem?.slotId }}</span>  </li>
         <li>LIS status : <span>No data sent or receuved from LIS</span>  </li>
@@ -20,7 +20,7 @@
       </ul>
     </div>
     <div>
-      <h3 class="mt2 mb1">Result information</h3>
+      <h3 class="mt2 mb1 hh3title">Result information</h3>
       <ul>
         <li>Analyzed date : <span>{{ selectedItem?.analyzedDttm }}</span></li>
         <li>Signed state : <span>{{ selectedItem?.signedState }}</span></li>
@@ -72,8 +72,10 @@ const showClassificationResults = (classificationResult) => {
   );
 
 };
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
 function getImageUrl(imageName){
-  return `http://localhost:3002/images?folder=${pbiaRootPath.value + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${pbiaRootPath.value + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
 }
 
 </script>
