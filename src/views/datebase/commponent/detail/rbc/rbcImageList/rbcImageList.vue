@@ -1,20 +1,44 @@
 <template>
+<div></div>
   <div class="rbc-container">
-    <div>tab and detail setting</div>
-    <div style="width: 100%; height: 800px;" id="tiling-viewer" ref="image"></div>
+    <div>
+      <button @click="toggleViewer('lowMag')">Low magnification</button>
+      <button @click="toggleViewer('malaria')">Malaria</button>
+    </div>
+    <div>
+      <Malaria v-if="activeViewer === 'malaria'"/>
+      <div v-else style="width: 100%; height: 89vh;" id="tiling-viewer" ref="image"></div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted } from 'vue';
+import { defineProps, onMounted, ref } from 'vue';
 import OpenSeadragon from 'openseadragon';
+import Malaria from './Malaria.vue';
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
+const activeViewer = ref('');
 
 onMounted(() => {
   initElement();
 });
+
+const toggleViewer = (viewerType: string) => {
+  switch (viewerType) {
+    case 'lowMag':
+      activeViewer.value = 'lowMag';
+      break;
+    case 'malaria':
+      activeViewer.value = 'malaria';
+      break;
+  }
+  
+  if (activeViewer.value !== 'malaria') {
+    initElement();
+  }
+};
 
 const initElement = async () => {
   const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/02_RBC_Image`;
@@ -32,8 +56,7 @@ const initElement = async () => {
       defaultZoomLevel: 1,
       prefixUrl:'http://localhost:3002/folders?folderPath=C:/workspace/uimdFe/images/',
       tileSources: tilesInfo,
-      // tileSources: `http://localhost:3002/images?drivesFolder=${folderPath}/RBC_Image_0_files/0/0_0.jpg`,
-      gestureSettingsMouse: { clickToZoom: false }
+      gestureSettingsMouse: { clickToZoom: false },
     });
   } catch (err) {
     console.error('Error:', err);
@@ -53,9 +76,6 @@ const fetchTilesInfo = async (folderPath: string) => {
 
   for (const fileName of fileNames) {
     if (fileName.endsWith('_files')) {
-      console.log('-----')
-      console.log(fileName)
-      // RBC_Image_n_files
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",
@@ -78,10 +98,6 @@ const fetchTilesInfo = async (folderPath: string) => {
 
 <style scoped>
 .rbc-container {
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  max-height:100vh;
 }
 </style>

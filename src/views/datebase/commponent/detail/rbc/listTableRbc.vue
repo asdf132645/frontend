@@ -11,14 +11,14 @@
       <button @click="moveWbc('down')"><font-awesome-icon :icon="['fas', 'circle-down']" /></button>
     </div>
   </div>
-  <div>
-    <div style="display:flex">
-      <div style="flex:1">
-        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" />
-      </div>
-      <div style="flex:4">
-        <RbcImageList :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb"/>
-      </div>
+
+  <div class="wbcContent">
+    <div class="databaseWbcRight">
+      <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" />
+    </div>
+    
+    <div class="databaseWbcLeft">
+      <RbcImageList :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb"/>
     </div>
   </div>
 </template>
@@ -40,12 +40,8 @@
   
   const rbcInfo = ref(null);
 
-  const wbcGo = () => {
-    router.push('/databaseWbc')
-  }
-
-  const reportGo = () => {
-    router.push('/report')
+  const pageGo = (path: string) => {
+    router.push(path)
   }
 
   const updateUpDown = async (selectRbc: any, selectItemsNewVal: any) => {
