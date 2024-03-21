@@ -45,57 +45,53 @@ import { getAllUsersApi, getUserApi } from "@/common/api/service/user/userApi";
 import { UserResponse, User  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-
-const currentUserId = ref('');
-const allUsers = ref<User[]>([]);
-
-const date = (text: string) => {
-  return text.replace('T', ' ').replace('.000Z', '');
-}
-
-
-const userSearchOption = ref('userId')
-
-const userSearchOptions = ref([
-  { value: 'userId', text: 'User Id' },
-  { value: 'name', text: 'User Name' }
-])
-
-
-const inputText = ref('');
-
-const onSearch = async () => {
-  try {
-    // api 받아옴
-    const result = await getAllUsersApi(String(currentUserId.value))
-
-    if (result) {
-      if (!result?.data) {
-        console.log(null)
-      } else {
-        if (userSearchOption.value === 'userId') {
-          const filteredUsers = result.data.users && result.data.users.filter(item => item.userId.includes(inputText.value));
-          allUsers.value = filteredUsers || [];
-        } else if (userSearchOption.value === 'name') {
-          const filteredUsers = result.data.users && result.data.users.filter(item => item.name.includes(inputText.value));
-          allUsers.value = filteredUsers || [];
-        }
-        inputText.value = ''; 
-      }
-    }
-
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 
 onMounted(async () => {
   currentUserId.value = getStoredUser.id;
   await getAllUsers();
 });
+
+
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
+const currentUserId = ref('');
+const allUsers = ref<User[]>([]);
+const date = (text: string) => {
+  return text.replace('T', ' ').replace('.000Z', '');
+}
+const userSearchOption = ref('userId')
+const userSearchOptions = ref([
+  { value: 'userId', text: 'User Id' },
+  { value: 'name', text: 'User Name' }
+])
+
+const inputText = ref('');
+
+const filterUsers = (users: any[], searchText: any, searchOption: string) => {
+  const searchQuery = searchText.toLowerCase();
+  return users.filter(item => {
+    const searchField = searchOption === 'userId' ? String(item.userId) : item.name;
+    return searchField.toLowerCase().includes(searchQuery);
+  });
+};
+
+const onSearch = async () => {
+  try {
+    const result = await getAllUsersApi(String(currentUserId.value));
+
+    if (result && result.data) {
+      const users = result.data.users || [];
+      const filteredUsers = filterUsers(users, inputText.value, userSearchOption.value);
+      allUsers.value = filteredUsers;
+    } else {
+      console.log('No data received from the API');
+    }
+
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+};
 
 const getAllUsers = async() => {
   try {
