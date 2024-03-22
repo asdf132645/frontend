@@ -119,7 +119,6 @@ const getRbcDegreeData = async () => {
     saveHttpType.value = 'put';
     const data = result.data;
     processData(data?.categories);
-    console.log(result);
   } catch (e) {
     console.log(e);
     saveHttpType.value = 'post';

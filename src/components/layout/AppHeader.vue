@@ -37,7 +37,7 @@
               <li class="lastLiM">
               <span class="userBox" @click='logOutBoxOn'>
                 {{ formattedTime }}
-                <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ storedUser && getStoredUser?.userId }}
+                <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ userModuleDataGet.userId }}
               </span>
                 <div class='logOutBox' v-if='logOutBox' @click='logout'>
                   LOGOUT
@@ -108,7 +108,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
@@ -118,8 +118,8 @@ import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
-const formattedDate = new Date().toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
-const formattedTime = new Date().toLocaleTimeString('en-US');
+// const formattedDate = new Date().toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
+// const formattedTime = new Date().toLocaleTimeString('en-US');
 const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -149,12 +149,39 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = ref('');
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
+// 현재 날짜와 시간을 저장하는 변수
+const currentDate = ref<string>("");
+const currentTime = ref<string>("");
+
+// 현재 날짜를 계산하는 computed 속성
+const formattedDate = computed(() => {
+  return currentDate.value;
+});
+
+// 현재 시간을 계산하는 computed 속성
+const formattedTime = computed(() => {
+  return currentTime.value;
+});
+
+// 화면에 실시간으로 날짜와 시간을 갱신하는 함수
+const updateDateTime = () => {
+  const now = new Date();
+  currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
+  currentTime.value = now.toLocaleTimeString('en-US');
+};
 
 onMounted(async () => {
+  updateDateTime(); // 초기 시간 설정
+  const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
+  // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
+  onBeforeUnmount(() => {
+    clearInterval(timerId);
+  });
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
   }
 });
+
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   cellImgGet(newUserId.id);
@@ -185,6 +212,8 @@ watch([commonDataGet.value], async (newVals: any) => {
 
 watch([runInfo.value], async (newVals: any) => {
   await nextTick();
+  console.log(newVals)
+  console.log('alarmCount', alarmCount)
   isAlarm.value = newVals[0].isAlarm;
   if (isAlarm.value) {
     setTimeout(() => {
@@ -305,7 +334,7 @@ const cellImgGet = async (newUserId: string) => {
       if (result?.data) {
         const data = result.data;
         isNsNbIntegration.value = data.isNsNbIntegration ? 'Y' : 'N';
-        alarmCount.value = Number(data.alarmCount) * 1000;
+        alarmCount.value = data?.isAlarm ? Number(data.alarmCount) * 1000 : 5000;
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });

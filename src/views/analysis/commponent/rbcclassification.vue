@@ -153,6 +153,8 @@ watch(
 const lowPowerPath = ref([]);
 const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
+  // console.log()
+
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;
     if(!slotArray.rbcInfo[commonDataGet.value.slideProceeding]){
@@ -162,8 +164,8 @@ const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
     //최종으로 슬라이드 정보를 업데이트
     calcRbcDegree(wbcInfoArr[0])
-    if (slotArray.lowPowerPath) {
-      lowPowerPath.value = slotArray.lowPowerPath.sort(function (a: any, b: any) {
+    if (slotArray.rbcInfo[0].lowPowerPath) {
+      lowPowerPath.value = slotArray.rbcInfo[0].lowPowerPath.sort(function (a: any, b: any) {
         return a.seqNo - b.seqNo;
       });
     } else {

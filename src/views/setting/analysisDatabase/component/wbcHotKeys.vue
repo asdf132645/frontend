@@ -3,7 +3,7 @@
     <!--    {{ wbcHotKeysItems }}-->
     <ul class="wbcHotKeysItems">
       <li v-for="item in wbcHotKeysItems" :key="item.id">
-        <span>{{ item.title }}</span>
+        <span>{{ item.title }} - </span>
         <span>{{ item.name }}</span>
         <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
@@ -82,9 +82,7 @@ const getWbcHotKeyClasses = async () => {
         saveHttpType.value = 'put';
         const data = result.data;
         wbcHotKeysItems.value = data;
-        console.log(data);
       }
-      console.log(result);
     }
   } catch (e) {
     console.log(e);

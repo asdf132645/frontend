@@ -2,7 +2,7 @@
   <div class="wbcMenu">
     <ul>
       <li @click="pageGo('/databaseRbc')">RBC</li>
-      <li @click="pageGo('/databaseWbc')">WBC</li>
+      <li class="onRight" @click="pageGo('/databaseWbc')">WBC</li>
       <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
@@ -117,7 +117,8 @@
               >
                 <div style="position: relative">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
-                    <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon :icon="['fas', 'arrow-right']" />  {{ image.title }}</span>
+                    <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
+                        :icon="['fas', 'arrow-right']"/>  {{ image.title }}</span>
                   </div>
                   <img :src="getImageUrl(image.fileName, item.id, item.title)"
                        :width="image.width ? image.width : '150px'"
@@ -168,6 +169,9 @@ import {
   confusionMatrixVal,
   MetricsVal
 } from "@/common/defines/constFile/classification";
+import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
+import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
+import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -204,6 +208,103 @@ const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const wbcCustomItems = ref<any>([]);
+const wbcHotKeysItems = ref<any>([]);
+const bfHotKeysItems = ref<any>([]);
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("keyup", handleKeyUp);
+  document.body.addEventListener("click", handleBodyClick);
+  getWbcCustomClasses();
+});
+
+const getWbcCustomClasses = async () => {
+  try {
+    const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
+    if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
+      console.log(null);
+      return;
+    }
+
+    const data: any = result.data;
+    const newData = data.filter((item: any) => item.abbreviation);
+
+    const customClassData: any = sessionStorage.getItem('customClass');
+    const getCustomSessionData = JSON.parse(customClassData);
+
+    if (getCustomSessionData) { // 커스텀 클래스 삭제하는 if 문
+      getCustomSessionData.forEach((item: any) => {
+        const findDelData = data.find((dataItems: any) => dataItems.customNum === item.customNum && dataItems.abbreviation !== item.abbreviation);
+        if (findDelData) {
+          if (item?.abbreviation === '') {
+            return;
+          }
+          const filePath = `${pbiaRootPath}/${selectItems.value.slotId}/01_WBC_Classification/${item?.abbreviation}`;
+          deleteRunningApi({path: filePath})
+        }
+      });
+    }
+    sessionStorage.setItem('customClass', JSON.stringify(data));
+    wbcCustomItems.value = data;
+    for (const item of newData) { // 커스텀클래스 폴더 생성
+      const {className, abbreviation, customNum} = item;
+      const filePath = `${pbiaRootPath}/${selectItems.value.slotId}/01_WBC_Classification/${customNum}_${abbreviation}`;
+      await fileSysPost({path: filePath});
+
+      const wbcPush = {
+        id: customNum,
+        name: className,
+        count: '0',
+        images: [],
+        title: abbreviation,
+      };
+      const foundObject = selectItems.value.wbcInfo.wbcInfo[0].find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
+      if (!foundObject) {
+        selectItems.value.wbcInfo.wbcInfo[0].push(wbcPush);
+        wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
+        sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
+        await updateOriginalDb();
+      } else {
+        console.log(foundObject);
+      }
+    }
+    await getWbcHotKeyClasses();
+    await getBfHotKeyClasses();
+    await initData(newData);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const getBfHotKeyClasses = async () => {
+  try {
+    const result = await getBfHotKeysApi(String(userModuleDataGet.value.id));
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        bfHotKeysItems.value = data;
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const getWbcHotKeyClasses = async () => {
+  try {
+    const result = await getWbcWbcHotKeysApi(String(userModuleDataGet.value.id));
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        wbcHotKeysItems.value = data;
+        console.log(JSON.stringify(wbcHotKeysItems.value));
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 
 function isBorderChanged(image: any) {
   const prefix = image.fileName.split('_')[0];
@@ -261,12 +362,6 @@ const zoomOut = () => {
   modalImageHeight.value = `${parseFloat(modalImageHeight.value) - 50}px`;
 };
 
-onMounted(() => {
-  initData();
-  window.addEventListener("keydown", handleKeyDown);
-  window.addEventListener("keyup", handleKeyUp);
-  document.body.addEventListener("click", handleBodyClick);
-});
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
@@ -430,7 +525,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
-  await initData();
+  await initData('');
 };
 
 const moveWbc = async (direction: any) => {
@@ -655,6 +750,40 @@ function handleKeyDown(event: KeyboardEvent) {
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
   }
+
+  // 이미지 이동 단축키 확인
+  if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+    moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+  }
+}
+
+async function moveSelectedImagesToTargetItem(targetItem: any) {
+  const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.title);
+  const selectedImages = selectedClickImages.value;
+
+  // 선택된 이미지를 타겟 아이템으로 이동
+  for (const selectedImage of selectedImages) {
+    const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
+    const sourceItem = wbcInfo.value[sourceItemIndex];
+    const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
+    if (imageIndex !== -1) {
+      // 이미지를 타겟 아이템으로 이동
+      const image = sourceItem.images.splice(imageIndex, 1)[0];
+      image.title = wbcInfo.value[targetIndex].title;
+      wbcInfo.value[targetIndex].images.push(image);
+      // 카운트 업데이트
+      sourceItem.count--;
+      wbcInfo.value[targetIndex].count++;
+
+      // 이동된 이미지 정보를 moveImage 함수로 전달하여 데이터 업데이트
+      await moveImage(targetIndex, [{
+        fileName: selectedImage.fileName,
+        id: selectedImage.id,
+        title: selectedImage.title
+      }], targetItem, wbcInfo.value[targetIndex], true, 'keyMove');
+    }
+  }
+
 }
 
 
@@ -670,7 +799,7 @@ function handleKeyUp(event: KeyboardEvent) {
   }
 }
 
-async function initData() {
+async function initData(newData: any) {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
@@ -690,6 +819,11 @@ async function initData() {
       item.images.forEach((itemImg: any) => {
         itemImg.title = item.title;
       })
+    });
+  }
+  if (newData !== '') {
+    selectItems.value.wbcInfo.wbcInfo[0] = selectItems.value.wbcInfo.wbcInfo[0].filter((item: any) => {
+      return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
 }
@@ -733,7 +867,7 @@ function selectImage(itemIndex: any, imageIndex: any) {
     }
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isSelected(selectedImage)) {
-      selectedClickImages.value.push(selectedImage);
+      selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
     } else {
       selectedClickImages.value = selectedClickImages.value.filter((img: any) => img !== selectedImage);
     }
@@ -771,7 +905,7 @@ async function originalOnDrop(targetItemIndex: number) {
   }
 }
 
-async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean) {
+async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string) {
   const {slotId} = selectItems.value;
   const arrType = selectedImagesToMove;
   try {
@@ -783,6 +917,15 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       const destinationFolder = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${targetItem.id}_${targetItem.title}`;
       // 이미지 이동 API 호출
       const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`);
+      if (keyMove === 'keyMove') {
+        if (response) {
+          // 선택된 이미지 초기화
+          selectedClickImages.value = [];
+          shiftClickImages.value = [];
+          await updateOriginalDb();
+        }
+        return;
+      }
       if (response) {
         // 드래그된 이미지를 원래 위치에서 제거
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
@@ -850,19 +993,11 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response) {
-      // initDataRefresh(wbcInfo);
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
   } catch (error) {
     console.error('Error:', error);
-  }
-}
-
-function initDataRefresh(wbcInfo: any) {
-  wbcInfo.value = [];
-  for (const item of wbcInfo) {
-    wbcInfo.value.push({...item, images: [...item.images]});
   }
 }
 
