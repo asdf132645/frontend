@@ -316,7 +316,7 @@ table.settingTable {
     width: 25.7%;
 }
 
-button.cellImgSet {
+button.saveBtn {
     margin-top: 20px;
     background: none;
     border: 1px solid #fff;
@@ -977,9 +977,11 @@ button.searchClass {
     overflow-y: auto;
     max-height: 87vh;
 }
+
 li.onRight {
     color: #29c7ca;
 }
+
 .rbcRight {
     display: inline-block;
     vertical-align: top;
@@ -1347,6 +1349,49 @@ ul.wbcHotKeysItems {
     text-align: left;
 }
 
+.alignDiv label {
+    display: inline-block;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 0.8rem;
+}
+.alignDiv li {
+    display: inline-block;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 0.8rem;
+}
+.alignDiv {
+    text-align: left;
+}
+
 .rbcDiv {
     width: 20%;
+}
+
+ul.normalItems {
+    text-align: left;
+}
+
+ul.normalItems li {
+    display: inline-block;
+    margin: 10px;
+    max-width: 584px;
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+ul.normalItems li div {
+    display: block;
+    width: 100%;
+}
+
+ul.normalItems li div span {
+    display: inline-block;
+    width: 41%;
+    margin-right: 21px;
+}
+
+ul.normalItems li div span:last-child {
+    width: 5%;
 }

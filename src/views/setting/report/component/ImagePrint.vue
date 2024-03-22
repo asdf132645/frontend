@@ -6,7 +6,7 @@
     </label>
   </div>
   <div class="mt1">
-    <button type="button" @click="saveImagePrint()">Save</button>
+    <button class="saveBtn" type="button" @click="saveImagePrint()">Save</button>
   </div>
   <Alert
       v-if="showAlert"

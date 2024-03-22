@@ -1,15 +1,18 @@
 <template>
   <div>
-    <ul>
+    <ul class="normalItems">
       <li v-for="item in normalItems" :key="item.id">
-        <span>{{ item.title }}</span>
-        <span>{{ item.name }}</span>
-        <span><input v-model="item.min" type="text" maxlength="25" placeholder="class name"/></span>
-        <span><input v-model="item.max" type="text" maxlength="25" placeholder="class name"/></span>
-        <span>{{ item.unit }}</span>
+        <div>
+          {{ item.title }} - {{ item.name }}
+        </div>
+        <div class="mt1">
+          <span><input v-model="item.min" type="text" maxlength="25" placeholder="class name"/></span>
+          <span><input v-model="item.max" type="text" maxlength="25" placeholder="class name"/></span>
+          <span>{{ item.unit }}</span>
+        </div>
       </li>
     </ul>
-    <button @click="saveNormalRange">Save</button>
+    <button @click="saveNormalRange" class="saveBtn" type="button">Save</button>
   </div>
   <Alert
       v-if="showAlert"

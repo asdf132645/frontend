@@ -69,6 +69,14 @@
       <button @click="afterChang">After</button>
     </div>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -80,6 +88,7 @@ import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
 import Button from "@/components/commonUi/Button.vue";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
@@ -99,7 +108,9 @@ const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
 const originalDbData = sessionStorage.getItem("originalDbData");
 const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
-
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
@@ -190,7 +201,7 @@ const resRunningItem = async (updatedRuningInfo: any) => {
       runingInfoDtoItems: updatedRuningInfo
     })
     if (response) {
-      alert('success');
+      showSuccessAlert('success');
       const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItems.value.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
@@ -258,5 +269,19 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
     console.error('Error:', error);
   }
 }
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
 
+const hideAlert = () => {
+  showAlert.value = false;
+};
 </script>

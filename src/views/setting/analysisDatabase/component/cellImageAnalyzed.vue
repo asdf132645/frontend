@@ -122,7 +122,7 @@
         <Datepicker v-model="backupEndDate"></Datepicker>
       </div>
     </div>
-    <button class="cellImgSet" type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
+    <button class="saveBtn" type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
   </div>
   <Alert
       v-if="showAlert"

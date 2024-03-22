@@ -7,7 +7,7 @@
         <span><input v-model="item.className" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
     </ul>
-    <button @click="saveWbcCustomClass">Save</button>
+    <button class="saveBtn" type="button" @click="saveWbcCustomClass">Save</button>
   </div>
   <Alert
       v-if="showAlert"

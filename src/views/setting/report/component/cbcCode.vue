@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="alignDiv">
     <label v-for="item in cbcCodeArr" :key="item.cd">
+      <p class="mb1">{{ item.testNm }}</p>
       <input type="text" v-model="item.testCd" />
-      {{ item.testNm }}
     </label>
   </div>
   <div class="mt1">
-    <button type="button" @click="saveCbcCode()">Save</button>
+    <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
   </div>
   <Alert
       v-if="showAlert"
