@@ -3,7 +3,9 @@
     <thead>
     <tr>
       <th>NO</th>
-      <th><input type="checkbox"/></th>
+      <th>
+        <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
+      </th>
       <th>Type</th>
       <th>State</th>
       <th>Tray Slot</th>
@@ -169,6 +171,7 @@ const rightClickItem = ref({});
 const printOnOff = ref(false);
 const printContent = ref(null);
 const selectItemWbc = ref([]);
+const selectAllCheckbox = ref(false);
 
 
 onMounted(async() => {
@@ -215,6 +218,11 @@ const classificationRowDbClick = () => {
   rowDbClick(rightClickItem.value);
   resetContextMenu();
 }
+const selectAllItems = () => {
+  props.dbData.forEach(item => {
+    item.checked = selectAllCheckbox.value;
+  });
+};
 
 const resetContextMenu = () => {
   contextMenu.value.x = 0;

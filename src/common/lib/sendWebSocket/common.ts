@@ -4,7 +4,7 @@ import {getCurrentInstance} from 'vue';
 const instance = getCurrentInstance();
 // appHeader page
 export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, userId: string, isNsNbIntegration: string) => {
-    const settings = tcpReq.embedStatus.settings;
+    const settings = tcpReq().embedStatus.settings;
     settings.reqUserId = userId;
 
     Object.assign(settings, {
@@ -17,20 +17,20 @@ export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, u
 }
 
 export const sendOilPrimeWebSocket = (userId: string) => {
-    tcpReq.embedStatus.oilPrime.reqUserId = userId;
-    sendMessage(tcpReq.embedStatus.oilPrime);
+    tcpReq().embedStatus.oilPrime.reqUserId = userId;
+    sendMessage(tcpReq().embedStatus.oilPrime);
 }
 
 
 // 셋팅 page -> 디바이스 컨트롤 page
 export const onGripperOpenWebSocket = (userId: string) => {
-    tcpReq.embedStatus.gripperOpen.reqUserId = userId;
-    sendMessage(tcpReq.embedStatus.gripperOpen);
+    tcpReq().embedStatus.gripperOpen.reqUserId = userId;
+    sendMessage(tcpReq().embedStatus.gripperOpen);
 }
 
 export const onCameraResetWebSocket = (userId: string) => {
-    tcpReq.embedStatus.cameraReset.reqUserId = userId;
-    sendMessage(tcpReq.embedStatus.cameraReset);
+    tcpReq().embedStatus.cameraReset.reqUserId = userId;
+    sendMessage(tcpReq().embedStatus.cameraReset);
 }
 
 

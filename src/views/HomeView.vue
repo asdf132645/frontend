@@ -10,7 +10,7 @@ import Analysis from "@/views/analysis/index.vue";
 // homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import {getCurrentInstance, ref, computed, watch, onMounted} from 'vue';
+import {getCurrentInstance, ref, computed, watch, onMounted, onBeforeUnmount} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import AppHeader from "@/components/layout/AppHeader.vue";
@@ -40,8 +40,9 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
-
-
+let intervalId: any = null;
+const messageQueue: any = [];
+let isSending = false;
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -60,11 +61,11 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 });
 
 onMounted(async () => {
+  clearIntervalIfExists();
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
-  // console.log(process.env.APP_API_BASE_URL)
   if (!commonDataGet.value.isRunningState) {
     if (userId.value && userId.value !== '') {
       if (isStartEmbeddedCalled.value) {
@@ -73,9 +74,15 @@ onMounted(async () => {
       await startSysPostWebSocket();
       await getNormalRange();
     }
+  }else{
+    await store.dispatch('commonModule/setCommonInfo', {startEmbedded: true,});
   }
+  await startInterval();
 
+});
 
+onBeforeUnmount(() => {
+  clearIntervalIfExists();
 });
 
 watch([commonDataGet.value], async (newVals: any) => {
@@ -109,7 +116,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       runInfoPostWebSocket();
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
-      await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',}); // 임베디드 상태가 죽음을 알려준다.
+      await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
       break;
     case 'RUNNING_INFO':
       await runningInfoStore(parseDataWarp);
@@ -145,22 +152,22 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       alert(messages.IDS_MSG_FAILED);
       break;
   }
-
+  // 메시지를 받은 후에 다음 메시지를 보낼지 여부를 결정
+  if (messageQueue.length > 0) {
+    await processMessageQueue(); // 큐에 대기 중인 메시지가 있으면 다음 메시지 보내기 실행
+  }
 });
 const startSysPostWebSocket = async () => {
   isRequestInProgress = true;
-  if (userId.value === '') {
-
-  }
-  tcpReq.embedStatus.sysInfo.reqUserId = userId.value;
-  await sendMessage(tcpReq.embedStatus.sysInfo);
+  tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
+  await sendMessage(tcpReq().embedStatus.sysInfo);
 };
 
 const runInfoPostWebSocket = async () => {
   if (!isRequestInProgress) {
     isRequestInProgress = true;
-    tcpReq.embedStatus.runningInfo.reqUserId = userId.value;
-    await sendMessage(tcpReq.embedStatus.runningInfo);
+    tcpReq().embedStatus.runningInfo.reqUserId = userId.value;
+    await sendMessage(tcpReq().embedStatus.runningInfo);
   }
 };
 
@@ -177,9 +184,9 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     //슬라이드 변경시 데이터 저장
     await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false})
     if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
-      tcpReq.embedStatus.pause.reqUserId = userId.value;
+      tcpReq().embedStatus.pause.reqUserId = userId.value;
       isRequestInProgress = true;
-      await sendMessage(tcpReq.embedStatus.pause);
+      await sendMessage(tcpReq().embedStatus.pause);
     } else {
       if (currentSlot?.slotId !== runningSlotId.value) { // 슬라이드 체인지 시
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
@@ -199,9 +206,9 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       if (userId.value === '') {
         return;
       }
-      tcpReq.embedStatus.runIngComp.reqUserId = userId.value;
+      tcpReq().embedStatus.runIngComp.reqUserId = userId.value;
       isRequestInProgress = true;
-      await sendMessage(tcpReq.embedStatus.runIngComp);
+      await sendMessage(tcpReq().embedStatus.runIngComp);
       await saveTestHistory(data);
     }
   }
@@ -229,15 +236,12 @@ const saveTestHistory = async (params: any) => {
     const wbcinfos = dbData.slotInfo[0].wbcInfo.wbcInfo.filter((wbc: any) => wbc.barcodeId === completeSlot.barcodeNo);
     const wbcInfo = wbcinfos.length > 0 ? wbcinfos[0].wbcInfo : [];
 
-    console.log(JSON.stringify(wbcInfo))
     const newWbcInfo = {
       wbcInfo: [wbcInfo],
       nonRbcClassList: dbData.slotInfo[0].wbcInfo.nonRbcClassList,
       totalCount: dbData.slotInfo[0].wbcInfo.totalCount,
       maxWbcCount: dbData.slotInfo[0].wbcInfo.maxWbcCount,
     }
-    console.log('dbData.slotInfo', dbData.slotInfo)
-    console.log('completeSlot', completeSlot)
     const newObj = {
       slotNo: completeSlot.slotNo,
       state: false,
@@ -293,7 +297,6 @@ const getNormalRange = async () => {
         const data = result.data;
         normalItems.value = data;
       }
-      // console.log(result);
     }
   } catch (e) {
     console.log(e);
@@ -314,23 +317,56 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
   }
 };
 
-const sendMessage = async (payload: object) => {
+// 메시지를 보내는 함수
+const sendMessage = async (payload: any) => {
+  // 큐에 메시지 추가
+  messageQueue.push(payload);
+  // 메시지를 보내는 중이 아닌 경우에만 메시지 보내기 실행
+  if (!isSending) {
+    await processMessageQueue();
+  }
+};
+
+// 메시지 큐 처리 함수
+const processMessageQueue = async () => {
+  // 메시지 보내는 중 플래그 설정
+  isSending = true;
+  // 큐에 메시지가 있는 동안 반복
+  while (messageQueue.length > 0) {
+    const payload = messageQueue.shift(); // 큐에서 메시지 꺼내기
+    // 실제로 메시지 보내기
+    await sendMessageToSocket(payload);
+  }
+  // 메시지 보내는 중 플래그 해제
+  isSending = false;
+};
+// 웹소켓으로 메시지 보내는 함수
+const sendMessageToSocket = async (payload: any) => {
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: payload
   });
   isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
-}
-
-
-setInterval(async () => {
-  if (userId.value && userId.value !== '') {
-    if (isStartEmbeddedCalled.value) {
-      await runInfoPostWebSocket();
+};
+const startInterval = async () => {
+  intervalId = setInterval(async () => {
+    if (userId.value && userId.value !== '') {
+      if (isStartEmbeddedCalled.value) {
+        await runInfoPostWebSocket();
+      }
+      await startSysPostWebSocket();
     }
-    await startSysPostWebSocket();
+  }, 800);
+};
+
+const clearIntervalIfExists = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
   }
-}, 800);
+};
+
+
 
 
 const cellImgGet = async (newUserId: string) => {
