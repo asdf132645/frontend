@@ -212,8 +212,6 @@ watch([commonDataGet.value], async (newVals: any) => {
 
 watch([runInfo.value], async (newVals: any) => {
   await nextTick();
-  console.log(newVals)
-  console.log('alarmCount', alarmCount)
   isAlarm.value = newVals[0].isAlarm;
   if (isAlarm.value) {
     setTimeout(() => {

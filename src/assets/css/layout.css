@@ -316,7 +316,7 @@ table.settingTable {
     width: 25.7%;
 }
 
-button.saveBtn {
+button.saveBtn, .defaultBtn {
     margin-top: 20px;
     background: none;
     border: 1px solid #fff;
@@ -324,6 +324,11 @@ button.saveBtn {
     color: #fff;
     padding: 10px 160px;
     cursor: pointer;
+}
+
+.defaultBtn:hover, .saveBtn:hover{
+    background: #ffffff;
+    color: #000;
 }
 
 /*동그라미*/

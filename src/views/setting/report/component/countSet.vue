@@ -1,12 +1,18 @@
 <template>
-  <div>
+  <div class="alignDiv" style="text-align: center">
     <p class="mb2"> [ Min count ] </p>
     <ul>
-      <li v-if="minCountArr.length > 0">Giant platelet <input type="text" v-model="minCountArr[0].minGpCount" class="form-control form-control-sm"></li>
-      <li v-if="minCountArr.length > 0">Platelet aggregation <input type="text" v-model="minCountArr[0].minPaCount" class="form-control form-control-sm"></li>
+      <li v-if="minCountArr.length > 0">
+        <p class="mb1">Giant platelet</p>
+        <input type="text" v-model="minCountArr[0].minGpCount" class="form-control form-control-sm">
+      </li>
+      <li v-if="minCountArr.length > 0">
+        <p class="mb1">Platelet aggregation</p>
+        <input type="text" v-model="minCountArr[0].minPaCount" class="form-control form-control-sm">
+      </li>
     </ul>
     <p class="mb2 mt1"> [ Running count ] </p>
-    <table>
+    <table class="defaultTable" style="margin: auto;">
       <thead>
         <tr>
           <th>WBC min</th>
@@ -29,7 +35,7 @@
   </div>
 
   <div class="mt1">
-    <button type="button" @click="saveLisCode()">Save</button>
+    <button class="saveBtn" type="button" @click="saveLisCode()">Save</button>
   </div>
   <Alert
       v-if="showAlert"

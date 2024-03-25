@@ -1,6 +1,6 @@
 <template>
   <!--  {{ filePathSetArr }}-->
-  <div class="alignDiv">
+  <div class="alignDiv" style="text-align: center">
     <ul>
       <li>
         <p class="mb1">lisHotKey</p>

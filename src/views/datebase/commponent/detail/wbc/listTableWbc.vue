@@ -263,9 +263,10 @@ const getWbcCustomClasses = async () => {
         selectItems.value.wbcInfo.wbcInfo[0].push(wbcPush);
         wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
         sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
-        await updateOriginalDb();
+        console.log('foundObject');
+        await updateOriginalDb('notWbcAfterSave');
       } else {
-        console.log(foundObject);
+        // console.log(foundObject);
       }
     }
     await getWbcHotKeyClasses();
@@ -957,7 +958,8 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   }
 }
 
-async function updateOriginalDb() {
+async function updateOriginalDb(notWbcAfterSave?: string) {
+  console.log('updateOriginalDb')
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
 
@@ -970,20 +972,24 @@ async function updateOriginalDb() {
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
-
-  // wbcInfoAfter 업데이트 및 sessionStorage에 저장
-  selectItems.value.wbcInfoAfter = clonedWbcInfo;
+  if(notWbcAfterSave !== 'notWbcAfterSave'){
+    // wbcInfoAfter 업데이트 및 sessionStorage에 저장
+    selectItems.value.wbcInfoAfter = clonedWbcInfo;
+  }
   sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
-  // originalDb 업데이트
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
-  if (filteredItems.length > 0) {
-    filteredItems.forEach((filteredItem: any) => {
-      filteredItem.wbcInfoAfter = clonedWbcInfo;
-    });
+  if(notWbcAfterSave !== 'notWbcAfterSave'){
+    // originalDb 업데이트
+    const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+    if (filteredItems.length > 0) {
+      filteredItems.forEach((filteredItem: any) => {
+        filteredItem.wbcInfoAfter = clonedWbcInfo;
+      });
+    }
+    originalDb.value = filteredItems;
   }
-  originalDb.value = filteredItems;
+
 
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDb.value);
