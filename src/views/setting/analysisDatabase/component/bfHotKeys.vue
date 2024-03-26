@@ -1,14 +1,14 @@
 <template>
   <div>
 <!--        {{ bfHotKeysItems }}-->
-    <ul>
+    <ul class="wbcHotKeysItems">
       <li v-for="item in bfHotKeysItems" :key="item.id">
-        <span>{{ item.title }}</span>
+        <span>{{ item.title }} - </span>
         <span>{{ item.name }}</span>
         <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
     </ul>
-    <button @click="saveBfCustomClass">Save</button>
+    <button @click="saveBfCustomClass" class="saveBtn" type="button">Save</button>
   </div>
   <Alert
       v-if="showAlert"

@@ -142,9 +142,9 @@ const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
 
-      tcpReq.embedStatus.restart.bfSelectFiles = bfSelectFiles.value;
-      tcpReq.embedStatus.restart.reqUserId = userId.value;
-      emitSocketData('SEND_DATA', tcpReq.embedStatus.restart);
+      tcpReq().embedStatus.restart.bfSelectFiles = bfSelectFiles.value;
+      tcpReq().embedStatus.restart.reqUserId = userId.value;
+      emitSocketData('SEND_DATA', tcpReq().embedStatus.restart);
       return;
     }
     // 실행 여부 체크
@@ -153,16 +153,16 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     } else if (userStop.value) {
       if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true) {
-        tcpReq.embedStatus.recovery.reqUserId = userId.value;
+        tcpReq().embedStatus.recovery.reqUserId = userId.value;
         instance?.appContext.config.globalProperties.$socket.emit('message', {
           type: 'SEND_DATA',
-          payload: tcpReq.embedStatus.recovery
+          payload: tcpReq().embedStatus.recovery
         });
       }
       return;
     }
 
-    const startAction = tcpReq.embedStatus.startAction;
+    const startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
       testType: analysisType.value,
       wbcCount: wbcCount.value,
@@ -186,16 +186,16 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     }
     store.dispatch('embeddedStatusModule/setUserStop', {userStop: true});
-    tcpReq.embedStatus.stop.reqUserId = userId.value;
-    emitSocketData('SEND_DATA', tcpReq.embedStatus.stop);
+    tcpReq().embedStatus.stop.reqUserId = userId.value;
+    emitSocketData('SEND_DATA', tcpReq().embedStatus.stop);
 
   }
 
 };
 
 const sendInit = () => { // 장비 초기화 진행
-  tcpReq.embedStatus.init.reqUserId = userId.value;
-  emitSocketData('SEND_DATA', tcpReq.embedStatus.init);
+  tcpReq().embedStatus.init.reqUserId = userId.value;
+  emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
 }
 
 const initData = () => {

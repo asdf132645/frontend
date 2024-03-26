@@ -110,6 +110,8 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
 // 장비가 슬라이드 검사를 완료 할때 감시
 watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals));
+  // console.log(timeDataGet.value);
+
 
   if (!newValsObj[0].startEmbedded) { // 슬라이드 검사가 끝난 후
     stopCounting();
@@ -122,6 +124,15 @@ watch([commonDataGet.value], async (newVals: any) => {
     stopCounting();
   }
 });
+watch([timeDataGet.value], async (newVals: any) => {
+  // console.log(newVals[0].slideTime)
+  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
+  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
+
+  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
+  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
+});
+
 
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
@@ -169,13 +180,16 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
+});
+onBeforeUnmount(() => {
+  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
+  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
 
   const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-  totalElapsedTimeCount.value = getItem && !commonDataGet.value.isRunningState ? Number(getItem) : 0;
-
-  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-  elapsedTimeCount.value = getTimeSlide && !commonDataGet.value.isRunningState ? Number(getTimeSlide) : 0;
+  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
 });
+
+
 
 const updateInputState = (source: string, target: any[]): void => {
   // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준
@@ -190,7 +204,7 @@ const startCounting = (): void => {
     clearInterval(countingInterval);
   }
 
-  elapsedTimeCount.value = 0;
+  // elapsedTimeCount.value = 0;
   countingInterval = setInterval(() => {
     if (commonDataGet.value.isRunningState) {
       elapsedTimeCount.value += 1;

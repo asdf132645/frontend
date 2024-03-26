@@ -36,12 +36,21 @@
       </div>
     </div>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
 import {ref} from "vue";
 import {createUser} from "@/common/api/service/user/userApi";
 import router from "@/router";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const employeeNo = ref('');
 const idVal = ref('');
@@ -49,7 +58,9 @@ const nameVal = ref('');
 const passwordRepeat = ref('');
 const password = ref('');
 const userType = ref('');
-
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 const createAccount = async () => {
   const currentDate = new Date();
   const user = {
@@ -65,7 +76,7 @@ const createAccount = async () => {
   try {
     const result = await createUser(user);
     if (result) {
-      alert('registration successful');
+      await showSuccessAlert('registration successful');
       await router.push('/user/login');
     }
 
@@ -74,5 +85,18 @@ const createAccount = async () => {
     console.log(e);
   }
 }
+const showSuccessAlert = async (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
 
+const hideAlert = () => {
+  showAlert.value = false;
+};
 </script>

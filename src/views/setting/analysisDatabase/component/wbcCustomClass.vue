@@ -3,11 +3,11 @@
     <ul class="customClass">
       <li v-for="item in wbcCustomItems" :key="item.id">
         <span>ID: {{ item!.customNum }}</span>
-        <span><input v-model="item.abbreviation" type="text" maxlength="15" placeholder="abbreviation"/></span>
+        <span><input v-model="item.abbreviation" type="text" maxlength="3" placeholder="abbreviation"/></span>
         <span><input v-model="item.className" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
     </ul>
-    <button @click="saveWbcCustomClass">Save</button>
+    <button class="saveBtn" type="button" @click="saveWbcCustomClass">Save</button>
   </div>
   <Alert
       v-if="showAlert"
@@ -34,11 +34,11 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const saveHttpType = ref('');
 const wbcCustomParm = [
-  { customNum: 90, abbreviation: ' ', className: ' ' },
-  { customNum: 91, abbreviation: ' ', className: ' ' },
-  { customNum: 92, abbreviation: ' ', className: ' ' },
-  { customNum: 93, abbreviation: ' ', className: ' ' },
-  { customNum: 94, abbreviation: ' ', className: ' ' }
+  { customNum: 90, abbreviation: '', className: '' },
+  { customNum: 91, abbreviation: '', className: '' },
+  { customNum: 92, abbreviation: '', className: '' },
+  { customNum: 93, abbreviation: '', className: '' },
+  { customNum: 94, abbreviation: '', className: '' }
 ];
 
 const wbcCustomItems = ref<any>([]);
@@ -89,9 +89,7 @@ const getWbcCustomClasses = async () => {
         saveHttpType.value = 'put';
         const data = result.data;
         wbcCustomItems.value = data;
-        console.log(data);
       }
-      console.log(result);
     }
   } catch (e) {
     console.log(e);

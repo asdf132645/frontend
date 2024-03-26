@@ -262,6 +262,16 @@ export const apiConstants = {
             endpoint: 'pdf/generate',
             requiresToken: false,
         }
+    },
+    filesystem:{
+        post:{
+            endpoint: 'filesystem/create-folder',
+            requiresToken: false,
+        },
+        delete: {
+            endpoint: 'filesystem/delete-folder',
+            requiresToken: false,
+        }
     }
 
 };

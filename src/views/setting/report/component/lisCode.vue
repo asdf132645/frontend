@@ -1,20 +1,20 @@
 <template>
-  <div>
-    <p class="mb2"> [ WBC ] </p>
+  <div class="alignDiv">
+    <p class="mt2 mb1"> [ WBC ] </p>
     <label v-for="item in lisCodeWbcArr" :key="item.value">
+      <p class="mb1">{{ item.text }}</p>
       <input type="text" v-model="item.code" />
-      {{ item.text }}
     </label>
   </div>
-  <div>
-    <p class="mb2"> [ RBC ] </p>
+  <div class="alignDiv">
+    <p class="mt2 mb1"> [ RBC ] </p>
     <label v-for="item in lisCodeRbcArr" :key="item.classNm">
+      <p class="mb1">{{ item.categoryNm }} - {{ item.classNm }}</p>
       <input type="text" v-model="item.code" />
-      {{ item.categoryNm }} - {{ item.classNm }}
     </label>
   </div>
   <div class="mt1">
-    <button type="button" @click="saveLisCode()">Save</button>
+    <button class="saveBtn" type="button" @click="saveLisCode()">Save</button>
   </div>
   <Alert
       v-if="showAlert"

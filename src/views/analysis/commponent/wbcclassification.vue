@@ -107,6 +107,7 @@ watch([commonDataGet.value], async (newVals: any) => {
 
 const updateDataArray = (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
+
   if (Array.isArray(slotArray.wbcInfo)) {
     testType.value = slotArray.wbcInfo[0].testType;
     if(!slotArray.wbcInfo[commonDataGet.value.slideProceeding]){

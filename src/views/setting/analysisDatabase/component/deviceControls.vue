@@ -2,16 +2,16 @@
   <div>
     <ul>
       <li>
-        <p>Gripper open</p>
-        <button @click="onGripperOpen">OK</button>
+        <p class="mb1">Gripper open</p>
+        <button @click="onGripperOpen" type="button" class="defaultBtn">OK</button>
       </li>
-      <li>
-        <p>Camera reset</p>
-        <button @click="onCameraReset">OK</button>
+      <li class="mt2">
+        <p class="mb1">Camera reset</p>
+        <button type="button" class="defaultBtn" @click="onCameraReset">OK</button>
       </li>
-      <li>
-        <p>Charge remaining count</p>
-        <button>Scan</button>
+      <li class="mt2">
+        <p class="mb1">Charge remaining count</p>
+        <button type="button" class="defaultBtn">Scan</button>
       </li>
     </ul>
   </div>

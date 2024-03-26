@@ -58,6 +58,14 @@
       </template>
     </template>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -66,6 +74,7 @@ import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
+import Alert from "@/components/commonUi/Alert.vue";
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 
 const props = defineProps(['rbcInfo', 'selectItems', 'originalDb']);
@@ -77,6 +86,9 @@ const malariaLabel = 'Malaria';
 const memo = ref('');
 const memoModal = ref(false);
 const store = useStore();
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 
 const userModuleDataGet = computed(() => store.state.userModule);
 
@@ -127,7 +139,7 @@ const resRunningItem = async (updatedRuningInfo: any) => {
       runingInfoDtoItems: updatedRuningInfo
     })
     if (response) {
-      alert('success');
+      showSuccessAlert('success');
       const filteredItems = updatedRuningInfo.filter((item: any) => item.id === props.selectItems.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
@@ -139,6 +151,21 @@ const resRunningItem = async (updatedRuningInfo: any) => {
     console.error('Error:', error);
   }
 }
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
+};
 
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="printSection">
+  <div class="printSection" style="min-width: 900px">
     <button class="printCloseBtn" @click="closePrint">Close</button>
     <div ref="printContent">
       <div>
@@ -55,12 +55,35 @@
                 <col width="45%"/>
                 <col width="*"/>
               </colgroup>
-              <tbody>
+              <thead>
               <tr>
-                <th>CATEGORY_NM</th>
-                <td>// rbc 개발 후 DEGREE 넣는 부분 CLASS_NM</td>
-                <td>DEGREE</td>
+                <th> Category </th>
+                <th> Class </th>
+                <th> Degree </th>
               </tr>
+              </thead>
+              <tbody>
+              <template v-for="(classList, outerIndex) in [selectItems?.rbcInfo]" :key="outerIndex">
+                <template v-for="(category, innerIndex) in classList" :key="innerIndex">
+                  <tr>
+                    <td>
+                      <div>{{ category.categoryNm }}</div>
+                    </td>
+                    <td>
+                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                        <div>{{ classInfo?.classNm }}</div>
+                      </template>
+                    </td>
+                    <td>
+                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                        <div v-if="classInfo.classId !== '01' || category.categoryId === '05'">
+                          {{ classInfo?.degree }}
+                        </div>
+                      </template>
+                    </td>
+                  </tr>
+                </template>
+              </template>
               <tr>
                 <th>Others</th>
                 <th>Platelets</th>
@@ -74,7 +97,7 @@
               <tr>
                 <th></th>
                 <th>Comment</th>
-                <th>rbc 개발 완료 후 코멘트 넣는 부분</th>
+                <th>{{ selectItems.rbcMemo }}</th>
               </tr>
               </tbody>
             </table>

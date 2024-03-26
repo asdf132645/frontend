@@ -1,14 +1,26 @@
 <template>
-<!--  {{ filePathSetArr }}-->
-  <div>
+  <!--  {{ filePathSetArr }}-->
+  <div class="alignDiv" style="text-align: center">
     <ul>
-      <li>lisHotKey <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''" @input="updateHotKey($event, 0)"></li>
-      <li>lisFilePath <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''" @input="updateFilePath($event, 0)"></li>
-      <li>cbcFilePath <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].cbcFilePath : ''" @input="updateCbcFilePath($event, 0)"></li>
+      <li>
+        <p class="mb1">lisHotKey</p>
+        <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
+               @input="updateHotKey($event, 0)">
+      </li>
+      <li>
+        <p class="mb1">lisFilePath</p>
+        <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''"
+               @input="updateFilePath($event, 0)">
+      </li>
+      <li>
+        <p class="mb1">cbcFilePath</p>
+        <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].cbcFilePath : ''"
+               @input="updateCbcFilePath($event, 0)">
+      </li>
     </ul>
   </div>
   <div class="mt1">
-    <button type="button" @click="saveFilePathSet()">Save</button>
+    <button class="saveBtn" type="button" @click="saveFilePathSet()">Save</button>
   </div>
   <Alert
       v-if="showAlert"
@@ -21,16 +33,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { lisHotKeyAndLisFilePathAndUrl } from "@/common/defines/constFile/settings";
-import { ApiResponse } from "@/common/api/httpClient";
+import {ref, onMounted} from 'vue';
+import {lisHotKeyAndLisFilePathAndUrl} from "@/common/defines/constFile/settings";
+import {ApiResponse} from "@/common/api/httpClient";
 import {
   createFilePathSetApi,
   createImagePrintApi, getFilePathSetApi,
   getImagePrintApi, updateFilePathSetApi,
   updateImagePrintApi
 } from "@/common/api/service/setting/settingApi";
-import { ImagePrintItem } from "@/common/api/service/setting/dto/imagePrintDto";
+import {ImagePrintItem} from "@/common/api/service/setting/dto/imagePrintDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
 
@@ -55,9 +67,12 @@ const saveFilePathSet = async () => {
     let result: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createFilePathSetApi({ filePathSetItems: filePathSetArr.value, userId: Number(userId.value) });
+      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value, userId: Number(userId.value)});
     } else {
-      const updateResult = await updateFilePathSetApi({ filePathSetItems: filePathSetArr.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateFilePathSetApi({
+        filePathSetItems: filePathSetArr.value,
+        userId: Number(userId.value)
+      }, userId.value);
 
       if (updateResult.data) {
         showSuccessAlert('update successful');
@@ -110,8 +125,6 @@ const updateFilePath = (event: any, index: number) => {
 const updateCbcFilePath = (event: any, index: number) => {
   filePathSetArr.value[index].cbcFilePath = event.target.value;
 };
-
-
 
 
 const showSuccessAlert = (message: string) => {

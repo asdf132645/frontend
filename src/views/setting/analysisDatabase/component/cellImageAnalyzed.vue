@@ -122,7 +122,7 @@
         <Datepicker v-model="backupEndDate"></Datepicker>
       </div>
     </div>
-    <button class="cellImgSet" type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
+    <button class="saveBtn" type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
   </div>
   <Alert
       v-if="showAlert"
@@ -163,7 +163,7 @@ const bfAnalysisType = ref('100');
 const pbiaRootPath = ref('');
 const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
-const alarmCount = ref('0');
+const alarmCount = ref('5');
 const keepPage = ref(false);
 const backupPath = ref('');
 const backupStartDate = ref(new Date());

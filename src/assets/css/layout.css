@@ -23,8 +23,8 @@
     margin-bottom: 20px;
 }
 
-.pl0{
-    padding-left: 0!important;
+.pl0 {
+    padding-left: 0 !important;
 }
 
 /* header-menu */
@@ -33,6 +33,7 @@
     display: block;
     background: #353942;
 }
+
 .printStart {
     margin-left: 10px;
     border: 1px solid #fff;
@@ -40,6 +41,7 @@
     vertical-align: middle;
     cursor: pointer;
 }
+
 .appHeaderLeft > a {
     font-size: 1rem;
     color: #ffffff;
@@ -314,7 +316,7 @@ table.settingTable {
     width: 25.7%;
 }
 
-button.cellImgSet {
+button.saveBtn, .defaultBtn {
     margin-top: 20px;
     background: none;
     border: 1px solid #fff;
@@ -322,6 +324,11 @@ button.cellImgSet {
     color: #fff;
     padding: 10px 160px;
     cursor: pointer;
+}
+
+.defaultBtn:hover, .saveBtn:hover{
+    background: #ffffff;
+    color: #000;
 }
 
 /*동그라미*/
@@ -790,9 +797,11 @@ table.defaultTable tbody td {
     border: 1px solid #fff;
     top: 0;
 }
+
 .filterListDiv {
     position: relative;
 }
+
 .selectedTr {
     border: 3px solid #6effc9;
 }
@@ -820,14 +829,17 @@ ul.wbcInfoDbUl > li {
     text-align: center;
     padding-top: 7px;
 }
+
 .titleImg {
     position: absolute;
     color: #00000094;
     background: none;
 }
+
 .hh3title {
     font-weight: 600;
 }
+
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;
@@ -956,14 +968,30 @@ button.searchClass {
 
 .wbcDiv {
     width: 20%;
+    margin-right: 20px;
+    padding-right: 10px;
 }
 
 .reportDetail {
-    width: 60%;
+    width: 57%;
     background: #ffffff;
     margin-left: 10px;
     color: #696969;
     font-size: 0.8rem;
+    margin-top: 20px;
+    overflow-y: auto;
+    max-height: 87vh;
+}
+
+li.onRight {
+    color: #29c7ca;
+}
+
+.rbcRight {
+    display: inline-block;
+    vertical-align: top;
+    width: 49%;
+    margin-left: 10px;
 }
 
 table.reportTable {
@@ -981,6 +1009,7 @@ table.reportTable {
     font-size: 1rem;
     color: #ffffff;
 }
+
 h3.reportH3 {
     text-align: left;
     font-size: 0.9rem;
@@ -988,19 +1017,28 @@ h3.reportH3 {
     border-bottom: 1px solid #979797;
     font-weight: 600;
 }
+
 .categories.report {
     padding: 5px 5px;
 }
+
 .reportDivBottom {
     padding: 0px 10px;
 }
+
 table.reportTable tr {
     border-bottom: 1px solid #babec5;
 }
+
 .wbcLeft {
-    width: 48%;
+    width: 49%;
     display: inline-block;
 }
+
+.reportDivTop {
+    padding: 0px 10px;
+}
+
 table.reportTable tr td {
     padding: 10px 10px;
 }
@@ -1008,6 +1046,7 @@ table.reportTable tr td {
 table.reportTable tr th {
     padding: 10px 10px;
 }
+
 ul.wbcInfoFilter > li {
     display: inline-block;
 }
@@ -1233,12 +1272,13 @@ ul.cellImgBox.print {
     border-radius: 5px;
     border: 1px solid #000;
 }
+
 .context-menu li {
     margin: 10px 0;
     cursor: pointer;
 }
 
-.context-menu li:hover{
+.context-menu li:hover {
     background: #dedede;
 }
 
@@ -1260,6 +1300,7 @@ table.tableClass td, table.tableClass th {
     text-align: left;
     padding: 5px;
 }
+
 table.tableClass {
     width: 100%;
 }
@@ -1288,15 +1329,19 @@ table.tableClass {
     min-width: 50px;
     cursor: pointer;
 }
+
 .layer-body {
     color: #000;
     font-size: 0.8rem;
 }
+
 ul.editOrder li {
     margin-bottom: 10px;
 }
 
-ul.editOrder li input {margin-top: 5px;}
+ul.editOrder li input {
+    margin-top: 5px;
+}
 
 ul.wbcHotKeysItems li {
     display: inline-block;
@@ -1307,4 +1352,51 @@ ul.wbcHotKeysItems li {
 
 ul.wbcHotKeysItems {
     text-align: left;
+}
+
+.alignDiv label {
+    display: inline-block;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 0.8rem;
+}
+.alignDiv li {
+    display: inline-block;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 0.8rem;
+}
+.alignDiv {
+    text-align: left;
+}
+
+.rbcDiv {
+    width: 20%;
+}
+
+ul.normalItems {
+    text-align: left;
+}
+
+ul.normalItems li {
+    display: inline-block;
+    margin: 10px;
+    max-width: 584px;
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+ul.normalItems li div {
+    display: block;
+    width: 100%;
+}
+
+ul.normalItems li div span {
+    display: inline-block;
+    width: 41%;
+    margin-right: 21px;
+}
+
+ul.normalItems li div span:last-child {
+    width: 5%;
 }
