@@ -43,6 +43,7 @@ const userModuleDataGet = computed(() => store.state.userModule);
 let intervalId: any = null;
 const messageQueue: any = [];
 let isSending = false;
+const lastSentReqDttm = ref(''); // 이전에 보낸 reqDttm을 저장하는 변수
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -151,10 +152,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     case 'ERROR_CLEAR':
       alert(messages.IDS_MSG_FAILED);
       break;
-  }
-  // 메시지를 받은 후에 다음 메시지를 보낼지 여부를 결정
-  if (messageQueue.length > 0) {
-    await processMessageQueue(); // 큐에 대기 중인 메시지가 있으면 다음 메시지 보내기 실행
   }
 });
 const startSysPostWebSocket = async () => {
@@ -319,6 +316,12 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
+  // reqDttm이 이전에 보낸 reqDttm과 동일한지 확인
+  if (payload.reqDttm === lastSentReqDttm.value) {
+    // console.log('이전에 보낸 reqDttm과 동일하여 메시지를 보내지 않는다.');
+    return; // 메시지 보내기를 건너뜁니다.
+  }
+
   // 큐에 메시지 추가
   messageQueue.push(payload);
   // 메시지를 보내는 중이 아닌 경우에만 메시지 보내기 실행
@@ -326,6 +329,8 @@ const sendMessage = async (payload: any) => {
     await processMessageQueue();
   }
 };
+
+
 
 // 메시지 큐 처리 함수
 const processMessageQueue = async () => {
@@ -342,12 +347,16 @@ const processMessageQueue = async () => {
 };
 // 웹소켓으로 메시지 보내는 함수
 const sendMessageToSocket = async (payload: any) => {
+  // 마지막으로 보낸 reqDttm 업데이트
+  lastSentReqDttm.value = payload.reqDttm;
+
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: payload
   });
   isRequestInProgress = false;  // 요청 완료 후 플래그 업데이트
 };
+
 const startInterval = async () => {
   intervalId = setInterval(async () => {
     if (userId.value && userId.value !== '') {
@@ -356,7 +365,7 @@ const startInterval = async () => {
       }
       await startSysPostWebSocket();
     }
-  }, 800);
+  }, 500);
 };
 
 const clearIntervalIfExists = () => {
@@ -376,6 +385,7 @@ const cellImgGet = async (newUserId: string) => {
       if (result?.data) {
         const data = result.data;
         sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
+        await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(data?.pbiaRootPath)});
       }
     }
 

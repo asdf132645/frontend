@@ -158,6 +158,8 @@ const visible = ref(false);
 const itemObj = ref({});
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
+const commonDataGet = computed(() => store.state.commonModule);
+
 const contextMenu = ref({
   visible: false,
   x: 0,
@@ -181,7 +183,7 @@ onMounted(async() => {
     await getRbcDegreeData();
   } catch (e) {
     console.log(e);
-  } 
+  }
 })
 
 watchEffect(async () => {

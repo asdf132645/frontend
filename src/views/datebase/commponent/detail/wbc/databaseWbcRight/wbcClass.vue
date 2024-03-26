@@ -96,7 +96,8 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
-const pbiaRootPath = sessionStorage.getItem("pbiaRootPath");
+const commonDataGet = computed(() => store.state.commonModule);
+const pbiaRootPath = commonDataGet.value.pbiaRootPath;
 const userId = ref('');
 const memo = ref('');
 const memoModal = ref(false);
@@ -216,7 +217,7 @@ const resRunningItem = async (updatedRuningInfo: any) => {
 
 const beforeChang = () => {
   wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0];
-  nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
 }
 
 const afterChang = () => {

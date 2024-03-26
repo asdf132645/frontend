@@ -8,13 +8,16 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref, watch } from 'vue';
+import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
+import {useStore} from "vuex";
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 
 const props = defineProps(['selectItems']);
-const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
+const store = useStore();
+const commonDataGet = computed(() => store.state.commonModule);
+const pbiaRootPath = commonDataGet.value.pbiaRootPath || 'D:/ia_proc';
 const showMagnification = ref(true);
 let viewer = null;
 
