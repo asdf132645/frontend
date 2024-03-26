@@ -319,7 +319,7 @@ const sendMessage = async (payload: any) => {
   // reqDttm이 이전에 보낸 reqDttm과 동일한지 확인
   if (payload.reqDttm === lastSentReqDttm.value) {
     // console.log('이전에 보낸 reqDttm과 동일하여 메시지를 보내지 않는다.');
-    return; // 메시지 보내기를 건너뜁니다.
+    return;
   }
 
   // 큐에 메시지 추가
