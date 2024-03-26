@@ -90,7 +90,7 @@ import Malaria from './Malaria.vue';
 const props = defineProps(['selectItems']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
 const activeViewer = ref('');
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
 let viewer:any = null;
 const imgSet = ref(false);
@@ -332,7 +332,7 @@ const refreshRuler = (element, rulerSize, ruler) => {
     const startY = viewBoxWH.value / 2
     const endY = startY
 
-    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize.value + 'μm' + '</div>' +
                               '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
                                 '<line x1="' + startX + '" y1="' + startY + '" x2="' + endX + '" y2="' + endY + '" stroke="black" stroke-width="2"/>' +
                                 '<line x1="' + startX + '" y1="' + (startY-5) + '" x2="' + startX + '" y2="' + (endY+5) + '" stroke="black" stroke-width="2"/>' +
@@ -345,7 +345,7 @@ const refreshRuler = (element, rulerSize, ruler) => {
     const centerY = viewBoxWH.value / 2;
     const halfWidth = rulerWidth.value / 2;
 
-    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize.value + 'μm' + '</div>' +
                               '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
                                 '<line x1="' + (centerX - halfWidth) + '" y1="' + centerY + '" x2="' + (centerX + halfWidth) + '" y2="' + centerY + '" stroke="black" stroke-width="2"/>' +
                                 '<line x1="' + centerX + '" y1="' + (centerY - halfWidth) + '" x2="' + centerX + '" y2="' + (centerY + halfWidth) + '" stroke="black" stroke-width="2"/>' +
