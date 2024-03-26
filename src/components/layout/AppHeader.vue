@@ -339,6 +339,8 @@ const cellImgGet = async (newUserId: string) => {
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
         sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
+        await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(data?.pbiaRootPath)});
+
       }
     }
 

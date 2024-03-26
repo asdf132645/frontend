@@ -11,6 +11,7 @@ export interface CommonState {
     bfSelectFiles: [],
     slideProceeding: string,
     totalSlideTime: string,
+    pbiaRootPath: string,
 }
 
 interface CommonModule {
@@ -26,6 +27,7 @@ interface CommonModule {
         setBfSelectFiles: (state: CommonState, value: []) => void;
         setSlideProceeding: (state: CommonState, value: string) => void;
         setTotalSlideTime: (state: CommonState, value: string) => void;
+        setPbiaRootPath: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -44,6 +46,7 @@ export const commonModule: CommonModule = {
         bfSelectFiles: [],
         slideProceeding: '',
         totalSlideTime: '00:00:00',
+        pbiaRootPath: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -72,6 +75,9 @@ export const commonModule: CommonModule = {
         },
         setTotalSlideTime(state: CommonState, value: string): void {
             state.totalSlideTime = value;
+        },
+        setPbiaRootPath(state: CommonState, value: string): void {
+            state.pbiaRootPath = value;
         }
     },
     actions: {
@@ -105,6 +111,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('totalSlideTime')) {
                 commit('setTotalSlideTime', payload.totalSlideTime);
+            }
+            if (payload.hasOwnProperty('pbiaRootPath')) {
+                commit('setPbiaRootPath', payload.pbiaRootPath);
             }
         },
     },
