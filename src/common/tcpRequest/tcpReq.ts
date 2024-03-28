@@ -52,6 +52,7 @@ export const tcpReq:any = () => {
             runningInfo: {
                 jobCmd: "RUNNING_INFO",
                 reqUserId: '',
+                reqDttm: reqDttm
             },
             sysInfo: {
                 jobCmd: 'SYSINFO',

@@ -1,5 +1,5 @@
 // commonModule.ts
-import {Commit} from 'vuex';
+import { Commit } from 'vuex';
 
 export interface CommonState {
     startEmbedded: boolean;
@@ -8,10 +8,17 @@ export interface CommonState {
     totalCount: string;
     embeddedNumber: string;
     isAlarm: boolean;
-    bfSelectFiles: [],
-    slideProceeding: string,
-    totalSlideTime: string,
-    pbiaRootPath: string,
+    bfSelectFiles: any[];
+    slideProceeding: string;
+    totalSlideTime: string;
+    pbiaRootPath: string;
+    runningSlotId: string;
+    isRequestInProgress: boolean;
+    startInfoBoolen: boolean;
+    runningInfoBoolen: boolean;
+    runningInfoStop: boolean;
+    reqArr: any[];
+    resFlag: boolean;
 }
 
 interface CommonModule {
@@ -28,6 +35,15 @@ interface CommonModule {
         setSlideProceeding: (state: CommonState, value: string) => void;
         setTotalSlideTime: (state: CommonState, value: string) => void;
         setPbiaRootPath: (state: CommonState, value: string) => void;
+        setRunningSlotId: (state: CommonState, value: string) => void;
+        setIsRequestInProgress: (state: CommonState, value: boolean) => void;
+        setStartInfoBoolen: (state: CommonState, value: boolean) => void;
+        setRunningInfoBoolen: (state: CommonState, value: boolean) => void;
+        setRunningInfoStop: (state: CommonState, value: boolean) => void;
+        setReqArr: (state: CommonState, value: string[]) => void;
+        shiftReqArr: (state: CommonState) => void;
+        setReqArrPaste: (state: CommonState, value: any[]) => void;
+        setResFlag: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -47,6 +63,13 @@ export const commonModule: CommonModule = {
         slideProceeding: '',
         totalSlideTime: '00:00:00',
         pbiaRootPath: '',
+        runningSlotId: '',
+        isRequestInProgress: false,
+        startInfoBoolen: false,
+        runningInfoBoolen: false,
+        runningInfoStop: false,
+        reqArr: [],
+        resFlag: true,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -67,7 +90,7 @@ export const commonModule: CommonModule = {
         setIsAlarm(state: CommonState, value: boolean): void {
             state.isAlarm = value;
         },
-        setBfSelectFiles(state: CommonState, value: []): void {
+        setBfSelectFiles(state: CommonState, value: any[]): void {
             state.bfSelectFiles = value;
         },
         setSlideProceeding(state: CommonState, value: string): void {
@@ -78,10 +101,40 @@ export const commonModule: CommonModule = {
         },
         setPbiaRootPath(state: CommonState, value: string): void {
             state.pbiaRootPath = value;
-        }
+        },
+        setRunningSlotId(state: CommonState, value: string): void {
+            state.runningSlotId = value;
+        },
+        setIsRequestInProgress(state: CommonState, value: boolean): void {
+            state.isRequestInProgress = value;
+        },
+        setStartInfoBoolen(state: CommonState, value: boolean): void {
+            state.startInfoBoolen = value;
+        },
+        setRunningInfoBoolen(state: CommonState, value: boolean): void {
+            state.runningInfoBoolen = value;
+        },
+        setRunningInfoStop(state: CommonState, value: boolean): void {
+            state.runningInfoStop = value;
+        },
+        setReqArr(state: CommonState, value: any[]): void {
+            if (!state.reqArr) {
+                state.reqArr = []; // 배열이 없으면 빈 배열로 초기화
+            }
+            state.reqArr.push(value); // 스프레드 문법 대신 push 메서드에 직접 값을 추가합니다.
+        },
+        shiftReqArr(state: CommonState): void {
+            state.reqArr.shift();
+        },
+        setReqArrPaste(state: CommonState, value: any[]): void {
+            state.reqArr = value;
+        },
+        setResFlag(state: CommonState, value: boolean): void {
+            state.resFlag = value;
+        },
     },
     actions: {
-        setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
+        setCommonInfo({ commit }: { commit: Commit }, payload: CommonState): void {
             if (payload.hasOwnProperty('startEmbedded')) {
                 commit('setStartEmbedded', payload.startEmbedded);
             }
@@ -109,11 +162,38 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('slideProceeding')) {
                 commit('setSlideProceeding', payload.slideProceeding);
             }
-            if (payload.hasOwnProperty('totalSlideTime')) {
+            if (payload.hasOwnProperty  ('totalSlideTime')) {
                 commit('setTotalSlideTime', payload.totalSlideTime);
             }
             if (payload.hasOwnProperty('pbiaRootPath')) {
                 commit('setPbiaRootPath', payload.pbiaRootPath);
+            }
+            if (payload.hasOwnProperty('runningSlotId')) {
+                commit('setRunningSlotId', payload.runningSlotId);
+            }
+            if (payload.hasOwnProperty('isRequestInProgress')) {
+                commit('setIsRequestInProgress', payload.isRequestInProgress);
+            }
+            if (payload.hasOwnProperty('startInfoBoolen')) {
+                commit('setStartInfoBoolen', payload.startInfoBoolen);
+            }
+            if (payload.hasOwnProperty('runningInfoBoolen')) {
+                commit('setRunningInfoBoolen', payload.runningInfoBoolen);
+            }
+            if (payload.hasOwnProperty('runningInfoStop')) {
+                commit('setRunningInfoStop', payload.runningInfoStop);
+            }
+            if (payload.hasOwnProperty('reqArr')) {
+                commit('setReqArr', payload.reqArr);
+            }
+            if (payload.hasOwnProperty('shiftReqArr')) {
+                commit('shiftReqArr');
+            }
+            if(payload.hasOwnProperty('reqArrPaste')){
+                commit('setReqArrPaste', payload.reqArr);
+            }
+            if(payload.hasOwnProperty('resFlag')){
+                commit('setResFlag', payload.resFlag);
             }
         },
     },

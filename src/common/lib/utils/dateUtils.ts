@@ -6,9 +6,11 @@ export function getDateTimeStr(): string {
     const hour = now.getHours().toString().padStart(2, '0');
     const minute = now.getMinutes().toString().padStart(2, '0');
     const second = now.getSeconds().toString().padStart(2, '0');
+    const millisecond = now.getMilliseconds().toString().padStart(3, '0');
 
-    return `${year}${month}${day}${hour}${minute}${second}`;
+    return `${year}${month}${day}${hour}${minute}${second}${millisecond}`;
 }
+
 
 export const getCountToTime = (timeCount: number): string => {
     const hour = Math.floor(timeCount / 3600);

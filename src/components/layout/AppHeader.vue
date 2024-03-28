@@ -152,6 +152,7 @@ const noRouterPush = ref(false);
 // 현재 날짜와 시간을 저장하는 변수
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
+let isAralrmInterver = null;
 
 // 현재 날짜를 계산하는 computed 속성
 const formattedDate = computed(() => {
@@ -214,9 +215,10 @@ watch([runInfo.value], async (newVals: any) => {
   await nextTick();
   isAlarm.value = newVals[0].isAlarm;
   if (isAlarm.value) {
-    setTimeout(() => {
+    isAralrmInterver = setTimeout(() => {
       isAlarm.value = false;
     }, alarmCount.value);
+    clearTimeout(isAralrmInterver);
   }
 });
 
