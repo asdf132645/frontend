@@ -644,3 +644,17 @@ export const lisHotKeyAndLisFilePathAndUrl =[
 export const barcodeImgDir = {
     barcodeDirName: '00_Barcode_Image'
 }
+
+export const dirName = {
+    howellJollyDirName: '19_Howell_jolly',
+    malariaDirName: '43_InclusionBody_Malaria',
+    noMalariaDirName: '44_InclusionBody_NoMalaria',
+    rbcClassDirName: '03_RBC_Classification',
+    rbcImageDirName: '02_RBC_Image',
+    barcodeDirName: '00_Barcode_Image',
+    wbcClassDirName: '01_WBC_Classification',
+    bfDirName: '02_LowPower_Image',
+    bfHighDirName: '03_HighPower_Image',
+    bfClassDirName: '05_BF_Classification',
+    pbiaRootPath: 'D:/ia_proc',
+}

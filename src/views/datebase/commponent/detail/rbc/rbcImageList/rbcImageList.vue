@@ -3,15 +3,23 @@
   <div class="rbc-container">
     <div class="btn-container">
       <div>
-        <button @click="toggleViewer('lowMag')">Low magnification</button>
-        <button @click="toggleViewer('malaria')">Malaria</button>
+        <button 
+          @click="toggleViewer('lowMag')" 
+          class="tab-btn" 
+          :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"
+          >Low magnification</button>
+        <button 
+          @click="toggleViewer('malaria')" 
+          class="tab-btn" 
+          :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"
+        >Malaria</button>
       </div>
-      <div>
-        <button @click="imgSetOpen">img Setting</button>
+      <div class='btn-imgsetbox'>
+        <button class="img-btn" @click="imgSetOpen">Img Setting</button>
         <div class="imgSet" v-if="imgSet">
             <div>
               <font-awesome-icon :icon="['fas', 'sun']"/>
-                Brightness
+              <span>Brightness</span>
               <input
                   type="range"
                   min="80"
@@ -22,7 +30,7 @@
             </div>
             <div>
               <font-awesome-icon :icon="['fas', 'palette']"/>
-              RGB
+              <span>RGB</span>
               <input
                   type="range"
                   min="0"
@@ -48,33 +56,50 @@
             </div>
             <div>
               <font-awesome-icon :icon="['fas', 'th']"/>
-              Grid
+              <span>Grid</span>
               <font-awesome-icon
                 :icon="isGrid ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 @click="onClickGrid"
               />
             </div>
             <div>
+              <font-awesome-icon :icon="['fas', 'crop']"/>
+              <span>Crop</span>
+              <font-awesome-icon
+                :icon="isCrop? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                @click="onClickCrop"
+              />
+            </div>
+            <div>
               <font-awesome-icon :icon="['fas', 'ruler']"/>
-              Ruler
-              <div>
-                <button @click="onClickRuler(ruler)" v-for="ruler in rulers" :key="ruler.id">{{ruler.text}}</button>
+              <span>Ruler</span>
+              <div class="ruler-box">
+                <button 
+                class="tab-ruler-btn" 
+                @click="onClickRuler(ruler)" 
+                v-for="ruler in rulers" 
+                :key="ruler.id"
+                :class="{ 'active': activeRuler === ruler.text, 'inactive': activeRuler !== ruler.text}"
+              >{{ruler.text}}</button>
               </div>
             </div>
             <div>
-              <font-awesome-icon :icon="['fas', 'glass']"/>
-              Zoom
+              <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
+              <span>Zoom</span>
               <font-awesome-icon
                 :icon="isMagnifyingGlass ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                @click="onClickMagnifyingGlass"
+                @click="onClickZoom"
               />
             </div>
+            
         </div>
       </div>
     </div>
-    <div>
-      <Malaria v-if="activeViewer === 'malaria'"/>
-      <div v-else style="width: 100%; height: 89vh;" id="tiling-viewer" ref="image"></div>
+    <div class="tiling-viewer-box">
+      <Malaria :selectItems="selectItems" v-if="activeTab === 'malaria'"/>
+      <div ref="tilingViewerLayer" v-else style="width: 100%; height: 86vh;" id="tiling-viewer" ></div>
+    
+      <div ref="highlightLayer" v-show="showHighlight" id="highlight-layer"></div>
     </div>
   </div>
 </template>
@@ -85,21 +110,23 @@ import { defineProps, onMounted, ref, watch } from 'vue';
 import OpenSeadragon from 'openseadragon';
 // import '@/components/Plugins/OpenSeadragonCanvasOverlay-0.0.2/openseadragon-canvas-overlay.js'
 import {rulers} from '@/common/defines/constFile/rbc';
+import {dirName} from "@/common/defines/constFile/settings";
 import Malaria from './Malaria.vue';
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
-const activeViewer = ref('');
+const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
 let viewer:any = null;
 const imgSet = ref(false);
 const imgBrightness = ref(100);
 const imageRgb = ref([0, 0, 0]);
-const isRuler = ref(false);
 const isGrid = ref(false);
+const isCrop = ref(false);
 const isMagnifyingGlass = ref(false);
 const ruler = ref(null);
+const activeRuler = ref('None');
 const rulerPos = ref({
   prevPosX: 0,
   prevPosY: 0,
@@ -113,93 +140,22 @@ const rulerPos = ref({
 const rulerSize = ref(5);
 const rulerWidth = ref(0);
 const viewBoxWH = ref(150);
+const tilingViewerLayer = ref(null);
+const highlightLayer = ref<HTMLElement | null>(null);
+const showHighlight = ref(false);
+let isFirstDragEvent = ref(true);
+let startPoint = ref(null);
+let lastPoint = ref(null);
+
 
 onMounted(() => {
   initElement();
 });
 
 
-const changeImageRgb = () => {
-  const red = imageRgb.value[0];
-  const green = imageRgb.value[1];
-  const blue = imageRgb.value[2];
-  const brightness = imgBrightness.value;
-  
-  const imageContainer = document.getElementById('tiling-viewer');
-
-  if (imageContainer) {
-    imageContainer.style.filter = `opacity(0.88) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
-  }
-
-}
-
-const changeImgBrightness = (event: any) => {
-  const brightness = event?.target?.value;
-  
-  const red = imageRgb.value[0];
-  const green = imageRgb.value[1];
-  const blue = imageRgb.value[2];
-  
-  const imageContainer = document.getElementById('tiling-viewer');
-  if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
-  }
-};
-
-const rgbReset = () => {
-  imgBrightness.value = 100;
-  imageRgb.value = [0, 0, 0];
-
-  const imageContainer = document.getElementById('tiling-viewer');
-  if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(100%)`;
-  }
-};
-
-const onClickRuler = (ruler: any) => {
-  isRuler.value = !isRuler.value;
-  if (isRuler.value) {
-    drawRuler(ruler);
-  }
-}
-
-const onClickGrid = () => {
-  isGrid.value = !isGrid.value;
-  viewer.forceRedraw()
-  if (isGrid.value) {
-    drawLines();
-  } else {
-    removeGridLines();
-  }
-}
-
-const onClickMagnifyingGlass = () => {
-  isMagnifyingGlass.value = !isMagnifyingGlass.value;
-}
-
-const imgSetOpen = () => {
-  imgSet.value = !imgSet.value;
-}
-
-const toggleViewer = (viewerType: string) => {
-  switch (viewerType) {
-    case 'lowMag':
-      activeViewer.value = 'lowMag';
-      break;
-    case 'malaria':
-      activeViewer.value = 'malaria';
-      break;
-  }
-  
-  if (activeViewer.value !== 'malaria') {
-    initElement();
-  }
-};
-
-
 const initElement = async () => {
 
-  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/02_RBC_Image`;
+  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
     
@@ -245,7 +201,7 @@ const initElement = async () => {
         magCanvas.style.borderRadius = '50%'
         magCanvas.style.width = magWidth + 'px'
         magCanvas.style.height = magHeight + 'px'
-        magCanvas.style.zIndex = '20'
+        magCanvas.style.zIndex = '0'
 
         viewer.element.appendChild(magCanvas)
         const magCtx = magCanvas.getContext('2d')
@@ -264,114 +220,257 @@ const initElement = async () => {
         } else {
           magCanvas.style.visibility = 'visible'
         }
-      }
+      },
     });
-
-    viewer.addHandler('zoom', handleGridZoom);
-
-    // const gridOverlay = viewer.addOverlay({
-    //   element: document.createElement("div"),
-    //   location: viewer.world.getHomeBounds(),
-    //   checkResize: false
-    // });
-
-    // const gridElement = gridOverlay.element;
-    // gridElement.style.width = "100%";
-    // gridElement.style.height = "100%";
-    // gridElement.style.background = "linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3) 100%), linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3) 100%)";
-    // gridElement.style.backgroundSize = "20px 20px";
 
 } catch (err) {
     console.error('Error:', err);
   }
 };
 
-const refreshRuler = (element, rulerSize, ruler) => {
-  if(document.getElementById('rulerTitle') !== null) {
-    element.removeChild(document.getElementById('rulerTitle'))
+const fetchTilesInfo = async (folderPath: string) => {
+  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
   }
 
-  let rSize = 1
-  if (rulerSize > 5) {
-    rSize = rSize + (0.06 * (rulerSize - 5))
+  const fileNames = await response.json();
+  const tilesInfo = [];
+
+  for (const fileName of fileNames) {
+    if (fileName.endsWith('_files')) {
+      tilesInfo.push({
+        Image: {
+          xmlns: "http://schemas.microsoft.com/deepzoom/2009",
+          Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
+          Format: "jpg",
+          Overlap: "1",
+          TileSize: "1024",
+          Size: {
+            Height: "3295",
+            Width: "3349"
+          }
+        }
+      });
+    }
   }
 
-  let zoomRatio = viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom())
+  return tilesInfo;
+};
 
-  if (zoomRatio > 1) {
-    zoomRatio = zoomRatio * 1.02
-  } else if (zoomRatio > 0.9 && zoomRatio < 1) {
-    zoomRatio = zoomRatio * 1.12
-  } else if (zoomRatio > 0.7 && zoomRatio <= 0.9) {
-    zoomRatio = zoomRatio * 1.22
-  } else if (zoomRatio > 0.6 && zoomRatio <= 0.7) {
-    zoomRatio = zoomRatio * 1.32
-  } else if (zoomRatio > 0.5 && zoomRatio <= 0.6) {
-    zoomRatio = zoomRatio * 1.42
-  } else if (zoomRatio > 0.4 && zoomRatio <= 0.5) {
-    zoomRatio = zoomRatio * 1.52
-  } else if (zoomRatio > 0.3 && zoomRatio <= 0.4) {
-    zoomRatio = zoomRatio * 1.72
-  } else if (zoomRatio > 0.2 && zoomRatio <= 0.3) {
-    zoomRatio = zoomRatio * 1.92
+
+// Low magnification and Malaria tab
+const toggleViewer = (viewerType: string) => {
+  switch (viewerType) {
+    case 'lowMag':
+      activeTab.value = 'lowMag';
+      break;
+    case 'malaria':
+      activeTab.value = 'malaria';
+      imgSet.value = false;
+      break;
+  }
+  
+  if (activeTab.value !== 'malaria') {
+    initElement();
+  }
+};
+
+
+// Img setting
+const imgSetOpen = () => {
+  imgSet.value = !imgSet.value;
+}
+
+
+// Brightness
+const changeImgBrightness = (event: any) => {
+  const brightness = event?.target?.value;
+  
+  const red = imageRgb.value[0];
+  const green = imageRgb.value[1];
+  const blue = imageRgb.value[2];
+  
+  const imageContainer = document.getElementById('tiling-viewer');
+  if (imageContainer) {
+    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+  }
+};
+
+
+// RGB
+const changeImageRgb = () => {
+  const red = imageRgb.value[0];
+  const green = imageRgb.value[1];
+  const blue = imageRgb.value[2];
+  const brightness = imgBrightness.value;
+  
+  const imageContainer = document.getElementById('tiling-viewer');
+
+  if (imageContainer) {
+    imageContainer.style.filter = `opacity(0.88) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
   }
 
-  rulerWidth.value = 60 * (zoomRatio * rSize)
+}
 
-  const titleElement = document.createElement('div')
-  titleElement.id = 'rulerTitle'
-  titleElement.style.color = 'black'
-  titleElement.style.textAlign = 'center'
-  titleElement.style.fontSize = '16px'
-  titleElement.style.minWidth = '50px'
-  titleElement.style.width = rulerWidth.value + 'px'
+const rgbReset = () => {
+  imgBrightness.value = 100;
+  imageRgb.value = [0, 0, 0];
 
-  if (ruler.id === 'line') {
-    const startX = (viewBoxWH.value / 2) - (rulerWidth.value / 2)
-    const endX = (viewBoxWH.value / 2) + (rulerWidth.value / 2)
-    const startY = viewBoxWH.value / 2
-    const endY = startY
+  const imageContainer = document.getElementById('tiling-viewer');
+  if (imageContainer) {
+    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(100%)`;
+  }
+};
 
-    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize.value + 'μm' + '</div>' +
-                              '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
-                                '<line x1="' + startX + '" y1="' + startY + '" x2="' + endX + '" y2="' + endY + '" stroke="black" stroke-width="2"/>' +
-                                '<line x1="' + startX + '" y1="' + (startY-5) + '" x2="' + startX + '" y2="' + (endY+5) + '" stroke="black" stroke-width="2"/>' +
-                                '<line x1="' + endX + '" y1="' + (endY-5) + '" x2="' + endX + '" y2="' + (endY+5) + '" stroke="black" stroke-width="2"/>' +
-                              '</svg>'
-    element.appendChild(titleElement)
 
-  } else if (ruler.id === 'cross') {
-    const centerX = viewBoxWH.value / 2;
-    const centerY = viewBoxWH.value / 2;
-    const halfWidth = rulerWidth.value / 2;
-
-    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize.value + 'μm' + '</div>' +
-                              '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
-                                '<line x1="' + (centerX - halfWidth) + '" y1="' + centerY + '" x2="' + (centerX + halfWidth) + '" y2="' + centerY + '" stroke="black" stroke-width="2"/>' +
-                                '<line x1="' + centerX + '" y1="' + (centerY - halfWidth) + '" x2="' + centerX + '" y2="' + (centerY + halfWidth) + '" stroke="black" stroke-width="2"/>' +
-                              '</svg>';
-
-    element.appendChild(titleElement);
-
-  } else if (ruler.id === 'circle') {
-    const cx = viewBoxWH.value / 2
-    const cy = viewBoxWH.value / 2
-    const radius = rulerWidth.value * 0.5
-
-    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize.value + 'μm' + '</div>' +
-                              '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
-                              '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" stroke="black" stroke-width="2" fill="transparent" opacity="0.6" />' +
-                              '</svg>';
-
-    element.appendChild(titleElement)
+// Grid
+const onClickGrid = () => {
+  isGrid.value = !isGrid.value;
+  viewer.addHandler('zoom', drawLines);
+  if (isGrid.value) {
+    drawLines();
   } else {
-    const rulerOverlay = document.getElementById('rulerOverlay')
-    if (rulerOverlay !== null) {
-      const divtilingViewer = document.getElementById('tilingViewer')
-      divtilingViewer?.removeChild(rulerOverlay)
+    removeGridLines();
+  }
+}
+
+const drawLines = () => {
+  removeGridLines();
+  if (isGrid.value) {
+    const imageHeight = viewer.world.getItemAt(0).getContentSize().y;
+    const imageWidth = viewer.world.getItemAt(0).getContentSize().x;
+    const zoom = viewer.viewport.getZoom();
+
+    const maxNumberOfLines = 400;
+    const numberOfLines = Math.round(maxNumberOfLines / zoom);
+
+    const minGap = Math.min(imageWidth, imageHeight) / numberOfLines;
+
+    for (let i = 1; i < numberOfLines; i++) {
+      const linePosition = i * minGap;
+
+      drawLine(linePosition, 0, 1, imageHeight, 'rgba(128, 128, 128, 0.2)'); // 세로선
+      drawLine(0, linePosition, imageWidth, 1, 'rgba(128, 128, 128, 0.2)'); // 가로선
     }
   }
 };
+
+const drawLine = (x: number, y: number, width: number, height: number, color: string) => {
+  const lineElement = document.createElement('div');
+  lineElement.className = 'grid-line';
+  lineElement.style.position = 'absolute';
+  lineElement.style.left = `${x}px`;
+  lineElement.style.top = `${y}px`;
+  lineElement.style.width = `${width}px`;
+  lineElement.style.height = `${height}px`;
+  lineElement.style.background = color;
+  lineElement.style.userSelect = 'none';
+  lineElement.style.pointerEvents = 'none';
+  viewer.container.appendChild(lineElement);
+};
+
+const removeGridLines = () => {
+  const gridLines = document.querySelectorAll('.grid-line');
+  gridLines.forEach(line => line.remove());
+};
+
+
+
+// Crop
+const onClickCrop = () => {
+  isCrop.value = !isCrop.value;
+
+  if (isCrop.value) {
+    viewer.removeAllHandlers('canvas-drag');
+    viewer.removeAllHandlers('canvas-drag-end');
+
+    viewer.addHandler('canvas-drag', function(event: any) {
+      event.preventDefaultAction = isCrop.value;
+
+      if (isFirstDragEvent.value) {
+        startPoint.value = event.position;
+        isFirstDragEvent.value = false;
+      }
+    });
+
+    viewer.addHandler('canvas-drag-end', function(event: any) {
+      lastPoint.value = event.position;
+      isFirstDragEvent.value = true;
+
+      if (startPoint.value && lastPoint.value) {
+        updateHighlighter(startPoint.value, lastPoint.value);
+        showHighlight.value = true;
+      }
+    })
+  }
+}
+
+const updateHighlighter = (start, last) => {
+  console.log('start');
+  console.log(start.x);
+  console.log(start.y);
+  console.log('last');
+  console.log(last);
+
+
+  const width = Math.abs(last.x - start.x);
+  const height = Math.abs(last.y - start.y);
+
+
+  if (highlightLayer.value) {
+    highlightLayer.value.style.position = 'absolute';
+    highlightLayer.value.style.top = (start.y) + 'px';
+    highlightLayer.value.style.left = (start.x) + 'px';
+    // if (last.x - start.x < 0) {
+    //   highlightLayer.value.style.top = (start.y) + 'px';
+    //   highlightLayer.value.style.left = (start.x) + 'px';
+    // } else {
+    //   highlightLayer.value.style.top = (last.y) + 'px';
+    //   highlightLayer.value.style.left = (last.x) + 'px';
+    // }
+    highlightLayer.value.style.width = width + 'px';
+    highlightLayer.value.style.height = height + 'px';
+    highlightLayer.value.style.background = 'lightgreen';
+    highlightLayer.value.style.zIndex = '100';
+  }
+  console.log('highlight')
+  console.log(highlightLayer.value)
+
+  displayCroppedImage(highlightLayer.value);
+
+}
+
+const displayCroppedImage = (highlightLayerImage: any) => {
+  // const croppedViewer = OpenSeadragon({
+    // id: "cropped-viewer",
+    // tileSources: highlightLayerImage
+  // });
+  console.log('croppedViewer')
+  // console.log(croppedViewer)
+}
+
+
+// Ruler
+const onClickRuler = (ruler: any) => {
+  switch (ruler.text) {
+    case 'None':
+      activeRuler.value = 'None';
+      break;
+    case 'Line':
+      activeRuler.value = 'Line';
+      break;
+    case 'Cross':
+      activeRuler.value = 'Cross';
+      break;
+    case 'Circle':
+      activeRuler.value = 'Circle';
+      break;
+  }
+  drawRuler(ruler);
+}
 
 const drawRuler = (ruler: any) => {
   console.log("drawruler")
@@ -482,87 +581,185 @@ const drawRuler = (ruler: any) => {
   }
 };
 
-const handleGridZoom = () => {
-  drawLines();
-};
+const refreshRuler = (element, rulerSize, ruler) => {
+  if (typeof rulerSize === 'object') {
+    rulerSize = rulerSize.value; // 예를 들어, 객체의 value 속성을 가져와 사용한다고 가정합니다.
+  }
+  if(document.getElementById('rulerTitle') !== null) {
+    element.removeChild(document.getElementById('rulerTitle'))
+  }
 
-const drawLines = () => {
-  removeGridLines();
-  if (isGrid.value) {
-    const imageHeight = viewer.world.getItemAt(0).getContentSize().y;
-    const imageWidth = viewer.world.getItemAt(0).getContentSize().x;
-    const zoom = viewer.viewport.getZoom();
+  let rSize = 1
+  if (rulerSize > 5) {
+    rSize = rSize + (0.06 * (rulerSize - 5))
+  }
 
-    const maxNumberOfLines = 400;
-    const numberOfLines = Math.round(maxNumberOfLines / zoom);
+  let zoomRatio = viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom())
 
-    const minGap = Math.min(imageWidth, imageHeight) / numberOfLines;
+  if (zoomRatio > 1) {
+    zoomRatio = zoomRatio * 1.02
+  } else if (zoomRatio > 0.9 && zoomRatio < 1) {
+    zoomRatio = zoomRatio * 1.12
+  } else if (zoomRatio > 0.7 && zoomRatio <= 0.9) {
+    zoomRatio = zoomRatio * 1.22
+  } else if (zoomRatio > 0.6 && zoomRatio <= 0.7) {
+    zoomRatio = zoomRatio * 1.32
+  } else if (zoomRatio > 0.5 && zoomRatio <= 0.6) {
+    zoomRatio = zoomRatio * 1.42
+  } else if (zoomRatio > 0.4 && zoomRatio <= 0.5) {
+    zoomRatio = zoomRatio * 1.52
+  } else if (zoomRatio > 0.3 && zoomRatio <= 0.4) {
+    zoomRatio = zoomRatio * 1.72
+  } else if (zoomRatio > 0.2 && zoomRatio <= 0.3) {
+    zoomRatio = zoomRatio * 1.92
+  }
 
-    for (let i = 1; i < numberOfLines; i++) {
-      const linePosition = i * minGap;
+  rulerWidth.value = 60 * (zoomRatio * rSize)
 
-      drawLine(linePosition, 0, 1, imageHeight, 'rgba(128, 128, 128, 0.2)'); // 세로선
-      drawLine(0, linePosition, imageWidth, 1, 'rgba(128, 128, 128, 0.2)'); // 가로선
+  const titleElement = document.createElement('div')
+  titleElement.id = 'rulerTitle'
+  titleElement.style.color = 'black'
+  titleElement.style.textAlign = 'center'
+  titleElement.style.fontSize = '16px'
+  titleElement.style.minWidth = '50px'
+  titleElement.style.width = rulerWidth.value + 'px'
+
+  if (ruler.id === 'line') {
+    const startX = (viewBoxWH.value / 2) - (rulerWidth.value / 2)
+    const endX = (viewBoxWH.value / 2) + (rulerWidth.value / 2)
+    const startY = viewBoxWH.value / 2
+    const endY = startY
+
+    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
+                              '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
+                                '<line x1="' + startX + '" y1="' + startY + '" x2="' + endX + '" y2="' + endY + '" stroke="black" stroke-width="2"/>' +
+                                '<line x1="' + startX + '" y1="' + (startY-5) + '" x2="' + startX + '" y2="' + (endY+5) + '" stroke="black" stroke-width="2"/>' +
+                                '<line x1="' + endX + '" y1="' + (endY-5) + '" x2="' + endX + '" y2="' + (endY+5) + '" stroke="black" stroke-width="2"/>' +
+                              '</svg>'
+    element.appendChild(titleElement)
+
+  } else if (ruler.id === 'cross') {
+    const centerX = viewBoxWH.value / 2;
+    const centerY = viewBoxWH.value / 2;
+    const halfWidth = rulerWidth.value / 2;
+
+    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
+                              '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
+                                '<line x1="' + (centerX - halfWidth) + '" y1="' + centerY + '" x2="' + (centerX + halfWidth) + '" y2="' + centerY + '" stroke="black" stroke-width="2"/>' +
+                                '<line x1="' + centerX + '" y1="' + (centerY - halfWidth) + '" x2="' + centerX + '" y2="' + (centerY + halfWidth) + '" stroke="black" stroke-width="2"/>' +
+                              '</svg>';
+
+    element.appendChild(titleElement);
+
+  } else if (ruler.id === 'circle') {
+    const cx = viewBoxWH.value / 2
+    const cy = viewBoxWH.value / 2
+    const radius = rulerWidth.value * 0.5
+
+    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
+                              '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
+                              '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" stroke="black" stroke-width="2" fill="transparent" opacity="0.6" />' +
+                              '</svg>';
+
+    element.appendChild(titleElement)
+  } else {
+    const rulerOverlay = document.getElementById('rulerOverlay')
+    if (rulerOverlay !== null) {
+      const divtilingViewer = document.getElementById('tilingViewer')
+      divtilingViewer?.removeChild(rulerOverlay)
     }
   }
 };
 
 
-const drawLine = (x: number, y: number, width: number, height: number, color: string) => {
-  const lineElement = document.createElement('div');
-  lineElement.className = 'grid-line';
-  lineElement.style.position = 'absolute';
-  lineElement.style.left = `${x}px`;
-  lineElement.style.top = `${y}px`;
-  lineElement.style.width = `${width}px`;
-  lineElement.style.height = `${height}px`;
-  lineElement.style.background = color;
-  lineElement.style.userSelect = 'none';
-  lineElement.style.pointerEvents = 'none';
-  viewer.container.appendChild(lineElement);
-};
+// Zoom
+const onClickZoom = () => {
+  isMagnifyingGlass.value = !isMagnifyingGlass.value;
+}
 
-const removeGridLines = () => {
-  const gridLines = document.querySelectorAll('.grid-line');
-  gridLines.forEach(line => line.remove());
-};
 
-const fetchTilesInfo = async (folderPath: string) => {
-  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
-  const response = await fetch(url);
 
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-
-  const fileNames = await response.json();
-  const tilesInfo = [];
-
-  for (const fileName of fileNames) {
-    if (fileName.endsWith('_files')) {
-      tilesInfo.push({
-        Image: {
-          xmlns: "http://schemas.microsoft.com/deepzoom/2009",
-          Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
-          Format: "jpg",
-          Overlap: "1",
-          TileSize: "1024",
-          Size: {
-            Height: "3295",
-            Width: "3349"
-          }
-        }
-      });
-    }
-  }
-
-  return tilesInfo;
-};
 </script>
 
 <style scoped>
+
+.tab-btn {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  background-color: #2c2d2c;
+}
+
+.ruler-box {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tab-ruler-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  background-color: #2c2d2c;
+}
+
+.tab-btn.active, .tab-ruler-btn.active {
+  color: white;
+  background-color: #2c2d2c;
+}
+
+.tab-btn.inactive, .tab-ruler-btn.inactive {
+  color: darkgray;
+  background-color: #393939;
+}
+
+
+.btn-imgsetbox{
+  position: relative;
+}
+
+.imgSet {
+  position: absolute;
+  top: 40px;
+  left: -150px;
+  width: 250px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.imgSet div {
+  padding: 10px;
+}
+
+.img-btn {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  background-color: #2c2d2c;
+}
+
+span {
+  margin: 0 10px 0 10px;
+}
+
+.tiling-viewer-box {
+  position: relative;
+  max-width: 100%; /* 부모 요소의 최대 너비를 화면의 너비로 설정합니다. */
+  overflow: hidden; /* 부모 요소를 넘어가는 콘텐츠를 숨깁니다. */
+}
+
 #tiling-viewer {
   position: relative;
+  max-width: 100%; /* 이미지의 최대 너비를 부모 요소의 너비로 설정합니다. */
+  height: auto; /* 이미지의 높이를 자동으로 조정하여 가로세로 비율을 유지합니다. */
 }
 
 .rbc-container {

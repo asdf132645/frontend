@@ -11,6 +11,9 @@
             <button @click="memoCancel">cancel</button>
           </div>
         </li>
+        <li @click="commitConfirmed">
+          <font-awesome-icon :icon="['fas', 'square-check']"/>
+        </li>
       </ul>
     </div>
     <template v-for="(classList, outerIndex) in [rbcInfoChangeVal]" :key="outerIndex">
@@ -75,6 +78,8 @@ import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
+import {messages} from "@/common/defines/constFile/constant";
+
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 
 const props = defineProps(['rbcInfo', 'selectItems', 'originalDb']);
@@ -97,12 +102,11 @@ onMounted(() => {
     pltCount.value = props.selectItems?.pltCount;
     malariaCount.value = props.selectItems?.malariaCount;
     memo.value = props.selectItems.rbcMemo;
+    console.log(props.rbcInfo)
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-    rbcInfoChangeVal.value = newItem;
-    // console.log('rbcInfoChangeVal')
-    // console.log(rbcInfoChangeVal.value)
+  rbcInfoChangeVal.value = newItem;
 });
 
 watch(() => props.selectItems, (newItem) => {
@@ -166,6 +170,26 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const commitConfirmed = () => {
+  const userConfirmed = confirm(messages.IDS_MSG_CONFIRM_SLIDE);
+
+  if (userConfirmed) {
+    onCommit()
+  }
+}
+
+const onCommit = async () => {
+  const updatedRuningInfo = props.originalDb
+      .filter((item: any) => item.id === props.selectItems.id)
+      .map((item: any) => {
+        const updatedItem = {...item, signedState: 'Submit', signedOfDate: new Date(), signedUserId: item.id};
+        updatedItem.submit = 'Submit';
+        return updatedItem;
+      });
+
+  await resRunningItem(updatedRuningInfo);
+}
 
 </script>
 

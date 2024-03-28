@@ -31,7 +31,6 @@
 import {computed, onMounted, ref} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
-import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import router from '@/router';
 import {useStore} from "vuex";
 
@@ -46,11 +45,16 @@ const pbiaRootPath = commonDataGet.value.pbiaRootPath;
 const clickid = ref(sessionStorage.getItem("dbBaseTrClickId"));
 const rbcInfo = ref(null);
 
+onMounted(()=>{
+  initData();
+})
+
 const pageGo = (path: string) => {
   router.push(path)
 }
 
 const initData = () => {
+  console.log(selectItemRbc)
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
 }
 </script>
