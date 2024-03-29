@@ -43,6 +43,7 @@ import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/def
 import {messages} from '@/common/defines/constFile/constant';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
+import EventBus from "@/eventBus/eventBus";
 
 const instance = getCurrentInstance();
 
@@ -136,9 +137,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: object) => {
-  instance?.appContext.config.globalProperties.$socket.emit('message', {type, payload});
-  await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
-  // store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
+  EventBus.publish('messageSent', payload);
 };
 const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {

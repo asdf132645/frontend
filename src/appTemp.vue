@@ -72,20 +72,8 @@ const componentKey = ref(0);
 watch(reqArr.value, (newVal, oldUserId) => {
   if(newVal.resFlag && newVal.reqArr){
     if (newVal.reqArr.length !== 0){
-      const originalArray = Array.from(newVal.reqArr); // 깊은 복사
-      console.log("Original array:", originalArray);
-
-      const invalidItems = newVal.reqArr.filter(item => item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO');
-      console.log("Invalid items:", invalidItems);
-      if(invalidItems.length !== 0){
-        sendMessage(invalidItems[0]);
-        store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
-      }else{
-        sendMessage(newVal.reqArr.shift());
-        store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
-      }
-
-
+      sendMessage(newVal.reqArr.shift());
+      store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
     }
   }
 });
