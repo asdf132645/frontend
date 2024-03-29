@@ -63,6 +63,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+    // 페이지 이동 전에 setInterval 정리
+    // clearIntervalIfExists();
     // 세션 스토리지에서 사용자 정보 확인
     const storedUser = sessionStorage.getItem('user');
     const getStoredUser = JSON.parse(storedUser || '{}');
