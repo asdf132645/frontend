@@ -81,7 +81,7 @@ watch(reqArr.value, (newVal, oldUserId) => {
         sendMessage(invalidItems[0]);
         store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
       }else{
-        sendMessage(newVal.reqArr.shift());
+        sendMessage(originalArray[0]);
         store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
       }
 
@@ -278,9 +278,8 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         return
       }
       await saveTestHistory(data);
-    } else {
-      await runInfoPostWebSocket();
     }
+    await runInfoPostWebSocket();
 
   }
 }
