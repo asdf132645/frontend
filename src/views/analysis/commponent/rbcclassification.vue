@@ -125,6 +125,7 @@ watch([runningInfoModule.value], (newVal: any) => {
         const currentSlot = firstItem?.slotInfo.find(
             (item: SlotInfo) => item.stateCd === "03"
         );
+
         if (currentSlot) {
           malariaCount.value = currentSlot.malariaCount;
           maxRbcCount.value = currentSlot.maxRbcCount;
@@ -162,8 +163,10 @@ const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
     }
     const wbcInfoArray = [slotArray.rbcInfo[commonDataGet.value.slideProceeding].rbcInfo];
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
+
     //최종으로 슬라이드 정보를 업데이트
     calcRbcDegree(wbcInfoArr[0])
+    
     if (slotArray.rbcInfo[0].lowPowerPath) {
       lowPowerPath.value = slotArray.rbcInfo[0].lowPowerPath.sort(function (a: any, b: any) {
         return a.seqNo - b.seqNo;
@@ -185,7 +188,7 @@ const calcRbcDegree = (rbcInfos: any) => {
   let totalCount = 0;
   let sizeTotal = 0;
   let chromiaTotal = 0;
-  const rbcInfo = JSON.parse(JSON.stringify(rbcInfos));
+  const rbcInfo = (JSON.parse(JSON.stringify(rbcInfos)));
 
   rbcInfo.forEach((rbcCategory: any) => {
     rbcCategory.classInfo.forEach((rbcClass: any) => {
@@ -231,6 +234,11 @@ const calcRbcDegree = (rbcInfos: any) => {
           }
 
           const setDegree = (value: any) => (rbcClass.degree = value);
+
+          console.log('percent')
+          console.log(percent)
+          console.log('degreeStandard')
+          console.log(degreeStandard)
 
           // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');

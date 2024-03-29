@@ -69,6 +69,7 @@
                 :icon="isCrop? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 @click="onClickCrop"
               />
+              <button>저장</button>
             </div>
             <div>
               <font-awesome-icon :icon="['fas', 'ruler']"/>
@@ -96,10 +97,9 @@
       </div>
     </div>
     <div class="tiling-viewer-box">
-      <Malaria :selectItems="selectItems" v-if="activeTab === 'malaria'"/>
-      <div ref="tilingViewerLayer" v-else style="width: 100%; height: 86vh;" id="tiling-viewer" ></div>
+      <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
+      <div v-else ref="tilingViewerLayer" id="tiling-viewer" ></div>
     
-      <div ref="highlightLayer" v-show="showHighlight" id="highlight-layer"></div>
     </div>
   </div>
 </template>
@@ -108,13 +108,13 @@
 
 import { defineProps, onMounted, ref, watch } from 'vue';
 import OpenSeadragon from 'openseadragon';
-// import '@/components/Plugins/OpenSeadragonCanvasOverlay-0.0.2/openseadragon-canvas-overlay.js'
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
 import Malaria from './Malaria.vue';
+import axios from 'axios';
 
 const props = defineProps(['selectItems']);
-const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || 'D:/ia_proc';
+const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || dirName.pbiaRootPath;
 const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
@@ -141,14 +141,13 @@ const rulerSize = ref(5);
 const rulerWidth = ref(0);
 const viewBoxWH = ref(150);
 const tilingViewerLayer = ref(null);
-const highlightLayer = ref<HTMLElement | null>(null);
-const showHighlight = ref(false);
 let isFirstDragEvent = ref(true);
-let startPoint = ref(null);
-let lastPoint = ref(null);
+let dragForCrop = ref({});
+const caputuredImage = ref<HTMLImageElement | null>(null)
 
 
 onMounted(() => {
+  console.log(process.env.APP_API_BASE_URL);
   initElement();
 });
 
@@ -170,6 +169,9 @@ const initElement = async () => {
       tileSources: tilesInfo,
       gestureSettingsMouse: { clickToZoom: false },
     });
+    
+    console.log('viewer')
+    console.log(viewer)
 
     new OpenSeadragon.MouseTracker({
       element: viewer.element,
@@ -378,8 +380,7 @@ const removeGridLines = () => {
 };
 
 
-
-// Crop
+// crop
 const onClickCrop = () => {
   isCrop.value = !isCrop.value;
 
@@ -391,66 +392,75 @@ const onClickCrop = () => {
       event.preventDefaultAction = isCrop.value;
 
       if (isFirstDragEvent.value) {
-        startPoint.value = event.position;
+        // 좌표 인식 이슈 때문에 드래그 하기 직전 처음으로 클릭한 시점 구분함
+        const overlayElement = document.createElement('div');
+        overlayElement.id = 'rectOverlay';
+        overlayElement.style.background = 'rgba(0, 255, 0, 0.3)';
+        const viewportPos = viewer.viewport.pointFromPixel(event.position);
+        viewer.addOverlay(overlayElement, new OpenSeadragon.Rect(viewportPos.x, viewportPos.y, 0, 0));
+
+        dragForCrop.value = {
+          overlayElement,
+          startPos: viewportPos
+        };
+
         isFirstDragEvent.value = false;
+
+      } else {
+        const viewportPos = viewer.viewport.pointFromPixel(event.position);
+        const diffX = viewportPos.x - dragForCrop.value.startPos.x;
+        const diffY = viewportPos.y - dragForCrop.value.startPos.y;
+
+        const location = new OpenSeadragon.Rect(
+          Math.min(dragForCrop.value.startPos.x, dragForCrop.value.startPos.x + diffX),
+          Math.min(dragForCrop.value.startPos.y, dragForCrop.value.startPos.y + diffY),
+          Math.abs(diffX),
+          Math.abs(diffY)
+        );
+
+        const b = viewer.updateOverlay(dragForCrop.value.overlayElement, location);
+        console.log(b)
       }
     });
 
-    viewer.addHandler('canvas-drag-end', function(event: any) {
-      lastPoint.value = event.position;
-      isFirstDragEvent.value = true;
+    viewer.addHandler('canvas-drag-end', function(event) {
+      console.log("끝")
+      if (isCrop.value && dragForCrop.value) {
+        const viewportPos = viewer.viewport.pointFromPixel(event.position);
+        const diffX = viewportPos.x - dragForCrop.value.startPos.x;
+        const diffY = viewportPos.y - dragForCrop.value.startPos.y;
 
-      if (startPoint.value && lastPoint.value) {
-        updateHighlighter(startPoint.value, lastPoint.value);
-        showHighlight.value = true;
+        const location = new OpenSeadragon.Rect(
+          Math.min(dragForCrop.value.startPos.x, dragForCrop.value.startPos.x + diffX),
+          Math.min(dragForCrop.value.startPos.y, dragForCrop.value.startPos.y + diffY),
+          Math.abs(diffX),
+          Math.abs(diffY)
+        );
+
+        const overlay = viewer.updateOverlay(dragForCrop.value.overlayElement, location);
+        console.log(overlay)
+
+        isFirstDragEvent.value = true;
+
+        captureComponent()
+
+        console.log('viewer.drawer.canvas', viewer.drawer.canvas)
       }
-    })
+    });
+  } else {
+    // isCrop.value가 false이면 모든 오버레이를 제거.
+    viewer.clearOverlays();
+  }
+};
+
+const captureComponent = () => {
+  try {
+//
+  } catch (err) {
+    console.error(err);
   }
 }
 
-const updateHighlighter = (start, last) => {
-  console.log('start');
-  console.log(start.x);
-  console.log(start.y);
-  console.log('last');
-  console.log(last);
-
-
-  const width = Math.abs(last.x - start.x);
-  const height = Math.abs(last.y - start.y);
-
-
-  if (highlightLayer.value) {
-    highlightLayer.value.style.position = 'absolute';
-    highlightLayer.value.style.top = (start.y) + 'px';
-    highlightLayer.value.style.left = (start.x) + 'px';
-    // if (last.x - start.x < 0) {
-    //   highlightLayer.value.style.top = (start.y) + 'px';
-    //   highlightLayer.value.style.left = (start.x) + 'px';
-    // } else {
-    //   highlightLayer.value.style.top = (last.y) + 'px';
-    //   highlightLayer.value.style.left = (last.x) + 'px';
-    // }
-    highlightLayer.value.style.width = width + 'px';
-    highlightLayer.value.style.height = height + 'px';
-    highlightLayer.value.style.background = 'lightgreen';
-    highlightLayer.value.style.zIndex = '100';
-  }
-  console.log('highlight')
-  console.log(highlightLayer.value)
-
-  displayCroppedImage(highlightLayer.value);
-
-}
-
-const displayCroppedImage = (highlightLayerImage: any) => {
-  // const croppedViewer = OpenSeadragon({
-    // id: "cropped-viewer",
-    // tileSources: highlightLayerImage
-  // });
-  console.log('croppedViewer')
-  // console.log(croppedViewer)
-}
 
 
 // Ruler
@@ -751,7 +761,6 @@ span {
 }
 
 .tiling-viewer-box {
-  position: relative;
   max-width: 100%; /* 부모 요소의 최대 너비를 화면의 너비로 설정합니다. */
   overflow: hidden; /* 부모 요소를 넘어가는 콘텐츠를 숨깁니다. */
 }
@@ -759,11 +768,11 @@ span {
 #tiling-viewer {
   position: relative;
   max-width: 100%; /* 이미지의 최대 너비를 부모 요소의 너비로 설정합니다. */
-  height: auto; /* 이미지의 높이를 자동으로 조정하여 가로세로 비율을 유지합니다. */
+  height: 85vh; /* 이미지의 높이를 자동으로 조정하여 가로세로 비율을 유지합니다. */
 }
 
 .rbc-container {
-  max-height:100vh;
+  height:100vh;
 }
 
 .btn-container {
