@@ -222,10 +222,10 @@ onMounted(() => {
 const getWbcCustomClasses = async () => {
   try {
     const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
-    if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-      console.log(null);
-      return;
-    }
+    // if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
+    //   console.log(null);
+    //   return;
+    // }
 
     const data: any = result.data;
     const newData = data.filter((item: any) => item.abbreviation);

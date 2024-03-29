@@ -73,10 +73,8 @@ watch(reqArr.value, (newVal, oldUserId) => {
   if(newVal.resFlag && newVal.reqArr){
     if (newVal.reqArr.length !== 0){
       const originalArray = Array.from(newVal.reqArr); // 깊은 복사
-      console.log("Original array:", originalArray);
-
       const invalidItems = newVal.reqArr.filter(item => item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO');
-      console.log("Invalid items:", invalidItems);
+
       if(invalidItems.length !== 0){
         sendMessage(invalidItems[0]);
         store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
@@ -164,6 +162,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await startSysPostWebSocket();
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
@@ -303,11 +302,9 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-    const wbcinfos = dbData.slotInfo[0].wbcInfo.wbcInfo.filter((wbc: any) => wbc.barcodeId === completeSlot.barcodeNo);
-    const wbcInfo = wbcinfos.length > 0 ? wbcinfos[0].wbcInfo : [];
 
     const newWbcInfo = {
-      wbcInfo: [wbcInfo],
+      wbcInfo: [completeSlot.wbcInfo],
       nonRbcClassList: dbData.slotInfo[0].wbcInfo.nonRbcClassList,
       totalCount: dbData.slotInfo[0].wbcInfo.totalCount,
       maxWbcCount: dbData.slotInfo[0].wbcInfo.maxWbcCount,
