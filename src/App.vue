@@ -1,6 +1,6 @@
 <!-- App.vue -->
 <template>
-  <div>
+  <div :key="componentKey">
     <AppHeader/>
     <main class='content'>
         <router-view/>
@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import AppHeader from "@/components/layout/AppHeader.vue";
-
+const router = useRouter();
 // homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
@@ -38,6 +38,7 @@ import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 import {parseDateString} from "@/common/lib/utils/dateUtils";
 import Alert from "@/components/commonUi/Alert.vue";
+import {useRouter} from "vue-router";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -57,6 +58,7 @@ const reqArr = computed(() => store.state.commonModule);
 const sendReqArr = ref([]); // ref로 배열을 초기화합니다.
 const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
+const componentKey = ref(0);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -69,11 +71,9 @@ const resFlag = ref(true);
 watch(reqArr.value, (newVal, oldUserId) => {
   if(newVal.resFlag && newVal.reqArr){
     if (newVal.reqArr.length !== 0){
-      console.log(newVal.reqArr)
       sendMessage(newVal.reqArr.shift());
       store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
     }
-
   }
 });
 
@@ -99,6 +99,7 @@ onMounted(async () => {
     await startSysPostWebSocket();
   }
   resFlag.value = reqArr.value.resFlag;
+  console.log(router.currentRoute.value.path === '/analysis')
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
@@ -126,7 +127,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await runInfoPostWebSocket();
         break;
       case 'START':
-        console.log('start!@!@!@!@!@!@!!!!!!!!!!!!!!!!!!!')
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
@@ -144,7 +144,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await rbcInfoStore(parseDataWarp);
         break;
       case 'STOP':
+        console.log('stop!=--------------------------')
         await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
+        await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
+        await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
+        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
@@ -155,11 +159,14 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
-
+        if(router.currentRoute.value.path === '/analysis' || router.currentRoute.value.path === '/'){
+          componentKey.value += 1;
+        }
         console.log('---------------      RUNNING_COMP        --------------------------')
         break;
       case 'PAUSE':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
+        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
         break;
       case 'RESTART':
@@ -168,11 +175,15 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
+        await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
+        await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         runningInfoBoolen.value = true;
         await runInfoPostWebSocket();
+        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
+        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         break;
       case 'ERROR_CLEAR':
         console.log('err')
@@ -220,6 +231,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
     } else {
       if (currentSlot?.slotId !== runningSlotId.value && currentSlot?.slotId) { // 슬라이드 체인지 시
+        console.log(currentSlot?.slotId)
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         if (runningSlotId.value !== '') {
@@ -228,7 +240,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
           }
           await saveTestHistory(data);
         }
-        console.log(currentSlot?.slotId)
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
       }
     }
@@ -242,7 +253,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       }
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-      console.log('save start')
+      // console.log('save start')
       if (!runningInfoBoolen.value) {
         return
       }
@@ -359,7 +370,6 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
-  console.log(payload)
   const executeAfterDelay = async (): Promise<void> => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',

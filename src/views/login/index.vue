@@ -26,17 +26,19 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {getCurrentInstance, ref} from "vue";
 import {login} from "@/common/api/service/user/userApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import {useEventBus} from "@/eventBus/eventBus";
+import {tcpReq} from "@/common/tcpRequest/tcpReq";
 // 스토어
 const store = useStore();
 const password = ref('');
 const idVal = ref('');
+const instance = getCurrentInstance();
 
 const goJoinPage = () => {
   router.push('/user/join');
@@ -56,6 +58,11 @@ const loginUser = async () => {
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
       await document.documentElement.requestFullscreen();
       await router.push('/');
+      instance?.appContext.config.globalProperties.$socket.emit('message', {
+        type: 'SEND_DATA',
+        payload: tcpReq().embedStatus.sysInfo
+      });
+      await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
     }else{
       alert('Login failed.');
     }

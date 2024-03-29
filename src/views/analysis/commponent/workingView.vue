@@ -111,11 +111,12 @@ watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals));
   // console.log(timeDataGet.value);
 
-  if (!newValsObj[0].startEmbedded) { // 슬라이드 검사가 끝난 후
+  if (!newValsObj[0].startEmbedded) {
     stopCounting();
   } else if(newValsObj[0].runningSlotId === '' && newValsObj[0].startEmbedded) {
     startTotalCounting();
   }
+
 
   if (!newValsObj[0].isRunningState) {
     stopTotalCounting();
@@ -137,6 +138,7 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
 
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
+
     startCounting();
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
     if (countingInterval !== null) {
@@ -177,8 +179,29 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
+  if (commonDataGet.value.isRunningState){
+    const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
+    elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
+
+    const getItem = sessionStorage.getItem('totalElapsedTimeCount');
+    totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
+
+    startTotalCounting();
+    startCounting();
+  }
+
 });
 onBeforeUnmount(() => {
+  if (countingInterval) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
+
+  if (countingIntervalTotal) {
+    clearInterval(countingIntervalTotal);
+    countingIntervalTotal = null;
+  }
+
   const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
   elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
 
@@ -197,60 +220,61 @@ const updateInputState = (source: string, target: any[]): void => {
 
 
 const startCounting = (): void => {
-  if (countingInterval) {
-    clearInterval(countingInterval);
+  if (!countingInterval) {
+    countingInterval = setInterval(() => {
+      if (commonDataGet.value.isRunningState) {
+        elapsedTimeCount.value += 1;
+        timeNum.value = elapsedTimeCount.value % 60;
+        sessionStorage.setItem('elapsedTimeCount', String(elapsedTimeCount.value));
+        store.dispatch('timeModule/setTimeInfo', {slideTime: getCountToTime(elapsedTimeCount.value)});
+      }
+    }, 1000);
   }
-
-  countingInterval = setInterval(() => {
-    if (commonDataGet.value.isRunningState) {
-      elapsedTimeCount.value += 1;
-      timeNum.value = elapsedTimeCount.value % 60;
-      sessionStorage.setItem('elapsedTimeCount', String(elapsedTimeCount.value));
-      store.dispatch('timeModule/setTimeInfo', {slideTime: getCountToTime(elapsedTimeCount.value)});
-    }
-  }, 1000);
 
   onBeforeUnmount(() => {
     if (countingInterval) {
       clearInterval(countingInterval);
+      countingInterval = null;
     }
   });
 };
 
-const startTotalCounting = (): void => {
-  if (countingIntervalTotal) {
-    clearInterval(countingIntervalTotal);
-  }
-  countingIntervalTotal = setInterval(() => {
-    if (commonDataGet.value.isRunningState) {
-      totalElapsedTimeCount.value += 1;
-      sessionStorage.setItem('totalElapsedTimeCount', String(totalElapsedTimeCount.value));
 
-      store.dispatch('timeModule/setTimeInfo', {totalSlideTime: getCountToTime(totalElapsedTimeCount.value)});
+const startTotalCounting = (): void => {
+  if (!countingIntervalTotal) {
+    countingIntervalTotal = setInterval(() => {
+      if (commonDataGet.value.isRunningState) {
+        totalElapsedTimeCount.value += 1;
+        sessionStorage.setItem('totalElapsedTimeCount', String(totalElapsedTimeCount.value));
+        store.dispatch('timeModule/setTimeInfo', {totalSlideTime: getCountToTime(totalElapsedTimeCount.value)});
+      }
+    }, 1000);
+  }
+
+  onBeforeUnmount(() => {
+    if (countingIntervalTotal) {
+      clearInterval(countingIntervalTotal);
+      countingIntervalTotal = null;
     }
-  }, 1000);
+  });
 };
 
 const stopCounting = () => {
-  if (countingInterval !== null) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
+  clearInterval(countingInterval);
+  countingInterval = null;
+  elapsedTimeCount.value = 0;
   slideTime.value = getCountToTime(0);
   sessionStorage.removeItem('elapsedTimeCount');
   store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
-  elapsedTimeCount.value = 0;
 };
 
 const stopTotalCounting = (): void => {
-  if (countingIntervalTotal !== null) {
-    clearInterval(countingIntervalTotal);
-    countingIntervalTotal = null;
-  }
+  clearInterval(countingIntervalTotal);
+  countingIntervalTotal = null;
+  totalElapsedTimeCount.value = 0;
   totalSlideTime.value = getCountToTime(0);
   sessionStorage.removeItem('totalElapsedTimeCount');
   store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
-  totalElapsedTimeCount.value = 0;
 };
 
 

@@ -135,9 +135,10 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 });
 
 //웹소켓으로 백엔드에 전송
-const emitSocketData = (type: string, payload: object) => {
-  // instance?.appContext.config.globalProperties.$socket.emit('message', {type, payload});
-  store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
+const emitSocketData = async (type: string, payload: object) => {
+  instance?.appContext.config.globalProperties.$socket.emit('message', {type, payload});
+  await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+  // store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
 const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {
@@ -155,10 +156,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     } else if (userStop.value) {
       if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true) {
         tcpReq().embedStatus.recovery.reqUserId = userId.value;
-        instance?.appContext.config.globalProperties.$socket.emit('message', {
-          type: 'SEND_DATA',
-          payload: tcpReq().embedStatus.recovery
-        });
+        emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
       }
       return;
     }
@@ -186,7 +184,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       alert(messages.IDS_ERROR_STOP_PROCESS);
       return;
     }
-    store.dispatch('embeddedStatusModule/setUserStop', {userStop: true});
+    store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: true});
     tcpReq().embedStatus.stop.reqUserId = userId.value;
     emitSocketData('SEND_DATA', tcpReq().embedStatus.stop);
 

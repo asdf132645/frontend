@@ -1,7 +1,10 @@
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCurrentInstance} from 'vue';
+import {useStore} from "vuex";
 
 const instance = getCurrentInstance();
+const store = useStore();
+
 // appHeader page
 export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, userId: string, isNsNbIntegration: string) => {
     const settings = tcpReq().embedStatus.settings;
@@ -39,5 +42,6 @@ const sendMessage = (payload: object) => {
         type: 'SEND_DATA',
         payload: payload
     });
+    store.dispatch('commonModule/setCommonInfo', {resFlag: false});
 }
 

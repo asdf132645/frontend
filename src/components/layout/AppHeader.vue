@@ -212,14 +212,14 @@ watch([commonDataGet.value], async (newVals: any) => {
 });
 
 watch([runInfo.value], async (newVals: any) => {
-  await nextTick();
+
   isAlarm.value = newVals[0].isAlarm;
-  if (isAlarm.value) {
+  if(newVals[0].isAlarm){
     isAralrmInterver = setTimeout(() => {
-      isAlarm.value = false;
+      store.dispatch('commonModule/setCommonInfo', {isAlarm: false});
     }, alarmCount.value);
-    clearTimeout(isAralrmInterver);
   }
+
 });
 
 
