@@ -70,14 +70,14 @@ let countingInterval: any = null;
 //   }
 // });
 
-watch(reqArr.value, (newVal, oldUserId) => {
+watch(reqArr.value, (newVal, oldVal) => {
   // 새 값이 특정 조건을 충족하는지 확인
   if (newVal.resFlag && newVal.reqArr) {
-    const {reqArr} = newVal; // reqArr 객체 디스트럭처링
-    // reqArr 배열에 항목이 있는지 확인
-    if (reqArr.length > 0) {
-      sendMessage(reqArr[0]);
-      store.dispatch('commonModule/setCommonInfo', {reqArrPaste: reqArr.shift()});
+    const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
+    // 유니크한 reqArr 배열에 항목이 있는지 확인
+    if (uniqueReqArr.length > 0) {
+      sendMessage(uniqueReqArr[0]);
+      store.dispatch('commonModule/setCommonInfo', { reqArrPaste: uniqueReqArr.shift() });
       if (countingInterval !== null) {
         clearInterval(countingInterval);
         countingInterval = null;
@@ -85,6 +85,20 @@ watch(reqArr.value, (newVal, oldUserId) => {
     }
   }
 });
+
+// jobCmd가 중복되지 않도록 배열 필터링
+const removeDuplicateJobCmd = (reqArr) => {
+  const uniqueJobCmds = new Set(); // 중복을 체크하기 위한 Set 생성
+  return reqArr.filter(req => {
+    if (uniqueJobCmds.has(req.jobCmd)) {
+      return false; // 이미 존재하는 jobCmd인 경우 필터링
+    } else {
+      uniqueJobCmds.add(req.jobCmd); // Set에 jobCmd 추가
+      return true; // 유니크한 jobCmd인 경우 유지
+    }
+  });
+};
+
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -137,8 +151,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await startSysPostWebSocket();
         break;
       case 'INIT':
-        runningInfoBoolen.value = true;
-        await runInfoPostWebSocket();
+        // runningInfoBoolen.value = true;
+        // await runInfoPostWebSocket();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
