@@ -89,15 +89,16 @@ watch(reqArr.value, async (newVal, oldVal) => {
 // jobCmd가 중복되지 않도록 배열 필터링
 const removeDuplicateJobCmd = (reqArr: any) => {
   const uniqueJobCmds = new Set(); // 중복을 체크하기 위한 Set 생성
-  return reqArr.filter((req: any) => {
-    if (uniqueJobCmds.has(req.jobCmd)) {
-      return false; // 이미 존재하는 jobCmd인 경우 필터링
-    } else {
+  const uniqueReqArr: any = []; // 중복되지 않은 jobCmd를 담을 배열
+  reqArr.forEach((req: any) => {
+    if (!uniqueJobCmds.has(req.jobCmd)) {
       uniqueJobCmds.add(req.jobCmd); // Set에 jobCmd 추가
-      return true; // 유니크한 jobCmd인 경우 유지
+      uniqueReqArr.push(req); // 유니크한 jobCmd인 경우 배열에 추가
     }
   });
+  return uniqueReqArr;
 };
+
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
