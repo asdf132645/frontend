@@ -179,6 +179,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await runningInfoStore(parseDataWarp);
         await wbcInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
+        await startSysPostWebSocket();
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -418,6 +419,9 @@ const sendMessage = async (payload: any) => {
     await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
   await delay(500);
+  if(!reqArr.value.resFlag){
+    return;
+  }
   await executeAfterDelay();
 };
 
