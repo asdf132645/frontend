@@ -81,8 +81,8 @@ watch(reqArr.value, async (newVal, oldVal) => {
       for (const el of uniqueReqArr) {
         await sendMessage(el);
       }
-      await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     }
+    await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
   }
 });
 
@@ -183,6 +183,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
+        await startSysPostWebSocket();
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
         await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
@@ -200,6 +201,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
+        await startSysPostWebSocket();
         break;
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
@@ -216,6 +218,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await startSysPostWebSocket();
         break;
       case 'ERROR_CLEAR':
         console.log('err')
