@@ -62,6 +62,7 @@ const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
 let countingInterval: any = null;
 
+
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -80,6 +81,11 @@ watch(reqArr.value, async (newVal, oldVal) => {
       // console.log(uniqueReqArr)
       if(uniqueReqArr.length > 1){
         const notSysInfo = uniqueReqArr.filter((item: any) => item.jobCmd !== 'SYSINFO');
+        const runInfo = uniqueReqArr.filter((item: any) => item.jobCmd === 'RUNNING_INFO');
+        if(!newVal.runningInfoStop && runInfo){
+          console.log('멈춰')
+          return;
+        }
         console.log(notSysInfo[0])
         await sendMessage(notSysInfo[0]);
       }else{
@@ -163,6 +169,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
+        await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
         runningInfoBoolen.value = true;
         await runInfoPostWebSocket();
         break;
@@ -189,6 +196,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         runningInfoBoolen.value = false;
         console.log('---------------      RUNNING_COMP        --------------------------')
         break;
