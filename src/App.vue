@@ -171,6 +171,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         runningInfoBoolen.value = true;
         await runInfoPostWebSocket();
+        await delay(300);
         await startSysPostWebSocket();
         break;
       case 'RUNNING_INFO':
