@@ -70,18 +70,20 @@ let countingInterval: any = null;
 //   }
 // });
 
-watch(reqArr.value, (newVal, oldVal) => {
+watch(reqArr.value, async (newVal, oldVal) => {
   // 새 값이 특정 조건을 충족하는지 확인
   if (newVal.resFlag && newVal.reqArr) {
+
     const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
     // 유니크한 reqArr 배열에 항목이 있는지 확인
     if (uniqueReqArr.length > 0) {
-      sendMessage(uniqueReqArr[0]);
-      store.dispatch('commonModule/setCommonInfo', { reqArrPaste: uniqueReqArr.shift() });
-      if (countingInterval !== null) {
-        clearInterval(countingInterval);
-        countingInterval = null;
+      console.log(uniqueReqArr)
+      if(uniqueReqArr.length > 1){
+        await sendMessage(uniqueReqArr[1]);
+      }else{
+        await sendMessage(uniqueReqArr[0]);
       }
+      await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     }
   }
 });
@@ -98,7 +100,6 @@ const removeDuplicateJobCmd = (reqArr) => {
     }
   });
 };
-
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -122,7 +123,6 @@ onMounted(async () => {
     await startSysPostWebSocket();
   }
   resFlag.value = reqArr.value.resFlag;
-  console.log(router.currentRoute.value.path === '/analysis');
   EventBus.subscribe('messageSent', emitSocketData);
   if (countingInterval !== null) {
     clearInterval(countingInterval);
@@ -402,7 +402,11 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
   const executeAfterDelay = async () => {
-    await delay(500); // 1초 딜레이
+    if (countingInterval !== null) {
+      clearInterval(countingInterval);
+      countingInterval = null;
+    }
+    await delay(500);
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: payload
@@ -412,9 +416,10 @@ const sendMessage = async (payload: any) => {
   await executeAfterDelay();
 };
 
-const delay = (milliseconds: any) => {
-  return countingInterval = new Promise(resolve => setTimeout(resolve, milliseconds));
+const delay = async (milliseconds: number) => {
+  await new Promise(resolve => setTimeout(resolve, milliseconds));
 };
+
 
 const cellImgGet = async (newUserId: string) => {
   try {
