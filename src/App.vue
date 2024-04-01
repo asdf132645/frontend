@@ -77,9 +77,11 @@ watch(reqArr.value, async (newVal, oldVal) => {
     const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
     // 유니크한 reqArr 배열에 항목이 있는지 확인
     if (uniqueReqArr.length > 0) {
-      console.log(uniqueReqArr)
+      // console.log(uniqueReqArr)
       if(uniqueReqArr.length > 1){
-        await sendMessage(uniqueReqArr[1]);
+        const notSysInfo = uniqueReqArr.filter((item: any) => item.jobCmd !== 'SYSINFO');
+        console.log(notSysInfo[0])
+        await sendMessage(notSysInfo[0]);
       }else{
         await sendMessage(uniqueReqArr[0]);
       }
@@ -89,9 +91,9 @@ watch(reqArr.value, async (newVal, oldVal) => {
 });
 
 // jobCmd가 중복되지 않도록 배열 필터링
-const removeDuplicateJobCmd = (reqArr) => {
+const removeDuplicateJobCmd = (reqArr: any) => {
   const uniqueJobCmds = new Set(); // 중복을 체크하기 위한 Set 생성
-  return reqArr.filter(req => {
+  return reqArr.filter((req: any) => {
     if (uniqueJobCmds.has(req.jobCmd)) {
       return false; // 이미 존재하는 jobCmd인 경우 필터링
     } else {
@@ -240,7 +242,7 @@ const runInfoPostWebSocket = async () => {
 };
 
 const emitSocketData = async (payload: object) => {
-  console.log('sss')
+  // console.log('sss')
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
 
@@ -312,8 +314,8 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-    const processBarcodeId = dbData?.slotInfo.find(slot => slot.processInfo.barcodeId === completeSlot.barcodeNo);
-    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo.find(item => item.barcodeId === completeSlot.barcodeNo);
+    const processBarcodeId = dbData?.slotInfo.find((slot: any) => slot.processInfo.barcodeId === completeSlot.barcodeNo);
+    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo.find((item: any) => item.barcodeId === completeSlot.barcodeNo);
 
     const newWbcInfo = {
       wbcInfo: [matchedWbcInfo.wbcInfo],
@@ -401,10 +403,6 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
   const executeAfterDelay = async () => {
-    if (countingInterval !== null) {
-      clearInterval(countingInterval);
-      countingInterval = null;
-    }
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: payload
@@ -416,7 +414,11 @@ const sendMessage = async (payload: any) => {
 };
 
 const delay = async (milliseconds: number) => {
-  await new Promise(resolve => setTimeout(resolve, milliseconds));
+  if (countingInterval !== null) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
+  countingInterval = await new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
 
@@ -449,6 +451,11 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+// setInterval(async () => {
+//   await startSysPostWebSocket();
+//   // await runInfoPostWebSocket();
+// }, 300);
 </script>
 
 <style>
