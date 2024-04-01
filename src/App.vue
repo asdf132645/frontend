@@ -159,8 +159,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await startSysPostWebSocket();
         break;
       case 'INIT':
-        // runningInfoBoolen.value = true;
-        // await runInfoPostWebSocket();
+        await startSysPostWebSocket();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -172,6 +171,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         runningInfoBoolen.value = true;
         await runInfoPostWebSocket();
+        await startSysPostWebSocket();
         break;
       case 'RUNNING_INFO':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -179,7 +179,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await runningInfoStore(parseDataWarp);
         await wbcInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
-        await startSysPostWebSocket();
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
