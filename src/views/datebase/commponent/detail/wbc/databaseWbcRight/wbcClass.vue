@@ -52,7 +52,7 @@
           <li>{{ getCategoryName(nWbcItem) }}</li>
         </ul>
         <ul class="classNm">
-          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+          <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
           <li>
             {{ nWbcItem?.count }}
             <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
@@ -103,7 +103,7 @@ const memo = ref('');
 const memoModal = ref(false);
 const wbcInfoChangeVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
-const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM', 'LR', 'LA', 'NS', 'NB'];
+const titleArr = ['NR', 'GP','PA', 'AR', 'MA'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
@@ -123,7 +123,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  wbcInfoChangeVal.value = newItem;
+  wbcInfoChangeVal.value = newItem.filter((item: any) => !titleArr.includes(item.title));
 });
 
 const startDrag = (index: any, event: any) => {
@@ -216,12 +216,12 @@ const resRunningItem = async (updatedRuningInfo: any) => {
 }
 
 const beforeChang = () => {
-  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0];
+  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
 }
 
 const afterChang = () => {
-  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter;
+  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
 }
 

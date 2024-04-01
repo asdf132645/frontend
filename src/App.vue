@@ -1,6 +1,6 @@
 <!-- App.vue -->
 <template>
-  <div :key="componentKey">
+  <div>
     <AppHeader/>
     <main class='content'>
       <router-view/>
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import AppHeader from "@/components/layout/AppHeader.vue";
+
 const router = useRouter();
 // homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
@@ -56,10 +57,10 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
 const reqArr = computed(() => store.state.commonModule);
-const sendReqArr = ref([]); // ref로 배열을 초기화합니다.
+const sendReqArr = ref([]);
 const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
-const componentKey = ref(0);
+let countingInterval: any = null;
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -70,20 +71,17 @@ const componentKey = ref(0);
 // });
 
 watch(reqArr.value, (newVal, oldUserId) => {
-  if(newVal.resFlag && newVal.reqArr){
-    if (newVal.reqArr.length !== 0){
-      const originalArray = Array.from(newVal.reqArr); // 깊은 복사
-      const invalidItems = newVal.reqArr.filter(item => item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO');
-
-      if(invalidItems.length !== 0){
-        sendMessage(invalidItems[0]);
-        store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
-      }else{
-        sendMessage(originalArray[0]);
-        store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
+  // 새 값이 특정 조건을 충족하는지 확인
+  if (newVal.resFlag && newVal.reqArr) {
+    const {reqArr} = newVal; // reqArr 객체 디스트럭처링
+    // reqArr 배열에 항목이 있는지 확인
+    if (reqArr.length > 0) {
+      sendMessage(reqArr[0]);
+      store.dispatch('commonModule/setCommonInfo', {reqArrPaste: reqArr.shift()});
+      if (countingInterval !== null) {
+        clearInterval(countingInterval);
+        countingInterval = null;
       }
-
-
     }
   }
 });
@@ -112,7 +110,10 @@ onMounted(async () => {
   resFlag.value = reqArr.value.resFlag;
   console.log(router.currentRoute.value.path === '/analysis');
   EventBus.subscribe('messageSent', emitSocketData);
-
+  if (countingInterval !== null) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
@@ -173,9 +174,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
-        if(router.currentRoute.value.path === '/analysis' || router.currentRoute.value.path === '/'){
-          componentKey.value += 1;
-        }
         console.log('---------------      RUNNING_COMP        --------------------------')
         break;
       case 'PAUSE':
@@ -250,7 +248,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
     } else {
       if (currentSlot?.slotId !== runningSlotId.value && currentSlot?.slotId) { // 슬라이드 체인지 시
-        console.log(currentSlot?.slotId)
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         if (runningSlotId.value !== '') {
@@ -302,13 +299,16 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
+    const processBarcodeId = dbData?.slotInfo.find(slot => slot.processInfo.barcodeId === completeSlot.barcodeNo);
+    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo.find(item => item.barcodeId === completeSlot.barcodeNo);
 
     const newWbcInfo = {
-      wbcInfo: [completeSlot.wbcInfo],
-      nonRbcClassList: dbData.slotInfo[0].wbcInfo.nonRbcClassList,
-      totalCount: dbData.slotInfo[0].wbcInfo.totalCount,
-      maxWbcCount: dbData.slotInfo[0].wbcInfo.maxWbcCount,
+      wbcInfo: [matchedWbcInfo.wbcInfo],
+      nonRbcClassList: processBarcodeId.wbcInfo.nonRbcClassList,
+      totalCount: processBarcodeId.wbcInfo.totalCount,
+      maxWbcCount: processBarcodeId.wbcInfo.maxWbcCount,
     }
+
     const newObj = {
       slotNo: completeSlot.slotNo,
       state: false,
@@ -385,8 +385,10 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 };
 
 // 메시지를 보내는 함수
+// 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
-  const executeAfterDelay = async (): Promise<void> => {
+  const executeAfterDelay = async () => {
+    await delay(500); // 1초 딜레이
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: payload
@@ -394,6 +396,10 @@ const sendMessage = async (payload: any) => {
     await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
   await executeAfterDelay();
+};
+
+const delay = (milliseconds: any) => {
+  return countingInterval = new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
 const cellImgGet = async (newUserId: string) => {

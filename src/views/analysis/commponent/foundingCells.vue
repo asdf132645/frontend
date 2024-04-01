@@ -49,8 +49,23 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
     });
 
     if (accumulatedRunningPath.length > 0) {
-      images.value.push(accumulatedRunningPath);
+      // 이미지 배열을 순회하며 중복 확인
+      let isDuplicate = false;
+      for (const image of accumulatedRunningPath) {
+        if (!images.value.find(existingImage => existingImage.path === image.path)) {
+          // 중복되지 않는 경우에만 이미지 배열에 추가
+          images.value.unshift(image);
+        } else {
+          isDuplicate = true;
+          break;
+        }
+      }
+
+      if (isDuplicate) {
+        console.log("중복 이미지");
+      }
     }
+
   }
 });
 
