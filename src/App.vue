@@ -289,9 +289,8 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       }
       await saveTestHistory(data);
     }
-    await runInfoPostWebSocket();
-
   }
+  await runInfoPostWebSocket();
 }
 
 const saveTestHistory = async (params: any) => {
@@ -406,13 +405,13 @@ const sendMessage = async (payload: any) => {
       clearInterval(countingInterval);
       countingInterval = null;
     }
-    await delay(500);
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: payload
     });
     await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
+  await delay(500);
   await executeAfterDelay();
 };
 
