@@ -242,9 +242,8 @@ const startSysPostWebSocket = async (text: string) => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
-  await delay(250);
+  await delay(300);
   await runInfoPostWebSocket();
-  console.log(text)
 };
 
 const runInfoPostWebSocket = async () => {
@@ -330,7 +329,9 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-    const processBarcodeId = dbData?.slotInfo.find((slot: any) => slot.processInfo.barcodeId === completeSlot.barcodeNo);
+    console.log(completeSlot)
+    console.log(dbData)
+    const processBarcodeId = dbData?.slotInfo.find((slot: any) => slot.orderList.barcodeId === completeSlot.barcodeNo);
     const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo.find((item: any) => item.barcodeId === completeSlot.barcodeNo);
 
     const newWbcInfo = {
@@ -418,7 +419,7 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 // 메시지를 보내는 함수
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
-  await delay(500);
+  await delay(700);
   const executeAfterDelay = async () => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
