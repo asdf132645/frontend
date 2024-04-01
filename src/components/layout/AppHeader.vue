@@ -15,7 +15,7 @@
           <span class='icoText'>Setting</span>
         </router-link>
 
-        <router-link to="/analysis" :class='{ "leftActive": isActive("/analysis") || route.path === "/" }'>
+        <router-link to="/" :class='{ "leftActive": isActive("/analysis") || route.path === "/" }'>
           <font-awesome-icon :icon="['fas', 'chart-pie']"
                              style="font-size: 1rem;"
           />

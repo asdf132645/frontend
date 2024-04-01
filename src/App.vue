@@ -119,18 +119,22 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
+    if(commonDataGet.value.firstLoading){
+      return;
+    }
     await startSysPostWebSocket();
+    await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
   }
   resFlag.value = reqArr.value.resFlag;
   EventBus.subscribe('messageSent', emitSocketData);
-
-  if (countingInterval !== null) {
+  if(countingInterval){
     clearInterval(countingInterval);
     countingInterval = null;
   }
+
 });
 onBeforeUnmount(() => {
-  if (countingInterval !== null) {
+  if(countingInterval){
     clearInterval(countingInterval);
     countingInterval = null;
   }
@@ -426,7 +430,7 @@ const sendMessage = async (payload: any) => {
 };
 
 const delay = async (milliseconds: number) => {
-  if (countingInterval !== null) {
+  if(countingInterval){
     clearInterval(countingInterval);
     countingInterval = null;
   }
