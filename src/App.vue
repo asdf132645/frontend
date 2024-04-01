@@ -81,6 +81,7 @@ watch(reqArr.value, async (newVal, oldVal) => {
       // console.log(uniqueReqArr)
       if(uniqueReqArr.length > 1){
         const notSysInfo = uniqueReqArr.filter((item: any) => item.jobCmd !== 'SYSINFO');
+        const sysInfo = uniqueReqArr.filter((item: any) => item.jobCmd === 'SYSINFO');
         const runInfo = uniqueReqArr.filter((item: any) => item.jobCmd === 'RUNNING_INFO');
         if(newVal.runningInfoStop && runInfo){
           console.log('멈춰')
@@ -88,6 +89,9 @@ watch(reqArr.value, async (newVal, oldVal) => {
         }
         console.log(notSysInfo[0])
         await sendMessage(notSysInfo[0]);
+        await delay(200);
+        await sendMessage(sysInfo[0]);
+
       }else{
         await sendMessage(uniqueReqArr[0]);
       }
