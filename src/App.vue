@@ -167,6 +167,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         runningInfoBoolen.value = true;
         await runInfoPostWebSocket();
+        await startSysPostWebSocket();
         break;
       case 'RUNNING_INFO':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -193,6 +194,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
         runningInfoBoolen.value = false;
+        await startSysPostWebSocket();
         console.log('---------------      RUNNING_COMP        --------------------------')
         break;
       case 'PAUSE':
