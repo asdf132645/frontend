@@ -23,7 +23,7 @@ const router = useRouter();
 // homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import {getCurrentInstance, ref, computed, watch, onMounted, nextTick} from 'vue';
+import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
@@ -61,6 +61,7 @@ const sendReqArr = ref([]);
 const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
 let countingInterval: any = null;
+let countingInterStartval: any = null;
 
 
 // 실제 배포시 사용해야함
@@ -72,28 +73,13 @@ let countingInterval: any = null;
 // });
 
 watch(reqArr.value, async (newVal, oldVal) => {
-  // 새 값이 특정 조건을 충족하는지 확인
   if (newVal.resFlag && newVal.reqArr) {
-
     const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
     // 유니크한 reqArr 배열에 항목이 있는지 확인
     if (uniqueReqArr.length > 0) {
-      // console.log(uniqueReqArr)
-      if(uniqueReqArr.length > 1){
-        const notSysInfo = uniqueReqArr.filter((item: any) => item.jobCmd !== 'SYSINFO');
-        const sysInfo = uniqueReqArr.filter((item: any) => item.jobCmd === 'SYSINFO');
-        const runInfo = uniqueReqArr.filter((item: any) => item.jobCmd === 'RUNNING_INFO');
-        if(newVal.runningInfoStop && runInfo){
-          console.log('멈춰')
-          return;
-        }
-        console.log(notSysInfo[0])
-        await sendMessage(notSysInfo[0]);
-        await delay(200);
-        await sendMessage(sysInfo[0]);
-
-      }else{
-        await sendMessage(uniqueReqArr[0]);
+      console.log(uniqueReqArr)
+      for (const el of uniqueReqArr) {
+        await sendMessage(el);
       }
       await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     }
@@ -136,12 +122,18 @@ onMounted(async () => {
   }
   resFlag.value = reqArr.value.resFlag;
   EventBus.subscribe('messageSent', emitSocketData);
+
   if (countingInterval !== null) {
     clearInterval(countingInterval);
     countingInterval = null;
   }
 });
-
+onBeforeUnmount(() => {
+  if (countingInterval !== null) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
+});
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
     const parsedData = JSON.parse(data);
@@ -175,12 +167,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         runningInfoBoolen.value = true;
         await runInfoPostWebSocket();
-        await delay(300);
-        await startSysPostWebSocket();
         break;
       case 'RUNNING_INFO':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoCheckStore(parseDataWarp);
+        await runInfoPostWebSocket();
         await runningInfoStore(parseDataWarp);
         await wbcInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
@@ -191,7 +182,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await startSysPostWebSocket();
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
@@ -305,7 +295,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       await saveTestHistory(data);
     }
   }
-  await runInfoPostWebSocket();
+
 }
 
 const saveTestHistory = async (params: any) => {
@@ -415,6 +405,7 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 // 메시지를 보내는 함수
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
+  await delay(500);
   const executeAfterDelay = async () => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
@@ -422,10 +413,10 @@ const sendMessage = async (payload: any) => {
     });
     await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
-  await delay(500);
   if(!reqArr.value.resFlag){
     return;
   }
+
   await executeAfterDelay();
 };
 
@@ -468,10 +459,7 @@ const hideAlert = () => {
   showAlert.value = false;
 };
 
-// setInterval(async () => {
-//   await startSysPostWebSocket();
-//   // await runInfoPostWebSocket();
-// }, 300);
+
 </script>
 
 <style>
