@@ -82,10 +82,10 @@ function getImageUrl(types: RunningPathItem[] | undefined): string[] {
   const imageUrls: string[] = [];
 
   // 각 이미지의 URL을 가져와서 배열에 추가
-  const folderPath = types[0].path.match(/^(.*\\)\d+_Real_Time\\/)?.[0];
+  const folderPath = types?.path.match(/^(.*\\)\d+_Real_Time\\/)?.[0];
 
   // 파일 경로에서 파일 이름 부분 추출
-  const fileName = types[0].path.match(/[^\\]*$/);
+  const fileName = types?.path.match(/[^\\]*$/);
 
   // 이미지의 URL 생성 후 배열에 추가
   const imageUrl = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${fileName}`;
