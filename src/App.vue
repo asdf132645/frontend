@@ -335,7 +335,8 @@ const saveTestHistory = async (params: any) => {
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
     const processBarcodeId = dbData?.slotInfo[0];
-    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo;
+    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[commonDataGet.value.slotIndex].wbcInfo;
+    console.log(matchedWbcInfo)
     console.log(processBarcodeId)
 
     const newWbcInfo = {
