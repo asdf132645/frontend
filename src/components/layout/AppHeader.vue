@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      <div class="leftMenu" v-if="router.currentRoute.value.path === '/analysis'">
+      <div class="leftMenu" v-if="router.currentRoute.value.path === '/'">
         <ul>
           <li class="alarm">
             <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>

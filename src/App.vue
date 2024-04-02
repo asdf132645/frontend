@@ -336,8 +336,8 @@ const saveTestHistory = async (params: any) => {
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
     const processBarcodeId = dbData?.slotInfo[0];
     const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[0].wbcInfo;
-    console.log(matchedWbcInfo)
-    console.log(processBarcodeId)
+    console.log('dbData?.slotInfo', dbData?.slotInfo)
+    console.log('completeSlot', completeSlot)
 
     const newWbcInfo = {
       wbcInfo: [matchedWbcInfo],
