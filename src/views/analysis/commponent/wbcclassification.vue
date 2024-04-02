@@ -104,6 +104,18 @@ watch([commonDataGet.value], async (newVals: any) => {
     slideProceeding.value = newVals.slideProceeding;
   }
 })
+onMounted(() => {
+  const initialWbcClassList = store.state.wbcClassificationModule;
+  updateDataArray(initialWbcClassList);
+});
+
+watch(
+    () => store.state.wbcClassificationModule,
+    (newSlotInfo) => {
+      updateDataArray(newSlotInfo);
+    },
+    {deep: true}
+);
 
 const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
@@ -156,18 +168,6 @@ const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
 
 
 
-onMounted(() => {
-  const initialWbcClassList = store.state.wbcClassificationModule;
-  updateDataArray(initialWbcClassList);
-});
-
-watch(
-    () => store.state.wbcClassificationModule,
-    (newSlotInfo) => {
-      updateDataArray(newSlotInfo);
-    },
-    {deep: true}
-);
 
 
 const calculateWbcPercentages = (

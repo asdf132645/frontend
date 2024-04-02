@@ -188,7 +188,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await runningInfoStore(parseDataWarp);
           await rbcInfoStore(parseDataWarp);
         }
-        await wbcInfoStore(parseDataWarp);
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -222,7 +221,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await wbcInfoStore(parseDataWarp);
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
@@ -262,6 +260,7 @@ const emitSocketData = async (payload: object) => {
 };
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
+  await wbcInfoStore(data);
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
@@ -307,6 +306,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       }
       await saveTestHistory(data);
     }
+
   }
 
 }
