@@ -76,7 +76,7 @@ let countingInterRunval: any = null;
 
 watch(reqArr.value, async (newVal, oldVal) => {
   // 새 값이 특정 조건을 충족하는지 확인
-  if (newVal.resFlag && newVal.reqArr) {
+  if (newVal.reqArr) {
 
     const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
     // 유니크한 reqArr 배열에 항목이 있는지 확인
@@ -139,7 +139,6 @@ onMounted(async () => {
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
   }
-  resFlag.value = reqArr.value.resFlag;
   EventBus.subscribe('messageSent', emitSocketData);
 });
 // onBeforeUnmount(() => {
@@ -164,7 +163,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       return
     }
     const parseDataWarp = JSON.parse(parsedData.bufferData); // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
-    await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
+    // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
@@ -430,11 +429,11 @@ const sendMessage = async (payload: any) => {
       type: 'SEND_DATA',
       payload: payload
     });
-    await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+    // await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
-  if (!reqArr.value.resFlag) {
-    return;
-  }
+  // if (!reqArr.value.resFlag) {
+  //   return;
+  // }
 
   await executeAfterDelay();
 };
