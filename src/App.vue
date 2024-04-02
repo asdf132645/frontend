@@ -340,7 +340,7 @@ const saveTestHistory = async (params: any) => {
     console.log(processBarcodeId)
 
     const newWbcInfo = {
-      wbcInfo: [matchedWbcInfo.wbcInfo],
+      wbcInfo: [matchedWbcInfo],
       nonRbcClassList: processBarcodeId.wbcInfo.nonRbcClassList,
       totalCount: processBarcodeId.wbcInfo.totalCount,
       maxWbcCount: processBarcodeId.wbcInfo.maxWbcCount,
