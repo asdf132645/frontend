@@ -60,10 +60,10 @@ const reqArr = computed(() => store.state.commonModule);
 const sendReqArr = ref([]);
 const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
-let countingInterval: any = null;
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
-
+const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
+const pbiaRootDir = commonDataGet.value.pbiaRootPath;
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -167,6 +167,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
         break;
       case 'INIT':
+        sendSettingInfo();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -388,6 +389,23 @@ const saveTestHistory = async (params: any) => {
   }
 }
 
+const sendSettingInfo = () => {
+
+  tcpReq().embedStatus.settings.reqUserId = userId.value;
+
+  const req =  {
+    jobCmd: 'SETTINGS',
+    reqUserId: '',
+    reqDttm: tcpReq().embedStatus.settings.reqDttm,
+    pbiaRootDir: pbiaRootDir,
+    oilCount: '0',
+    isOilReset: 'N',
+    deviceType: '01',
+    uiVersion: '',
+    isNsNbIntegration: isNsNbIntegration,
+  };
+  store.dispatch('commonModule/setCommonInfo', {reqArr: req});
+}
 
 const getNormalRange = async () => {
   try {

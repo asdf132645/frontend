@@ -82,7 +82,7 @@ export const tcpReq:any = () => {
                 oilCount: '',
                 isOilReset: '',
                 deviceType: '01',
-                uiVersion: '',
+                uiVersion: 'web',
                 isNsNbIntegration: '',
             },
             oilPrime: {
