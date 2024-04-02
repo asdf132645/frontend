@@ -145,6 +145,9 @@ const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
         (item: SlotInfo) => item.stateCd === "03"
     );
     if (currentSlot) {
+      if(currentSlot.wbcCount === '00'){
+        return;
+      }
       await updateCounts(currentSlot);
       maxWbcCount.value = currentSlot.maxWbcCount;
     }

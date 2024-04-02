@@ -25,7 +25,7 @@ const router = useRouter();
 
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {useStore} from "vuex";
-import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
+import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constant';
@@ -82,11 +82,11 @@ watch(reqArr.value, async (newVal, oldVal) => {
     // 유니크한 reqArr 배열에 항목이 있는지 확인
     if (uniqueReqArr.length > 0) {
       // console.log(uniqueReqArr)
-      if(uniqueReqArr.length > 1){
+      if (uniqueReqArr.length > 1) {
         const notSysRunInfo = uniqueReqArr.filter((item: any) => (item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO'));
         console.log(notSysRunInfo[0])
         await sendMessage(notSysRunInfo[0]);
-      }else{
+      } else {
         await sendMessage(uniqueReqArr[0]);
       }
       await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
@@ -129,10 +129,10 @@ onMounted(async () => {
     if (!commonDataGet.value.firstLoading) {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
-      }, 400);
+      }, 300);
 
       countingInterRunval = setInterval(async () => {
-        if(!commonDataGet.value.runningInfoStop){
+        if (!commonDataGet.value.runningInfoStop) {
           await runInfoPostWebSocket();
         }
       }, 500);
@@ -168,7 +168,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
         break;
       case 'INIT':
-        sendSettingInfo();
+        // sendSettingInfo();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -178,17 +178,14 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
-        await store.dispatch('commonModule/setCommonInfo',{slotIndex: 0})
+        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0})
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
-        if (!commonDataGet.value.runningInfoStop) {
-          await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
-          // await runInfoPostWebSocket();
-          await runningInfoCheckStore(parseDataWarp);
-          await runningInfoStore(parseDataWarp);
-          await rbcInfoStore(parseDataWarp);
-        }
+        await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
+        await runningInfoCheckStore(parseDataWarp);
+        await runningInfoStore(parseDataWarp);
+        await rbcInfoStore(parseDataWarp);
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -306,8 +303,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         return
       }
       await saveTestHistory(data);
-    }else{
-      await wbcInfoStore(data);
     }
 
   }
@@ -387,14 +382,14 @@ const saveTestHistory = async (params: any) => {
       rbcMemo: '',
     }
     await saveRunningInfo(newObj);
-    await store.dispatch('commonModule/setCommonInfo',{slotIndex: commonDataGet.value.slotIndex + 1})
+    await store.dispatch('commonModule/setCommonInfo', {slotIndex: commonDataGet.value.slotIndex + 1})
 
   }
 }
 
 const sendSettingInfo = () => {
 
-  const req =  {
+  const req = {
     jobCmd: 'SETTINGS',
     reqUserId: String(userId.value),
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
