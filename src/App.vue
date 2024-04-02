@@ -187,12 +187,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if (!commonDataGet.value.runningInfoStop) {
           await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
           // await runInfoPostWebSocket();
-          await wbcInfoStore(parseDataWarp);
           await runningInfoCheckStore(parseDataWarp);
           await runningInfoStore(parseDataWarp);
           await rbcInfoStore(parseDataWarp);
-
         }
+        await wbcInfoStore(parseDataWarp);
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -219,15 +218,14 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
-        await wbcInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         runningInfoBoolen.value = true;
-        // await runInfoPostWebSocket();
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await wbcInfoStore(parseDataWarp);
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});

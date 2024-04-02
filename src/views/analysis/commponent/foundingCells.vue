@@ -60,10 +60,10 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
           break;
         }
       }
-
-      if (isDuplicate) {
-        console.log("중복 이미지");
-      }
+      //
+      // if (isDuplicate) {
+      //   console.log("중복 이미지");
+      // }
     }
 
   }

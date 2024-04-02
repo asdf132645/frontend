@@ -105,7 +105,7 @@ watch([commonDataGet.value], async (newVals: any) => {
   }
 })
 
-const updateDataArray = (newSlotInfo: WbcInfo[]) => {
+const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
 
   if (Array.isArray(slotArray.wbcInfo)) {
@@ -133,14 +133,13 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
         (item: SlotInfo) => item.stateCd === "03"
     );
     if (currentSlot) {
-      updateCounts(currentSlot);
+      await updateCounts(currentSlot);
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
   }
-  updatePercentages();
+  await updatePercentages();
 
-  console.log('setDataBaseSetData')
-  store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+  await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
         wbcInfo: {
@@ -198,7 +197,7 @@ const calculateWbcPercentages = (
 };
 
 
-const updateCounts = (currentSlot: SlotInfo) => {
+const updateCounts = async (currentSlot: SlotInfo) => {
   const wbcList = currentSlot.wbcInfo;
   let totalVal = "";
 
@@ -212,7 +211,7 @@ const updateCounts = (currentSlot: SlotInfo) => {
   }
 
   totalCount.value = totalVal;
-  updatePercentages();
+  await updatePercentages();
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
@@ -224,7 +223,7 @@ const shouldRenderCategory = (category: WbcInfo) => {
   return !targetArray.includes(category.title);
 };
 
-const updatePercentages = () => {
+const updatePercentages = async () => {
   const percent = dspWbcClassList.value.map((classList: any) => {
     return classList.map((category: any) => {
       // Calculate and update percentage
