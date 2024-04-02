@@ -156,10 +156,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     const parsedData = JSON.parse(data);
     if (parsedData.bufferData === 'err') {
       // alert('활성화된 TCP 클라이언트 연결 없음');
-      instance?.appContext.config.globalProperties.$socket.emit('message', {
-        type: 'SEND_DATA',
-        payload: tcpReq().embedStatus.sysInfo
-      });
       return
     }
     const parseDataWarp = JSON.parse(parsedData.bufferData); // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
