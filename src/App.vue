@@ -62,6 +62,7 @@ const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
 let countingInterval: any = null;
 let countingInterStartval: any = null;
+let countingInterRunval: any = null;
 
 
 // 실제 배포시 사용해야함
@@ -72,17 +73,24 @@ let countingInterStartval: any = null;
 //   }
 // });
 
+
 watch(reqArr.value, async (newVal, oldVal) => {
+  // 새 값이 특정 조건을 충족하는지 확인
   if (newVal.resFlag && newVal.reqArr) {
+
     const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
     // 유니크한 reqArr 배열에 항목이 있는지 확인
     if (uniqueReqArr.length > 0) {
       // console.log(uniqueReqArr)
-      for (const el of uniqueReqArr) {
-        await sendMessage(el);
+      if(uniqueReqArr.length > 1){
+        const notSysRunInfo = uniqueReqArr.filter((item: any) => (item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO'));
+        console.log(notSysRunInfo[0])
+        await sendMessage(notSysRunInfo[0]);
+      }else{
+        await sendMessage(uniqueReqArr[0]);
       }
+      await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     }
-    await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
   }
 });
 
@@ -119,26 +127,31 @@ onMounted(async () => {
       await getNormalRange();
     }
     if (!commonDataGet.value.firstLoading) {
-      await startSysPostWebSocket('onMounted');
+      countingInterStartval = setInterval(async () => {
+        await startSysPostWebSocket();
+      }, 400);
+
+      countingInterRunval = setInterval(async () => {
+        if(!commonDataGet.value.runningInfoStop){
+          await runInfoPostWebSocket();
+        }
+      }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
-  } else {
-    await runInfoPostWebSocket();
   }
   resFlag.value = reqArr.value.resFlag;
   EventBus.subscribe('messageSent', emitSocketData);
-  if (countingInterval) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
-
 });
-onBeforeUnmount(() => {
-  if (countingInterval) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
-});
+// onBeforeUnmount(() => {
+//   if (countingInterval) {
+//     clearInterval(countingInterval);
+//     countingInterval = null;
+//   }
+//   if (countingInterRunval) {
+//     clearInterval(countingInterRunval);
+//     countingInterRunval = null;
+//   }
+// });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
     const parsedData = JSON.parse(data);
@@ -155,12 +168,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
-        await startSysPostWebSocket('SYSINFO');
         await sysInfoStore(parseDataWarp);
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
         break;
       case 'INIT':
-        await startSysPostWebSocket('INIT');
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -170,8 +181,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
+        await store.dispatch('commonModule/setCommonInfo',{slotIndex: 0})
         runningInfoBoolen.value = true;
-        // await runInfoPostWebSocket();
         break;
       case 'RUNNING_INFO':
         if (!commonDataGet.value.runningInfoStop) {
@@ -190,7 +201,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
-        await startSysPostWebSocket('STOP');
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
@@ -206,7 +216,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
-        await startSysPostWebSocket('PAUSE');
         break;
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
@@ -223,7 +232,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await startSysPostWebSocket('RECOVERY');
         break;
       case 'ERROR_CLEAR':
         console.log('err')
@@ -238,12 +246,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   }
 });
 
-const startSysPostWebSocket = async (text: string) => {
+const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
-  await delay(300);
-  await runInfoPostWebSocket();
 };
 
 const runInfoPostWebSocket = async () => {
@@ -329,10 +335,9 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-    console.log(completeSlot)
-    console.log(dbData)
-    const processBarcodeId = dbData?.slotInfo.find((slot: any) => slot.orderList.barcodeId === completeSlot.barcodeNo);
-    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo.find((item: any) => item.barcodeId === completeSlot.barcodeNo);
+    const processBarcodeId = dbData?.slotInfo[commonDataGet.value.slotIndex];
+    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[commonDataGet.value.slotIndex];
+    console.log(processBarcodeId)
 
     const newWbcInfo = {
       wbcInfo: [matchedWbcInfo.wbcInfo],
@@ -382,7 +387,8 @@ const saveTestHistory = async (params: any) => {
       memo: '',
       rbcMemo: '',
     }
-    saveRunningInfo(newObj);
+    await saveRunningInfo(newObj);
+    await store.dispatch('commonModule/setCommonInfo',{slotIndex: commonDataGet.value.slotIndex + 1})
 
   }
 }
@@ -419,7 +425,6 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 // 메시지를 보내는 함수
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
-  await delay(700);
   const executeAfterDelay = async () => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
@@ -432,14 +437,6 @@ const sendMessage = async (payload: any) => {
   }
 
   await executeAfterDelay();
-};
-
-const delay = async (milliseconds: number) => {
-  if (countingInterval) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
-  countingInterval = await new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
 
