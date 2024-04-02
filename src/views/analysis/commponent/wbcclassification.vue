@@ -145,6 +145,7 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
       barcodeId: slotArray.wbcInfo[slotArrayKey].barcodeNo
     })
   }
+  console.log('setDataBaseSetData')
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {

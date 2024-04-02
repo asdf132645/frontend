@@ -189,8 +189,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           // await runInfoPostWebSocket();
           await runningInfoCheckStore(parseDataWarp);
           await runningInfoStore(parseDataWarp);
-          await wbcInfoStore(parseDataWarp);
           await rbcInfoStore(parseDataWarp);
+          await wbcInfoStore(parseDataWarp);
         }
         break;
       case 'STOP':
