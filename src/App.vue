@@ -143,11 +143,11 @@ onMounted(async () => {
   EventBus.subscribe('messageSent', emitSocketData);
 });
 // onBeforeUnmount(() => {
-//   if (countingInterval) {
-//     clearInterval(countingInterval);
-//     countingInterval = null;
-//   }
 //   if (countingInterRunval) {
+//     clearInterval(countingInterRunval);
+//     countingInterRunval = null;
+//   }
+//   if (countingInterStartval) {
 //     clearInterval(countingInterRunval);
 //     countingInterRunval = null;
 //   }
@@ -292,9 +292,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     // 주문 내역 및 처리 결과 저장 -start
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-      if (userId.value === '') {
-        return;
-      }
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
