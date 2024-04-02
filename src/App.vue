@@ -62,8 +62,8 @@ const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
-const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
-const pbiaRootDir = commonDataGet.value.pbiaRootPath;
+const isNsNbIntegration = ref('');
+const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -138,6 +138,7 @@ onMounted(async () => {
       }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
+    isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('messageSent', emitSocketData);
 });
@@ -260,7 +261,7 @@ const emitSocketData = async (payload: object) => {
 };
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
-  await wbcInfoStore(data);
+
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
@@ -305,6 +306,8 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         return
       }
       await saveTestHistory(data);
+    }else{
+      await wbcInfoStore(data);
     }
 
   }
@@ -391,19 +394,18 @@ const saveTestHistory = async (params: any) => {
 
 const sendSettingInfo = () => {
 
-  tcpReq().embedStatus.settings.reqUserId = userId.value;
-
   const req =  {
     jobCmd: 'SETTINGS',
-    reqUserId: '',
+    reqUserId: String(userId.value),
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
-    pbiaRootDir: pbiaRootDir,
+    pbiaRootDir: pbiaRootDir.value || '',
     oilCount: '0',
     isOilReset: 'N',
     deviceType: '01',
-    uiVersion: '',
-    isNsNbIntegration: isNsNbIntegration,
+    uiVersion: 'web',
+    isNsNbIntegration: isNsNbIntegration.value || 'N',
   };
+  console.log(req)
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
 
