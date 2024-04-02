@@ -187,10 +187,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if (!commonDataGet.value.runningInfoStop) {
           await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
           // await runInfoPostWebSocket();
+          await wbcInfoStore(parseDataWarp);
           await runningInfoCheckStore(parseDataWarp);
           await runningInfoStore(parseDataWarp);
           await rbcInfoStore(parseDataWarp);
-          await wbcInfoStore(parseDataWarp);
+
         }
         break;
       case 'STOP':
