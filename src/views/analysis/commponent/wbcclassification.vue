@@ -138,19 +138,13 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
     }
   }
   updatePercentages();
-  const wbcInfoArr = [];
-  for (const slotArrayKey in slotArray.wbcInfo) {
-    wbcInfoArr.push({
-      wbcInfo: dspWbcClassList.value[slotArrayKey],
-      barcodeId: slotArray.wbcInfo[slotArrayKey].barcodeNo
-    })
-  }
+
   console.log('setDataBaseSetData')
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
         wbcInfo: {
-          wbcInfo: wbcInfoArr,
+          wbcInfo: dspWbcClassList.value,
           nonRbcClassList: nonRbcClassList,
           totalCount: totalCount.value,
           maxWbcCount: maxWbcCount.value,
