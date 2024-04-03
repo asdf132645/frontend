@@ -1,6 +1,7 @@
 <template>
 <div></div>
   <div class="rbc-container">
+    <!-- <div id="capture-container" style="width:49px; height:49px"></div> -->
     <div class="btn-container">
       <div>
         <button 
@@ -110,7 +111,8 @@ import { defineProps, onMounted, ref, watch } from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
-import Malaria from './Malaria.vue';
+import Malaria from './malaria.vue';
+import html2canvas from 'html2canvas'
 import axios from 'axios';
 
 const props = defineProps(['selectItems']);
@@ -145,19 +147,33 @@ let isFirstDragEvent = ref(true);
 let dragForCrop = ref({});
 const caputuredImage = ref<HTMLImageElement | null>(null)
 
-
 onMounted(() => {
-  console.log(process.env.APP_API_BASE_URL);
   initElement();
 });
 
 
 const initElement = async () => {
 
-  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
-    const tilesInfo = await fetchTilesInfo(folderPath);
-    
+    const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+    const imageUrls = [];
+
+    for (let i=0; i<5; i++) {
+      const imageUrl = `${apiBaseUrl}/images?folder=${folderPath}&imageName=RBC_Image_${i}.jpg`
+      await preloadImage(imageUrl);
+      imageUrls.push({
+        type: 'image',
+        url: imageUrl
+      })
+    }
+
+    const captureContainer = document.getElementById('capture-container');
+    imageUrls.forEach(imageUrl => {
+      const img = document.createElement('img');
+      img.src = imageUrl.url;
+      captureContainer?.appendChild(img);
+    })
+
     viewer = OpenSeadragon({
       id: "tiling-viewer",
       animationTime: 0.4,
@@ -166,12 +182,10 @@ const initElement = async () => {
       sequenceMode: true,
       defaultZoomLevel: 1,
       prefixUrl:`${apiBaseUrl}/folders?folderPath=C:/workspace/uimdFe/images/`,
-      tileSources: tilesInfo,
+      tileSources: imageUrls,
       gestureSettingsMouse: { clickToZoom: false },
-    });
+    })
     
-    console.log('viewer')
-    console.log(viewer)
 
     new OpenSeadragon.MouseTracker({
       element: viewer.element,
@@ -230,6 +244,16 @@ const initElement = async () => {
   }
 };
 
+const preloadImage = (url: any) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url;
+    console.log(img)
+  });
+};
+
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);
@@ -262,6 +286,21 @@ const fetchTilesInfo = async (folderPath: string) => {
   return tilesInfo;
 };
 
+
+async function getImageUrl () {
+  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+  const fileNamesResponse = await fetch(`${apiBaseUrl}/folders?folderPath=${folderPath}`);
+  if (!fileNamesResponse.ok) {
+    throw new Error('Network response was not ok');
+  }
+  
+  const fileNames = await fileNamesResponse.json();
+  const imageUrls = fileNames
+    .filter(fileName => fileName.endsWith('.jpg')) // jpg 파일만 필터링
+    .map((fileName, index) => `${apiBaseUrl}/images?folder=${folderPath}&imageName=RBC_Image_${index}.jpg`); // 각 이미지의 URL 생성
+  console.log(imageUrls);
+  return imageUrls;
+}
 
 // Low magnification and Malaria tab
 const toggleViewer = (viewerType: string) => {
@@ -418,15 +457,15 @@ const onClickCrop = () => {
           Math.abs(diffY)
         );
 
-        const b = viewer.updateOverlay(dragForCrop.value.overlayElement, location);
-        console.log(b)
+        viewer.updateOverlay(dragForCrop.value.overlayElement, location);
+
       }
     });
 
     viewer.addHandler('canvas-drag-end', function(event) {
-      console.log("끝")
       if (isCrop.value && dragForCrop.value) {
         const viewportPos = viewer.viewport.pointFromPixel(event.position);
+        console.log('viewportPos', viewportPos)
         const diffX = viewportPos.x - dragForCrop.value.startPos.x;
         const diffY = viewportPos.y - dragForCrop.value.startPos.y;
 
@@ -437,14 +476,18 @@ const onClickCrop = () => {
           Math.abs(diffY)
         );
 
-        const overlay = viewer.updateOverlay(dragForCrop.value.overlayElement, location);
-        console.log(overlay)
+        viewer.updateOverlay(dragForCrop.value.overlayElement, location);
+       
+        // 크롭된 이미지
+        console.log('dragForCrop.value.overlayElement')
+        console.log(dragForCrop.value.overlayElement)
+        // <div id="rectOverlay" style="background: rgba(0,255,0,0.3)" > 형태 
+        
+        // 크롭된 이미지 저장
+        captureComponent() // 여기서 이미지를 가져오고 처리하는 부분이 있어야 합니다.
 
         isFirstDragEvent.value = true;
 
-        captureComponent()
-
-        console.log('viewer.drawer.canvas', viewer.drawer.canvas)
       }
     });
   } else {
@@ -455,7 +498,70 @@ const onClickCrop = () => {
 
 const captureComponent = () => {
   try {
-//
+    const overlayElement = document.getElementById('rectOverlay');
+
+    if (overlayElement) {
+      const viewportRect = viewer.viewport.getBounds(true); // 현재 뷰어의 영역 가져오기
+      console.log(viewportRect)
+
+      console.log('dragForCrop.value.overlayElement')
+      // overlayElement
+      console.log(dragForCrop.value.overlayElement)
+
+      // viewport 말고 cropped된 영역을 넣어라
+      const viewportWidth = viewer.container.clientWidth;
+      const viewportHeight = viewer.container.clientHeight;
+
+      console.log('viewportWidth')
+      console.log(viewportWidth)
+      console.log(viewportHeight)
+
+      // const x = overlayElement.offsetLeft - viewportRect.x * viewportWidth;
+      // const y = overlayElement.offsetTop - viewportRect.y * viewportHeight;
+      console.log(overlayElement.offsetLeft - viewportRect.x * viewportWidth)
+      console.log(overlayElement.offsetTop - viewportRect.y * viewportHeight)
+
+      console.log('x, y');
+      console.log(overlayElement.clientWidth, overlayElement.clientHeight);
+      // 좌표 문제야`~~~
+      const x = overlayElement.offsetLeft;
+      const y = overlayElement.offsetTop;
+
+      const width = overlayElement.offsetWidth;
+      const height = overlayElement.offsetHeight;
+      
+      console.log('x, y, width, height')
+      console.log(x, y, width, height)
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+
+      if (ctx) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = function() {
+          console.log('xxxx')
+          ctx.drawImage(img, x, y, width, height, 0, 0, width, height); // 크롭된 영역 가져오기
+          const imgData = canvas.toDataURL(); // 이미지 데이터로 변환
+
+          // 이미지를 새로운 이미지 객체로 추가
+          const newImg = new Image(); // 새로운 이미지 객체 생성
+          newImg.src = imgData; // 새로운 이미지 객체의 src 설정
+          console.log(newImg)
+          document.body.appendChild(newImg); // 새로운 이미지를 body에 추가
+        };
+        img.src = `${apiBaseUrl}/images?folder=${folderPath}&imageName=RBC_Image_0.jpg`
+      } else {
+        console.error('Failed to get 2d context from canvas');
+      }
+    } else {
+      console.error('Overlay element not found');
+    }
   } catch (err) {
     console.error(err);
   }
@@ -483,7 +589,6 @@ const onClickRuler = (ruler: any) => {
 }
 
 const drawRuler = (ruler: any) => {
-  console.log("drawruler")
   
   const divtilingViewer = document.getElementById('tiling-viewer')
 
@@ -501,7 +606,6 @@ const drawRuler = (ruler: any) => {
     // element.style.background = 'rgba(0, 0, 0, 0.3)'
     element.style.width = rulerPos.value.width + 'px'
     element.style.height = rulerPos.value.height + 'px'
-    console.log(rulerPos)
 
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
@@ -521,7 +625,6 @@ const drawRuler = (ruler: any) => {
     let isPress = false
 
     element.onmousedown = function(e) {
-      console.log('onmousedown')
       rulerPos.value.prevPosX = e.clientX
       rulerPos.value.prevPosY = e.clientY
 
@@ -537,13 +640,11 @@ const drawRuler = (ruler: any) => {
     }
 
     element.onmouseup = function() {
-      console.log('onmouseup')
 
       isPress = false
     }
 
     element.onwheel = function(e) {
-      console.log('onwheel')
 
       if (e.deltaY < 0) {
         if (rulerSize.value < 20) {
@@ -561,8 +662,6 @@ const drawRuler = (ruler: any) => {
 
     if (parent) {
       parent.onmousemove = function(e) {
-        console.log('onmousemove')
-        console.log(e)
         if (!isPress) {
           return
         }

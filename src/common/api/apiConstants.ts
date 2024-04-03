@@ -244,6 +244,12 @@ export const apiConstants = {
                 requiresToken: false,
             }
         },
+        folders: {
+            get:{
+                endpoint:'folders',
+                requiresToken: false,
+            }
+        }
     },
     images:{
         move: {

@@ -1,40 +1,33 @@
 <template>
   <!-- malaria -->
-  <div
-    data-draggable="target"
-    @dragover.prevent="onDragOver()"
-    @drop="onDrop('malaria')"
-    style="text-align: left; overflow: auto; height: 400px;"
-  >
-    <img
-      v-for="(malaria, index) in malariaList"
-      :key="'malaria-' + index" 
-      :src="malaria" 
-      alt="malaria-image"
-      :class="{ 'item-image': true, 'selected': isSelected('malaria', index, malaria) }"
-      draggable="true"
-      @dragstart="onDragStart('malaria', index, malaria)"
-      @click="selectImage('malaria', index, malaria, $event)"
-    >
+  <div>
+    <div class="malaria">Malaria</div>
+    <div @drop="onDrop('malaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
+      <img
+        v-for="(malaria, index) in malariaList"
+        :key="'malaria-' + index" 
+        :src="malaria" 
+        class="item-image"
+        :class="{'selected': isSelected('malaria', malaria) }"
+        alt="malaria-image"
+        @click="handleClickImage('malaria', malaria, index, $event)"
+        @dragstart="onDragStart('malaria', malaria, index)"
+      >
+    </div>
   </div>
   <!-- no malaria -->
   <div>
     <div class="no-malaria" style="text-align:left">No Malaria</div>
-    <div
-      data-draggable="target"
-      @dragover.prevent="onDragOver()"
-      @drop="onDrop('noMalaria')"
-      style="text-align: left; overflow: auto; height: 400px;"
-    >
+    <div @drop="onDrop('noMalaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
       <img
         v-for="(noMalaria, index) in noMalariaList"
         :key="'noMalaria-' + index"
         :src="noMalaria"
+        class="item-image"
+        :class="{'selected': isSelected('noMalaria', noMalaria) }"
         alt="noMalaria-image"  
-        :class="{ 'item-image': true, 'selected': isSelected('noMalaria', index, noMalaria) }"
-        draggable="true"
-        @dragstart="onDragStart('noMalaria', index, noMalaria)"
-        @click="selectImage('noMalaria', index, noMalaria, $event)"
+        @click="handleClickImage('noMalaria', noMalaria, index, $event)"
+        @dragstart="onDragStart('noMalaria', noMalaria, index)"
       >
     </div>
   </div>
@@ -52,10 +45,9 @@ const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || dirName.pbiaRootP
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const malariaList = ref([]);
 const noMalariaList = ref([]);
-const selectedClickImages = ref<{ section: string, index: number, imageName: string }[]>([]);
-let shiftStartIndex = ref<number | null>(null);
-let isCtrlPressed = ref(false);
-let isShiftPressed = ref(false);
+const selectedClickImages = ref<{ section: string, imgName: string, index: number }[]>([]);
+let indexBeforePressingShift = ref<number | null>(null);
+let draggedImages = ref<{ section: string, imgName: string, index: number }[]>([]);
 
 onMounted(async () => {
   await getImageList(dirName.malariaDirName, malariaList);
@@ -75,52 +67,6 @@ async function getImageList(folderName: string, list: []) {
   }
 }
 
-function selectImage(section: string, index: number, imageName: string, event: MouseEvent) {
-  const clickedImage = { section, index, imageName };
-
-  isCtrlPressed.value = event.ctrlKey || event.metaKey;
-  isShiftPressed.value = event.shiftKey;
-
-  // if (isSelected(section, index, imageName)) {
-  //   // 이미 선택된 이미지 또 클릭시 선택 해제
-  //   selectedClickImages.value = selectedClickImages.value.filter(item => !(item.section === section && item.index === index));
-  //   return;
-  // }
-  
-  // 현재 클릭된 이미지의 영역과 이전에 선택된 이미지들의 영역을 확인
-  const isSameSection = selectedClickImages.value.length > 0 && selectedClickImages.value[0].section === section;
-
-  if (isShiftPressed.value && shiftStartIndex.value !== null) {
-    const start = Math.min(shiftStartIndex.value, index);
-    const end = Math.max(shiftStartIndex.value, index);
-    selectedClickImages.value = [];
-    for (let i = start; i <= end; i++) {
-      selectedClickImages.value.push({ section, index: i, imageName });
-    }
-  } else {
-    // isSameSection ? selectedClickImages.value.push(clickedImage) : selectedClickImages.value = [clickedImage];
-
-    if (!isCtrlPressed.value) {
-      selectedClickImages.value = [{ section, index, imageName }];
-    } else {
-      isSameSection ? selectedClickImages.value.push(clickedImage) : selectedClickImages.value = [clickedImage];
-    }
-  }
-    shiftStartIndex.value = index;
-
-  // console.log(selectedClickImages.value)
-}
-
-function isSelected(section: string, index: number, imageName: string): boolean {
-  for (const item of selectedClickImages.value) {
-    console.log(item.section === section && item.index === index && item.imageName === imageName)
-    if (item.section === section && item.index === index && item.imageName === imageName) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;
   
@@ -129,47 +75,90 @@ function handleBodyClick(event: Event) {
   }
 }
 
-function onDragOver() {
-  // 동작 안함
-}
+function handleClickImage(section: string, imgName: string, index: number, event: MouseEvent) {
+  const clickedImage = { section, imgName, index };
 
-function onDragStart(section: string, index: number, item: any) {
-  // selectImage(section, index, item, event);
-}
+  if (selectedClickImages.value.length > 0 && selectedClickImages.value[selectedClickImages.value.length - 1].section !== section) {
+    selectedClickImages.value = [clickedImage];
+  } else {
+    if (event.shiftKey && indexBeforePressingShift.value !== null) {
 
-async function onDrop(section: string) {
-  const slotId = props.selectItems.slotId || '';
-  const path = `${pbiaRootPath}/${slotId}/${dirName.rbcClassDirName}`;
-  const sourceFolder = section === 'malaria' ? `${path}/${dirName.noMalariaDirName}` : `${path}/${dirName.malariaDirName}`;
-  const destinationFolder = section === 'malaria' ? `${path}/${dirName.malariaDirName}` : `${path}/${dirName.noMalariaDirName}`;
- 
-  for (const image of selectedClickImages.value) {
-    const imgNameArr = image.imageName.split("/");
-    const imgName = imgNameArr[imgNameArr.length-1];
-    
-    try {
-      const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${imgName}`);
-      if (response) {
-        const sourceList = section === 'malaria' ? noMalariaList : malariaList;
-        const destinationList = section === 'malaria' ? malariaList : noMalariaList;
+      const startIdx = Math.min(indexBeforePressingShift.value, index);
+      const endIdx = Math.max(indexBeforePressingShift.value, index);
 
-        sourceList.value.splice(image.index, 1);
-        destinationList.value.push(image.imageName);
+      for (let i = startIdx; i <= endIdx; i++) {
+        const existingIndex = selectedClickImages.value.findIndex(item => item.index === i);
+        if (existingIndex === -1) {
+          selectedClickImages.value.push({ section, imgName: section === 'malaria' ? malariaList.value[i] : noMalariaList.value[i], index: i });
+        }
       }
-    } 
-    catch (error) {
-      console.error(error);
+      
+    } else if (event.ctrlKey && indexBeforePressingShift.value !== null) {
+      selectedClickImages.value.push(clickedImage);
+    } else {
+      const existingIndex = selectedClickImages.value.findIndex(item => item.imgName === imgName);
+      if (existingIndex !== -1) {
+        selectedClickImages.value.splice(existingIndex, 1);
+      } else {
+        selectedClickImages.value = [clickedImage];
+      }
     }
   }
 
-  // 이미지 이동 후 선택된 이미지 초기화
-  selectedClickImages.value = [];
+  indexBeforePressingShift.value = index;
+}
 
+function isSelected(section: string, imgName: string): boolean {
+  return selectedClickImages.value.some(selectedImage => selectedImage.imgName === imgName);
 }
 
 
+function onDragStart(section: string, imgName: string, index: number) {
+  if (selectedClickImages.value.length > 0) {
+    draggedImages.value = selectedClickImages.value;
+  } else {
+    draggedImages.value = [{ section, imgName, index }];
+  }
+}
+
+function onDrop(targetSection: string) {
+  for (const draggedImage of draggedImages.value) {
+    if (targetSection !== draggedImage.section) {
+      moveImage(targetSection, draggedImage.imgName);
+    }
+  }
+}
+
+async function moveImage(targetSection: string, imgName: string) {
+  const slotId = props.selectItems.slotId || '';
+  const path = `${pbiaRootPath}/${slotId}/${dirName.rbcClassDirName}`
+  const sourceFolder = targetSection === 'malaria' ? `${path}/${dirName.noMalariaDirName}` : `${path}/${dirName.malariaDirName}`;
+  const destinationFolder = targetSection === 'malaria' ? `${path}/${dirName.malariaDirName}` : `${path}/${dirName.noMalariaDirName}`;
+
+  const imgNameArr = imgName.split("/");
+  const imageName = imgNameArr[imgNameArr.length-1];
+
+
+  const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${imageName}`);
+  
+  if (response) {
+    const index = targetSection === 'malaria' ? noMalariaList.value.findIndex(image => image === imgName) : malariaList.value.findIndex(image => image === imgName);
+    if (targetSection === 'malaria') {
+      noMalariaList.value.splice(index, 1);
+      malariaList.value.push(imgName);
+    } else {
+      malariaList.value.splice(index, 1);
+      noMalariaList.value.push(imgName);
+    }
+  }
+
+  // 선택된 이미지 초기화
+  selectedClickImages.value = [];
+}
 
 </script>
+
+
 
 <style scoped>
 .item-image {
@@ -181,4 +170,5 @@ async function onDrop(section: string) {
 .selected {
   border: 6px solid rgb(106, 153, 194);
 }
+
 </style>
