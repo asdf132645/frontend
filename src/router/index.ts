@@ -8,6 +8,8 @@ import Database from '@/views/datebase/index.vue';
 import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listTableRbc.vue';
 import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listTableWbc.vue';
 import Report from  '@/views/datebase/commponent/detail/report/report.vue';
+import DatabaseBm from '@/views/datebase/commponent/detail/bm/listTableBm.vue';
+import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
 
 import {useStore} from "vuex";
 
@@ -48,6 +50,16 @@ const router = createRouter({
             path: '/databaseWbc',
             name: 'databaseWbc',
             component: DatabaseWbc,
+        },
+        {
+            path: '/databaseBm',
+            name: 'databaseBm',
+            component: DatabaseBm,
+        },
+        {
+            path: '/databaseWhole',
+            name: 'databaseWhole',
+            component: DatabaseWhole,
         },
         {
             path: '/databaseRbc',
