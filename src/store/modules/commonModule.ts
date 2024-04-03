@@ -19,6 +19,8 @@ export interface CommonState {
     runningInfoStop: boolean;
     reqArr: any[];
     resFlag: boolean;
+    firstLoading: boolean;
+    slotIndex: number;
 }
 
 interface CommonModule {
@@ -44,6 +46,8 @@ interface CommonModule {
         shiftReqArr: (state: CommonState) => void;
         setReqArrPaste: (state: CommonState, value: any[]) => void;
         setResFlag: (state: CommonState, value: boolean) => void;
+        setFirstLoading: (state: CommonState, value: boolean) => void;
+        setSlotIndex: (state: CommonState, value: number) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -70,6 +74,8 @@ export const commonModule: CommonModule = {
         runningInfoStop: false,
         reqArr: [],
         resFlag: true,
+        firstLoading: false,
+        slotIndex: 0,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -131,6 +137,12 @@ export const commonModule: CommonModule = {
         },
         setResFlag(state: CommonState, value: boolean): void {
             state.resFlag = value;
+        },
+        setFirstLoading(state: CommonState, value: boolean): void {
+            state.firstLoading = value;
+        },
+        setSlotIndex(state: CommonState, value: number): void {
+            state.slotIndex = value;
         },
     },
     actions: {
@@ -194,6 +206,12 @@ export const commonModule: CommonModule = {
             }
             if(payload.hasOwnProperty('resFlag')){
                 commit('setResFlag', payload.resFlag);
+            }
+            if(payload.hasOwnProperty('firstLoading')){
+                commit('setFirstLoading', payload.firstLoading);
+            }
+            if(payload.hasOwnProperty('slotIndex')){
+                commit('setSlotIndex', payload.slotIndex);
             }
         },
     },

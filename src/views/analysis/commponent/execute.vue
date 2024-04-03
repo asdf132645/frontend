@@ -160,13 +160,40 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     }
 
-    const startAction = tcpReq().embedStatus.startAction;
+    let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
       testType: analysisType.value,
       wbcCount: wbcCount.value,
       stitchCount: stitchCount.value,
       reqUserId: userId.value,
     });
+    if (process.env.PROJECT_TYPE === 'bm'){
+      startAction = {
+        "jobCmd": "START",
+        "reqUserId": "aaaaa",
+        "reqDttm": "20240402162245",
+        "orderInfo": [{
+          "orderId": "ORD2024040216223754373395",
+          "cassetNo": "1",
+          "slotNo": "1",
+          "bmNo": "s",
+          "patientId": "s",
+          "patientNm": "s",
+          "age": "1",
+          "gender": "01",
+          "testType": "02",
+          "stainType": "01",
+          "userInputStainType": "",
+          "analysisType": "01",
+          "bmSamplingSide": "01",
+          "cellCount": "100",
+          "department": "s",
+          "stitchCount": "2"
+        }],
+        "runningMode": "00",
+        "positionMargin": "0"
+      }
+    }
 
     if (isInit.value === 'Y') { // 초기화 여부 체크 초기화가 되어있는 상태이면 실행
       // 웹소켓으로 백엔드에 전송

@@ -239,7 +239,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
     } else {
       if (currentSlot?.slotId !== runningSlotId.value && currentSlot?.slotId) { // 슬라이드 체인지 시
-        console.log(currentSlot?.slotId)
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         if (runningSlotId.value !== '') {

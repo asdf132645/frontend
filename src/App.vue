@@ -1,6 +1,6 @@
 <!-- App.vue -->
 <template>
-  <div :key="componentKey">
+  <div>
     <AppHeader/>
     <main class='content'>
       <router-view/>
@@ -18,13 +18,14 @@
 
 <script setup lang="ts">
 import AppHeader from "@/components/layout/AppHeader.vue";
+
 const router = useRouter();
 // homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
 // startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
 
-import {getCurrentInstance, ref, computed, watch, onMounted, nextTick} from 'vue';
+import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {useStore} from "vuex";
-import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
+import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constant';
@@ -56,10 +57,13 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
 const reqArr = computed(() => store.state.commonModule);
-const sendReqArr = ref([]); // ref로 배열을 초기화합니다.
+const sendReqArr = ref([]);
 const runningInfoBoolen = ref(false);
 const resFlag = ref(true);
-const componentKey = ref(0);
+let countingInterStartval: any = null;
+let countingInterRunval: any = null;
+const isNsNbIntegration = ref('');
+const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -69,26 +73,39 @@ const componentKey = ref(0);
 //   }
 // });
 
-watch(reqArr.value, (newVal, oldUserId) => {
-  if(newVal.resFlag && newVal.reqArr){
-    if (newVal.reqArr.length !== 0){
-      const originalArray = Array.from(newVal.reqArr); // 깊은 복사
-      console.log("Original array:", originalArray);
 
-      const invalidItems = newVal.reqArr.filter(item => item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO');
-      console.log("Invalid items:", invalidItems);
-      if(invalidItems.length !== 0){
-        sendMessage(invalidItems[0]);
-        store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
-      }else{
-        sendMessage(originalArray[0]);
-        store.dispatch('commonModule/setCommonInfo', {reqArrPaste: newVal.reqArr.shift()});
+watch(reqArr.value, async (newVal, oldVal) => {
+  // 새 값이 특정 조건을 충족하는지 확인
+  if (newVal.reqArr) {
+
+    const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
+    // 유니크한 reqArr 배열에 항목이 있는지 확인
+    if (uniqueReqArr.length > 0) {
+      // console.log(uniqueReqArr)
+      if (uniqueReqArr.length > 1) {
+        const notSysRunInfo = uniqueReqArr.filter((item: any) => (item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO'));
+        console.log(notSysRunInfo[0])
+        await sendMessage(notSysRunInfo[0]);
+      } else {
+        await sendMessage(uniqueReqArr[0]);
       }
-
-
+      await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     }
   }
 });
+
+// jobCmd가 중복되지 않도록 배열 필터링
+const removeDuplicateJobCmd = (reqArr: any) => {
+  const uniqueJobCmds = new Set(); // 중복을 체크하기 위한 Set 생성
+  const uniqueReqArr: any = []; // 중복되지 않은 jobCmd를 담을 배열
+  reqArr.forEach((req: any) => {
+    if (!uniqueJobCmds.has(req.jobCmd)) {
+      uniqueJobCmds.add(req.jobCmd); // Set에 jobCmd 추가
+      uniqueReqArr.push(req); // 유니크한 jobCmd인 경우 배열에 추가
+    }
+  });
+  return uniqueReqArr;
+};
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -109,37 +126,49 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
-    await startSysPostWebSocket();
+    if (!commonDataGet.value.firstLoading) {
+      countingInterStartval = setInterval(async () => {
+        await startSysPostWebSocket();
+      }, 300);
+
+      countingInterRunval = setInterval(async () => {
+        if (!commonDataGet.value.runningInfoStop) {
+          await runInfoPostWebSocket();
+        }
+      }, 500);
+      await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
+    }
+    isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
-  resFlag.value = reqArr.value.resFlag;
-  console.log(router.currentRoute.value.path === '/analysis');
   EventBus.subscribe('messageSent', emitSocketData);
-
 });
-
+// onBeforeUnmount(() => {
+//   if (countingInterRunval) {
+//     clearInterval(countingInterRunval);
+//     countingInterRunval = null;
+//   }
+//   if (countingInterStartval) {
+//     clearInterval(countingInterRunval);
+//     countingInterRunval = null;
+//   }
+// });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
     const parsedData = JSON.parse(data);
     if (parsedData.bufferData === 'err') {
       // alert('활성화된 TCP 클라이언트 연결 없음');
-      instance?.appContext.config.globalProperties.$socket.emit('message', {
-        type: 'SEND_DATA',
-        payload: tcpReq().embedStatus.sysInfo
-      });
       return
     }
     const parseDataWarp = JSON.parse(parsedData.bufferData); // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
-    await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
+    // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
-        await startSysPostWebSocket();
         break;
       case 'INIT':
-        runningInfoBoolen.value = true;
-        await runInfoPostWebSocket();
+        // sendSettingInfo();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -148,14 +177,14 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
+        await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
+        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0})
         runningInfoBoolen.value = true;
-        await runInfoPostWebSocket();
         break;
       case 'RUNNING_INFO':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoCheckStore(parseDataWarp);
         await runningInfoStore(parseDataWarp);
-        await wbcInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
         break;
       case 'STOP':
@@ -167,6 +196,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
+        await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
         await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
         await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false}); // 임베디드 상태가 죽음을 알려준다.
         await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
@@ -174,10 +204,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = false;
-        if(router.currentRoute.value.path === '/analysis' || router.currentRoute.value.path === '/'){
-          componentKey.value += 1;
-        }
-        console.log('---------------      RUNNING_COMP        --------------------------')
         break;
       case 'PAUSE':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
@@ -186,14 +212,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
-        await wbcInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         runningInfoBoolen.value = true;
-        await runInfoPostWebSocket();
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         break;
       case 'RECOVERY':
@@ -229,11 +253,12 @@ const runInfoPostWebSocket = async () => {
 };
 
 const emitSocketData = async (payload: object) => {
-  console.log('sss')
+  // console.log('sss')
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
+
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo.find(
         (item: SlotInfo) => item.stateCd === "03"
@@ -251,7 +276,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
     } else {
       if (currentSlot?.slotId !== runningSlotId.value && currentSlot?.slotId) { // 슬라이드 체인지 시
-        console.log(currentSlot?.slotId)
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         if (runningSlotId.value !== '') {
@@ -268,20 +292,18 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     // 주문 내역 및 처리 결과 저장 -start
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-      if (userId.value === '') {
-        return;
-      }
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+      await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
       // console.log('save start')
       if (!runningInfoBoolen.value) {
         return
       }
       await saveTestHistory(data);
     }
-    await runInfoPostWebSocket();
 
   }
+
 }
 
 const saveTestHistory = async (params: any) => {
@@ -303,15 +325,18 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-    const wbcinfos = dbData.slotInfo[0].wbcInfo.wbcInfo.filter((wbc: any) => wbc.barcodeId === completeSlot.barcodeNo);
-    const wbcInfo = wbcinfos.length > 0 ? wbcinfos[0].wbcInfo : [];
+    const processBarcodeId = dbData?.slotInfo[0];
+    const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[0];
+    console.log('dbData?.slotInfo', dbData?.slotInfo)
+    console.log('completeSlot', completeSlot)
 
     const newWbcInfo = {
-      wbcInfo: [wbcInfo],
-      nonRbcClassList: dbData.slotInfo[0].wbcInfo.nonRbcClassList,
-      totalCount: dbData.slotInfo[0].wbcInfo.totalCount,
-      maxWbcCount: dbData.slotInfo[0].wbcInfo.maxWbcCount,
+      wbcInfo: [matchedWbcInfo],
+      nonRbcClassList: processBarcodeId.wbcInfo.nonRbcClassList,
+      totalCount: processBarcodeId.wbcInfo.totalCount,
+      maxWbcCount: processBarcodeId.wbcInfo.maxWbcCount,
     }
+
     const newObj = {
       slotNo: completeSlot.slotNo,
       state: false,
@@ -353,11 +378,28 @@ const saveTestHistory = async (params: any) => {
       memo: '',
       rbcMemo: '',
     }
-    saveRunningInfo(newObj);
+    await saveRunningInfo(newObj);
+    await store.dispatch('commonModule/setCommonInfo', {slotIndex: commonDataGet.value.slotIndex + 1})
 
   }
 }
 
+const sendSettingInfo = () => {
+
+  const req = {
+    jobCmd: 'SETTINGS',
+    reqUserId: String(userId.value),
+    reqDttm: tcpReq().embedStatus.settings.reqDttm,
+    pbiaRootDir: pbiaRootDir.value || '',
+    oilCount: '0',
+    isOilReset: 'N',
+    deviceType: '01',
+    uiVersion: 'web',
+    isNsNbIntegration: isNsNbIntegration.value || 'N',
+  };
+  console.log(req)
+  store.dispatch('commonModule/setCommonInfo', {reqArr: req});
+}
 
 const getNormalRange = async () => {
   try {
@@ -388,16 +430,22 @@ const saveRunningInfo = async (runningInfo: RuningInfo) => {
 };
 
 // 메시지를 보내는 함수
+// 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
-  const executeAfterDelay = async (): Promise<void> => {
+  const executeAfterDelay = async () => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
       payload: payload
     });
-    await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+    // await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
+  // if (!reqArr.value.resFlag) {
+  //   return;
+  // }
+
   await executeAfterDelay();
 };
+
 
 const cellImgGet = async (newUserId: string) => {
   try {
@@ -428,6 +476,8 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+
 </script>
 
 <style>

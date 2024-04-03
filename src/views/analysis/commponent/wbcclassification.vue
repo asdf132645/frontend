@@ -104,8 +104,20 @@ watch([commonDataGet.value], async (newVals: any) => {
     slideProceeding.value = newVals.slideProceeding;
   }
 })
+onMounted(() => {
+  const initialWbcClassList = store.state.wbcClassificationModule;
+  updateDataArray(initialWbcClassList);
+});
 
-const updateDataArray = (newSlotInfo: WbcInfo[]) => {
+watch(
+    () => store.state.wbcClassificationModule,
+    (newSlotInfo) => {
+      updateDataArray(newSlotInfo);
+    },
+    {deep: true}
+);
+
+const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
 
   if (Array.isArray(slotArray.wbcInfo)) {
@@ -133,23 +145,20 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
         (item: SlotInfo) => item.stateCd === "03"
     );
     if (currentSlot) {
-      updateCounts(currentSlot);
+      if(currentSlot.wbcCount === '00'){
+        return;
+      }
+      await updateCounts(currentSlot);
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
   }
-  updatePercentages();
-  const wbcInfoArr = [];
-  for (const slotArrayKey in slotArray.wbcInfo) {
-    wbcInfoArr.push({
-      wbcInfo: dspWbcClassList.value[slotArrayKey],
-      barcodeId: slotArray.wbcInfo[slotArrayKey].barcodeNo
-    })
-  }
-  store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+  await updatePercentages();
+
+  await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
         wbcInfo: {
-          wbcInfo: wbcInfoArr,
+          wbcInfo: dspWbcClassList.value,
           nonRbcClassList: nonRbcClassList,
           totalCount: totalCount.value,
           maxWbcCount: maxWbcCount.value,
@@ -162,18 +171,6 @@ const updateDataArray = (newSlotInfo: WbcInfo[]) => {
 
 
 
-onMounted(() => {
-  const initialWbcClassList = store.state.wbcClassificationModule;
-  updateDataArray(initialWbcClassList);
-});
-
-watch(
-    () => store.state.wbcClassificationModule,
-    (newSlotInfo) => {
-      updateDataArray(newSlotInfo);
-    },
-    {deep: true}
-);
 
 
 const calculateWbcPercentages = (
@@ -203,7 +200,7 @@ const calculateWbcPercentages = (
 };
 
 
-const updateCounts = (currentSlot: SlotInfo) => {
+const updateCounts = async (currentSlot: SlotInfo) => {
   const wbcList = currentSlot.wbcInfo;
   let totalVal = "";
 
@@ -217,7 +214,7 @@ const updateCounts = (currentSlot: SlotInfo) => {
   }
 
   totalCount.value = totalVal;
-  updatePercentages();
+  await updatePercentages();
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
@@ -229,7 +226,7 @@ const shouldRenderCategory = (category: WbcInfo) => {
   return !targetArray.includes(category.title);
 };
 
-const updatePercentages = () => {
+const updatePercentages = async () => {
   const percent = dspWbcClassList.value.map((classList: any) => {
     return classList.map((category: any) => {
       // Calculate and update percentage
