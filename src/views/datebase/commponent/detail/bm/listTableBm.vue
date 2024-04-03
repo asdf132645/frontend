@@ -1,9 +1,9 @@
 <template>
   <div class="wbcMenu">
     <ul>
-      <li @click="pageGo('/databaseRbc')">RBC</li>
-      <li class="onRight" @click="pageGo('/databaseWbc')">WBC</li>
-      <li @click="pageGo('/report')">REPORT</li>
+      <li @click="pageGo('/databaseWhole')">WHOLE</li>
+      <li class="onRight" @click="pageGo('/databaseBm')">BMCELL</li>
+<!--      <li @click="pageGo('/report')">REPORT</li>-->
       <li>LIS-CBC</li>
     </ul>
     <div class="wbcMenuBottom">
@@ -18,7 +18,7 @@
 
   <div class="wbcContent">
     <div class="databaseWbcRight">
-      <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <BmClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
 
     <div class="databaseWbcLeft">
@@ -159,7 +159,7 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import WbcClass from "@/views/datebase/commponent/detail/wbc/databaseWbcRight/wbcClass.vue";
+import BmClass from "@/views/datebase/commponent/detail/bm/databaseBmRight/bmClass.vue";
 import * as XLSX from 'xlsx';
 import router from "@/router";
 import {
@@ -240,7 +240,7 @@ const getWbcCustomClasses = async () => {
           if (item?.abbreviation === '') {
             return;
           }
-          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${item?.abbreviation}`;
+          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${item?.abbreviation}`;
           deleteRunningApi({path: filePath})
         }
       });
@@ -249,7 +249,7 @@ const getWbcCustomClasses = async () => {
     wbcCustomItems.value = data;
     for (const item of newData) { // 커스텀클래스 폴더 생성
       const {className, abbreviation, customNum} = item;
-      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${customNum}_${abbreviation}`;
+      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${customNum}_${abbreviation}`;
       await fileSysPost({path: filePath});
 
       const wbcPush = {
@@ -548,12 +548,7 @@ const drawCellMarker = async () => {
   cellMarkerIcon.value = !cellMarkerIcon.value
 
   if (cellMarkerIcon.value) {
-    let url = '';
-    if (selectItems.value.testType === '01' || selectItems.value.testType === '04') {
-      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${selectItems.value.slotId}.json`
-    } else {
-      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/05_BF_Classification/${selectItems.value.slotId}.json`
-    }
+    const url = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${selectItems.value.slotId}.json`
     const response = await readJsonFile({fullPath: url});
 
     if (response && response.success) {
@@ -914,9 +909,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     // 선택된 이미지 배열에 대해 반복
     for (const selectedImage of arrType) {
       const fileName = selectedImage.fileName;
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${selectedImage.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${draggedItem.id}_${draggedItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${targetItem.id}_${targetItem.title}`;
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${selectedImage.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${draggedItem.id}_${draggedItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
       // 이미지 이동 API 호출
       const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`);
       if (keyMove === 'keyMove') {
@@ -1014,7 +1009,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
   const slotId = selectItems.value.slotId || "";
-  const folderPath = `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
@@ -1069,8 +1064,8 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   findUndefinedImages(prevWbcInfo, currentWbcInfo, destinationFolderInfo);
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
-    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
-    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
+    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
+    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
 
     if (response) {

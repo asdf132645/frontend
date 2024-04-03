@@ -1400,3 +1400,8 @@ ul.normalItems li div span {
 ul.normalItems li div span:last-child {
     width: 5%;
 }
+
+.bmclass {
+    width: 74%!important;
+    min-height: 68vh;
+}

@@ -49,7 +49,7 @@
       <td>
         <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
       </td>
-      <td> {{ getTestTypeText(item?.testType) }}</td>
+      <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
       <td>
         <font-awesome-icon
             :icon="['fas', `${!item?.state ? 'lock-open' : 'lock' }`]"
@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {ref, onMounted, watchEffect, defineProps, defineEmits, computed, nextTick, onUnmounted} from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
@@ -159,6 +159,7 @@ const itemObj = ref({});
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const commonDataGet = computed(() => store.state.commonModule);
+const projectType = ref('');
 
 const contextMenu = ref({
   visible: false,
@@ -177,6 +178,7 @@ const selectAllCheckbox = ref(false);
 
 
 onMounted(async() => {
+  projectType.value = process.env.PROJECT_TYPE;
    try {
     
     userId.value = getStoredUser.id;
@@ -302,7 +304,12 @@ const rowDbClick = (item) => {
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
-  router.push('/databaseWbc')
+  if(projectType.value !== 'bm'){
+    router.push('/databaseWbc')
+  }else{
+    router.push('/databaseBm')
+  }
+
 }
 
 

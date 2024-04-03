@@ -54,7 +54,8 @@
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <ListWbcImg :dbData="dbGetData" :selectedItem="selectedItem"/>
+      <ListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+      <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
   </div>
 </template>
@@ -69,6 +70,7 @@ import {getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
+import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -89,9 +91,11 @@ const nrCount = ref(0);
 const testType = ref('');
 const wbcCountOrder = ref('');
 const classListToggle = ref(false);
+const bmClassIsBoolen = ref(false);
 
 onMounted(async () => {
   await initDbData();
+  bmClassIsBoolen.value = process.env.PROJECT_TYPE === 'bm';
 });
 
 const classListToggleEvent = () => {

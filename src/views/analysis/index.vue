@@ -6,8 +6,9 @@
   </div>
   <div class="contentRight">
     <workingView class="contentRightChild"/>
-    <rbcclassification class="contentRightChild"/>
-    <wbcclassification class="contentRightChild"/>
+    <rbcclassification v-if="!bmIsBoolen" class="contentRightChild"/>
+    <wbcclassification v-if="!bmIsBoolen" class="contentRightChild"/>
+    <Bmclass v-if="bmIsBoolen"/>
     <div class="contentBottom">
       <FoundingCells/>
     </div>
@@ -22,4 +23,13 @@ import orderList from './commponent/orderList.vue';
 import wbcclassification from './commponent/wbcclassification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
+import {onMounted, ref} from "vue";
+import Bmclass from "@/views/analysis/commponent/bmclass.vue";
+const bmIsBoolen = ref(false);
+
+onMounted(async () => {
+  if(process.env.PROJECT_TYPE === 'bm'){
+    bmIsBoolen.value = true;
+  }
+});
 </script>
