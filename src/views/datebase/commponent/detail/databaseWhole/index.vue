@@ -1,13 +1,14 @@
 <template>
   <div>
     <div ref="imageContainer" class="image-container" >
-      <img class="img"
+      <TilingViewer />
+      <!-- <img class="img"
            ref='imgRef'
            :src="getImageUrl()"
            :style="{ width: imageWidth + 'px', height: imageHeight + 'px' }"
            @wheel.prevent="zoomImage"
            @click="handleMouseClick"
-           />
+           /> -->
       <div
           v-if="dragging"
           class="resize-overlay"
@@ -46,6 +47,7 @@
 import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
+import TilingViewer from './tilingViewer.vue';
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);

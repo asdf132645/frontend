@@ -1,6 +1,6 @@
 <template>
+<div></div>
   <div class="rbc-container">
-    <!-- <div id="capture-container" style="width:49px; height:49px"></div> -->
     <div class="btn-container">
       <div>
         <button 
@@ -62,15 +62,14 @@
                 @click="onClickGrid"
               />
             </div>
-            <div>
+            <!-- <div>
               <font-awesome-icon :icon="['fas', 'crop']"/>
               <span>Crop</span>
               <font-awesome-icon
                 :icon="isCrop? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 @click="onClickCrop"
               />
-              <button>저장</button>
-            </div>
+            </div> -->
             <div>
               <font-awesome-icon :icon="['fas', 'ruler']"/>
               <span>Ruler</span>
@@ -98,32 +97,22 @@
     </div>
     <div class="tiling-viewer-box">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else 
-        id="tiling-viewer"
-        ref="tilingViewerLayer"
-        @mousedown.prevent="onMouseDown"
-        @mousemove.prevent="onMouseMove"
-        @mouseup.prevent="onMouseUp"
-        @wheel="handleWheel"
-      >
-        <div></div>
-        <img :style="{ transform: `scale(${scale}) translate(${imageX}px, ${imageY}px)` }" :src="getImageUrl()">
-      </div>
+      <div v-else ref="tilingViewerLayer" id="tiling-viewer" ></div>
+    
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 
-import { defineProps, onMounted, ref, watch } from 'vue';
+import { defineProps, onMounted, ref, watch, computed} from 'vue';
+import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
-import malaria from './malaria.vue';
-import html2canvas from 'html2canvas'
-import axios from 'axios';
+import Malaria from './malaria.vue';
 
 const props = defineProps(['selectItems']);
-const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || dirName.pbiaRootPath;
+const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
@@ -152,29 +141,6 @@ const viewBoxWH = ref(150);
 const tilingViewerLayer = ref(null);
 let isFirstDragEvent = ref(true);
 let dragForCrop = ref({});
-const caputuredImage = ref<HTMLImageElement | null>(null)
-
-// tiling viewer 좌표
-let dragging = ref(false);
-let startX = ref(0);
-let startY = ref(0);
-let offsetX = ref(0);
-let offsetY = ref(0);
-let imageX = ref(0);
-let imageY = ref(0);
-
-// scale 조절
-let scale = ref(1);
-let maxScale = ref(10);
-let minScale = ref(0.9);
-
-// 선택 영역 
-let selectedWidth = ref(0);
-let selectedHeight = ref(0);
-let selectedX = ref(0);
-let selectedY = ref(0);
-let imageElement = ref(null);
-let croppedImage = ref(null);
 
 
 onMounted(() => {
@@ -183,8 +149,7 @@ onMounted(() => {
 
 
 const initElement = async () => {
-
-  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
     
@@ -200,6 +165,7 @@ const initElement = async () => {
       gestureSettingsMouse: { clickToZoom: false },
     });
 
+    
     new OpenSeadragon.MouseTracker({
       element: viewer.element,
       moveHandler: function(event: any) {
@@ -252,6 +218,7 @@ const initElement = async () => {
       },
     });
 
+
 } catch (err) {
     console.error('Error:', err);
   }
@@ -259,6 +226,7 @@ const initElement = async () => {
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+  console.log(url)
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -358,6 +326,7 @@ const rgbReset = () => {
 // Grid
 const onClickGrid = () => {
   isGrid.value = !isGrid.value;
+  viewer.addHandler('zoom', drawLines);
   if (isGrid.value) {
     drawLines();
   } else {
@@ -368,27 +337,21 @@ const onClickGrid = () => {
 const drawLines = () => {
   removeGridLines();
   if (isGrid.value) {
-    const tilingViewer = tilingViewerLayer.value;
+    const imageHeight = viewer.world.getItemAt(0).getContentSize().y;
+    const imageWidth = viewer.world.getItemAt(0).getContentSize().x;
+    const zoom = viewer.viewport.getZoom();
 
     const maxNumberOfLines = 400;
-    const numberOfLines = Math.round(maxNumberOfLines / scale.value);
-    console.log(numberOfLines)
+    const numberOfLines = Math.round(maxNumberOfLines / zoom);
 
-    console.log('client')
-    console.log(tilingViewer.clientWidth, tilingViewer.clientHeight)
-    for (let i = 0; i < numberOfLines; i++) {
-      const lineY = (i / numberOfLines) * tilingViewer.clientHeight;
-      ///
+    const minGap = Math.min(imageWidth, imageHeight) / numberOfLines;
+
+    for (let i = 1; i < numberOfLines; i++) {
+      const linePosition = i * minGap;
+
+      drawLine(linePosition, 0, 1, imageHeight, 'rgba(128, 128, 128, 0.2)'); // 세로선
+      drawLine(0, linePosition, imageWidth, 1, 'rgba(128, 128, 128, 0.2)'); // 가로선
     }
-
-    // const minGap = Math.min(imageWidth, imageHeight) / numberOfLines;
-
-    // for (let i = 1; i < numberOfLines; i++) {
-    //   const linePosition = i * minGap;
-
-    //   drawLine(linePosition, 0, 1, imageHeight, 'rgba(128, 128, 128, 0.2)'); // 세로선
-    //   drawLine(0, linePosition, imageWidth, 1, 'rgba(128, 128, 128, 0.2)'); // 가로선
-    // }
   }
 };
 
@@ -412,28 +375,6 @@ const removeGridLines = () => {
 };
 
 
-// crop
-const onClickCrop = () => {
-  isCrop.value = !isCrop.value;
-
-  imageElement.value = tilingViewerLayer.value.querySelector('img');
-
-  if (isCrop.value) {
-    // 이미지를 클릭해서 드래그하여 이동할 수 없도록 pointer-events 속성을 none으로 설정
-    imageElement.value.style.pointerEvents = 'none';
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-
-  } else {
-    // 이미지에 대한 마우스 이벤트를 다시 활성화
-    imageElement.value.style.pointerEvents = 'auto';
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-  }
-}
-
 // Ruler
 const onClickRuler = (ruler: any) => {
   switch (ruler.text) {
@@ -454,6 +395,7 @@ const onClickRuler = (ruler: any) => {
 }
 
 const drawRuler = (ruler: any) => {
+  console.log("drawruler")
   
   const divtilingViewer = document.getElementById('tiling-viewer')
 
@@ -471,6 +413,7 @@ const drawRuler = (ruler: any) => {
     // element.style.background = 'rgba(0, 0, 0, 0.3)'
     element.style.width = rulerPos.value.width + 'px'
     element.style.height = rulerPos.value.height + 'px'
+    console.log(rulerPos)
 
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
@@ -490,6 +433,7 @@ const drawRuler = (ruler: any) => {
     let isPress = false
 
     element.onmousedown = function(e) {
+      console.log('onmousedown')
       rulerPos.value.prevPosX = e.clientX
       rulerPos.value.prevPosY = e.clientY
 
@@ -505,11 +449,13 @@ const drawRuler = (ruler: any) => {
     }
 
     element.onmouseup = function() {
+      console.log('onmouseup')
 
       isPress = false
     }
 
     element.onwheel = function(e) {
+      console.log('onwheel')
 
       if (e.deltaY < 0) {
         if (rulerSize.value < 20) {
@@ -527,6 +473,8 @@ const drawRuler = (ruler: any) => {
 
     if (parent) {
       parent.onmousemove = function(e) {
+        console.log('onmousemove')
+        console.log(e)
         if (!isPress) {
           return
         }
@@ -725,28 +673,18 @@ span {
 }
 
 .tiling-viewer-box {
-  max-width: 100%;
-  overflow: hidden;
+  max-width: 100%; /* 부모 요소의 최대 너비를 화면의 너비로 설정합니다. */
+  overflow: hidden; /* 부모 요소를 넘어가는 콘텐츠를 숨깁니다. */
 }
 
 #tiling-viewer {
   position: relative;
-  /* width: 1318px; */
-  width: calc(100% - 10px);
-  height: 800px;
-  overflow: hidden;
-  border:5px solid green;
-}
-
-#tiling-viewer img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%; /* 이미지의 최대 너비를 부모 요소의 너비로 설정합니다. */
+  height: 85vh; /* 이미지의 높이를 자동으로 조정하여 가로세로 비율을 유지합니다. */
 }
 
 .rbc-container {
-  /* height:100vh; */
-  overflow: hidden;
+  height:100vh;
 }
 
 .btn-container {
