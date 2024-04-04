@@ -1409,3 +1409,41 @@ ul.normalItems li div span:last-child {
     width: 74%!important;
     min-height: 68vh;
 }
+
+.leftWhole ul li {
+    display: inline-block;
+    max-width: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.leftWhole ul li img {
+    max-width: 100px;
+}
+
+.leftWhole {
+    display: inline-block;
+    width: 50%;
+    background: #252629;
+    padding: 10px;
+}
+.leftWhole ul p {
+    text-align: left;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.wrap-whole {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 38px;
+}
+.leftWhole ul {
+    text-align: left;
+    min-height: 150px;
+}
+
+.imgContent {
+    width: 95%;
+    display: inline-block;
+}

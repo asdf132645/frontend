@@ -1,59 +1,86 @@
 <template>
-  <div>
-    <div ref="imageContainer" class="image-container" >
-      <img class="img"
-           ref='imgRef'
-           :src="getImageUrl()"
-           :style="{ width: imageWidth + 'px', height: imageHeight + 'px' }"
-           @wheel.prevent="zoomImage"
-           @click="handleMouseClick"
-           />
-      <div
-          v-if="dragging"
-          class="resize-overlay"
-          :style="{ left: dragStartX + 'px', top: dragStartY + 'px', width: dragWidth + 'px', height: dragHeight + 'px' }"
-          @dragover="handleDragOver"
-          @drop="handleDrop">
-        <div
-            class="resize-handle top-left"
-            draggable="true"
-            @dragstart="handleDragStart"
-            @drag="handleDragTopLeft"></div>
-<!--        <div-->
-<!--            class="resize-handle top-right"-->
-<!--            draggable="true"-->
-<!--            @dragstart="handleDragStart"-->
-<!--            @drag="handleDragTopRight"></div>-->
-<!--        <div-->
-<!--            class="resize-handle bottom-left"-->
-<!--            draggable="true"-->
-<!--            @dragstart="handleDragStart"-->
-<!--            @drag="handleDragBottomLeft"></div>-->
-<!--        <div-->
-<!--            class="resize-handle bottom-right"-->
-<!--            draggable="true"-->
-<!--            @dragstart="handleDragStart"-->
-<!--            @drag="handleDragBottomRight"></div>-->
-      </div>
-      <button @click="zoomIn">Zoom In</button>
-      <button @click="zoomOut">Zoom Out</button>
+  <div class="wbcMenu">
+    <ul>
+      <li @click="pageGo('/databaseWhole')">WHOLE</li>
+      <li class="onRight" @click="pageGo('/databaseBm')">BMCELL</li>
+      <!--      <li @click="pageGo('/report')">REPORT</li>-->
+      <li>LIS-CBC</li>
+    </ul>
+    <div class="wbcMenuBottom">
+      <button @click="moveWbc('up')">
+        <font-awesome-icon :icon="['fas', 'circle-up']"/>
+      </button>
+      <button @click="moveWbc('down')">
+        <font-awesome-icon :icon="['fas', 'circle-down']"/>
+      </button>
     </div>
-    <LeftImgList/>
+  </div>
+  <div class="imgContent">
+    <div class="wrap-whole">
+      <div ref="imageContainer" class="image-container">
+        <img class="img"
+             ref='imgRef'
+             :src="getImageUrl()"
+             :style="{ width: imageWidth + 'px', height: imageHeight + 'px' }"
+             @wheel.prevent="zoomImage"
+             @click="handleMouseClick"
+        />
+        <div
+            v-if="dragging"
+            class="resize-overlay"
+            :style="{ left: dragStartX + 'px', top: dragStartY + 'px', width: dragWidth + 'px', height: dragHeight + 'px' }"
+            @dragover="handleDragOver"
+            @drop="handleDrop">
+          <div
+              class="resize-handle top-left"
+              draggable="true"
+              @dragstart="handleDragStart"
+              @drag="handleDragTopLeft"></div>
+          <!--        <div-->
+          <!--            class="resize-handle top-right"-->
+          <!--            draggable="true"-->
+          <!--            @dragstart="handleDragStart"-->
+          <!--            @drag="handleDragTopRight"></div>-->
+          <!--        <div-->
+          <!--            class="resize-handle bottom-left"-->
+          <!--            draggable="true"-->
+          <!--            @dragstart="handleDragStart"-->
+          <!--            @drag="handleDragBottomLeft"></div>-->
+          <!--        <div-->
+          <!--            class="resize-handle bottom-right"-->
+          <!--            draggable="true"-->
+          <!--            @dragstart="handleDragStart"-->
+          <!--            @drag="handleDragBottomRight"></div>-->
+        </div>
+        <button @click="zoomIn">Zoom In</button>
+        <button @click="zoomOut">Zoom Out</button>
+      </div>
+      <div class="leftWhole">
+        <LeftImgList/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { useStore } from "vuex";
+import {computed, ref, onMounted} from "vue";
+import {useStore} from "vuex";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
+import router from "@/router";
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const store = useStore();
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const selectItemWbc = sessionStorage.getItem("selectItemWbc");
+const wbcInfo = ref<any>(null);
+const originalDbData = sessionStorage.getItem("originalDbData");
+const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
+const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 
-const imgRef = ref<HTMLElement | null>(null); 
+
+const imgRef = ref<HTMLElement | null>(null);
 const imageContainer = ref<HTMLElement | null>(null);
 const imageWidth = ref(700);
 const imageHeight = ref(700);
@@ -64,6 +91,10 @@ const dragWidth = ref(150); // 초기 너비
 const dragHeight = ref(150); // 초기 높이
 const minDragWidth = 50; // 최소 너비
 const minDragHeight = 50; // 최소 높이
+
+const pageGo = (path: string) => {
+  router.push(path)
+}
 
 const getImageUrl = () => {
   const slotId = selectItems.value?.slotId || "";
@@ -200,12 +231,62 @@ const handleDragBottomRight = (event: DragEvent) => {
   }
 };
 
-
-
 onMounted(() => {
   imgRef.value = document.querySelector('.img'); // Assign imgRef ref
   // imageContainer.value = document.querySelector('.image-container');
 });
+
+const moveWbc = async (direction: any) => {
+  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
+  const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
+
+  if (nextDbIndex >= 0 && nextDbIndex < originalDb.value.length) {
+    selectItems.value = originalDb.value[nextDbIndex];
+    sessionStorage.setItem('selectItems', JSON.stringify(originalDb.value[nextDbIndex]));
+    sessionStorage.setItem('selectItemWbc', JSON.stringify(originalDb.value[nextDbIndex].wbcInfo.wbcInfo));
+    sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
+    clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
+    await updateUpDown(originalDb.value[nextDbIndex].wbcInfo.wbcInfo[0], originalDb.value[nextDbIndex]);
+  }
+}
+
+const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
+  wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
+      ? selectItemsNewVal.wbcInfoAfter
+      : selectItemsNewVal.wbcInfo.wbcInfo[0];
+  await initData('');
+};
+
+async function initData(newData: any) {
+  wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
+  if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
+    wbcInfo.value = selectItems.value.wbcInfoAfter;
+    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+      const title = item.title;
+      const correspondingItem = selectItems.value.wbcInfoAfter.find((afterItem: any) => afterItem.title === title);
+      if (correspondingItem) {
+        correspondingItem.images.forEach((item: any) => {
+          item.title = title;
+
+        })
+      }
+    });
+  } else {
+    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
+    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+      item.images.forEach((itemImg: any) => {
+        itemImg.title = item.title;
+      })
+    });
+  }
+  if (newData !== '') {
+    selectItems.value.wbcInfo.wbcInfo[0] = selectItems.value.wbcInfo.wbcInfo[0].filter((item: any) => {
+      return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
+    });
+  }
+}
+
+
 </script>
 
 <style scoped>

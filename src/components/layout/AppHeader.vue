@@ -4,7 +4,7 @@
       <!-- 왼쪽 메인 메뉴 -->
       <div class='appHeaderLeft' v-if="!appHeaderLeftHidden">
         <div class="borderLine">
-          <span class="greenColor">U</span>MID
+          <span class="greenColor">U</span>IMD
         </div>
         <!--        <div class='toggleHeadBtn'>-->
         <!--          <span></span>-->
