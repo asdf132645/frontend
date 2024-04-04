@@ -115,6 +115,7 @@ const alertMessage = ref('');
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  beforeChang();
 })
 
 

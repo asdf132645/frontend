@@ -64,6 +64,7 @@
 main.content {
     background: #25313b;
     padding: 10px;
+    height: 89vh;
 }
 
 .toggleHeadBtn {
@@ -569,14 +570,41 @@ span.proSpan {
     height: 100%;
     top: 0;
     left: 0;
-    background: #172b4d;
+    background: #252629;
 }
 
 .loginContent {
     margin: 0 auto;
     margin-top: 13%;
 }
+.joinContent input {
+    box-shadow: none!important;
+    width: 90%;
+    display: inline-block;
+    max-width: 250px;
+}
 
+.joinContent li {
+    text-align: center;
+}
+
+.joinContent li span {
+    min-width: 150px;
+    display: inline-block;
+    text-align: left;
+}
+
+.joinContent select {
+    box-shadow: none;
+    width: 91%;
+    display: inline-block;
+    max-width: 271px;
+    height: 35px;
+    margin-top: 3px;
+}
+
+.joinContent ul {
+}
 p.loginTitle {
     color: #fff;
     font-size: 3rem;
@@ -1446,4 +1474,9 @@ ul.normalItems li div span:last-child {
 .imgContent {
     width: 95%;
     display: inline-block;
+}
+
+.loginFooter input {
+    width: 5%;
+    vertical-align: middle;
 }

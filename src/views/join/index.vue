@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <p>CREATE ACCOUNT</p>
+  <div class="joinContent">
+    <p class="mt2 mb2">CREATE ACCOUNT</p>
     <div>
       <ul>
         <li>
@@ -32,7 +32,7 @@
         </li>
       </ul>
       <div class='joinBtn'>
-        <button type="button" @click='createAccount'>create account</button>
+        <button class="defaultBtn" type="button" @click='createAccount'>create account</button>
       </div>
     </div>
   </div>
@@ -57,7 +57,7 @@ const idVal = ref('');
 const nameVal = ref('');
 const passwordRepeat = ref('');
 const password = ref('');
-const userType = ref('');
+const userType = ref('admin');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
