@@ -16,9 +16,9 @@
     </div>
   </div>
 
-  <div class="wbcContent">
+  <div class="wbcCotent">
     <div class="databaseWbcRight">
-      <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" />
+      <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable' />
     </div>
     
     <div class="databaseWbcLeft">
@@ -58,3 +58,7 @@ const initData = () => {
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
 }
 </script>
+
+<style lang="css" scoped>
+@import "@/assets/css/rbc/rbcImageList.css";
+</style>

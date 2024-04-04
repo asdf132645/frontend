@@ -23,8 +23,9 @@ const hideAlert = () => {
 <style scoped>
 .alert {
   position: absolute;
-  top: 5%;
+  top: 50%;
   left: 50%;
+  z-index: 999;
   padding: 25px;
   border: 1px solid #414141;
   border-radius: 5px;

@@ -1,0 +1,13 @@
+@media (min-width: 1920px) {
+
+    .item-image {
+        cursor: pointer;
+        width: 150px;
+        margin: 5px;
+    }
+      
+    .selected {
+        border: 6px solid rgb(106, 153, 194);
+    }
+
+}

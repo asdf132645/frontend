@@ -159,16 +159,5 @@ async function moveImage(targetSection: string, imgName: string) {
 </script>
 
 
-
-<style scoped>
-.item-image {
-  cursor: pointer;
-  width: 150px;
-  margin: 5px;
-}
-
-.selected {
-  border: 6px solid rgb(106, 153, 194);
-}
-
+<style lang="css" scoped src="@/assets/css/rbc/malaria.css">
 </style>

@@ -77,6 +77,14 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+  <Confirm
+    v-if="showConfirm"
+    :is-visible="showConfirm"
+    :type="confirmType"
+    :message="confirmMessage"
+    @hide="hideConfirm"
+    @okConfirm="handleOkConfirm"
+  />
 </template>
 
 <script setup lang="ts">
@@ -89,6 +97,7 @@ import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constant";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
+import Confirm from "@/components/commonUi/Confirm.vue";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
@@ -112,6 +121,11 @@ const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const showConfirm = ref(false);
+const confirmType = ref('');
+const confirmMessage = ref('');
+const userConfirmed = ref(false);
+
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
@@ -151,11 +165,17 @@ const toggleLockEvent = () => {
 }
 
 const commitConfirmed = () => {
-  const userConfirmed = confirm(messages.IDS_MSG_CONFIRM_SLIDE);
+  showConfirm.value = true;
+  confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
+}
 
-  if (userConfirmed) {
-    onCommit()
-  }
+const handleOkConfirm = () => {
+  onCommit();
+  showConfirm.value = false;
+}
+
+const hideConfirm = () => {
+  showConfirm.value = false;
 }
 
 const onCommit = async () => {

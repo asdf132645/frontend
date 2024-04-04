@@ -21,7 +21,7 @@
         <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
       </div>
       <div class="rbcDiv">
-        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" />
+        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report' />
       </div>
       <div class="reportDetail">
         <div class="reportTitle">

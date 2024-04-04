@@ -32,10 +32,11 @@
           <ul class="degree">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-              <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
+              <li  v-if="classInfo.classId !== '01' || category.categoryId === '05'">
                 <font-awesome-icon
                     :icon="['fas', 'circle']"
                     v-for="degreeIndex in 4" :key="degreeIndex"
+                    @click="onClickDegree(classInfo, degreeIndex-1)"
                     :class="{
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
@@ -43,13 +44,15 @@
                 />
               </li>
               <li v-else>
-                <div v-if="classInfo.degree === '0'">
+                <div  v-if="classInfo.degree === '0'">
                   <font-awesome-icon
+                      @click="onClickDegreeNormal(category, classInfo)"
                       :icon="['fas', 'circle']"
                   />
                 </div>
                 <div v-else>
                   <font-awesome-icon
+                      @click="onClickDegreeNormal(category, classInfo)"
                       :icon="['fas', 'circle']"
                       class="degreeActive"
                   />
@@ -59,7 +62,28 @@
           </ul>
         </div>
       </template>
+      
     </template>
+       <!--orders-->
+        <div>
+          <div class="categories">
+            <ul class="categoryNm">
+              <li>Others</li>
+            </ul>
+            <ul class="classNm">
+              <li>Platelets</li>
+              <li>Malaria</li>
+            </ul>
+            <ul class="degree">
+              <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+              <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
+            </ul>
+          </div>
+    </div>
+    <div v-if="type !== 'report'" class="beforeAfterBtn">
+      <button @click="beforeChange">Before</button>
+      <button @click="afterChange">After</button>
+    </div>
   </div>
   <Alert
       v-if="showAlert"
@@ -69,6 +93,15 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :type="confirmType"
+      :message="confirmMessage"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+  
 </template>
 
 <script setup lang="ts">
@@ -78,11 +111,12 @@ import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
+import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constant";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 
-const props = defineProps(['rbcInfo', 'selectItems', 'originalDb']);
+const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type']);
 const rbcInfoChangeVal = ref([]);
 const pltCount = ref('');
 const malariaCount = ref('');
@@ -95,24 +129,74 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
+const showConfirm = ref(false);
+const confirmType = ref('');
+const confirmMessage = ref('');
+const userConfirmed = ref(false);
+
 const userModuleDataGet = computed(() => store.state.userModule);
 
 
 onMounted(() => {
-    pltCount.value = props.selectItems?.pltCount;
-    malariaCount.value = props.selectItems?.malariaCount;
-    memo.value = props.selectItems.rbcMemo;
-    console.log(props.rbcInfo)
+  console.log('props.selectItems',props.selectItems)
+  pltCount.value = props.selectItems?.pltCount;
+  malariaCount.value = props.selectItems?.malariaCount;
+  memo.value = props.selectItems.rbcMemo;
+  console.log(props.rbcInfo);
 });
 
 watch(() => props.rbcInfo, (newItem) => {
+  console.log('newItem')
   rbcInfoChangeVal.value = newItem;
 });
 
 watch(() => props.selectItems, (newItem) => {
+  console.log('watch-props.selectItems')
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
 });
+
+const beforeChange = () => {
+  rbcInfoChangeVal.value = props.rbcInfo;
+}
+
+const afterChange = () => {
+  const selectItemRbcAfter = sessionStorage.getItem('selectItemRbcAfter')
+  console.log('selectItemRbcAfter', selectItemRbcAfter)
+  rbcInfoChangeVal.value = JSON.parse(selectItemRbcAfter)
+  console.log('afterchange', rbcInfoChangeVal.value)
+}
+
+const onClickDegree = (classInfo, degreeIndex) => {
+
+  const selectItemRbcAfter = rbcInfoChangeVal.value.map(rbc => {
+    return rbc.classInfo.map(item => {
+      if (item.classNm === classInfo.classNm) {
+        item.degree = String(degreeIndex);
+      }
+      return item;
+    });
+  });
+
+  sessionStorage.setItem('selectItemRbcAfter', JSON.stringify(selectItemRbcAfter));
+
+}
+
+const onClickDegreeNormal = (category, classInfo) => {
+  const selectItemRbcAfter = rbcInfoChangeVal.value.map(rbc => {
+    if (category.categoryNm === rbc.categoryNm) {
+      rbc.classInfo.forEach(item => {
+        if (item.classNm === classInfo.classNm) {
+          item.degree = item.degree === '0' ? '1' : '0';
+        }
+      });
+    }
+    return rbc;
+  });
+  
+  sessionStorage.setItem('selectItemRbcAfter', JSON.stringify(selectItemRbcAfter));
+}
+
 
 const memoOpen = () => {
   memo.value = memo.value !== '' ? memo.value : props.selectItems.rbcMemo;
@@ -155,12 +239,16 @@ const resRunningItem = async (updatedRuningInfo: any) => {
     console.error('Error:', error);
   }
 }
+
+
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
@@ -172,11 +260,17 @@ const hideAlert = () => {
 };
 
 const commitConfirmed = () => {
-  const userConfirmed = confirm(messages.IDS_MSG_CONFIRM_SLIDE);
+  showConfirm.value = true;
+  confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
+}
 
-  if (userConfirmed) {
-    onCommit()
-  }
+const handleOkConfirm = () => {
+  onCommit();
+  showConfirm.value = false;
+}
+
+const hideConfirm = () => {
+  showConfirm.value = false;
 }
 
 const onCommit = async () => {
@@ -195,6 +289,7 @@ const onCommit = async () => {
 
 
 <style scoped>
+
 .table-container {
   display: flex;
   flex-direction: column;
