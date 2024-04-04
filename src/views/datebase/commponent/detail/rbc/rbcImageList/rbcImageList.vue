@@ -118,7 +118,7 @@
 import { defineProps, onMounted, ref, watch } from 'vue';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
-import Malaria from './malaria.vue';
+import malaria from './malaria.vue';
 import html2canvas from 'html2canvas'
 import axios from 'axios';
 

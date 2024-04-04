@@ -60,5 +60,4 @@ const initData = () => {
 </script>
 
 <style lang="css" scoped>
-@import "@/assets/css/rbc/rbcImageList.css";
 </style>
