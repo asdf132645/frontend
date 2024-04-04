@@ -176,118 +176,119 @@ let selectedY = ref(0);
 let imageElement = ref(null);
 let croppedImage = ref(null);
 
+
 onMounted(() => {
   initElement();
 });
 
-const initElement = async () => {
-  try {
 
-  } catch (err) {
+const initElement = async () => {
+
+  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+  try {
+    const tilesInfo = await fetchTilesInfo(folderPath);
+    
+    viewer = OpenSeadragon({
+      id: "tiling-viewer",
+      animationTime: 0.4,
+      navigatorSizeRatio: 0.25,
+      showNavigator: true,
+      sequenceMode: true,
+      defaultZoomLevel: 1,
+      prefixUrl:`${apiBaseUrl}/folders?folderPath=C:/workspace/uimdFe/images/`,
+      tileSources: tilesInfo,
+      gestureSettingsMouse: { clickToZoom: false },
+    });
+
+    new OpenSeadragon.MouseTracker({
+      element: viewer.element,
+      moveHandler: function(event: any) {
+        if (!isMagnifyingGlass.value) {
+          if (document.getElementById('magCanvas') !== null) {
+            viewer.element.removeChild(document.getElementById('magCanvas'))
+          }
+          return;
+        }
+
+        const { canvas } = viewer.drawer
+        const ctx = canvas.getContext("2d")
+
+        if (document.getElementById('magCanvas') !== null) {
+          viewer.element.removeChild(document.getElementById('magCanvas'))
+        }
+
+        const magWidth = 200
+        const magHeight = 200
+        const zoomLevel = 5
+
+        const magCanvas = document.createElement('canvas')
+        magCanvas.id = 'magCanvas'
+        magCanvas.style.position = 'absolute'
+        magCanvas.style.left = (event.position.x - (magWidth / 2)) + 'px'
+        magCanvas.style.top = (event.position.y - (magHeight / 2)) + 'px'
+        magCanvas.style.border = '1px solid'
+        magCanvas.style.borderRadius = '50%'
+        magCanvas.style.width = magWidth + 'px'
+        magCanvas.style.height = magHeight + 'px'
+        magCanvas.style.zIndex = '0'
+
+        viewer.element.appendChild(magCanvas)
+        const magCtx = magCanvas.getContext('2d')
+        magCtx?.drawImage(canvas,
+          event.position.x - ((magWidth / 2) / 4),
+          event.position.y - ((magHeight / 2) / 4),
+          magWidth,
+          magHeight,
+          0,
+          0,
+          magWidth * zoomLevel,
+          (magHeight / 2) * zoomLevel
+        )
+        if (event.position.y <= 0 || event.position.x <= 0) {
+          magCanvas.style.visibility = 'hidden'
+        } else {
+          magCanvas.style.visibility = 'visible'
+        }
+      },
+    });
+
+} catch (err) {
     console.error('Error:', err);
   }
 };
 
-// scale
-const handleWheel = (event) => {
-  event.preventDefault(); // 기본 스크롤 동작 막기
+const fetchTilesInfo = async (folderPath: string) => {
+  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+  const response = await fetch(url);
 
-  // 휠 이벤트에서 deltaY 값을 가져와서 확대/축소
-  const delta = Math.sign(event.deltaY);
-  if (delta > 0) {
-    scale.value = Math.max(minScale.value, scale.value - 0.1); // 축소
-  } else {
-    scale.value = Math.min(maxScale.value, scale.value + 0.1); // 확대
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
   }
-}
 
-// moving image
-// 처음에 클릭할 때
-const onMouseDown = (event) => {
-  if (event.target.tagName === 'IMG') {
-    // startX: 드래그 시작할 때 마우스 X 좌표 (브라우저 기준)
-    // startY: 드래그 시작할 때 마우스 Y 좌표 (브라우저 기준)
-    // offsetX, offSetY => 이미지의 새로운 위치 계산
-    // imageX, imageY => 이미지의 X, Y 좌표
-    // event.clientX, event.clientY: 마우스 이벤트가 발생한 X, Y 좌표
-    startX.value = event.clientX - imageX.value;
-    startY.value = event.clientY - imageY.value;
-    dragging.value = true;
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+  const fileNames = await response.json();
+  const tilesInfo = [];
 
-    console.log('>이미지 안의< 마우스 좌표1')
-    console.log(event.offsetX, event.offsetY);
+  for (const fileName of fileNames) {
+    if (fileName.endsWith('_files')) {
+      tilesInfo.push({
+        Image: {
+          xmlns: "http://schemas.microsoft.com/deepzoom/2009",
+          Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
+          Format: "jpg",
+          Overlap: "1",
+          TileSize: "1024",
+          Size: {
+            Height: "3295",
+            Width: "3349"
+          }
+        }
+      });
+    }
   }
+
+  return tilesInfo;
 };
 
-const onMouseMove = (event) => {
-  if (dragging.value) {
-    const newX = event.clientX - startX.value;
-    const newY = event.clientY - startY.value;
-    imageX.value = newX;
-    imageY.value = newY;
-
-    selectedWidth.value = Math.abs(newX - startX.value);
-    selectedHeight.value = Math.abs(newY - startY.value);
-    selectedX.value = Math.min(newX, startX.value);
-    selectedY.value = Math.min(newY, startY.value);
-
-    console.log('>이미지 안의< 마우스 좌표')
-    console.log(event.offsetX, event.offsetY);
-
-  }
-};
-
-const onMouseUp = () => {
-  if (dragging.value) {
-    // 드래그가 종료되면 선택된 영역에 대한 처리를 수행합니다.
-    // 예를 들어, 이미지 객체를 생성하거나 선택된 영역의 정보를 기반으로 다른 작업을 수행할 수 있습니다.
-    // createCroppedImage();
-  }
-  // 마우스 업 이벤트가 발생하면 드래그 동작을 종료합니다.
-  dragging.value = false;
-  // 마우스 이동 이벤트와 마우스 업 이벤트의 감시를 해제합니다.
-  window.removeEventListener('mousemove', onMouseMove);
-  window.removeEventListener('mouseup', onMouseUp);
-};
-
-
-// const createCroppedImage = () => {
-//   const canvas = document.createElement('canvas');
-//   const ctx = canvas.getContext('2d')
-//   canvas.width = selectedWidth.value;
-//   canvas.height = selectedHeight.value;
-  
-//   // 이미지 객체에서 선택된 영역을 Canvas에 그립니다.
-//   ctx.drawImage(
-//     imageElement.value, // 이미지 객체
-//     selectedX.value, // 선택된 영역의 X 좌표
-//     selectedY.value, // 선택된 영역의 Y 좌표
-//     selectedWidth.value, // 선택된 영역의 너비
-//     selectedHeight.value, // 선택된 영역의 높이
-//     0, // Canvas에 그려질 X 좌표
-//     0, // Canvas에 그려질 Y 좌표
-//     selectedWidth.value, // Canvas에 그려질 너비
-//     selectedHeight.value // Canvas에 그려질 높이
-//   );
-
-//   // Canvas를 이미지로 변환하여 croppedImage 변수에 할당합니다.
-//   const dataURL = canvas.toDataURL('image/jpeg');
-//   croppedImage.value = new Image();
-//   console.log(croppedImage.value);
-//   croppedImage.value.src = dataURL;
-
-
-// }
-
-
-
-// 이미지 받아오는 용
-function getImageUrl (): string {
-  const folderPath = `${pbiaRootPath}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
-  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=RBC_Image_0.jpg`
-}
 
 // Low magnification and Malaria tab
 const toggleViewer = (viewerType: string) => {
