@@ -1,16 +1,13 @@
 <template>
-  <div>
-    <br>
-    <br>
-    <br>
-    <div>
-      <select v-model="userSearchOption">
+  <div class="settingContainer">
+    <div class="searchUserContainer">
+      <select v-model="userSearchOption" class="userSearch">
         <option v-for="option in userSearchOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <input type="text" v-model="inputText">
       <button @click="onSearch">Search</button>
     </div>
-    <table>
+    <table class="table">
       <thead>
         <tr>
           <th>No.</th>
@@ -113,3 +110,7 @@ const getAllUsers = async() => {
 }
 
 </script>
+
+<style lang="css" scoped>
+@import "@/assets/css/setting/loginAccount.css";
+</style>

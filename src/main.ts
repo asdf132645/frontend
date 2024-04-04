@@ -7,6 +7,7 @@ import './assets/css/global.css';
 import './assets/css/layout.css';
 import './assets/css/icoBtn.css';
 import './assets/css/rbc/rbcImageList.css';
+import './assets/css/setting/loginAccount.css';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 // @ts-ignore
