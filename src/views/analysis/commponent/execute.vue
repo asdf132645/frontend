@@ -33,6 +33,14 @@
       </div>
     </div>
   </div>
+  <Alert
+    v-if="showAlert"
+    :is-visible="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @hide="hideAlert"
+    @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -44,6 +52,7 @@ import {messages} from '@/common/defines/constFile/constant';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const instance = getCurrentInstance();
 
@@ -72,6 +81,10 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 //내부 변수
 const showStopBtn = ref(false);
 const btnStatus = ref('');
+
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
@@ -150,7 +163,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     }
     // 실행 여부 체크
     if (isRunningState.value) {
-      alert(messages.IDS_ERROR_ALREADY_RUNNING);
+      showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
       if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true) {
@@ -207,7 +220,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
   } else {
     // 장비 중단
     if (!isRunningState.value) {
-      alert(messages.IDS_ERROR_STOP_PROCESS);
+      showSuccessAlert(messages.IDS_ERROR_STOP_PROCESS);
       return;
     }
     store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: true});
@@ -217,6 +230,17 @@ const toggleStartStop = (action: 'start' | 'stop') => {
   }
 
 };
+
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
+};
+
 
 const sendInit = () => { // 장비 초기화 진행
   tcpReq().embedStatus.init.reqUserId = userId.value;

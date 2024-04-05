@@ -1,31 +1,33 @@
 <template>
-  <ul class="">
-    <p>Partical Image</p>
-    <li v-for="(image, index) in paImages" :key="index">
-      <img :src="getImageUrls(image, 'particle')" alt="Partical Image" >
-      <!-- <img :src="getPaImageUrl(image)" alt="Partical Image"> -->
-    </li>
-  </ul>
-  <ul class="">
-    <p>Ideal Zone</p>
-    <li v-for="(image, index) in idealZoneImages" :key="index" style="width:100px">
-      <img :src="getImageUrls(image, 'idealZone')">
-    </li>
-  </ul>
-  <ul class="">
-    <div>
-      <p>Ideal stitch</p>
-      <li v-for="(image, index) in idealStitchImages" :key="index">
-        <img :src="getImageUrls(image, 'idealStitch')">
+  <div class="leftImgList">
+    <ul class="">
+      <p>Partical Image</p>
+      <li v-for="(image, index) in paImages" :key="index">
+        <img :src="getImageUrls(image, 'particle')" alt="Partical Image" >
+        <!-- <img :src="getPaImageUrl(image)" alt="Partical Image"> -->
       </li>
-    </div>
-    <div>
-      <p>Megakaryocyte</p>
-      <li v-for="(image, index) in megaImages" :key="index">
-        <img :src="getImageUrls(image, 'mega')">
+    </ul>
+    <ul class="">
+      <p>Ideal Zone</p>
+      <li v-for="(image, index) in idealZoneImages" :key="index" style="width:100px">
+        <img :src="getImageUrls(image, 'idealZone')">
       </li>
-    </div>
-  </ul>
+    </ul>
+    <ul class="">
+      <div>
+        <p>Ideal stitch</p>
+        <li v-for="(image, index) in idealStitchImages" :key="index">
+          <img :src="getImageUrls(image, 'idealStitch')">
+        </li>
+      </div>
+      <div>
+        <p>Megakaryocyte</p>
+        <li v-for="(image, index) in megaImages" :key="index">
+          <img :src="getImageUrls(image, 'mega')">
+        </li>
+      </div>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -83,16 +85,17 @@ const getImgUrl = () => {
       .then(response => {
         switch (item) {
           case '02_Particle_Image':
-            paImages.value = response.data;
+            paImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
             break;
           case '03_Cell_Ideal_Image':
-            idealZoneImages.value = response.data;
+            console.log(response.data);
+            idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
             break;
           case '04_Cell_Ideal_Stitch_Image':
-            idealStitchImages.value = response.data;
+            idealStitchImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
             break;
           case '05_Mega_Image':
-            megaImages.value = response.data;
+            megaImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
           default:
             break;
         }

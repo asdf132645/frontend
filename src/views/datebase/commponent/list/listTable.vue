@@ -137,6 +137,14 @@
   </Modal>
   <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
          :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+  <Alert
+    v-if="showAlert"
+    :is-visible="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @hide="hideAlert"
+    @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup>
@@ -146,9 +154,11 @@ import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constFile/constant";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import Alert from "@/components/commonUi/Alert.vue";
+import {messages} from "@/common/defines/constFile/constant";
+
 
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
@@ -160,6 +170,10 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const projectType = ref('');
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+
 
 const contextMenu = ref({
   visible: false,
@@ -205,6 +219,8 @@ watchEffect(async () => {
     }
   }
 });
+
+
 const printClose = () => {
   printOnOff.value = false;
 }
@@ -250,7 +266,7 @@ onUnmounted(() => {
 });
 const rowRightClick = (item, event) => {
   if (props.dbData.filter(item => item.checked).length === 0) {
-    alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+    showSuccessAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
   rightClickItem.value = item;
@@ -280,6 +296,17 @@ const handleIntersection = (entries, observer) => {
   });
 };
 
+const showSuccessAlert = (message) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
+};
+
+
 const selectItem = (item) => {
   // 부모로 전달
   if (!item) {
@@ -300,7 +327,7 @@ const rowDbClick = (item) => {
   const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
   // 스토어 사용 못하는 이유 -> 새로고침 등 여러가지 행동에 데이터가 날라가면 안되서 세션스토리지 사용
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
+  // sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
@@ -355,7 +382,7 @@ const dbDataSet = async () => {
       runingInfoDtoItems: [localDbData[indexToUpdate]]
     })
     if (response) {
-      alert('success');
+      showSuccessAlert('success');
       emits('initData');
       closeLayer();
     } else {
@@ -381,7 +408,7 @@ const deleteRow = async () => {
   try {
     const selectedItems = props.dbData.filter(item => item.checked);
     if (selectedItems.length === 0) {
-      alert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+      showSuccessAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
       return;
     }
 
@@ -389,7 +416,7 @@ const deleteRow = async () => {
     const response = await deleteRunningApi(idsToDelete);
 
     if (response.success) {
-      alert('Items deleted successfully');
+      showSuccessAlert('Items deleted successfully');
       emits('initData'); // 데이터 다시 불러오기
       resetContextMenu();
     } else {

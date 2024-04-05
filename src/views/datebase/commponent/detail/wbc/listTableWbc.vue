@@ -299,7 +299,6 @@ const getWbcHotKeyClasses = async () => {
       if (result?.data) {
         const data = result.data;
         wbcHotKeysItems.value = data;
-        console.log(JSON.stringify(wbcHotKeysItems.value));
       }
     }
   } catch (e) {

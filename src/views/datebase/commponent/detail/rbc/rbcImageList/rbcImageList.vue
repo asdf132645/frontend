@@ -97,7 +97,7 @@
     </div>
     <div class="tiling-viewer-box">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else ref="tilingViewerLayer" id="tiling-viewer" ></div>
+      <div v-else-if="activeTab !== 'malaria' && tileExist === true" ref="tilingViewerLayer" id="tiling-viewer" ></div>
     
     </div>
   </div>
@@ -112,8 +112,7 @@ import {dirName} from "@/common/defines/constFile/settings";
 import Malaria from './Malaria.vue';
 import {useStore} from "vuex";
 
-const props = defineProps(['selectItems']);
-const store = useStore();
+const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type']);const store = useStore();
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
@@ -143,18 +142,33 @@ const viewBoxWH = ref(150);
 const tilingViewerLayer = ref(null);
 let isFirstDragEvent = ref(true);
 let dragForCrop = ref({});
-
+let tileExist = ref(true);
 
 onMounted(() => {
-  initElement();
+  // initElement();
 });
+
+watch(() => props.rbcInfo, (newItem) => {
+  initElement();
+
+});
+
 
 
 const initElement = async () => {
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
+
     const tilesInfo = await fetchTilesInfo(folderPath);
-    
+    // if (tilesInfo.length === 0) {
+    //   console.log('없음');
+    //   tileExist.value = false;
+    // } else {
+    //   tileExist.value = true;
+    // }
+    if (tilesInfo.length === 0) console.log('없음')
+    tilesInfo.length === 0 ? tileExist.value = false : tileExist.value = true;
+
     viewer = OpenSeadragon({
       id: "tiling-viewer",
       animationTime: 0.4,
@@ -166,7 +180,6 @@ const initElement = async () => {
       tileSources: tilesInfo,
       gestureSettingsMouse: { clickToZoom: false },
     });
-
     
     new OpenSeadragon.MouseTracker({
       element: viewer.element,
@@ -220,7 +233,6 @@ const initElement = async () => {
       },
     });
 
-
 } catch (err) {
     console.error('Error:', err);
   }
@@ -228,7 +240,6 @@ const initElement = async () => {
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
-  console.log(url)
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -397,8 +408,6 @@ const onClickRuler = (ruler: any) => {
 }
 
 const drawRuler = (ruler: any) => {
-  console.log("drawruler")
-  
   const divtilingViewer = document.getElementById('tiling-viewer')
 
   if (divtilingViewer !== null) {
@@ -415,7 +424,6 @@ const drawRuler = (ruler: any) => {
     // element.style.background = 'rgba(0, 0, 0, 0.3)'
     element.style.width = rulerPos.value.width + 'px'
     element.style.height = rulerPos.value.height + 'px'
-    console.log(rulerPos)
 
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
@@ -435,7 +443,6 @@ const drawRuler = (ruler: any) => {
     let isPress = false
 
     element.onmousedown = function(e) {
-      console.log('onmousedown')
       rulerPos.value.prevPosX = e.clientX
       rulerPos.value.prevPosY = e.clientY
 
@@ -451,14 +458,10 @@ const drawRuler = (ruler: any) => {
     }
 
     element.onmouseup = function() {
-      console.log('onmouseup')
-
       isPress = false
     }
 
     element.onwheel = function(e) {
-      console.log('onwheel')
-
       if (e.deltaY < 0) {
         if (rulerSize.value < 20) {
           refreshRuler(element, ++rulerSize.value, ruler)
@@ -475,8 +478,6 @@ const drawRuler = (ruler: any) => {
 
     if (parent) {
       parent.onmousemove = function(e) {
-        console.log('onmousemove')
-        console.log(e)
         if (!isPress) {
           return
         }
@@ -681,7 +682,7 @@ span {
 
 #tiling-viewer {
   position: relative;
-  max-width: 100%; /* 이미지의 최대 너비를 부모 요소의 너비로 설정합니다. */
+  width: 100%; /* 이미지의 최대 너비를 부모 요소의 너비로 설정합니다. */
   height: 85vh; /* 이미지의 높이를 자동으로 조정하여 가로세로 비율을 유지합니다. */
 }
 

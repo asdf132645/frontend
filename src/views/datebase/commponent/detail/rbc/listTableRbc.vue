@@ -22,7 +22,7 @@
     </div>
     
     <div class="databaseWbcLeft">
-      <RbcImageList :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb"/>
+      <RbcImageList :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
   </div>
 </template>
@@ -57,7 +57,7 @@ const pageGo = (path: string) => {
   router.push(path)
 }
 
-const moveRbc =  async (direction: any) => {
+const moveRbc = (direction: any) => {
   const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
   const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
   
@@ -67,14 +67,15 @@ const moveRbc =  async (direction: any) => {
     sessionStorage.setItem('selectItemRbc', JSON.stringify(originalDb.value[nextDbIndex].rbcInfo));
     sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
     clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
-    await updateUpDown(originalDb.value[nextDbIndex].rbcInfo, originalDb.value[nextDbIndex]);
+    updateUpDown(originalDb.value[nextDbIndex].rbcInfo, originalDb.value[nextDbIndex]);
   }
 }
 
-const updateUpDown = async (selectRbc: any, selectItemsNewVal: any) => {
+const updateUpDown = (selectRbc: any, selectItemsNewVal: any) => {
   rbcInfo.value = selectItemsNewVal.rbcInfoAfter && selectItemsNewVal.rbcInfoAfter.length !== 0
       ? selectItemsNewVal.rbcInfoAfter
       : selectItemsNewVal.rbcInfo;
+  initData();
 }
 
 

@@ -23,6 +23,14 @@
       </div>
     </div>
   </div>
+    <Alert
+    v-if="showAlert"
+    :is-visible="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @hide="hideAlert"
+    @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -34,11 +42,17 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import {useEventBus} from "@/eventBus/eventBus";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
+import Alert from "@/components/commonUi/Alert.vue";
+
 // 스토어
 const store = useStore();
 const password = ref('');
 const idVal = ref('');
 const instance = getCurrentInstance();
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+
 
 const goJoinPage = () => {
   router.push('/user/join');
@@ -53,7 +67,7 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
-      alert('login successful.');
+      showSuccessAlert('login successful.');
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
       await document.documentElement.requestFullscreen();
@@ -64,11 +78,22 @@ const loginUser = async () => {
       });
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
     }else{
-      alert('Login failed.');
+      showSuccessAlert('Login failed.');
     }
   } catch (e) {
-    alert('server Err.')
+    showSuccessAlert('server Err.')
     console.log(e);
   }
 }
+
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
+};
+
 </script>

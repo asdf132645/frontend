@@ -71,8 +71,8 @@ const fetchTilesInfo = async (folderPath: string) => {
           Overlap: "1",
           TileSize: "1024",
           Size: {
-            Height: "3295",
-            Width: "3349"
+            Width: "2354",
+            Height: "3295"
           }
         }
       });
@@ -88,8 +88,8 @@ const fetchTilesInfo = async (folderPath: string) => {
 
 #tiling-viewer {
   position: relative;
-  max-width: 100%; 
-  height: 85vh;
+  width: 100%;
+  height: 100vh;
 }
 
 </style>

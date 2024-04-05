@@ -64,7 +64,10 @@
 main.content {
     background: #25313b;
     padding: 10px;
-    height: 89vh;
+    height: 92vh;
+    /* 바디 세로 스크롤 방지*/
+    position: fixed;
+    width:100%;
 }
 
 .toggleHeadBtn {
@@ -1224,12 +1227,12 @@ select.selectSizeTitle {
 
 .wbcMenu::before {
     content: "";
-    height: 91%;
+    height: 95%;
     background: #252629;
-    position: absolute;
+    position: fixed;
     top: 80px;
     left: 0;
-    width: 131px;
+    width: 135px;
 }
 
 .wbcMenu ul {
@@ -1465,8 +1468,9 @@ ul.normalItems li div span:last-child {
 }
 .wrap-whole {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     margin-left: 38px;
+    height:90vh;
 }
 .leftWhole ul {
     text-align: left;
@@ -1481,4 +1485,19 @@ ul.normalItems li div span:last-child {
 .loginFooter input {
     width: 5%;
     vertical-align: middle;
+}
+
+.leftImgList {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.leftImgList ul {
+    list-style: none;
+    margin: 15px;
+    padding: 0;
+    flex: 1;
+    overflow-y: auto;
 }

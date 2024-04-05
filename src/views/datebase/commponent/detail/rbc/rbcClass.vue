@@ -81,8 +81,8 @@
           </div>
     </div>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
-      <button @click="beforeChange">Before</button>
-      <button @click="afterChange">After</button>
+      <button @click="beforeChange" :class={clicked:isBefore}>Before</button>
+      <button @click="afterChange" :class={clicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -135,6 +135,7 @@ const confirmMessage = ref('');
 const userConfirmed = ref(false);
 const userModuleDataGet = computed(() => store.state.userModule);
 const isBefore = ref(false);
+const selectedRbc = sessionStorage.getItem("selectItemRbc");
 
 
 
@@ -142,14 +143,9 @@ onMounted(() => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems.rbcMemo;
-  const rbcValue = sessionStorage.getItem('selectItemRbc')
-  console.log('rbcValue')
-  console.log(rbcValue)
-  rbcInfoChangeVal.value = JSON.parse(rbcValue);
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  console.log(newItem)
   rbcInfoChangeVal.value = newItem;
 });
 
@@ -159,9 +155,8 @@ watch(() => props.selectItems, (newItem) => {
 });
 
 const beforeChange = () => {
-  console.log(props.selectItems.rbcInfo)
   isBefore.value = true;
-  rbcInfoChangeVal.value = props.selectItems.rbcInfo;
+  rbcInfoChangeVal.value = JSON.parse(selectedItem).rbcInfo
 }
 
 const afterChange = () => {
@@ -171,6 +166,10 @@ const afterChange = () => {
 
 
 const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
+  if (isBefore.value) {
+    return;
+  }
+  
   const rbcInfoAfter = rbcInfoChangeVal.value.map(rbc => {
     return rbc.classInfo.map(item => {
       if (item.classNm === classInfo.classNm && category.categoryNm === rbc.categoryNm) {
@@ -194,11 +193,14 @@ const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
     })
   };
 
-  // const 
+  const rbcAfter = props.selectItems.rbcInfo.map((rbcItem, index) => {
+    return {
+      ...rbcItem,
+      classInfo: rbcInfoAfter[index]
+    };
+  })
 
-
-
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoAfter));
+  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcAfter));
   sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
 };
 
@@ -306,5 +308,9 @@ const onCommit = async () => {
   flex: 1;
   padding-right: 20px;
   text-align: left;
+}
+
+.clicked {
+  color:red;
 }
 </style>

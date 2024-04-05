@@ -32,8 +32,6 @@
             @drag="handleDragTopLeft">
         </div>
       </div>
-      <button @click="zoomIn">Zoom In</button>
-      <button @click="zoomOut">Zoom Out</button>
     </div>
     <div class="leftWhole">
       <LeftImgList/>
@@ -308,12 +306,10 @@ async function initData(newData: any) {
 }
 
 .image-container {
-  max-height: 700px;
-  max-width: 700px;
   overflow: hidden;
   position: relative;
-  width: 700px;
-  height: 700px;
+  width: 40%;
+  height: 100vh;
 }
 
 .img {

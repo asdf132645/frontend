@@ -104,6 +104,14 @@
 
     </template>
   </Modal>
+  <Alert
+    v-if="showAlert"
+    :is-visible="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @hide="hideAlert"
+    @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -115,6 +123,7 @@ import Modal from '@/components/commonUi/modal.vue';
 import {messages} from "@/common/defines/constFile/constant";
 import {sendOilPrimeWebSocket, sendSettingInfoWebSocket} from "@/common/lib/sendWebSocket/common";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -153,6 +162,9 @@ const noRouterPush = ref(false);
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
 let isAralrmInterver = null;
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 
 // 현재 날짜를 계산하는 computed 속성
 const formattedDate = computed(() => {
@@ -221,6 +233,17 @@ watch([runInfo.value], async (newVals: any) => {
   }
 
 });
+
+
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
+};
 
 
 const isActive = (path: string) => {
@@ -303,7 +326,7 @@ const closeLayer = (val: boolean) => {
 };
 
 const onReset = () => {
-  alert(messages.IDS_MSG_SUCCESS);
+  showSuccessAlert(messages.IDS_MSG_SUCCESS);
   getPercent();
   sendSettingInfoWebSocket('Y', String(oilCount.value), userId.value, isNsNbIntegration.value);
 }
