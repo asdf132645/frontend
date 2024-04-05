@@ -109,7 +109,7 @@ import { defineProps, onMounted, ref, watch, computed} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
-import Malaria from './malaria.vue';
+import Malaria from './Malaria.vue';
 import {useStore} from "vuex";
 
 const props = defineProps(['selectItems']);
