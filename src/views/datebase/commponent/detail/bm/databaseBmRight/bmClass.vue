@@ -124,7 +124,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  wbcInfoChangeVal.value = newItem.filter((item: any) => !titleArr.includes(item.title));
+  // afterChang();
 });
 
 const startDrag = (index: any, event: any) => {

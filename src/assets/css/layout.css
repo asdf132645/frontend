@@ -91,7 +91,9 @@ main.content {
     background: #2d3d4a;
     padding-left: 16px;
 }
-
+.bmclass .categories {
+    justify-content: flex-start;
+}
 .small-icon-menu {
     display: inline-block;
     width: 53%;
