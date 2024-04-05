@@ -28,7 +28,7 @@ import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
-import {messages} from '@/common/defines/constFile/constant';
+import {messages} from '@/common/defines/constFile/constantMessageText';
 import {
   getCellImgApi,
   getNormalRangeApi,
@@ -154,12 +154,12 @@ onMounted(async () => {
 // });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
-    const parsedData = JSON.parse(data);
+    const parsedData = JSON.parse(data.trim());
     if (parsedData.bufferData === 'err') {
       // alert('활성화된 TCP 클라이언트 연결 없음');
       return
     }
-    const parseDataWarp = JSON.parse(parsedData.bufferData); // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
+    const parseDataWarp = parsedData.bufferData; // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {

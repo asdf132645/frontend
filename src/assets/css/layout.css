@@ -91,6 +91,21 @@ main.content {
     background: #2d3d4a;
     padding-left: 16px;
 }
+
+.topClintInfo ul li {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 17px;
+    font-size: 0.8rem;
+}
+
+.topClintInfo ul {
+    text-align: left;
+    margin-left: 47px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 10px;
+}
 .bmclass .categories {
     justify-content: flex-start;
 }

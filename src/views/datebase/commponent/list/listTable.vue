@@ -146,7 +146,7 @@ import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constFile/constant";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 

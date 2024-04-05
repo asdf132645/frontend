@@ -112,7 +112,7 @@ import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {messages} from "@/common/defines/constFile/constant";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 

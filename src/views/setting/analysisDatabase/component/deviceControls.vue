@@ -29,7 +29,7 @@
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from "@/common/defines/constFile/constant";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 import {onCameraResetWebSocket, onGripperOpenWebSocket} from "@/common/lib/sendWebSocket/common";
 
 const showAlert = ref(false);

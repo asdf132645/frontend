@@ -235,11 +235,6 @@ const calcRbcDegree = (rbcInfos: any) => {
 
           const setDegree = (value: any) => (rbcClass.degree = value);
 
-          console.log('percent')
-          console.log(percent)
-          console.log('degreeStandard')
-          console.log(degreeStandard)
-
           // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');
           // 1

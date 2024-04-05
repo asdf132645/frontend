@@ -40,7 +40,7 @@ import {ref, getCurrentInstance, computed, watch, onMounted, nextTick} from "vue
 
 import {useStore} from "vuex";
 import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
-import {messages} from '@/common/defines/constFile/constant';
+import {messages} from '@/common/defines/constFile/constantMessageText';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";

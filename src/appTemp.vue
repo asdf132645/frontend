@@ -27,7 +27,7 @@ import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, wbcInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
-import {messages} from '@/common/defines/constFile/constant';
+import {messages} from '@/common/defines/constFile/constantMessageText';
 import {
   getCellImgApi,
   getNormalRangeApi,
