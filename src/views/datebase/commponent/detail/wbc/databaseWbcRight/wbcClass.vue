@@ -91,7 +91,7 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
-import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
+import {basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
@@ -129,15 +129,16 @@ const userConfirmed = ref(false);
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  beforeChang();
 })
-
+// basicWbcArr
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  wbcInfoChangeVal.value = newItem.filter((item: any) => !titleArr.includes(item.title));
+  //
 });
 
 const startDrag = (index: any, event: any) => {
@@ -235,14 +236,39 @@ const resRunningItem = async (updatedRuningInfo: any) => {
   }
 }
 
+const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => item.name === a.name);
+    const nameB = basicWbcArr.findIndex((item: any) => item.name === b.name);
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  return newSortArr;
+};
+
+
 const beforeChang = () => {
-  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
+  const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
+  const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
+
+  wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
+
 }
 
 const afterChang = () => {
-  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  const wbcInfo = props.selectItems.wbcInfoAfter;
+  const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
+
+  wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 }
 
 async function updateOriginalDb() {
