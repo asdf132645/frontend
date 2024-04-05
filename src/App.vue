@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
 });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
-    const parsedData = JSON.parse(data.trim());
+    const parsedData = JSON.parse(data.trim().replace(/'/g, "\""));
     if (parsedData.bufferData === 'err') {
       // alert('활성화된 TCP 클라이언트 연결 없음');
       return
