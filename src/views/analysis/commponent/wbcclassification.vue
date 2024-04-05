@@ -67,6 +67,7 @@ import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
+const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
 const siteCd = ref('');
 
@@ -92,6 +93,7 @@ const testType = ref<string>("");
 const totalCount = ref<string>("");
 const maxWbcCount = ref<string>('');
 const slideProceeding = ref('0');
+
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
     const sysInfo = newVal[0].sysInfo;
@@ -117,15 +119,14 @@ watch(
     {deep: true}
 );
 
-const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
+const updateDataArray = async (newSlotInfo: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
-
   if (Array.isArray(slotArray.wbcInfo)) {
-    testType.value = slotArray.wbcInfo[0].testType;
-    if(!slotArray.wbcInfo[commonDataGet.value.slideProceeding]){
+    testType.value = slotArray?.wbcInfo[0]?.testType;
+    if(!slotArray.wbcInfo[slotIndex.value]){
       return
     }
-    const wbcInfoArray = [slotArray.wbcInfo[commonDataGet.value.slideProceeding].wbcInfo];
+    const wbcInfoArray = [slotArray.wbcInfo[slotIndex.value].wbcInfo];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicWbcArr];
     dspBfClassList.value = dspWbcClassList.value.flat();
 
@@ -153,7 +154,7 @@ const updateDataArray = async (newSlotInfo: WbcInfo[]) => {
     }
   }
   await updatePercentages();
-
+  // console.log('?!@!@')
   await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {

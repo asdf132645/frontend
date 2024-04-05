@@ -115,6 +115,7 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
 const commonDataGet = computed(() => store.state.commonModule);
+const slotIndex = computed(() => store.state.commonModule.slotIndex);
 
 
 watch([runningInfoModule.value], (newVal: any) => {
@@ -158,10 +159,10 @@ const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
 
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;
-    if(!slotArray.rbcInfo[commonDataGet.value.slideProceeding]){
+    if(!slotArray.rbcInfo[slotIndex.value]){
       return
     }
-    const wbcInfoArray = [slotArray.rbcInfo[commonDataGet.value.slideProceeding].rbcInfo];
+    const wbcInfoArray = [slotArray.rbcInfo[slotIndex.value].rbcInfo];
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
 
     //최종으로 슬라이드 정보를 업데이트

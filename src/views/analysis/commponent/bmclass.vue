@@ -93,6 +93,8 @@ const testType = ref<string>("");
 const totalCount = ref<string>("");
 const maxWbcCount = ref<string>('');
 const slideProceeding = ref('0');
+const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
+
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
     const sysInfo = newVal[0].sysInfo;
@@ -122,11 +124,11 @@ const updateDataArray = async (newSlotInfo: BmInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
 
   if (Array.isArray(slotArray.wbcInfo)) {
-    testType.value = slotArray.wbcInfo[0].testType;
-    if(!slotArray.wbcInfo[commonDataGet.value.slideProceeding]){
+    testType.value = slotArray?.wbcInfo[0]?.testType;
+    if(!slotArray.wbcInfo[slotIndex.value]){
       return
     }
-    const wbcInfoArray = [slotArray.wbcInfo[commonDataGet.value.slideProceeding].bmInfo];
+    const wbcInfoArray = [slotArray.wbcInfo[slotIndex.value].bmInfo];
     dspBmClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicBmClassList];
     dspBfClassList.value = dspBmClassList.value.flat();
 
