@@ -133,15 +133,19 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userConfirmed = ref(false);
-
 const userModuleDataGet = computed(() => store.state.userModule);
+const isBefore = ref(false);
+
 
 
 onMounted(() => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems.rbcMemo;
-  rbcInfoChangeVal.value = props.rbcInfo;
+  const rbcValue = sessionStorage.getItem('selectItemRbc')
+  console.log('rbcValue')
+  console.log(rbcValue)
+  rbcInfoChangeVal.value = JSON.parse(rbcValue);
 });
 
 watch(() => props.rbcInfo, (newItem) => {
@@ -156,10 +160,12 @@ watch(() => props.selectItems, (newItem) => {
 
 const beforeChange = () => {
   console.log(props.selectItems.rbcInfo)
+  isBefore.value = true;
   rbcInfoChangeVal.value = props.selectItems.rbcInfo;
 }
 
 const afterChange = () => {
+  isBefore.value = false;
   rbcInfoChangeVal.value = props.rbcInfo;
 }
 
@@ -187,6 +193,10 @@ const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
       };
     })
   };
+
+  // const 
+
+
 
   sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoAfter));
   sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
