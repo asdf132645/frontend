@@ -1,6 +1,6 @@
 <template>
   <img v-if="type !== 'report'"
-       :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
+       :src="barcodeImg"/>
   <div class="mt2 mb2">
     <h3 class="wbcClassInfoLeft">WBC Classification</h3>
     <ul class="leftWbcInfo">
@@ -106,7 +106,8 @@ const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
-const pbiaRootPath = commonDataGet.value.pbiaRootPath;
+const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
+const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
 const memoModal = ref(false);
@@ -130,6 +131,7 @@ onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   beforeChang();
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
 })
 // basicWbcArr
 
@@ -138,7 +140,10 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  //
+  memo.value = props.selectItems.memo;
+  nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  beforeChang();
 });
 
 const startDrag = (index: any, event: any) => {
