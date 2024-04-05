@@ -1,7 +1,6 @@
 <template>
   <!-- malaria -->
   <div>
-    <div class="malaria">Malaria</div>
     <div @drop="onDrop('malaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
       <img
         v-for="(malaria, index) in malariaList"

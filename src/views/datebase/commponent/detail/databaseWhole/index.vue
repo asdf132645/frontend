@@ -17,48 +17,28 @@
   </div>
   <div class="imgContent">
     <div class="wrap-whole">
-      <div ref="imageContainer" class="image-container">
-        <img class="img"
-             ref='imgRef'
-             :src="getImageUrl()"
-             :style="{ width: imageWidth + 'px', height: imageHeight + 'px' }"
-             @wheel.prevent="zoomImage"
-             @click="handleMouseClick"
-        />
+    <div ref="imageContainer" class="image-container" >
+      <TilingViewer />
+      <div
+          v-if="dragging"
+          class="resize-overlay"
+          :style="{ left: dragStartX + 'px', top: dragStartY + 'px', width: dragWidth + 'px', height: dragHeight + 'px' }"
+          @dragover="handleDragOver"
+          @drop="handleDrop">
         <div
-            v-if="dragging"
-            class="resize-overlay"
-            :style="{ left: dragStartX + 'px', top: dragStartY + 'px', width: dragWidth + 'px', height: dragHeight + 'px' }"
-            @dragover="handleDragOver"
-            @drop="handleDrop">
-          <div
-              class="resize-handle top-left"
-              draggable="true"
-              @dragstart="handleDragStart"
-              @drag="handleDragTopLeft"></div>
-          <!--        <div-->
-          <!--            class="resize-handle top-right"-->
-          <!--            draggable="true"-->
-          <!--            @dragstart="handleDragStart"-->
-          <!--            @drag="handleDragTopRight"></div>-->
-          <!--        <div-->
-          <!--            class="resize-handle bottom-left"-->
-          <!--            draggable="true"-->
-          <!--            @dragstart="handleDragStart"-->
-          <!--            @drag="handleDragBottomLeft"></div>-->
-          <!--        <div-->
-          <!--            class="resize-handle bottom-right"-->
-          <!--            draggable="true"-->
-          <!--            @dragstart="handleDragStart"-->
-          <!--            @drag="handleDragBottomRight"></div>-->
+            class="resize-handle top-left"
+            draggable="true"
+            @dragstart="handleDragStart"
+            @drag="handleDragTopLeft">
         </div>
-        <button @click="zoomIn">Zoom In</button>
-        <button @click="zoomOut">Zoom Out</button>
       </div>
-      <div class="leftWhole">
-        <LeftImgList/>
-      </div>
+      <button @click="zoomIn">Zoom In</button>
+      <button @click="zoomOut">Zoom Out</button>
     </div>
+    <div class="leftWhole">
+      <LeftImgList/>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -66,6 +46,7 @@
 import {computed, ref, onMounted} from "vue";
 import {useStore} from "vuex";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
+import TilingViewer from './tilingViewer.vue';
 import router from "@/router";
 
 const selectItemsData = sessionStorage.getItem("selectItems");

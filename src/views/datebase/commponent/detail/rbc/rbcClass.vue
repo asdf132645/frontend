@@ -36,7 +36,7 @@
                 <font-awesome-icon
                     :icon="['fas', 'circle']"
                     v-for="degreeIndex in 4" :key="degreeIndex"
-                    @click="onClickDegree(classInfo, degreeIndex-1)"
+                    @click="onClickDegree(category, classInfo, degreeIndex-1, false)"
                     :class="{
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
@@ -46,13 +46,13 @@
               <li v-else>
                 <div  v-if="classInfo.degree === '0'">
                   <font-awesome-icon
-                      @click="onClickDegreeNormal(category, classInfo)"
+                      @click="onClickDegree(category, classInfo, '0', true)"
                       :icon="['fas', 'circle']"
                   />
                 </div>
                 <div v-else>
                   <font-awesome-icon
-                      @click="onClickDegreeNormal(category, classInfo)"
+                      @click="onClickDegree(category, classInfo, '1', true) "
                       :icon="['fas', 'circle']"
                       class="degreeActive"
                   />
@@ -133,69 +133,75 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userConfirmed = ref(false);
-
 const userModuleDataGet = computed(() => store.state.userModule);
+const isBefore = ref(false);
+
 
 
 onMounted(() => {
-  console.log('props.selectItems',props.selectItems)
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems.rbcMemo;
-  console.log(props.rbcInfo);
+  const rbcValue = sessionStorage.getItem('selectItemRbc')
+  console.log('rbcValue')
+  console.log(rbcValue)
+  rbcInfoChangeVal.value = JSON.parse(rbcValue);
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  console.log('newItem')
+  console.log(newItem)
   rbcInfoChangeVal.value = newItem;
 });
 
 watch(() => props.selectItems, (newItem) => {
-  console.log('watch-props.selectItems')
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
 });
 
 const beforeChange = () => {
-  rbcInfoChangeVal.value = props.rbcInfo;
+  console.log(props.selectItems.rbcInfo)
+  isBefore.value = true;
+  rbcInfoChangeVal.value = props.selectItems.rbcInfo;
 }
 
 const afterChange = () => {
-  const selectItemRbcAfter = sessionStorage.getItem('selectItemRbcAfter')
-  console.log('selectItemRbcAfter', selectItemRbcAfter)
-  rbcInfoChangeVal.value = JSON.parse(selectItemRbcAfter)
-  console.log('afterchange', rbcInfoChangeVal.value)
+  isBefore.value = false;
+  rbcInfoChangeVal.value = props.rbcInfo;
 }
 
-const onClickDegree = (classInfo, degreeIndex) => {
 
-  const selectItemRbcAfter = rbcInfoChangeVal.value.map(rbc => {
+const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
+  const rbcInfoAfter = rbcInfoChangeVal.value.map(rbc => {
     return rbc.classInfo.map(item => {
-      if (item.classNm === classInfo.classNm) {
-        item.degree = String(degreeIndex);
+      if (item.classNm === classInfo.classNm && category.categoryNm === rbc.categoryNm) {
+        if (isNormal) {
+          item.degree = String(Number(item.degree) === 0 ? 1 : 0);
+        } else {
+          item.degree = String(degreeIndex);
+        }
       }
       return item;
     });
   });
 
-  sessionStorage.setItem('selectItemRbcAfter', JSON.stringify(selectItemRbcAfter));
+  const updatedSelectItems = {
+    ...props.selectItems,
+    rbcInfoAfter: props.selectItems.rbcInfo.map((rbcItem, index) => {
+      return {
+        ...rbcItem,
+        classInfo: rbcInfoAfter[index]
+      };
+    })
+  };
 
-}
+  // const 
 
-const onClickDegreeNormal = (category, classInfo) => {
-  const selectItemRbcAfter = rbcInfoChangeVal.value.map(rbc => {
-    if (category.categoryNm === rbc.categoryNm) {
-      rbc.classInfo.forEach(item => {
-        if (item.classNm === classInfo.classNm) {
-          item.degree = item.degree === '0' ? '1' : '0';
-        }
-      });
-    }
-    return rbc;
-  });
-  
-  sessionStorage.setItem('selectItemRbcAfter', JSON.stringify(selectItemRbcAfter));
-}
+
+
+  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoAfter));
+  sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
+};
+
 
 
 const memoOpen = () => {
