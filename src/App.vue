@@ -64,6 +64,7 @@ let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
+const slotIndex = computed(() => store.state.commonModule.slotIndex);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -142,16 +143,16 @@ onMounted(async () => {
   }
   EventBus.subscribe('messageSent', emitSocketData);
 });
-// onBeforeUnmount(() => {
-//   if (countingInterRunval) {
-//     clearInterval(countingInterRunval);
-//     countingInterRunval = null;
-//   }
-//   if (countingInterStartval) {
-//     clearInterval(countingInterRunval);
-//     countingInterRunval = null;
-//   }
-// });
+onBeforeUnmount(() => {
+  if (countingInterRunval) {
+    clearInterval(countingInterRunval);
+    countingInterRunval = null;
+  }
+  if (countingInterStartval) {
+    clearInterval(countingInterRunval);
+    countingInterRunval = null;
+  }
+});
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
     const parsedData = JSON.parse(data.trim());
@@ -325,7 +326,7 @@ const saveTestHistory = async (params: any) => {
 
     const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-    const processBarcodeId = dbData?.slotInfo[0];
+    const processBarcodeId = dbData?.slotInfo[slotIndex.value];
     const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[0];
     console.log('dbData?.slotInfo', dbData?.slotInfo)
     console.log('completeSlot', completeSlot)
