@@ -28,7 +28,7 @@ import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
-import {messages} from '@/common/defines/constFile/constant';
+import {messages} from '@/common/defines/constFile/constantMessageText';
 import {
   getCellImgApi,
   getNormalRangeApi,
@@ -64,6 +64,7 @@ let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
+const slotIndex = computed(() => store.state.commonModule.slotIndex);
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -135,31 +136,31 @@ onMounted(async () => {
         if (!commonDataGet.value.runningInfoStop) {
           await runInfoPostWebSocket();
         }
-      }, 500);
+      }, 400);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('messageSent', emitSocketData);
 });
-// onBeforeUnmount(() => {
-//   if (countingInterRunval) {
-//     clearInterval(countingInterRunval);
-//     countingInterRunval = null;
-//   }
-//   if (countingInterStartval) {
-//     clearInterval(countingInterRunval);
-//     countingInterRunval = null;
-//   }
-// });
+onBeforeUnmount(() => {
+  if (countingInterRunval) {
+    clearInterval(countingInterRunval);
+    countingInterRunval = null;
+  }
+  if (countingInterStartval) {
+    clearInterval(countingInterRunval);
+    countingInterRunval = null;
+  }
+});
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
-    const parsedData = JSON.parse(data);
+    const parsedData = JSON.parse(data.trim().replace(/'/g, "\""));
     if (parsedData.bufferData === 'err') {
       // alert('활성화된 TCP 클라이언트 연결 없음');
       return
     }
-    const parseDataWarp = JSON.parse(parsedData.bufferData); // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
+    const parseDataWarp = parsedData.bufferData; // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {

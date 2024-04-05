@@ -1,6 +1,6 @@
 <template>
   <img v-if="type !== 'report'"
-       :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
+       :src="barcodeImg"/>
   <div class="mt2 mb2">
     <h3 class="wbcClassInfoLeft">WBC Classification</h3>
     <ul class="leftWbcInfo">
@@ -91,10 +91,10 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
-import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
+import {basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constFile/constant";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
@@ -106,7 +106,8 @@ const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
-const pbiaRootPath = commonDataGet.value.pbiaRootPath;
+const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
+const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
 const memoModal = ref(false);
@@ -129,15 +130,20 @@ const userConfirmed = ref(false);
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  beforeChang();
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
 })
-
+// basicWbcArr
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  wbcInfoChangeVal.value = newItem.filter((item: any) => !titleArr.includes(item.title));
+  memo.value = props.selectItems.memo;
+  nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  beforeChang();
 });
 
 const startDrag = (index: any, event: any) => {
@@ -235,14 +241,39 @@ const resRunningItem = async (updatedRuningInfo: any) => {
   }
 }
 
+const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => item.name === a.name);
+    const nameB = basicWbcArr.findIndex((item: any) => item.name === b.name);
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  return newSortArr;
+};
+
+
 const beforeChang = () => {
-  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
+  const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
+  const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
+
+  wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
+
 }
 
 const afterChang = () => {
-  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  const wbcInfo = props.selectItems.wbcInfoAfter;
+  const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
+
+  wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 }
 
 async function updateOriginalDb() {
