@@ -824,9 +824,11 @@ async function initData(newData: any) {
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      item.images.forEach((itemImg: any) => {
-        itemImg.title = item.title;
-      })
+      if(item.images){
+        item.images.forEach((itemImg: any) => {
+          itemImg.title = item.title;
+        })
+      }
     });
   }
   if (newData !== '') {

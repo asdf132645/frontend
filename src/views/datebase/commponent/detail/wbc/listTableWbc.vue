@@ -24,7 +24,7 @@
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
         <li>{{ selectItems?.patientName }}</li>
-        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }}  {{ selectItems?.cbcAge }}</li>
+        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
         <li>{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
@@ -829,7 +829,7 @@ async function initData(newData: any) {
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if(item.images){
+      if (item.images) {
         item.images.forEach((itemImg: any) => {
           itemImg.title = item.title;
         })
@@ -955,9 +955,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
         wbcInfo.value.forEach((item: any) => {
-          item.images.forEach((itemImg: any) => {
-            itemImg.title = item.title;
-          })
+          if (item.images) {
+            item.images.forEach((itemImg: any) => {
+              itemImg.title = item.title;
+            })
+          }
         });
       } else {
         console.error('이미지 이동 실패:', fileName);
@@ -987,14 +989,14 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
-  if(notWbcAfterSave !== 'notWbcAfterSave'){
+  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트 및 sessionStorage에 저장
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
   }
   sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
-  if(notWbcAfterSave !== 'notWbcAfterSave'){
+  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // originalDb 업데이트
     const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
     if (filteredItems.length > 0) {

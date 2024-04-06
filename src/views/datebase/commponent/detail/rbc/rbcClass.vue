@@ -156,7 +156,7 @@ watch(() => props.selectItems, (newItem) => {
 
 const beforeChange = () => {
   isBefore.value = true;
-  rbcInfoChangeVal.value = JSON.parse(selectedItem).rbcInfo
+  rbcInfoChangeVal.value = JSON.parse(props?.selectItems).rbcInfo
 }
 
 const afterChange = () => {
