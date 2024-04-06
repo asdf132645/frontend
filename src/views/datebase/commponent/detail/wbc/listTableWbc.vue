@@ -24,7 +24,7 @@
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
         <li>{{ selectItems?.patientName }}</li>
-        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }}  {{ selectItems?.cbcAge }}</li>
+        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
         <li>{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
@@ -184,6 +184,7 @@ import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/comm
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -224,12 +225,31 @@ const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
-  getWbcCustomClasses();
+  await getWbcCustomClasses();
+
 });
+const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = wbcInfo.slice(); // 기존 배열 복사
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  // 정렬된 배열을 wbcInfo에 할당
+  wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
+};
+
 
 const getWbcCustomClasses = async () => {
   try {
@@ -829,7 +849,7 @@ async function initData(newData: any) {
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if(item.images){
+      if (item.images.length > 0) {
         item.images.forEach((itemImg: any) => {
           itemImg.title = item.title;
         })
@@ -842,6 +862,7 @@ async function initData(newData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
+  await sortWbcInfo(wbcInfo.value, basicWbcArr);
 }
 
 function onDragOver() {
@@ -955,9 +976,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
         wbcInfo.value.forEach((item: any) => {
-          item.images.forEach((itemImg: any) => {
-            itemImg.title = item.title;
-          })
+          if (item.images.length > 0) {
+            item.images.forEach((itemImg: any) => {
+              itemImg.title = item.title;
+            })
+          }
         });
       } else {
         console.error('이미지 이동 실패:', fileName);
@@ -987,14 +1010,14 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
-  if(notWbcAfterSave !== 'notWbcAfterSave'){
+  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트 및 sessionStorage에 저장
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
   }
   sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
-  if(notWbcAfterSave !== 'notWbcAfterSave'){
+  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // originalDb 업데이트
     const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
     if (filteredItems.length > 0) {

@@ -1,6 +1,6 @@
 <template>
   <img v-if="type !== 'report'"
-       :src="getBarcodeImageUrl('barcode_image.jpg',pbiaRootPath, selectItems.slotId, barcodeImgDir.barcodeDirName)"/>
+       :src="barcodeImg"/>
   <div class="mt2 mb2">
     <h3 class="wbcClassInfoLeft">BM CELL Classification</h3>
     <ul class="leftWbcInfo">
@@ -97,7 +97,7 @@ const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
-const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
+const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const userId = ref('');
 const memo = ref('');
 const memoModal = ref(false);
@@ -112,10 +112,15 @@ const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const barcodeImg = ref('');
+
+
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   beforeChang();
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+
 })
 
 
@@ -124,7 +129,10 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  // afterChang();
+  memo.value = props.selectItems.memo;
+  nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  beforeChang();
 });
 
 const startDrag = (index: any, event: any) => {

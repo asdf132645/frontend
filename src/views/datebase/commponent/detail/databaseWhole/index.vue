@@ -1,7 +1,7 @@
 <template>
   <div class="wbcMenu">
     <ul>
-      <li class="onRight"  @click="pageGo('/databaseWhole')">WHOLE</li>
+      <li class="onRight" @click="pageGo('/databaseWhole')">WHOLE</li>
       <li @click="pageGo('/databaseBm')">BMCELL</li>
       <!--      <li @click="pageGo('/report')">REPORT</li>-->
       <li>LIS-CBC</li>
@@ -17,26 +17,26 @@
   </div>
   <div class="imgContent">
     <div class="wrap-whole">
-    <div ref="imageContainer" class="image-container" >
-      <TilingViewer />
-      <div
-          v-if="dragging"
-          class="resize-overlay"
-          :style="{ left: dragStartX + 'px', top: dragStartY + 'px', width: dragWidth + 'px', height: dragHeight + 'px' }"
-          @dragover="handleDragOver"
-          @drop="handleDrop">
+      <div ref="imageContainer" class="image-container">
+        <TilingViewer/>
         <div
-            class="resize-handle top-left"
-            draggable="true"
-            @dragstart="handleDragStart"
-            @drag="handleDragTopLeft">
+            v-if="dragging"
+            class="resize-overlay"
+            :style="{ left: dragStartX + 'px', top: dragStartY + 'px', width: dragWidth + 'px', height: dragHeight + 'px' }"
+            @dragover="handleDragOver"
+            @drop="handleDrop">
+          <div
+              class="resize-handle top-left"
+              draggable="true"
+              @dragstart="handleDragStart"
+              @drag="handleDragTopLeft">
+          </div>
         </div>
       </div>
+      <div class="leftWhole">
+        <LeftImgList/>
+      </div>
     </div>
-    <div class="leftWhole">
-      <LeftImgList/>
-    </div>
-  </div>
   </div>
 </template>
 
@@ -253,9 +253,11 @@ async function initData(newData: any) {
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      item.images.forEach((itemImg: any) => {
-        itemImg.title = item.title;
-      })
+      if (item.images.length > 0) {
+        item.images.forEach((itemImg: any) => {
+          itemImg.title = item.title;
+        })
+      }
     });
   }
   if (newData !== '') {
