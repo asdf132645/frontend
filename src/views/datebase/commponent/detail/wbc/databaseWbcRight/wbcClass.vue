@@ -245,8 +245,8 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => item.name === a.name);
-    const nameB = basicWbcArr.findIndex((item: any) => item.name === b.name);
+    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
 
     // 이름이 없는 경우는 배열 맨 뒤로 배치
     if (nameA === -1) return 1;
@@ -262,7 +262,7 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
 const beforeChang = () => {
   const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
   const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
-
+  console.log(sortedWbcInfo)
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 
@@ -271,7 +271,7 @@ const beforeChang = () => {
 const afterChang = () => {
   const wbcInfo = props.selectItems.wbcInfoAfter;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
-
+  
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 }

@@ -184,6 +184,7 @@ import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/comm
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -224,12 +225,31 @@ const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
-  getWbcCustomClasses();
+  await getWbcCustomClasses();
+
 });
+const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = wbcInfo.slice(); // 기존 배열 복사
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  // 정렬된 배열을 wbcInfo에 할당
+  wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
+};
+
 
 const getWbcCustomClasses = async () => {
   try {
@@ -842,6 +862,7 @@ async function initData(newData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
+  await sortWbcInfo(wbcInfo.value, basicWbcArr);
 }
 
 function onDragOver() {
