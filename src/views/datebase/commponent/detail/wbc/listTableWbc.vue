@@ -829,7 +829,7 @@ async function initData(newData: any) {
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if (item.images) {
+      if (item.images.length > 0) {
         item.images.forEach((itemImg: any) => {
           itemImg.title = item.title;
         })
@@ -955,7 +955,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
         wbcInfo.value.forEach((item: any) => {
-          if (item.images) {
+          if (item.images.length > 0) {
             item.images.forEach((itemImg: any) => {
               itemImg.title = item.title;
             })
