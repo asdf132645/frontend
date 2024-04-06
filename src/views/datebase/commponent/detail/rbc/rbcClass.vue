@@ -156,7 +156,7 @@ watch(() => props.selectItems, (newItem) => {
 
 const beforeChange = () => {
   isBefore.value = true;
-  rbcInfoChangeVal.value = JSON.parse(selectedItem).rbcInfo
+  rbcInfoChangeVal.value = props.rbcInfo;
 }
 
 const afterChange = () => {
@@ -218,8 +218,6 @@ const memoCancel = () => {
 const memoChange = async () => {
   const updatedRuningInfo = props.originalDb.map((item: any) => {
     if (item.id === props.selectItems.id) {
-      // id가 일치하는 경우 해당 항목의 submit 값을 변경
-      // updatedItem의 내용을 변경
       return {...item, rbcMemo: memo.value};
     }
     return item;

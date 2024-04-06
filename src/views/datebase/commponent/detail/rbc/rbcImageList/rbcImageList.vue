@@ -145,12 +145,11 @@ let dragForCrop = ref({});
 let tileExist = ref(true);
 
 onMounted(() => {
-  // initElement();
+  initElement();
 });
 
 watch(() => props.rbcInfo, (newItem) => {
   initElement();
-
 });
 
 
@@ -160,13 +159,6 @@ const initElement = async () => {
   try {
 
     const tilesInfo = await fetchTilesInfo(folderPath);
-    // if (tilesInfo.length === 0) {
-    //   console.log('없음');
-    //   tileExist.value = false;
-    // } else {
-    //   tileExist.value = true;
-    // }
-    if (tilesInfo.length === 0) console.log('없음')
     tilesInfo.length === 0 ? tileExist.value = false : tileExist.value = true;
 
     viewer = OpenSeadragon({
@@ -508,7 +500,7 @@ const drawRuler = (ruler: any) => {
 
 const refreshRuler = (element, rulerSize, ruler) => {
   if (typeof rulerSize === 'object') {
-    rulerSize = rulerSize.value; // 예를 들어, 객체의 value 속성을 가져와 사용한다고 가정합니다.
+    rulerSize = rulerSize.value;
   }
   if(document.getElementById('rulerTitle') !== null) {
     element.removeChild(document.getElementById('rulerTitle'))
@@ -676,14 +668,14 @@ span {
 }
 
 .tiling-viewer-box {
-  max-width: 100%; /* 부모 요소의 최대 너비를 화면의 너비로 설정합니다. */
-  overflow: hidden; /* 부모 요소를 넘어가는 콘텐츠를 숨깁니다. */
+  max-width: 100%;
+  overflow: hidden;
 }
 
 #tiling-viewer {
   position: relative;
-  width: 100%; /* 이미지의 최대 너비를 부모 요소의 너비로 설정합니다. */
-  height: 85vh; /* 이미지의 높이를 자동으로 조정하여 가로세로 비율을 유지합니다. */
+  width: 100%;
+  height: 85vh;
 }
 
 .rbc-container {

@@ -1516,3 +1516,13 @@ ul.normalItems li div span:last-child {
     flex: 1;
     overflow-y: auto;
 }
+
+.item-image {
+    cursor: pointer;
+    width: 100px;
+    margin: 5px;
+}
+  
+.selected {
+    border: 6px solid rgb(106, 153, 194);
+}

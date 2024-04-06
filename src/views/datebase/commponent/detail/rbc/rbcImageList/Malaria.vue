@@ -156,7 +156,3 @@ async function moveImage(targetSection: string, imgName: string) {
 }
 
 </script>
-
-
-<style lang="css" scoped src="@/assets/css/rbc/malaria.css">
-</style>
