@@ -149,9 +149,9 @@ const updateDataArray = async (newSlotInfo: BmInfo[]) => {
     );
     if (currentSlot) {
       // console.log(currentSlot)
-      // if(currentSlot.wbcCount === '00'){
-      //   return;
-      // }
+      if(currentSlot.wbcCount === '00'){
+        return;
+      }
       await updateCounts(currentSlot);
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
