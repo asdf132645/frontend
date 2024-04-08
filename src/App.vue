@@ -130,13 +130,13 @@ onMounted(async () => {
     if (!commonDataGet.value.firstLoading) {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
-      }, 300);
+      }, 400);
 
       countingInterRunval = setInterval(async () => {
         if (!commonDataGet.value.runningInfoStop) {
           await runInfoPostWebSocket();
         }
-      }, 400);
+      }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
@@ -155,12 +155,15 @@ onBeforeUnmount(() => {
 });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
-    const parsedData = JSON.parse(data.trim().replace(/'/g, "\""));
-    if (parsedData.bufferData === 'err') {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData  = textDecoder.decode(data);
+
+    const parsedData = JSON.parse(stringData);
+    if (parsedData?.bufferData === 'err') {
       // alert('활성화된 TCP 클라이언트 연결 없음');
       return
     }
-    const parseDataWarp = parsedData.bufferData; // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
+    const parseDataWarp = parsedData; // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
@@ -179,7 +182,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0})
+        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
@@ -212,6 +216,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'PAUSE':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         runningInfoBoolen.value = false;
         break;
       case 'RESTART':
@@ -228,6 +233,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         break;
       case 'ERROR_CLEAR':
         console.log('err')
@@ -238,7 +244,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
   } catch (error) {
     console.error(error);
-    // Handle error here
   }
 });
 
