@@ -183,10 +183,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
+        runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
-        await runningInfoCheckStore(parseDataWarp);
         await runningInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
+        await runningInfoCheckStore(parseDataWarp);
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
