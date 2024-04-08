@@ -20,9 +20,6 @@
 import AppHeader from "@/components/layout/AppHeader.vue";
 
 const router = useRouter();
-// homeView 에 역할은 모든 페이지에서 던지는 웹소켓 응답 값을 처리 하는 곳입니다.
-// startSys는 장비를 실행 시키는 tcp 응답 메세시입니다. runInfoGetTcpData 장비실행 여부에 대한 메서드입니다.
-
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
@@ -163,7 +160,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       // alert('활성화된 TCP 클라이언트 연결 없음');
       return
     }
-    const parseDataWarp = parsedData; // 2번 json 으로 감싸는 이유는 잘못된 문자열이 들어와서 한번더 맵핑시키는 것임
+    const parseDataWarp = parsedData; 
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
