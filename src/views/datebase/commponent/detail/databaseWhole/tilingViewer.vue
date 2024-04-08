@@ -20,6 +20,7 @@ const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const store = useStore();
 const tilingViewerLayer = ref(null);
+let viewer:any = null;
 
 onMounted(() => {
   initElement();
