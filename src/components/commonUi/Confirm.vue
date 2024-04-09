@@ -28,8 +28,8 @@ const okConfirm = () => {
 <style scoped>
 .confirm {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 10%;
+  left: 40%;
   z-index: 999;
   padding: 25px;
   border: 1px solid #414141;
