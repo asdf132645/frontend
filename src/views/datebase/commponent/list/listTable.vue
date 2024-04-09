@@ -149,7 +149,17 @@
 
 <script setup>
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {ref, onMounted, watchEffect, defineProps, defineEmits, computed, nextTick, onUnmounted} from 'vue';
+import {
+  ref,
+  onMounted,
+  watchEffect,
+  defineProps,
+  defineEmits,
+  computed,
+  nextTick,
+  onUnmounted,
+  getCurrentInstance
+} from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
@@ -189,6 +199,7 @@ const printOnOff = ref(false);
 const printContent = ref(null);
 const selectItemWbc = ref([]);
 const selectAllCheckbox = ref(false);
+const instance = getCurrentInstance();
 
 
 onMounted(async() => {
@@ -200,8 +211,16 @@ onMounted(async() => {
   } catch (e) {
     console.log(e);
   }
+
+  instance?.appContext.config.globalProperties.$socket.emit('state', {
+    type: 'SEND_DATA',
+    payload: '?!'
+  });
 })
 
+instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => {
+  console.log(data)
+})
 watchEffect(async () => {
   if (props.dbData.length > 0) {
     await nextTick();
