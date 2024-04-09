@@ -133,7 +133,7 @@ onMounted(async () => {
         if (!commonDataGet.value.runningInfoStop) {
           await runInfoPostWebSocket();
         }
-      }, 500);
+      }, 300);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
@@ -160,7 +160,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       // alert('활성화된 TCP 클라이언트 연결 없음');
       return
     }
-    const parseDataWarp = parsedData; 
+    const parseDataWarp = parsedData;
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
@@ -186,9 +186,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'RUNNING_INFO':
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
+        await runningInfoCheckStore(parseDataWarp);
         await runningInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
-        await runningInfoCheckStore(parseDataWarp);
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -302,10 +302,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      // console.log('save start')
-      if (!runningInfoBoolen.value) {
-        return
-      }
       await saveTestHistory(data);
     }
 
