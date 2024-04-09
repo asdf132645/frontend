@@ -38,7 +38,7 @@
     <tr
         v-for="(item, idx) in dbData"
         :key="item.id"
-        :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit' }"
+        :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state }"
         @click="selectItem(item)"
         @dblclick='rowDbClick(item)'
         ref="firstRow"
@@ -131,19 +131,19 @@
         </ul>
       </div>
       <div class="modalBottom">
-        <button @click="dbDataSet">Ok</button>
+        <button @click="dbDataEditSet">Ok</button>
       </div>
     </template>
   </Modal>
   <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
          :selectItemWbc="selectItemWbc" @printClose="printClose"/>
   <Alert
-    v-if="showAlert"
-    :is-visible="showAlert"
-    :type="alertType"
-    :message="alertMessage"
-    @hide="hideAlert"
-    @update:hideAlert="hideAlert"
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
   />
 </template>
 
@@ -168,6 +168,7 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 
 const props = defineProps(['dbData']);
@@ -202,25 +203,24 @@ const selectAllCheckbox = ref(false);
 const instance = getCurrentInstance();
 
 
-onMounted(async() => {
+onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
-   try {
-    
+  try {
+
     userId.value = getStoredUser.id;
     await getRbcDegreeData();
   } catch (e) {
     console.log(e);
   }
-
-  instance?.appContext.config.globalProperties.$socket.emit('state', {
-    type: 'SEND_DATA',
-    payload: '?!'
-  });
+  document.addEventListener('click', handleOutsideClick);
 })
-
-instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => {
+instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
   console.log(data)
+  emits('initData');
 })
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
 watchEffect(async () => {
   if (props.dbData.length > 0) {
     await nextTick();
@@ -277,12 +277,6 @@ const handleOutsideClick = (event) => {
 };
 
 
-onMounted(() => {
-  document.addEventListener('click', handleOutsideClick);
-});
-onUnmounted(() => {
-  document.removeEventListener('click', handleOutsideClick);
-});
 const rowRightClick = (item, event) => {
   if (props.dbData.filter(item => item.checked).length === 0) {
     showSuccessAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
@@ -341,8 +335,19 @@ const selectItem = (item) => {
     selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
 };
+const getUserIp = async (item) => {
+  try {
+    const result = await getUserIpApi();
+    await stateUpdate(item, result.data);
+  } catch (e) {
+    console.log(e)
+  }
+}
+const rowDbClick = async (item) => {
+  if(item.state){
+    return;
+  }
 
-const rowDbClick = (item) => {
   const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
   // 스토어 사용 못하는 이유 -> 새로고침 등 여러가지 행동에 데이터가 날라가면 안되서 세션스토리지 사용
@@ -350,9 +355,10 @@ const rowDbClick = (item) => {
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
-  if(projectType.value !== 'bm'){
+  await getUserIp(item);
+  if (projectType.value !== 'bm') {
     router.push('/databaseWbc')
-  }else{
+  } else {
     router.push('/databaseBm')
   }
 
@@ -369,7 +375,6 @@ const getRbcDegreeData = async () => {
   }
 };
 
-  
 
 const closeLayer = (val) => {
   visible.value = val;
@@ -379,7 +384,7 @@ const onModalOpen = () => {
   //
 };
 
-const dbDataSet = async () => {
+const dbDataEditSet = async () => {
   try {
     const updatedRuningInfo = {
       id: itemObj.value.id,
@@ -404,6 +409,40 @@ const dbDataSet = async () => {
       showSuccessAlert('success');
       emits('initData');
       closeLayer();
+    } else {
+      console.error('백엔드가 디비에 저장 실패함');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+const stateUpdate = async (itemVal, pcIp) => {
+  try {
+    const updatedRuningInfo = {
+      id: itemVal.id,
+      pcIp: pcIp,
+      state: true,
+    };
+
+    const localDbData = [...props.dbData];
+
+    const indexToUpdate = localDbData.findIndex(item => item.id === itemVal.id);
+
+    if (indexToUpdate !== -1) {
+      localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
+    }
+
+    const response = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: [localDbData[indexToUpdate]]
+    })
+    if (response) {
+      await emits('initData');
+      await instance?.appContext.config.globalProperties.$socket.emit('state', {
+        type: 'SEND_DATA',
+        payload: 'refreshDb'
+      });
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -445,7 +484,6 @@ const deleteRow = async () => {
     console.error('Error:', error);
   }
 }
-
 
 
 </script>

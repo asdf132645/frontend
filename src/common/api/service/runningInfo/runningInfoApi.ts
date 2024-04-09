@@ -7,7 +7,7 @@ export const createRunningApi = async (request: { userId: number; runingInfoDtoI
     return httpClient.httpPost(apiConstants.settings.runningInfo.create, request);
 };
 
-export const updateRunningApi = async (request: { userId: number; runingInfoDtoItems: RuningInfo }): Promise<ApiResponse<void>> => {
+export const updateRunningApi = async (request: { userId: number; runingInfoDtoItems: any }): Promise<ApiResponse<void>> => {
     return httpClient.httpPut(apiConstants.settings.runningInfo.update, request, '',true);
 };
 

@@ -20,7 +20,7 @@
 import AppHeader from "@/components/layout/AppHeader.vue";
 
 const router = useRouter();
-import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount} from 'vue';
+import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
 import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
@@ -38,6 +38,7 @@ import {parseDateString} from "@/common/lib/utils/dateUtils";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
 import EventBus from "@/eventBus/eventBus";
+import {getAllUsersApi, getUserApi, getUserIpApi} from "@/common/api/service/user/userApi";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -54,14 +55,14 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
 const reqArr = computed(() => store.state.commonModule);
-const sendReqArr = ref([]);
 const runningInfoBoolen = ref(false);
-const resFlag = ref(true);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
+const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
+const clientIpAddress = ref('');
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
@@ -71,6 +72,23 @@ const slotIndex = computed(() => store.state.commonModule.slotIndex);
 //   }
 // });
 
+instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
+  console.log(ip)
+  await getUserIp(ip)
+})
+
+const getUserIp = async (ip: string) => {
+  try {
+    const result = await getUserIpApi();
+    if (result.data === ip) {
+      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
+    } else {
+      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 watch(reqArr.value, async (newVal, oldVal) => {
   // 새 값이 특정 조건을 충족하는지 확인
@@ -113,6 +131,12 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   cellImgGet(newUserId.id);
   userId.value = newUserId.id;
 });
+onBeforeMount(() => {
+  instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
+    type: 'SEND_DATA',
+    payload: process.env.MAIN_API
+  });
+});
 
 onMounted(async () => {
   await nextTick();
@@ -120,6 +144,7 @@ onMounted(async () => {
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
+
   if (!commonDataGet.value.isRunningState) {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
@@ -153,7 +178,7 @@ onBeforeUnmount(() => {
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
     const textDecoder = new TextDecoder('utf-8');
-    const stringData  = textDecoder.decode(data);
+    const stringData = textDecoder.decode(data);
 
     const parsedData = JSON.parse(stringData);
     if (parsedData?.bufferData === 'err') {

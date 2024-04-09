@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -185,6 +185,7 @@ import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSy
 import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -225,6 +226,10 @@ const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
+const instance = getCurrentInstance();
+const getDB = ref({})
+
+
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -232,6 +237,43 @@ onMounted(async () => {
   await getWbcCustomClasses();
 
 });
+onUnmounted(() => {
+  stateUpdate();
+})
+
+const stateUpdate = async () => {
+  try {
+    const updatedRuningInfo = {
+      pcIp: '',
+      state: false,
+    };
+
+    const localDbData = [...originalDb.value];
+
+    const indexToUpdate = localDbData.findIndex(item => item.id === selectItems.value.id);
+
+    if (indexToUpdate !== -1) {
+      localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
+    }
+
+    const response = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: [localDbData[indexToUpdate]]
+    })
+    if (response) {
+      await initData('');
+      await instance?.appContext.config.globalProperties.$socket.emit('state', {
+        type: 'SEND_DATA',
+        payload: 'refreshDb'
+      });
+    } else {
+      console.error('백엔드가 디비에 저장 실패함');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
 

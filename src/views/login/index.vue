@@ -35,13 +35,11 @@
 
 <script setup lang="ts">
 import {getCurrentInstance, ref} from "vue";
-import {login} from "@/common/api/service/user/userApi";
+import {getUserApi, getUserIpApi, login, putUserDataApi} from "@/common/api/service/user/userApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
-import {useEventBus} from "@/eventBus/eventBus";
-import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Alert from "@/components/commonUi/Alert.vue";
 
 // 스토어
@@ -67,21 +65,57 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
-      showSuccessAlert('login successful.');
-      await store.dispatch('userModule/setUserAction', result.data?.user);
-      sessionStorage.setItem('user', JSON.stringify(result.data.user));
-      await document.documentElement.requestFullscreen();
-      await router.push('/');
-      instance?.appContext.config.globalProperties.$socket.emit('message', {
-        type: 'SEND_DATA',
-        payload: tcpReq().embedStatus.sysInfo
-      });
-      await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+
+      await getUserIp(result?.data?.user.userId);
     }else{
       showSuccessAlert('Login failed.');
     }
   } catch (e) {
     showSuccessAlert('server Err.')
+    console.log(e);
+  }
+}
+const getUserIp = async (userId: string) => {
+  try {
+    const result = await getUserIpApi();
+    if(result.data === process.env.MAIN_API){
+      await updateAccount(userId, String(process.env.MAIN_API), 'main');
+      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
+    }else{
+      await updateAccount(userId, result.data, 'viewer');
+      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
+    }
+  } catch (e) {
+
+  }
+}
+
+const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) => {
+  const user = {
+    userId: userId,
+    password: '',
+    name: '',
+    employeeNo: '',
+    userType: '',
+    subscriptionDate: '',
+    state: '',
+    pcIp: pcIp,
+    viewerCheck: viewerCheck,
+  }
+
+  try {
+    const result = await putUserDataApi(user);
+    if (result) {
+      showSuccessAlert('login successful.');
+      await store.dispatch('userModule/setUserAction', result.data?.user);
+      sessionStorage.setItem('user', JSON.stringify(result.data.user));
+      await document.documentElement.requestFullscreen();
+      await router.push('/');
+      await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+    }
+
+  } catch (e) {
+
     console.log(e);
   }
 }

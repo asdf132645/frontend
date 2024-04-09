@@ -21,6 +21,7 @@ export interface CommonState {
     resFlag: boolean;
     firstLoading: boolean;
     slotIndex: number;
+    viewerCheck: string;
 }
 
 interface CommonModule {
@@ -48,6 +49,7 @@ interface CommonModule {
         setResFlag: (state: CommonState, value: boolean) => void;
         setFirstLoading: (state: CommonState, value: boolean) => void;
         setSlotIndex: (state: CommonState, value: number) => void;
+        setViewerCheck: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -76,6 +78,7 @@ export const commonModule: CommonModule = {
         resFlag: true,
         firstLoading: false,
         slotIndex: 0,
+        viewerCheck: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -143,6 +146,9 @@ export const commonModule: CommonModule = {
         },
         setSlotIndex(state: CommonState, value: number): void {
             state.slotIndex = value;
+        },
+        setViewerCheck(state: CommonState, value: string): void{
+            state.viewerCheck = value;
         },
     },
     actions: {
@@ -212,6 +218,9 @@ export const commonModule: CommonModule = {
             }
             if(payload.hasOwnProperty('slotIndex')){
                 commit('setSlotIndex', payload.slotIndex);
+            }
+            if(payload.hasOwnProperty('viewerCheck')) {
+                commit('setViewerCheck', payload.viewerCheck);
             }
         },
     },

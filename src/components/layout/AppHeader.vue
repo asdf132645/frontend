@@ -15,7 +15,8 @@
           <span class='icoText'>Setting</span>
         </router-link>
 
-        <router-link to="/" :class='{ "leftActive": isActive("/analysis") || route.path === "/" }'>
+        <router-link to="/" v-if="viewerCheckData === 'main'"
+                     :class='{ "leftActive": isActive("/analysis") || route.path === "/" }'>
           <font-awesome-icon :icon="['fas', 'chart-pie']"
                              style="font-size: 1rem;"
           />
@@ -105,12 +106,12 @@
     </template>
   </Modal>
   <Alert
-    v-if="showAlert"
-    :is-visible="showAlert"
-    :type="alertType"
-    :message="alertMessage"
-    @hide="hideAlert"
-    @update:hideAlert="hideAlert"
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
   />
 </template>
 
@@ -133,6 +134,8 @@ const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
+const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
+
 
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const oilCount = ref(0);
@@ -226,7 +229,7 @@ watch([commonDataGet.value], async (newVals: any) => {
 watch([runInfo.value], async (newVals: any) => {
 
   isAlarm.value = newVals[0].isAlarm;
-  if(newVals[0].isAlarm){
+  if (newVals[0].isAlarm) {
     isAralrmInterver = setTimeout(() => {
       store.dispatch('commonModule/setCommonInfo', {isAlarm: false});
     }, alarmCount.value);

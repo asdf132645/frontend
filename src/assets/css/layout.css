@@ -94,7 +94,9 @@ main.content {
     background: #2d3d4a;
     padding-left: 16px;
 }
-
+.rock {
+    color: #ff6363;
+}
 .topClintInfo ul li {
     display: inline-block;
     vertical-align: middle;

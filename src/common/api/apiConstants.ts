@@ -36,8 +36,16 @@ export const apiConstants = {
             endpoint: 'user',
             requiresToken: false,
         },
+        userIp:{
+            endpoint: 'ip',
+            requiresToken: false,
+        },
         getUsers:{
             endpoint:'user/getUsers',
+            requiresToken: false,
+        },
+        userDataPut: {
+            endpoint:'user/update',
             requiresToken: false,
         }
     },
