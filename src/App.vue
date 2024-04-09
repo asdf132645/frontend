@@ -1,7 +1,7 @@
 <!-- App.vue -->
 <template>
   <div>
-    <AppHeader/>
+    <AppHeader v-if="router.currentRoute.value.path !== '/user/login'"/>
     <main class='content'>
       <router-view/>
     </main>
@@ -61,8 +61,6 @@ let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
-const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
-const clientIpAddress = ref('');
 
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
