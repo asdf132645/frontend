@@ -22,6 +22,7 @@ export interface CommonState {
     firstLoading: boolean;
     slotIndex: number;
     viewerCheck: string;
+    runningArr: any[];
 }
 
 interface CommonModule {
@@ -50,6 +51,7 @@ interface CommonModule {
         setFirstLoading: (state: CommonState, value: boolean) => void;
         setSlotIndex: (state: CommonState, value: number) => void;
         setViewerCheck: (state: CommonState, value: string) => void;
+        setRunningArr: (state: CommonState, value: any[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -79,6 +81,7 @@ export const commonModule: CommonModule = {
         firstLoading: false,
         slotIndex: 0,
         viewerCheck: '',
+        runningArr: [],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -130,7 +133,7 @@ export const commonModule: CommonModule = {
             if (!state.reqArr) {
                 state.reqArr = []; // 배열이 없으면 빈 배열로 초기화
             }
-            state.reqArr.push(value); // 스프레드 문법 대신 push 메서드에 직접 값을 추가합니다.
+            state.reqArr.push(value);
         },
         shiftReqArr(state: CommonState): void {
             state.reqArr.shift();
@@ -149,6 +152,9 @@ export const commonModule: CommonModule = {
         },
         setViewerCheck(state: CommonState, value: string): void{
             state.viewerCheck = value;
+        },
+        setRunningArr(state: CommonState, value: any[]): void {
+            state.runningArr = value;
         },
     },
     actions: {
@@ -221,6 +227,9 @@ export const commonModule: CommonModule = {
             }
             if(payload.hasOwnProperty('viewerCheck')) {
                 commit('setViewerCheck', payload.viewerCheck);
+            }
+            if (payload.hasOwnProperty('runningArr')) {
+                commit('setRunningArr', payload.runningArr);
             }
         },
     },

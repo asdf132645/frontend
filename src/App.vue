@@ -61,7 +61,7 @@ let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
-
+const runningArr = computed(() => store.state.commonModule.runningArr);
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -288,12 +288,36 @@ const emitSocketData = async (payload: object) => {
 };
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
+  const regex = /[1,2,9]/g;
+  const dataICasStat = String(data?.iCasStat);
+  console.log(dataICasStat)
+  // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
 
+  if(dataICasStat === '333333333333'){
+    tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
+    await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+    await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+    await saveTestHistory(data);
+    return;
+  }
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo;
-    if (currentSlot?.stateCd !== '03') {
-      return;
+    const str: any = data?.iCasStat;
+    const iCasStatArr: any = [...str];
+    const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
+    const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
+
+    if (existingIndex !== -1) {
+      const updatedArr = [...runningArr.value]; // 기존 배열 복사
+      updatedArr.splice(existingIndex, 1, data); // 해당 요소를 교체
+      console.log('splice', updatedArr);
+      await store.dispatch('commonModule/setCommonInfo', { runningArr: updatedArr });
+    } else {
+      const newArr = [...runningArr.value, data]; // 새로운 배열에 데이터 추가
+      console.log('newArr', newArr);
+      await store.dispatch('commonModule/setCommonInfo', { runningArr: newArr });
     }
+    // console.log(runningArr.value)
     if (data?.iCasStat.indexOf("2") !== -1) {
       await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
     }
@@ -305,31 +329,13 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq().embedStatus.pause.reqUserId = userId.value;
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
     } else {
-      const str: any = data?.iCasStat;
-      const iCasStatArr: any = [...str];
-      const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
       if (lastCompleteIndex !== slotIndex.value) {
-        console.log('?!@!@')
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-        if (!runningInfoBoolen.value) {
-          return
-        }
-        await saveTestHistory(data);
+        await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")]);
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
       }
-
-    }
-    const regex = /[1,2,9]/g;
-    const dataICasStat = String(data?.iCasStat);
-    // 주문 내역 및 처리 결과 저장 -start
-    // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-    if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-      tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-      await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-      await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      await saveTestHistory(data);
     }
 
   }

@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div :class="[bmIsBoolen ? 'bmclass' : '']">
     <h3 class="titleText">
-      <span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification
+      <template v-if="bmIsBoolen"><span class="greenColor">BM</span> <span class="greenColor">C</span>lassification</template>
+      <template v-else><span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification</template>
     </h3>
     <div>
       <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
