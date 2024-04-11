@@ -93,7 +93,6 @@ const testType = ref<string>("");
 const totalCount = ref<string>("");
 const maxWbcCount = ref<string>('');
 const slideProceeding = ref('0');
-const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
@@ -125,10 +124,10 @@ const updateDataArray = async (newSlotInfo: BmInfo[]) => {
 
   if (Array.isArray(slotArray.wbcInfo)) {
     testType.value = slotArray?.wbcInfo[0]?.testType;
-    if(!slotArray.wbcInfo[slotIndex.value]){
+    if(!slotArray.wbcInfo[0]){
       return
     }
-    const wbcInfoArray = [slotArray.wbcInfo[slotIndex.value].bmInfo];
+    const wbcInfoArray = [slotArray.wbcInfo[0].bmInfo];
     dspBmClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicBmClassList];
     dspBfClassList.value = dspBmClassList.value.flat();
 
@@ -144,11 +143,8 @@ const updateDataArray = async (newSlotInfo: BmInfo[]) => {
     dspBfClassList.value = dspBmClassList.value.flat();
   }
   if (slotArray && slotArray.wbcInfo) {
-    const currentSlot = slotArray.wbcInfo.find(
-        (item: SlotInfo) => item.stateCd === "03"
-    );
-    if (currentSlot) {
-      // console.log(currentSlot)
+    const currentSlot = slotArray.wbcInfo;
+    if (currentSlot && currentSlot?.stateCd === '03') {
       if(currentSlot.wbcCount === '00'){
         return;
       }

@@ -63,9 +63,7 @@ watch([runningInfoModule.value], (newVal: any) => {
     const firstItem = newVal[0].runningInfo;
     if (firstItem) {
       if (firstItem.jobCmd === 'RUNNING_INFO') {
-        const currentSlot = firstItem?.slotInfo.find(
-            (item: SlotInfo) => item.stateCd === "03"
-        );
+        const currentSlot = firstItem?.slotInfo;
         if (currentSlot) {
           processInfoItem.value = {
             cassetteNo: 1,

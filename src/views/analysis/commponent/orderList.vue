@@ -51,7 +51,7 @@ const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 
 
 // end 스토어
-const dspOrderList = ref<OrderItem[]>([]);
+const dspOrderList = ref<any>([]);
 const siteCd = ref('');
 
 
@@ -61,25 +61,27 @@ watch([runningInfoModule.value], (newVal: any) => {
     const firstItem = newVal[0].runningInfo;
     if (firstItem) {
       if (firstItem.jobCmd === 'RUNNING_INFO') {
-        const currentSlot = firstItem?.slotInfo.find(
-            (item: SlotInfo) => item.stateCd === "03"
-        );
-        if (currentSlot) {
-          dspOrderList.value = firstItem?.slotInfo.map((item: any) => ({
-            barcodeId: item.barcodeNo,
-            patientName: item.patientNm,
-            orderDate: stringToDateTime(item.orderDttm),
-            analyzedDttm: stringToDateTime(item.analyzedDttm),
-            state: item.stateCd,
-          }));
-
-          store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-            slotInfo: [
-              {
-                orderList: dspOrderList.value,
-              },
-            ]
-          });
+        const currentSlot = firstItem?.slotInfo
+        if (currentSlot && currentSlot?.stateCd === '03') {
+          const barcodeNo = currentSlot.barcodeNo;
+          const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+          if (existingItemIndex === -1 && barcodeNo !== '') {
+            dspOrderList.value.push({
+              barcodeId: barcodeNo,
+              patientName: currentSlot.patientNm,
+              orderDate: stringToDateTime(currentSlot.orderDttm),
+              analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+              state: currentSlot.stateCd,
+            });
+            // 업데이트된 데이터를 데이터베이스에 전달합니다.
+            store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+              slotInfo: [
+                {
+                  orderList: dspOrderList.value,
+                },
+              ]
+            });
+          }
         }
 
       }

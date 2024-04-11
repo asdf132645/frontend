@@ -151,11 +151,9 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
   if (slotArray[0].runningInfo) {
 
-    const currentSlot = slotArray[0].runningInfo.slotInfo.find((item: any) => {
-      return item.stateCd === '03';
-    });
+    const currentSlot = slotArray[0].runningInfo.slotInfo;
 
-    if (currentSlot) {
+    if (currentSlot && currentSlot?.stateCd === '03') {
       wbcCount.value = Number(currentSlot.wbcCount);
       maxWbcCount.value = Number(currentSlot.maxWbcCount);
 

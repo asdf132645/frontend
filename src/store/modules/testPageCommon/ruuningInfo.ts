@@ -72,7 +72,7 @@ export interface RunningInfo {
     oCasStat: string;
     cassetId: string;
     isRunningState: boolean;
-    slotInfo: SlotInfo[];
+    slotInfo: SlotInfo;
 }
 
 interface RunningInfoState {

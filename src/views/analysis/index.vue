@@ -7,7 +7,7 @@
   <div class="contentRight">
     <workingView class="contentRightChild"/>
     <rbcclassification v-if="!bmIsBoolen" class="contentRightChild"/>
-    <wbcclassification v-if="!bmIsBoolen" class="contentRightChild"/>
+    <wbcclassification v-if="!bmIsBoolen" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <Bmclass v-if="bmIsBoolen"/>
     <div class="contentBottom">
       <FoundingCells/>

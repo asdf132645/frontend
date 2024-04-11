@@ -115,7 +115,6 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
 const commonDataGet = computed(() => store.state.commonModule);
-const slotIndex = computed(() => store.state.commonModule.slotIndex);
 
 
 watch([runningInfoModule.value], (newVal: any) => {
@@ -123,11 +122,9 @@ watch([runningInfoModule.value], (newVal: any) => {
     const firstItem = newVal[0].runningInfo;
     if (firstItem) {
       if (firstItem.jobCmd === 'RUNNING_INFO') {
-        const currentSlot = firstItem?.slotInfo.find(
-            (item: SlotInfo) => item.stateCd === "03"
-        );
+        const currentSlot = firstItem?.slotInfo;
 
-        if (currentSlot) {
+        if (currentSlot && currentSlot?.stateCd === '03') {
           malariaCount.value = currentSlot.malariaCount;
           maxRbcCount.value = currentSlot.maxRbcCount;
           pltCount.value = currentSlot.pltCount;
@@ -159,10 +156,10 @@ const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
 
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;
-    if(!slotArray.rbcInfo[slotIndex.value]){
+    if(!slotArray.rbcInfo[0]){
       return
     }
-    const wbcInfoArray = [slotArray.rbcInfo[slotIndex.value].rbcInfo];
+    const wbcInfoArray = [slotArray.rbcInfo[0].rbcInfo];
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
 
     //최종으로 슬라이드 정보를 업데이트

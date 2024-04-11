@@ -10,14 +10,14 @@
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
-              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
+              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">
                 total
               </li>
             </ul>
             <ul class="classNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
               <li>{{ category?.count }}</li>
-              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
+              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">
                 {{ totalCount || 0 }}
               </li>
             </ul>
@@ -35,6 +35,23 @@
           </div>
         </template>
       </template>
+      <div class="categories">
+        <ul class="categoryNm">
+          <li>
+            total
+          </li>
+        </ul>
+        <ul class="classNm">
+          <li>
+            {{ totalCount || 0 }}
+          </li>
+        </ul>
+        <ul class="degree">
+          <li>
+            100.00
+          </li>
+        </ul>
+      </div>
       <!--      nonrbc-->
       <div class='mt1'>
         <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
@@ -60,14 +77,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, watch} from "vue";
+import {computed, ref, onMounted, watch, defineProps} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-
+const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
-const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
 const siteCd = ref('');
 
@@ -123,10 +139,10 @@ const updateDataArray = async (newSlotInfo: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (Array.isArray(slotArray.wbcInfo)) {
     testType.value = slotArray?.wbcInfo[0]?.testType;
-    if(!slotArray.wbcInfo[slotIndex.value]){
+    if(!slotArray.wbcInfo[0]){
       return
     }
-    const wbcInfoArray = [slotArray.wbcInfo[slotIndex.value].wbcInfo];
+    const wbcInfoArray = [slotArray.wbcInfo[0].wbcInfo];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicWbcArr];
     dspBfClassList.value = dspWbcClassList.value.flat();
 
@@ -142,10 +158,8 @@ const updateDataArray = async (newSlotInfo: any) => {
     dspBfClassList.value = dspWbcClassList.value.flat();
   }
   if (slotArray && slotArray.wbcInfo) {
-    const currentSlot = slotArray.wbcInfo.find(
-        (item: SlotInfo) => item.stateCd === "03"
-    );
-    if (currentSlot) {
+    const currentSlot = slotArray.wbcInfo;
+    if (currentSlot && currentSlot?.stateCd === '03') {
       if(currentSlot.wbcCount === '00'){
         return;
       }

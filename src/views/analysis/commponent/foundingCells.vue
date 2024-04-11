@@ -35,18 +35,16 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   if (slotInfo) {
     let accumulatedRunningPath: any = {};
 
-    slotInfo.forEach((item: any) => {
-      if (item.stateCd === '03' && item.runningPath && item.runningPath.length > 0) {
-        const runningPath: RunningPathItem[] = item.runningPath.map((pathItem: any) => ({
-          ...pathItem,
-          // path: pathItem.path + '?' + getDateTimeStr(),
-          path: pathItem.path,
-          id: generateUniqueId()
-        }));
+    if (slotInfo.stateCd === '03' && slotInfo.runningPath && slotInfo.runningPath.length > 0) {
+      const runningPath: RunningPathItem[] = slotInfo.runningPath.map((pathItem: any) => ({
+        ...pathItem,
+        // path: pathItem.path + '?' + getDateTimeStr(),
+        path: pathItem.path,
+        id: generateUniqueId()
+      }));
 
-        accumulatedRunningPath = runningPath;
-      }
-    });
+      accumulatedRunningPath = runningPath;
+    }
 
     if (accumulatedRunningPath.length > 0) {
       // 이미지 배열을 순회하며 중복 확인

@@ -156,7 +156,7 @@ onMounted(async () => {
         if (!commonDataGet.value.runningInfoStop) {
           await runInfoPostWebSocket();
         }
-      }, 500);
+      }, 300);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
@@ -290,12 +290,12 @@ const emitSocketData = async (payload: object) => {
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
-    const currentSlot = data?.slotInfo.find(
-        (item: SlotInfo) => item.stateCd === "03"
-    );
+    const currentSlot = data?.slotInfo;
+    if (currentSlot?.stateCd !== '03') {
+      return;
+    }
     if (data?.iCasStat.indexOf("2") !== -1) {
       await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
-
     }
     //슬라이드 변경시 데이터 저장
     await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false})
@@ -305,17 +305,21 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq().embedStatus.pause.reqUserId = userId.value;
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
     } else {
-      if (currentSlot?.slotId !== runningSlotId.value && currentSlot?.slotId) { // 슬라이드 체인지 시
+      const str: any = data?.iCasStat;
+      const iCasStatArr: any = [...str];
+      const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
+      if (lastCompleteIndex !== slotIndex.value) {
+        console.log('?!@!@')
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-        if (runningSlotId.value !== '') {
-          if (!runningInfoBoolen.value) {
-            return
-          }
-          await saveTestHistory(data);
+        if (!runningInfoBoolen.value) {
+          return
         }
+        await saveTestHistory(data);
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
+        await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
       }
+
     }
     const regex = /[1,2,9]/g;
     const dataICasStat = String(data?.iCasStat);
@@ -334,9 +338,12 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 
 const saveTestHistory = async (params: any) => {
   //
-  const completeSlot = params.slotInfo.find(function (item: any) {
-    return item.slotId === runningSlotId.value && item.stateCd === '04'
-  });
+  const completeSlot = params.slotInfo;
+  // .find(function (item: any) {
+  //   return item.slotId === runningSlotId.value && item.stateCd === '04'
+  // });
+  console.log(JSON.stringify(completeSlot))
+  // && completeSlot.stateCd === '04'
   if (completeSlot) {
     completeSlot.userId = userId.value;
     completeSlot.cassetId = params.cassetId;
@@ -353,9 +360,7 @@ const saveTestHistory = async (params: any) => {
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
     const processBarcodeId = dbData?.slotInfo[0];
     const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[0];
-    console.log('dbData?.slotInfo', dbData?.slotInfo)
-    console.log('completeSlot', completeSlot)
-
+    console.log(matchedWbcInfo)
     const newWbcInfo = {
       wbcInfo: [matchedWbcInfo],
       nonRbcClassList: processBarcodeId.wbcInfo.nonRbcClassList,
@@ -378,7 +383,7 @@ const saveTestHistory = async (params: any) => {
       slotId: completeSlot.slotId,
       orderDttm: parseDateString(completeSlot.orderDttm),
       testType: completeSlot.testType,
-      analyzedDttm: parseDateString(completeSlot.analyzedDttm),
+      analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
       pltCount: completeSlot.pltCount,
       malariaCount: completeSlot.malariaCount,
       maxRbcCount: completeSlot.maxRbcCount,
@@ -405,7 +410,7 @@ const saveTestHistory = async (params: any) => {
       rbcMemo: '',
     }
     await saveRunningInfo(newObj);
-    await store.dispatch('commonModule/setCommonInfo', {slotIndex: commonDataGet.value.slotIndex + 1})
+
 
   }
 }
