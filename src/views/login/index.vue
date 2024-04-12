@@ -65,7 +65,8 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
-
+      await store.dispatch('userModule/setUserAction', result.data?.user);
+      sessionStorage.setItem('user', JSON.stringify(result.data.user));
       await getUserIp(result?.data?.user.userId);
     }else{
       showSuccessAlert('Login failed.');
@@ -107,10 +108,8 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
     const result = await putUserDataApi(user);
     if (result) {
       showSuccessAlert('login successful.');
-      await store.dispatch('userModule/setUserAction', result.data?.user);
-      sessionStorage.setItem('user', JSON.stringify(result.data.user));
       await document.documentElement.requestFullscreen();
-      await router.push('/');
+      await router.push('/dataBase');
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
     }
 

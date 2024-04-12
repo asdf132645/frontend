@@ -305,7 +305,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
     await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
     await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-    await saveTestHistory(data);
+    await saveTestHistory(runningArr.value[runningArr.value.length -1]);
     return;
   }
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
