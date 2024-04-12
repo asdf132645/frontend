@@ -11,13 +11,12 @@
       </tr>
       </thead>
       <tbody v-if="dspOrderList.length > 0">
-      <tr v-for="(item, index) in dspOrderList" :key="index">
-        <td>{{ item.barcodeId }}</td>
-        <td>{{ item.patientName }}</td>
+      <tr v-for="(slot, index) in runningArr" :key="index">
+        <td>{{ slot.slotInfo.barcodeNo }}</td>
+        <td>{{ slot.slotInfo.patientNm  }}</td>
         <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
-        <td v-if="siteCd === '0019'">{{ item.analyzedDttm }}</td>
-        <td v-else>{{ item.orderDate }}</td>
-        <td>{{ getCommonCode('14', item.state) }}</td>
+        <td>{{ slot.slotInfo.analyzedDttm ? slot.slotInfo.analyzedDttm : slot.slotInfo.orderDttm }}</td>
+        <td>{{ getCommonCode('14', slot.slotInfo.stateCd) }}</td>
       </tr>
       </tbody>
       <tbody v-else>
@@ -48,7 +47,8 @@ const store = useStore();
 const orderList = computed(() => store.state.slotInfoModule);
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-
+const runningArr = computed(() => store.state.commonModule.runningArr);
+const slotIndex = computed(() => store.state.commonModule.slotIndex);
 
 // end 스토어
 const dspOrderList = ref<any>([]);
@@ -59,6 +59,7 @@ watch([runningInfoModule.value], (newVal: any) => {
   // console.log(newVal)
   if (newVal.length > 0) {
     const firstItem = newVal[0].runningInfo;
+
     if (firstItem) {
       if (firstItem.jobCmd === 'RUNNING_INFO') {
         const currentSlot = firstItem?.slotInfo

@@ -138,7 +138,6 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
 
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
-
     startCounting();
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
     if (countingInterval !== null) {

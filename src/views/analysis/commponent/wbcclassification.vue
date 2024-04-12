@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import {computed, ref, onMounted, watch, defineProps} from "vue";
 import {useStore} from "vuex";
-import {WbcInfo, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
 const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
@@ -103,8 +103,8 @@ interface RootState {
 
 const store = useStore<RootState>();
 const dspWbcClassList = ref<any>([]);
-const dspBfClassList = ref<WbcInfo[]>([]);
-const nonRbcClassList = ref<WbcInfo[]>([]);
+const dspBfClassList = ref<any[]>([]);
+const nonRbcClassList = ref<any[]>([]);
 
 const testType = ref<string>("");
 const totalCount = ref<string>("");
@@ -143,8 +143,10 @@ const updateDataArray = async (newSlotInfo: any) => {
     if(!slotArray.wbcInfo[0]){
       return
     }
-    const wbcInfoArray = [slotArray.wbcInfo[0].wbcInfo];
-    dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicWbcArr];
+    const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo[0].bmInfo] : [slotArray.wbcInfo[0].wbcInfo];
+    const wbcInfoArray = wbcinfoType;
+    const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
+    dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
     dspBfClassList.value = dspWbcClassList.value.flat();
 
     const nonRbcWbcInfoArray = wbcInfoArray
@@ -155,7 +157,8 @@ const updateDataArray = async (newSlotInfo: any) => {
     nonRbcClassList.value = nonRbcWbcInfoArray;
 
   } else {
-    dspWbcClassList.value = [basicWbcArr];
+    const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
+    dspWbcClassList.value = arrType;
     dspBfClassList.value = dspWbcClassList.value.flat();
   }
   if (slotArray && slotArray.wbcInfo) {
@@ -216,8 +219,9 @@ const calculateWbcPercentages = (
 };
 
 
-const updateCounts = async (currentSlot: SlotInfo) => {
-  const wbcList = currentSlot.wbcInfo;
+const updateCounts = async (currentSlot: any) => {
+  const arrType = props.bmIsBoolen ? currentSlot.bmInfo : currentSlot.wbcInfo;
+  const wbcList = arrType;
   let totalVal = "";
 
   if (testType.value === "01" || testType.value === "04") {
