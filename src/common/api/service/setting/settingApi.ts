@@ -194,3 +194,14 @@ export const getDrivesApi = async (): Promise<ApiResponse<any | undefined>> => {
 };
 
 //-- 클래스 정렬
+export const createOrderClassApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.settings.classOrder.create, request);
+};
+
+export const getOrderClassApi = async (userId: string): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.classOrder.get, userId);
+};
+
+export const putOrderClassApi = async (request: any, userName: string): Promise<ApiResponse<any>> => {
+    return httpClient.httpPut(apiConstants.settings.classOrder.update, request, userName);
+};

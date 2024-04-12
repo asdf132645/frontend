@@ -24,18 +24,35 @@
 
 import {onMounted, ref} from "vue";
 import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {createOrderClassApi, getCellImgApi} from "@/common/api/service/setting/settingApi";
 
 const wbcInfoChangeVal = ref<any>([]);
 
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
+const saveHttpType = ref('');
+
+const storedUser = sessionStorage.getItem('user');
+const getStoredUser = JSON.parse(storedUser || '{}');
+const userId = ref('');
 
 onMounted(() => {
   wbcInfoChangeVal.value = basicWbcArr;
+  userId.value = getStoredUser.id;
+
 })
 
-const saveOrderClassSave = () => {
-  //
+const saveOrderClassSave = async () => {
+  let orderList: any = wbcInfoChangeVal;
+  for (const index in orderList.value) {
+    orderList.value[index].userName = userId.value;
+  }
+  try {
+    const result = await createOrderClassApi(orderList.value);
+    alert('ㅇㅇ')
+  } catch (e) {
+
+  }
 }
 
 const startDrag = (index: any, event: any) => {
