@@ -135,9 +135,19 @@ onBeforeMount(() => {
     payload: process.env.MAIN_API
   });
 });
+window.addEventListener('beforeunload', function() {
+  console.log('22')
+  store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
+});
+const leave = (event: any) => {
+  event.preventDefault();
+  console.log('Ejska')
+};
 
 onMounted(async () => {
   await nextTick();
+  window.addEventListener('beforeunload', leave);
+
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
@@ -161,8 +171,11 @@ onMounted(async () => {
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('messageSent', emitSocketData);
+
 });
 onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', leave);
+
   if (countingInterRunval) {
     clearInterval(countingInterRunval);
     countingInterRunval = null;
