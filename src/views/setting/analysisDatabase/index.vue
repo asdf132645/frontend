@@ -8,6 +8,7 @@
       <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">WBC Hot Keys</button>
       <button @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
       <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
+      <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">WBC Order</button>
     </div>
 
     <div class="tab-content">
@@ -25,6 +26,7 @@ import WbcCustomClass from '@/views/setting/analysisDatabase/component/wbcCustom
 import WbcHotKey from "@/views/setting/analysisDatabase/component/wbcHotKeys.vue";
 import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
 import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
+import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
 const activeTab = ref('cellImageAnalyzed');
 
 const activateTab = (tabName: string) => {
@@ -47,6 +49,8 @@ const activeTabComponent = computed(() => {
       return BfHotKey;
     case 'normalRange':
       return NormalRange;
+    case 'wbcOrder':
+      return WbcOrder;
     default:
       return null;
   }

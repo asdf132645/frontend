@@ -18,6 +18,7 @@
           <Datepicker v-model="startDate"></Datepicker>
           <Datepicker v-model="endDate"></Datepicker>
           <button class="searchClass" @click="search">Search</button>
+          <button class="searchClass" @click="refresh">Refresh</button>
         </div>
         <div class="filterDivBox" v-if="classListToggle">
           <div class="nrCount">
@@ -217,6 +218,10 @@ const getDbData = async (type: string, pageNum?: number) => {
 const search = () => {
   getDbData('search');
 };
+
+const refresh = () => {
+  getDbData('search');
+}
 
 const loadMoreData = async () => {
   page.value += 1;
