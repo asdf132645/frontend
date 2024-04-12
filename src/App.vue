@@ -142,7 +142,6 @@ onMounted(async () => {
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
-
   if (!commonDataGet.value.isRunningState) {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
@@ -204,7 +203,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
@@ -221,7 +220,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
         break;
@@ -233,7 +232,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
@@ -242,7 +241,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
         break;
@@ -256,13 +255,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         break;
       case 'ERROR_CLEAR':
         console.log('err')
@@ -301,13 +300,14 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   const dataICasStat = String(data?.iCasStat);
   // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
 
-  if(dataICasStat === '333333333333'){
+  if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
     tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
     await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
     await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-    await saveTestHistory(runningArr.value[runningArr.value.length -1]);
+    await saveTestHistory(runningArr.value[runningArr.value.length - 1]);
     return;
   }
+
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
     const currentSlot = data?.slotInfo;
     const str: any = data?.iCasStat;
@@ -315,17 +315,17 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
     const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
 
-    if (iCasStatArr.lastIndexOf("2") === 0){
+    if (iCasStatArr.lastIndexOf("2") === 0) {
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
     }
 
     if (existingIndex !== -1) {
       const updatedArr = [...runningArr.value]; // 기존 배열 복사
       updatedArr.splice(existingIndex, 1, data); // 해당 요소를 교체
-      await store.dispatch('commonModule/setCommonInfo', { runningArr: updatedArr });
+      await store.dispatch('commonModule/setCommonInfo', {runningArr: updatedArr});
     } else {
       const newArr = [...runningArr.value, data]; // 새로운 배열에 데이터 추가
-      await store.dispatch('commonModule/setCommonInfo', { runningArr: newArr });
+      await store.dispatch('commonModule/setCommonInfo', {runningArr: newArr});
     }
     // console.log(runningArr.value)
     if (data?.iCasStat.indexOf("2") !== -1) {
@@ -500,6 +500,7 @@ const cellImgGet = async (newUserId: string) => {
       if (result?.data) {
         const data = result.data;
         sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
+        await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(data?.pbiaRootPath)});
       }
     }
 
