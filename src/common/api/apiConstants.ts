@@ -257,7 +257,21 @@ export const apiConstants = {
                 endpoint:'folders',
                 requiresToken: false,
             }
-        }
+        },
+        classOrder: {
+            create: {
+                endpoint: 'classOrders/create',
+                requiresToken: false,
+            },
+            update: {
+                endpoint: 'classOrders/update',
+                requiresToken: false,
+            },
+            get:{
+                endpoint: 'classOrders/get',
+                requiresToken: false,
+            }
+        },
     },
     images:{
         move: {

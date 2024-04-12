@@ -11,26 +11,33 @@
     >
       <ul class="nth1Child" v-if="idx === 0">
         <li>Class</li>
-        <li>Count</li>
-        <li>%</li>
       </ul>
       <ul class="nth1Child">
         <li>{{ item?.name }}</li>
-        <li>{{ item?.count }}</li>
-        <li> {{ item?.percent || '-' }}</li>
       </ul>
     </div>
   </div>
+  <button @click="saveOrderClassSave" class="saveBtn" type="button">Save</button>
 </template>
 
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const wbcInfoChangeVal = ref<any>([]);
 
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
+
+onMounted(() => {
+  wbcInfoChangeVal.value = basicWbcArr;
+})
+
+const saveOrderClassSave = () => {
+  //
+}
+
 const startDrag = (index: any, event: any) => {
   dragIndex.value = index;
   dragOffsetY.value = event.clientY - event.target.getBoundingClientRect().top;
