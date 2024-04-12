@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
-import {createUser} from "@/common/api/service/user/userApi";
+import {createUser, getUserIpApi} from "@/common/api/service/user/userApi";
 import router from "@/router";
 import Alert from "@/components/commonUi/Alert.vue";
 
@@ -62,6 +62,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const createAccount = async () => {
+  const result = await getUserIpApi();
   const currentDate = new Date();
   const user = {
     userId: idVal.value,
@@ -71,6 +72,7 @@ const createAccount = async () => {
     userType: userType.value,
     subscriptionDate: currentDate,
     state: '',
+    pcIp: result.data,
   }
 
   try {
