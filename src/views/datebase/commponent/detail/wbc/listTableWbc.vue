@@ -235,7 +235,10 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses();
-
+  if(!pbiaRootPath.value){
+    const rootPath = sessionStorage.getItem('pbiaRootPath');
+    await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(rootPath)});
+  }
 });
 onUnmounted(() => {
   stateUpdate();
@@ -1088,6 +1091,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
 }
 
 function getImageUrl(imageName: any, id: string, title: string): string {
+  console.log(pbiaRootPath.value)
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";

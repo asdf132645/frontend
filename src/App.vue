@@ -312,7 +312,6 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   const regex = /[1,2,9]/g;
   const dataICasStat = String(data?.iCasStat);
   // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-
   if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
     tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
     await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
