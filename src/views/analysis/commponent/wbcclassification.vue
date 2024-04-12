@@ -55,7 +55,7 @@
       </div>
       <!--      nonrbc-->
       <div class='mt1'>
-        <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
+        <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
           <div class="categories">
             <ul class="categoryNm">
               <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
@@ -104,7 +104,7 @@ interface RootState {
 const store = useStore<RootState>();
 const dspWbcClassList = ref<any>([]);
 const dspBfClassList = ref<any[]>([]);
-const nonRbcClassList = ref<any[]>([]);
+const nonWbcClassList = ref<any[]>([]);
 
 const testType = ref<string>("");
 const totalCount = ref<string>("");
@@ -138,6 +138,7 @@ watch(
 
 const updateDataArray = async (newSlotInfo: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
+  console.log(props.bmIsBoolen)
   if (Array.isArray(slotArray.wbcInfo)) {
     testType.value = slotArray?.wbcInfo[0]?.testType;
     if(!slotArray.wbcInfo[0]){
@@ -145,6 +146,7 @@ const updateDataArray = async (newSlotInfo: any) => {
     }
     const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo[0].bmInfo] : [slotArray.wbcInfo[0].wbcInfo];
     const wbcInfoArray = wbcinfoType;
+    console.log(wbcinfoType)
     const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
     dspBfClassList.value = dspWbcClassList.value.flat();
@@ -152,9 +154,9 @@ const updateDataArray = async (newSlotInfo: any) => {
     const nonRbcWbcInfoArray = wbcInfoArray
         .flat()  // 중첩 배열을 평탄화
         .filter((item: any) =>
-            ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'].includes(item?.title)
+            ['NR', 'AR', 'GP', 'PA', 'MC', 'MA', 'GP', 'PA','SM'].includes(item?.title)
         );
-    nonRbcClassList.value = nonRbcWbcInfoArray;
+    nonWbcClassList.value = nonRbcWbcInfoArray;
 
   } else {
     const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
@@ -178,7 +180,7 @@ const updateDataArray = async (newSlotInfo: any) => {
       {
         wbcInfo: {
           wbcInfo: dspWbcClassList.value,
-          nonRbcClassList: nonRbcClassList,
+          nonRbcClassList: nonWbcClassList,
           totalCount: totalCount.value,
           maxWbcCount: maxWbcCount.value,
         },
@@ -238,8 +240,8 @@ const updateCounts = async (currentSlot: any) => {
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA"] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM"];
-  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA"] : ["NR", "AR", "MC", "MA", "SM"];
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", 'NE','GP','PA'] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE','GP','PA'];
+  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA", 'NE','GP','PA'] : ["NR", "AR", "MC", "MA", "SM", 'NE','GP','PA'];
 
   const targetArray = testType.value === '01' || testType.value === '04' ? includesStr : includesStr2;
 

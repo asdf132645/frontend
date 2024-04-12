@@ -299,7 +299,6 @@ const emitSocketData = async (payload: object) => {
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   const regex = /[1,2,9]/g;
   const dataICasStat = String(data?.iCasStat);
-  console.log(dataICasStat)
   // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
 
   if(dataICasStat === '333333333333'){
@@ -323,11 +322,9 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     if (existingIndex !== -1) {
       const updatedArr = [...runningArr.value]; // 기존 배열 복사
       updatedArr.splice(existingIndex, 1, data); // 해당 요소를 교체
-      console.log('splice', updatedArr);
       await store.dispatch('commonModule/setCommonInfo', { runningArr: updatedArr });
     } else {
       const newArr = [...runningArr.value, data]; // 새로운 배열에 데이터 추가
-      console.log('newArr', newArr);
       await store.dispatch('commonModule/setCommonInfo', { runningArr: newArr });
     }
     // console.log(runningArr.value)
