@@ -18,13 +18,25 @@
     </div>
   </div>
   <button @click="saveOrderClassSave" class="saveBtn" type="button">Save</button>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
 
 import {onMounted, ref} from "vue";
 import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-import {createOrderClassApi, getCellImgApi} from "@/common/api/service/setting/settingApi";
+import {
+  createOrderClassApi,
+  getOrderClassApi, putOrderClassApi,
+} from "@/common/api/service/setting/settingApi";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const wbcInfoChangeVal = ref<any>([]);
 
@@ -36,22 +48,54 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 
-onMounted(() => {
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+
+onMounted(async () => {
   wbcInfoChangeVal.value = basicWbcArr;
   userId.value = getStoredUser.id;
-
+  await getOrderClass();
 })
 
-const saveOrderClassSave = async () => {
-  let orderList: any = wbcInfoChangeVal;
-  for (const index in orderList.value) {
-    orderList.value[index].userName = userId.value;
-  }
+const getOrderClass = async () => {
+  //getOrderClassApi
   try {
-    const result = await createOrderClassApi(orderList.value);
-    alert('ㅇㅇ')
+    const result = await getOrderClassApi(String(userId.value));
+    if (result) {
+      if (result?.data.length === 0) {
+        console.log(null)
+        saveHttpType.value = 'post';
+      }else{
+        saveHttpType.value = 'put';
+        wbcInfoChangeVal.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+      }
+    }
   } catch (e) {
+    console.log(e)
+  }
+}
 
+const saveOrderClassSave = async () => {
+  let orderList: any = wbcInfoChangeVal.value;
+  for (const index in orderList) {
+    orderList[index].userName = userId.value;
+    orderList[index].orderText = index;
+  }
+  console.log(orderList)
+  try {
+    let result = {};
+    if (saveHttpType.value === 'post') {
+      result = await createOrderClassApi(orderList);
+    }else {
+      result = await putOrderClassApi(orderList, userId.value);
+    }
+    if (result) {
+      const text = saveHttpType.value === 'post' ? 'save successful' : 'update successful'
+      showSuccessAlert(text);
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
@@ -66,7 +110,22 @@ const drop = (index: any, event: any) => {
     const movedItem = wbcInfoChangeVal.value.splice(dragIndex.value, 1)[0];
     wbcInfoChangeVal.value.splice(index, 0, movedItem);
     dragIndex.value = -1;
-    // updateOriginalDb();
   }
+};
+
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
+
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
 };
 </script>

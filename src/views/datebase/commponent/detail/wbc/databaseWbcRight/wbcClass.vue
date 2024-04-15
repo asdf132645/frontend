@@ -78,12 +78,12 @@
       @update:hideAlert="hideAlert"
   />
   <Confirm
-    v-if="showConfirm"
-    :is-visible="showConfirm"
-    :type="confirmType"
-    :message="confirmMessage"
-    @hide="hideConfirm"
-    @okConfirm="handleOkConfirm"
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :type="confirmType"
+      :message="confirmMessage"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
   />
 </template>
 
@@ -98,6 +98,7 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
+import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
@@ -113,7 +114,7 @@ const memo = ref('');
 const memoModal = ref(false);
 const wbcInfoChangeVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
-const titleArr = ['NR', 'GP','PA', 'AR', 'MA'];
+const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
@@ -126,12 +127,14 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userConfirmed = ref(false);
+const orderClass = ref<any>([]);
 
-onMounted(() => {
+onMounted(async () => {
+  await getOrderClass();
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  beforeChang();
-  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  await beforeChang();
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
 })
 // basicWbcArr
 
@@ -142,7 +145,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   beforeChang();
 });
 
@@ -152,7 +155,7 @@ const startDrag = (index: any, event: any) => {
 };
 
 const drop = (index: any, event: any) => {
-  if(!toggleLock.value){
+  if (!toggleLock.value) {
     return;
   }
   event.preventDefault();
@@ -163,7 +166,6 @@ const drop = (index: any, event: any) => {
     updateOriginalDb();
   }
 };
-
 
 
 const toggleLockEvent = () => {
@@ -258,11 +260,30 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   return newSortArr;
 };
 
+const getOrderClass = async () => {
+  //getOrderClassApi
+  try {
+    const result = await getOrderClassApi(String(userModuleDataGet.value.id));
+    if (result) {
+      if (result?.data.length === 0) {
+        orderClass.value = [];
+      } else {
+        console.log(result)
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
 
-const beforeChang = () => {
+const beforeChang = async () => {
+  await getOrderClass();
   const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
-  const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
-  console.log(sortedWbcInfo)
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : basicWbcArr;
+  console.log(orderClass.value.length !== 0)
+
+  const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 
@@ -270,8 +291,9 @@ const beforeChang = () => {
 
 const afterChang = () => {
   const wbcInfo = props.selectItems.wbcInfoAfter;
-  const sortedWbcInfo = sortWbcInfo(wbcInfo, basicWbcArr);
-  
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : basicWbcArr;
+  const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
+
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 }
@@ -321,11 +343,12 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
     console.error('Error:', error);
   }
 }
+
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top: 0, behavior: 'smooth'});
 };
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
