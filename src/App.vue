@@ -62,6 +62,7 @@ const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr = computed(() => store.state.commonModule.runningArr);
+const viewerCheckApp = ref('');
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -80,8 +81,10 @@ const getUserIp = async (ip: string) => {
     const result = await getUserIpApi();
     if (result.data === ip) {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
+      viewerCheckApp.value = 'main';
     } else {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
+      viewerCheckApp.value = 'viewer';
     }
   } catch (e) {
     console.log(e)
@@ -156,7 +159,7 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
-    if (!commonDataGet.value.firstLoading && commonDataGet.value.viewerCheck !== '') {
+    if (!commonDataGet.value.firstLoading) {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
       }, 400);
