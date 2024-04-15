@@ -295,6 +295,7 @@ p.startStopP {
 
 .settingWrapDiv {
     min-height: 89vh;
+    padding: 50px;
 }
 
 ul.customClass li span {
@@ -781,7 +782,6 @@ table.settingTable td, table.settingTable th {
 }
 
 .rbcClassListArr {
-    display: inline-block;
     vertical-align: top;
     font-size: 0.8rem;
 }
@@ -1523,4 +1523,25 @@ ul.normalItems li div span:last-child {
   
 .selected {
     border: 6px solid rgb(106, 153, 194);
+}
+
+.searchUserContainer {
+
+}
+
+
+/* setting */
+/* login / account */
+
+.userSearch {
+    width: 10px;
+}
+
+.searchInputBox {
+    padding: 8px;
+    border-radius: 0px;
+}
+
+.searchBtn {
+    padding: 8px;
 }

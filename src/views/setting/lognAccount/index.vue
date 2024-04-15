@@ -4,8 +4,8 @@
       <select v-model="userSearchOption" class="userSearch">
         <option v-for="option in userSearchOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <input type="text" v-model="inputText">
-      <button @click="onSearch">Search</button>
+      <input type="text" v-model="inputText" class="searchInputBox">
+      <button @click="onSearch" class="searchBtn">Search</button>
     </div>
     <table class="table">
       <thead>

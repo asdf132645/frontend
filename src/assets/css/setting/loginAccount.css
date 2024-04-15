@@ -1,34 +1,27 @@
-@media (min-width: 1920px) {
-    .settingContainer {
-        padding: 20px;
-        display: flex; /* 부모 요소를 플렉스 박스로 설정합니다. */
-        flex-direction: column;
-        justify-content: center; /* 가로 정렬을 중앙으로 설정합니다. */
-        align-items: center; /* 세로 정렬을 중앙으로 설정합니다. */
-        text-align: center; /* 내부 텍스트를 가운데 정렬합니다. */
-      }
-    
-      .userSearch {
-    
-      }
-    
-      .searchUserContainer {
-        text-align: left;
-        margin:30px;
-      }
-    
-      .searchUserContainer select, .searchUserContainer input {
-        width: 200px;
-      }
-    
-      .table th, .table td {
-        padding: 8px;
-        text-align: center;
-      }
-    
-      .table th, .table td {
-        width: calc(100% / 8);
-      }
-    
+.settingContainer {
+    padding: 20px;
+    display: flex; /* 부모 요소를 플렉스 박스로 설정합니다. */
+    flex-direction: column;
+    justify-content: center; /* 가로 정렬을 중앙으로 설정합니다. */
+    align-items: center; /* 세로 정렬을 중앙으로 설정합니다. */
+    text-align: center; /* 내부 텍스트를 가운데 정렬합니다. */
+  }
+  
+  .searchUserContainer {
+    text-align: left;
+    margin:30px;
+  }
 
-}
+  .searchUserContainer select, .searchUserContainer input {
+    width: 200px;
+  }
+
+  .table th, .table td {
+    padding: 8px;
+    text-align: center;
+  }
+
+  .table th, .table td {
+    width: calc(100% / 8);
+  }
+
