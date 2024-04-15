@@ -261,7 +261,6 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
 };
 
 const getOrderClass = async () => {
-  //getOrderClassApi
   try {
     const result = await getOrderClassApi(String(userModuleDataGet.value.id));
     if (result) {

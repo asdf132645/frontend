@@ -1020,6 +1020,8 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         // 옮기는 곳
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+        wbcInfo.value = removeDuplicateImages(wbcInfo.value);
+        console.log(JSON.stringify(wbcInfo.value))
         wbcInfo.value.forEach((item: any) => {
           if (item.images.length > 0) {
             item.images.forEach((itemImg: any) => {
@@ -1040,6 +1042,21 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     console.error('에러:', error);
   }
 }
+function removeDuplicateImages(data: any[]): any[] {
+  const uniqueFileNames = new Set<string>();
+
+  return data.map(item => {
+    const uniqueImages = item.images.filter((image: any) => {
+      if (!uniqueFileNames.has(image.fileName)) {
+        uniqueFileNames.add(image.fileName);
+        return true;
+      }
+      return false;
+    });
+
+    return { ...item, images: uniqueImages };
+  });
+}
 
 async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
@@ -1055,6 +1072,18 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
+  let uniqueImages: any = [];
+  const uniqueData = clonedWbcInfo.map((item: any) => {
+    const uniqueImagesForItem = item.images.filter((image: any) => {
+      if (!uniqueImages.includes(image.fileName)) {
+        uniqueImages.push(image.fileName);
+        return true;
+      }
+      return false;
+    });
+    return { ...item, images: uniqueImagesForItem };
+  });
+  clonedWbcInfo = uniqueData;
   if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트 및 sessionStorage에 저장
     selectItems.value.wbcInfoAfter = clonedWbcInfo;

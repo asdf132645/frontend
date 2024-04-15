@@ -156,7 +156,7 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
-    if (!commonDataGet.value.firstLoading) {
+    if (!commonDataGet.value.firstLoading && commonDataGet.value.viewerCheck !== '') {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
       }, 400);
@@ -186,6 +186,9 @@ onBeforeUnmount(() => {
   }
 });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  if(commonDataGet.value.viewerCheck === ''){
+    return;
+  }
   try {
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
