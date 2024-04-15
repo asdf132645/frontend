@@ -1,6 +1,4 @@
 
-@media (min-width: 1920px) {
-}    /*공통 css*/
 .mt1 {
     margin-top: 10px;
 }
@@ -206,8 +204,6 @@ span.icoText {
 
 /*main*/
 
-@media (min-width: 1920px) {
-}
 .contentLeft {
     text-align: left;
     display: inline-block;
