@@ -33,6 +33,7 @@
       </ul>
       <div class='joinBtn'>
         <button class="defaultBtn" type="button" @click='createAccount'>create account</button>
+        <button class="defaultBtn" type="button" @click='goLoginPage'>login page</button>
       </div>
     </div>
   </div>
@@ -61,6 +62,10 @@ const userType = ref('admin');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+
+const goLoginPage = () => {
+  router.push('/user/login');
+}
 const createAccount = async () => {
   const result = await getUserIpApi();
   const currentDate = new Date();

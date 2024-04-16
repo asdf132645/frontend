@@ -1,7 +1,7 @@
 <!-- App.vue -->
 <template>
-  <div class="appcontainer" >
-    <AppHeader v-if="router.currentRoute.value.path !== '/user/login'"/>
+  <div>
+    <AppHeader v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class='content' :class="{ 'bmComponent': projectBm }">
       <router-view/>
     </main>
@@ -524,6 +524,14 @@ const cellImgGet = async (newUserId: string) => {
         const data = result.data;
         sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
         await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(data?.pbiaRootPath)});
+        await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+          isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
+        });
+        // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
+        sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
+        sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
+        sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
+        sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
       }
     }
 
