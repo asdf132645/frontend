@@ -371,13 +371,9 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 }
 
 const saveTestHistory = async (params: any) => {
-  //
   const completeSlot = params.slotInfo;
-  // .find(function (item: any) {
-  //   return item.slotId === runningSlotId.value && item.stateCd === '04'
-  // });
+
   console.log(JSON.stringify(completeSlot))
-  // && completeSlot.stateCd === '04'
   if (completeSlot) {
     completeSlot.userId = userId.value;
     completeSlot.cassetId = params.cassetId;

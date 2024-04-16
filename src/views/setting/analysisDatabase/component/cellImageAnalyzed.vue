@@ -151,6 +151,7 @@ import {
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
+import {useStore} from "vuex";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -182,6 +183,7 @@ const cellimgId = ref('');
 const projectType = ref('pb');
 
 const testTypeArr = ref<any>([]);
+const store = useStore();
 
 onMounted(async () => {
 
@@ -289,8 +291,19 @@ const cellImgSet = async () => {
     }
 
     if (result) {
-      const text = saveHttpType.value === 'post' ? 'save successful' : 'update successful'
+      const text = saveHttpType.value === 'post' ? 'save successful' : 'update successful';
       showSuccessAlert(text);
+      const data = result?.data;
+      await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+        isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
+      });
+      // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
+      sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
+      sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
+      sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
+      sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
+      sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
+      console.log(result)
     }
 
   } catch (e) {
