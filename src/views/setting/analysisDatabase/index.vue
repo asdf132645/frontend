@@ -2,12 +2,12 @@
   <div>
     <div class="tab-buttons">
       <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
-      <button @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
+      <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
       <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device controls</button>
       <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">WBC Custom Class</button>
       <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">WBC Hot Keys</button>
-      <button @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
-      <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
+      <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
+      <button v-if="projectType === 'pb'" @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
       <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">WBC Order</button>
     </div>
 
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
 import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
@@ -27,8 +27,9 @@ import WbcHotKey from "@/views/setting/analysisDatabase/component/wbcHotKeys.vue
 import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
 import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
 import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
+import process from "process";
 const activeTab = ref('cellImageAnalyzed');
-
+const projectType = ref('');
 const activateTab = (tabName: string) => {
   activeTab.value = tabName;
 };
@@ -55,4 +56,8 @@ const activeTabComponent = computed(() => {
       return null;
   }
 });
+onMounted(async () => {
+  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+})
+
 </script>

@@ -62,6 +62,7 @@ const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr = computed(() => store.state.commonModule.runningArr);
+const viewerCheckApp = ref('');
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -80,8 +81,10 @@ const getUserIp = async (ip: string) => {
     const result = await getUserIpApi();
     if (result.data === ip) {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
+      viewerCheckApp.value = 'main';
     } else {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
+      viewerCheckApp.value = 'viewer';
     }
   } catch (e) {
     console.log(e)
@@ -186,6 +189,9 @@ onBeforeUnmount(() => {
   }
 });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  if(commonDataGet.value.viewerCheck === ''){
+    return;
+  }
   try {
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
@@ -311,21 +317,22 @@ const emitSocketData = async (payload: object) => {
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   const regex = /[1,2,9]/g;
   const dataICasStat = String(data?.iCasStat);
+  const currentSlot = data?.slotInfo;
+  const str: any = data?.iCasStat;
+  const iCasStatArr: any = [...str];
+  const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
+  const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
   // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
   if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
     tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
     await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
     await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-    await saveTestHistory(runningArr.value[runningArr.value.length - 1]);
+    await saveTestHistory(runningArr.value[lastCompleteIndex]);
     return;
   }
 
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
-    const currentSlot = data?.slotInfo;
-    const str: any = data?.iCasStat;
-    const iCasStatArr: any = [...str];
-    const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
-    const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
+
 
     if (iCasStatArr.lastIndexOf("2") === 0) {
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});

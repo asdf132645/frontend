@@ -2,7 +2,7 @@
   <div class="execute">
     <div class='startDiv'>
       <select v-model="analysisType">
-        <option v-for="option in analysisOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
+        <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <p class="startStopP" v-if="showStopBtn">
         <font-awesome-icon
@@ -18,7 +18,7 @@
 
     <div class="stopDiv">
       <select v-model="wbcCount" :disabled="isRunningState">
-        <option v-for="option in wbcCountOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
+        <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState && analysisType === '04'">
         <option v-for="option in stitchCountOptions" :key="option.value" :value="option.value">
@@ -34,12 +34,12 @@
     </div>
   </div>
   <Alert
-    v-if="showAlert"
-    :is-visible="showAlert"
-    :type="alertType"
-    :message="alertMessage"
-    @hide="hideAlert"
-    @update:hideAlert="hideAlert"
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
   />
 </template>
 
@@ -47,18 +47,27 @@
 import {ref, getCurrentInstance, computed, watch, onMounted, nextTick} from "vue";
 
 import {useStore} from "vuex";
-import {analysisOptions, wbcCountOptions, stitchCountOptions} from '@/common/defines/constFile/analysis';
+import {
+  analysisOptions,
+  wbcCountOptions,
+  stitchCountOptions,
+  bmCountOptions
+} from '@/common/defines/constFile/analysis';
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
+import process from "process";
+import {testBmTypeList, testTypeList} from "@/common/defines/constFile/settings";
 
 const instance = getCurrentInstance();
 
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const userModuleDataGet = computed(() => store.state.userModule);
+const projectType = ref('pb');
+const countType = ref<any>([]);
 
 const runInfo = computed(() => store.state.commonModule);
 const executeState = computed(() => store.state.executeModule);
@@ -85,8 +94,13 @@ const btnStatus = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const testTypeArr = ref<any>([]);
 
 onMounted(async () => {
+  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
+
+  countType.value = process.env.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
   userId.value = getStoredUser.id;
   await nextTick();
   await cellImgGet();
@@ -172,6 +186,9 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       }
       return;
     }
+    const rbcPositionMargin = sessionStorage.getItem('rbcPositionMargin');
+    const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
+    const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
@@ -179,8 +196,12 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       wbcCount: wbcCount.value,
       stitchCount: stitchCount.value,
       reqUserId: userId.value,
+      rbcPositionMargin: rbcPositionMargin,
+      wbcPositionMargin: wbcPositionMargin,
+      pltPositionMargin: pltPositionMargin,
     });
-    if (process.env.PROJECT_TYPE === 'bm'){
+    console.log(startAction);
+    if (process.env.PROJECT_TYPE === 'bm') {
       startAction = {
         "jobCmd": "START",
         "reqUserId": "aaaaa",

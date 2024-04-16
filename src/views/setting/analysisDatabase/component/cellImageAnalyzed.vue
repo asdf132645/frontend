@@ -6,30 +6,39 @@
         <th>Analysis Type</th>
         <td colspan="2">
           <select v-model='testTypeCd'>
-            <option v-for="type in testTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
       <!--Common analysis values-->
       <tr>
-        <th rowspan="3">Common Analysis Values</th>
-        <th>Wbc Position Margin</th>
+        <th rowspan="4" v-if="projectType === 'pb'">WBC diff analysis values</th>
+        <th v-if="projectType === 'bm'">BM diff analysis values</th>
+        <th>Cell analyzing count:</th>
+        <td>
+          <select v-model='pbAnalysisType'>
+            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+        </td>
+      </tr>
+      <tr v-if="projectType === 'pb'">
+        <th>Wbc Position margin:</th>
         <td>
           <select v-model='wbcPositionMargin'>
             <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
-      <tr>
-        <th>Rbc Position Margin</th>
+      <tr v-if="projectType === 'pb'">
+        <th>Rbc Position margin:</th>
         <td>
           <select v-model='rbcPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
-      <tr>
-        <th>Plt Position Margin</th>
+      <tr v-if="projectType === 'pb'">
+        <th>Plt Position margin:</th>
         <td>
           <select v-model='pltPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -47,8 +56,8 @@
         </td>
       </tr>
       <!--      PBS analysis values-->
-      <tr>
-        <th rowspan="2">PBS</th>
+      <tr v-if="projectType === 'pb'">
+        <th rowspan="2">PBS analysis values</th>
         <th>
           Cell Analyzing Count
         </th>
@@ -59,7 +68,8 @@
         </td>
       </tr>
       <tr>
-        <th>Stitch Count</th>
+        <th v-if="projectType === 'bm'"></th>
+        <th>Stitch count:</th>
         <td>
           <select v-model='stitchCount'>
             <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -67,9 +77,9 @@
         </td>
       </tr>
       <!--      BF analysis values-->
-      <tr>
-        <th>BF</th>
-        <th>Cell Analyzing Count</th>
+      <tr v-if="projectType === 'pb'">
+        <th>BF analysis values</th>
+        <th>Cell analyzing count:</th>
         <td>
           <select v-model='bfAnalysisType'>
             <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -150,9 +160,12 @@ import {
   AnalysisList,
   PositionMarginList, stitchCountList,
   testTypeList,
-  WbcPositionMarginList
+  WbcPositionMarginList,
+  testBmTypeList
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
+import * as process from "process";
+
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -180,8 +193,16 @@ const userId = ref('');
 const saveHttpType = ref('');
 const drive = ref<any>([]);
 const cellimgId = ref('');
+const projectType = ref('pb');
+
+const testTypeArr = ref<any>([]);
 
 onMounted(async () => {
+
+  testTypeCd.value = process.env.PROJECT_TYPE === 'bm' ? '02' : '01';
+  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  console.log(process.env.PROJECT_TYPE);
+  testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   userId.value = getStoredUser.id;
   await cellImgGet();
   await driveGet();
@@ -194,8 +215,9 @@ const driveGet = async () => {
       if (!result?.data) {
       } else {
         const data = result.data;
+        const savePlace = process.env.PROJECT_TYPE === 'bm' ? 'BMIA_proc' : 'PBIA_proc';
         for (const dataKey in data) {
-          data[dataKey] = data[dataKey] + '\\ia_proc';
+          data[dataKey] = data[dataKey] + `\\${savePlace}`;
         }
         drive.value = data;
       }

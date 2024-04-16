@@ -41,6 +41,7 @@ import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
 const prevOilCount = ref<string | null>(null);
+const projectType = ref('pb');
 
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {

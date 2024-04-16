@@ -5,6 +5,13 @@ export const testTypeList = [
     {value: '03', text: 'Body fluid select'}
 ];
 
+export const testBmTypeList = [
+    {value: '02', text: 'BM smear'},
+    {value: '03', text: 'Touch print'},
+    {value: '04', text: 'BM biopsy'},
+    {value: '05', text: 'Clot section'}
+];
+
 export const AnalysisList = [
     {value: '100', text: '100'},
     {value: '150', text: '150'},

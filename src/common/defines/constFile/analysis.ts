@@ -6,7 +6,8 @@ export const analysisOptions = [
     {value: '05', text: 'Quality Check'}
 ];
 
-export const wbcCountOptions = [{value: '100', text: '100 WBC'},
+export const wbcCountOptions = [
+    {value: '100', text: '100 WBC'},
     {value: '150', text: '150 WBC'},
     {value: '200', text: '200 WBC'},
     {value: '250', text: '250 WBC'},
@@ -14,7 +15,12 @@ export const wbcCountOptions = [{value: '100', text: '100 WBC'},
     {value: '350', text: '350 WBC'},
     {value: '400', text: '400 WBC'},
     {value: '450', text: '450 WBC'},
-    {value: '500', text: '500 WBC'}];
+    {value: '500', text: '500 WBC'}
+];
+
+export const bmCountOptions = [
+    {value: '500', text: '500'}
+];
 
 export const stitchCountOptions = [{value: '1', text: '1 stitch'},
     {value: '2', text: '2 stitch'},
