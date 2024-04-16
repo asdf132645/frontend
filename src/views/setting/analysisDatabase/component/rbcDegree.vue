@@ -3,7 +3,7 @@
     <div id="collapse-4">
       <!--      {{ rbcClassListArr }}-->
       <div class="mt2 rbcClassListArr" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
-        <div>
+        <div class="rbcDegreeCategoryNm">
           {{ category?.categoryNm }}
         </div>
 

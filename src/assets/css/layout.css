@@ -61,11 +61,11 @@
 
 main.content {
     background: #25313b;
-    padding: 10px;
-    height: 92vh;
+    /* padding: 10px; */
+    /* height: 92vh; */
     /* 바디 세로 스크롤 방지*/
-    position: fixed;
-    width:100%;
+    /* position: fixed;
+    width:100%; */
 }
 
 .toggleHeadBtn {
@@ -294,8 +294,8 @@ p.startStopP {
 }
 
 .settingWrapDiv {
-    min-height: 89vh;
-    padding: 50px;
+    min-height: 85vh;
+    padding: 40px;
 }
 
 ul.customClass li span {
@@ -327,6 +327,7 @@ ul.customClass li {
 }
 
 .backupDiv {
+    margin-top: 20px;
     text-align: center;
 }
 
@@ -335,6 +336,15 @@ table.settingTable {
     text-align: left;
     margin: auto;
 }
+
+table.settingTable tr{
+    /* border-bottom: 1px solid black; */
+}
+
+table.settingTable select{
+    padding: 6px;
+}
+
 
 .backupDiv input {
     width: 25.7%;
@@ -720,11 +730,15 @@ input.loginInput {
     background-color: #0080C1;
 }
 
+ul.settingTabBtn {
+
+}
+
 ul.settingTabBtn li {
     display: inline-block;
     cursor: pointer;
     margin-right: 25px;
-    min-width: 7%;
+    min-width: 7%;    
 }
 
 .settingWrap {
@@ -739,7 +753,7 @@ li.activeTab {
 
 table.settingTable td, table.settingTable th {
     height: 45px;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .range-slider {
@@ -783,7 +797,13 @@ table.settingTable td, table.settingTable th {
 
 .rbcClassListArr {
     vertical-align: top;
-    font-size: 0.8rem;
+    font-size: 1rem;
+    /* display: flex; */
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rbcDegreeCategoryNm {
 }
 
 .tab-buttons {
@@ -798,7 +818,7 @@ table.settingTable td, table.settingTable th {
 }
 
 .tab-buttons button.active {
-    background-color: #ccc;
+    background-color: #b6b6b6;
 }
 
 .filterListDiv > div > select, .filterListDiv > div > input, .filterListDiv > div > div {
@@ -1346,6 +1366,7 @@ ul.cellImgBox.print {
     margin-top: 10px;
 }
 
+
 table.tableClass td, table.tableClass th {
     text-align: left;
     padding: 5px;
@@ -1402,6 +1423,9 @@ ul.wbcHotKeysItems li {
 
 ul.wbcHotKeysItems {
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .alignDiv label {
@@ -1418,6 +1442,9 @@ ul.wbcHotKeysItems {
 }
 .alignDiv {
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .rbcDiv {
@@ -1426,6 +1453,9 @@ ul.wbcHotKeysItems {
 
 ul.normalItems {
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 ul.normalItems li {
@@ -1531,10 +1561,13 @@ ul.normalItems li div span:last-child {
 
 
 /* setting */
-/* login / account */
+/* login/account */
 
 .userSearch {
-    width: 10px;
+    width: 100px !important;
+    padding: 7px;
+    border: 1px solid black;
+    border-radius: 0px;
 }
 
 .searchInputBox {
@@ -1543,5 +1576,14 @@ ul.normalItems li div span:last-child {
 }
 
 .searchBtn {
-    padding: 8px;
+    margin-left: 15px;
+}
+
+.searchBtn:hover{
+    cursor: pointer;
+}
+
+/* analysis/database */
+.tab-content {
+    padding: 20px;
 }

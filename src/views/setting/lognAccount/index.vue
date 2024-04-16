@@ -5,7 +5,8 @@
         <option v-for="option in userSearchOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <input type="text" v-model="inputText" class="searchInputBox">
-      <button @click="onSearch" class="searchBtn">Search</button>
+      <font-awesome-icon :icon="['fas', 'search']" class="searchBtn" @click="onSearch"/>
+
     </div>
     <table class="table">
       <thead>

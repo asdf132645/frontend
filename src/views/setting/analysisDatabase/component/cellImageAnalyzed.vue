@@ -3,24 +3,17 @@
     <table class="settingTable">
       <tbody>
       <tr>
-        <th>Analysis type</th>
+        <th>Analysis Type</th>
         <td colspan="2">
           <select v-model='testTypeCd'>
             <option v-for="type in testTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
+      <!--Common analysis values-->
       <tr>
-        <th rowspan="4">WBC diff analysis values</th>
-        <th>Cell analyzing count:</th>
-        <td>
-          <select v-model='pbAnalysisType'>
-            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <th>Wbc Position margin:</th>
+        <th rowspan="3">Common Analysis Values</th>
+        <th>Wbc Position Margin</th>
         <td>
           <select v-model='wbcPositionMargin'>
             <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -28,7 +21,7 @@
         </td>
       </tr>
       <tr>
-        <th>Rbc Position margin:</th>
+        <th>Rbc Position Margin</th>
         <td>
           <select v-model='rbcPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -36,18 +29,28 @@
         </td>
       </tr>
       <tr>
-        <th>Plt Position margin:</th>
+        <th>Plt Position Margin</th>
         <td>
           <select v-model='pltPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
+      <!--WBC diff analysis values-->
+      <tr>
+        <th>WBC diff</th>
+        <th>Cell Analyzing Count</th>
+        <td>
+          <select v-model='pbAnalysisType'>
+            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+        </td>
+      </tr>
       <!--      PBS analysis values-->
       <tr>
-        <th rowspan="2">PBS analysis values</th>
+        <th rowspan="2">PBS</th>
         <th>
-          Cell analyzing count:
+          Cell Analyzing Count
         </th>
         <td>
           <select v-model='pbAnalysisType2'>
@@ -56,7 +59,7 @@
         </td>
       </tr>
       <tr>
-        <th>Stitch count:</th>
+        <th>Stitch Count</th>
         <td>
           <select v-model='stitchCount'>
             <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -65,8 +68,8 @@
       </tr>
       <!--      BF analysis values-->
       <tr>
-        <th>BF analysis values</th>
-        <th>Cell analyzing count:</th>
+        <th>BF</th>
+        <th>Cell Analyzing Count</th>
         <td>
           <select v-model='bfAnalysisType'>
             <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -74,7 +77,7 @@
         </td>
       </tr>
       <tr>
-        <th>IA root path</th>
+        <th>IA Root Path</th>
         <td colspan="2">
           <select v-model='pbiaRootPath'>
             <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
@@ -86,6 +89,7 @@
         <td>
           <font-awesome-icon
               :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              size="lg"
               @click="toggleNsNbIntegration"
           />
         </td>
@@ -95,6 +99,7 @@
         <td>
           <font-awesome-icon
               :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              size="lg"
               @click="toggleAlarm"
           />
         </td>
@@ -103,10 +108,11 @@
         </td>
       </tr>
       <tr>
-        <th>keepPage</th>
+        <th>Keep WBC Page</th>
         <td>
           <font-awesome-icon
               :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              size="lg"
               @click="toggleKeepPage"
           />
         </td>
