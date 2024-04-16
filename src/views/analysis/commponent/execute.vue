@@ -196,9 +196,9 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       wbcCount: wbcCount.value,
       stitchCount: stitchCount.value,
       reqUserId: userId.value,
-      rbcPositionMargin: rbcPositionMargin,
-      wbcPositionMargin: wbcPositionMargin,
-      pltPositionMargin: pltPositionMargin,
+      rbcPositionMargin: rbcPositionMargin || '0',
+      wbcPositionMargin: wbcPositionMargin || '0',
+      pltPositionMargin: pltPositionMargin || '0',
     });
     console.log(startAction);
     if (process.env.PROJECT_TYPE === 'bm') {

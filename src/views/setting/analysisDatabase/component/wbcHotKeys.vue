@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!--    {{ wbcHotKeysItems }}-->
     <ul class="wbcHotKeysItems">
       <li v-for="item in wbcHotKeysItems" :key="item.id">
         <span>{{ item.title }} - </span>
@@ -27,7 +26,8 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
-import {wbcHotKeys} from "@/common/defines/constFile/settings";
+import {bmHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
+import process from "process";
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -38,9 +38,11 @@ const wbcHotKeysItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const projectType = ref('pb');
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
+  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   await getWbcHotKeyClasses();
 });
 
@@ -77,7 +79,8 @@ const getWbcHotKeyClasses = async () => {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         console.log(null);
         saveHttpType.value = 'post';
-        wbcHotKeysItems.value = wbcHotKeys;
+        wbcHotKeysItems.value = projectType.value ==='bm' ? bmHotKeys : wbcHotKeys;
+        // bmHotKeys
       } else {
         saveHttpType.value = 'put';
         const data = result.data;

@@ -184,8 +184,9 @@ import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/comm
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import process from "process";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -227,7 +228,6 @@ const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
-const getDB = ref({})
 
 
 onMounted(async () => {
@@ -907,7 +907,8 @@ async function initData(newData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
-  await sortWbcInfo(wbcInfo.value, basicWbcArr);
+  const sortArr =  process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  await sortWbcInfo(wbcInfo.value, sortArr);
 }
 
 function onDragOver() {

@@ -31,12 +31,13 @@
 <script setup lang="ts">
 
 import {onMounted, ref} from "vue";
-import {basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {
   createOrderClassApi,
   getOrderClassApi, putOrderClassApi,
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
+import process from "process";
 
 const wbcInfoChangeVal = ref<any>([]);
 
@@ -53,7 +54,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  wbcInfoChangeVal.value = basicWbcArr;
+  wbcInfoChangeVal.value = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   userId.value = getStoredUser.id;
   await getOrderClass();
 })
