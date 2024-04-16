@@ -1,7 +1,7 @@
 <!-- App.vue -->
 <template>
   <div>
-    <AppHeader v-if="router.currentRoute.value.path !== '/user/login'"/>
+    <AppHeader v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class='content'>
       <router-view/>
     </main>
