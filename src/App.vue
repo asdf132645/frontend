@@ -1,8 +1,8 @@
 <!-- App.vue -->
 <template>
-  <div>
+  <div class="appcontainer" >
     <AppHeader v-if="router.currentRoute.value.path !== '/user/login'"/>
-    <main class='content'>
+    <main class='content' :class="{ 'bmComponent': projectBm }">
       <router-view/>
     </main>
     <Alert
@@ -39,6 +39,9 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
 import EventBus from "@/eventBus/eventBus";
 import {getAllUsersApi, getUserApi, getUserIpApi} from "@/common/api/service/user/userApi";
+import * as process from "process";
+import { faL } from "@fortawesome/free-solid-svg-icons";
+
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -63,6 +66,8 @@ const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr = computed(() => store.state.commonModule.runningArr);
 const viewerCheckApp = ref('');
+const projectBm = ref(false);
+
 // 실제 배포시 사용해야함
 // document.addEventListener('click', function (event: any) {
 //   const storedUser = sessionStorage.getItem('user');
@@ -150,6 +155,9 @@ const leave = (event: any) => {
 onMounted(async () => {
   await nextTick();
   window.addEventListener('beforeunload', leave);
+
+  // 현재 프로젝트가 bm인지 확인하고 클래스 부여
+  projectBm.value = process.env.PROJECT_TYPE === 'bm' ? true : false;
 
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);

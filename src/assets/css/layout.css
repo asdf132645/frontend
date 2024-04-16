@@ -61,11 +61,10 @@
 
 main.content {
     background: #25313b;
-    /* padding: 10px; */
-    /* height: 92vh; */
-    /* 바디 세로 스크롤 방지*/
-    /* position: fixed;
-    width:100%; */
+}
+
+main.bmComponent {
+    background: #272727;
 }
 
 .toggleHeadBtn {
@@ -1586,4 +1585,9 @@ ul.normalItems li div span:last-child {
 /* analysis/database */
 .tab-content {
     padding: 20px;
+}
+
+
+/* BM */
+.projectBm {
 }
