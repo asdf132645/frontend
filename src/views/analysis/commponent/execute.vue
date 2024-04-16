@@ -172,6 +172,9 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       }
       return;
     }
+    const rbcPositionMargin = sessionStorage.getItem('rbcPositionMargin');
+    const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
+    const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
@@ -179,7 +182,11 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       wbcCount: wbcCount.value,
       stitchCount: stitchCount.value,
       reqUserId: userId.value,
+      rbcPositionMargin: rbcPositionMargin,
+      wbcPositionMargin: wbcPositionMargin,
+      pltPositionMargin: pltPositionMargin,
     });
+    console.log(startAction);
     if (process.env.PROJECT_TYPE === 'bm'){
       startAction = {
         "jobCmd": "START",
