@@ -4,11 +4,17 @@
       <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
       <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
       <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device controls</button>
-      <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">WBC Custom Class</button>
-      <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">WBC Hot Keys</button>
+      <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
+        {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
+      </button>
+      <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">
+        {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
+      </button>
       <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
       <button v-if="projectType === 'pb'" @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
-      <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">WBC Order</button>
+      <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
+        {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
+      </button>
     </div>
 
     <div class="tab-content">
@@ -22,7 +28,7 @@ import {computed, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
 import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
-import WbcCustomClass from '@/views/setting/analysisDatabase/component/wbcCustomClass.vue'
+import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'
 import WbcHotKey from "@/views/setting/analysisDatabase/component/wbcHotKeys.vue";
 import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
 import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
