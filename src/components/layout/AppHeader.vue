@@ -1,14 +1,10 @@
 <template>
   <header class='header'>
-    <nav>
-      <!-- 왼쪽 메인 메뉴 -->
-      <div class='appHeaderLeft' v-if="!appHeaderLeftHidden">
+    <nav> 
+      <div class='appHeaderLeft' :class="{ 'bmComponent': projectBm }" v-if="!appHeaderLeftHidden">
         <div class="borderLine">
           <span class="greenColor">U</span>IMD
         </div>
-        <!--        <div class='toggleHeadBtn'>-->
-        <!--          <span></span>-->
-        <!--        </div>-->
         <router-link :to="noRouterPush ? '#' : '/setting'"
                      :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
           <font-awesome-icon :icon="['fas', 'gear']" style="font-size: 1rem;"/>
@@ -48,7 +44,7 @@
           </div>
         </div>
       </div>
-      <div class="leftMenu" v-if="router.currentRoute.value.path === '/'">
+      <div class="leftMenu" :class="{ 'bmComponent': projectBm }" v-if="router.currentRoute.value.path === '/'">
         <ul>
           <li class="alarm">
             <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
@@ -125,11 +121,10 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import {sendOilPrimeWebSocket, sendSettingInfoWebSocket} from "@/common/lib/sendWebSocket/common";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
+import * as process from "process";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
-// const formattedDate = new Date().toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
-// const formattedTime = new Date().toLocaleTimeString('en-US');
 const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -161,25 +156,22 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = ref('');
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
-// 현재 날짜와 시간을 저장하는 변수
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
 let isAralrmInterver = null;
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const projectBm = ref(false);
 
-// 현재 날짜를 계산하는 computed 속성
 const formattedDate = computed(() => {
   return currentDate.value;
 });
 
-// 현재 시간을 계산하는 computed 속성
 const formattedTime = computed(() => {
   return currentTime.value;
 });
 
-// 화면에 실시간으로 날짜와 시간을 갱신하는 함수
 const updateDateTime = () => {
   const now = new Date();
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
@@ -187,6 +179,9 @@ const updateDateTime = () => {
 };
 
 onMounted(async () => {
+  // 현재 프로젝트가 bm인지 확인하고 클래스 부여
+  projectBm.value = process.env.PROJECT_TYPE === 'bm' ? true : false;
+
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
   // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
@@ -196,6 +191,7 @@ onMounted(async () => {
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
   }
+  
 });
 
 

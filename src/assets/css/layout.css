@@ -64,7 +64,7 @@ main.content {
 }
 
 main.bmComponent {
-    background: #272727;
+    background: #232323;
 }
 
 .toggleHeadBtn {
@@ -82,6 +82,10 @@ main.bmComponent {
     border-bottom: 1px solid #494949;
 }
 
+.appHeaderLeft.bmComponent {
+    background: #121212;
+}
+
 .leftMenu {
     text-align: left;
     margin-left: 0;
@@ -91,6 +95,11 @@ main.bmComponent {
     background: #2d3d4a;
     padding-left: 16px;
 }
+
+.leftMenu.bmComponent {
+    background: #101316;
+}
+
 .rock {
     color: #ff6363;
 }
@@ -1585,9 +1594,4 @@ ul.normalItems li div span:last-child {
 /* analysis/database */
 .tab-content {
     padding: 20px;
-}
-
-
-/* BM */
-.projectBm {
 }
