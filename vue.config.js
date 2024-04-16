@@ -12,6 +12,9 @@ module.exports = {
       alias: {
         '@': path.join(__dirname, 'src/')
       },
+      fallback: {
+        "process": require.resolve("process/browser")
+      }
     },
     plugins: [
       new PurgeCSSPlugin({

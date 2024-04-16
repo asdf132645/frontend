@@ -19,7 +19,7 @@ export const tcpReq:any = () => {
                 wbcCount: '',
                 stitchCount: '',
                 runningMode: '00',
-                rbcPositionMargin:'0',
+                positionMargin:  '0',
                 wbcPositionMargin: '0',
                 pltPositionMargin: '0',
                 reqDttm: reqDttm,

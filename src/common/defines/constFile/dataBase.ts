@@ -6,8 +6,8 @@ export const testType = [
 ];
 
 export const bmTestType = [
-    {value: '01', text: 'PB smear'},
-    {value: '04', text: 'BM smear'},
-    {value: '02', text: 'Touch print'},
-    {value: '03', text: 'BM biopsy'}
+    {value: '02', text: 'BM smear'},
+    {value: '03', text: 'Touch print'},
+    {value: '04', text: 'BM biopsy'},
+    {value: '05', text: 'Clot section'}
 ];
