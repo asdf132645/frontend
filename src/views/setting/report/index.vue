@@ -2,9 +2,11 @@
   <div>
     <div class="tab-buttons">
       <button @click="selectTab('ImagePrint')" :class="{ 'active': selectedTab === 'ImagePrint' }">Image Print</button>
-      <button @click="selectTab('LisCode')" :class="{ 'active': selectedTab === 'LisCode' }">Lis Code</button>
-      <button @click="selectTab('CbcCode')" :class="{ 'active': selectedTab === 'CbcCode' }">CBC Code</button>
-      <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">File Path Set & LisHotKey</button>
+      <div v-if="!projectBm">
+        <button @click="selectTab('LisCode')" :class="{ 'active': selectedTab === 'LisCode' }">Lis Code</button>
+        <button @click="selectTab('CbcCode')" :class="{ 'active': selectedTab === 'CbcCode' }">CBC Code</button>
+        <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">File Path Set & LisHotKey</button>
+      </div>
       <button @click="selectTab('countSet')" :class="{ 'active': selectedTab === 'countSet' }">Count Set</button>
     </div>
 
@@ -20,8 +22,11 @@ import LisCode from "@/views/setting/report/component/lisCode.vue";
 import cbcCode from "@/views/setting/report/component/cbcCode.vue";
 import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
 import CountSet from '@/views/setting/report/component/countSet.vue';
+import  * as process from "process";
 
-import {computed, ref} from "vue";
+import {computed, ref, onMounted} from "vue";
+
+const projectBm = ref(false);
 
 let selectedTab = ref('ImagePrint');
 
@@ -45,5 +50,9 @@ const selectedTabComponent = computed(() => {
       return null;
   }
 });
+
+onMounted(() => {
+  projectBm.value = process.env.PROJECT_TYPE === 'bm' ? true : false;
+})
 
 </script>
