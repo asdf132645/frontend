@@ -64,7 +64,7 @@ main.content {
 }
 
 main.bmComponent {
-    background: #252525;
+    background: #2e2e2e;
 }
 
 .toggleHeadBtn {
@@ -218,7 +218,7 @@ span.icoText {
     width: 28%;
     padding: 0;
     margin-top: 0;
-    height: 89vh;
+    height: 88vh;
 }
 
 .contentRight {
@@ -226,7 +226,7 @@ span.icoText {
     width: 72%;
     align-items: start;
     vertical-align: top;
-    height: 89vh;
+    height: 88vh;
 }
 
 .contentRight > div {
@@ -581,8 +581,8 @@ ul.slideContent > p {
 }
 
 ul.processInfoUl > li {
-    font-size: 0.8rem;
-    padding: 4px 0;
+    font-size: 0.9rem;
+    padding: 5px;
     display: flex;
     justify-content: space-between;
 }
@@ -835,14 +835,13 @@ table.settingTable td, table.settingTable th {
     margin-right: 15px;
 }
 
-table.defaultTable thead th {
-    background: #252629;
+table.defaultTable thead th .table{
+    background: #c7cad1;
 }
 
 table.defaultTable thead th, table.defaultTable tbody td {
     padding: 10px;
-    font-size: 0.8rem;
-    text-align: center;
+    font-size: 0.9rem;
 }
 
 table.defaultTable tbody td {
@@ -1564,14 +1563,14 @@ ul.normalItems li div span:last-child {
 }
 
 .searchUserContainer {
-
+    
 }
 
 
 /* setting */
 /* login/account */
 
-.userSearch {
+.searchSelect {
     width: 100px !important;
     padding: 7px;
     border: 1px solid black;
@@ -1585,6 +1584,7 @@ ul.normalItems li div span:last-child {
 
 .searchBtn {
     margin-left: 15px;
+    color: #29c7ca;
 }
 
 .searchBtn:hover{
@@ -1595,3 +1595,4 @@ ul.normalItems li div span:last-child {
 .tab-content {
     padding: 20px;
 }
+
