@@ -117,7 +117,7 @@
           <input type="text" v-model='alarmCount'>
         </td>
       </tr>
-      <tr>
+      <tr v-if="projectType === 'pb'">
         <th>Keep WBC Page</th>
         <td>
           <font-awesome-icon
