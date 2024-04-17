@@ -2,11 +2,11 @@
   <div>
     <h3 class="titleText"><span class="greenColor">P</span>rocessing <span class="greenColor">I</span>nformation </h3>
     <ul class="processInfoUl">
-      <li><span class="proSpan">Cassette No:</span> <span class="proVal">{{ processInfoItem?.cassetteNo }}</span></li>
-      <li><span class="proSpan">Barcode ID:</span> <span class="proVal">{{ processInfoItem?.barcodeId }}</span></li>
-      <li><span class="proSpan">Patient ID:</span> <span class="proVal">{{ processInfoItem?.patientId }}</span></li>
-      <li><span class="proSpan">Patient Name:</span> <span class="proVal">{{ processInfoItem?.patientName }}</span></li>
-      <li><span class="proSpan">WBC Count:</span> <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
+      <li><span class="proSpan">Cassette No</span> <span class="proVal">{{ processInfoItem?.cassetteNo }}</span></li>
+      <li><span class="proSpan">Barcode ID</span> <span class="proVal">{{ processInfoItem?.barcodeId }}</span></li>
+      <li><span class="proSpan">Patient ID</span> <span class="proVal">{{ processInfoItem?.patientId }}</span></li>
+      <li><span class="proSpan">Patient Name</span> <span class="proVal">{{ processInfoItem?.patientName }}</span></li>
+      <li><span class="proSpan">WBC Count</span> <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
       <li>
         <!--0019 길병원-->
         <span class="proSpan">

@@ -1,14 +1,14 @@
 <template>
   <div class="settingContainer">
     <div class="searchUserContainer">
-      <select v-model="userSearchOption" class="userSearch">
+      <select v-model="userSearchOption" class="searchSelect">
         <option v-for="option in userSearchOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <input type="text" v-model="inputText" class="searchInputBox">
       <font-awesome-icon :icon="['fas', 'search']" class="searchBtn" @click="onSearch"/>
 
     </div>
-    <table class="table">
+    <table class="table defaultTable mt2">
       <thead>
         <tr>
           <th>No.</th>

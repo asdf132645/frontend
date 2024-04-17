@@ -9,12 +9,12 @@
     <div class='listBoxTable'>
       <div class="filterListDiv">
         <div>
-          <select v-model="searchType">
+          <select v-model="searchType" class="searchSelect">
             <option value="barcodeNo">Barcode No</option>
             <option value="patientId">Patient ID</option>
             <option value="patientNm">Patient Name</option>
           </select>
-          <input type="text" v-model='searchText'/>
+          <input type="text" v-model='searchText' class="searchInputBox"/>
           <Datepicker v-model="startDate"></Datepicker>
           <Datepicker v-model="endDate"></Datepicker>
           <button class="searchClass" @click="search">Search</button>
