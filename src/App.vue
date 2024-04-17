@@ -333,18 +333,23 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     const iCasStatArr: any = [...str];
     const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
     const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
+
+    if (iCasStatArr.lastIndexOf("2") === 0) {
+      await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+    }
+    // 데이터 넣는 부분
+    if(iCasStatArr.lastIndexOf("2") !== -1){
+      runningArr.value[iCasStatArr.lastIndexOf("2")] = data;
+    }
+
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
     if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")]);
+      await saveTestHistory(runningArr.value[existingIndex]);
       return;
     }
-    if (iCasStatArr.lastIndexOf("2") === 0) {
-      await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-    }
-    runningArr.value[iCasStatArr.lastIndexOf("2")] = data;
     if (data?.iCasStat.indexOf("2") !== -1) {
       await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
     }
