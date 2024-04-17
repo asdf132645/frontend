@@ -169,6 +169,7 @@ import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import {stateUpdateCommon} from "@/common/lib/commonfunction";
 
 
 const props = defineProps(['dbData']);
@@ -338,7 +339,15 @@ const selectItem = (item) => {
 const getUserIp = async (item) => {
   try {
     const result = await getUserIpApi();
-    await stateUpdate(item, result.data);
+    await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
+      emits('initData');
+      instance?.appContext.config.globalProperties.$socket.emit('state', {
+        type: 'SEND_DATA',
+        payload: 'refreshDb'
+      });
+    }).catch(error => {
+      console.error('Error:', error.response.data);
+    });
   } catch (e) {
     console.log(e)
   }

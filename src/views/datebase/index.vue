@@ -76,7 +76,7 @@ import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
-const dbGetData = ref<RuningInfo[]>([]);
+const dbGetData = ref<any[]>([]);
 const emits = defineEmits();
 
 
@@ -161,6 +161,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   if (type === 'search') {
     page.value = 1;
   }
+  dbGetData.value = [];
   const requestData: any = {
     page: type !== 'mounted' ? page.value : Number(pageNum),
     pageSize: 20,
@@ -202,7 +203,9 @@ const getDbData = async (type: string, pageNum?: number) => {
           dbGetData.value = newData;
         } else {
           dbGetData.value = [...dbGetData.value, ...newData];
+          console.log(dbGetData.value)
         }
+        dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0]
 
         // 마지막 조회 결과 저장

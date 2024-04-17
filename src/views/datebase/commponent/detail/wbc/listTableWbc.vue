@@ -187,6 +187,7 @@ import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
+import {stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -235,47 +236,24 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses();
-  if(!pbiaRootPath.value){
+  if (!pbiaRootPath.value) {
     const rootPath = sessionStorage.getItem('pbiaRootPath');
     await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(rootPath)});
   }
 });
-onUnmounted(() => {
-  stateUpdate();
+onUnmounted(async () => {
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+      .then(response => {
+        initData('');
+        instance?.appContext.config.globalProperties.$socket.emit('state', {
+          type: 'SEND_DATA',
+          payload: 'refreshDb'
+        });
+      }).catch(error => {
+        console.error('Error:', error.response.data);
+      });
 })
 
-const stateUpdate = async () => {
-  try {
-    const updatedRuningInfo = {
-      pcIp: '',
-      state: false,
-    };
-
-    const localDbData = [...originalDb.value];
-
-    const indexToUpdate = localDbData.findIndex(item => item.id === selectItems.value.id);
-
-    if (indexToUpdate !== -1) {
-      localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
-    }
-
-    const response = await updateRunningApi({
-      userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [localDbData[indexToUpdate]]
-    })
-    if (response) {
-      await initData('');
-      await instance?.appContext.config.globalProperties.$socket.emit('state', {
-        type: 'SEND_DATA',
-        payload: 'refreshDb'
-      });
-    } else {
-      console.error('백엔드가 디비에 저장 실패함');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
@@ -607,6 +585,16 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
 };
 
 const moveWbc = async (direction: any) => {
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+      .then(response => {
+        initData('');
+        instance?.appContext.config.globalProperties.$socket.emit('state', {
+          type: 'SEND_DATA',
+          payload: 'refreshDb'
+        });
+      }).catch(error => {
+        console.error('Error:', error.response.data);
+      });
   const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
   const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
 
@@ -618,6 +606,16 @@ const moveWbc = async (direction: any) => {
     clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
     await updateUpDown(originalDb.value[nextDbIndex].wbcInfo.wbcInfo[0], originalDb.value[nextDbIndex]);
   }
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    initData('');
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 }
 
 const drawCellMarker = async () => {
@@ -878,6 +876,7 @@ function handleKeyUp(event: KeyboardEvent) {
 }
 
 async function initData(newData: any) {
+  wbcInfo.value = [];
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
@@ -907,7 +906,7 @@ async function initData(newData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
-  const sortArr =  process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortArr = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
 }
 
@@ -1043,6 +1042,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     console.error('에러:', error);
   }
 }
+
 function removeDuplicateImages(data: any[]): any[] {
   const uniqueFileNames = new Set<string>();
 
@@ -1055,7 +1055,7 @@ function removeDuplicateImages(data: any[]): any[] {
       return false;
     });
 
-    return { ...item, images: uniqueImages };
+    return {...item, images: uniqueImages};
   });
 }
 
@@ -1082,7 +1082,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       }
       return false;
     });
-    return { ...item, images: uniqueImagesForItem };
+    return {...item, images: uniqueImagesForItem};
   });
   clonedWbcInfo = uniqueData;
   if (notWbcAfterSave !== 'notWbcAfterSave') {
