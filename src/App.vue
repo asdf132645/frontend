@@ -1,7 +1,8 @@
 <!-- App.vue -->
 <template>
   <div>
-    <AppHeader v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
+    <AppHeader
+        v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class='content' :class="{ 'bmComponent': projectBm }">
       <router-view/>
     </main>
@@ -40,7 +41,7 @@ import {useRouter} from "vue-router";
 import EventBus from "@/eventBus/eventBus";
 import {getAllUsersApi, getUserApi, getUserIpApi} from "@/common/api/service/user/userApi";
 import * as process from "process";
-import { faL } from "@fortawesome/free-solid-svg-icons";
+import {faL} from "@fortawesome/free-solid-svg-icons";
 
 
 const showAlert = ref(false);
@@ -143,7 +144,7 @@ onBeforeMount(() => {
     payload: process.env.MAIN_API
   });
 });
-window.addEventListener('beforeunload', function() {
+window.addEventListener('beforeunload', function () {
   console.log('22')
   store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
@@ -197,7 +198,7 @@ onBeforeUnmount(() => {
   }
 });
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  if(commonDataGet.value.viewerCheck === ''){
+  if (commonDataGet.value.viewerCheck === '') {
     return;
   }
   try {
@@ -230,7 +231,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
@@ -247,7 +248,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
         break;
@@ -259,7 +260,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
@@ -268,7 +269,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
         break;
@@ -282,13 +283,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
         break;
       case 'ERROR_CLEAR':
         console.log('err')
@@ -324,37 +325,26 @@ const emitSocketData = async (payload: object) => {
 
 const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
   const regex = /[1,2,9]/g;
-  const dataICasStat = String(data?.iCasStat);
-  const currentSlot = data?.slotInfo;
-  const str: any = data?.iCasStat;
-  const iCasStatArr: any = [...str];
-  const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
-  const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
-  // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-  if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-    tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-    await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-    await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-    await saveTestHistory(runningArr.value[lastCompleteIndex]);
-    return;
-  }
 
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
-
-
+    const dataICasStat = String(data?.iCasStat);
+    const currentSlot = data?.slotInfo;
+    const str: any = data?.iCasStat;
+    const iCasStatArr: any = [...str];
+    const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
+    const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
+    // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
+    if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
+      tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
+      await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+      await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+      await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")]);
+      return;
+    }
     if (iCasStatArr.lastIndexOf("2") === 0) {
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
     }
-
-    if (existingIndex !== -1) {
-      const updatedArr = [...runningArr.value]; // 기존 배열 복사
-      updatedArr.splice(existingIndex, 1, data); // 해당 요소를 교체
-      await store.dispatch('commonModule/setCommonInfo', {runningArr: updatedArr});
-    } else {
-      const newArr = [...runningArr.value, data]; // 새로운 배열에 데이터 추가
-      await store.dispatch('commonModule/setCommonInfo', {runningArr: newArr});
-    }
-    // console.log(runningArr.value)
+    runningArr.value[iCasStatArr.lastIndexOf("2")] = data;
     if (data?.iCasStat.indexOf("2") !== -1) {
       await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
     }
@@ -368,6 +358,8 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       if (lastCompleteIndex !== slotIndex.value) {
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+        console.log('save')
+        console.log(runningArr.value[iCasStatArr.lastIndexOf("3")])
         await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")]);
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})

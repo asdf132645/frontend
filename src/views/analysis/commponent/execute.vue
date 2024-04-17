@@ -204,8 +204,8 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     if (process.env.PROJECT_TYPE === 'bm') {
       startAction = {
         "jobCmd": "START",
-        "reqUserId": "aaaaa",
-        "reqDttm": "20240402162245",
+        "reqUserId": userId.value,
+        "reqDttm": tcpReq().embedStatus.startAction.reqDttm,
         "orderInfo": [{
           "orderId": "1",
           "cassetNo": "1",
@@ -215,14 +215,14 @@ const toggleStartStop = (action: 'start' | 'stop') => {
           "patientNm": "",
           "age": "1",
           "gender": "01",
-          "testType": "02",
+          "testType": analysisType.value,
           "stainType": "01",
           "userInputStainType": "",
           "analysisType": "02",
           "bmSamplingSide": "01",
           "cellCount": "500",
           "department": "s",
-          "stitchCount": "1"
+          "stitchCount":stitchCount.value,
         }],
         "runningMode": "00",
         "positionMargin": "0"
