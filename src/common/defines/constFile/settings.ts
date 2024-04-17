@@ -606,6 +606,65 @@ export const imagePrintAndWbc = [
     { text: 'Artifact(Smudge)', value: '15', code: '' ,checked: false},
     { text: 'rbcPrintModel', value: '99999', code: '' ,checked: false},
 ]
+export const imagePrintAndBm = [{
+    text: 'Neutrophil',
+    value: '01'
+}, {
+    text: 'Neutrophil-Segmented',
+    value: '71'
+}, {
+    text: 'Neutrophil-Band',
+    value: '72'
+}, {
+    text: 'Metamyelocyte',
+    value: '02'
+}, {
+    text: 'Myelocyte',
+    value: '03'
+}, {
+    text: 'Promyelocyte',
+    value: '04'
+}, {
+    text: 'Lymphocyte',
+    value: '05'
+}, {
+    text: 'Abnormal lymphocyte',
+    value: '06'
+}, {
+    text: 'Monocyte',
+    value: '07'
+}, {
+    text: 'Eosinophil',
+    value: '08'
+}, {
+    text: 'Basophil',
+    value: '09'
+}, {
+    text: 'Blast',
+    value: '10'
+}, {
+    text: 'Plasma cell',
+    value: '11'
+}, {
+    text: 'Orthochromic Normoblast',
+    value: '12'
+}, {
+    text: 'Polychromic Normoblast',
+    value: '13'
+}, {
+    text: 'Basophilic Normoblast',
+    value: '14'
+}, {
+    text: 'Proerythroblast',
+    value: '15'
+}, {
+    text: 'Histiocyte',
+    value: '16'
+}, {
+    text: 'Others',
+    value: '17'
+}];
+
 
 export const lisCodeWbcOption = [
     { text: 'Neutrophil', value: '01', code: '' },
