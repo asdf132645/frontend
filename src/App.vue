@@ -206,7 +206,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     const parsedData = JSON.parse(stringData);
     if (parsedData?.bufferData === 'err') {
-      // alert('활성화된 TCP 클라이언트 연결 없음');
+      await showSuccessAlert(messages.IDS_MSG_FAILED);
       return
     }
     const parseDataWarp = parsedData;

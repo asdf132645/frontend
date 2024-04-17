@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -184,6 +184,8 @@ import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/comm
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -224,6 +226,8 @@ const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
+const instance = getCurrentInstance();
+
 onMounted(() => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -234,11 +238,6 @@ onMounted(() => {
 const getWbcCustomClasses = async () => {
   try {
     const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
-    // if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-    //   console.log(null);
-    //   return;
-    // }
-
     const data: any = result.data;
     const newData = data.filter((item: any) => item.abbreviation);
 
@@ -542,18 +541,20 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
 };
 
 const moveWbc = async (direction: any) => {
-  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
-  const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
-
-  if (nextDbIndex >= 0 && nextDbIndex < originalDb.value.length) {
-    selectItems.value = originalDb.value[nextDbIndex];
-    sessionStorage.setItem('selectItems', JSON.stringify(originalDb.value[nextDbIndex]));
-    sessionStorage.setItem('selectItemWbc', JSON.stringify(originalDb.value[nextDbIndex].wbcInfo.wbcInfo));
-    sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
-    clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
-    await updateUpDown(originalDb.value[nextDbIndex].wbcInfo.wbcInfo[0], originalDb.value[nextDbIndex]);
-  }
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
+  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    initData('');
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 }
+
 
 const drawCellMarker = async () => {
   cellMarkerIcon.value = !cellMarkerIcon.value

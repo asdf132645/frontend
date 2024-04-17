@@ -39,12 +39,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import {computed, getCurrentInstance, onMounted, onUnmounted, ref} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import router from '@/router';
 import {useStore} from "vuex";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const originalDbData = sessionStorage.getItem("originalDbData");
@@ -56,10 +58,27 @@ const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootPath = commonDataGet.value.pbiaRootPath;
 const clickid = ref(sessionStorage.getItem("dbBaseTrClickId"));
 const rbcInfo = ref(null);
+const userModuleDataGet = computed(() => store.state.userModule);
+const instance = getCurrentInstance();
+
 
 onMounted(() => {
   initData();
 });
+
+onUnmounted(async () => {
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+      .then(response => {
+        initData();
+        instance?.appContext.config.globalProperties.$socket.emit('state', {
+          type: 'SEND_DATA',
+          payload: 'refreshDb'
+        });
+      }).catch(error => {
+        console.error('Error:', error.response.data);
+      });
+})
+
 
 const initData = () => {
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
@@ -69,18 +88,19 @@ const pageGo = (path: string) => {
   router.push(path)
 }
 
-const moveRbc = (direction: any) => {
-  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
-  const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
-  
-  if (nextDbIndex >= 0 && nextDbIndex < originalDb.value.length) {
-    selectItems.value = originalDb.value[nextDbIndex];
-    sessionStorage.setItem('selectItems', JSON.stringify(originalDb.value[nextDbIndex]));
-    sessionStorage.setItem('selectItemRbc', JSON.stringify(originalDb.value[nextDbIndex].rbcInfo));
-    sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
-    clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
-    updateUpDown(originalDb.value[nextDbIndex].rbcInfo, originalDb.value[nextDbIndex]);
-  }
+const moveRbc = async (direction: any) => {
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
+  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    initData();
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 }
 
 const updateUpDown = (selectRbc: any, selectItemsNewVal: any) => {

@@ -401,5 +401,6 @@ export  const messages: Messages = {
     IDS_NO_DATA_FOUND: 'No data found.',
     IDS_MSG_DATA_BACKUP: 'Data from that period will be deleted. Would you like to proceed?',
     IDS_MSG_DATA_RESTORE: 'Do you want to recover your data?',
-    IDS_MSG_SIZE_CHROMIA_LINKED_LIS: 'Size and Chromia categories are linked with LIS data.'
+    IDS_MSG_SIZE_CHROMIA_LINKED_LIS: 'Size and Chromia categories are linked with LIS data.',
+
 };
