@@ -191,7 +191,6 @@ onMounted(() => {
 onUnmounted(async () => {
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
       .then(response => {
-        initData();
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
           payload: 'refreshDb'
@@ -221,6 +220,15 @@ async function initData() {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0]
   }
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 }
 
 const moveWbc = async (direction: any) => {

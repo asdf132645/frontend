@@ -5,8 +5,8 @@ import JoinView from '@/views/join/index.vue';
 import loginView from '@/views/login/index.vue';
 import setting from '@/views/setting/index.vue'
 import Database from '@/views/datebase/index.vue';
-import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listTableRbc.vue';
-import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listTableWbc.vue';
+import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listDetailRbc.vue';
+import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listDetailWbc.vue';
 import Report from  '@/views/datebase/commponent/detail/report/report.vue';
 import DatabaseBm from '@/views/datebase/commponent/detail/bm/listTableBm.vue';
 import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
