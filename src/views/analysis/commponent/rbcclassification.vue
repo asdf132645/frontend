@@ -95,11 +95,12 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, watch, computed} from "vue";
+import {ref, onMounted, watch, computed, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
@@ -115,6 +116,7 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
 const commonDataGet = computed(() => store.state.commonModule);
+const instance = getCurrentInstance();
 
 
 watch([runningInfoModule.value], (newVal: any) => {
@@ -142,17 +144,35 @@ onMounted(async () => {
   await updateDataArray(initialRbcClassList);
 });
 
-watch(
-    () => store.state.rbcClassificationModule,
-    (newSlotInfo) => {
-      updateDataArray(newSlotInfo);
-    },
-    {deep: true}
-);
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  try {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
+
+    const parsedData = JSON.parse(stringData);
+    if(parsedData.jobCmd === 'RUNNING_INFO'){
+      // console.log()
+      // updateDataArray(parsedData.slotInfo);
+     await updateDataArray({rbcInfo: parsedData.slotInfo});
+    }
+  } catch (e) {
+    // console.log(e)
+  }
+})
+
+
+// watch(
+//     () => store.state.rbcClassificationModule,
+//     (newSlotInfo) => {
+//       console.log(newSlotInfo)
+//       updateDataArray(newSlotInfo);
+//     },
+//     {deep: true}
+// );
 const lowPowerPath = ref([]);
-const updateDataArray = async (newSlotInfo: RbcInfo[]) => {
+const updateDataArray = async (newSlotInfo: any[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
-  // console.log()
+  console.log(newSlotInfo)
 
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;

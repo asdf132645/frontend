@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, ref, watch} from "vue";
 import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
@@ -49,46 +49,46 @@ const runningInfoModule = computed(() => store.state.runningInfoModule);
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const runningArr = computed(() => store.state.commonModule.runningArr);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
+const instance = getCurrentInstance();
 
 // end 스토어
 const dspOrderList = ref<any>([]);
 const siteCd = ref('');
 
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  try {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
 
-watch([runningInfoModule.value], (newVal: any) => {
-  // console.log(newVal)
-  if (newVal.length > 0) {
-    const firstItem = newVal[0].runningInfo;
-
-    if (firstItem) {
-      if (firstItem.jobCmd === 'RUNNING_INFO') {
-        const currentSlot = firstItem?.slotInfo
-        if (currentSlot && currentSlot?.stateCd === '03') {
-          const barcodeNo = currentSlot.barcodeNo;
-          const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
-          if (existingItemIndex === -1 && barcodeNo !== '') {
-            dspOrderList.value.push({
-              barcodeId: barcodeNo,
-              patientName: currentSlot.patientNm,
-              orderDate: stringToDateTime(currentSlot.orderDttm),
-              analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-              state: currentSlot.stateCd,
-            });
-            // 업데이트된 데이터를 데이터베이스에 전달합니다.
-            store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-              slotInfo: [
-                {
-                  orderList: dspOrderList.value,
-                },
-              ]
-            });
-          }
+    const parsedData = JSON.parse(stringData);
+    if(parsedData.jobCmd === 'RUNNING_INFO'){
+      const currentSlot = parsedData?.slotInfo
+      if (currentSlot && currentSlot?.stateCd === '03') {
+        const barcodeNo = currentSlot.barcodeNo;
+        const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+        if (existingItemIndex === -1 && barcodeNo !== '') {
+          dspOrderList.value.push({
+            barcodeId: barcodeNo,
+            patientName: currentSlot.patientNm,
+            orderDate: stringToDateTime(currentSlot.orderDttm),
+            analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+            state: currentSlot.stateCd,
+          });
+          // 업데이트된 데이터를 데이터베이스에 전달합니다.
+          store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+            slotInfo: [
+              {
+                orderList: dspOrderList.value,
+              },
+            ]
+          });
         }
-
       }
     }
+  } catch (e) {
+    // console.log(e)
   }
-});
+})
 
 watch([embeddedStatusJobCmd.value], async (newVals) => {
   // console.log('감시시작')

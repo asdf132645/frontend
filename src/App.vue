@@ -144,7 +144,7 @@ onBeforeMount(() => {
     payload: process.env.MAIN_API
   });
 });
-window.addEventListener('beforeunload', function () {
+window.addEventListener('beforeunload', function (event: any) {
   store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
 const leave = (event: any) => {
@@ -196,6 +196,7 @@ onBeforeUnmount(() => {
     countingInterRunval = null;
   }
 });
+
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   if (commonDataGet.value.viewerCheck === '') {
     return;
@@ -297,6 +298,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }
 
     async function runningInfoCheckStore (data: any | undefined) {
+      console.log('runrun')
       const regex = /[1,2,9]/g;
       // console.log(data)
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
