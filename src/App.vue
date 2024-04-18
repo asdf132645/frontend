@@ -85,11 +85,9 @@ const getUserIp = async (ip: string) => {
   try {
     const result = await getUserIpApi();
     if (result.data === ip) {
-      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
-      viewerCheckApp.value = 'main';
+      viewerCheckApp.value = result.data;
     } else {
-      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
-      viewerCheckApp.value = 'viewer';
+      viewerCheckApp.value = result.data;
     }
   } catch (e) {
     console.log(e)
@@ -153,7 +151,7 @@ const leave = (event: any) => {
 onMounted(async () => {
   await nextTick();
   window.addEventListener('beforeunload', leave);
-
+  console.log(commonDataGet.value.viewerCheck)
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -161,6 +159,7 @@ onMounted(async () => {
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
+
   if (!commonDataGet.value.isRunningState) {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
@@ -196,6 +195,9 @@ onBeforeUnmount(() => {
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  if(commonDataGet.value.viewerCheck !== 'main'){
+    return;
+  }
   try {
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
@@ -206,6 +208,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       return
     }
     const parseDataWarp = parsedData;
+
+
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
