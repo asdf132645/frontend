@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -234,7 +234,19 @@ onMounted(() => {
   document.body.addEventListener("click", handleBodyClick);
   getWbcCustomClasses();
 });
-
+onUnmounted(async () => {
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+      .then(response => {
+        console.log(response)
+        instance?.appContext.config.globalProperties.$socket.emit('state', {
+          type: 'SEND_DATA',
+          payload: 'refreshDb'
+        });
+        initData('');
+      }).catch(error => {
+        console.error('Error:', error.response.data);
+      });
+})
 const getWbcCustomClasses = async () => {
   try {
     const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
