@@ -333,7 +333,7 @@ const runningInfoCheckStore = async (data: any | undefined) => {
     const iCasStatArr: any = [...str];
     const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
     const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
-    console.log(existingIndex);
+    console.log(data?.slotInfo);
 
     if (iCasStatArr.lastIndexOf("2") === 0) {
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
