@@ -10,13 +10,13 @@
         <th>State</th>
       </tr>
       </thead>
-      <tbody v-if="dspOrderList.length > 0">
+      <tbody v-if="runningArr.length > 0">
       <tr v-for="(slot, index) in runningArr" :key="index">
-        <td>{{ slot.slotInfo.barcodeNo }}</td>
-        <td>{{ slot.slotInfo.patientNm  }}</td>
+        <td>{{ slot?.slotInfo?.barcodeNo }}</td>
+        <td>{{ slot?.slotInfo?.patientNm  }}</td>
         <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
-        <td>{{ slot.slotInfo.analyzedDttm ? slot.slotInfo.analyzedDttm : slot.slotInfo.orderDttm }}</td>
-        <td>{{ getCommonCode('14', slot.slotInfo.stateCd) }}</td>
+        <td>{{ slot?.slotInfo?.analyzedDttm ? slot?.slotInfo?.analyzedDttm : slot?.slotInfo?.orderDttm }}</td>
+        <td>{{ getCommonCode('14', slot?.slotInfo?.stateCd) }}</td>
       </tr>
       </tbody>
       <tbody v-else>

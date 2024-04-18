@@ -156,14 +156,18 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/wbc/databaseWbcRight/wbcClass.vue";
-import {onMounted, ref} from "vue";
+import {computed, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
+import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
+import {useStore} from "vuex";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
+const store = useStore();
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
@@ -176,11 +180,26 @@ const printContent = ref(null);
 const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const rbcInfo = ref([]);
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
+const userModuleDataGet = computed(() => store.state.userModule);
+const instance = getCurrentInstance();
 
 
 onMounted(() => {
   initData();
 });
+
+onUnmounted(async () => {
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+      .then(response => {
+        initData();
+        instance?.appContext.config.globalProperties.$socket.emit('state', {
+          type: 'SEND_DATA',
+          payload: 'refreshDb'
+        });
+      }).catch(error => {
+        console.error('Error:', error.response.data);
+      });
+})
 
 const printClose = () => {
   printOnOff.value = false;
@@ -194,6 +213,7 @@ const pageGo = (path: string) => {
 }
 
 async function initData() {
+  wbcInfo.value = [];
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
@@ -204,17 +224,18 @@ async function initData() {
 }
 
 const moveWbc = async (direction: any) => {
-  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
-  const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
-
-  if (nextDbIndex >= 0 && nextDbIndex < originalDb.value.length) {
-    selectItems.value = originalDb.value[nextDbIndex];
-    sessionStorage.setItem('selectItems', JSON.stringify(originalDb.value[nextDbIndex]));
-    sessionStorage.setItem('selectItemWbc', JSON.stringify(originalDb.value[nextDbIndex].wbcInfo.wbcInfo));
-    sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
-    clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
-    await updateUpDown(originalDb.value[nextDbIndex].wbcInfo.wbcInfo[0], originalDb.value[nextDbIndex]);
-  }
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
+  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    initData();
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 }
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {

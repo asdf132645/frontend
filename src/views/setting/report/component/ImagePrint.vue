@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted, computed} from 'vue';
-import { imagePrintAndWbc } from "@/common/defines/constFile/settings";
+import {imagePrintAndBm, imagePrintAndWbc} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
   createImagePrintApi,
@@ -30,9 +30,10 @@ import {
 import { ImagePrintItem } from "@/common/api/service/setting/dto/imagePrintDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
+import process from "process";
 
 
-const imagePrintAndWbcArr = ref<ImagePrintItem[]>([]);
+const imagePrintAndWbcArr = ref<any[]>([]);
 const selectedItems = ref<string[]>([]);
 
 const storedUser = sessionStorage.getItem('user');
@@ -93,7 +94,7 @@ const getImagePrintData = async () => {
       if (!data || (data instanceof Array && data.length === 0)) {
         console.log(null);
         saveHttpType.value = 'post';
-        imagePrintAndWbcArr.value = imagePrintAndWbc;
+        imagePrintAndWbcArr.value = process.env.PROJECT_TYPE ==='bm'? imagePrintAndBm : imagePrintAndWbc;
       } else {
         saveHttpType.value = 'put';
         imagePrintAndWbcArr.value = data;

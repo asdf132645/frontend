@@ -138,12 +138,10 @@ watch(
 
 const updateDataArray = async (newSlotInfo: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
-  console.log(props.bmIsBoolen)
   if (slotArray.wbcInfo) {
     testType.value = slotArray?.wbcInfo?.testType;
     const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo.bmInfo] : [slotArray.wbcInfo.wbcInfo];
     const wbcInfoArray = wbcinfoType;
-    console.log(wbcinfoType)
     const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
     dspBfClassList.value = dspWbcClassList.value.flat();

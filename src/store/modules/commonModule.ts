@@ -81,7 +81,7 @@ export const commonModule: CommonModule = {
         firstLoading: false,
         slotIndex: 0,
         viewerCheck: '',
-        runningArr: [],
+        runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
