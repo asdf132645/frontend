@@ -64,7 +64,7 @@ main.content {
 }
 
 main.bmComponent {
-    background: #2e2e2e;
+    background: #1d1d1d;
 }
 
 .toggleHeadBtn {
@@ -116,6 +116,7 @@ main.bmComponent {
     margin-bottom: 10px;
     border-bottom: 1px solid #fff;
     padding-bottom: 10px;
+    padding-top:10px;
 }
 .bmclass .categories {
     justify-content: flex-start;
@@ -345,10 +346,6 @@ table.settingTable {
     margin: auto;
 }
 
-table.settingTable tr{
-    /* border-bottom: 1px solid black; */
-}
-
 table.settingTable select{
     padding: 6px;
 }
@@ -405,13 +402,15 @@ button.saveBtn, .defaultBtn {
 }
 
 /*동그라미 끝*/
-.categories {
+.categories, .nth1Child {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     text-align: left;
+    padding: 4px 0;
+    margin-left: 15px;
+    border-bottom:1px solid #494949;
 }
-
 
 ul.classInfo {
     width: 50%;
@@ -475,6 +474,7 @@ ul.nth1Child > :nth-child(3) {
 
 li.mb1.liTitle {
     font-weight: 600;
+    margin-top: 20px;
 }
 
 .startBtn.isInit {
@@ -540,7 +540,7 @@ ul.slideContent .outClassDefault {
 
 .orderListTable {
     width: 100%;
-    height: 45vh;
+    height: 46vh;
 }
 
 .orderListTable th, .orderListTable td {
@@ -597,7 +597,7 @@ span.proSpan {
 
 .contentBottom {
     width: 97.5% !important;
-    min-height: 142px;
+    min-height: 146px;
     margin-top: 10px !important;
 }
 
@@ -829,10 +829,30 @@ table.settingTable td, table.settingTable th {
     background-color: #b6b6b6;
 }
 
+.filterListDiv {
+    position: relative;
+    left: 10px;
+}
+
 .filterListDiv > div > select, .filterListDiv > div > input, .filterListDiv > div > div {
     display: inline-block;
-    width: 20%;
-    margin-right: 15px;
+    width: 21%;
+    border-radius: 4px;
+}
+
+.filterListDiv > div > button {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 8px;
+    position: relative;
+    left: 43px;
+    margin-right: 6px;
+}
+
+.datePicker {
+    height: 22px;
+    margin-left: 15px;
 }
 
 table.defaultTable thead th .table{
@@ -853,13 +873,22 @@ table.defaultTable tbody td {
     display: inline-block;
     vertical-align: top;
     text-align: left;
-    padding-left: 18px;
+    background: #292929;
+    border-radius: 9px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.listBox div {
+    padding: 10px;
 }
 
 .listBoxTable {
     width: 65%;
     display: inline-block;
     text-align: left;
+    background: #212121;
+
 }
 
 .text-center {
@@ -875,9 +904,16 @@ table.defaultTable tbody td {
     top: 0;
 }
 
-.filterListDiv {
-    position: relative;
+.filterDivBox div {
+    padding: 10px;
 }
+
+.filterDivBox span {
+    border-bottom: 1px solid white;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
 
 .selectedTr {
     border: 3px solid #6effc9;
@@ -885,7 +921,16 @@ table.defaultTable tbody td {
 
 h3.titleH3 {
     text-align: left;
-    margin-bottom: 10px;
+    padding: 10px;
+}
+
+h3.titleH3 button {
+    color: #fff;
+    border: 1px solid #fff;
+    background: transparent;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 ul.wbcInfoDbUl > li {
@@ -915,6 +960,7 @@ ul.wbcInfoDbUl > li {
 
 .hh3title {
     font-weight: 600;
+    border-bottom: 1px solid #939393;
 }
 
 ul.wbcInfoDbUl {
@@ -1021,7 +1067,7 @@ ul.leftWbcInfo {
 }
 
 .dbDataTable {
-    height: 80vh;
+    height: 83vh;
     overflow-y: auto;
     display: block;
 }
@@ -1201,6 +1247,7 @@ h3.orderTitle {
 .wbcContent {
     display: inline-block;
     width: 95%;
+    height: 92.5vh;
     vertical-align: top;
 }
 
@@ -1370,7 +1417,7 @@ ul.cellImgBox.print {
 
 .beforeAfterBtn {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 
@@ -1491,7 +1538,14 @@ ul.normalItems li div span:last-child {
 .bmclass {
     width: 74%!important;
     min-height: 68vh;
+    text-align: left;
 }
+
+.titleText {
+    margin-top: 0px;
+    margin-left: 10px;
+}
+
 
 .leftWhole ul li {
     display: inline-block;
@@ -1562,16 +1616,12 @@ ul.normalItems li div span:last-child {
     border: 6px solid rgb(106, 153, 194);
 }
 
-.searchUserContainer {
-    
-}
-
 
 /* setting */
 /* login/account */
 
 .searchSelect {
-    width: 100px !important;
+    width: 120px !important;
     padding: 7px;
     border: 1px solid black;
     border-radius: 0px;
@@ -1595,4 +1645,6 @@ ul.normalItems li div span:last-child {
 .tab-content {
     padding: 20px;
 }
+
+
 

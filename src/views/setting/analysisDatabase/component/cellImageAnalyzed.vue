@@ -99,7 +99,6 @@
         <td>
           <font-awesome-icon
               :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              size="lg"
               @click="toggleNsNbIntegration"
           />
         </td>
@@ -109,7 +108,6 @@
         <td>
           <font-awesome-icon
               :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              size="lg"
               @click="toggleAlarm"
           />
         </td>
@@ -122,7 +120,6 @@
         <td>
           <font-awesome-icon
               :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              size="lg"
               @click="toggleKeepPage"
           />
         </td>

@@ -120,7 +120,6 @@ onMounted(() => {
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   beforeChang();
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-
 })
 
 

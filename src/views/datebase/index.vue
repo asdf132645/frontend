@@ -15,8 +15,8 @@
             <option value="patientNm">Patient Name</option>
           </select>
           <input type="text" v-model='searchText' class="searchInputBox"/>
-          <Datepicker v-model="startDate"></Datepicker>
-          <Datepicker v-model="endDate"></Datepicker>
+          <Datepicker class="datePicker" v-model="startDate"></Datepicker>
+          <Datepicker class="datePicker" v-model="endDate"></Datepicker>
           <button class="searchClass" @click="search">Search</button>
           <button class="searchClass" @click="refresh">Refresh</button>
         </div>
