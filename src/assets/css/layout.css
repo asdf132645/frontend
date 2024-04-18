@@ -1585,11 +1585,13 @@ ul.normalItems li div span:last-child {
 }
 
 .dbBmImageContainer {
-    overflow-y:  scroll;
+    overflow-y:  auto;
+    max-height: 400px;
 }
 
 .dbBmImages {
-    width: 100px;
+    width: 85px;
+    margin: 0 5px 1px 0;
 }
 
 .leftWhole ul li {
