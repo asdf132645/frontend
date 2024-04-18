@@ -2,7 +2,9 @@
   <img v-if="type !== 'report'"
        :src="barcodeImg"/>
   <div class="mt2 mb2">
-    <h3 class="wbcClassInfoLeft">WBC Classification</h3>
+    <h3 class="wbcClassInfoLeft">
+      {{ wbcClassTileChange() }}
+    </h3>
     <ul class="leftWbcInfo">
       <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
@@ -91,7 +93,7 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
-import {basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
+import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
@@ -99,6 +101,7 @@ import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
+import process from "process";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
@@ -128,6 +131,7 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const userConfirmed = ref(false);
 const orderClass = ref<any>([]);
+const projectBm = ref(false);
 
 onMounted(async () => {
   await getOrderClass();
@@ -135,6 +139,8 @@ onMounted(async () => {
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   await beforeChang();
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  projectBm.value = process.env.PROJECT_TYPE === 'bm';
+
 })
 // basicWbcArr
 
@@ -148,6 +154,14 @@ watch(() => props.wbcInfo, (newItem) => {
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   beforeChang();
 });
+
+const wbcClassTileChange = (): string => {
+  if (!projectBm.value){
+    return 'WBC Classification';
+  }else{
+    return 'BM Classification';
+  }
+}
 
 const startDrag = (index: any, event: any) => {
   dragIndex.value = index;
@@ -279,7 +293,7 @@ const getOrderClass = async () => {
 const beforeChang = async () => {
   await getOrderClass();
   const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : basicWbcArr;
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   console.log(orderClass.value.length !== 0)
 
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
@@ -290,7 +304,7 @@ const beforeChang = async () => {
 
 const afterChang = () => {
   const wbcInfo = props.selectItems.wbcInfoAfter;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : basicWbcArr;
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
 
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));

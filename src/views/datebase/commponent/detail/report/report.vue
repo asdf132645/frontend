@@ -1,8 +1,10 @@
 <template>
   <div class="wbcMenu">
     <ul>
-      <li @click="pageGo('/databaseRbc')">RBC</li>
-      <li @click="pageGo('/databaseWbc')">WBC</li>
+      <li v-if="projectBm === false" @click="pageGo('/databaseRbc')">RBC</li>
+      <li v-else @click="pageGo('/databaseWhole')">WHOLE</li>
+      <li v-if="projectBm === false" @click="pageGo('/databaseWbc')">WBC</li>
+      <li v-else @click="pageGo('/databaseBm')">BMCELL</li>
       <li class="onRight" @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
@@ -20,7 +22,7 @@
       <div class="wbcDiv">
         <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
       </div>
-      <div class="rbcDiv">
+      <div class="rbcDiv" v-if="!projectBm">
         <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report' />
       </div>
       <div class="reportDetail">
@@ -29,7 +31,8 @@
           <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>
         </div>
         <div class="reportDivTop">
-          <h3 class="reportH3">Analysis Report from UIMD PB system</h3>
+          <h3 class="reportH3" v-if="!projectBm">Analysis Report from UIMD PB system</h3>
+          <h3 class="reportH3" v-if="projectBm">Analysis Report from UIMD BM system</h3>
           <table class="reportTable">
             <tbody>
             <tr>
@@ -73,7 +76,7 @@
         </div>
         <div class="reportDivBottom">
          <div class="wbcLeft">
-           <h3 class="reportH3 mb1 pl0">WBC classification result</h3>
+           <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
            <table class="tableClass">
              <colgroup>
                <col width="40%">
@@ -117,7 +120,7 @@
              </tbody>
            </table>
          </div>
-          <div class="rbcRight">
+          <div class="rbcRight" v-if="!projectBm">
             <h3 class="reportH3 mb1 pl0">RBC classification result</h3>
             <template v-for="(classList, outerIndex) in [rbcInfo]" :key="outerIndex">
               <template v-for="(category, innerIndex) in classList" :key="innerIndex">
@@ -165,6 +168,7 @@ import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {useStore} from "vuex";
+import process from "process";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -182,10 +186,12 @@ const rbcInfo = ref([]);
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const userModuleDataGet = computed(() => store.state.userModule);
 const instance = getCurrentInstance();
+const projectBm = ref(false);
 
 
 onMounted(() => {
   initData();
+  projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
 
 onUnmounted(async () => {
@@ -203,7 +209,13 @@ onUnmounted(async () => {
 const printClose = () => {
   printOnOff.value = false;
 }
-
+const wbcClassTileChange = (): string => {
+  if (!projectBm.value){
+    return 'WBC Classification';
+  }else{
+    return 'BM Classification';
+  }
+}
 const printStart = () => {
   printOnOff.value = true;
 }
