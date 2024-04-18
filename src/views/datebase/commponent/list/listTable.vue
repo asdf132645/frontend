@@ -59,7 +59,7 @@
       <td> {{ item?.barcodeNo }}</td>
       <td> {{ item?.patientId }}</td>
       <td> {{ item?.patientNm }}</td>
-      <td> {{ item?.analyzedDttm }}</td>
+      <td> {{ item?.createDate }}</td>
       <td> {{ item?.tactTime }}</td>
       <td> {{ item?.submit }}</td>
       <td> {{ item?.signedOfDate }}</td>
