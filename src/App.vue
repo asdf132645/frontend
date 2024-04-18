@@ -323,7 +323,7 @@ const emitSocketData = async (payload: object) => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
 
-const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
+const runningInfoCheckStore = async (data: any | undefined) => {
   const regex = /[1,2,9]/g;
 
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
@@ -348,7 +348,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      await saveTestHistory(data);
+      await saveTestHistory(data,data?.slotInfo?.slotNo);
       return;
     }
     if (data?.iCasStat.indexOf("2") !== -1) {
@@ -366,7 +366,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         console.log('save')
         console.log(runningArr.value[iCasStatArr.lastIndexOf("3")])
-        await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")]);
+        await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],iCasStatArr.lastIndexOf("3"));
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
       }
@@ -376,7 +376,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 
 }
 
-const saveTestHistory = async (params: any) => {
+const saveTestHistory = async (params: any, idx: any) => {
   const completeSlot = params.slotInfo;
 
   console.log(JSON.stringify(completeSlot))
@@ -409,7 +409,7 @@ const saveTestHistory = async (params: any) => {
       state: false,
       submit: 'Ready',
       submitDate: '',
-      traySlot: '1-' + completeSlot.slotNo,
+      traySlot: '1-' + idx,
       barcodeNo: completeSlot.barcodeNo,
       patientId: completeSlot.patientId,
       patientNm: completeSlot.patientNm,
