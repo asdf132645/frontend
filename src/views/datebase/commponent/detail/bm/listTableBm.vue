@@ -3,7 +3,7 @@
     <ul>
       <li @click="pageGo('/databaseWhole')">WHOLE</li>
       <li class="onRight" @click="pageGo('/databaseBm')">BMCELL</li>
-<!--      <li @click="pageGo('/report')">REPORT</li>-->
+     <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
     <div class="wbcMenuBottom">
@@ -36,14 +36,19 @@
       <div class="imgMenuSetDiv">
         <button type="button" @click="drawCellMarker">
           <font-awesome-icon
-              :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
           />
-          Cell marking
+          Cell Marking
         </button>
-        <button @click="rollbackChanges">Rollback</button>
-        <button @click="imgSetOpen">img Setting</button>
+        <button @click="rollbackChanges">
+          <font-awesome-icon :icon="['fas', 'rotate-left']" />
+          Rollback</button>
+        <button @click="imgSetOpen">
+          <font-awesome-icon :icon="['fas', 'gear']" />
+          IMG Setting</button>
         <button @click="excelDownload">
-          <font-awesome-icon :icon="['fas', 'file-excel']"/>
+          <font-awesome-icon :icon="['fas', 'file-csv']" />
+          Excel
         </button>
         <div class="imgSet" v-if="imgSet">
           <div>

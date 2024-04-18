@@ -3,6 +3,7 @@
     <ul>
       <li class="onRight"  @click="pageGo('/databaseWhole')">WHOLE</li>
       <li @click="pageGo('/databaseBm')">BMCELL</li>
+      <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
     <div class="wbcMenuBottom">

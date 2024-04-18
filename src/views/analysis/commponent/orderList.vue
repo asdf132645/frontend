@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="orderListTableContainer">
     <h3 class="titleText"><span class="greenColor">O</span>rder <span class="greenColor">L</span>ist</h3>
     <table class="orderListTable">
       <thead>

@@ -23,7 +23,7 @@
           <font-awesome-icon :icon="['fas', 'server']"
                              style="font-size: 1rem;"
           />
-          <span class='icoText'>Data Base</span>
+          <span class='icoText'>Database</span>
         </router-link>
 
         <!--  좌측메뉴  -->
