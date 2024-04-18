@@ -41,11 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted} from "vue";
+import {computed, ref, onMounted, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
 import TilingViewer from './tilingViewer.vue';
 import router from "@/router";
+import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
@@ -70,6 +72,8 @@ const dragWidth = ref(150); // 초기 너비
 const dragHeight = ref(150); // 초기 높이
 const minDragWidth = 50; // 최소 너비
 const minDragHeight = 50; // 최소 높이
+const userModuleDataGet = computed(() => store.state.userModule);
+const instance = getCurrentInstance();
 
 const pageGo = (path: string) => {
   router.push(path)
@@ -216,17 +220,17 @@ onMounted(() => {
 });
 
 const moveWbc = async (direction: any) => {
-  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
-  const nextDbIndex = direction === 'up' ? currentDbIndex - 1 : currentDbIndex + 1;
-
-  if (nextDbIndex >= 0 && nextDbIndex < originalDb.value.length) {
-    selectItems.value = originalDb.value[nextDbIndex];
-    sessionStorage.setItem('selectItems', JSON.stringify(originalDb.value[nextDbIndex]));
-    sessionStorage.setItem('selectItemWbc', JSON.stringify(originalDb.value[nextDbIndex].wbcInfo.wbcInfo));
-    sessionStorage.setItem('dbBaseTrClickId', String(Number(clickid.value) + (direction === 'up' ? -1 : 1)));
-    clickid.value = String(Number(clickid.value) + (direction === 'up' ? -1 : 1));
-    await updateUpDown(originalDb.value[nextDbIndex].wbcInfo.wbcInfo[0], originalDb.value[nextDbIndex]);
-  }
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
+  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 }
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {

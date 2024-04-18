@@ -26,7 +26,7 @@
 
 
 <script setup lang="ts">
-import {ref, computed, watch, onMounted} from "vue";
+import {ref, computed, watch, onMounted, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 // 스토어
 const store = useStore();
@@ -42,6 +42,7 @@ import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 const processInfoItem = ref<any>({});
 const prevOilCount = ref<string | null>(null);
 const projectType = ref('pb');
+const instance = getCurrentInstance();
 
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
@@ -58,36 +59,41 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
 onMounted(() => {
   prevOilCount.value = embeddedStatusJobCmd.value[0]?.sysInfo.oilCount;
 });
-// 실행정보를 가지고 온다.
-watch([runningInfoModule.value], (newVal: any) => {
-  if (newVal.length > 0) {
-    const firstItem = newVal[0].runningInfo;
-    if (firstItem) {
-      if (firstItem.jobCmd === 'RUNNING_INFO') {
-        const currentSlot = firstItem?.slotInfo;
-        if (currentSlot) {
-          processInfoItem.value = {
-            cassetteNo: 1,
-            barcodeId: currentSlot.barcodeNo,
-            patientId: currentSlot.patientId,
-            patientName: currentSlot.patientNm,
-            wbcCount: currentSlot.maxWbcCount,
-            orderDate: stringToDateTime(currentSlot.orderDttm),
-            analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-          };
 
-          store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-            slotInfo: [
-              {
-                processInfo: processInfoItem.value,
-              },
-            ]
-          });
-        }
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  try {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
+
+    const parsedData = JSON.parse(stringData);
+    if(parsedData.jobCmd === 'RUNNING_INFO'){
+      const currentSlot = parsedData?.slotInfo;
+      if (currentSlot) {
+        processInfoItem.value = {
+          cassetteNo: 1,
+          barcodeId: currentSlot.barcodeNo,
+          patientId: currentSlot.patientId,
+          patientName: currentSlot.patientNm,
+          wbcCount: currentSlot.maxWbcCount,
+          orderDate: stringToDateTime(currentSlot.orderDttm),
+          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+        };
+
+        store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+          slotInfo: [
+            {
+              processInfo: processInfoItem.value,
+            },
+          ]
+        });
       }
     }
+  } catch (e) {
+    // console.log(e)
   }
-});
+})
 
+
+// 실행정보를 가지고 온다.
 
 </script>

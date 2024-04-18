@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, watch, defineProps} from "vue";
+import {computed, ref, onMounted, watch, defineProps, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
 const props = defineProps(['bmIsBoolen']);
@@ -110,6 +110,7 @@ const testType = ref<string>("");
 const totalCount = ref<string>("");
 const maxWbcCount = ref<string>('');
 const slideProceeding = ref('0');
+const instance = getCurrentInstance();
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
@@ -128,13 +129,27 @@ onMounted(() => {
   updateDataArray(initialWbcClassList);
 });
 
-watch(
-    () => store.state.wbcClassificationModule,
-    (newSlotInfo) => {
-      updateDataArray(newSlotInfo);
-    },
-    {deep: true}
-);
+// watch(
+//     () => store.state.wbcClassificationModule,
+//     (newSlotInfo) => {
+//       updateDataArray(newSlotInfo);
+//     },
+//     {deep: true}
+// );
+
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  try {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
+
+    const parsedData = JSON.parse(stringData);
+    if(parsedData.jobCmd === 'RUNNING_INFO'){
+      await updateDataArray({wbcInfo: parsedData.slotInfo});
+    }
+  } catch (e) {
+    // console.log(e)
+  }
+})
 
 const updateDataArray = async (newSlotInfo: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));

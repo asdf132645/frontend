@@ -61,7 +61,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import process from "process";
 import {testBmTypeList, testTypeList} from "@/common/defines/constFile/settings";
 
-const instance = getCurrentInstance();
 
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
@@ -113,6 +112,8 @@ onMounted(async () => {
     showStopBtn.value = true;
   }
 });
+
+
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
