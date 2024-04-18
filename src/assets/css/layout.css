@@ -1584,7 +1584,11 @@ ul.normalItems li div span:last-child {
     height: 92.2vh;
 }
 
-.databaseBmImages {
+.dbBmImageContainer {
+    overflow-y:  scroll;
+}
+
+.dbBmImages {
     width: 100px;
 }
 
