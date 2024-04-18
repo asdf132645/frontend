@@ -247,10 +247,14 @@ const moveWbc = async (direction: any) => {
 }
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
+  const keepPage = sessionStorage.getItem('keepPage');
+  if(keepPage === 'true' && process.env.PROJECT_TYPE === 'pb'){
+    router.push('/databaseWbc')
+  }
   wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
-
+  initData();
 };
 
 </script>

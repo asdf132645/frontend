@@ -314,6 +314,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
       sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
+      sessionStorage.setItem('keepPage',String(data?.keepPage));
       console.log(result)
     }
 
