@@ -215,10 +215,7 @@ onMounted(async () => {
   }
   document.addEventListener('click', handleOutsideClick);
 })
-instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
-  console.log(data)
-  emits('initData');
-})
+
 onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
 });

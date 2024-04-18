@@ -66,7 +66,7 @@
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
-import {onMounted, ref} from "vue";
+import {getCurrentInstance, onMounted, ref} from "vue";
 import {getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 import Datepicker from "vue3-datepicker";
@@ -93,7 +93,11 @@ const testType = ref('');
 const wbcCountOrder = ref('');
 const classListToggle = ref(false);
 const bmClassIsBoolen = ref(false);
+const instance = getCurrentInstance();
 
+instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
+  await initDbData();
+})
 onMounted(async () => {
   await initDbData();
   bmClassIsBoolen.value = process.env.PROJECT_TYPE === 'bm';
@@ -112,8 +116,8 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
+  console.log('sss')
   userId.value = getStoredUser.id;
-  dbGetData.value = [];
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();
@@ -161,7 +165,6 @@ const getDbData = async (type: string, pageNum?: number) => {
   if (type === 'search') {
     page.value = 1;
   }
-  dbGetData.value = [];
   const requestData: any = {
     page: type !== 'mounted' ? page.value : Number(pageNum),
     pageSize: 20,
@@ -189,6 +192,7 @@ const getDbData = async (type: string, pageNum?: number) => {
     if (result && result.data) {
 
       const newData = result.data.data;
+      console.log(newData)
       if (newData.length === 0) {
         if (page.value === 1) {
           page.value = 1;
@@ -202,12 +206,20 @@ const getDbData = async (type: string, pageNum?: number) => {
         if (type === 'search') {
           dbGetData.value = newData;
         } else {
-          dbGetData.value = [...dbGetData.value, ...newData];
-          console.log(dbGetData.value)
-        }
-        dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
-        titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0]
+          console.log(newData)
+          // dbGetData.value = [...dbGetData.value, ...newData];
+          newData.forEach(item => {
+            const index = dbGetData.value.findIndex(data => data.id === item.id);
+            if (index !== -1) {
+              dbGetData.value[index] = item;
+            } else {
+              dbGetData.value.push(item);
+            }
+          });
 
+        }
+        // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
+        titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
         // 마지막 조회 결과 저장
         saveLastSearchParams();
       }
