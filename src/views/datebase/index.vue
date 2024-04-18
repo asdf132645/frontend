@@ -18,7 +18,7 @@
           <Datepicker class="datePicker" v-model="startDate"></Datepicker>
           <Datepicker class="datePicker" v-model="endDate"></Datepicker>
           <button class="searchClass" @click="search">Search</button>
-          <button class="searchClass" @click="refresh">Refresh</button>
+          <!-- <button class="searchClass" @click="refresh">Refresh</button> -->
         </div>
         <div class="filterDivBox" v-if="classListToggle">
           <div class="nrCount">

@@ -1008,6 +1008,10 @@ ul.wbcImgWrap > li > img {
     margin-right: 10px;
 }
 
+.databaseWbcRight img {
+    width: 100%;
+}
+
 .databaseWbcLeft {
     display: inline-block;
     width: 70%;
@@ -1340,11 +1344,13 @@ select.selectSizeTitle {
 .reportSection {
     display: inline-block;
     width: 95%;
-    min-height: 89vh;
+    min-height: 92.5vh;
 }
 
 .reportDiv {
     padding-left: 3%;
+    display: flex;
+    padding-top:10px;
 }
 
 .printSection {
@@ -1578,6 +1584,10 @@ ul.normalItems li div span:last-child {
     height: 92.2vh;
 }
 
+.databaseBmImages {
+    width: 12%;
+}
+
 .leftWhole ul li {
     display: inline-block;
     max-width: 100px;
@@ -1594,6 +1604,7 @@ ul.normalItems li div span:last-child {
     width: 50%;
     background: #252629;
     padding: 10px;
+    height:100%;
 }
 .leftWhole ul p {
     text-align: left;
