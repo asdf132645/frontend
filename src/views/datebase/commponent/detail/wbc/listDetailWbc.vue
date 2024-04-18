@@ -236,10 +236,15 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses();
-  if (!pbiaRootPath.value) {
-    const rootPath = sessionStorage.getItem('pbiaRootPath');
-    await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(rootPath)});
-  }
+  const result = await getUserIpApi();
+  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }).catch(error => {
+    console.error('Error:', error.response.data);
+  });
 });
 onUnmounted(async () => {
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)

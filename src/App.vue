@@ -323,7 +323,7 @@ const emitSocketData = async (payload: object) => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
 
-const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
+const runningInfoCheckStore = async (data: any | undefined) => {
   const regex = /[1,2,9]/g;
 
   if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
@@ -333,6 +333,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     const iCasStatArr: any = [...str];
     const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
     const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
+    console.log(data?.slotInfo);
 
     if (iCasStatArr.lastIndexOf("2") === 0) {
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
@@ -347,7 +348,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      await saveTestHistory(runningArr.value[existingIndex]);
+      await saveTestHistory(data,data?.slotInfo?.slotNo);
       return;
     }
     if (data?.iCasStat.indexOf("2") !== -1) {
@@ -365,7 +366,8 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         console.log('save')
         console.log(runningArr.value[iCasStatArr.lastIndexOf("3")])
-        await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")]);
+        await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
+        // await saveTestHistory(data, data?.slotInfo?.slotNo);
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
       }
@@ -375,7 +377,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
 
 }
 
-const saveTestHistory = async (params: any) => {
+const saveTestHistory = async (params: any, idx: any) => {
   const completeSlot = params.slotInfo;
 
   console.log(JSON.stringify(completeSlot))
@@ -408,7 +410,7 @@ const saveTestHistory = async (params: any) => {
       state: false,
       submit: 'Ready',
       submitDate: '',
-      traySlot: '1-' + completeSlot.slotNo,
+      traySlot: '1-' + idx,
       barcodeNo: completeSlot.barcodeNo,
       patientId: completeSlot.patientId,
       patientNm: completeSlot.patientNm,
@@ -529,6 +531,7 @@ const cellImgGet = async (newUserId: string) => {
         sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
+        sessionStorage.setItem('keepPage',String(data?.keepPage));
       }
     }
 

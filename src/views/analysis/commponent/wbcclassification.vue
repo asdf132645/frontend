@@ -11,16 +11,16 @@
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
-              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">
-                total
-              </li>
+<!--              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">-->
+<!--                total-->
+<!--              </li>-->
             </ul>
             <ul class="classNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
               <li>{{ category?.count }}</li>
-              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">
-                {{ totalCount || 0 }}
-              </li>
+<!--              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">-->
+<!--                {{ totalCount || 0 }}-->
+<!--              </li>-->
             </ul>
             <ul class="degree">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
