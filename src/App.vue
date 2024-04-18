@@ -366,7 +366,8 @@ const runningInfoCheckStore = async (data: any | undefined) => {
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         console.log('save')
         console.log(runningArr.value[iCasStatArr.lastIndexOf("3")])
-        await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],iCasStatArr.lastIndexOf("3"));
+        // await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],iCasStatArr.lastIndexOf("3"));
+        await saveTestHistory(data, data?.slotInfo?.slotNo);
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
       }
