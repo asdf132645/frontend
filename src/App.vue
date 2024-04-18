@@ -158,7 +158,7 @@ onMounted(async () => {
   window.addEventListener('beforeunload', leave);
 
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
-  projectBm.value = process.env.PROJECT_TYPE === 'bm' ? true : false;
+  projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
@@ -344,7 +344,7 @@ const runningInfoCheckStore = async (data: any | undefined) => {
     }
 
     // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-    if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
+    if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
@@ -397,7 +397,6 @@ const saveTestHistory = async (params: any, idx: any) => {
     const dbData = dataBaseSetDataModule.value.dataBaseSetData;
     const processBarcodeId = dbData?.slotInfo[0];
     const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[0];
-    console.log(matchedWbcInfo)
     const newWbcInfo = {
       wbcInfo: [matchedWbcInfo],
       nonRbcClassList: processBarcodeId.wbcInfo.nonRbcClassList,
@@ -421,6 +420,7 @@ const saveTestHistory = async (params: any, idx: any) => {
       orderDttm: parseDateString(completeSlot.orderDttm),
       testType: completeSlot.testType,
       analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
+      createDate: tcpReq().embedStatus.settings.reqDttm,
       pltCount: completeSlot.pltCount,
       malariaCount: completeSlot.malariaCount,
       maxRbcCount: completeSlot.maxRbcCount,
@@ -505,11 +505,7 @@ const sendMessage = async (payload: any) => {
       type: 'SEND_DATA',
       payload: payload
     });
-    // await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
   };
-  // if (!reqArr.value.resFlag) {
-  //   return;
-  // }
 
   await executeAfterDelay();
 };

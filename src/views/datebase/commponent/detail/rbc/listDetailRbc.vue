@@ -112,6 +112,11 @@ const moveRbc = async (direction: any) => {
 }
 
 const updateUpDown = (selectRbc: any, selectItemsNewVal: any) => {
+  const keepPage = sessionStorage.getItem('keepPage');
+  if(keepPage === 'true' && process.env.PROJECT_TYPE === 'pb'){
+    router.push('/databaseWbc')
+  }
+  // console.log(keepPage);
   rbcInfo.value = selectItemsNewVal.rbcInfoAfter && selectItemsNewVal.rbcInfoAfter.length !== 0
       ? selectItemsNewVal.rbcInfoAfter
       : selectItemsNewVal.rbcInfo;
