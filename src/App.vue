@@ -333,6 +333,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
     const iCasStatArr: any = [...str];
     const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
     const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
+    console.log(existingIndex);
 
     if (iCasStatArr.lastIndexOf("2") === 0) {
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
@@ -347,7 +348,7 @@ const runningInfoCheckStore = async (data: RunningInfo | undefined) => {
       tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
       await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      await saveTestHistory(runningArr.value[existingIndex]);
+      await saveTestHistory(data);
       return;
     }
     if (data?.iCasStat.indexOf("2") !== -1) {
