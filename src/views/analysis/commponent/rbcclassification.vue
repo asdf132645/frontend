@@ -172,7 +172,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 const lowPowerPath = ref([]);
 const updateDataArray = async (newSlotInfo: any[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
-  console.log(newSlotInfo)
 
   if (Array.isArray(slotArray.rbcInfo)) {
     testType.value = slotArray.rbcInfo[0].testType;
