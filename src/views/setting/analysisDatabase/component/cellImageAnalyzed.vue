@@ -17,7 +17,7 @@
         <th>Cell analyzing count:</th>
         <td>
           <select v-model='pbAnalysisType'>
-            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
@@ -46,7 +46,7 @@
         </td>
       </tr>
       <!--WBC diff analysis values-->
-      <tr>
+      <tr v-if="projectType === 'pb'">
         <th>WBC diff</th>
         <th>Cell Analyzing Count</th>
         <td>
@@ -158,7 +158,7 @@ import {
   PositionMarginList, stitchCountList,
   testTypeList,
   WbcPositionMarginList,
-  testBmTypeList
+  testBmTypeList, bmAnalysisList
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
@@ -168,7 +168,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
-
+const analysisVal = ref<any>([]);
 const testTypeCd = ref('01');
 const pbAnalysisType = ref('100');
 const wbcPositionMargin = ref('0');
@@ -202,6 +202,7 @@ onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   console.log(process.env.PROJECT_TYPE);
   testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
+  analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   userId.value = getStoredUser.id;
   await cellImgGet();
   await driveGet();

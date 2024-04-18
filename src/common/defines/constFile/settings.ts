@@ -24,6 +24,10 @@ export const AnalysisList = [
     {value: '500', text: '500'}
 ];
 
+export const bmAnalysisList = [
+    {value: '500', text: '500'}
+];
+
 export const AnalysisList2 = [
     {value: '50', text: '50'},
     {value: '100', text: '100'},
