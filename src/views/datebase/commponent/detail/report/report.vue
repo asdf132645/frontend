@@ -248,7 +248,6 @@ const moveWbc = async (direction: any) => {
   await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
   const result = await getUserIpApi();
   await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    initData();
     instance?.appContext.config.globalProperties.$socket.emit('state', {
       type: 'SEND_DATA',
       payload: 'refreshDb'

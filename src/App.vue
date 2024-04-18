@@ -423,6 +423,23 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
       }
     }
+    async function saveRunningInfo (runningInfo: RuningInfo) {
+      try {
+        let result: ApiResponse<void>;
+        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
+
+        if (result) {
+          console.log('save successful');
+          instance?.appContext.config.globalProperties.$socket.emit('state', {
+            type: 'SEND_DATA',
+            payload: 'refreshDb'
+          });
+          // alert('성공~')
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   } catch (error) {
     console.error(error);
   }
@@ -481,19 +498,7 @@ const getNormalRange = async () => {
   }
 }
 
-const saveRunningInfo = async (runningInfo: RuningInfo) => {
-  try {
-    let result: ApiResponse<void>;
-    result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
-    if (result) {
-      console.log('save successful');
-      // alert('성공~')
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 // 메시지를 보내는 함수
 // 메시지를 보내는 함수
