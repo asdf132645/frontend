@@ -137,6 +137,7 @@ watch(
 );
 
 const updateDataArray = async (newSlotInfo: any) => {
+  console.log(newSlotInfo)
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (slotArray.wbcInfo) {
     testType.value = slotArray?.wbcInfo?.testType;
