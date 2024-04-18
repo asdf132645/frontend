@@ -55,18 +55,3 @@ function getImageUrl(imageName: any, id: string, title:string): string {
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 }
 </script>
-
-<style scoped>
-.image-container {
-  display: flex;
-  flex-wrap: wrap;
-  max-height: 348px;
-  overflow: auto;
-}
-
-.image-container img {
-  max-width: 100px;
-  max-height: 100px;
-  margin: 5px;
-}
-</style>

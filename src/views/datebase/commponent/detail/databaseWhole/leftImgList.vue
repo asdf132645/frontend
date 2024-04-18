@@ -4,7 +4,6 @@
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index">
         <img :src="getImageUrls(image, 'particle')" alt="Partical Image" >
-        <!-- <img :src="getPaImageUrl(image)" alt="Partical Image"> -->
       </li>
     </ul>
     <ul class="">
@@ -78,7 +77,6 @@ const getImageUrls = (imageName: string, type: string) => {
 
 const getImgUrl = () => {
   const slotId = selectItems.value?.slotId || "";
-  console.log(sessionStorage.getItem('pbiaRootPath'))
 
   for (const item of strArray) {
     axios.get(`${apiBaseUrl}/folders?folderPath=${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${item}`)
@@ -88,7 +86,6 @@ const getImgUrl = () => {
             paImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
             break;
           case '03_Cell_Ideal_Image':
-            console.log(response.data);
             idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
             break;
           case '04_Cell_Ideal_Stitch_Image':

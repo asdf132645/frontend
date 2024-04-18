@@ -3,7 +3,6 @@
     <ul>
       <li class="onRight"  @click="pageGo('/databaseWhole')">WHOLE</li>
       <li @click="pageGo('/databaseBm')">BMCELL</li>
-      <li @click="pageGo('/report')">REPORT</li>
       <li>LIS-CBC</li>
     </ul>
     <div class="wbcMenuBottom">
@@ -305,15 +304,4 @@ async function initData(newData: any) {
   cursor: nwse-resize;
 }
 
-.image-container {
-  overflow: hidden;
-  position: relative;
-  width: 40%;
-  height: 100vh;
-}
-
-.img {
-  position: relative;
-  object-fit: cover;
-}
 </style>

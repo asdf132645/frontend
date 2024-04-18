@@ -118,9 +118,7 @@ main.bmComponent {
     padding-bottom: 10px;
     padding-top:10px;
 }
-.bmclass .categories {
-    justify-content: flex-start;
-}
+
 .small-icon-menu {
     display: inline-block;
     width: 53%;
@@ -540,7 +538,7 @@ ul.slideContent .outClassDefault {
 
 .orderListTable {
     width: 100%;
-    height: 46vh;
+    height: 44vh;
 }
 
 .orderListTable th, .orderListTable td {
@@ -588,7 +586,7 @@ ul.processInfoUl > li {
 }
 
 .contentRightChild {
-    min-height: 68vh;
+    height: 68vh;
 }
 
 span.proSpan {
@@ -855,6 +853,10 @@ table.settingTable td, table.settingTable th {
     margin-left: 15px;
 }
 
+table.defaultTable thead tr {
+    background: #070707;
+}
+
 table.defaultTable thead th .table{
     background: #c7cad1;
 }
@@ -1015,7 +1017,7 @@ ul.cellImgBox {
 }
 
 .wbcClassScroll {
-    max-height: 65vh;
+    max-height: 75vh;
     overflow-x: auto;
 }
 
@@ -1067,7 +1069,7 @@ ul.leftWbcInfo {
 }
 
 .dbDataTable {
-    height: 83vh;
+    height: 82.5vh;
     overflow-y: auto;
     display: block;
 }
@@ -1537,15 +1539,36 @@ ul.normalItems li div span:last-child {
 
 .bmclass {
     width: 74%!important;
-    min-height: 68vh;
+    min-height: 67vh;
     text-align: left;
 }
 
+.bmclass .categories {
+    justify-content: flex-start;
+}
+
+.bmclass > div {
+    padding-top: 40px;
+}
+
 .titleText {
-    margin-top: 0px;
+    padding-top: 10px;
     margin-left: 10px;
 }
 
+.wrap-whole {
+    display: flex;
+    justify-content: space-around;
+    margin-left: 38px;
+    height:90vh;
+}
+
+.image-container {
+    overflow: hidden;
+    position: relative;
+    width: 40%;
+    height: 92.2vh;
+}
 
 .leftWhole ul li {
     display: inline-block;
@@ -1570,12 +1593,8 @@ ul.normalItems li div span:last-child {
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
-.wrap-whole {
-    display: flex;
-    justify-content: space-around;
-    margin-left: 38px;
-    height:90vh;
-}
+
+
 .leftWhole ul {
     text-align: left;
     min-height: 150px;
