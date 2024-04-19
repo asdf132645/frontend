@@ -98,7 +98,7 @@
              </tr>
              </tbody>
            </table>
-           <table class="tableClass">
+           <table class="tableClass" v-if="!projectBm">
              <colgroup>
                <col width="37%">
                <col width="20%">
