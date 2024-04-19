@@ -78,7 +78,6 @@ const projectBm = ref(false);
 // });
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
-  console.log(ip)
   await getUserIp(ip)
 })
 
@@ -86,11 +85,9 @@ const getUserIp = async (ip: string) => {
   try {
     const result = await getUserIpApi();
     if (result.data === ip) {
-      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
-      viewerCheckApp.value = 'main';
+      viewerCheckApp.value = result.data;
     } else {
-      await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
-      viewerCheckApp.value = 'viewer';
+      viewerCheckApp.value = result.data;
     }
   } catch (e) {
     console.log(e)
@@ -107,7 +104,6 @@ watch(reqArr.value, async (newVal, oldVal) => {
       // console.log(uniqueReqArr)
       if (uniqueReqArr.length > 1) {
         const notSysRunInfo = uniqueReqArr.filter((item: any) => (item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO'));
-        console.log(notSysRunInfo[0])
         await sendMessage(notSysRunInfo[0]);
       } else {
         await sendMessage(uniqueReqArr[0]);
@@ -155,7 +151,7 @@ const leave = (event: any) => {
 onMounted(async () => {
   await nextTick();
   window.addEventListener('beforeunload', leave);
-
+  console.log(commonDataGet.value.viewerCheck)
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -163,6 +159,7 @@ onMounted(async () => {
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
   }
+
   if (!commonDataGet.value.isRunningState) {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
@@ -198,7 +195,7 @@ onBeforeUnmount(() => {
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  if (commonDataGet.value.viewerCheck === '') {
+  if(commonDataGet.value.viewerCheck !== 'main'){
     return;
   }
   try {
@@ -211,6 +208,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       return
     }
     const parseDataWarp = parsedData;
+
+
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
@@ -298,7 +297,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }
 
     async function runningInfoCheckStore (data: any | undefined) {
-      console.log('runrun')
       const regex = /[1,2,9]/g;
       // console.log(data)
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
@@ -339,7 +337,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             console.log('save')
-            console.log(runningArr.value[iCasStatArr.lastIndexOf("3")])
             await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
             // await saveTestHistory(data, data?.slotInfo?.slotNo);
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
@@ -353,7 +350,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     async function saveTestHistory (params: any, idx: any) {
       const completeSlot = params.slotInfo;
-
       console.log(JSON.stringify(completeSlot))
       if (completeSlot) {
         completeSlot.userId = userId.value;
@@ -470,17 +466,18 @@ const emitSocketData = async (payload: object) => {
 
 
 const sendSettingInfo = () => {
+  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
 
   const req = {
     jobCmd: 'SETTINGS',
-    reqUserId: String(userId.value),
+    reqUserId: '',
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
     pbiaRootDir: pbiaRootDir.value || '',
-    oilCount: '0',
+    oilCount: '1000',
     isOilReset: 'N',
     deviceType: '01',
-    uiVersion: 'web',
-    isNsNbIntegration: isNsNbIntegration.value || 'N',
+    uiVersion: 'uimd-pb-comm_v2.0.102',
+    isNsNbIntegration: isNsNbIntegration || 'N',
   };
   console.log(req)
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});

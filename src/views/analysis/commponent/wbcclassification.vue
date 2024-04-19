@@ -152,7 +152,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 })
 
 const updateDataArray = async (newSlotInfo: any) => {
+  console.log(newSlotInfo)
+
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
+  if(slotArray.wbcCount === '00'){
+    return;
+  }
   if (slotArray.wbcInfo) {
     testType.value = slotArray?.wbcInfo?.testType;
     const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo.bmInfo] : [slotArray.wbcInfo.wbcInfo];
@@ -184,7 +189,6 @@ const updateDataArray = async (newSlotInfo: any) => {
     }
   }
   await updatePercentages();
-  // console.log('?!@!@')
   await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {
