@@ -51,7 +51,7 @@
           </div>
         </div>
       </div>
-      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem"/>
+      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @refresh="refresh" @selectItem="selectItem"/>
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
@@ -201,9 +201,11 @@ const getDbData = async (type: string, pageNum?: number) => {
         if (newData.length === 0 && String(result.data?.page) === '1') {
           dbGetData.value = newData;
         }
+        console.log(dbGetData.value);
       } else {
         if (type === 'search') {
           dbGetData.value = newData;
+          console.log(newData)
         } else {
           // dbGetData.value = [...dbGetData.value, ...newData];
           newData.forEach(item => {

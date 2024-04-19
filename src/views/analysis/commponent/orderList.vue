@@ -76,7 +76,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
               state: currentSlot.stateCd,},
             slotId: parsedData.slotInfo.slotId
           };
-          console.log(orderList)
         }
         if (existingItemIndex === -1 && barcodeNo !== '') {
           dspOrderList.value.push({
