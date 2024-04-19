@@ -86,23 +86,10 @@ main.bmComponent {
     background: #121212;
 }
 
-.leftMenu {
-    text-align: left;
-    margin-left: 0;
-    display: inline-block;
-    width: 99%;
-    padding: 14px 0;
-    background: #25313b;
-    padding-left: 16px;
-}
-
-.leftMenu.bmComponent {
-    background: #121212;
-}
-
 .rock {
     color: #ff6363;
 }
+
 .topClintInfo ul li {
     display: inline-block;
     vertical-align: middle;
@@ -121,7 +108,7 @@ main.bmComponent {
 
 .small-icon-menu {
     display: inline-block;
-    width: 53%;
+    width: 58%;
     text-align: right;
 }
 
@@ -144,16 +131,17 @@ main.bmComponent {
     color: #29c7ca;
 }
 
-.leftMenu > ul > li.storage {
+
+.iconHeaderMenu > ul > li.storage {
     border-right: none;
 }
 
-.leftMenu > ul > li {
+.iconHeaderMenu > ul > li {
     display: inline-block;
-    margin-right: 8px;
-    padding-right: 8px;
+    margin-right: 18px;
+    padding-right: 18px;
     color: #ffffff;
-    font-size: 1.1rem;
+    font-size: 1.6rem;
     font-weight: 200;
     font-family: sans-serif;
     border-right: 1px solid #dedede;
@@ -214,18 +202,18 @@ span.icoText {
 .contentLeft {
     text-align: left;
     display: inline-block;
-    width: 28%;
-    padding: 0;
-    margin-top: 0;
-    height: 88vh;
+    padding-top: 15px;
+    width: 27%;
+    height: 91vh;
 }
 
 .contentRight {
     display: inline-block;
-    width: 72%;
+    width: 73%;
+    padding-top: 15px;
     align-items: start;
     vertical-align: top;
-    height: 88vh;
+    height: 91vh;
 }
 
 .contentRight > div {
@@ -234,7 +222,7 @@ span.icoText {
     width: 36%;
     background: #252629;
     padding: 10px;
-    margin: 0px 10px 0px 0px;
+    margin: 0px 12px 0px 0px;
     border-radius: 5px;
 }
 
@@ -307,13 +295,21 @@ p.startStopP {
 
 ul.customClass li span {
     display: inline-block;
-    min-width: 200px;
     margin-right: 22px;
     vertical-align: middle;
 }
 
 ul.customClass li {
     margin: 5px;
+}
+
+.settingImagePrint label {
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
+    margin: 0 auto;
+    padding: 8px;
+    text-align: left;
 }
 
 .degreeDiv button {
@@ -338,6 +334,10 @@ ul.customClass li {
     text-align: center;
 }
 
+.backupDiv input {
+    width: 25.7%;
+}
+
 table.settingTable {
     width: 35%;
     text-align: left;
@@ -346,11 +346,6 @@ table.settingTable {
 
 table.settingTable select{
     padding: 6px;
-}
-
-
-.backupDiv input {
-    width: 25.7%;
 }
 
 button.saveBtn, .defaultBtn {
@@ -537,7 +532,7 @@ ul.slideContent .outClassDefault {
 }
 
 .orderListTableContainer {
-    height: 47.5vh;
+    height: 46.5vh;
 }
 
 .orderListTable {
@@ -583,7 +578,7 @@ ul.slideContent > p {
 
 ul.processInfoUl > li {
     font-size: 0.9rem;
-    padding: 5px;
+    padding: 8px;
     display: flex;
     justify-content: space-between;
 }
@@ -598,7 +593,7 @@ span.proSpan {
 
 .contentBottom {
     width: 97.5% !important;
-    min-height: 146px;
+    min-height: 176px;
     margin-top: 10px !important;
 }
 
@@ -816,6 +811,8 @@ table.settingTable td, table.settingTable th {
 }
 
 .tab-buttons {
+    display: flex;
+    justify-content: center;
     margin: 20px 0;
 }
 
@@ -852,7 +849,20 @@ table.settingTable td, table.settingTable th {
     margin-right: 6px;
 }
 
-.datePicker {
+.filterListDiv > div > div > .v3dp__popout {
+    width: 265px;
+    position: absolute;
+    left: 17px;
+}
+
+.settingDatePickers > .v3dp__datepicker > .v3dp__popout{
+    position: absolute;
+    top: -262px;
+    left: 660px;
+    width: 472px;
+}
+
+.dbDatePicker {
     height: 22px;
     margin-left: 15px;
 }
@@ -1687,8 +1697,38 @@ ul.normalItems li div span:last-child {
 
 /* analysis/database */
 .tab-content {
-    padding: 20px;
+    padding: 20px 0;
 }
 
 
+/* alert */
+.alert {
+    position: absolute;
+    top: 45%;
+    left: 40%;
+    z-index: 999;
+    padding: 45px 0;
+    width: 400px;
+    border: 1px solid #414141;
+    border-radius: 5px;
+}
+  
+.alert-success {
+    background-color: #252629;
+    color: #fff;
+}
 
+.alert-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert button {
+    border: none;
+    background-color: #29c7ca;
+    color: #fff;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: 2px;
+}

@@ -10,14 +10,14 @@
       <li>
         <!--0019 길병원-->
         <span class="proSpan">
-          {{ siteCd === '0019' ? 'Order Date:' : 'Analyzed Date:' }}
+          {{ siteCd === '0019' ? 'Order Date' : 'Analyzed Date' }}
         </span>
         <span class="proVal">
           {{ siteCd === '0019' ? processInfoItem?.analyzedDttm : processInfoItem?.orderDate }}
         </span>
       </li>
       <li>
-        <span class="proSpan">Oil Count:</span>
+        <span class="proSpan">Oil Count</span>
         <span class="proVal">{{ prevOilCount }}</span>
       </li>
     </ul>

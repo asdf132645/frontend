@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="settingImagePrint">
     <label v-for="item in imagePrintAndWbcArr" :key="item.value">
-      <input type="checkbox" :value="item.value" v-model="selectedItems" />
-      {{ item.text }}
+      <div>{{ item.text }}</div>
+      <div><input type="checkbox" :value="item.value" v-model="selectedItems" /></div>
     </label>
   </div>
   <div class="mt1">
