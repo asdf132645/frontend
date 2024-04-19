@@ -42,25 +42,28 @@
               </li>
             </ul>
           </div>
+          <div class="iconHeaderMenu">
+          <ul>
+            <li class="alarm">
+              <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
+            </li>
+            <li>
+              <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
+              <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
+            </li>
+            <li>
+              <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
+            </li>
+            <li class="oliCount" @click="openLayer" :title="'oilCount: ' + (oilCountData || 0)">
+              <font-awesome-icon :icon="['fas', 'droplet']"/>
+            </li>
+            <li class="storage" :title="'storage: ' + (storagePercentData || 0)">
+              <font-awesome-icon :icon="['fas', 'database']" />  
+            </li>
+          </ul>
+          </div>
         </div>
       </div>
-      <div class="leftMenu" :class="{ 'bmComponent': projectBm }" v-if="router.currentRoute.value.path === '/'">
-        <ul>
-          <li class="alarm">
-            <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
-          </li>
-          <li>
-            <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
-            <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
-          </li>
-          <li>
-            <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
-          </li>
-          <li class="oliCount" @click="openLayer">oliCount: {{ oilCountData || 0 }}</li>
-          <li class="storage">storage: {{ storagePercentData || 0 }}</li>
-        </ul>
-      </div>
-
     </nav>
   </header>
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">

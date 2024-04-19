@@ -21,25 +21,5 @@ const hideAlert = () => {
 </script>
 
 <style scoped>
-.alert {
-  position: absolute;
-  top: 45%;
-  left: 45%;
-  z-index: 999;
-  padding: 25px;
-  border: 1px solid #414141;
-  border-radius: 5px;
-}
 
-.alert-success {
-  background-color: #ffffff;
-  border-color: #ccc;
-  color: #155724;
-}
-
-.alert-error {
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-  color: #721c24;
-}
 </style>
