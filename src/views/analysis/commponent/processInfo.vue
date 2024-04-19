@@ -28,6 +28,9 @@
 <script setup lang="ts">
 import {ref, computed, watch, onMounted, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
+import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
+const processInfo = computed(() => store.state.commonModule.processInfo);
+
 // 스토어
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
@@ -36,12 +39,9 @@ const siteCd = ref('');
 // 스토어 end
 
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
-import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
 const prevOilCount = ref<string | null>(null);
-const projectType = ref('pb');
 const instance = getCurrentInstance();
 
 
@@ -74,11 +74,19 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           barcodeId: currentSlot.barcodeNo,
           patientId: currentSlot.patientId,
           patientName: currentSlot.patientNm,
-          wbcCount: currentSlot.maxWbcCount,
+          // wbcCount: currentSlot.maxWbcCount,
           orderDate: stringToDateTime(currentSlot.orderDttm),
           analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
         };
-
+        // processInfo
+        const str: any = parsedData?.iCasStat ?? '';
+        const iCasStatArr: any = [...str];
+        if(iCasStatArr.lastIndexOf("2") !== -1){
+          processInfo.value[iCasStatArr.lastIndexOf("2")] = {
+            processInfo: processInfoItem.value,
+            slotId: parsedData.slotInfo.slotId
+          };
+        }
         store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           slotInfo: [
             {

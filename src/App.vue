@@ -66,6 +66,11 @@ const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr = computed(() => store.state.commonModule.runningArr);
+const classArr = computed(() => store.state.commonModule.classArr);
+const rbcArr = computed(() => store.state.commonModule.rbcArr);
+const processInfo = computed(() => store.state.commonModule.processInfo);
+const orderList = computed(() => store.state.commonModule.orderList);
+
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
 
@@ -145,13 +150,11 @@ window.addEventListener('beforeunload', function (event: any) {
 });
 const leave = (event: any) => {
   event.preventDefault();
-  console.log('Ejska')
 };
 
 onMounted(async () => {
   await nextTick();
   window.addEventListener('beforeunload', leave);
-  console.log(commonDataGet.value.viewerCheck)
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -298,7 +301,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     async function runningInfoCheckStore (data: any | undefined) {
       const regex = /[1,2,9]/g;
-      // console.log(data)
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
         const dataICasStat = String(data?.iCasStat);
         const currentSlot = data?.slotInfo;
@@ -350,12 +352,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     async function saveTestHistory (params: any, idx: any) {
       const completeSlot = params.slotInfo;
-      console.log(JSON.stringify(completeSlot))
       if (completeSlot) {
         completeSlot.userId = userId.value;
         completeSlot.cassetId = params.cassetId;
-        // completeSlot.isNsNbIntegration = isNsNbIntegration
-
         // PB 비정상 클래스 체크
         completeSlot.isNormal = 'Y'
 
@@ -364,14 +363,17 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
 
         const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
-        const dbData = dataBaseSetDataModule.value.dataBaseSetData;
-        const processBarcodeId = dbData?.slotInfo[0];
-        const matchedWbcInfo = processBarcodeId.wbcInfo.wbcInfo[0];
+        const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        const processInfoElements = processInfo.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        const orderListElements = orderList.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        // rbcArr
+        const matchedWbcInfo = classElements[0];
         const newWbcInfo = {
-          wbcInfo: [matchedWbcInfo],
-          nonRbcClassList: processBarcodeId.wbcInfo.nonRbcClassList,
-          totalCount: processBarcodeId.wbcInfo.totalCount,
-          maxWbcCount: processBarcodeId.wbcInfo.maxWbcCount,
+          wbcInfo: matchedWbcInfo?.wbcInfo,
+          nonRbcClassList: matchedWbcInfo?.nonRbcClassList,
+          totalCount: matchedWbcInfo?.totalCount,
+          maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
 
         const newObj = {
@@ -401,13 +403,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           runningPath: completeSlot.runningPath,
           wbcInfo: newWbcInfo,
           wbcInfoAfter: [],
-          rbcInfo: dbData.slotInfo[0].rbcInfo,
+          rbcInfo: rbcArrElements[0].rbcInfo,
           bminfo: completeSlot.bminfo,
           userId: userId.value,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
-          processInfo: dbData.slotInfo[0].processInfo,
-          orderList: dbData.slotInfo[0].orderList.filter((order: any) => order.barcodeId === completeSlot.barcodeNo),
+          processInfo: processInfoElements[0].processInfo,
+          orderList: orderListElements[0].orderList,
           signedState: '',
           signedOfDate: '',
           signedUserId: '',
@@ -416,6 +418,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           memo: '',
           rbcMemo: '',
         }
+        console.log(newObj)
         await saveRunningInfo(newObj);
 
 
@@ -479,7 +482,6 @@ const sendSettingInfo = () => {
     uiVersion: 'uimd-pb-comm_v2.0.102',
     isNsNbIntegration: isNsNbIntegration || 'N',
   };
-  console.log(req)
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
 

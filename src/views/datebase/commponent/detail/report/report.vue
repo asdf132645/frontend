@@ -91,7 +91,7 @@
              </tr>
              </thead>
              <tbody>
-             <tr v-for="(item) in selectItems?.wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
+             <tr v-for="(item) in wbcArr" :key="item.id" class="wbcClassDbDiv">
                <td>{{ item?.name }}</td>
                <td>{{ item?.count }}</td>
                <td> {{ item?.percent || '-' }}</td>
@@ -187,7 +187,7 @@ const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const userModuleDataGet = computed(() => store.state.userModule);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
-
+const wbcArr = ref<any>([]);
 
 onMounted(() => {
   initData();
@@ -228,8 +228,10 @@ async function initData() {
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
+    wbcArr.value = selectItems.value.wbcInfoAfter;
   } else {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0]
+    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
+    wbcArr.value = selectItems.value.wbcInfo.wbcInfo[0];
   }
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
   const result = await getUserIpApi();

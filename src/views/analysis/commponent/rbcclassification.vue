@@ -117,6 +117,7 @@ const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
 const commonDataGet = computed(() => store.state.commonModule);
 const instance = getCurrentInstance();
+const rbcArr = computed(() => store.state.commonModule.rbcArr);
 
 
 watch([runningInfoModule.value], (newVal: any) => {
@@ -141,7 +142,7 @@ onMounted(async () => {
   userId.value = getStoredUser.id;
   const initialRbcClassList = store.state.rbcClassificationModule;
   await getRbcDegreeData();
-  await updateDataArray(initialRbcClassList);
+  await updateDataArray(initialRbcClassList,'');
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
@@ -153,24 +154,15 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     if(parsedData.jobCmd === 'RUNNING_INFO'){
       // console.log()
       // updateDataArray(parsedData.slotInfo);
-     await updateDataArray({rbcInfo: parsedData.slotInfo});
+     await updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
     }
   } catch (e) {
     // console.log(e)
   }
 })
 
-
-// watch(
-//     () => store.state.rbcClassificationModule,
-//     (newSlotInfo) => {
-//       console.log(newSlotInfo)
-//       updateDataArray(newSlotInfo);
-//     },
-//     {deep: true}
-// );
 const lowPowerPath = ref([]);
-const updateDataArray = async (newSlotInfo: any[]) => {
+const updateDataArray = async (newSlotInfo: any[], parsedData: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
 
   if (Array.isArray(slotArray.rbcInfo)) {
@@ -182,7 +174,7 @@ const updateDataArray = async (newSlotInfo: any[]) => {
     const wbcInfoArr = wbcInfoArray[0].length > 0 ? wbcInfoArray : [basicRbcArr];
 
     //최종으로 슬라이드 정보를 업데이트
-    calcRbcDegree(wbcInfoArr[0])
+    calcRbcDegree(wbcInfoArr[0], parsedData)
     
     if (slotArray.rbcInfo[0].lowPowerPath) {
       lowPowerPath.value = slotArray.rbcInfo[0].lowPowerPath.sort(function (a: any, b: any) {
@@ -195,13 +187,13 @@ const updateDataArray = async (newSlotInfo: any[]) => {
 
   } else {
     //최종으로 슬라이드 정보를 업데이트
-    calcRbcDegree([basicRbcArr][0]);
+    calcRbcDegree([basicRbcArr][0], parsedData);
   }
 
 
 };
 
-const calcRbcDegree = (rbcInfos: any) => {
+const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
   let totalCount = 0;
   let sizeTotal = 0;
   let chromiaTotal = 0;
@@ -304,6 +296,14 @@ const calcRbcDegree = (rbcInfos: any) => {
   });
   // console.log(rbcInfo)
   dspRbcClassList.value[0] = rbcInfo;
+  const str: any = parsedData?.iCasStat ?? '';
+  const iCasStatArr: any = [...str];
+  if(iCasStatArr.lastIndexOf("2") !== -1){
+    rbcArr.value[iCasStatArr.lastIndexOf("2")] = {
+      rbcInfo: rbcInfo,
+      slotId: parsedData.slotInfo.slotId,
+    };
+  }
   store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {

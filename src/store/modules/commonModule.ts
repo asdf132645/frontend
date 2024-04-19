@@ -1,5 +1,5 @@
 // commonModule.ts
-import { Commit } from 'vuex';
+import {Commit} from 'vuex';
 
 export interface CommonState {
     startEmbedded: boolean;
@@ -23,6 +23,10 @@ export interface CommonState {
     slotIndex: number;
     viewerCheck: string;
     runningArr: any[];
+    classArr: any[];
+    rbcArr: any[];
+    processInfo: any[];
+    orderList: any[];
 }
 
 interface CommonModule {
@@ -52,6 +56,10 @@ interface CommonModule {
         setSlotIndex: (state: CommonState, value: number) => void;
         setViewerCheck: (state: CommonState, value: string) => void;
         setRunningArr: (state: CommonState, value: any[]) => void;
+        setClassArr: (state: CommonState, value: any[]) => void;
+        setRbcArr: (state: CommonState, value: any[]) => void;
+        setProcessInfo: (state: CommonState, value: any[]) => void;
+        setOrderList: (state: CommonState, value: any[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -81,7 +89,11 @@ export const commonModule: CommonModule = {
         firstLoading: false,
         slotIndex: 0,
         viewerCheck: '',
-        runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}],
+        runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+        classArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+        rbcArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+        processInfo: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+        orderList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -150,15 +162,27 @@ export const commonModule: CommonModule = {
         setSlotIndex(state: CommonState, value: number): void {
             state.slotIndex = value;
         },
-        setViewerCheck(state: CommonState, value: string): void{
+        setViewerCheck(state: CommonState, value: string): void {
             state.viewerCheck = value;
         },
         setRunningArr(state: CommonState, value: any[]): void {
             state.runningArr = value;
         },
+        setClassArr(state: CommonState, value: any[]): void {
+            state.classArr = value;
+        },
+        setRbcArr(state: CommonState, value: any[]): void {
+            state.rbcArr = value;
+        },
+        setProcessInfo(state: CommonState, value: any[]): void {
+            state.processInfo = value;
+        },
+        setOrderList(state: CommonState, value: any[]): void {
+            state.orderList = value;
+        },
     },
     actions: {
-        setCommonInfo({ commit }: { commit: Commit }, payload: CommonState): void {
+        setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
             if (payload.hasOwnProperty('startEmbedded')) {
                 commit('setStartEmbedded', payload.startEmbedded);
             }
@@ -186,7 +210,7 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('slideProceeding')) {
                 commit('setSlideProceeding', payload.slideProceeding);
             }
-            if (payload.hasOwnProperty  ('totalSlideTime')) {
+            if (payload.hasOwnProperty('totalSlideTime')) {
                 commit('setTotalSlideTime', payload.totalSlideTime);
             }
             if (payload.hasOwnProperty('pbiaRootPath')) {
@@ -213,23 +237,35 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('shiftReqArr')) {
                 commit('shiftReqArr');
             }
-            if(payload.hasOwnProperty('reqArrPaste')){
+            if (payload.hasOwnProperty('reqArrPaste')) {
                 commit('setReqArrPaste', payload.reqArr);
             }
-            if(payload.hasOwnProperty('resFlag')){
+            if (payload.hasOwnProperty('resFlag')) {
                 commit('setResFlag', payload.resFlag);
             }
-            if(payload.hasOwnProperty('firstLoading')){
+            if (payload.hasOwnProperty('firstLoading')) {
                 commit('setFirstLoading', payload.firstLoading);
             }
-            if(payload.hasOwnProperty('slotIndex')){
+            if (payload.hasOwnProperty('slotIndex')) {
                 commit('setSlotIndex', payload.slotIndex);
             }
-            if(payload.hasOwnProperty('viewerCheck')) {
+            if (payload.hasOwnProperty('viewerCheck')) {
                 commit('setViewerCheck', payload.viewerCheck);
             }
             if (payload.hasOwnProperty('runningArr')) {
                 commit('setRunningArr', payload.runningArr);
+            }
+            if (payload.hasOwnProperty('classArr')) {
+                commit('setClassArr', payload.classArr);
+            }
+            if (payload.hasOwnProperty('rbcArr')) {
+                commit('setRbcArr', payload.rbcArr);
+            }
+            if (payload.hasOwnProperty('processInfo')) {
+                commit('setProcessInfo', payload.processInfo);
+            }
+            if (payload.hasOwnProperty('orderList')) {
+                commit('setOrderList', payload.orderList);
             }
         },
     },
