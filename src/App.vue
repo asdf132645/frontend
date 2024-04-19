@@ -466,18 +466,20 @@ const emitSocketData = async (payload: object) => {
 
 
 const sendSettingInfo = () => {
+  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
 
   const req = {
     jobCmd: 'SETTINGS',
-    reqUserId: String(userId.value),
+    reqUserId: '',
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
     pbiaRootDir: pbiaRootDir.value || '',
-    oilCount: '0',
+    oilCount: '1000',
     isOilReset: 'N',
     deviceType: '01',
-    uiVersion: 'web',
-    isNsNbIntegration: isNsNbIntegration.value || 'N',
+    uiVersion: 'uimd-pb-comm_v2.0.102',
+    isNsNbIntegration: isNsNbIntegration || 'N',
   };
+  console.log(req)
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
 
