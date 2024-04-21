@@ -481,7 +481,7 @@ const deleteRow = async () => {
 
     if (response.success) {
       showSuccessAlert('Items deleted successfully');
-      emits('initData'); // 데이터 다시 불러오기
+      emits('refresh'); // 데이터 다시 불러오기
       resetContextMenu();
     } else {
       console.error('Failed to delete items');

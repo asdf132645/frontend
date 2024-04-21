@@ -44,11 +44,10 @@ interface OrderItem {
 
 // 스토어
 const store = useStore();
-const orderList = computed(() => store.state.slotInfoModule);
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const runningArr = computed(() => store.state.commonModule.runningArr);
-const slotIndex = computed(() => store.state.commonModule.slotIndex);
+const orderList = computed(() => store.state.commonModule.orderList);
 const instance = getCurrentInstance();
 
 // end 스토어
@@ -63,9 +62,21 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     const parsedData = JSON.parse(stringData);
     if(parsedData.jobCmd === 'RUNNING_INFO'){
       const currentSlot = parsedData?.slotInfo
-      if (currentSlot && currentSlot?.stateCd === '03') {
+      if (currentSlot) {
         const barcodeNo = currentSlot.barcodeNo;
         const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+        const str: any = parsedData?.iCasStat ?? '';
+        const iCasStatArr: any = [...str];
+        if(iCasStatArr.lastIndexOf("2") !== -1){
+          orderList.value[iCasStatArr.lastIndexOf("2")] = {
+            orderList: {barcodeId: barcodeNo,
+              patientName: currentSlot.patientNm,
+              orderDate: stringToDateTime(currentSlot.orderDttm),
+              analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+              state: currentSlot.stateCd,},
+            slotId: parsedData.slotInfo.slotId
+          };
+        }
         if (existingItemIndex === -1 && barcodeNo !== '') {
           dspOrderList.value.push({
             barcodeId: barcodeNo,

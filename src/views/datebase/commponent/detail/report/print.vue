@@ -172,6 +172,7 @@ import {useStore} from "vuex";
 
 const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const store = useStore();
 
 const printContent = ref(null);
 const wbcInfo = ref([]);

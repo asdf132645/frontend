@@ -85,6 +85,7 @@ const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
+const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
 const siteCd = ref('');
 
@@ -111,7 +112,7 @@ const totalCount = ref<string>("");
 const maxWbcCount = ref<string>('');
 const slideProceeding = ref('0');
 const instance = getCurrentInstance();
-
+const classArr = computed(() => storeEm.state.commonModule.classArr);
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
     const sysInfo = newVal[0].sysInfo;
@@ -129,14 +130,6 @@ onMounted(() => {
   updateDataArray(initialWbcClassList);
 });
 
-// watch(
-//     () => store.state.wbcClassificationModule,
-//     (newSlotInfo) => {
-//       updateDataArray(newSlotInfo);
-//     },
-//     {deep: true}
-// );
-
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
     const textDecoder = new TextDecoder('utf-8');
@@ -144,20 +137,15 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     const parsedData = JSON.parse(stringData);
     if(parsedData.jobCmd === 'RUNNING_INFO'){
-      await updateDataArray({wbcInfo: parsedData.slotInfo});
+      await updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
     }
   } catch (e) {
     // console.log(e)
   }
 })
 
-const updateDataArray = async (newSlotInfo: any) => {
-  console.log(newSlotInfo)
-
+const updateDataArray = async (newSlotInfo: any,parsedData?: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
-  if(slotArray.wbcCount === '00'){
-    return;
-  }
   if (slotArray.wbcInfo) {
     testType.value = slotArray?.wbcInfo?.testType;
     const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo.bmInfo] : [slotArray.wbcInfo.wbcInfo];
@@ -189,6 +177,17 @@ const updateDataArray = async (newSlotInfo: any) => {
     }
   }
   await updatePercentages();
+  const str: any = parsedData?.iCasStat ?? '';
+  const iCasStatArr: any = [...str];
+  if(iCasStatArr.lastIndexOf("2") !== -1){
+    classArr.value[iCasStatArr.lastIndexOf("2")] = {
+      wbcInfo: dspWbcClassList.value,
+      nonRbcClassList: nonWbcClassList,
+      totalCount: totalCount.value,
+      maxWbcCount: maxWbcCount.value,
+      slotId: parsedData.slotInfo.slotId
+    };
+  }
   await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
     slotInfo: [
       {

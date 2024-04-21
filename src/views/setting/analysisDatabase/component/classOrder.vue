@@ -83,7 +83,6 @@ const saveOrderClassSave = async () => {
     orderList[index].userName = userId.value;
     orderList[index].orderText = index;
   }
-  console.log(orderList)
   try {
     let result = {};
     if (saveHttpType.value === 'post') {
