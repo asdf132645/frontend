@@ -97,14 +97,15 @@
       </div>
       <div class="tiling-viewer-box">
         <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-        <div v-else-if="activeTab !== 'malaria' && tileExist === true" ref="tilingViewerLayer" id="tiling-viewer" ></div>
-      
+        <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer" ></div>
+        <div v-else>
+          <span>Tile does not exist.</span>
+        </div>
       </div>
     </div>
   </template>
   
   <script setup lang="ts">
-  
   import { defineProps, onMounted, ref, watch, computed} from 'vue';
   import OpenSeadragon from 'openseadragon';
   import {rulers} from '@/common/defines/constFile/rbc';
@@ -142,25 +143,23 @@
   const tilingViewerLayer = ref(null);
   let isFirstDragEvent = ref(true);
   let dragForCrop = ref({});
-  let tileExist = ref(false);
-  
+  const tileExist = ref(true);
+
   onMounted(() => {
     initElement();
   });
   
   watch(() => props.rbcInfo, (newItem) => {
+    activeTab.value = 'lowMag';
     initElement();
   });
-  
-  
   
   const initElement = async () => {
     const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
     try {
   
       const tilesInfo = await fetchTilesInfo(folderPath);
-      tilesInfo.length === 0 ? tileExist.value = false : tileExist.value = true;
-  
+
       if (tilesInfo.length !== 0) {
   
         viewer = OpenSeadragon({
@@ -238,31 +237,33 @@
     const response = await fetch(url);
   
     if (!response.ok) {
+      tileExist.value = false;
       throw new Error('Network response was not ok');
-    }
+    } else {
   
-    const fileNames = await response.json();
-    const tilesInfo = [];
-  
-    for (const fileName of fileNames) {
-      if (fileName.endsWith('_files')) {
-        tilesInfo.push({
-          Image: {
-            xmlns: "http://schemas.microsoft.com/deepzoom/2009",
-            Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
-            Format: "jpg",
-            Overlap: "1",
-            TileSize: "1024",
-            Size: {
-              Height: "3295",
-              Width: "3349"
+      const fileNames = await response.json();
+      const tilesInfo = [];
+    
+      for (const fileName of fileNames) {
+        if (fileName.endsWith('_files')) {
+          tilesInfo.push({
+            Image: {
+              xmlns: "http://schemas.microsoft.com/deepzoom/2009",
+              Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
+              Format: "jpg",
+              Overlap: "1",
+              TileSize: "1024",
+              Size: {
+                Height: "3295",
+                Width: "3349"
+              }
             }
-          }
-        });
+          });
+        }
       }
+      tileExist.value = true;  
+      return tilesInfo;
     }
-  
-    return tilesInfo;
   };
   
   
@@ -678,11 +679,11 @@
   #tiling-viewer {
     position: relative;
     width: 100%;
-    height: 85vh;
+    height: 80vh;
   }
   
   .rbc-container {
-    height:100vh;
+    height:85vh;
   }
   
   .btn-container {

@@ -1363,26 +1363,6 @@ select.selectSizeTitle {
     padding-top:10px;
 }
 
-.printSection {
-    position: absolute;
-    top: 0;
-    background: #fff;
-    margin: auto;
-    left: 29%;
-    max-width: 980px;
-    color: #000;
-}
-
-.printSection {
-    position: absolute;
-    top: 0;
-    background: #fff;
-    margin: auto;
-    left: 29%;
-    max-width: 980px;
-    color: #000;
-}
-
 .reportContent > table tr th, .reportContent > table tr td {
     text-align: left;
     padding: 5px;

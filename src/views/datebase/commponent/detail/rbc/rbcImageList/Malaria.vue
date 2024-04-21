@@ -1,34 +1,39 @@
 <template>
-  <!-- malaria -->
-  <div>
-    <div @drop="onDrop('malaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
-      <img
-        v-for="(malaria, index) in malariaList"
-        :key="'malaria-' + index" 
-        :src="malaria" 
-        class="item-image"
-        :class="{'selected': isSelected('malaria', malaria) }"
-        alt="malaria-image"
-        @click="handleClickImage('malaria', malaria, index, $event)"
-        @dragstart="onDragStart('malaria', malaria, index)"
-      >
+  <div v-if="imageExist">
+    <!-- malaria -->
+    <div>
+      <div @drop="onDrop('malaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
+        <img
+          v-for="(malaria, index) in malariaList"
+          :key="'malaria-' + index" 
+          :src="malaria" 
+          class="item-image"
+          :class="{'selected': isSelected('malaria', malaria) }"
+          alt="malaria-image"
+          @click="handleClickImage('malaria', malaria, index, $event)"
+          @dragstart="onDragStart('malaria', malaria, index)"
+        >
+      </div>
+    </div>
+    <!-- no malaria -->
+    <div>
+      <div class="no-malaria" style="text-align:left">No Malaria</div>
+      <div @drop="onDrop('noMalaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
+        <img
+          v-for="(noMalaria, index) in noMalariaList"
+          :key="'noMalaria-' + index"
+          :src="noMalaria"
+          class="item-image"
+          :class="{'selected': isSelected('noMalaria', noMalaria) }"
+          alt="noMalaria-image"  
+          @click="handleClickImage('noMalaria', noMalaria, index, $event)"
+          @dragstart="onDragStart('noMalaria', noMalaria, index)"
+        >
+      </div>
     </div>
   </div>
-  <!-- no malaria -->
-  <div>
-    <div class="no-malaria" style="text-align:left">No Malaria</div>
-    <div @drop="onDrop('noMalaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
-      <img
-        v-for="(noMalaria, index) in noMalariaList"
-        :key="'noMalaria-' + index"
-        :src="noMalaria"
-        class="item-image"
-        :class="{'selected': isSelected('noMalaria', noMalaria) }"
-        alt="noMalaria-image"  
-        @click="handleClickImage('noMalaria', noMalaria, index, $event)"
-        @dragstart="onDragStart('noMalaria', noMalaria, index)"
-      >
-    </div>
+  <div v-else>
+    <span>Malaria Images do not exist.</span>
   </div>
 </template>
 
@@ -47,6 +52,7 @@ const noMalariaList = ref([]);
 const selectedClickImages = ref<{ section: string, imgName: string, index: number }[]>([]);
 let indexBeforePressingShift = ref<number | null>(null);
 let draggedImages = ref<{ section: string, imgName: string, index: number }[]>([]);
+const imageExist = ref(false);
 
 onMounted(async () => {
   await getImageList(dirName.malariaDirName, malariaList);
@@ -59,8 +65,15 @@ async function getImageList(folderName: string, list: []) {
   const folderPath = `${pbiaRootPath}/${slotId}/${dirName.rbcClassDirName}/${folderName}`;
 
   try {
-    const response = await axios.get(`${apiBaseUrl}/folders?folderPath=${folderPath}`);
-    list.value = response.data.map((image: string) => `${apiBaseUrl}/folders?folderPath=${folderPath}/${image}`);
+    const response = await fetch(`${apiBaseUrl}/folders?folderPath=${folderPath}`);
+    if (!response.ok) {
+      imageExist.value = false;
+      throw new Error('Network response was not ok');
+    } else {
+      const data = await response.json();
+      list.value = data.map((image: string) => `${apiBaseUrl}/folders?folderPath=${folderPath}/${image}`);
+      imageExist.value = true;
+    }
   } catch (err) {
     console.error(err);
   }

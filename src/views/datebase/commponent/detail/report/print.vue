@@ -1,11 +1,11 @@
 <template>
-  <div class="printSection" style="min-width: 900px">
+  <div class="printSection" style="min-width: 900px; ">
     <button class="printCloseBtn" @click="closePrint">Close</button>
-    <div ref="printContent">
+    <div ref="printContent" style="display: flex; flex-direction: column">
       <div>
         <h3 class="printDetailTitle">Analysis Report from UIMD PB system</h3>
       </div>
-      <div class="reportContent">
+      <div class="reportContent" style="margin: 0 auto">
         <table>
           <colgroup>
             <col width="30%"/>
@@ -176,13 +176,13 @@ const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
+const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootPath = commonDataGet.value.pbiaRootPath;
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const store = useStore();
 const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
 
