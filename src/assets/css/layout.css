@@ -1654,6 +1654,34 @@ ul.normalItems li div span:last-child {
 /* setting */
 /* login/account */
 
+.settingContainer {
+    width: 950px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.searchUserContainer {
+    text-align: left;
+    margin:30px;
+}
+
+.searchUserContainer select, .searchUserContainer input {
+    width: 200px;
+}
+
+.table th, .table td {
+    padding: 8px;
+    text-align: center;
+}
+
+.table th, .table td {
+    width: calc(100% / 8);
+}
+
 .searchSelect {
     width: 120px !important;
     padding: 7px;

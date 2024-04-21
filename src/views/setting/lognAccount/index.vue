@@ -111,7 +111,3 @@ const getAllUsers = async() => {
 }
 
 </script>
-
-<style lang="css" scoped>
-@import "@/assets/css/setting/loginAccount.css";
-</style>
