@@ -177,7 +177,6 @@ const store = useStore();
 const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
-const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootPath = commonDataGet.value.pbiaRootPath;
 const storedUser = sessionStorage.getItem('user');
