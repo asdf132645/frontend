@@ -337,7 +337,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         } else {
           if (lastCompleteIndex !== slotIndex.value) {
             console.log('save')
-            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo, currentSlot?.slotId, lastCompleteIndex);
+            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+            await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
+            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
+            await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
           }
         }
 
@@ -427,10 +431,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if (result) {
           if(slotId){
             console.log('save successful');
-            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
-            await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: slotId});
-            await store.dispatch('commonModule/setCommonInfo', {slotIndex: last})
           }
           instance?.appContext.config.globalProperties.$socket.emit('state', {
             type: 'SEND_DATA',
