@@ -37,6 +37,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
@@ -67,7 +68,7 @@ const saveLisCode = async () => {
       const updateRbcResult = await updateLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) }, userId.value);
 
       if (updateResult.data && updateRbcResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
         showErrorAlert('update failed');

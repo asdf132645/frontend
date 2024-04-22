@@ -28,6 +28,7 @@ import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {bmHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import process from "process";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -55,7 +56,7 @@ const saveWbcCustomClass = async () => {
       const updateResult = await updateWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value , userId: Number(userId.value)}, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getWbcHotKeyClasses();
       } else {
         showErrorAlert('update failed');

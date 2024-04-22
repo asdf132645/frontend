@@ -45,6 +45,7 @@ import {
 import {ImagePrintItem} from "@/common/api/service/setting/dto/imagePrintDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const filePathSetArr = ref<FilePathItem[]>([]);
 const selectedItems = ref<string[]>([]);
@@ -75,7 +76,7 @@ const saveFilePathSet = async () => {
       }, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
         showErrorAlert('update failed');

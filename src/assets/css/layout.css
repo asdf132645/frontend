@@ -1082,6 +1082,7 @@ ul.leftWbcInfo li {
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
+    margin-left: 13px;
 }
 
 ul.leftWbcInfo {

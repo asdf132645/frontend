@@ -34,6 +34,7 @@ import {
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {normalRange} from "@/common/defines/constFile/settings";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -59,7 +60,7 @@ const saveNormalRange = async () => {
       const updateResult = await updateBfNormalRangeApi({normalRangeItems: normalItems.value , userId: Number(userId.value)}, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getNormalRange();
       } else {
         showErrorAlert('update failed');

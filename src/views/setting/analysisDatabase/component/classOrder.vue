@@ -38,6 +38,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import process from "process";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const wbcInfoChangeVal = ref<any>([]);
 
@@ -91,7 +92,7 @@ const saveOrderClassSave = async () => {
       result = await putOrderClassApi(orderList, userId.value);
     }
     if (result) {
-      const text = saveHttpType.value === 'post' ? 'save successful' : 'update successful'
+      const text = saveHttpType.value === 'post' ? 'save successful' : messages.UPDATE_SUCCESSFULLY
       showSuccessAlert(text);
     }
   } catch (e) {

@@ -28,6 +28,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -60,7 +61,7 @@ const saveWbcCustomClass = async () => {
       const updateResult = await updateWbcCustomClassApi({ classArr: wbcCustomItems.value, userId: Number(userId.value) }, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getWbcCustomClasses();
       } else {
         showErrorAlert('update failed');

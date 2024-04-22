@@ -29,6 +29,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const cbcCodeArr = ref<cbcCodeItem[]>([]);
 const storedUser = sessionStorage.getItem('user');
@@ -54,7 +55,7 @@ const saveCbcCode = async () => {
       const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value, userId: Number(userId.value) }, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
         showErrorAlert('update failed');

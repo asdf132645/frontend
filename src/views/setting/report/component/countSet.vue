@@ -59,6 +59,7 @@ import {
 import Alert from "@/components/commonUi/Alert.vue";
 import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import {runCountItem} from "@/common/api/service/setting/dto/runWbcInfoCountDto";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const minCountArr = ref<minCountItem[]>([]);
 const wbcRunInfoCountArr = ref<runCountItem[]>([]);
@@ -89,7 +90,7 @@ const saveLisCode = async () => {
       const updateRbcResult = await updateMinCountApi({ minCountItems: minCountArr.value, userId: Number(userId.value) }, userId.value);
 
       if (updateResult.data && updateRbcResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getCountData();
       } else {
         showErrorAlert('update failed');

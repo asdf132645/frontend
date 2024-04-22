@@ -31,6 +31,7 @@ import { ImagePrintItem } from "@/common/api/service/setting/dto/imagePrintDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import process from "process";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 
 const imagePrintAndWbcArr = ref<any[]>([]);
@@ -66,7 +67,7 @@ const saveImagePrint = async () => {
       const updateResult = await updateImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value, userId: Number(userId.value) }, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
         showErrorAlert('update failed');

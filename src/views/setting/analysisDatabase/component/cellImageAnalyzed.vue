@@ -165,6 +165,7 @@ import {
 import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {useStore} from "vuex";
+import { messages } from "@/common/defines/constFile/constantMessageText";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -305,7 +306,7 @@ const cellImgSet = async () => {
     }
 
     if (result) {
-      const text = saveHttpType.value === 'post' ? 'save successful' : 'update successful';
+      const text = saveHttpType.value === 'post' ? 'save successful' : messages.UPDATE_SUCCESSFULLY;
       showSuccessAlert(text);
       const data = result?.data;
       await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
