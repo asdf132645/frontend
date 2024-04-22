@@ -359,7 +359,11 @@ ul.customClass li {
 }
 
 .settingDatePickers > div {
-    margin-right: 15px;
+    margin: 0 12px;
+}
+
+.v3dp__input_wrapper > input {
+    padding: 9px;
 }
 
 table.settingTable {
@@ -373,12 +377,12 @@ table.settingTable select{
 }
 
 button.saveBtn, .defaultBtn {
-    margin-top: 20px;
+    margin-top: 10px;
     background: none;
     border: 1px solid #fff;
     border-radius: 5px;
     color: #fff;
-    padding: 10px 160px;
+    padding: 10px 80px;
     cursor: pointer;
 }
 
@@ -639,6 +643,18 @@ span.proSpan {
     margin: 0 auto;
     margin-top: 13%;
 }
+
+.joinContent {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.joinContent p {
+    font-weight: bold;
+}
+
 .joinContent input {
     box-shadow: none!important;
     width: 90%;
@@ -665,8 +681,13 @@ span.proSpan {
     margin-top: 3px;
 }
 
-.joinContent ul {
+.joinBtn {
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+    width: 430px;
 }
+
 p.loginTitle {
     color: #fff;
     font-size: 3rem;
@@ -687,7 +708,7 @@ ul.loginUl {
     border: none;
     color: #fff;
     padding: 10px;
-    margin: 10px;
+    margin: 5px;
     border-radius: 5px;
 }
 
@@ -867,10 +888,8 @@ input.alarmInput {
     top: 10px;
 }
 
-.filterListDiv > div > select, .filterListDiv > div > input, .filterListDiv > div > div {
-    display: inline-block;
-    width: 21%;
-    border-radius: 4px;
+.filterListDiv > div {
+    display: flex;
 }
 
 .filterListDiv > div > button {
@@ -882,12 +901,6 @@ input.alarmInput {
     left: 43px;
     margin-right: 6px;
 }
-
-/* .filterListDiv > div > div > .v3dp__popout {
-    width: 265px;
-    position: absolute;
-    left: 17px;
-} */
 
 table.defaultTable thead tr {
     background: #252629;
@@ -1717,12 +1730,13 @@ ul.normalItems li div span:last-child {
     width: 120px !important;
     padding: 7px;
     border: 1px solid black;
-    border-radius: 0px;
+    border-radius: 5px;
 }
 
 .searchInputBox {
     padding: 8px;
-    border-radius: 0px;
+    border-radius: 5px;
+    width: 300px;
 }
 
 .searchBtn {
