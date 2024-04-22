@@ -14,7 +14,7 @@ class EventBus {
     }
 
     // 이벤트를 발행하는 메서드
-    public publish(eventName: string, ...args: any[]): void {
+     public publish(eventName: string, ...args: any[]): void {
         const handlers = this.events[eventName];
         if (handlers) {
             handlers.forEach(handler => handler(...args));

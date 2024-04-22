@@ -85,6 +85,7 @@ const bfSelectFiles = ref([]);
 // 스토어 end
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
+const commonDataGet = computed(() => store.state.commonModule);
 
 //내부 변수
 const showStopBtn = ref(false);
@@ -96,6 +97,10 @@ const alertMessage = ref('');
 const testTypeArr = ref<any>([]);
 
 onMounted(async () => {
+  await initDataExecut();
+});
+
+const initDataExecut =async () =>{
   projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
 
@@ -111,9 +116,15 @@ onMounted(async () => {
     btnStatus.value = 'start';
     showStopBtn.value = true;
   }
+}
+
+watch(commonDataGet.value, (value, oldValue) => {
+  if(value.loginSetData === ''){
+    console.log(value.resFlag)
+    initDataExecut();
+    store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
+  }
 });
-
-
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
@@ -282,6 +293,7 @@ const initData = () => {
 }
 
 const cellImgGet = async () => {
+  console.log('cellimg')
   try {
     const result = await getCellImgApi(String(userId.value));
     if (result) {

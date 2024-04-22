@@ -153,8 +153,7 @@
 import {createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
-import router from "@/router";
-import {onMounted, ref} from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -166,6 +165,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {useStore} from "vuex";
 import { messages } from "@/common/defines/constFile/constantMessageText";
+import EventBus from "@/eventBus/eventBus";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -180,7 +180,7 @@ const pltPositionMargin = ref('0');
 const pbAnalysisType2 = ref('100');
 const stitchCount = ref('1');
 const bfAnalysisType = ref('100');
-const pbiaRootPath = ref('');
+const pbiaRootPath = ref(process.env.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
 const alarmCount = ref('5');
@@ -199,17 +199,34 @@ const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const store = useStore();
 
-onMounted(async () => {
+const handleLoginSuccess = async (userIdVal: any) => {
+  console.log('?!@!@?')
+  testTypeCd.value = process.env.PROJECT_TYPE === 'bm' ? '02' : '01';
+  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  console.log(process.env.PROJECT_TYPE);
+  testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
+  analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
+  userId.value = userIdVal;
+  await cellImgGet();
+  await driveGet();
+  await cellImgSet();
+}
 
+
+onMounted(async () => {
+  await nextTick();
   testTypeCd.value = process.env.PROJECT_TYPE === 'bm' ? '02' : '01';
   projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   console.log(process.env.PROJECT_TYPE);
   testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   userId.value = getStoredUser.id;
+
+
   await cellImgGet();
   await driveGet();
 });
+
 
 const driveGet = async () => {
   try {

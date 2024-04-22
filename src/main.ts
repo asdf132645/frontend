@@ -13,6 +13,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 // @ts-ignore
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import socketPlugin from '@/plugins/socketPlugin';
+
 /// <reference path="../types/webapi.d.ts" />
 
 

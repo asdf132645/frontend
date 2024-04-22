@@ -1,5 +1,4 @@
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: any) => {
     try {

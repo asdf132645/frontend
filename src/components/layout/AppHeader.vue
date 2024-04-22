@@ -263,6 +263,8 @@ const logout = () => {
     document.exitFullscreen();
   }
   logOutBox.value = false;
+
+
 }
 
 const oilCountChangeVal = (): string => {

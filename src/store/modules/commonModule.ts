@@ -27,6 +27,7 @@ export interface CommonState {
     rbcArr: any[];
     processInfo: any[];
     orderList: any[];
+    loginSetData: string;
 }
 
 interface CommonModule {
@@ -60,6 +61,7 @@ interface CommonModule {
         setRbcArr: (state: CommonState, value: any[]) => void;
         setProcessInfo: (state: CommonState, value: any[]) => void;
         setOrderList: (state: CommonState, value: any[]) => void;
+        setLoginSetData: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -94,6 +96,7 @@ export const commonModule: CommonModule = {
         rbcArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         processInfo: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         orderList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+        loginSetData: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -179,6 +182,9 @@ export const commonModule: CommonModule = {
         },
         setOrderList(state: CommonState, value: any[]): void {
             state.orderList = value;
+        },
+        setLoginSetData(state: CommonState, value: string): void {
+            state.loginSetData = value;
         },
     },
     actions: {
@@ -266,6 +272,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('orderList')) {
                 commit('setOrderList', payload.orderList);
+            }
+            if (payload.hasOwnProperty('loginSetData')) {
+                commit('setLoginSetData', payload.loginSetData);
             }
         },
     },

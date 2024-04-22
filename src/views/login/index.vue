@@ -41,6 +41,7 @@ import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
+import {cellImgSet} from "@/common/lib/commonfunction/settingFunctions";
 
 // 스토어
 const store = useStore();
@@ -65,9 +66,12 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
+      console.log('??!@@')
+      await cellImgSet(String(result?.data?.user.id));
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
       await getUserIp(result?.data?.user.userId);
+
     }else{
       showSuccessAlert('Login failed.');
     }
@@ -88,7 +92,7 @@ const getUserIp = async (userId: string) => {
       await updateAccount(userId, result.data, 'viewer');
     }
   } catch (e) {
-
+    console.log(e);
   }
 }
 
@@ -107,6 +111,7 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
 
   try {
     const result = await putUserDataApi(user);
+    console.log(result)
     if (result) {
       showSuccessAlert('login successful.');
       await document.documentElement.requestFullscreen();
@@ -115,7 +120,7 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
       }else{
         await router.push('/dataBase');
       }
-
+      await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
     }
 

@@ -26,7 +26,7 @@ import {CreateMinCountDto, minCountItem, UpdateMinCountDto} from "@/common/api/s
 
 const httpClient = useHttpClient();
 
-export const createCellImgApi = async (request: CellImgAnalyzedRequest): Promise<ApiResponse<void>> => {
+export const createCellImgApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.cellImgAnalyzedPost.cellImgAdd, request);
 };
 
@@ -34,7 +34,7 @@ export const getCellImgApi = async (userId: string): Promise<ApiResponse<CellImg
     return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGet, userId);
 };
 
-export const putCellImgApi = async (request: CellImgAnalyzedRequest, id: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
+export const putCellImgApi = async (request: any, id: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
     return httpClient.httpPut(apiConstants.settings.cellImgAnalyzedPost.cellImgPut, request, id);
 };
 

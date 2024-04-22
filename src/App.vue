@@ -425,8 +425,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
         if (result) {
-          console.log('save successful');
           if(slotId){
+            console.log('save successful');
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: slotId});
