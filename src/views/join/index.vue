@@ -1,6 +1,6 @@
 <template>
   <div class="joinContent">
-    <p class="mt2 mb2">CREATE ACCOUNT</p>
+    <p class="mt2 mb4">CREATE ACCOUNT</p>
     <div>
       <ul>
         <li>
@@ -32,8 +32,8 @@
         </li>
       </ul>
       <div class='joinBtn'>
-        <button class="defaultBtn" type="button" @click='createAccount'>create account</button>
-        <button class="defaultBtn" type="button" @click='goLoginPage'>login page</button>
+        <button class="defaultBtn" type="button" @click='createAccount'>Create Account</button>
+        <button class="defaultBtn" type="button" @click='goLoginPage'>Back</button>
       </div>
     </div>
   </div>

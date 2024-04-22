@@ -130,14 +130,14 @@
     <div class="backupDiv">
       <div class="backupDivChild">
         <h5 class="mb1">Backup and Restore</h5>
-        <input type="text" readonly v-model='backupPath' class="backupInput">
         <div class="settingDatePickers">
+          <input placeholder="Backup Path" type="text" readonly v-model='backupPath' class="backupInput">
           <Datepicker v-model="backupStartDate"></Datepicker>
           <Datepicker v-model="backupEndDate"></Datepicker>
         </div>
       </div>
     </div>
-    <button class="saveBtn" type="button" @click='cellImgSet()'>Save Cell image analyzed</button>
+    <button class="saveBtn" type="button" @click='cellImgSet()'>Save Cell Image Analyzed</button>
   </div>
   <Alert
       v-if="showAlert"
