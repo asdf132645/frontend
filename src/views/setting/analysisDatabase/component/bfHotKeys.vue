@@ -83,7 +83,6 @@ const getBfHotKeyClasses = async () => {
         saveHttpType.value = 'put';
         const data = result.data;
         bfHotKeysItems.value = data;
-        console.log(data);
       }
     }
   } catch (e) {

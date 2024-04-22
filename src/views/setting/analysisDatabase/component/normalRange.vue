@@ -89,7 +89,6 @@ const getNormalRange = async () => {
         saveHttpType.value = 'put';
         const data = result.data;
         normalItems.value = data;
-        console.log(data);
       }
       console.log(result);
     }
