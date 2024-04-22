@@ -23,6 +23,14 @@
     margin-bottom: 20px;
 }
 
+.mb3 {
+    margin-bottom: 30px;
+}
+
+.mb4 {
+    margin-bottom: 40px;
+}
+
 .pl0 {
     padding-left: 0 !important;
 }
@@ -202,8 +210,9 @@ span.icoText {
 .contentLeft {
     text-align: left;
     display: inline-block;
+    padding-left: 13px;
     padding-top: 15px;
-    width: 27%;
+    width: 26%;
     height: 91vh;
 }
 
@@ -264,6 +273,11 @@ h3.titleText {
     border: 1px solid;
 }
 
+.initBtn:hover {
+    background: #fff;
+    color:  #212121;
+}
+
 p.startStopP {
     border: 1px solid #ffffff;
     padding: 20px;
@@ -302,7 +316,7 @@ ul.customClass li span {
 ul.customClass li {
     margin: 5px;
 }
-
+ 
 .settingImagePrint label {
     display: flex;
     justify-content: space-between;
@@ -324,8 +338,8 @@ ul.customClass li {
 }
 
 .circular-progress-bar {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     position: relative;
 }
 
@@ -334,12 +348,22 @@ ul.customClass li {
     text-align: center;
 }
 
-.backupDiv input {
-    width: 25.7%;
+.backupInput {
+    width: 350px;
+    margin-bottom: 2px;
+}
+
+.settingDatePickers {
+    display: flex;
+    justify-content: center;
+}
+
+.settingDatePickers > div {
+    margin-right: 15px;
 }
 
 table.settingTable {
-    width: 35%;
+    width: 80%;
     text-align: left;
     margin: auto;
 }
@@ -474,11 +498,16 @@ li.mb1.liTitle {
     color: #dedede;
 }
 
+.slideCardWrap {
+    padding-top: 15px;
+}
+
 ul.slideContent li {
     width: 100%;
     height: 20px;
     background: #dedede;
-    margin: 5px 0px;
+    margin: 8px 0px;
+    border-radius: 2px;
 }
 
 ul.slideContent {
@@ -760,6 +789,11 @@ table.settingTable td, table.settingTable th {
     font-size: 1rem;
 }
 
+input.alarmInput {
+    padding: 7px;
+    box-sizing: border-box;
+}
+
 .range-slider {
     position: relative;
     width: 100%;
@@ -849,26 +883,14 @@ table.settingTable td, table.settingTable th {
     margin-right: 6px;
 }
 
-.filterListDiv > div > div > .v3dp__popout {
+/* .filterListDiv > div > div > .v3dp__popout {
     width: 265px;
     position: absolute;
     left: 17px;
-}
-
-.settingDatePickers > .v3dp__datepicker > .v3dp__popout{
-    position: absolute;
-    top: -262px;
-    left: 660px;
-    width: 472px;
-}
-
-.dbDatePicker {
-    height: 22px;
-    margin-left: 15px;
-}
+} */
 
 table.defaultTable thead tr {
-    background: #070707;
+    background: #252629;
 }
 
 table.defaultTable thead th .table{
@@ -948,6 +970,7 @@ h3.titleH3 button {
     border: 1px solid #fff;
     background: transparent;
     padding: 5px 10px;
+    margin-left: 5px;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -980,6 +1003,10 @@ ul.wbcInfoDbUl > li {
 .hh3title {
     font-weight: 600;
     border-bottom: 1px solid #939393;
+}
+
+.infoImageTitle {
+    margin-left: 10px;
 }
 
 ul.wbcInfoDbUl {
@@ -1095,8 +1122,13 @@ ul.leftWbcInfo {
     display: block;
 }
 
-ul.orderListUl > li {
+ul.orderListUi > li {
     margin-bottom: 5px;
+}
+
+ul.orderListUi > li > img {
+    border: 1px solid #696969;
+    border-radius: 3px;
 }
 
 button.searchClass {
@@ -1474,36 +1506,33 @@ ul.editOrder li input {
 }
 
 ul.wbcHotKeysItems li {
-    display: inline-block;
-    margin: 10px;
-    max-width: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px auto;
     font-size: 0.8rem;
+    width: 450px;
 }
 
 ul.wbcHotKeysItems {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-bottom: 30px;
+} 
+
+.alignDiv {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px 0;
 }
 
-.alignDiv label {
-    display: inline-block;
-    margin: 10px;
-    max-width: 200px;
-    font-size: 0.8rem;
-}
-.alignDiv li {
-    display: inline-block;
-    margin: 10px;
-    max-width: 200px;
-    font-size: 0.8rem;
-}
-.alignDiv {
-    text-align: left;
+.alignDiv > label {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    height: 27px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.alignDiv > label > input, .alignDiv > ul > li > input {
+    width: 200px;
 }
 
 .rbcDiv {
@@ -1553,6 +1582,7 @@ ul.normalItems li div span:last-child {
 
 .bmclass > div {
     padding-top: 40px;
+    width: 700px;
 }
 
 .titleText {
@@ -1655,7 +1685,7 @@ ul.normalItems li div span:last-child {
 /* login/account */
 
 .settingContainer {
-    width: 950px;
+    width: 920px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1703,9 +1733,10 @@ ul.normalItems li div span:last-child {
     cursor: pointer;
 }
 
-/* analysis/database */
+/* setting/analysis/database */
 .tab-content {
-    padding: 20px 0;
+    width: 700px;
+    margin: 0 auto;
 }
 
 

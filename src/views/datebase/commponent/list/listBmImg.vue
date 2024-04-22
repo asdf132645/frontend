@@ -1,6 +1,6 @@
 <template>
   <div class="mt3">
-    <h3 class="mb1 hh3title">BM Images</h3>
+    <h3 class="mb1 hh3title infoImageTitle">BM Images</h3>
     <div v-if="allImages.length > 0" class="dbBmImageContainer">
       <div v-for="imageSet in allImages" :key="imageSet.id">
         <img v-for="image in imageSet.images" :key="image.fileName" class="dbBmImages" :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)" alt="Image" />

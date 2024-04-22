@@ -3,15 +3,15 @@
     <p class="mb2"> [ Min count ] </p>
     <ul>
       <li v-if="minCountArr.length > 0">
-        <p class="mb1">Giant platelet</p>
+        <p class="mb1 mt1">Giant Platelet</p>
         <input type="text" v-model="minCountArr[0].minGpCount" class="form-control form-control-sm">
       </li>
       <li v-if="minCountArr.length > 0">
-        <p class="mb1">Platelet aggregation</p>
+        <p class="mb1 mt1">Platelet Aggregation</p>
         <input type="text" v-model="minCountArr[0].minPaCount" class="form-control form-control-sm">
       </li>
     </ul>
-    <p class="mb2 mt1"> [ Running count ] </p>
+    <p class="mb2 mt4"> [ Running count ] </p>
     <table class="defaultTable" style="margin: auto;">
       <thead>
         <tr>

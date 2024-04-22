@@ -14,7 +14,7 @@
       <tr>
         <th rowspan="4" v-if="projectType === 'pb'">WBC diff analysis values</th>
         <th v-if="projectType === 'bm'">BM diff analysis values</th>
-        <th>Cell analyzing count:</th>
+        <th>Cell analyzing count</th>
         <td>
           <select v-model='pbAnalysisType'>
             <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -22,7 +22,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Wbc Position margin:</th>
+        <th>Wbc Position margin</th>
         <td>
           <select v-model='wbcPositionMargin'>
             <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -30,7 +30,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Rbc Position margin:</th>
+        <th>Rbc Position margin</th>
         <td>
           <select v-model='rbcPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -38,7 +38,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Plt Position margin:</th>
+        <th>Plt Position margin</th>
         <td>
           <select v-model='pltPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -69,7 +69,7 @@
       </tr>
       <tr>
         <th v-if="projectType === 'bm'"></th>
-        <th>Stitch count:</th>
+        <th>Stitch count</th>
         <td>
           <select v-model='stitchCount'>
             <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -112,7 +112,7 @@
           />
         </td>
         <td>
-          <input type="text" v-model='alarmCount'>
+          <input type="text" v-model='alarmCount' class="alarmInput">
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
@@ -130,7 +130,7 @@
     <div class="backupDiv">
       <div class="backupDivChild">
         <h5 class="mb1">Backup and Restore</h5>
-        <input type="text" readonly v-model='backupPath'>
+        <input type="text" readonly v-model='backupPath' class="backupInput">
         <div class="settingDatePickers">
           <Datepicker v-model="backupStartDate"></Datepicker>
           <Datepicker v-model="backupEndDate"></Datepicker>

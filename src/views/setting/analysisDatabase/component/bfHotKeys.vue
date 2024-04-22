@@ -3,7 +3,7 @@
 <!--        {{ bfHotKeysItems }}-->
     <ul class="wbcHotKeysItems">
       <li v-for="item in bfHotKeysItems" :key="item.id">
-        <span>{{ item.title }} - </span>
+        <span>{{ item.title }}</span>
         <span>{{ item.name }}</span>
         <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
@@ -28,6 +28,7 @@ import {
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {bfHotKeys} from "@/common/defines/constFile/settings";
+import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -53,7 +54,7 @@ const saveBfCustomClass = async () => {
       const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value , userId: Number(userId.value)}, userId.value);
 
       if (updateResult.data) {
-        showSuccessAlert('update successful');
+        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getBfHotKeyClasses();
       } else {
         showErrorAlert('update failed');

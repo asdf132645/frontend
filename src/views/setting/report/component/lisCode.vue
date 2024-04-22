@@ -1,13 +1,13 @@
 <template>
   <div class="alignDiv">
-    <p class="mt2 mb1"> [ WBC ] </p>
+    <p class="mb4"> [ WBC ] </p>
     <label v-for="item in lisCodeWbcArr" :key="item.value">
       <p class="mb1">{{ item.text }}</p>
       <input type="text" v-model="item.code" />
     </label>
   </div>
   <div class="alignDiv">
-    <p class="mt2 mb1"> [ RBC ] </p>
+    <p class="mt2 mb4"> [ RBC ] </p>
     <label v-for="item in lisCodeRbcArr" :key="item.classNm">
       <p class="mb1">{{ item.categoryNm }} - {{ item.classNm }}</p>
       <input type="text" v-model="item.code" />

@@ -4,13 +4,13 @@
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
       <h3 class="orderTitle hh3title">Order information</h3>
-      <ul class="orderListUl">
+      <ul class="orderListUi">
         <li>Order ID <span>{{ selectedItem?.slotId }}</span>  </li>
         <li>LIS status <span>No data sent or receuved from LIS</span>  </li>
         <li>Type of order <span>No data sent or receuved from LIS</span>
           <span v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>
           <span v-else>{{ selectedItem?.testType }}</span>
-        </li>
+        </li> 
         <li>NS, NB Integration <span>{{ selectedItem?.isNsNbIntegration }}</span>  </li>
         <li>Patient ID <span>{{ selectedItem?.patientId }}</span>  </li>
         <li>Patient name <span>{{ selectedItem?.patientNm }}</span>  </li>

@@ -2,7 +2,7 @@
   <div>
     <ul class="wbcHotKeysItems">
       <li v-for="item in wbcHotKeysItems" :key="item.id">
-        <span>{{ item.title }} - </span>
+        <span>{{ item.title }}</span>
         <span>{{ item.name }}</span>
         <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
       </li>

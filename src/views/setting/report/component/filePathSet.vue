@@ -3,17 +3,17 @@
   <div class="alignDiv" style="text-align: center">
     <ul>
       <li>
-        <p class="mb1">lisHotKey</p>
+        <p class="mb2">LIS Hot Key</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
                @input="updateHotKey($event, 0)">
       </li>
       <li>
-        <p class="mb1">lisFilePath</p>
+        <p class="mb2 mt2">Lis File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''"
                @input="updateFilePath($event, 0)">
       </li>
       <li>
-        <p class="mb1">cbcFilePath</p>
+        <p class="mb2 mt2">Cbc File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].cbcFilePath : ''"
                @input="updateCbcFilePath($event, 0)">
       </li>
