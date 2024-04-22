@@ -110,7 +110,12 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
     if (result) {
       showSuccessAlert('login successful.');
       await document.documentElement.requestFullscreen();
-      await router.push('/dataBase');
+      if(viewerCheck === 'main'){
+        await router.push('/');
+      }else{
+        await router.push('/dataBase');
+      }
+
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
     }
 

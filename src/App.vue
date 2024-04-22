@@ -336,13 +336,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
         } else {
           if (lastCompleteIndex !== slotIndex.value) {
-            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
-            await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             console.log('save')
-            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
-            // await saveTestHistory(data, data?.slotInfo?.slotNo);
-            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
-            await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
+            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo, currentSlot?.slotId, lastCompleteIndex);
           }
         }
 
@@ -350,7 +345,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     }
 
-    async function saveTestHistory (params: any, idx: any) {
+    async function saveTestHistory (params: any, idx: any, slotId?: any, lastCompleteIndex?: any) {
       const completeSlot = params.slotInfo;
       if (completeSlot) {
         completeSlot.userId = userId.value;
@@ -419,18 +414,24 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           rbcMemo: '',
         }
         console.log(newObj)
-        await saveRunningInfo(newObj);
+        await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
 
       }
     }
-    async function saveRunningInfo (runningInfo: RuningInfo) {
+    async function saveRunningInfo (runningInfo: any, slotId: any, last: any) {
       try {
         let result: ApiResponse<void>;
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
         if (result) {
           console.log('save successful');
+          if(slotId){
+            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+            await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: slotId});
+            await store.dispatch('commonModule/setCommonInfo', {slotIndex: last})
+          }
           instance?.appContext.config.globalProperties.$socket.emit('state', {
             type: 'SEND_DATA',
             payload: 'refreshDb'
