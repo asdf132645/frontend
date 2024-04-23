@@ -194,7 +194,6 @@ import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassif
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
-import {commonUpdateCounts} from "@/common/lib/commonfunction/classFicationPercent";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
