@@ -2,9 +2,9 @@
   <div class="mt3">
     <h3 class="mb1 hh3title infoImageTitle">WBC Images</h3>
     <div v-if="allImages.length > 0" class="image-container">
-      <div v-for="imageSet in allImages" :key="imageSet.id">
-        <img v-for="image in imageSet.images" :key="image.fileName" :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)" alt="Image" />
-      </div>
+      <template v-for="imageSet in allImages" :key="imageSet.id">
+        <img v-for="image in imageSet.images" :key="image.fileName" :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)" />
+      </template>
     </div>
     <div v-else>No images available</div>
   </div>
