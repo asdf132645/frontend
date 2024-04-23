@@ -29,7 +29,7 @@
       </ul>
     </div>
     <div class="databaseWbcRight">
-      <BmClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
 
     <div class="databaseWbcLeft">
@@ -191,6 +191,7 @@ import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);

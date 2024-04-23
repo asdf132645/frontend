@@ -1,25 +1,20 @@
 import {ref} from 'vue';
-import {getDrivesApi, getCellImgApi, createCellImgApi, putCellImgApi} from '@/common/api/service/setting/settingApi';
-import {useStore} from "vuex";
+import {getCellImgApi, createCellImgApi} from '@/common/api/service/setting/settingApi';
 
-// 전역적으로 사용할 수 있도록 하기 위해 ref로 상태를 관리
 const saveHttpType = ref('');
 const cellimgId = ref('');
 
-// Vuex 스토어
-const store = useStore();
-
-// 기본값을 정의하기 위한 상수
+const projectType = process.env.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
-    testTypeCd: '01',
-    pbAnalysisType: '100',
+    testTypeCd: projectType ? '02' : '01',
+    pbAnalysisType: projectType ? '500':'100',
     wbcPositionMargin: '0',
     rbcPositionMargin: '0',
     pltPositionMargin: '0',
     pbAnalysisType2: '100',
     stitchCount: '1',
     bfAnalysisType: '100',
-    pbiaRootPath: process.env.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
+    pbiaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
     isAlarm: false,
     alarmCount: '5',
@@ -69,8 +64,6 @@ export const cellImgSet = async (userId: string) => {
         try {
             const result = await createCellImgApi(cellImgSet);
             if (result) {
-                const data = result?.data;
-                // 세션 스토리지 업데이트
                 sessionStorage.setItem('isNsNbIntegration', defaultCellImgData?.isNsNbIntegration ? 'Y' : 'N');
                 sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.wbcPositionMargin));
                 sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.rbcPositionMargin));

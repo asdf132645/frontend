@@ -175,7 +175,7 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import WbcClass from "@/views/datebase/commponent/detail/wbc/databaseWbcRight/wbcClass.vue";
+import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 import * as XLSX from 'xlsx';
 import router from "@/router";
 import {

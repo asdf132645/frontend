@@ -300,16 +300,21 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
         analysisType.value = data.analysisType;
-        switch (analysisType.value) {
-          case '01':
-            wbcCount.value = data.cellAnalyzingCount;
-            break;
-          case '04':
-            wbcCount.value = data.pbAnalysisType2;
-            break;
-          default:
-            wbcCount.value = data.bfAnalysisType;
+        if(process.env.PROJECT_TYPE === 'bm'){
+          wbcCount.value = data.cellAnalyzingCount;
+        }else{
+          switch (analysisType.value) {
+            case '01':
+              wbcCount.value = data.cellAnalyzingCount;
+              break;
+            case '04':
+              wbcCount.value = data.pbAnalysisType2;
+              break;
+            default:
+              wbcCount.value = data.bfAnalysisType;
+          }
         }
+
         stitchCount.value = data.stitchCount
       }
     }
