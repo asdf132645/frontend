@@ -1056,10 +1056,6 @@ function removeDuplicateImages(data: any[]): any[] {
   });
 }
 
-function fetchClonedWbcInfo (newInfo: any) {
-  store.commit('commonModule/setClonedWbcInfo', newInfo);
-}
-
 async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
@@ -1093,9 +1089,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
-  // // //
-  fetchClonedWbcInfo(clonedWbcInfo);
-  console.log(clonedWbcInfos);
+  await store.dispatch('commonModule/setCommonInfo', clonedWbcInfo);
 
   if (notWbcAfterSave !== 'notWbcAfterSave') {
     // originalDb 업데이트
