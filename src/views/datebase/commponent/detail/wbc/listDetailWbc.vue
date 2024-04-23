@@ -25,7 +25,7 @@
         <li>{{ selectItems?.cbcPatientNo }}</li>
         <li>{{ selectItems?.patientName }}</li>
         <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
-        <li>{{ selectItems?.analyzedDttm }}</li>
+        <li>{{ selectItems?.createDate }}</li>
       </ul>
     </div>
     <div class="databaseWbcRight">
@@ -126,7 +126,8 @@
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                   :class="{
                     'border-changed': isBorderChanged(image),
-                    'selected-image': isSelected(image)
+                    'selected-image': isSelected(image),
+                     'wbcImgWrapLi': true
                   }"
                   @click="selectImage(itemIndex, imageIndex)"
                   @dblclick="openModal(image, item)"
@@ -803,7 +804,7 @@ async function onDropCircle(item: any) {
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;
   // 클릭한 요소 또는 그 부모 중에 .wbcImgWrap 클래스를 가지고 있지 않으면
-  if (!target.closest('.wbcImgWrap')) {
+  if (!target.closest('.wbcImgWrapLi')) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
@@ -938,10 +939,12 @@ function selectImage(itemIndex: any, imageIndex: any) {
       });
     }
   } else { // 쉬프트 키를 누르지 않은 경우
+    const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
+      selectedClickImages.value = [];
+      selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
       return
     }
-    const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isSelected(selectedImage)) {
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
     } else {

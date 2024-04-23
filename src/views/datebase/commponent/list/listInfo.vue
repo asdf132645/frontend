@@ -22,7 +22,7 @@
     <div>
       <h3 class="mt2 mb1 hh3title">Result information</h3>
       <ul>
-        <li>Analyzed date <span>{{ selectedItem?.analyzedDttm }}</span></li>
+        <li>Analyzed date <span>{{ selectedItem?.createDate }}</span></li>
         <li>Signed state <span>{{ selectedItem?.signedState }}</span></li>
         <li>Signed of date <span>{{ selectedItem?.signedOfDate }}</span></li>
         <li>Signed user ID <span>{{ selectedItem?.signedUserId }}</span></li>
