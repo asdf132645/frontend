@@ -74,14 +74,6 @@ const orderList = computed(() => store.state.commonModule.orderList);
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
 
-// 실제 배포시 사용해야함
-// document.addEventListener('click', function (event: any) {
-//   const storedUser = sessionStorage.getItem('user');
-//   if((storedUser) && route.fullPath !== '/user/login'){
-//     document.documentElement.requestFullscreen();
-//   }
-// });
-
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
