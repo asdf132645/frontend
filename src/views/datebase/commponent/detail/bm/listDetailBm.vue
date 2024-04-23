@@ -29,7 +29,7 @@
       </ul>
     </div>
     <div class="databaseWbcRight">
-      <BmClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
 
     <div class="databaseWbcLeft">
@@ -126,7 +126,8 @@
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                   :class="{
                     'border-changed': isBorderChanged(image),
-                    'selected-image': isSelected(image)
+                    'selected-image': isSelected(image),
+                    'wbcImgWrapLi': true
                   }"
                   @click="selectImage(itemIndex, imageIndex)"
                   @dblclick="openModal(image, item)"
@@ -187,13 +188,12 @@ import {
 } from "@/common/defines/constFile/classification";
 import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
-import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
-import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
-import {commonUpdateCounts} from "@/common/lib/commonfunction/classFicationPercent";
 import process from "process";
+import ClassInfo from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -770,7 +770,7 @@ async function onDropCircle(item: any) {
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;
   // 클릭한 요소 또는 그 부모 중에 .wbcImgWrap 클래스를 가지고 있지 않으면
-  if (!target.closest('.wbcImgWrap')) {
+  if (!target.closest('.wbcImgWrapLi')) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
@@ -900,11 +900,13 @@ function selectImage(itemIndex: any, imageIndex: any) {
         ...wbcInfo.value[itemIndex].images[i],
       });
     }
-  } else { // 쉬프트 키를 누르지 않은 경우
+  } else {
+    const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
+      selectedClickImages.value = [];
+      selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
       return
     }
-    const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isSelected(selectedImage)) {
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
     } else {
