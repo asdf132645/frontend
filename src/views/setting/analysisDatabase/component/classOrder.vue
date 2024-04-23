@@ -10,7 +10,7 @@
         @drop="drop(idx, $event)"
     >
       <ul class="nth1Child" v-if="idx === 0">
-        <li>Class</li>
+        <li class="classTitle">Class</li>
       </ul>
       <ul class="nth1Child">
         <li>{{ item?.name }}</li>

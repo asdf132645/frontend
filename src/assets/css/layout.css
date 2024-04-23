@@ -345,12 +345,13 @@ ul.customClass li {
 
 .backupDiv {
     margin-top: 20px;
+    text-align: center;
 }
 
 .backupInput {
-    width: 140px;
-    padding: 8px;
-} 
+    width: 350px;
+    margin-bottom: 2px;
+}
 
 .settingDatePickers {
     display: flex;
@@ -358,12 +359,11 @@ ul.customClass li {
 }
 
 .settingDatePickers > div {
-    margin-right: 1px;
+    margin: 0 12px;
 }
 
 .v3dp__input_wrapper > input {
-    width: 180px;
-    padding: 8px;
+    padding: 9px;
 }
 
 table.settingTable {
@@ -377,7 +377,7 @@ table.settingTable select{
 }
 
 button.saveBtn, .defaultBtn {
-    margin-top: 25px;
+    margin-top: 10px;
     background: none;
     border: 1px solid #fff;
     border-radius: 5px;
@@ -1013,6 +1013,12 @@ ul.wbcInfoDbUl > li {
     background: none;
 }
 
+.titleImg div {
+    font-weight: bold;
+    font-size: 19px;
+    background: #fff;
+}
+
 .hh3title {
     font-weight: 600;
     border-bottom: 1px solid #939393;
@@ -1041,7 +1047,7 @@ ul.wbcImgWrap > li {
 }
 
 .selected-image {
-    border: 2px solid #ff00eb !important;
+    border: 2px solid #20eaa7 !important;
     margin: 3px !important;
 }
 
@@ -1105,8 +1111,8 @@ ul.leftWbcInfo {
 }
 
 .border-changed {
-    border: 2px solid #3fff00;
-    margin: 3px !important;
+    /* border: 2px solid #3fff00;
+    margin: 3px !important; */
 }
 
 .wbcClassDbDiv > div > p {
@@ -1766,7 +1772,6 @@ ul.normalItems li div span:last-child {
     width: 400px;
     border: 1px solid #414141;
     border-radius: 5px;
-    text-align: center;
 }
 
 .alert-success {
@@ -1787,4 +1792,8 @@ ul.normalItems li div span:last-child {
     padding: 5px;
     margin-top: 10px;
     border-radius: 2px;
+}
+
+.isBeforeClicked {
+    color: red !important;
 }

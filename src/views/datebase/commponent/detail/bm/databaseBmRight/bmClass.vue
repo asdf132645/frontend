@@ -65,8 +65,8 @@
       </div>
     </template>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
-      <button @click="beforeChang">Before</button>
-      <button @click="afterChang">After</button>
+      <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
+      <button @click="afterChang" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -113,12 +113,13 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const barcodeImg = ref('');
+const isBefore = ref(false);
 
 
 onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  beforeChang();
+  afterChang();
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
 })
 
@@ -131,7 +132,7 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  beforeChang();
+  afterChang();
 });
 
 const startDrag = (index: any, event: any) => {
@@ -159,7 +160,7 @@ const toggleLockEvent = () => {
 }
 
 const commitConfirmed = () => {
-  const userConfirmed = confirm(messages.IDS_MSG_CONFIRM_SLIDE);
+  const userConfirmed = showSuccessAlert(messages.IDS_MSG_CONFIRM_SLIDE); 
 
   if (userConfirmed) {
     onCommit()
@@ -224,13 +225,20 @@ const resRunningItem = async (updatedRuningInfo: any) => {
 }
 
 const beforeChang = () => {
+  isBefore.value = true;
   wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
 }
 
 const afterChang = () => {
-  wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  isBefore.value = false;
+  if (props.selectItems.wbcInfoAfter.length === 0) {
+    wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
+  } else {
+    wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  }
 }
 
 async function updateOriginalDb() {

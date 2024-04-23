@@ -133,8 +133,8 @@
               >
                 <div style="position: relative">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
-                    <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
-                        :icon="['fas', 'arrow-right']"/>  {{ image.title }}</span>
+                    <div>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
+                        :icon="['fas', 'arrow-right']"/>  {{ image.title }}</div>
                   </div>
                   <img :src="getImageUrl(image.fileName, item.id, item.title)"
                        :width="image.width ? image.width : '150px'"
@@ -1007,12 +1007,14 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
+
   if(notWbcAfterSave !== 'notWbcAfterSave'){
     // wbcInfoAfter 업데이트 및 sessionStorage에 저장
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
   }
   sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+  
 
   if(notWbcAfterSave !== 'notWbcAfterSave'){
     // originalDb 업데이트
