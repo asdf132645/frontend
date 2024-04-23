@@ -192,6 +192,8 @@ import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
+import {commonUpdateCounts} from "@/common/lib/commonfunction/classFicationPercent";
+import process from "process";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -203,7 +205,7 @@ const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const commonDataGet = computed(() => store.state.commonModule);
+const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
@@ -998,7 +1000,8 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
-
+  // const newTotal = await commonUpdateCounts(selectItems.value, wbcInfo.value,commonDataGetSiteCd.value);
+  // console.log(newTotal)
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {

@@ -41,7 +41,7 @@ import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {cellImgSet} from "@/common/lib/commonfunction/settingFunctions";
+import {firstCellImgSet, firstSaveOrderClass} from "@/common/lib/commonfunction/settingFunctions";
 
 // 스토어
 const store = useStore();
@@ -66,8 +66,8 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
-      console.log('??!@@')
-      await cellImgSet(String(result?.data?.user.id));
+      await firstCellImgSet(String(result?.data?.user.id));
+      await firstSaveOrderClass(String(result.data?.user.id));
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
       await getUserIp(result?.data?.user.userId);

@@ -176,7 +176,7 @@ onMounted(async () => {
         if (!commonDataGet.value.runningInfoStop) {
           await runInfoPostWebSocket();
         }
-      }, 300);
+      }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';

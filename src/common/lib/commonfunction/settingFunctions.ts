@@ -1,9 +1,17 @@
 import {ref} from 'vue';
-import {getCellImgApi, createCellImgApi} from '@/common/api/service/setting/settingApi';
+import {
+    getCellImgApi,
+    createCellImgApi,
+    createOrderClassApi,
+    putOrderClassApi, getOrderClassApi
+} from '@/common/api/service/setting/settingApi';
+import {messages} from "@/common/defines/constFile/constantMessageText";
+import process from "process";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const saveHttpType = ref('');
 const cellimgId = ref('');
-
+const orderHttpType = ref('');
 const projectType = process.env.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
@@ -25,7 +33,7 @@ const defaultCellImgData = {
     userId: '', // 사용자 ID 기본값
 };
 
-export const cellImgSet = async (userId: string) => {
+export const firstCellImgSet = async (userId: string) => {
     let cellImgData;
 
     // `cellImgGet` 함수를 호출하여 `cellimgId` 및 `cellImgData` 값을 가져옵니다.
@@ -78,3 +86,27 @@ export const cellImgSet = async (userId: string) => {
 
 };
 
+
+
+export const firstSaveOrderClass = async (userId: any) => {
+    const orderList: any = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    for (const index in orderList) {
+        orderList[index].userName = userId;
+        orderList[index].orderText = index;
+    }
+    const result = await getOrderClassApi(String(userId));
+    if (result) {
+        if (result?.data.length === 0) {
+            orderHttpType.value = 'post';
+        }else{
+            orderHttpType.value = 'put';
+        }
+    }
+    try {
+        if (orderHttpType.value === 'post') {
+            await createOrderClassApi(orderList);
+        }
+    } catch (e) {
+        console.log(e);
+    }
+}
