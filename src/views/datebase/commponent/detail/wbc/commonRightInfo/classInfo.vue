@@ -67,8 +67,8 @@
       </div>
     </template>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
-      <button @click="beforeChang">Before</button>
-      <button @click="afterChang">After</button>
+      <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
+      <button @click="afterChang" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -132,12 +132,13 @@ const confirmMessage = ref('');
 const userConfirmed = ref(false);
 const orderClass = ref<any>([]);
 const projectBm = ref(false);
+const isBefore = ref(false);
 
 onMounted(async () => {
   await getOrderClass();
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  await beforeChang();
+  await afterChang();
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -152,7 +153,7 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  beforeChang();
+  afterChang();
 });
 
 const wbcClassTileChange = (): string => {
@@ -291,6 +292,7 @@ const getOrderClass = async () => {
 }
 
 const beforeChang = async () => {
+  isBefore.value = true;
   await getOrderClass();
   const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
@@ -303,12 +305,21 @@ const beforeChang = async () => {
 }
 
 const afterChang = () => {
-  const wbcInfo = props.selectItems.wbcInfoAfter;
+  isBefore.value = false;
+  const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
+  const wbcInfoAfter = props.selectItems.wbcInfoAfter;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
+  const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
 
-  wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
+  if (wbcInfoAfter.length === 0) {
+    wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
+  } else {
+    wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  }
+
 }
 
 async function updateOriginalDb() {
