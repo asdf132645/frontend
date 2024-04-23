@@ -235,6 +235,7 @@ const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
@@ -264,9 +265,31 @@ onUnmounted(async () => {
         console.error('Error:', error.response.data);
       });
 })
+
+
+const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = wbcInfo.slice(); // 기존 배열 복사
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  // 정렬된 배열을 wbcInfo에 할당
+  wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
+};
+
+
 const getWbcCustomClasses = async () => {
   try {
     const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
+
     const data: any = result.data;
     const newData = data.filter((item: any) => item.abbreviation);
 
@@ -837,6 +860,7 @@ function handleKeyUp(event: KeyboardEvent) {
 }
 
 async function initData(newData: any) {
+  wbcInfo.value = [];
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItems.value.wbcInfoAfter;
@@ -853,11 +877,12 @@ async function initData(newData: any) {
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if(item.images){
+      if (item.images.length > 0) {
         item.images.forEach((itemImg: any) => {
           itemImg.title = item.title;
         })
       }
+
     });
   }
   if (newData !== '') {
@@ -865,6 +890,8 @@ async function initData(newData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
+  const sortArr = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  await sortWbcInfo(wbcInfo.value, sortArr);
 }
 
 function onDragOver() {
@@ -900,7 +927,7 @@ function selectImage(itemIndex: any, imageIndex: any) {
         ...wbcInfo.value[itemIndex].images[i],
       });
     }
-  } else {
+  } else { // 쉬프트 키를 누르지 않은 경우
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
@@ -979,10 +1006,14 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         // 옮기는 곳
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+        wbcInfo.value = removeDuplicateImages(wbcInfo.value);
+        console.log(JSON.stringify(wbcInfo.value))
         wbcInfo.value.forEach((item: any) => {
-          item.images.forEach((itemImg: any) => {
-            itemImg.title = item.title;
-          })
+          if (item.images.length > 0) {
+            item.images.forEach((itemImg: any) => {
+              itemImg.title = item.title;
+            })
+          }
         });
       } else {
         console.error('이미지 이동 실패:', fileName);
@@ -996,6 +1027,22 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   } catch (error) {
     console.error('에러:', error);
   }
+}
+
+function removeDuplicateImages(data: any[]): any[] {
+  const uniqueFileNames = new Set<string>();
+
+  return data.map(item => {
+    const uniqueImages = item.images.filter((image: any) => {
+      if (!uniqueFileNames.has(image.fileName)) {
+        uniqueFileNames.add(image.fileName);
+        return true;
+      }
+      return false;
+    });
+
+    return {...item, images: uniqueImages};
+  });
 }
 
 async function updateOriginalDb(notWbcAfterSave?: string) {
@@ -1012,7 +1059,19 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
 
-  if(notWbcAfterSave !== 'notWbcAfterSave'){
+  let uniqueImages: any = [];
+  const uniqueData = clonedWbcInfo.map((item: any) => {
+    const uniqueImagesForItem = item.images.filter((image: any) => {
+      if (!uniqueImages.includes(image.fileName)) {
+        uniqueImages.push(image.fileName);
+        return true;
+      }
+      return false;
+    });
+    return {...item, images: uniqueImagesForItem};
+  });
+  clonedWbcInfo = uniqueData;
+  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트 및 sessionStorage에 저장
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
   }
@@ -1020,7 +1079,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
   
 
-  if(notWbcAfterSave !== 'notWbcAfterSave'){
+  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // originalDb 업데이트
     const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
     if (filteredItems.length > 0) {

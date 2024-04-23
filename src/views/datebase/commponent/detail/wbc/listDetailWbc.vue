@@ -174,7 +174,7 @@
 import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {useStore, mapActions} from "vuex";
+import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 import * as XLSX from 'xlsx';
@@ -194,7 +194,7 @@ import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassif
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
-import {commonUpdateCounts} from "@/common/lib/commonfunction/classFicationPercent";
+
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
 const originalDbData = sessionStorage.getItem("originalDbData");
@@ -238,7 +238,6 @@ const instance = getCurrentInstance();
 // const commnDataGet =
 // commonUpdateCounts
 const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
-const clonedWbcInfos = computed(() => store.state.commonModule.clonedWbcInfo);
 
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
@@ -268,6 +267,7 @@ onUnmounted(async () => {
         console.error('Error:', error.response.data);
       });
 })
+
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
