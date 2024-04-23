@@ -66,7 +66,6 @@ const getOrderClass = async () => {
     const result = await getOrderClassApi(String(userId.value));
     if (result) {
       if (result?.data.length === 0) {
-        console.log(null)
         saveHttpType.value = 'post';
       }else{
         saveHttpType.value = 'put';
