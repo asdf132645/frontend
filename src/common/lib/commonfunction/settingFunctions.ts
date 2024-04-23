@@ -94,7 +94,7 @@ export const firstSaveOrderClass = async (userId: any) => {
         orderList[index].userName = userId;
         orderList[index].orderText = index;
     }
-    const result = await getOrderClassApi(String(userId.value));
+    const result = await getOrderClassApi(String(userId));
     if (result) {
         if (result?.data.length === 0) {
             orderHttpType.value = 'post';

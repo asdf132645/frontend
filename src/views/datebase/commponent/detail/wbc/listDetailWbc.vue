@@ -193,6 +193,7 @@ import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassif
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import {commonUpdateCounts} from "@/common/lib/commonfunction/classFicationPercent";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -234,7 +235,9 @@ const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
-
+// const commnDataGet =
+// commonUpdateCounts
+const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
 
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
@@ -1050,7 +1053,6 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
-
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
