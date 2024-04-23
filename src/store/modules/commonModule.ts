@@ -28,6 +28,8 @@ export interface CommonState {
     processInfo: any[];
     orderList: any[];
     loginSetData: string;
+    siteCd: string;
+    deviceBarcode: string;
 }
 
 interface CommonModule {
@@ -62,6 +64,8 @@ interface CommonModule {
         setProcessInfo: (state: CommonState, value: any[]) => void;
         setOrderList: (state: CommonState, value: any[]) => void;
         setLoginSetData: (state: CommonState, value: string) => void;
+        setSiteCd: (state: CommonState, value: string) => void;
+        setDeviceBarcode: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -97,6 +101,8 @@ export const commonModule: CommonModule = {
         processInfo: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         orderList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         loginSetData: '',
+        siteCd: '',
+        deviceBarcode: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {

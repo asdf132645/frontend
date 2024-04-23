@@ -1062,6 +1062,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     });
     item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
+
   let uniqueImages: any = [];
   const uniqueData = clonedWbcInfo.map((item: any) => {
     const uniqueImagesForItem = item.images.filter((image: any) => {
