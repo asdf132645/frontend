@@ -19,13 +19,13 @@
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{ getTestTypeText(selectItems?.testType) }} Smear</li>
+        <li>{{ getBmTestTypeText(selectItems?.testType) }} Smear</li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
         <li>{{ selectItems?.patientName }}</li>
         <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }}  {{ selectItems?.cbcAge }}</li>
-        <li>{{ selectItems?.analyzedDttm }}</li>
+        <li>{{ selectItems?.createDate }}</li>
       </ul>
     </div>
     <div class="databaseWbcRight">
@@ -188,7 +188,7 @@ import {
 import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {bfHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
-import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";

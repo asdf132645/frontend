@@ -192,6 +192,12 @@ export const commonModule: CommonModule = {
         setLoginSetData(state: CommonState, value: string): void {
             state.loginSetData = value;
         },
+        setDeviceBarcode(state: CommonState, value: string): void {
+            state.deviceBarcode = value;
+        },
+        setSiteCd(state: CommonState, value: string): void {
+            state.siteCd = value;
+        },
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -281,6 +287,12 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('loginSetData')) {
                 commit('setLoginSetData', payload.loginSetData);
+            }
+            if (payload.hasOwnProperty('siteCd')) {
+                commit('setSiteCd', payload.siteCd);
+            }
+            if (payload.hasOwnProperty('deviceBarcode')) {
+                commit('setDeviceBarcode', payload.deviceBarcode);
             }
         },
     },
