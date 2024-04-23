@@ -28,8 +28,7 @@ export interface CommonState {
     processInfo: any[];
     orderList: any[];
     loginSetData: string;
-    siteCd: string;
-    deviceBarcode: string;
+    clonedWbcInfo: any[];
 }
 
 interface CommonModule {
@@ -64,8 +63,7 @@ interface CommonModule {
         setProcessInfo: (state: CommonState, value: any[]) => void;
         setOrderList: (state: CommonState, value: any[]) => void;
         setLoginSetData: (state: CommonState, value: string) => void;
-        setSiteCd: (state: CommonState, value: string) => void;
-        setDeviceBarcode: (state: CommonState, value: string) => void;
+        setClonedWbcInfo: (state: CommonState, value: any[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -101,8 +99,7 @@ export const commonModule: CommonModule = {
         processInfo: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         orderList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         loginSetData: '',
-        siteCd: '',
-        deviceBarcode: '',
+        clonedWbcInfo:[],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -192,6 +189,9 @@ export const commonModule: CommonModule = {
         setLoginSetData(state: CommonState, value: string): void {
             state.loginSetData = value;
         },
+        setClonedWbcInfo(state: CommonState, value: any[]): void {
+            state.clonedWbcInfo = value;
+        }
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {

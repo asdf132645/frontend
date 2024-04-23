@@ -229,6 +229,7 @@ export  const messages: Messages = {
     SET_ROLLBACK_LIST: 'setRollbackList',
     GET_ROLLBACK_LIST: 'getRollbackList',
     GET_IMAGE_ROLLBACK_LIST: 'getImageRollbackList',
+    SET_CLONED_WBC_INFO: 'setClonedWbcInfo',
 
     // rbc
     GET_RBC_BRIGHTNESS_SLIDE_VALUE: 'getRbcBrightnessSlideValue',

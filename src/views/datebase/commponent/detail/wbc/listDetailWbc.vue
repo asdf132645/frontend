@@ -173,7 +173,7 @@
 import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {useStore} from "vuex";
+import {useStore, mapActions} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 import * as XLSX from 'xlsx';
@@ -194,7 +194,6 @@ import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {commonUpdateCounts} from "@/common/lib/commonfunction/classFicationPercent";
-
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
 const originalDbData = sessionStorage.getItem("originalDbData");
@@ -238,6 +237,7 @@ const instance = getCurrentInstance();
 // const commnDataGet =
 // commonUpdateCounts
 const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
+const clonedWbcInfos = computed(() => store.state.commonModule.clonedWbcInfo);
 
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
@@ -267,7 +267,6 @@ onUnmounted(async () => {
         console.error('Error:', error.response.data);
       });
 })
-
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
@@ -432,6 +431,11 @@ const zoomOut = () => {
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
+
+watch(clonedWbcInfos.value, (newItem, oldItem) => {
+  wbcInfo.value = newItem;
+  console.log('newItem', newItem)
+})
 
 const pageGo = (path: string) => {
   router.push(path)
@@ -1049,6 +1053,10 @@ function removeDuplicateImages(data: any[]): any[] {
   });
 }
 
+function fetchClonedWbcInfo (newInfo: any) {
+  store.commit('commonModule/setClonedWbcInfo', newInfo);
+}
+
 async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
@@ -1081,6 +1089,10 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   }
   sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+
+  // // //
+  fetchClonedWbcInfo(clonedWbcInfo);
+  console.log(clonedWbcInfos);
 
   if (notWbcAfterSave !== 'notWbcAfterSave') {
     // originalDb 업데이트

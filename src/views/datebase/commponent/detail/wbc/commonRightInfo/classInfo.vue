@@ -153,6 +153,7 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  console.log(props.selectItems);
   afterChang();
 });
 
