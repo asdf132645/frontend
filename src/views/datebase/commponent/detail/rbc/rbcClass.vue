@@ -81,8 +81,8 @@
           </div>
     </div>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
-      <button @click="beforeChange" :class={clicked:isBefore}>Before</button>
-      <button @click="afterChange" :class={clicked:!isBefore}>After</button>
+      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>
+      <button @click="afterChange" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -308,7 +308,4 @@ const onCommit = async () => {
   text-align: left;
 }
 
-.clicked {
-  color:red;
-}
 </style>
