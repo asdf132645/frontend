@@ -203,6 +203,11 @@ span.icoText {
     color: #ffffff;
 }
 
+.dbDataTable > tbody {
+    height: 82.5vh;
+    overflow-y: auto;
+}
+
 /* header-menu-end */
 
 /*main*/
@@ -1350,7 +1355,7 @@ select.selectSizeTitle {
 
 .imgMenuSetDiv > button {
     background: none;
-    color: #cdf6f7;
+    color: #ffffff;
     font-size: 1rem;
     border-radius: 5px;
     margin-right: 19px; 
@@ -1630,7 +1635,7 @@ ul.normalItems li div span:last-child {
 }
 
 .dbBmImages {
-    width: 85px;
+    width: 96px;
     margin: 0 5px 1px 0;
 }
 

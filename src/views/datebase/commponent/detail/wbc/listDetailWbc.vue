@@ -132,7 +132,7 @@
                   @click="selectImage(itemIndex, imageIndex)"
                   @dblclick="openModal(image, item)"
               >
-                <div style="position: relative">
+                <div style="position: relative; height: 150px">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
                     <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
                         :icon="['fas', 'arrow-right']"/>  {{ image.title }}</span>

@@ -132,7 +132,7 @@
                   @click="selectImage(itemIndex, imageIndex)"
                   @dblclick="openModal(image, item)"
               >
-                <div style="position: relative">
+                <div style="position: relative; height: 150px">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
                     <div>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
                         :icon="['fas', 'arrow-right']"/>  {{ image.title }}</div>
@@ -1002,8 +1002,6 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
-  // const newTotal = await commonUpdateCounts(selectItems.value, wbcInfo.value,commonDataGetSiteCd.value);
-  // console.log(newTotal)
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
