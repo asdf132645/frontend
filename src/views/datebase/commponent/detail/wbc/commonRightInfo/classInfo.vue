@@ -159,12 +159,6 @@ watch(() => props.wbcInfo, (newItem) => {
   afterChang();
 });
 
-watch(clonedWbcInfo.value, (newInfo) => {
-  wbcInfoUpdated.value = newInfo;
-  console.log('newInfo'. newInfo);
-  console.log(wbcInfoUpdated.value);
-});
-
 
 const wbcClassTileChange = (): string => {
   if (!projectBm.value){
@@ -317,12 +311,10 @@ const beforeChang = async () => {
 const afterChang = () => {
   isBefore.value = false;
   const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
-  // const wbcInfoAfter = props.selectItems.wbcInfoAfter;
-  const wbcInfoAfter = wbcInfoUpdated.value;
+  const wbcInfoAfter = props.selectItems.wbcInfoAfter.length === 0 ? props.selectItems?.wbcInfo.wbcInfo[0] : props.selectItems.wbcInfoAfter
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
-
   if (wbcInfoAfter.length === 0) {
     wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
     nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
@@ -330,7 +322,6 @@ const afterChang = () => {
     wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
     nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
   }
-
 }
 
 async function updateOriginalDb() {
