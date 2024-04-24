@@ -378,7 +378,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data?.categories
   } catch (e) {
-    console.log(e);
+    // console.log(e);
   }
 };
 

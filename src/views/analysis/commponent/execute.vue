@@ -25,7 +25,8 @@
           {{ option.text }}
         </option>
       </select>
-      <div class="initBtn" @click="sendInit">
+<!--      {{ isInit }}-->
+      <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
         />
@@ -276,6 +277,10 @@ const hideAlert = () => {
 
 
 const sendInit = () => { // 장비 초기화 진행
+  if(isInit.value === 'Y'){
+    showSuccessAlert(messages.alreadyInitialized);
+    return;
+  }
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
 }

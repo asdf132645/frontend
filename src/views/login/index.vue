@@ -111,7 +111,6 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
 
   try {
     const result = await putUserDataApi(user);
-    console.log(result)
     if (result) {
       showSuccessAlert('login successful.');
       await document.documentElement.requestFullscreen();

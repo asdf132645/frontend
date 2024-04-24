@@ -118,7 +118,6 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
-  console.log('sss')
   userId.value = getStoredUser.id;
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
@@ -218,6 +217,17 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
 
         }
+        console.log(wbcCountOrder.value)
+        if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
+          dbGetData.value = dbGetData.value.sort((a, b) => {
+            const dateA = new Date(a.createDate);
+            const dateB = new Date(b.createDate);
+
+            // 내림차순 정렬
+            return dateB.getTime() - dateA.getTime();
+          });
+        }
+
         // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
         // 마지막 조회 결과 저장

@@ -1007,7 +1007,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
         wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
         wbcInfo.value = removeDuplicateImages(wbcInfo.value);
-        console.log(JSON.stringify(wbcInfo.value))
         wbcInfo.value.forEach((item: any) => {
           if (item.images.length > 0) {
             item.images.forEach((itemImg: any) => {

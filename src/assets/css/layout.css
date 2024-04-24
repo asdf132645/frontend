@@ -1784,7 +1784,10 @@ ul.normalItems li div span:last-child {
     border-radius: 5px;
     text-align: center;
 }
-
+.initBtn.isInitDisabled {
+    background: #dedede;
+    cursor: no-drop;
+}
 .iconHeaderMenu {
     position: absolute;
     right: 207px;

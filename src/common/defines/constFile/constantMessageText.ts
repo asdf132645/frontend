@@ -406,4 +406,5 @@ export  const messages: Messages = {
 
     UPDATE_SUCCESSFULLY : 'Update Successfully',
     TCP_DiSCONNECTED: 'The TCP connection was disconnected.',
+    alreadyInitialized: 'It has already been initialized.',
 };

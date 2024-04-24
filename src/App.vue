@@ -215,7 +215,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
         break;
       case 'INIT':
-        // sendSettingInfo();
+        sendSettingInfo();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -411,7 +411,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           memo: '',
           rbcMemo: '',
         }
-        console.log(newObj)
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
 
@@ -474,7 +473,7 @@ const sendSettingInfo = () => {
     oilCount: '1000',
     isOilReset: 'N',
     deviceType: '01',
-    uiVersion: 'uimd-pb-comm_v2.0.102',
+    // uiVersion: 'uimd-pb-comm_v2.0.102',
     isNsNbIntegration: isNsNbIntegration || 'N',
   };
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
