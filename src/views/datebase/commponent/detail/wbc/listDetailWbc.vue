@@ -433,11 +433,6 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
 
-watch(clonedWbcInfos.value, (newItem, oldItem) => {
-  wbcInfo.value = newItem;
-  console.log('newItem', newItem)
-})
-
 const pageGo = (path: string) => {
   router.push(path)
 }
