@@ -13,7 +13,7 @@ export const sendSettingInfoWebSocket = (isOilReset: string, oilCount: string, u
     Object.assign(settings, {
         oilCount,
         isOilReset,
-        uiVersion: 'uimd-pb-comm_v3',
+        // uiVersion: 'uimd-pb-comm_v3',
         isNsNbIntegration: isNsNbIntegration,
     });
     sendMessage(settings);
@@ -38,10 +38,11 @@ export const onCameraResetWebSocket = (userId: string) => {
 
 
 const sendMessage = (payload: object) => {
+    console.log(payload)
     instance?.appContext.config.globalProperties.$socket.emit('message', {
         type: 'SEND_DATA',
         payload: payload
     });
-    store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+    // store.dispatch('commonModule/setCommonInfo', {resFlag: false});
 }
 

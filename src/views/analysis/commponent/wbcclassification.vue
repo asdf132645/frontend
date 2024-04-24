@@ -11,23 +11,15 @@
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
-<!--              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">-->
-<!--                total-->
-<!--              </li>-->
             </ul>
             <ul class="classNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
               <li>{{ category?.count }}</li>
-<!--              <li v-if="innerIndex === classList.length - 1 && outerIndex === dspWbcClassList.length - 1">-->
-<!--                {{ totalCount || 0 }}-->
-<!--              </li>-->
             </ul>
             <ul class="degree">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
-                {{
-                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
-                }}
+                {{totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0' }}
               </li>
               <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
                 100.00
@@ -108,7 +100,7 @@ const dspBfClassList = ref<any[]>([]);
 const nonWbcClassList = ref<any[]>([]);
 
 const testType = ref<string>("");
-const totalCount = ref<string>("");
+const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
 const slideProceeding = ref('0');
 const instance = getCurrentInstance();
@@ -152,6 +144,23 @@ const updateDataArray = async (newSlotInfo: any,parsedData?: any) => {
     const wbcInfoArray = wbcinfoType;
     const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
+    console.log(dspWbcClassList.value)
+    const areAllCountsZero = (classList: any[]) => {
+      // 모든 요소의 count가 0인지 확인
+      return classList.every((classGroup) => {
+        return classGroup.every((category: any) => {
+          return category.count === '0';
+        });
+      });
+    };
+
+    // dspWbcClassList.value 배열의 모든 count 값이 '0'인지 확인
+    const allCountsAreZero = areAllCountsZero(dspWbcClassList.value);
+
+    if (allCountsAreZero) {
+      totalCount.value = '0'
+    }
+
     dspBfClassList.value = dspWbcClassList.value.flat();
 
     const nonRbcWbcInfoArray = wbcInfoArray
@@ -211,7 +220,7 @@ const calculateWbcPercentages = (
     classList: WbcInfo[],
     wbcList: WbcInfo[]
 ) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA"]:["AR", "NR", "GP", "PA", "MC", "MA", "SM"]
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", "OT"]:["AR", "NR", "GP", "PA", "MC", "MA", "SM","OT"]
   const total = classList
       .filter(
           (category) =>
@@ -229,7 +238,6 @@ const calculateWbcPercentages = (
 
         return acc;
       }, 0);
-
   return total;
 };
 
@@ -237,7 +245,7 @@ const calculateWbcPercentages = (
 const updateCounts = async (currentSlot: any) => {
   const arrType = props.bmIsBoolen ? currentSlot.bmInfo : currentSlot.wbcInfo;
   const wbcList = arrType;
-  let totalVal = "";
+  let totalVal = "0";
 
   if (testType.value === "01" || testType.value === "04") {
     totalVal = calculateWbcPercentages(
@@ -247,6 +255,7 @@ const updateCounts = async (currentSlot: any) => {
   } else {
     totalVal = calculateWbcPercentages(dspBfClassList.value, wbcList).toFixed(0);
   }
+
 
   totalCount.value = totalVal;
   await updatePercentages();

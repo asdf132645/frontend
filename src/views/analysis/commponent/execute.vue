@@ -4,7 +4,7 @@
       <select v-model="analysisType">
         <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <p class="startStopP" v-if="showStopBtn">
+      <p class=" startStopP" v-if="showStopBtn">
         <font-awesome-icon
             :icon="['fas', 'circle-play']"
             :class="{ 'startBtn': true, [btnStatus]: true }"
@@ -221,10 +221,10 @@ const toggleStartStop = (action: 'start' | 'stop') => {
         "reqDttm": tcpReq().embedStatus.startAction.reqDttm,
         "orderInfo": [{
           "orderId": "1",
-          "cassetNo": "1",
+          "cassetNo": "",
           "slotNo": "1",
           "bmNo": "1",
-          "patientId": "1",
+          "patientId": "",
           "patientNm": "",
           "age": "1",
           "gender": "01",

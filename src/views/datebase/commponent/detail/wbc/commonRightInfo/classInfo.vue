@@ -47,6 +47,24 @@
         <li> {{ item?.percent || '-' }}</li>
       </ul>
     </div>
+    <div class="categories">
+      <ul class="categoryNm">
+        <li>
+          total
+        </li>
+      </ul>
+      <ul class="classNm">
+        <li>
+          {{ selectItems?.wbcInfo?.totalCount || 0 }}
+        </li>
+      </ul>
+      <ul class="degree">
+        <li>
+          100.00
+        </li>
+      </ul>
+    </div>
+
     <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
       <div class="categories">
         <ul class="categoryNm">
@@ -135,6 +153,7 @@ const orderClass = ref<any>([]);
 const projectBm = ref(false);
 const isBefore = ref(false);
 const wbcInfoUpdated = ref<any>([]);
+const totalCount = ref('');
 
 onMounted(async () => {
   await getOrderClass();
@@ -322,6 +341,7 @@ const afterChang = () => {
     wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
     nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
   }
+  // console.log(props.)
 }
 
 async function updateOriginalDb() {

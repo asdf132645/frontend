@@ -6,7 +6,9 @@
       <li><span class="proSpan">Barcode ID</span> <span class="proVal">{{ processInfoItem?.barcodeId }}</span></li>
       <li><span class="proSpan">Patient ID</span> <span class="proVal">{{ processInfoItem?.patientId }}</span></li>
       <li><span class="proSpan">Patient Name</span> <span class="proVal">{{ processInfoItem?.patientName }}</span></li>
-      <li><span class="proSpan">WBC Count</span> <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
+      <li>
+        <span class="proSpan">{{ projectBm ? 'BMCELL Count ' : 'WBC Count ' }} </span>
+        <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
       <li>
         <!--0019 길병원-->
         <span class="proSpan">
@@ -29,6 +31,7 @@
 import {ref, computed, watch, onMounted, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
+import process from "process";
 const processInfo = computed(() => store.state.commonModule.processInfo);
 
 // 스토어
@@ -43,7 +46,7 @@ const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const processInfoItem = ref<any>({});
 const prevOilCount = ref<string | null>(null);
 const instance = getCurrentInstance();
-
+const projectBm = ref(false);
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
@@ -58,6 +61,7 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
 
 onMounted(() => {
   prevOilCount.value = embeddedStatusJobCmd.value[0]?.sysInfo.oilCount;
+  projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
@@ -70,7 +74,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       const currentSlot = parsedData?.slotInfo;
       if (currentSlot) {
         processInfoItem.value = {
-          cassetteNo: 1,
+          cassetteNo: '',
           barcodeId: currentSlot.barcodeNo,
           patientId: currentSlot.patientId,
           patientName: currentSlot.patientNm,

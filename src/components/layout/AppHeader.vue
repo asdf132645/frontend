@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
@@ -125,6 +125,7 @@ import {sendOilPrimeWebSocket, sendSettingInfoWebSocket} from "@/common/lib/send
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
+import {tcpReq} from "@/common/tcpRequest/tcpReq";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -134,6 +135,7 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
 const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
 
+const instance = getCurrentInstance();
 
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const oilCount = ref(0);
@@ -330,9 +332,24 @@ const closeLayer = (val: boolean) => {
 };
 
 const onReset = () => {
-  showSuccessAlert(messages.IDS_MSG_SUCCESS);
+
   getPercent();
-  sendSettingInfoWebSocket('Y', String(oilCount.value), userId.value, isNsNbIntegration.value);
+  const settings = tcpReq().embedStatus.settings;
+  settings.reqUserId = userId;
+
+  Object.assign(settings, {
+    oilCount,
+    isOilReset: 'Y',
+    // uiVersion: 'uimd-pb-comm_v3',
+    userId: '',
+    isNsNbIntegration: isNsNbIntegration.value,
+  });
+  instance?.appContext.config.globalProperties.$socket.emit('message', {
+    type: 'SEND_DATA',
+    payload: settings
+  });
+
+  showSuccessAlert(messages.IDS_MSG_SUCCESS);
 }
 
 const getPercent = () => {
@@ -346,7 +363,13 @@ const getPercent = () => {
 }
 
 const onPrime = () => {
-  sendOilPrimeWebSocket(userId.value);
+  tcpReq().embedStatus.oilPrime.reqUserId = userId;
+  instance?.appContext.config.globalProperties.$socket.emit('message', {
+    type: 'SEND_DATA',
+    payload: tcpReq().embedStatus.oilPrime
+  });
+
+  showSuccessAlert(messages.IDS_MSG_SUCCESS);
 }
 
 const onModalOpen = () => {

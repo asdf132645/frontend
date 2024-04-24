@@ -1071,9 +1071,10 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트 및 sessionStorage에 저장
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
+    sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
+    sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
   }
-  sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
-  sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+
   
 
   if (notWbcAfterSave !== 'notWbcAfterSave') {
