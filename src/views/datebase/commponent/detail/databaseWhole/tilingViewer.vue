@@ -46,7 +46,24 @@ const initElement = async () => {
       gestureSettingsMouse: { clickToZoom: false },
     });
 
-} catch (err) {
+    viewer.addHandler("open", function() {
+      // 타일링 뷰어에 height 동적 조정
+      const imageWidth = viewer.source.dimensions.x;
+      const imageHeight = viewer.source.dimensions.y;
+
+      const tilingViewerElement: any = document.getElementById("tiling-viewer");
+
+      const containerWidth = tilingViewerElement.clientWidth;
+
+      const aspectRatio = imageHeight / imageWidth;
+
+      const dynamicHeight = containerWidth * aspectRatio;
+      tilingViewerElement.style.height = `${dynamicHeight}px`;
+      console.log(dynamicHeight)
+    });
+
+
+  } catch (err) {
     console.error('Error:', err);
   }
 };
@@ -90,7 +107,6 @@ const fetchTilesInfo = async (folderPath: string) => {
 #tiling-viewer {
   position: relative;
   width: 100%;
-  height: 100vh;
 }
 
 </style>

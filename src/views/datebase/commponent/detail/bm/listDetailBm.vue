@@ -19,7 +19,7 @@
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{ getBmTestTypeText(selectItems?.testType) }} Smear</li>
+        <li>{{ getBmTestTypeText(selectItems?.testType) }}</li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>

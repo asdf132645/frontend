@@ -1772,11 +1772,18 @@ ul.normalItems li div span:last-child {
     top: 50%;
     left: 50%;
     transform: translateX(-50%);
-    /* z-index: 999; */
+    z-index: 999;
     padding: 45px 0;
     width: 400px;
     border: 1px solid #414141;
     border-radius: 5px;
+    text-align: center;
+}
+
+.iconHeaderMenu {
+    position: absolute;
+    right: 207px;
+    top: 26px;
 }
 
 .alert-success {

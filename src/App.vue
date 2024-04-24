@@ -194,14 +194,16 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     return;
   }
   try {
+    if(typeof data === 'string'){
+      await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      return
+    }else{
+      hideAlert();
+    }
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
     const parsedData = JSON.parse(stringData);
-    if (parsedData?.bufferData === 'err') {
-      await showSuccessAlert(messages.IDS_MSG_FAILED);
-      return
-    }
     const parseDataWarp = parsedData;
 
 
