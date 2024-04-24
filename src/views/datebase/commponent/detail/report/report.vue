@@ -96,8 +96,14 @@
                <td>{{ item?.count }}</td>
                <td> {{ item?.percent || '-' }}</td>
              </tr>
+             <tr>
+               <td>total</td>
+               <td>{{ selectItems?.wbcInfo?.totalCount || 0 }}</td>
+               <td>100.00</td>
+             </tr>
              </tbody>
            </table>
+
            <table class="tableClass" v-if="!projectBm">
              <colgroup>
                <col width="37%">
