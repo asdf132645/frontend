@@ -1,28 +1,30 @@
 <template>
+  <div id="viewerSmall" @click="closeViewer"></div>
   <div class="leftImgList">
     <ul class="">
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index">
-        <img :src="getImageUrls(image, 'particle')" alt="Partical Image" >
+        <img :src="getImageUrls(image, 'particle')" alt="Partical Image"
+             @dblclick="openInViewer(getImageUrls(image, 'particle'))">
       </li>
     </ul>
     <ul class="">
       <p>Ideal Zone</p>
       <li v-for="(image, index) in idealZoneImages" :key="index" style="width:100px">
-        <img :src="getImageUrls(image, 'idealZone')">
+        <img :src="getImageUrls(image, 'idealZone')" @dblclick="openInViewer(getImageUrls(image, 'idealZone'))">
       </li>
     </ul>
     <ul class="">
       <div>
         <p>Ideal stitch</p>
         <li v-for="(image, index) in idealStitchImages" :key="index">
-          <img :src="getImageUrls(image, 'idealStitch')">
+          <img :src="getImageUrls(image, 'idealStitch')" @dblclick="openInViewer(getImageUrls(image, 'idealStitch'))">
         </li>
       </div>
       <div>
         <p>Megakaryocyte</p>
         <li v-for="(image, index) in megaImages" :key="index">
-          <img :src="getImageUrls(image, 'mega')">
+          <img :src="getImageUrls(image, 'mega')" @dblclick="openInViewer(getImageUrls(image, 'mega'))">
         </li>
       </div>
     </ul>
@@ -30,9 +32,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
-import {useStore} from "vuex";
+import {onMounted, ref} from "vue";
+import OpenSeadragon from "openseadragon";
 import axios from "axios";
+import {useStore} from "vuex";
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
@@ -43,28 +46,28 @@ const paImages = ref([]);
 const idealZoneImages = ref([]);
 const idealStitchImages = ref([]);
 const megaImages = ref([]);
-const strArray = ['02_Particle_Image','03_Cell_Ideal_Image', '04_Cell_Ideal_Stitch_Image', '05_Mega_Image'];
+const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Stitch_Image', '05_Mega_Image'];
 
+let viewerSmall: any = null;
 
 onMounted(() => {
   getImgUrl();
-})
-
+});
 
 const getImageUrls = (imageName: string, type: string) => {
   let folderName;
   switch (type) {
     case 'particle':
-      folderName = '02_Particle_Image'
+      folderName = '02_Particle_Image';
       break;
     case 'idealZone':
-      folderName = '03_Cell_Ideal_Image'
+      folderName = '03_Cell_Ideal_Image';
       break;
     case 'idealStitch':
-      folderName = '04_Cell_Ideal_Stitch_Image'
+      folderName = '04_Cell_Ideal_Stitch_Image';
       break;
     case 'mega':
-      folderName = '05_Mega_Image'
+      folderName = '05_Mega_Image';
       break;
     default:
       break;
@@ -80,27 +83,114 @@ const getImgUrl = () => {
 
   for (const item of strArray) {
     axios.get(`${apiBaseUrl}/folders?folderPath=${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${item}`)
-      .then(response => {
-        switch (item) {
-          case '02_Particle_Image':
-            paImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
-            break;
-          case '03_Cell_Ideal_Image':
-            idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
-            break;
-          case '04_Cell_Ideal_Stitch_Image':
-            idealStitchImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
-            break;
-          case '05_Mega_Image':
-            megaImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
-          default:
-            break;
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error.response.data);
-      });
+        .then(response => {
+          switch (item) {
+            case '02_Particle_Image':
+              paImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+              break;
+            case '03_Cell_Ideal_Image':
+              idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+              break;
+            case '04_Cell_Ideal_Stitch_Image':
+              idealStitchImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+              break;
+            case '05_Mega_Image':
+              megaImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+              break;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
   }
-}
+};
+
+// 이미지를 더블클릭하면 OpenSeadragon 뷰어에서 열기
+const openInViewer = (imageUrl: string) => {
+  // 기존의 뷰어 제거
+  if (viewerSmall) {
+    viewerSmall.destroy();
+  }
+
+  // 새로운 OpenSeadragon 뷰어 생성
+  viewerSmall = OpenSeadragon({
+    id: "viewerSmall",
+    element: document.getElementById("viewerSmall"),
+    tileSources: {
+      type: "image",
+      url: imageUrl,
+    },
+    defaultZoomLevel: 0.2,
+    navigator: false,
+    showZoomControl: false, // 줌 컨트롤 숨기기
+    showHomeControl: false, // 홈 컨트롤 숨기기
+    showFullScreenControl: false, // 전체 화면 컨트롤 숨기기
+    showRotationControl: false, // 회전 컨트롤 숨기기
+    showFullPageControl: false,
+  });
+
+  viewerSmall.addHandler("open", function () {
+    // 타일링 뷰어에 height 동적 조정
+    const imageWidth = viewerSmall.source.dimensions.x;
+    const imageHeight = viewerSmall.source.dimensions.y;
+
+    const tilingViewerElement: any = document.getElementById("viewerSmall");
+
+    const containerWidth = tilingViewerElement.clientWidth;
+
+    const aspectRatio = imageHeight / imageWidth;
+
+    const dynamicHeight = containerWidth * aspectRatio;
+    tilingViewerElement.style.position = `fixed`;
+    tilingViewerElement.style.height = `${dynamicHeight}px`;
+    tilingViewerElement.style.width = `100%`;
+    tilingViewerElement.style.left = `0`;
+    tilingViewerElement.style.background = `#00000061`;
+
+    // 뷰어에 클릭 이벤트 리스너 추가
+    tilingViewerElement.addEventListener('click', closeViewer);
+  });
+};
+
+
+const closeViewer = () => {
+  if (viewerSmall) {
+    viewerSmall.destroy();
+
+    // viewerSmall 요소를 제거하여 닫기
+    const viewerElement = document.getElementById('viewerSmall');
+    if (viewerElement) {
+      viewerElement.innerHTML = '';  // 뷰어 요소의 내용을 비워서 닫기
+      viewerElement.style.background = 'none';
+      viewerElement.style.height = `0`;
+      viewerElement.style.width = `0`;
+
+      // 클릭 이벤트 리스너 제거
+      viewerElement.removeEventListener('click', closeViewer);
+    }
+
+    // viewerSmall 변수를 null로 설정
+    viewerSmall = null;
+  }
+};
+
 
 </script>
+
+<style scoped>
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+div#viewerSmall {
+  position: fixed;
+  top: 0;
+  height: 100%!important;
+}
+
+</style>
