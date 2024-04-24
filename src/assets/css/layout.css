@@ -205,6 +205,7 @@ span.icoText {
 
 .dbDataTable > tbody {
     overflow-y: auto;
+    height: 82.5vh;
 }
 
 /* header-menu-end */
@@ -353,7 +354,7 @@ ul.customClass li {
 }
 
 .backupInput {
-    width: 350px;
+    width: 160px;
     margin-bottom: 2px;
 }
 
@@ -883,7 +884,7 @@ input.alarmInput {
 }
 
 .tab-buttons button.active {
-    background-color: #b6b6b6;
+    background-color: #29c7ca;
 }
 
 .filterListDiv {
@@ -1807,4 +1808,8 @@ ul.normalItems li div span:last-child {
 
 .isBeforeClicked {
     color: red !important;
+}
+
+.iconSize {
+    font-size: 20px;
 }
