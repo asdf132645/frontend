@@ -30,7 +30,14 @@ onMounted(async () => {
 });
 
 const onImageLoad = async () => {
+
+
   const imgElement = hideImageRef.value;
+  const slotId = selectItems.value?.slotId || "";
+  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/01_Stitching_Image`;
+
+  const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
+  hideImage.value = imageUrl;
   // 이미지가 로드되었는지 확인합니다.
   if (imgElement && imgElement.complete) {
     const imageHeight = imgElement.naturalHeight;
@@ -43,10 +50,10 @@ const onImageLoad = async () => {
       newImgWidth.value = imageWidth;
 
       // 이미지 높이를 얻은 후 initElement 함수를 호출합니다.
-
+      await initElement(imageHeight);
     }
     console.log('???')
-    await initElement(imageHeight);
+
   }
 };
 
