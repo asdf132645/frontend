@@ -176,7 +176,6 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import BmClass from "@/views/datebase/commponent/detail/bm/databaseBmRight/bmClass.vue";
 import * as XLSX from 'xlsx';
 import router from "@/router";
 import {
@@ -191,7 +190,6 @@ import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSy
 import {getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
-import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 import process from "process";
 import ClassInfo from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 
