@@ -1,6 +1,6 @@
 <template>
   <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad" />
-    <div>
+    <div class="tilingViewerContainer">
       <div ref="tilingViewerLayer" id="tiling-viewer" ></div>
     </div>
 </template>
@@ -129,12 +129,3 @@ const fetchTilesInfo = async (folderPath: string) => {
 };
 
 </script>
-
-<style scoped>
-
-#tiling-viewer {
-  position: relative;
-  width: 100%;
-}
-
-</style>

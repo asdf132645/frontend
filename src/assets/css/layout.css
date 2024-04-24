@@ -1617,7 +1617,7 @@ ul.normalItems li div span:last-child {
 
 .wrap-whole {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     margin-left: 38px;
     height:90vh;
 }
@@ -1629,8 +1629,13 @@ ul.normalItems li div span:last-child {
     height: 92.2vh;
 }
 
+.tilingViewerContainer {
+    position: relative;
+    top: 40%;
+}
+
 .dbBmImageContainer {
-    overflow-y:  auto;
+    overflow-y: auto;
     max-height: 400px;
 }
 

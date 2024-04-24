@@ -42,6 +42,7 @@
         @click="selectItem(item)"
         @dblclick='rowDbClick(item)'
         ref="firstRow"
+        style="height: 49px"
         v-bind:data-row-id="item.id"
         @contextmenu.prevent="rowRightClick(item, $event)"
     >
