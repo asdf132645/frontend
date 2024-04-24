@@ -4,7 +4,7 @@
     <p class="mb1">
       {{ message }}
     </p>
-    <button @click="hideAlert">Close</button>
+    <button class="alertButton" @click="hideAlert">Close</button>
   </div>
 </template>
 
@@ -19,7 +19,3 @@ const hideAlert = () => {
   emit('hide');
 };
 </script>
-
-<style scoped>
-
-</style>

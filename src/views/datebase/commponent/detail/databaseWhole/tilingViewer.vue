@@ -97,6 +97,11 @@ const initElement = async (imageHeight: any) => {
       tilingViewerElement.style.height = `${dynamicHeight}px`;
     });
 
+    viewer.addHandler("zoom", function () {
+      const tilingViewerElement: any = document.getElementById("tiling-viewer");
+      tilingViewerElement && (tilingViewerElement.style.height = '80vh')
+    })
+
 
   } catch (err) {
     console.error('Error:', err);

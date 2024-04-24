@@ -4,11 +4,11 @@
       <select v-model="analysisType">
         <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <p class=" startStopP" v-if="showStopBtn">
+      <p class="startStopP" v-if="showStopBtn">
         <font-awesome-icon
             :icon="['fas', 'circle-play']"
             :class="{ 'startBtn': true, [btnStatus]: true }"
-            @click="toggleStartStop('start')"
+            @click="isInit === 'Y' && toggleStartStop('start')"
         />
       </p>
       <p class="startStopP" v-else>

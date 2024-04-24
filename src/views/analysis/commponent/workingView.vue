@@ -2,7 +2,7 @@
   <div>
     <h3 class="titleText"><span class="greenColor">W</span>orking <span class="greenColor">V</span>iew </h3>
     <div>
-      <p>{{ changeWqStatCd() }}</p>
+      <p :class="{'blinkColor': isBlinking}">{{ changeWqStatCd() }}</p>
       <p>{{ wbcCount }}</p>
 
       <div class="circular-progress-bar mt2">
@@ -83,7 +83,8 @@ let countingIntervalTotal: any = null;
 const slideCardData = ref(slideCard);
 let totalElapsedTimeCount = ref(0);
 let elapsedTimeCount = ref(0);
-
+const isBlinking = ref(false);
+let interval: any = ref(null);
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
@@ -165,6 +166,19 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
     }
   }
 });
+
+
+watch(()=>eqStatCd.value, (newVal) => {
+  if (newVal === '05') {
+    interval.value = setInterval(() => {
+      isBlinking.value = !isBlinking.value;
+    }, 1000);
+
+  } else {
+    isBlinking.value = false;
+    clearInterval(interval.value);
+  }
+})
 
 
 onMounted(() => {

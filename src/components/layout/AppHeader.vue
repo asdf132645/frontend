@@ -30,15 +30,13 @@
         <div class="small-icon-menu">
           <div class="lastMenu">
             <ul>
-              <li>Logged: {{ formattedDate }}</li>
+              <li>{{ formattedDate }}</li>
               <li class="lastLiM">
               <span class="userBox" @click='logOutBoxOn'>
                 {{ formattedTime }}
                 <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ userModuleDataGet.userId }}
               </span>
-                <div class='logOutBox' v-if='logOutBox' @click='logout'>
-                  LOGOUT
-                </div>
+              <font-awesome-icon class="logOutBox" :icon="['fas', 'right-from-bracket']" />
               </li>
             </ul>
           </div>
