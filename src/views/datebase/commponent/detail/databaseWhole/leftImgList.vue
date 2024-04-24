@@ -1,5 +1,6 @@
 <template>
-  <div id="viewerSmall" @click="closeViewer"></div>
+  <div class="closeViewer" @click="closeViewer" v-if="buttonOfen">x</div>
+  <div id="viewerSmall"></div>
   <div class="leftImgList">
     <ul class="">
       <p>Partical Image</p>
@@ -47,7 +48,7 @@ const idealZoneImages = ref([]);
 const idealStitchImages = ref([]);
 const megaImages = ref([]);
 const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Stitch_Image', '05_Mega_Image'];
-
+const buttonOfen = ref(false);
 let viewerSmall: any = null;
 
 onMounted(() => {
@@ -128,7 +129,7 @@ const openInViewer = (imageUrl: string) => {
     showRotationControl: false, // 회전 컨트롤 숨기기
     showFullPageControl: false,
   });
-
+  buttonOfen.value = true;
   viewerSmall.addHandler("open", function () {
     // 타일링 뷰어에 height 동적 조정
     const imageWidth = viewerSmall.source.dimensions.x;
@@ -147,8 +148,6 @@ const openInViewer = (imageUrl: string) => {
     tilingViewerElement.style.left = `0`;
     tilingViewerElement.style.background = `#00000061`;
 
-    // 뷰어에 클릭 이벤트 리스너 추가
-    tilingViewerElement.addEventListener('click', closeViewer);
   });
 };
 
@@ -171,6 +170,7 @@ const closeViewer = () => {
 
     // viewerSmall 변수를 null로 설정
     viewerSmall = null;
+    buttonOfen.value = false;
   }
 };
 
@@ -192,5 +192,12 @@ div#viewerSmall {
   top: 0;
   height: 100%!important;
 }
-
+.closeViewer {
+  position: absolute;
+  font-size: 3.9rem;
+  z-index: 999;
+  right: 25px;
+  top: 12px;
+  cursor: pointer;
+}
 </style>

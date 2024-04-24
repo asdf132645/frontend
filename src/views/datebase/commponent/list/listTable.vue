@@ -28,9 +28,9 @@
       <col width="8%"/>
       <col width="8%"/>
       <col width="8%"/>
-      <col width="15%"/>
+      <col width="19%"/>
       <col width="7%"/>
-      <col width="7%"/>
+      <col width="5%"/>
       <col width="20%"/>
       <col width="3%"/>
     </colgroup>
@@ -60,7 +60,7 @@
       <td> {{ item?.barcodeNo }}</td>
       <td> {{ item?.patientId }}</td>
       <td> {{ item?.patientNm }}</td>
-      <td> {{ item?.createDate }}</td>
+      <td> {{ formatDateString(item?.createDate)   }}</td>
       <td> {{ item?.tactTime }}</td>
       <td> {{ item?.submit }}</td>
       <td> {{ item?.signedOfDate }}</td>
@@ -186,6 +186,13 @@ const projectType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+
+const formatDateString = (dateString) => {
+  const parts = dateString.split('T');
+  const formattedString = `${parts[0]} T${parts[1]}`;
+  return formattedString;
+}
+
 
 
 const contextMenu = ref({
