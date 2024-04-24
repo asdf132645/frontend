@@ -4,7 +4,7 @@
       <li class="onRight" @click="pageGo('/databaseRbc')">RBC</li>
       <li @click="pageGo('/databaseWbc')">WBC</li>
       <li @click="pageGo('/report')">REPORT</li>
-      <li>LIS-CBC</li>
+<!--      <li>LIS-CBC</li>-->
     </ul>
     <div class="wbcMenuBottom">
       <button @click="moveRbc('up')">

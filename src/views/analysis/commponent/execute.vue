@@ -8,7 +8,7 @@
         <font-awesome-icon
             :icon="['fas', 'circle-play']"
             :class="{ 'startBtn': true, [btnStatus]: true }"
-            @click="toggleStartStop('start')"
+            @click="isInit === 'Y' && toggleStartStop('start')"
         />
       </p>
       <p class="startStopP" v-else>
@@ -25,7 +25,7 @@
           {{ option.text }}
         </option>
       </select>
-      <div class="initBtn" @click="sendInit">
+      <div class="initBtn" @click="sendInit" :class="{disabled: isRunningState}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
         />
@@ -179,6 +179,7 @@ const emitSocketData = async (type: string, payload: object) => {
   EventBus.publish('messageSent', payload);
 };
 const toggleStartStop = (action: 'start' | 'stop') => {
+  console.log('start')
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
 

@@ -11,7 +11,8 @@
       </tr>
       </thead>
       <tbody v-if="runningArr.length > 0">
-      <tr v-for="(slot, index) in runningArr" :key="index">
+      <tr v-for="(slot, index) in runningArr" :key="index" >
+
         <td>{{ slot?.slotInfo?.barcodeNo }}</td>
         <td>{{ slot?.slotInfo?.patientNm  }}</td>
         <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->

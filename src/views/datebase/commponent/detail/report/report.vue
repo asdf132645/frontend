@@ -6,7 +6,7 @@
       <li v-if="projectBm === false" @click="pageGo('/databaseWbc')">WBC</li>
       <li v-else @click="pageGo('/databaseBm')">BMCELL</li>
       <li class="onRight" @click="pageGo('/report')">REPORT</li>
-      <li>LIS-CBC</li>
+<!--      <li>LIS-CBC</li>-->
     </ul>
     <div class="wbcMenuBottom">
       <button @click="moveWbc('up')">

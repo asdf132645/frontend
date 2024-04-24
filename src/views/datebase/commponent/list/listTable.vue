@@ -35,20 +35,20 @@
       <col width="3%"/>
     </colgroup>
     <tbody v-if="dbData.length !== 0">
-    <tr
-        v-for="(item, idx) in dbData"
-        :key="item.id"
-        :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state }"
-        @click="selectItem(item)"
-        @dblclick='rowDbClick(item)'
-        ref="firstRow"
-        style="height: 49px"
-        v-bind:data-row-id="item.id"
-        @contextmenu.prevent="rowRightClick(item, $event)"
-    >
-      <td> {{ idx + 1 }}</td>
-      <td>
-        <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
+        <tr
+            v-for="(item, idx) in dbData"
+            :key="item.id"
+            :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state }"
+            @click="selectItem(item)"
+            @dblclick='rowDbClick(item)'
+            ref="firstRow"
+            style="height: 49px"
+            v-bind:data-row-id="item.id"
+            @contextmenu.prevent="rowRightClick(item, $event)"
+        >
+          <td> {{ idx + 1 }}</td>
+          <td>
+            <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
       </td>
       <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
       <td>

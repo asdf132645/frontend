@@ -171,14 +171,13 @@ main.bmComponent {
 }
 
 .logOutBox {
-    position: absolute;
-    background: #fff;
-    color: #696969;
-    padding: 5px;
-    border: 1px solid #696969;
-    top: 64px;
-    width: 113px;
+    background-color: #29c7ca; 
+    color: white;
+    border: none;
+    padding: 5px 10px;
     text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .lastMenu {
@@ -346,6 +345,7 @@ ul.customClass li {
     width: 130px;
     height: 130px;
     position: relative;
+    width: 100%;
 }
 
 .backupDiv {
@@ -397,21 +397,18 @@ button.saveBtn, .defaultBtn {
 }
 
 /*동그라미*/
+
 .progress-ring-circle {
     fill: transparent;
     stroke-width: 4px;
-    stroke: #506496; /* 테두리 색상 */
-    stroke-dasharray: 200; /* 테두리 길이, 적절한 값으로 조절해보세요 */
+    stroke: #506496;
+    stroke-dasharray: 200;
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.5s ease;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
     border-radius: 50%;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-}
-
-.circular-progress-bar {
-    width: 100%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .rotate-animation {
@@ -435,8 +432,18 @@ button.saveBtn, .defaultBtn {
     text-align: left;
     padding: 2px 0;
     margin-left: 15px;
-    border-bottom:1px solid #494949;
+    position: relative;
+    border-bottom: 1px solid #494949;
 }
+  
+/* .categories::after, .nth1Child::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 65%;
+    border-bottom: 1px solid #494949;
+} */
 
 ul.classInfo {
     width: 50%;
@@ -478,10 +485,11 @@ ul.nth1Child > :nth-child(1) {
 
 ul.nth1Child > :nth-child(2) {
     width: 40%;
-    text-align: left;
+    text-align: center;
 }
 
 ul.nth1Child > :nth-child(3) {
+    text-align: center;
     width: 20%;
 }
 
@@ -582,6 +590,10 @@ ul.slideContent .outClassDefault {
     text-align: center;
     vertical-align: middle;
     padding: 5px;
+}
+
+.orderListTableBottomLine {
+    border-bottom: 1px solid #494949;
 }
 
 .orderListTable th {
@@ -790,7 +802,7 @@ input.loginInput {
 }
 
 ul.settingTabBtn {
-
+    border:1px
 }
 
 ul.settingTabBtn li {
@@ -870,20 +882,20 @@ input.alarmInput {
 .rbcDegreeCategoryNm {
 }
 
-.tab-buttons {
+.settingTabSubButtons {
     display: flex;
     justify-content: center;
     margin: 20px 0;
 }
 
-.tab-buttons button {
+.settingTabSubButtons button {
     padding: 10px;
     margin: 0;
     border: none;
     cursor: pointer;
 }
 
-.tab-buttons button.active {
+.settingTabSubButtons button.active {
     background-color: #29c7ca;
 }
 
@@ -1631,7 +1643,7 @@ ul.normalItems li div span:last-child {
 
 .tilingViewerContainer {
     position: relative;
-    top: 40%;
+    /*top: 40%;*/
 }
 
 .dbBmImageContainer {
@@ -1781,6 +1793,7 @@ ul.normalItems li div span:last-child {
     padding: 45px 0;
     width: 400px;
     border: 1px solid #414141;
+    background: #414141;
     border-radius: 5px;
     text-align: center;
 }
@@ -1791,23 +1804,18 @@ ul.normalItems li div span:last-child {
     top: 26px;
 }
 
-.alert-success {
-    background-color: #252629;
-    color: #fff;
-}
-
 .alert-error {
     background-color: #f8d7da;
     border-color: #f5c6cb;
     color: #721c24;
 }
 
-.alert button {
+.alertButton {
     border: none;
     background-color: #29c7ca;
     color: #fff;
-    padding: 5px;
-    margin-top: 10px;
+    padding: 10px;
+    margin: 3px;
     border-radius: 2px;
 }
 
@@ -1817,4 +1825,8 @@ ul.normalItems li div span:last-child {
 
 .iconSize {
     font-size: 20px;
+}
+
+.blinkColor {
+    color: red;
 }
