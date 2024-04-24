@@ -403,5 +403,6 @@ export  const messages: Messages = {
     IDS_MSG_DATA_RESTORE: 'Do you want to recover your data?',
     IDS_MSG_SIZE_CHROMIA_LINKED_LIS: 'Size and Chromia categories are linked with LIS data.',
 
-    UPDATE_SUCCESSFULLY : 'Update Successfully'
+    UPDATE_SUCCESSFULLY : 'Update Successfully',
+    TCP_DiSCONNECTED: 'The TCP connection was disconnected.',
 };
