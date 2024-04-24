@@ -34,6 +34,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@nuxt/types": "^2.17.3",
     "@types/openseadragon": "^3.0.10",
+    "@types/pako": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

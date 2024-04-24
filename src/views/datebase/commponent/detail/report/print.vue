@@ -169,6 +169,7 @@ import {computed, defineEmits, defineProps, onMounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
+import pako from 'pako';
 
 const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -223,13 +224,17 @@ const printPage = async () => {
       throw new Error("프린트할 내용을 찾을 수 없습니다.");
     }
 
+    // HTML 컨텐츠를 Gzip으로 압축
+    const compressedContent = pako.gzip(content.innerHTML, { to: 'array' });
+
     // HTML 컨텐츠를 PDF로 변환하는 요청을 보냄
     const response = await fetch(`${apiBaseUrl}/pdf/convert`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Content-Encoding': 'gzip'
       },
-      body: JSON.stringify({htmlContent: content.innerHTML})
+      body: compressedContent
     });
 
     if (!response.ok) {
