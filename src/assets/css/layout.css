@@ -204,7 +204,6 @@ span.icoText {
 }
 
 .dbDataTable > tbody {
-    height: 82.5vh;
     overflow-y: auto;
 }
 
