@@ -142,7 +142,6 @@ window.addEventListener('beforeunload', function (event: any) {
 });
 const leave = (event: any) => {
   event.preventDefault();
-
 };
 
 onMounted(async () => {
@@ -195,10 +194,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     return;
   }
   try {
-    // console.log()
     if(typeof data === 'string'){
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
+    }else{
+      hideAlert();
     }
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
