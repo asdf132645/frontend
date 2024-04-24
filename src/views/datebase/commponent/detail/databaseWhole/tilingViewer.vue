@@ -1,4 +1,5 @@
 <template>
+  <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad" />
     <div>
       <div ref="tilingViewerLayer" id="tiling-viewer" ></div>
     </div>
@@ -6,12 +7,9 @@
 
 <script setup lang="ts">
 
-import { defineProps, onMounted, ref, watch, computed } from 'vue';
+import {defineProps, onMounted, ref, watch, computed, nextTick} from 'vue';
 import OpenSeadragon from 'openseadragon';
-import {rulers} from '@/common/defines/constFile/rbc';
-import {dirName} from "@/common/defines/constFile/settings";
 import { useStore } from "vuex";
-import malaria from './malaria.vue';
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
@@ -20,20 +18,51 @@ const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const store = useStore();
 const tilingViewerLayer = ref(null);
+const hideImageRef = ref(null);
+const newImgHeight = ref('');
+const newImgWidth = ref('');
+
+const hideImage = ref('');
 let viewer:any = null;
 
-onMounted(() => {
-  initElement();
+onMounted(async () => {
+  await onImageLoad();
 });
 
+const onImageLoad = async () => {
+  const imgElement = hideImageRef.value;
+  // 이미지가 로드되었는지 확인합니다.
+  if (imgElement && imgElement.complete) {
+    const imageHeight = imgElement.naturalHeight;
+    const imageWidth = imgElement.naturalWidth;
 
-const initElement = async () => {
+    // 이미지 높이가 0이 아닌지 확인합니다.
+    if (imageHeight !== 0) {
+      console.log('이미지 높이:', imageHeight);
+      newImgHeight.value = imageHeight;
+      newImgWidth.value = imageWidth;
+
+      // 이미지 높이를 얻은 후 initElement 함수를 호출합니다.
+
+    }
+    console.log('???')
+    await initElement(imageHeight);
+  }
+};
+
+
+
+const initElement = async (imageHeight: any) => {
+  if (viewer) {
+    viewer.destroy();
+  }
   const slotId = selectItems.value?.slotId || "";
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/01_Stitching_Image`;
 
+  const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
+  hideImage.value = imageUrl;
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
-    
     viewer = OpenSeadragon({
       id: "tiling-viewer",
       animationTime: 0.4,
@@ -59,7 +88,6 @@ const initElement = async () => {
 
       const dynamicHeight = containerWidth * aspectRatio;
       tilingViewerElement.style.height = `${dynamicHeight}px`;
-      console.log(dynamicHeight)
     });
 
 
@@ -78,7 +106,7 @@ const fetchTilesInfo = async (folderPath: string) => {
 
   const fileNames = await response.json();
   const tilesInfo = [];
-
+  // console.log()
   for (const fileName of fileNames) {
     if (fileName.endsWith('_files')) {
       tilesInfo.push({
@@ -89,8 +117,8 @@ const fetchTilesInfo = async (folderPath: string) => {
           Overlap: "1",
           TileSize: "1024",
           Size: {
-            Width: "2354",
-            Height: "3295"
+            Width: newImgWidth.value,
+            Height: newImgHeight.value
           }
         }
       });
