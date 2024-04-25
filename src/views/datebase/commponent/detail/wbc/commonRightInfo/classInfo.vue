@@ -86,7 +86,7 @@
     </template>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
-      <button @click="afterChang(clonedWbcInfo)" :class={isBeforeClicked:!isBefore}>After</button>
+      <button @click="afterChang([])" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -159,7 +159,7 @@ onMounted(async () => {
   await getOrderClass();
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  await afterChang(clonedWbcInfo.value);
+  await afterChang([]);
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -179,6 +179,7 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfo.value, (newItem) => {
+  console.log('?')
   afterChang(newItem);
 });
 
@@ -329,9 +330,10 @@ const beforeChang = async () => {
 }
 
 const afterChang = (newItem: any) => {
+  console.log(selectItems.value.wbcInfoAfter.length)
   isBefore.value = false;
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
-  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
+  const wbcInfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);

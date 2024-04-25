@@ -8,14 +8,14 @@
       <li class="onRight" @click="pageGo('/report')">REPORT</li>
 <!--      <li>LIS-CBC</li>-->
     </ul>
-    <div class="wbcMenuBottom">
-      <button @click="moveWbc('up')">
-        <font-awesome-icon :icon="['fas', 'circle-up']"/>
-      </button>
-      <button @click="moveWbc('down')">
-        <font-awesome-icon :icon="['fas', 'circle-down']"/>
-      </button>
-    </div>
+<!--    <div class="wbcMenuBottom">-->
+<!--      <button @click="moveWbc('up')">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
+<!--      </button>-->
+<!--      <button @click="moveWbc('down')">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
+<!--      </button>-->
+<!--    </div>-->
   </div>
   <div class="reportSection">
     <div class="reportDiv">
@@ -195,6 +195,7 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
 const wbcArr = ref<any>([]);
+const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 
 onMounted(() => {
   initData();
@@ -241,29 +242,29 @@ async function initData() {
     wbcArr.value = selectItems.value.wbcInfo.wbcInfo[0];
   }
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
-  const result = await getUserIpApi();
-  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    instance?.appContext.config.globalProperties.$socket.emit('state', {
-      type: 'SEND_DATA',
-      payload: 'refreshDb'
-    });
-  }).catch(error => {
-    console.error('Error:', error.response.data);
-  });
+  // const result = await getUserIpApi();
+  // await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+  //   instance?.appContext.config.globalProperties.$socket.emit('state', {
+  //     type: 'SEND_DATA',
+  //     payload: 'refreshDb'
+  //   });
+  // }).catch(error => {
+  //   console.error('Error:', error.response.data);
+  // });
 }
 
 const moveWbc = async (direction: any) => {
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
+  // await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
   await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
-  const result = await getUserIpApi();
-  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    instance?.appContext.config.globalProperties.$socket.emit('state', {
-      type: 'SEND_DATA',
-      payload: 'refreshDb'
-    });
-  }).catch(error => {
-    console.error('Error:', error.response.data);
-  });
+  // const result = await getUserIpApi();
+  // await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+  //   instance?.appContext.config.globalProperties.$socket.emit('state', {
+  //     type: 'SEND_DATA',
+  //     payload: 'refreshDb'
+  //   });
+  // }).catch(error => {
+  //   console.error('Error:', error.response.data);
+  // });
 }
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
@@ -274,7 +275,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
       ? selectItemsNewVal.wbcInfoAfter
       : selectItemsNewVal.wbcInfo.wbcInfo[0];
-  initData();
+  await initData();
 };
 
 </script>

@@ -6,14 +6,14 @@
       <li @click="pageGo('/report')">REPORT</li>
       <!--      <li>LIS-CBC</li>-->
     </ul>
-    <div class="wbcMenuBottom">
-      <button @click="moveWbc('up')">
-        <font-awesome-icon :icon="['fas', 'circle-up']"/>
-      </button>
-      <button @click="moveWbc('down')">
-        <font-awesome-icon :icon="['fas', 'circle-down']"/>
-      </button>
-    </div>
+<!--    <div class="wbcMenuBottom">-->
+<!--      <button @click="moveWbc('up')">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
+<!--      </button>-->
+<!--      <button @click="moveWbc('down')">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
+<!--      </button>-->
+<!--    </div>-->
   </div>
 
   <div class="wbcContent">
@@ -956,26 +956,38 @@ function selectImage(itemIndex: any, imageIndex: any) {
     selectedClickImages.value = [];
     // 범위 내의 이미지 선택
     for (let i = startIndex; i <= endIndex; i++) {
-      selectedClickImages.value.push({
-        id: wbcInfo.value[itemIndex].id,
-        title: wbcInfo.value[itemIndex].title,
-        ...wbcInfo.value[itemIndex].images[i],
-      });
+      // 최대 10개까지만 선택 가능
+      if (selectedClickImages.value.length < 10) {
+        selectedClickImages.value.push({
+          id: wbcInfo.value[itemIndex].id,
+          title: wbcInfo.value[itemIndex].title,
+          ...wbcInfo.value[itemIndex].images[i],
+        });
+      }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
-      return
+      return;
     }
-    if (!isSelected(selectedImage)) {
-      selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+
+    // 선택된 이미지가 배열에 있는지 확인
+    const imageIndexInSelected = selectedClickImages.value.findIndex((img: any) => img === selectedImage);
+
+    if (imageIndexInSelected === -1) {
+      // 이미지를 선택하고 10개 미만일 때만 추가
+      if (selectedClickImages.value.length < 10) {
+        selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+      }
     } else {
-      selectedClickImages.value = selectedClickImages.value.filter((img: any) => img !== selectedImage);
+      // 이미 선택된 이미지를 다시 클릭하면 선택 해제
+      selectedClickImages.value.splice(imageIndexInSelected, 1);
     }
   }
 }
+
 
 function isSelected(image: any) {
   const imageFileName = image.fileName;

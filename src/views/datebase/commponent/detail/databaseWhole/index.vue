@@ -6,14 +6,14 @@
       <li @click="pageGo('/report')">REPORT</li>
 <!--      <li>LIS-CBC</li>-->
     </ul>
-    <div class="wbcMenuBottom">
-      <button @click="moveWbc('up')">
-        <font-awesome-icon :icon="['fas', 'circle-up']"/>
-      </button>
-      <button @click="moveWbc('down')">
-        <font-awesome-icon :icon="['fas', 'circle-down']"/>
-      </button>
-    </div>
+<!--    <div class="wbcMenuBottom">-->
+<!--      <button @click="moveWbc('up')">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
+<!--      </button>-->
+<!--      <button @click="moveWbc('down')">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
+<!--      </button>-->
+<!--    </div>-->
   </div>
   <div class="imgContent">
     <div class="wrap-whole">
