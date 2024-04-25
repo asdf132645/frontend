@@ -232,11 +232,12 @@ const pageGo = (path: string) => {
 }
 
 async function initData() {
+  console.log(clonedWbcInfo.value)
   wbcInfo.value = [];
   wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
-    wbcInfo.value = selectItems.value.wbcInfoAfter;
-    wbcArr.value = selectItems.value.wbcInfoAfter;
+    wbcInfo.value = clonedWbcInfo.value;
+    wbcArr.value = clonedWbcInfo.value;
   } else {
     wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
     wbcArr.value = selectItems.value.wbcInfo.wbcInfo[0];

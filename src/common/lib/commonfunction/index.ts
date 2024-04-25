@@ -19,7 +19,6 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
             userId: Number(id),
             runingInfoDtoItems: [localDbData[indexToUpdate]]
         })
-        console.log(response)
         return response;
     } catch (error) {
         console.error('Error:', error);

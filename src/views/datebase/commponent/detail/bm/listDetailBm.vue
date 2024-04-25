@@ -811,17 +811,18 @@ async function onDropCircle(item: any) {
   } else {
     // 여러 이미지를 드래그한 경우
     for (const selectedImage of selectedClickImages.value) {
-      item.images.push(selectedImage);
+      // item.images.push(selectedImage);
       // 드롭된 위치에 이미지 추가
       const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
-      if (matchingItemIndex !== -1) {
-        wbcInfo.value[matchingItemIndex].images.push(selectedImage);
-      } else {
-        console.error('일치하는 id를 가진 요소 없음');
-      }
+      // if (matchingItemIndex !== -1) {
+      //   wbcInfo.value[matchingItemIndex].images.push(selectedImage);
+      // } else {
+      //   console.error('일치하는 id를 가진 요소 없음');
+      // }
       // 여러 이미지를 드래그한 경우에도 이동 API 호출
       await moveImage(matchingItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
     }
+
   }
 }
 
@@ -1023,25 +1024,30 @@ async function originalOnDrop(targetItemIndex: number) {
 async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string) {
   const {slotId} = selectItems.value;
   const arrType = selectedImagesToMove;
+  let sourceFolders = [];
+  let destinationFolders = [];
+  let fileNames = [];
   try {
     // 선택된 이미지 배열에 대해 반복
     for (const selectedImage of arrType) {
+
       const fileName = selectedImage.fileName;
+      fileNames.push(fileName)
       const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${selectedImage.id}_${selectedImage.title}` :
           `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${draggedItem.id}_${draggedItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
+      destinationFolders.push(destinationFolder);
       // 이미지 이동 API 호출
-      const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`);
+      sourceFolders.push(sourceFolder)
       if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-        if (response) {
+        // if (response) {
           // 선택된 이미지 초기화
           selectedClickImages.value = [];
           shiftClickImages.value = [];
           await updateOriginalDb();
-        }
+        // }
         return;
       }
-      if (response) {
         // 드래그된 이미지를 원래 위치에서 제거
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
         draggedItem.images.splice(draggedImageIndex, 1);
@@ -1061,11 +1067,8 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             })
           }
         });
-        console.log(wbcInfo.value)
-      } else {
-        console.error('이미지 이동 실패:', fileName);
-      }
     }
+    await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
     // 선택된 이미지 초기화
     selectedClickImages.value = [];
     shiftClickImages.value = [];

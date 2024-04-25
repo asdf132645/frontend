@@ -178,7 +178,6 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
-  console.log('?')
   afterChang(newItem);
 });
 
@@ -329,7 +328,6 @@ const beforeChang = async () => {
 }
 
 const afterChang = (newItem: any) => {
-  console.log(newItem)
   isBefore.value = false;
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = selectItemsS.value.wbcInfoAfter.length !== 0 ? selectItemsS.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
