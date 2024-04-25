@@ -141,7 +141,7 @@
                 <div>
                   <p class="mt1">{{ item?.title }} ({{ item?.count }})</p>
                 </div>
-                <ul :class="'wbcImgWrap ' + item?.title">
+                <ul :class="'wbcImgWrap ' + item?.title">d
                   <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block">
                     <div style="position: relative">
                       <img :src="getImageUrl(image.fileName, item.id, item.title)"
