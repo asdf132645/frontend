@@ -369,6 +369,7 @@ const rowDbClick = async (item) => {
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
+  await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await getUserIp(item);
   if (projectType.value !== 'bm') {
     router.push('/databaseWbc')

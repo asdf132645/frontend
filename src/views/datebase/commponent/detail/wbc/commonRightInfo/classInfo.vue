@@ -55,7 +55,7 @@
       </ul>
       <ul class="classNm">
         <li>
-          {{ selectItems?.wbcInfo?.totalCount || 0 }}
+          {{ selectItemsS?.wbcInfo?.totalCount || 0 }}
         </li>
       </ul>
       <ul class="degree">
@@ -75,7 +75,7 @@
           <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
           <li>
             {{ nWbcItem?.count }}
-            <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
+            <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItemsS?.wbcInfo?.maxWbcCount }} WBC</span>
           </li>
         </ul>
         <ul class="degree">
@@ -86,7 +86,7 @@
     </template>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
-      <button @click="afterChang([])" :class={isBeforeClicked:!isBefore}>After</button>
+      <button @click="afterChang(clonedWbcInfoStore)" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -126,10 +126,10 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const selectItemsS = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
-const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
+const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
@@ -142,24 +142,23 @@ const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
 const originalDbData = sessionStorage.getItem("originalDbData");
 const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
+
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
-const userConfirmed = ref(false);
 const orderClass = ref<any>([]);
 const projectBm = ref(false);
 const isBefore = ref(false);
-const wbcInfoUpdated = ref<any>([]);
 const totalCount = ref('');
 
 onMounted(async () => {
   await getOrderClass();
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  await afterChang([]);
+  await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -178,7 +177,7 @@ watch(() => props.wbcInfo, (newItem) => {
 
 });
 
-watch(() => clonedWbcInfo.value, (newItem) => {
+watch(() => clonedWbcInfoStore.value, (newItem) => {
   console.log('?')
   afterChang(newItem);
 });
@@ -273,7 +272,7 @@ const resRunningItem = async (updatedRuningInfo: any) => {
     })
     if (response) {
       showSuccessAlert('success');
-      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItems.value.id);
+      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItemsS.value.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
       memo.value = filteredItems[0].memo;
@@ -320,7 +319,7 @@ const getOrderClass = async () => {
 const beforeChang = async () => {
   isBefore.value = true;
   await getOrderClass();
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
@@ -330,10 +329,10 @@ const beforeChang = async () => {
 }
 
 const afterChang = (newItem: any) => {
-  console.log(selectItems.value.wbcInfoAfter.length)
+  console.log(newItem)
   isBefore.value = false;
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
-  const wbcInfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
+  const wbcInfo = selectItemsS.value.wbcInfoAfter.length !== 0 ? selectItemsS.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
@@ -354,16 +353,16 @@ async function updateOriginalDb() {
       delete image.filter;
       delete image.changed;
     });
-    item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
+    item.percent = selectItemsS.value.wbcInfo.totalCount && selectItemsS.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItemsS.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
-  selectItems.value.wbcInfoAfter = clonedWbcInfo;
-  sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
+  selectItemsS.value.wbcInfoAfter = clonedWbcInfo;
+  sessionStorage.setItem("selectItems", JSON.stringify(selectItemsS.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
   // originalDb 업데이트
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   if (filteredItems.length > 0) {
     filteredItems.forEach((filteredItem: any) => {
       filteredItem.wbcInfoAfter = clonedWbcInfo;
