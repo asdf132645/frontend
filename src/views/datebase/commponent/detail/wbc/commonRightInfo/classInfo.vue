@@ -50,7 +50,7 @@
     <div class="categories">
       <ul class="categoryNm">
         <li>
-          total
+          Total
         </li>
       </ul>
       <ul class="classNm">
@@ -59,7 +59,7 @@
         </li>
       </ul>
       <ul class="degree">
-        <li>
+        <li class="degreeTotal">
           100.00
         </li>
       </ul>
