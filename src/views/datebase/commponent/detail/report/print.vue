@@ -225,13 +225,13 @@ const printPage = async () => {
     }
 
     // HTML 컨텐츠를 Gzip으로 압축
-    const compressedContent = pako.gzip(content.innerHTML, { to: 'array' });
+    const compressedContent = pako.gzip(content.innerHTML, { level: 9 });
 
     // HTML 컨텐츠를 PDF로 변환하는 요청을 보냄
     const response = await fetch(`${apiBaseUrl}/pdf/convert`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/octet-stream',
         'Content-Encoding': 'gzip'
       },
       body: compressedContent
@@ -250,6 +250,7 @@ const printPage = async () => {
     console.error('Error:', error);
   }
 };
+
 
 
 const getImagePrintData = async () => {
