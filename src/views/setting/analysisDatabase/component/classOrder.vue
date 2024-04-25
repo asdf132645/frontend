@@ -9,10 +9,10 @@
         @dragover.prevent
         @drop="drop(idx, $event)"
     >
-      <ul class="nth1Child" v-if="idx === 0">
+      <ul class="nth1ChildOrder" v-if="idx === 0">
         <li class="classTitle">Class</li>
       </ul>
-      <ul class="nth1Child">
+      <ul class="nth1ChildOrder">
         <li>{{ item?.name }}</li>
       </ul>
     </div>

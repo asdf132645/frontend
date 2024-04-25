@@ -314,6 +314,10 @@ p.startStopP {
     padding: 40px;
 }
 
+.customSettingContainer {
+    margin-top: 4rem;
+}
+
 ul.customClass li span {
     display: inline-block;
     margin-right: 22px;
@@ -427,6 +431,21 @@ button.saveBtn, .defaultBtn {
     }
 }
 
+.classTitle {
+    font-weight: bold;
+}
+.nth1ChildOrder {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+    padding: 4px 0;
+    margin: 0 auto;
+    position: relative;
+    width: 200px;
+    border-bottom: 1px solid #494949;
+}
+
 /*동그라미 끝*/
 .categories, .nth1Child {
     display: flex;
@@ -439,14 +458,14 @@ button.saveBtn, .defaultBtn {
     border-bottom: 1px solid #494949;
 }
 
-/* .categories::after, .nth1Child::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 65%;
-    border-bottom: 1px solid #494949;
-} */
+/*.categories::after, .nth1Child::after {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    bottom: 0;*/
+/*    left: 0;*/
+/*    width: 65%;*/
+/*    border-bottom: 1px solid #494949;*/
+/*}*/
 
 ul.classInfo {
     width: 50%;
@@ -466,6 +485,12 @@ ul.classInfo {
 .degree {
     display: inline-block;
     width: 15%;
+    text-align: right;
+}
+
+.degreeTotal {
+    position: relative;
+    left: -25px;
 }
 
 ul.nth1Child li {
@@ -478,6 +503,7 @@ ul.nth1Child li {
 
 ul.nth1Child {
     display: flex;
+    align-items: center;
 }
 
 ul.nth1Child > :nth-child(1) {
@@ -892,14 +918,19 @@ input.alarmInput {
 }
 
 .settingTabSubButtons button {
-    padding: 10px;
-    margin: 0;
+    padding: 10px 20px;
+    margin: 0 10px;
     border: none;
     cursor: pointer;
+    background: #ffffff;
+    color: #333;
+    font-size: 16px;
+    border-radius: 5px;
 }
 
 .settingTabSubButtons button.active {
     background-color: #29c7ca;
+    color: #fff;
 }
 
 .filterListDiv {
@@ -1550,7 +1581,7 @@ ul.wbcHotKeysItems li {
     justify-content: space-between;
     align-items: center;
     margin: 8px auto;
-    font-size: 0.8rem;
+    font-size: 1rem;
     width: 450px;
 }
 
@@ -1613,15 +1644,13 @@ ul.normalItems li div span:last-child {
     width: 74%!important;
     min-height: 67vh;
     text-align: left;
-}
-
-.bmclass .categories {
     justify-content: flex-start;
     padding: 4px 0;
 }
 
+
 .bmclass > div {
-    width: 700px;
+    width: 600px;
 }
 
 .titleText {
@@ -1781,8 +1810,9 @@ ul.normalItems li div span:last-child {
 /* setting/analysis/database */
 .tab-content {
     width: 700px;
-    margin: 0 auto;
+    margin: 30px auto;
 }
+
 button.rollbackButton {
     position: absolute;
     right: -20px;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul>
+    <ul class="customSettingContainer">
       <li>
         <p class="mb1">Gripper open</p>
         <button @click="onGripperOpen" type="button" class="defaultBtn">OK</button>
