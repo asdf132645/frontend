@@ -18,7 +18,7 @@
           </tr>
           <tr>
             <th>Ordered date</th>
-            <td>{{ selectItems?.orderDttm }}</td>
+            <td>{{ formatDateString(selectItems?.orderDttm) }}</td>
           </tr>
           <tr>
             <th>Signed by ID</th>
@@ -170,6 +170,7 @@ import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 import pako from 'pako';
+import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';

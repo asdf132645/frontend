@@ -40,9 +40,6 @@
           />
           Cell Marking
         </button>
-        <button @click="rollbackChanges">
-          <font-awesome-icon :icon="['fas', 'rotate-left']" />
-          Rollback</button>
         <button @click="imgSetOpen">
           <font-awesome-icon :icon="['fas', 'gear']" />
           IMG Setting</button>
@@ -53,7 +50,7 @@
         <div class="imgSet" v-if="imgSet">
           <div>
             <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-            Size
+            Size {{ imageSize }}
             <input
                 type="range"
                 min="150"
@@ -61,10 +58,11 @@
                 v-model="imageSize"
                 @input="changeImageSize"
             />
+            <button class="resetBtn mb2" @click="imgSizeReset">SIZE Reset</button>
           </div>
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
-            Brightness
+            Brightness {{ imgBrightness }}
             <input
                 type="range"
                 min="50"
@@ -72,10 +70,11 @@
                 v-model="imgBrightness"
                 @input="changeImgBrightness"
             />
+            <button class="resetBtn mb2" @click="brightnessReset">Brightness Reset</button>
           </div>
           <div>
             <font-awesome-icon :icon="['fas', 'palette']"/>
-            RGB
+            RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}`}} ]
             <input
                 type="range"
                 min="0"
@@ -105,6 +104,9 @@
           </div>
 
         </div>
+        <button @click="rollbackChanges" class="rollbackButton">
+          <font-awesome-icon :icon="['fas', 'rotate-left']" />
+          Rollback</button>
       </div>
 
       <div>
@@ -695,6 +697,21 @@ const scrollToElement = (itemId: number) => {
 
 function rgbReset() {
   imageRgb.value = [0, 0, 0];
+  changeImageRgb();
+}
+function imgSizeReset() {
+  imageSize.value = 150;
+  wbcInfo.value.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      // 이미지의 width와 height를 조절
+      image.width = 150;
+      image.height = 150;
+    });
+  });
+}
+
+function brightnessReset() {
+  imgBrightness.value = 100;
   changeImageRgb();
 }
 

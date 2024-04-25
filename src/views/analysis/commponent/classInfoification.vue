@@ -144,7 +144,6 @@ const updateDataArray = async (newSlotInfo: any,parsedData?: any) => {
     const wbcInfoArray = wbcinfoType;
     const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
-    console.log(dspWbcClassList.value)
     const areAllCountsZero = (classList: any[]) => {
       // 모든 요소의 count가 0인지 확인
       return classList.every((classGroup) => {

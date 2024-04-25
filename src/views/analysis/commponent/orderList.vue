@@ -15,7 +15,7 @@
         <td>{{ slot?.slotInfo?.barcodeNo }}</td>
         <td>{{ slot?.slotInfo?.patientNm  }}</td>
         <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
-        <td>{{ slot?.slotInfo?.analyzedDttm ? slot?.slotInfo?.analyzedDttm : slot?.slotInfo?.orderDttm }}</td>
+        <td>{{ slot?.slotInfo?.analyzedDttm ? formatDateString(slot?.slotInfo?.analyzedDttm) : formatDateString(slot?.slotInfo?.orderDttm) }}</td>
         <td>{{ getCommonCode('14', slot?.slotInfo?.stateCd) }}</td>
       </tr>
       </tbody>
@@ -33,6 +33,7 @@ import {computed, getCurrentInstance, nextTick, ref, watch} from "vue";
 import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
+import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 interface OrderItem {
   barcodeId: string;

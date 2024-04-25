@@ -15,7 +15,7 @@
           {{ siteCd === '0019' ? 'Order Date' : 'Analyzed Date' }}
         </span>
         <span class="proVal">
-          {{ siteCd === '0019' ? processInfoItem?.analyzedDttm : processInfoItem?.orderDate }}
+          {{ siteCd === '0019' ? processInfoItem?.orderDate  : processInfoItem?.analyzedDttm }}
         </span>
       </li>
       <li>

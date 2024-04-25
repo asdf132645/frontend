@@ -94,7 +94,6 @@ const getUserIp = async (ip: string) => {
 watch(reqArr.value, async (newVal, oldVal) => {
   // 새 값이 특정 조건을 충족하는지 확인
   if (newVal.reqArr) {
-
     const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
     // 유니크한 reqArr 배열에 항목이 있는지 확인
     if (uniqueReqArr.length > 0) {
@@ -382,7 +381,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           birthDay: completeSlot.birthDay,
           wbcCount: completeSlot.wbcCount,
           slotId: completeSlot.slotId,
-          orderDttm: parseDateString(completeSlot.orderDttm),
+          orderDttm: completeSlot.orderDttm,
           testType: completeSlot.testType,
           analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
           createDate: tcpReq().embedStatus.settings.reqDttm,

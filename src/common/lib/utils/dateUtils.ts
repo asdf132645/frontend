@@ -1,16 +1,22 @@
-export function getDateTimeStr(): string {
-    const now = new Date();
-    const year = now.getFullYear().toString();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const hour = now.getHours().toString().padStart(2, '0');
-    const minute = now.getMinutes().toString().padStart(2, '0');
-    const second = now.getSeconds().toString().padStart(2, '0');
-    const millisecond = now.getMilliseconds().toString().padStart(3, '0');
+import moment from 'moment';
+import 'moment-timezone';
 
-    return `${year}${month}${day}${hour}${minute}${second}${millisecond}`;
+
+export function getDateTimeStr(): string {
+    const now = moment();
+
+    const formattedTime = now.format('YYYYMMDDHHmmssSSS');
+
+    return formattedTime;
 }
 
+export const formatDateString = (dateString: any) => {
+    if(!dateString){
+       return null;
+    }
+    const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
+    return momentObj.format('YYYY-MM-DD HH:mm:ss');
+}
 
 export const getCountToTime = (timeCount: number): string => {
     const hour = Math.floor(timeCount / 3600);
