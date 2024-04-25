@@ -2,9 +2,7 @@
   <img v-if="type !== 'report'"
        :src="barcodeImg"/>
   <div class="mt2 mb2">
-    <h3 class="wbcClassInfoLeft">
-      {{ wbcClassTileChange() }}
-    </h3>
+    <h3 class="wbcClassInfoLeft">BM CELL Classification</h3>
     <ul class="leftWbcInfo">
       <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
@@ -35,7 +33,7 @@
         @dragstart="startDrag(idx, $event)"
         @dragover.prevent
         @drop="drop(idx, $event)"
-      >
+    >
       <ul class="nth1Child" v-if="idx === 0">
         <li>Class</li>
         <li>Count</li>
@@ -47,24 +45,6 @@
         <li> {{ item?.percent || '-' }}</li>
       </ul>
     </div>
-    <div class="categories">
-      <ul class="categoryNm">
-        <li>
-          total
-        </li>
-      </ul>
-      <ul class="classNm">
-        <li>
-          {{ selectItems?.wbcInfo?.totalCount || 0 }}
-        </li>
-      </ul>
-      <ul class="degree">
-        <li>
-          100.00
-        </li>
-      </ul>
-    </div>
-
     <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
       <div class="categories">
         <ul class="categoryNm">
@@ -86,7 +66,7 @@
     </template>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
-      <button @click="afterChang(clonedWbcInfo)" :class={isBeforeClicked:!isBefore}>After</button>
+      <button @click="afterChang" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -97,29 +77,18 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      :type="confirmType"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
 </template>
 
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
-import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
+import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
-import Confirm from "@/components/commonUi/Confirm.vue";
-import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
-import process from "process";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
@@ -129,14 +98,12 @@ const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
-const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
-const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
 const memoModal = ref(false);
 const wbcInfoChangeVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
-const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA'];
+const titleArr = ['NR', 'GP','PA', 'AR', 'MA'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
@@ -145,26 +112,17 @@ const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmType = ref('');
-const confirmMessage = ref('');
-const userConfirmed = ref(false);
-const orderClass = ref<any>([]);
-const projectBm = ref(false);
+const barcodeImg = ref('');
 const isBefore = ref(false);
-const wbcInfoUpdated = ref<any>([]);
-const totalCount = ref('');
 
-onMounted(async () => {
-  await getOrderClass();
+
+onMounted(() => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  await afterChang(clonedWbcInfo.value);
-  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  projectBm.value = process.env.PROJECT_TYPE === 'bm';
-
+  afterChang();
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
 })
-// basicWbcArr
+
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
@@ -173,23 +131,9 @@ watch(userModuleDataGet.value, (newUserId) => {
 watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  // console.log('classinfo_props.selectItems' , props.selectItems);
-
+  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg',pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  afterChang();
 });
-
-watch(() => clonedWbcInfo.value, (newItem) => {
-  console.log('classinfo_props.wbcInfo' , newItem);
-  afterChang(newItem);
-});
-
-const wbcClassTileChange = (): string => {
-  if (!projectBm.value){
-    return 'WBC Classification';
-  }else{
-    return 'BM Classification';
-  }
-}
 
 const startDrag = (index: any, event: any) => {
   dragIndex.value = index;
@@ -197,7 +141,7 @@ const startDrag = (index: any, event: any) => {
 };
 
 const drop = (index: any, event: any) => {
-  if (!toggleLock.value) {
+  if(!toggleLock.value){
     return;
   }
   event.preventDefault();
@@ -210,22 +154,17 @@ const drop = (index: any, event: any) => {
 };
 
 
+
 const toggleLockEvent = () => {
   toggleLock.value = !toggleLock.value;
 }
 
 const commitConfirmed = () => {
-  showConfirm.value = true;
-  confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
-}
+  const userConfirmed = showSuccessAlert(messages.IDS_MSG_CONFIRM_SLIDE); 
 
-const handleOkConfirm = () => {
-  onCommit();
-  showConfirm.value = false;
-}
-
-const hideConfirm = () => {
-  showConfirm.value = false;
+  if (userConfirmed) {
+    onCommit()
+  }
 }
 
 const onCommit = async () => {
@@ -285,60 +224,21 @@ const resRunningItem = async (updatedRuningInfo: any) => {
   }
 }
 
-const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
-  let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
-
-  newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
-    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
-
-    // 이름이 없는 경우는 배열 맨 뒤로 배치
-    if (nameA === -1) return 1;
-    if (nameB === -1) return -1;
-
-    return nameA - nameB;
-  });
-
-  return newSortArr;
-};
-
-const getOrderClass = async () => {
-  try {
-    const result = await getOrderClassApi(String(userModuleDataGet.value.id));
-    if (result) {
-      if (result?.data.length === 0) {
-        orderClass.value = [];
-      } else {
-        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
-      }
-    }
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-const beforeChang = async () => {
+const beforeChang = () => {
   isBefore.value = true;
-  await getOrderClass();
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
-  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
-  wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
-
+  wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
 }
 
-const afterChang = (newItem: any) => {
+const afterChang = () => {
   isBefore.value = false;
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
-  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
-  const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
-  wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
-
+  if (props.selectItems.wbcInfoAfter.length === 0) {
+    wbcInfoChangeVal.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = props.selectItems?.wbcInfo.wbcInfo[0].filter((item: any) => titleArr.includes(item.title));
+  } else {
+    wbcInfoChangeVal.value = props.selectItems.wbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = props.selectItems?.wbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  }
 }
 
 async function updateOriginalDb() {
@@ -386,12 +286,11 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
     console.error('Error:', error);
   }
 }
-
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 const showErrorAlert = (message: string) => {
   showAlert.value = true;

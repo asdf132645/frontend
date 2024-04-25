@@ -171,13 +171,16 @@ main.bmComponent {
 }
 
 .logOutBox {
-    background-color: #29c7ca; 
+    background-color: #4f4f4f;
     color: white;
     border: none;
     padding: 5px 10px;
-    text-align: center;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 12px;
+    margin: 4px 4px 0 12px;
+    position: relative;
+    top: 0.2rem;
 }
 
 .lastMenu {
@@ -186,9 +189,9 @@ main.bmComponent {
     right: 0;
     top: 0;
     background: #252629;
-    height: 3.39rem;
-    padding: 0 33px;
-    padding-top: 26px !important;
+    height: 3rem;
+    padding: 16px;
+    /*padding-top: 16px !important;*/
     color: #fff;
     border-left: 1px solid #515a67;
 }
@@ -433,17 +436,17 @@ button.saveBtn, .defaultBtn {
     padding: 2px 0;
     margin-left: 15px;
     position: relative;
-    border-bottom: 1px solid #494949;
+    /* border-bottom: 1px solid #494949; */
 }
   
-/* .categories::after, .nth1Child::after {
+.categories::after, .nth1Child::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 65%;
+    width: 75%;
     border-bottom: 1px solid #494949;
-} */
+}
 
 ul.classInfo {
     width: 50%;
@@ -457,8 +460,14 @@ ul.classInfo {
 
 .classNm {
     display: inline-block;
-    text-align: left;
+    /*text-align: left;*/
     min-width: 150px;
+}
+
+.classNm li, .degree li {
+    text-align: center;
+    margin-left: 0.7rem;
+    font-weight: bold;
 }
 
 .degree {
@@ -599,6 +608,10 @@ ul.slideContent .outClassDefault {
 .orderListTable th {
     background: #212121;
     color: #ffffff;
+}
+
+.setBorderBottom {
+    border-bottom: 1px solid #fff;
 }
 
 p.slideTime {
@@ -1092,12 +1105,12 @@ ul.wbcImgWrap > li > img {
 }
 
 ul.cellImgBox {
-    max-height: 76.9vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    text-align: left;
-    padding-left: 20px;
-    background: #252629;
+    /*max-height: 76.9vh;*/
+    /*overflow-y: scroll;*/
+    /*overflow-x: hidden;*/
+    /*text-align: left;*/
+    /*padding-left: 20px;*/
+    /*background: #252629;*/
 }
 
 .wbcClassScroll {
@@ -1424,6 +1437,7 @@ select.selectSizeTitle {
     display: inline-block;
     width: 95%;
     min-height: 92.5vh;
+    background: #000;
 }
 
 .reportDiv {
@@ -1432,18 +1446,29 @@ select.selectSizeTitle {
     padding-top:10px;
 }
 
-.reportContent > table tr th, .reportContent > table tr td {
+.reportContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.reportContent table tr {
+    padding: 10px;
+}
+
+.reportContent > table tr th {
     text-align: left;
     padding: 5px;
 }
 
-.reportContent table {
-    width: 100%;
+.reportContent > table tr td {
+    text-align: right;
+    padding: 5px;
 }
 
 h3.printDetailTitle {
     margin: 40px 0;
-    font-size: 1.2rem;
+    /*font-size: 1.2rem;*/
     font-weight: 600;
 }
 
@@ -1618,7 +1643,6 @@ ul.normalItems li div span:last-child {
 }
 
 .bmclass > div {
-    padding-top: 40px;
     width: 700px;
 }
 

@@ -1,11 +1,11 @@
 <template>
-  <div class="printSection" style="min-width: 900px; ">
+  <div class="printSection" style="width: 900px; height: 90%; overflow-y: auto; background: #fff; color: #000; position: absolute; top: 10%; left: 33%; box-sizing: border-box; padding: 3rem 7rem;">
     <button class="printCloseBtn" @click="closePrint">Close</button>
-    <div ref="printContent" style="display: flex; flex-direction: column">
+    <div ref="printContent" style="display: flex; flex-direction: column;">
       <div>
         <h3 class="printDetailTitle">Analysis Report from UIMD PB system</h3>
       </div>
-      <div class="reportContent" style="margin: 0 auto">
+      <div class="reportContent">
         <table>
           <colgroup>
             <col width="30%"/>
@@ -117,13 +117,13 @@
                 <td>{{ item?.percent }}</td>
               </tr>
               <tr>
-                <th>Total count</th>
+                <th style="font-weight: bold;">Total count</th>
                 <td>{{ selectItems?.wbcInfo?.totalCount }}</td>
                 <td>100.00%</td>
               </tr>
               <tr v-for="item in filteredWbcInfo" :key="item.id">
                 <th>{{ item?.name }}</th>
-                <td colspan="2">
+                <td colspan="1">
                   {{ item?.count }}
                   <span v-if="item.id === '12' || item.id === '13'">
                   / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC
