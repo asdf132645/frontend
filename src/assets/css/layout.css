@@ -1833,6 +1833,11 @@ button.rollbackButton {
     text-align: center;
 }
 
+.initBtn.isInitDisabled {
+    background: #dedede;
+    cursor: no-drop;
+}
+
 .iconHeaderMenu {
     position: absolute;
     right: 207px;
