@@ -41,7 +41,7 @@
             </tr>
             <tr>
               <th>Ordered date</th>
-              <td>{{ selectItems?.orderDttm }}</td>
+              <td>{{ formatDateString(selectItems?.orderDttm) }}</td>
             </tr>
             <tr>
               <th>Signed by ID</th>
@@ -175,6 +175,7 @@ import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/c
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {useStore} from "vuex";
 import process from "process";
+import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
