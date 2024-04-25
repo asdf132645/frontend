@@ -1466,15 +1466,25 @@ select.selectSizeTitle {
     padding-top:10px;
 }
 
-.reportContent > table tr th, .reportContent > table tr td {
+.reportContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.reportContent table tr {
+    padding: 10px;
+}
+
+.reportContent > table tr th {
     text-align: left;
     padding: 5px;
 }
 
-.reportContent table {
-    width: 100%;
+.reportContent > table tr td {
+    text-align: right;
+    padding: 5px;
 }
-
 h3.printDetailTitle {
     margin: 40px 0;
     font-size: 1.2rem;
