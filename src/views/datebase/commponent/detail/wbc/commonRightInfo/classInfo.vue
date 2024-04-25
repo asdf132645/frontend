@@ -179,7 +179,6 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfo.value, (newItem) => {
-  console.log('classinfo_props.wbcInfo' , newItem);
   afterChang(newItem);
 });
 

@@ -1,6 +1,7 @@
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 
 export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: any) => {
+
     try {
         const updatedRuningInfo = {
             pcIp: '',
@@ -8,7 +9,7 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
         };
 
         const localDbData = [...originalDb];
-
+        console.log(localDbData)
         const indexToUpdate = localDbData.findIndex(item => item.id === selectItems.id);
         if (indexToUpdate !== -1) {
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
@@ -18,6 +19,7 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
             userId: Number(id),
             runingInfoDtoItems: [localDbData[indexToUpdate]]
         })
+        console.log(response)
         return response;
     } catch (error) {
         console.error('Error:', error);

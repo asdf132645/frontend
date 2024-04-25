@@ -4,7 +4,7 @@
       <li @click="pageGo('/databaseWhole')">WHOLE</li>
       <li class="onRight" @click="pageGo('/databaseBm')">BMCELL</li>
       <li @click="pageGo('/report')">REPORT</li>
-<!--      <li>LIS-CBC</li>-->
+      <!--      <li>LIS-CBC</li>-->
     </ul>
     <div class="wbcMenuBottom">
       <button @click="moveWbc('up')">
@@ -24,7 +24,7 @@
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
         <li>{{ selectItems?.patientName }}</li>
-        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }}  {{ selectItems?.cbcAge }}</li>
+        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
         <li>{{ selectItems?.createDate }}</li>
       </ul>
     </div>
@@ -36,78 +36,81 @@
       <div class="imgMenuSetDiv">
         <button type="button" @click="drawCellMarker">
           <font-awesome-icon
-            :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
           />
           Cell Marking
         </button>
-
-        <button @click="imgSetOpen">
-          <font-awesome-icon :icon="['fas', 'gear']" />
-          IMG Setting</button>
         <button @click="excelDownload">
-          <font-awesome-icon :icon="['fas', 'file-csv']" />
+          <font-awesome-icon :icon="['fas', 'file-csv']"/>
           Excel
         </button>
-        <div class="imgSet" v-if="imgSet">
-          <div>
-            <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-            Size {{ imageSize }}
-            <input
-                type="range"
-                min="150"
-                max="600"
-                v-model="imageSize"
-                @input="changeImageSize"
-            />
-            <button class="resetBtn mb2" @click="imgSizeReset">SIZE Reset</button>
-          </div>
-          <div>
-            <font-awesome-icon :icon="['fas', 'sun']"/>
-            Brightness {{ imgBrightness }}
-            <input
-                type="range"
-                min="50"
-                max="600"
-                v-model="imgBrightness"
-                @input="changeImgBrightness"
-            />
-            <button class="resetBtn mb2" @click="brightnessReset">Brightness Reset</button>
-          </div>
-          <div>
-            <font-awesome-icon :icon="['fas', 'palette']"/>
-            RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}`}} ]
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[0]"
-                @input="changeImageRgb"
-            />
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[1]"
-                @input="changeImageRgb"
-            />
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[2]"
-                @input="changeImageRgb"
-            />
-            RGB Select a Class
-            <select v-model="selectSizeTitle" class="selectSizeTitle">
-              <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
-            </select>
-            <button class="resetBtn" @click="rgbReset">RGB Reset</button>
-          </div>
+        <div class="imgSetWrap" ref="imgSetWrap">
+          <button @click="imgSetOpen">
+            <font-awesome-icon :icon="['fas', 'gear']"/>
+            IMG Setting
+          </button>
+          <div class="imgSet" v-if="imgSet">
+            <div>
+              <font-awesome-icon :icon="['fas', 'plus-minus']"/>
+              Size {{ imageSize }}
+              <input
+                  type="range"
+                  min="150"
+                  max="600"
+                  v-model="imageSize"
+                  @input="changeImageSize"
+              />
+              <button class="resetBtn mb2" @click="imgSizeReset">SIZE Reset</button>
+            </div>
+            <div>
+              <font-awesome-icon :icon="['fas', 'sun']"/>
+              Brightness {{ imgBrightness }}
+              <input
+                  type="range"
+                  min="50"
+                  max="600"
+                  v-model="imgBrightness"
+                  @input="changeImgBrightness"
+              />
+              <button class="resetBtn mb2" @click="brightnessReset">Brightness Reset</button>
+            </div>
+            <div>
+              <font-awesome-icon :icon="['fas', 'palette']"/>
+              RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}` }} ]
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[0]"
+                  @input="changeImageRgb"
+              />
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[1]"
+                  @input="changeImageRgb"
+              />
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[2]"
+                  @input="changeImageRgb"
+              />
+              RGB Select a Class
+              <select v-model="selectSizeTitle" class="selectSizeTitle">
+                <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
+              </select>
+              <button class="resetBtn" @click="rgbReset">RGB Reset</button>
+            </div>
 
+          </div>
         </div>
         <button @click="rollbackChanges" class="rollbackButton">
-          <font-awesome-icon :icon="['fas', 'rotate-left']" />
-          Rollback</button>
+          <font-awesome-icon :icon="['fas', 'rotate-left']"/>
+          Rollback
+        </button>
       </div>
 
       <div>
@@ -137,8 +140,11 @@
               >
                 <div style="position: relative; height: 150px">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
-                    <div>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
-                        :icon="['fas', 'arrow-right']"/>  {{ image.title }}</div>
+                    <div>{{ replaceFileNamePrefix(image.fileName) }}
+                      <font-awesome-icon
+                          :icon="['fas', 'arrow-right']"/>
+                      {{ image.title }}
+                    </div>
                   </div>
                   <img :src="getImageUrl(image.fileName, item.id, item.title)"
                        :width="image.width ? image.width : '150px'"
@@ -252,11 +258,12 @@ onMounted(async () => {
   }).catch(error => {
     console.error('Error:', error.response.data);
   });
+  document.addEventListener('click', handleClickOutside);
+
 });
 onUnmounted(async () => {
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
       .then(response => {
-        console.log(response)
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
           payload: 'refreshDb'
@@ -265,8 +272,16 @@ onUnmounted(async () => {
       }).catch(error => {
         console.error('Error:', error.response.data);
       });
+  document.addEventListener('click', handleClickOutside);
+
 })
 
+const handleClickOutside = (event: any) => {
+  // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
+  if (!event.target.closest('.imgSetWrap')) {
+    imgSet.value = false; // imgSet.value를 false로 설정
+  }
+};
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
@@ -430,6 +445,10 @@ const zoomOut = () => {
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
+});
+
+watch(wbcInfo.value, (newVal) => {
+  console.log(newVal)
 });
 
 const pageGo = (path: string) => {
@@ -596,15 +615,15 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
 const moveWbc = async (direction: any) => {
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
   await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
-  const result = await getUserIpApi();
-  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    instance?.appContext.config.globalProperties.$socket.emit('state', {
-      type: 'SEND_DATA',
-      payload: 'refreshDb'
-    });
-  }).catch(error => {
-    console.error('Error:', error.response.data);
-  });
+  // const result = await getUserIpApi();
+  // await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+  //   instance?.appContext.config.globalProperties.$socket.emit('state', {
+  //     type: 'SEND_DATA',
+  //     payload: 'refreshDb'
+  //   });
+  // }).catch(error => {
+  //   console.error('Error:', error.response.data);
+  // });
 }
 
 
@@ -749,7 +768,6 @@ function changeImgBrightness(event: any) {
 function changeImageSize(event: any) {
   wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      console.log(event?.target)
       // 현재 이미지의 width와 height
       let currentWidth = event?.target?.value;
       let currentHeight = event?.target?.value;
@@ -1031,6 +1049,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             })
           }
         });
+        console.log(wbcInfo.value)
       } else {
         console.error('이미지 이동 실패:', fileName);
       }
@@ -1063,6 +1082,7 @@ function removeDuplicateImages(data: any[]): any[] {
 
 async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
+  let originalDbVal: any = [];
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
@@ -1101,12 +1121,13 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
         filteredItem.wbcInfoAfter = clonedWbcInfo;
       });
     }
-    originalDb.value = filteredItems;
+    originalDbVal = filteredItems;
+    // console.log('???')
   }
 
 
   //updateRunningApi 호출
-  await updateRunningApiPost(clonedWbcInfo, originalDb.value);
+  await updateRunningApiPost(clonedWbcInfo, originalDbVal);
 }
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
