@@ -22,7 +22,7 @@
     <div>
       <h3 class="mt2 mb1 hh3title">Result information</h3>
       <ul>
-        <li>Analyzed date <span>{{ selectedItem?.createDate }}</span></li>
+        <li>Analyzed date <span>{{ formatDateString(selectedItem?.createDate) }}</span></li>
         <li>Signed state <span>{{ selectedItem?.signedState }}</span></li>
         <li>Signed of date <span>{{ selectedItem?.signedOfDate }}</span></li>
         <li>Signed user ID <span>{{ selectedItem?.signedUserId }}</span></li>
@@ -44,6 +44,7 @@
 import {ref, defineProps, onMounted, watchEffect, watch, nextTick} from 'vue';
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import moment from "moment/moment";
 
 const props = defineProps(['selectedItem']);
 const pbiaRootPath = ref('');
@@ -63,7 +64,10 @@ watch(() => props.selectedItem, (newSelectedItem) => {
   }
 });
 
-
+const formatDateString = (dateString) => {
+  const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
+  return momentObj.format('YYYY-MM-DD HH:mm:ss');
+}
 const showClassificationResults = (classificationResult) => {
   return (
       classificationResult &&

@@ -171,6 +171,7 @@ import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {stateUpdateCommon} from "@/common/lib/commonfunction";
+import moment from "moment";
 
 
 const props = defineProps(['dbData']);
@@ -188,9 +189,8 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 const formatDateString = (dateString) => {
-  const parts = dateString.split('T');
-  const formattedString = `${parts[0]} T${parts[1]}`;
-  return formattedString;
+  const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
+  return momentObj.format('YYYY-MM-DD HH:mm:ss');
 }
 
 

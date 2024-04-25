@@ -19,7 +19,7 @@ import ProcessInfo from '@/views/analysis/commponent/processInfo.vue';
 import Execute from '@/views/analysis/commponent/execute.vue';
 import workingView from '@/views/analysis/commponent/workingView.vue';
 import orderList from './commponent/orderList.vue';
-import wbcclassification from './commponent/wbcclassification.vue';
+import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
 import {onMounted, ref} from "vue";
