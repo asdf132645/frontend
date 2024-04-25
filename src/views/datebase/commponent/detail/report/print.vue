@@ -210,7 +210,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
   const slotId = props.selectItems.slotId || "";
-  const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = process.env.PROJECT_TYPE === 'bm' ? `${pbiaRootPath}/${slotId}/04_BM_Classification/${id}_${title}` : `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
@@ -225,13 +225,13 @@ const printPage = async () => {
     }
 
     // HTML 컨텐츠를 Gzip으로 압축
-    const compressedContent = pako.gzip(content.innerHTML, { to: 'array' });
+    const compressedContent = pako.gzip(content.innerHTML, { level: 9 });
 
     // HTML 컨텐츠를 PDF로 변환하는 요청을 보냄
     const response = await fetch(`${apiBaseUrl}/pdf/convert`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/octet-stream',
         'Content-Encoding': 'gzip'
       },
       body: compressedContent
@@ -244,12 +244,13 @@ const printPage = async () => {
     // 받은 PDF 파일을 브라우저의 PDF 뷰어로 열기
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    window.open(url, '_blank', 'width=800,height=500');
+    window.open(url, '_blank', 'width=800,height=500,noopener,noreferrer');
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Error:', error);
   }
 };
+
 
 
 const getImagePrintData = async () => {

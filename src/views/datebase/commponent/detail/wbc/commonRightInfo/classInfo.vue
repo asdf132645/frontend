@@ -86,7 +86,7 @@
     </template>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
-      <button @click="afterChang" :class={isBeforeClicked:!isBefore}>After</button>
+      <button @click="afterChang(clonedWbcInfo)" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -159,7 +159,7 @@ onMounted(async () => {
   await getOrderClass();
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
-  await afterChang();
+  await afterChang(clonedWbcInfo.value);
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 
@@ -174,10 +174,14 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  console.log(props.selectItems);
-  afterChang();
+  // console.log('classinfo_props.selectItems' , props.selectItems);
+
 });
 
+watch(() => clonedWbcInfo.value, (newItem) => {
+  console.log('classinfo_props.wbcInfo' , newItem);
+  afterChang(newItem);
+});
 
 const wbcClassTileChange = (): string => {
   if (!projectBm.value){
@@ -305,7 +309,6 @@ const getOrderClass = async () => {
       if (result?.data.length === 0) {
         orderClass.value = [];
       } else {
-        console.log(result)
         orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
       }
     }
@@ -317,31 +320,25 @@ const getOrderClass = async () => {
 const beforeChang = async () => {
   isBefore.value = true;
   await getOrderClass();
-  const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  console.log(orderClass.value.length !== 0)
-
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
 
 }
 
-const afterChang = () => {
+const afterChang = (newItem: any) => {
   isBefore.value = false;
-  const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
-  const wbcInfoAfter = props.selectItems.wbcInfoAfter.length === 0 ? props.selectItems?.wbcInfo.wbcInfo[0] : props.selectItems.wbcInfoAfter
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
+  const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
-  if (wbcInfoAfter.length === 0) {
-    wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
-    nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
-  } else {
-    wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
-    nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
-  }
-  // console.log(props.)
+  wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+
 }
 
 async function updateOriginalDb() {

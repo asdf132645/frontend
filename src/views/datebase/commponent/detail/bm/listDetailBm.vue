@@ -983,7 +983,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
       // 이미지 이동 API 호출
       const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`);
-      if (keyMove === 'keyMove') {
+      if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
         if (response) {
           // 선택된 이미지 초기화
           selectedClickImages.value = [];
@@ -1073,11 +1073,8 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
     sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
     sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
-  }
+    await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
 
-  
-
-  if (notWbcAfterSave !== 'notWbcAfterSave') {
     // originalDb 업데이트
     const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
     if (filteredItems.length > 0) {
