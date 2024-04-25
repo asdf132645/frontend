@@ -329,11 +329,14 @@ const beforeChang = async () => {
 
 const afterChang = () => {
   isBefore.value = false;
-  const wbcInfoAfter = props.selectItems.wbcInfoAfter.length === 0 ? props.selectItems?.wbcInfo.wbcInfo[0] : props.wbcInfo;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
-  wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  if (props.wbcInfo){
+    const wbcInfoAfter = props.selectItems.wbcInfoAfter.length === 0 ? props.selectItems?.wbcInfo.wbcInfo[0] : props.wbcInfo;
+    const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
+    wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
+    nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  }
+
 }
 
 async function updateOriginalDb() {
