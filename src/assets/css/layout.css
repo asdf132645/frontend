@@ -1805,7 +1805,10 @@ ul.normalItems li div span:last-child {
     width: 700px;
     margin: 0 auto;
 }
-
+button.rollbackButton {
+    position: absolute;
+    right: -20px;
+}
 
 /* alert */
 .alert {
