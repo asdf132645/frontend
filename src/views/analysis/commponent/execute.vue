@@ -1,7 +1,7 @@
 <template>
   <div class="execute">
     <div class='startDiv'>
-      <select v-model="analysisType">
+      <select v-model="analysisType" :disabled="isRunningState">
         <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <p class="startStopP" v-if="showStopBtn">
@@ -20,7 +20,7 @@
       <select v-model="wbcCount" :disabled="isRunningState">
         <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState && analysisType === '04'">
+      <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState && analysisType === '04'" >
         <option v-for="option in stitchCountOptions" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>

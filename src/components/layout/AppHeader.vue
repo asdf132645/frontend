@@ -35,8 +35,8 @@
               <span class="userBox" @click='logOutBoxOn'>
                 {{ formattedTime }}
                 <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ userModuleDataGet.userId }}
-              </span>
-              <font-awesome-icon class="logOutBox" :icon="['fas', 'right-from-bracket']" />
+                </span>
+                <font-awesome-icon class="logOutBox" :icon="['fas', 'right-from-bracket']" @click="logout"/>
               </li>
             </ul>
           </div>
