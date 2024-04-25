@@ -1073,6 +1073,8 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
     sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
     sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+    await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
+
     // originalDb 업데이트
     const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
     if (filteredItems.length > 0) {
