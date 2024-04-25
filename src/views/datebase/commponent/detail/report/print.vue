@@ -210,7 +210,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
   const slotId = props.selectItems.slotId || "";
-  const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = process.env.PROJECT_TYPE === 'bm' ? `${pbiaRootPath}/${slotId}/04_BM_Classification/${id}_${title}` : `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
@@ -244,7 +244,7 @@ const printPage = async () => {
     // 받은 PDF 파일을 브라우저의 PDF 뷰어로 열기
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    window.open(url, '_blank', 'width=800,height=500');
+    window.open(url, '_blank', 'width=800,height=500,noopener,noreferrer');
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Error:', error);
