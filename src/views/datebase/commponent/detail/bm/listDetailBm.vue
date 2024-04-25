@@ -811,17 +811,19 @@ async function onDropCircle(item: any) {
   } else {
     // 여러 이미지를 드래그한 경우
     for (const selectedImage of selectedClickImages.value) {
-      // item.images.push(selectedImage);
+      item.images.push(selectedImage);
       // 드롭된 위치에 이미지 추가
       const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
-      // if (matchingItemIndex !== -1) {
-      //   wbcInfo.value[matchingItemIndex].images.push(selectedImage);
-      // } else {
-      //   console.error('일치하는 id를 가진 요소 없음');
-      // }
-      // 여러 이미지를 드래그한 경우에도 이동 API 호출
-      await moveImage(matchingItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
+      if (matchingItemIndex !== -1) {
+        wbcInfo.value[matchingItemIndex].images.push(selectedImage);
+        console.log('emfo')
+      } else {
+        console.error('일치하는 id를 가진 요소 없음');
+      }
     }
+      const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
+      // 여러 이미지를 드래그한 경우에도 이동 API 호출
+      await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false);
 
   }
 }
