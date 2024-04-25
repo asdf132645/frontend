@@ -174,7 +174,8 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  console.log(props.selectItems);
+  console.log('classinfo_props.wbcInfo' , props.wbcInfo);
+  console.log('classinfo_props.selectItems' , props.selectItems);
   afterChang();
 });
 
@@ -305,7 +306,6 @@ const getOrderClass = async () => {
       if (result?.data.length === 0) {
         orderClass.value = [];
       } else {
-        console.log(result)
         orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
       }
     }
@@ -317,9 +317,10 @@ const getOrderClass = async () => {
 const beforeChang = async () => {
   isBefore.value = true;
   await getOrderClass();
-  const wbcInfo = props.selectItems?.wbcInfo.wbcInfo[0];
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
+  // console.log(filteredItems[0].wbcInfo.wbcInfo[0])
+  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
@@ -328,7 +329,7 @@ const beforeChang = async () => {
 
 const afterChang = () => {
   isBefore.value = false;
-  const wbcInfoAfter = props.selectItems.wbcInfoAfter.length === 0 ? props.selectItems?.wbcInfo.wbcInfo[0] : props.selectItems.wbcInfoAfter;
+  const wbcInfoAfter = props.selectItems.wbcInfoAfter.length === 0 ? props.selectItems?.wbcInfo.wbcInfo[0] : props.wbcInfo;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
