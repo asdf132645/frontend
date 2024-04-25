@@ -1838,7 +1838,20 @@ button.rollbackButton {
     right: 207px;
     top: 26px;
 }
+.imgSetWrap > button{
+    background: none;
+    color: #ffffff;
+    font-size: 1rem;
+    border-radius: 5px;
+    margin-right: 19px;
+    cursor: pointer;
+    padding: 3px;
+}
 
+.imgSetWrap {
+    display: inline-block;
+    vertical-align: top;
+}
 .alert-error {
     background-color: #f8d7da;
     border-color: #f5c6cb;
