@@ -35,39 +35,40 @@
       <col width="3%"/>
     </colgroup>
     <tbody v-if="dbData.length !== 0">
-        <tr
-            v-for="(item, idx) in dbData"
-            :key="item.id"
-            :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state }"
-            @click="selectItem(item)"
-            @dblclick='rowDbClick(item)'
-            ref="firstRow"
-            style="height: 49px"
-            v-bind:data-row-id="item.id"
-            @contextmenu.prevent="rowRightClick(item, $event)"
-        >
-          <td> {{ idx + 1 }}</td>
-          <td>
-            <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
-      </td>
-      <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
-      <td>
-        <font-awesome-icon
-            :icon="['fas', `${!item?.state ? 'lock-open' : 'lock' }`]"
-        />
-      </td>
-      <td> {{ item?.traySlot }}</td>
-      <td> {{ item?.barcodeNo }}</td>
-      <td> {{ item?.patientId }}</td>
-      <td> {{ item?.patientNm }}</td>
-      <td> {{ formatDateString(item?.createDate)   }}</td>
-      <td> {{ item?.tactTime }}</td>
-      <td> {{ item?.submit }}</td>
-      <td> {{ item?.signedOfDate }}</td>
-      <td>
-        <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
-      </td>
-    </tr>
+    <template v-for="(item, idx) in dbData"
+              :key="item.id">
+      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state }"
+          @click="selectItem(item)"
+          @dblclick='rowDbClick(item)'
+          ref="firstRow"
+          style="height: 49px"
+          v-bind:data-row-id="item.id"
+          @contextmenu.prevent="rowRightClick(item, $event)"
+          v-if="Object.keys(item.wbcInfo).length !== 0"
+      >
+        <td> {{ idx + 1 }}</td>
+        <td>
+          <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
+        </td>
+        <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
+        <td>
+          <font-awesome-icon
+              :icon="['fas', `${!item?.state ? 'lock-open' : 'lock' }`]"
+          />
+        </td>
+        <td> {{ item?.traySlot }}</td>
+        <td> {{ item?.barcodeNo }}</td>
+        <td> {{ item?.patientId }}</td>
+        <td> {{ item?.patientNm }}</td>
+        <td> {{ formatDateString(item?.createDate) }}</td>
+        <td> {{ item?.tactTime }}</td>
+        <td> {{ item?.submit }}</td>
+        <td> {{ item?.signedOfDate }}</td>
+        <td>
+          <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
+        </td>
+      </tr>
+    </template>
     <tr>
       <div ref="loadMoreRef" style="height: 10px;"></div>
     </tr>
@@ -192,7 +193,6 @@ const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
 }
-
 
 
 const contextMenu = ref({
@@ -358,7 +358,7 @@ const getUserIp = async (item) => {
   }
 }
 const rowDbClick = async (item) => {
-  if(item.state){
+  if (item.state) {
     return;
   }
 
