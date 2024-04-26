@@ -125,7 +125,9 @@
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div>
-              <p class="mt1"><input type="checkbox" @input="allCheckChange($event,item.title)">{{ item?.title }}
+              <p class="mt1">
+<!--                <input type="checkbox" @input="allCheckChange($event,item.title)">-->
+                {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
