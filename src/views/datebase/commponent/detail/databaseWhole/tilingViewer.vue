@@ -77,7 +77,7 @@ const initElement = async (imageHeight: any) => {
       showNavigator: true,
       sequenceMode: true,
       defaultZoomLevel: 1,
-      prefixUrl:`${apiBaseUrl}/folders?folderPath=C:/workspace/uimdFe/images/`,
+      prefixUrl:`${apiBaseUrl}/folders?folderPath=C:/uimdFe/images/`,
       tileSources: tilesInfo,
       gestureSettingsMouse: { clickToZoom: false },
     });
