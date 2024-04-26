@@ -135,7 +135,7 @@
                     'selected-image': isSelected(image),
                     'wbcImgWrapLi': true
                   }"
-                  @click="selectImage(itemIndex, imageIndex)"
+                  @click="selectImage(itemIndex, imageIndex, item)"
                   @dblclick="openModal(image, item)"
               >
                 <div style="position: relative; height: 150px">
@@ -219,6 +219,7 @@ const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
 const isCtrlKeyPressed = ref(false);
 const draggedCircleIndex = ref<number | null>(null);
+const draggedCircleIndexArr = ref<any>([]);
 const draggedCircleImgIndex = ref<number | null>(null);
 const selectedClickImages = ref<any>([]);
 const shiftClickImages = ref<any>([]);
@@ -243,7 +244,7 @@ const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-
+const selectItemIamgeArr = ref<any>([]);
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -794,6 +795,7 @@ function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
+  console.log(draggedCircleIndexArr.value)
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     // 이미지를 한 개만 드래그한 경우
@@ -809,19 +811,6 @@ async function onDropCircle(item: any) {
     // 이미지를 한 개만 드래그한 경우에만 이동 API 호출
     await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
   } else {
-    // 여러 이미지를 드래그한 경우
-    // for (const selectedImage of selectedClickImages.value) {
-    //   item.images.push(selectedImage);
-    //   // 드롭된 위치에 이미지 추가
-    //   const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
-    //   if (matchingItemIndex !== -1) {
-    //     // wbcInfo.value[matchingItemIndex].images.push(selectedImage);
-    //     console.log('emfo')
-    //   } else {
-    //     console.error('일치하는 id를 가진 요소 없음');
-    //   }
-    // }
-    // console.log('wbcInfo.value', wbcInfo.value)
       const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
       // 여러 이미지를 드래그한 경우에도 이동 API 호출
       await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false,'', wbcInfo.value);
@@ -943,9 +932,11 @@ function onDragStart(itemIndex: any, imageIndex: any) {
   draggedImageIndex.value = imageIndex;
   draggedCircleImgIndex.value = imageIndex;
   draggedCircleIndex.value = itemIndex;
+  draggedCircleIndexArr.value.push(itemIndex);
 }
 
-function selectImage(itemIndex: any, imageIndex: any) {
+function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
+
   // 쉬프트 키를 누른 경우
   if (isShiftKeyPressed.value) {
     // 현재 선택한 이미지
@@ -958,6 +949,7 @@ function selectImage(itemIndex: any, imageIndex: any) {
 
     // 선택된 이미지 초기화
     selectedClickImages.value = [];
+    selectItemIamgeArr.value = [];
     // 범위 내의 이미지 선택
     for (let i = startIndex; i <= endIndex; i++) {
       // 최대 10개까지만 선택 가능
@@ -967,13 +959,16 @@ function selectImage(itemIndex: any, imageIndex: any) {
           title: wbcInfo.value[itemIndex].title,
           ...wbcInfo.value[itemIndex].images[i],
         });
+        selectItemIamgeArr.value.push(classInfoitem);
       }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
+      selectItemIamgeArr.value =[];
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+      selectItemIamgeArr.value.push(classInfoitem);
       return;
     }
 
@@ -984,10 +979,12 @@ function selectImage(itemIndex: any, imageIndex: any) {
       // 이미지를 선택하고 10개 미만일 때만 추가
       if (selectedClickImages.value.length < 10) {
         selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+        selectItemIamgeArr.value.push(classInfoitem);
       }
     } else {
       // 이미 선택된 이미지를 다시 클릭하면 선택 해제
       selectedClickImages.value.splice(imageIndexInSelected, 1);
+      selectItemIamgeArr.value.splice(imageIndexInSelected, 1);
     }
   }
 }
@@ -1058,11 +1055,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       // 드롭된 위치에 이미지를 삽입
       wbcInfo.value[targetItemIndex].images.push(selectedImage);
       // Count 업데이트 옮겨진 곳
-      const newCountPlus = parseInt(wbcInfo.value[targetItemIndex].count) + 1;
-      wbcInfo.value[targetItemIndex].count = newCountPlus.toString();
+      wbcInfo.value[targetItemIndex].count = wbcInfo.value[targetItemIndex].images.length;
       // 옮기는 곳
-      const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
-      wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+      wbcInfo.value[draggedItemIndex.value].count = wbcInfo.value[draggedItemIndex.value].images.length;
       wbcInfo.value = removeDuplicateImages(wbcInfo.value);
       wbcInfo.value.forEach((item: any) => {
         if (item.images.length > 0) {
@@ -1075,6 +1070,12 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
 
   }
   if (wbcInfosArr) {
+    console.log(selectItemIamgeArr.value)
+    // console.log('selectedImagesToMove', JSON.stringify(selectedImagesToMove));
+    // console.log('draggedItem', draggedItem); // 내가 클릭해서 잡은 영역
+    // console.log('targetItemIndex', targetItemIndex); // 옮겨져야하는 인덱스
+    // console.log('wbcInfo.value', wbcInfo.value);
+    return;
     // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
     let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
     if (res) {
@@ -1204,6 +1205,7 @@ async function rollbackChanges() {
     draggedItemIndex.value = null;
     draggedImageIndex.value = null;
     draggedCircleIndex.value = null;
+    draggedCircleIndexArr.value = [];
     draggedCircleImgIndex.value = null;
     selectedClickImages.value = [];
     shiftClickImages.value = [];
