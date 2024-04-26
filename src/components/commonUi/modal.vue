@@ -4,7 +4,7 @@
     <div class="layer-content">
       <div class="layer-header">
         <slot name="header"></slot>
-        <button @click="closeLayer">Close</button>
+        <button @click="closeLayer" class="alertButton">Close</button>
       </div>
       <div class="layer-body">
         <slot name="content"></slot>
@@ -48,7 +48,7 @@ onMounted(() => {
 
 .layer-content {
   text-align: left;
-  background: #fff;
+  background: #414141;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -63,6 +63,10 @@ onMounted(() => {
   font-weight: 600;
   border-bottom: 1px solid #dedede;
   padding-bottom: 15px;
-  color: #4f4f4f;
+  color: #fff;
+}
+
+.layer-body {
+  color: #fff;
 }
 </style>

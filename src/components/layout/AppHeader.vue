@@ -72,7 +72,7 @@
 
     <!-- 컨텐츠 슬롯에 들어갈 내용 -->
     <template #content>
-      <div>
+      <div class="immersionOilContainer">
         <h5 class="modalTitle">Immersion Oil count Reset</h5>
         <span class="colorGray">Reset Immersion Oil count after changing Oil pack</span>
         <div class="smallTitle">
@@ -85,7 +85,7 @@
             <div ref="statusBar" class="statusBar"></div>
           </div>
           <div>
-            <button @click='onReset'>RESET</button>
+            <button @click='onReset' class="alertButton">RESET</button>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
         <div>
           <div class="statusBarWrapper">
           </div>
-          <button @click='onPrime'>PRIME</button>
+          <button @click='onPrime' class="alertButton">PRIME</button>
         </div>
       </div>
 

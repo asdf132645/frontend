@@ -817,10 +817,15 @@ input.loginInput {
     cursor: pointer;
 }
 
+.immersionOilContainer {
+    padding-bottom: 16px;
+    border-bottom:1px solid #fff;
+}
+
 .statusBarWrapper {
     width: 100%;
     height: 20px;
-    margin-top: 5px;
+    margin: 5px 0;
     background-color: #063E5F;
 }
 
@@ -1098,14 +1103,19 @@ ul.wbcImgWrap > li {
     cursor: move;
 }
 
-.selected-image {
-    border: 2px solid #20eaa7 !important;
-    margin: 3px !important;
+.wbcImgWrap {
+    text-align: left;
+    min-height: 150px;
 }
 
 ul.wbcImgWrap > li > img {
     /*max-width: 150px;*/
     /*max-height: 150px;*/
+}
+
+.selected-image {
+    border: 2px solid #20eaa7 !important;
+    margin: 3px !important;
 }
 
 .databaseWbcRight {
@@ -1178,10 +1188,6 @@ ul.leftWbcInfo {
     list-style: none;
 }
 
-.wbcImgWrap {
-    text-align: left;
-    min-height: 150px;
-}
 
 .submittedTr {
     background: #dff7ff;
@@ -1231,6 +1237,7 @@ button.searchClass {
     margin-top: 20px;
     overflow-y: auto;
     max-height: 87vh;
+    border: 1px solid #fff;
 }
 
 li.onRight {
