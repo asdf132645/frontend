@@ -4,7 +4,7 @@
       <li v-if="projectBm === false" @click="pageGo('/databaseRbc')">RBC</li>
       <li v-else @click="pageGo('/databaseWhole')">WHOLE</li>
       <li v-if="projectBm === false" @click="pageGo('/databaseWbc')">WBC</li>
-      <li v-else @click="pageGo('/databaseBm')">BMCELL</li>
+      <li v-else @click="pageGo('/databaseBm')">BM CELL</li>
       <li class="onRight" @click="pageGo('/report')">REPORT</li>
 <!--      <li>LIS-CBC</li>-->
     </ul>
