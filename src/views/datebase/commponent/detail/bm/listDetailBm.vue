@@ -6,14 +6,14 @@
       <li @click="pageGo('/report')">REPORT</li>
       <!--      <li>LIS-CBC</li>-->
     </ul>
-<!--    <div class="wbcMenuBottom">-->
-<!--      <button @click="moveWbc('up')">-->
-<!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
-<!--      </button>-->
-<!--      <button @click="moveWbc('down')">-->
-<!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
-<!--      </button>-->
-<!--    </div>-->
+    <!--    <div class="wbcMenuBottom">-->
+    <!--      <button @click="moveWbc('up')">-->
+    <!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
+    <!--      </button>-->
+    <!--      <button @click="moveWbc('down')">-->
+    <!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
+    <!--      </button>-->
+    <!--    </div>-->
   </div>
 
   <div class="wbcContent">
@@ -244,6 +244,7 @@ const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+
 const selectItemIamgeArr = ref<any>([]);
 onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
@@ -811,9 +812,9 @@ async function onDropCircle(item: any) {
     // 이미지를 한 개만 드래그한 경우에만 이동 API 호출
     await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
   } else {
-      const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
-      // 여러 이미지를 드래그한 경우에도 이동 API 호출
-      await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false,'', wbcInfo.value);
+    const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
+    // 여러 이미지를 드래그한 경우에도 이동 API 호출
+    await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false, '', wbcInfo.value);
 
   }
 }
@@ -966,7 +967,7 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
-      selectItemIamgeArr.value =[];
+      selectItemIamgeArr.value = [];
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
       selectItemIamgeArr.value.push(classInfoitem);
       return;
@@ -1040,32 +1041,34 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
       let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
       if (res) {
-      // 선택된 이미지 초기화
-      selectedClickImages.value = [];
-      shiftClickImages.value = [];
-      await updateOriginalDb();
+        // 선택된 이미지 초기화
+        selectedClickImages.value = [];
+        shiftClickImages.value = [];
+        await updateOriginalDb();
       }
       return;
     }
-    if(!wbcInfosArr){
-      await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+    if (!wbcInfosArr) {
+      let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
       // 드래그된 이미지를 원래 위치에서 제거
-      const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
-      draggedItem.images.splice(draggedImageIndex, 1);
-      // 드롭된 위치에 이미지를 삽입
-      wbcInfo.value[targetItemIndex].images.push(selectedImage);
-      // Count 업데이트 옮겨진 곳
-      wbcInfo.value[targetItemIndex].count = wbcInfo.value[targetItemIndex].images.length;
-      // 옮기는 곳
-      wbcInfo.value[draggedItemIndex.value].count = wbcInfo.value[draggedItemIndex.value].images.length;
-      wbcInfo.value = removeDuplicateImages(wbcInfo.value);
-      wbcInfo.value.forEach((item: any) => {
-        if (item.images.length > 0) {
-          item.images.forEach((itemImg: any) => {
-            itemImg.title = item.title;
-          })
-        }
-      });
+      if (res) {
+        const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
+        draggedItem.images.splice(draggedImageIndex, 1);
+        // 드롭된 위치에 이미지를 삽입
+        wbcInfo.value[targetItemIndex].images.push(selectedImage);
+        // Count 업데이트 옮겨진 곳
+        wbcInfo.value[targetItemIndex].count = wbcInfo.value[targetItemIndex].images.length;
+        // 옮기는 곳
+        wbcInfo.value[draggedItemIndex.value].count = wbcInfo.value[draggedItemIndex.value].images.length;
+        wbcInfo.value = removeDuplicateImages(wbcInfo.value);
+        wbcInfo.value.forEach((item: any) => {
+          if (item.images.length > 0) {
+            item.images.forEach((itemImg: any) => {
+              itemImg.title = item.title;
+            })
+          }
+        });
+      }
     }
 
   }
