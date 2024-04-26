@@ -1104,19 +1104,12 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
 
   }
   if (wbcInfosArr) {
-    console.log(selectItemIamgeArr.value)
     for (const seItem of selectItemIamgeArr.value) {
       const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${seItem.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
-    // console.log('selectItemIamgeArr.value', JSON.stringify(selectItemIamgeArr.value))
-    // console.log('selectedImagesToMove', JSON.stringify(selectedImagesToMove));
-    // console.log('draggedItem', draggedItem); // 내가 클릭해서 잡은 영역
-    // console.log('targetItemIndex', targetItemIndex); // 옮겨져야하는 인덱스
-    // console.log('wbcInfo.value', wbcInfo.value);
-    // return;
     // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
     let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
     if (res) {
