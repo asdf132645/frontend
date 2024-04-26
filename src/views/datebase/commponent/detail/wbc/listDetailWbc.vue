@@ -258,7 +258,6 @@ onMounted(async () => {
 onUnmounted(async () => {
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
       .then(response => {
-        console.log(response)
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
           payload: 'refreshDb'

@@ -810,18 +810,22 @@ async function onDropCircle(item: any) {
     await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
   } else {
     // 여러 이미지를 드래그한 경우
-    for (const selectedImage of selectedClickImages.value) {
-      item.images.push(selectedImage);
-      // 드롭된 위치에 이미지 추가
+    // for (const selectedImage of selectedClickImages.value) {
+    //   item.images.push(selectedImage);
+    //   // 드롭된 위치에 이미지 추가
+    //   const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
+    //   if (matchingItemIndex !== -1) {
+    //     // wbcInfo.value[matchingItemIndex].images.push(selectedImage);
+    //     console.log('emfo')
+    //   } else {
+    //     console.error('일치하는 id를 가진 요소 없음');
+    //   }
+    // }
+    // console.log('wbcInfo.value', wbcInfo.value)
       const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
-      if (matchingItemIndex !== -1) {
-        wbcInfo.value[matchingItemIndex].images.push(selectedImage);
-      } else {
-        console.error('일치하는 id를 가진 요소 없음');
-      }
       // 여러 이미지를 드래그한 경우에도 이동 API 호출
-      await moveImage(matchingItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
-    }
+      await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false,'', wbcInfo.value);
+
   }
 }
 
@@ -1020,60 +1024,85 @@ async function originalOnDrop(targetItemIndex: number) {
   }
 }
 
-async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string) {
+async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string, wbcInfosArr?: any) {
   const {slotId} = selectItems.value;
   const arrType = selectedImagesToMove;
-  try {
-    // 선택된 이미지 배열에 대해 반복
-    for (const selectedImage of arrType) {
-      const fileName = selectedImage.fileName;
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${selectedImage.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${draggedItem.id}_${draggedItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
-      // 이미지 이동 API 호출
-      const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`);
-      if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-        if (response) {
-          // 선택된 이미지 초기화
-          selectedClickImages.value = [];
-          shiftClickImages.value = [];
-          await updateOriginalDb();
-        }
-        return;
+  let sourceFolders = [];
+  let destinationFolders = [];
+  let fileNames = [];
+  // 선택된 이미지 배열에 대해 반복
+  for (const selectedImage of arrType) {
+    const fileName = selectedImage.fileName;
+    fileNames.push(fileName)
+    const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${selectedImage.id}_${selectedImage.title}` :
+        `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${draggedItem.id}_${draggedItem.title}`;
+    const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
+    destinationFolders.push(destinationFolder);
+    // 이미지 이동 API 호출
+    sourceFolders.push(sourceFolder)
+    if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
+      let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+      if (res) {
+      // 선택된 이미지 초기화
+      selectedClickImages.value = [];
+      shiftClickImages.value = [];
+      await updateOriginalDb();
       }
-      if (response) {
-        // 드래그된 이미지를 원래 위치에서 제거
-        const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
-        draggedItem.images.splice(draggedImageIndex, 1);
-        // 드롭된 위치에 이미지를 삽입
-        wbcInfo.value[targetItemIndex].images.push(selectedImage);
-        // Count 업데이트 옮겨진 곳
-        const newCountPlus = parseInt(wbcInfo.value[targetItemIndex].count) + 1;
-        wbcInfo.value[targetItemIndex].count = newCountPlus.toString();
-        // 옮기는 곳
-        const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
-        wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
-        wbcInfo.value = removeDuplicateImages(wbcInfo.value);
-        wbcInfo.value.forEach((item: any) => {
-          if (item.images.length > 0) {
-            item.images.forEach((itemImg: any) => {
-              itemImg.title = item.title;
-            })
-          }
-        });
-        console.log(wbcInfo.value)
-      } else {
-        console.error('이미지 이동 실패:', fileName);
+      return;
+    }
+    if(!wbcInfosArr){
+      await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+      // 드래그된 이미지를 원래 위치에서 제거
+      const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
+      draggedItem.images.splice(draggedImageIndex, 1);
+      // 드롭된 위치에 이미지를 삽입
+      wbcInfo.value[targetItemIndex].images.push(selectedImage);
+      // Count 업데이트 옮겨진 곳
+      const newCountPlus = parseInt(wbcInfo.value[targetItemIndex].count) + 1;
+      wbcInfo.value[targetItemIndex].count = newCountPlus.toString();
+      // 옮기는 곳
+      const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
+      wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+      wbcInfo.value = removeDuplicateImages(wbcInfo.value);
+      wbcInfo.value.forEach((item: any) => {
+        if (item.images.length > 0) {
+          item.images.forEach((itemImg: any) => {
+            itemImg.title = item.title;
+          })
+        }
+      });
+    }
+
+  }
+  if (wbcInfosArr) {
+    // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
+    let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+    if (res) {
+      // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
+      for (const images of selectedImagesToMove) {
+        images.title = wbcInfo.value[targetItemIndex].title;
+      }
+      const targetItem = wbcInfo.value[targetItemIndex];
+      targetItem.images.push(...selectedImagesToMove);
+      targetItem.count = targetItem.images.length;
+      // draggedItem.title을 가진 객체의 images 배열에서 draggedItem.images의 fileName과 일치하는 이미지 제거
+      const draggedItemIdx = wbcInfo.value.findIndex(item => item.title === draggedItem.title);
+
+      if (draggedItemIdx !== -1) {
+        const draggedItemObj = wbcInfo.value[draggedItemIdx];
+        const selectedImagesFileNames = selectedImagesToMove.map(image => image.fileName);
+        const filteredImages = draggedItemObj.images.filter(image => !selectedImagesFileNames.includes(image.fileName));
+        // 새로 생성한 배열을 draggedItemObj의 images 배열에 할당
+        draggedItemObj.images = filteredImages;
+        draggedItemObj.count = draggedItemObj.images.length;
       }
     }
-    // 선택된 이미지 초기화
-    selectedClickImages.value = [];
-    shiftClickImages.value = [];
-    // 원본 데이터베이스 업데이트
-    await updateOriginalDb();
-  } catch (error) {
-    console.error('에러:', error);
   }
+  // 선택된 이미지 초기화
+  selectedClickImages.value = [];
+  shiftClickImages.value = [];
+  // 원본 데이터베이스 업데이트
+  await updateOriginalDb();
 }
 
 function removeDuplicateImages(data: any[]): any[] {
