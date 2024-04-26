@@ -47,11 +47,6 @@ const router = createRouter({
             component: Database,
         },
         {
-            path: '/databaseWbc',
-            name: 'databaseWbc',
-            component: DatabaseWbc,
-        },
-        {
             path: '/databaseBm',
             name: 'databaseBm',
             component: DatabaseBm,

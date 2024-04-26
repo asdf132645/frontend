@@ -3,7 +3,7 @@
     <ul>
       <li v-if="projectBm === false" @click="pageGo('/databaseRbc')">RBC</li>
       <li v-else @click="pageGo('/databaseWhole')">WHOLE</li>
-      <li v-if="projectBm === false" @click="pageGo('/databaseWbc')">WBC</li>
+      <li v-if="projectBm === false" @click="pageGo('/databaseBm')">WBC</li>
       <li v-else @click="pageGo('/databaseBm')">BM CELL</li>
       <li class="onRight" @click="pageGo('/report')">REPORT</li>
 <!--      <li>LIS-CBC</li>-->
@@ -164,7 +164,7 @@
 <script setup lang="ts">
 
 
-import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
+import WbcClass from "@/views/datebase/commponent/detail/bm/commonRightInfo/classInfo.vue";
 import {computed, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
@@ -271,7 +271,7 @@ const moveWbc = async (direction: any) => {
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   const keepPage = sessionStorage.getItem('keepPage');
   if(keepPage === 'true' && process.env.PROJECT_TYPE === 'pb'){
-    router.push('/databaseWbc')
+    router.push('/databaseBm')
   }
   wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
       ? selectItemsNewVal.wbcInfoAfter
