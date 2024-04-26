@@ -458,6 +458,12 @@ button.saveBtn, .defaultBtn {
     border-bottom: 1px solid #494949;
 }
 
+.categoriesBm {
+    display: flex;
+    width: 400px;
+    justify-content: space-between;
+}
+
 /*.categories::after, .nth1Child::after {*/
 /*    content: '';*/
 /*    position: absolute;*/
@@ -485,12 +491,7 @@ ul.classInfo {
 .degree {
     display: inline-block;
     width: 15%;
-    text-align: right;
-}
-
-.degreeTotal {
-    position: relative;
-    left: -25px;
+    /*text-align: right;*/
 }
 
 ul.nth1Child li {

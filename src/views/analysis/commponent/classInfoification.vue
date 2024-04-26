@@ -14,7 +14,7 @@
             </ul>
             <ul class="classNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
-              <li>{{ category?.count }}</li>
+              <li style="text-align: center">{{ category?.count }}</li>
             </ul>
             <ul class="degree">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
@@ -31,7 +31,7 @@
       <div class="categories">
         <ul class="categoryNm">
           <li>
-            total
+            Total
           </li>
         </ul>
         <ul class="classNm">
