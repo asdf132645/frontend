@@ -830,6 +830,7 @@ function handleBodyClick(event: Event) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
+    selectItemIamgeArr.value = [];
   }
 }
 
