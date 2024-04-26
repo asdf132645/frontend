@@ -1043,8 +1043,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
-    }else{
-
     }
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
       let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
@@ -1089,11 +1087,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
-    console.log('selectItemIamgeArr.value', JSON.stringify(selectItemIamgeArr.value))
-    console.log('selectedImagesToMove', JSON.stringify(selectedImagesToMove));
-    console.log('draggedItem', draggedItem); // 내가 클릭해서 잡은 영역
-    console.log('targetItemIndex', targetItemIndex); // 옮겨져야하는 인덱스
-    console.log('wbcInfo.value', wbcInfo.value);
+    // console.log('selectItemIamgeArr.value', JSON.stringify(selectItemIamgeArr.value))
+    // console.log('selectedImagesToMove', JSON.stringify(selectedImagesToMove));
+    // console.log('draggedItem', draggedItem); // 내가 클릭해서 잡은 영역
+    // console.log('targetItemIndex', targetItemIndex); // 옮겨져야하는 인덱스
+    // console.log('wbcInfo.value', wbcInfo.value);
     // return;
     // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
     let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
