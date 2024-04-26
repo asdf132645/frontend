@@ -1066,12 +1066,10 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         draggedItem.images.splice(draggedImageIndex, 1);
         // 드롭된 위치에 이미지를 삽입
         wbcInfo.value[targetItemIndex].images.push(selectedImage);
-        // Count 업데이트 옮겨진 곳
-        wbcInfo.value[targetItemIndex].count = wbcInfo.value[targetItemIndex].images.length;
-        // 옮기는 곳
-        wbcInfo.value[draggedItemIndex.value].count = wbcInfo.value[draggedItemIndex.value].images.length;
+
         wbcInfo.value = removeDuplicateImages(wbcInfo.value);
         wbcInfo.value.forEach((item: any) => {
+          item.count = item.images.length;
           if (item.images.length > 0) {
             item.images.forEach((itemImg: any) => {
               itemImg.title = item.title;
