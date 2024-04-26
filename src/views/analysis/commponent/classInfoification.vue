@@ -118,8 +118,8 @@ watch([commonDataGet.value], async (newVals: any) => {
   }
 })
 onMounted(() => {
-  const initialWbcClassList = store.state.wbcClassificationModule;
-  updateDataArray(initialWbcClassList);
+  // const initialWbcClassList = store.state.wbcClassificationModule;
+  updateDataArray(basicBmClassList);
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {

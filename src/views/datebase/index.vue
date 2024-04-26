@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem"/>
+      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem" @refresh="refresh"/>
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
@@ -215,9 +215,7 @@ const getDbData = async (type: string, pageNum?: number) => {
               dbGetData.value.push(item);
             }
           });
-
         }
-        console.log(wbcCountOrder.value)
 
 
         // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));

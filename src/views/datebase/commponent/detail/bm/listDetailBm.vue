@@ -2,7 +2,7 @@
   <div class="wbcMenu">
     <ul>
       <li @click="pageGo('/databaseWhole')">WHOLE</li>
-      <li class="onRight" @click="pageGo('/databaseBm')">BMCELL</li>
+      <li class="onRight" @click="pageGo('/databaseBm')">BM CELL</li>
       <li @click="pageGo('/report')">REPORT</li>
       <!--      <li>LIS-CBC</li>-->
     </ul>
@@ -830,6 +830,7 @@ function handleBodyClick(event: Event) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
+    selectItemIamgeArr.value = [];
   }
 }
 
