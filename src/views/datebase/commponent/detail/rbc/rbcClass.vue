@@ -23,7 +23,7 @@
             <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
             <li>{{ getCategoryName(category) }}</li>
           </ul>
-          <ul class="classNm">
+          <ul class="classNmRbc">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
               <li>{{ classInfo?.classNm }}</li>
@@ -70,7 +70,7 @@
             <ul class="categoryNm">
               <li>Others</li>
             </ul>
-            <ul class="classNm">
+            <ul class="classNmRbc">
               <li>Platelets</li>
               <li>Malaria</li>
             </ul>

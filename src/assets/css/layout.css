@@ -473,6 +473,7 @@ button.saveBtn, .defaultBtn {
 /*    border-bottom: 1px solid #494949;*/
 /*}*/
 
+
 ul.classInfo {
     width: 50%;
     display: inline-block;
@@ -483,9 +484,10 @@ ul.classInfo {
     width: 35%;
 }
 
-.classNm {
+.classNmRbc {
     display: inline-block;
     text-align: left;
+    min-width: 150px;
 }
 
 .degree {
