@@ -9,7 +9,6 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
         };
 
         const localDbData = [...originalDb];
-        console.log(localDbData)
         const indexToUpdate = localDbData.findIndex(item => item.id === selectItems.id);
         if (indexToUpdate !== -1) {
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};

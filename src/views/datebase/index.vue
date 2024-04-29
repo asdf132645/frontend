@@ -98,6 +98,7 @@ const bmClassIsBoolen = ref(false);
 const instance = getCurrentInstance();
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
+  console.log(data)
   await initDbData();
 })
 onMounted(async () => {
