@@ -447,7 +447,7 @@ button.saveBtn, .defaultBtn {
 }
 
 /*동그라미 끝*/
-.categories {
+.categories, .nth1Child {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
