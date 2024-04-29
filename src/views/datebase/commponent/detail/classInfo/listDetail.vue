@@ -1,27 +1,5 @@
 <template>
-  <div class="wbcMenu">
-    <ul>
-      <template v-if="['bm', 'pb'].includes(projectType)">
-        <li @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')">
-          {{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}
-        </li>
-        <li class="onRight" @click="pageGo(projectType === 'bm' ? '/databaseBm' : '/databaseWbc')">
-          {{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}
-        </li>
-        <li @click="pageGo('/report')">REPORT</li>
-      </template>
-      <!--      <li>LIS-CBC</li>-->
-    </ul>
-    <!--    <div class="wbcMenuBottom">-->
-    <!--      <button @click="moveWbc('up')">-->
-    <!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
-    <!--      </button>-->
-    <!--      <button @click="moveWbc('down')">-->
-    <!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
-    <!--      </button>-->
-    <!--    </div>-->
-  </div>
-
+  <ClassInfoMenu @refreshClass="refreshClass"/>
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
@@ -253,39 +231,20 @@ const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 
 const selectItemIamgeArr = ref<any>([]);
+
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
-  await getWbcCustomClasses();
-  const result = await getUserIpApi();
-  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    instance?.appContext.config.globalProperties.$socket.emit('state', {
-      type: 'SEND_DATA',
-      payload: 'refreshDb'
-    });
-  }).catch(error => {
-    console.error('Error:', error.response.data);
-  });
+  await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
-
 });
 onUnmounted(async () => {
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
-      .then(response => {
-        instance?.appContext.config.globalProperties.$socket.emit('state', {
-          type: 'SEND_DATA',
-          payload: 'refreshDb'
-        });
-        initData('');
-      }).catch(error => {
-        console.error('Error:', error.response.data);
-      });
   document.addEventListener('click', handleClickOutside);
-
 })
 
 const handleClickOutside = (event: any) => {
@@ -314,7 +273,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 };
 
 
-const getWbcCustomClasses = async () => {
+const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   try {
     const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
 
@@ -363,7 +322,7 @@ const getWbcCustomClasses = async () => {
     }
     await getWbcHotKeyClasses();
     await getBfHotKeyClasses();
-    await initData(newData);
+    await initData(newData, upDown, upDownData);
   } catch (e) {
     console.log(e);
   }
@@ -459,14 +418,10 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
 
-watch(wbcInfo.value, (newVal) => {
-  console.log(newVal)
-});
-
-const pageGo = (path: string) => {
-  router.push(path)
+const refreshClass = async (data: any) => {
+  selectItems.value = data;
+  await getWbcCustomClasses(true, data);
 }
-
 
 const excelDownload = () => {
   const groundTruth = selectItems.value.wbcInfoAfter; // 실제 정답 데이터
@@ -616,27 +571,6 @@ const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, n
 
   return excelData;
 };
-
-const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-  wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
-      ? selectItemsNewVal.wbcInfoAfter
-      : selectItemsNewVal.wbcInfo.wbcInfo[0];
-  await initData('');
-};
-
-const moveWbc = async (direction: any) => {
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
-  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
-  // const result = await getUserIpApi();
-  // await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-  //   instance?.appContext.config.globalProperties.$socket.emit('state', {
-  //     type: 'SEND_DATA',
-  //     payload: 'refreshDb'
-  //   });
-  // }).catch(error => {
-  //   console.error('Error:', error.response.data);
-  // });
-}
 
 
 const drawCellMarker = async () => {
@@ -916,14 +850,20 @@ function handleKeyUp(event: KeyboardEvent) {
   }
 }
 
-async function initData(newData: any) {
-  wbcInfo.value = [];
-  wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
-  if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
-    wbcInfo.value = selectItems.value.wbcInfoAfter;
-    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+async function initData(newData: any, upDown: any, upDownData: any) {
+  let selectItemsVal: any = [];
+  if(!upDown){
+    wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
+    selectItemsVal = selectItems.value;
+  }else{
+    wbcInfo.value = upDownData;
+    selectItemsVal = upDownData;
+  }
+  if (selectItemsVal.wbcInfoAfter && selectItemsVal.wbcInfoAfter.length !== 0) {
+    wbcInfo.value = selectItemsVal.wbcInfoAfter;
+    selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
       const title = item.title;
-      const correspondingItem = selectItems.value.wbcInfoAfter.find((afterItem: any) => afterItem.title === title);
+      const correspondingItem = selectItemsVal.wbcInfoAfter.find((afterItem: any) => afterItem.title === title);
       if (correspondingItem) {
         correspondingItem.images.forEach((item: any) => {
           item.title = title;
@@ -932,8 +872,8 @@ async function initData(newData: any) {
       }
     });
   } else {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
-    selectItems.value.wbcInfo.wbcInfo[0].forEach((item: any) => {
+    wbcInfo.value = selectItemsVal.wbcInfo.wbcInfo[0];
+    selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
       if (item.images.length > 0) {
         item.images.forEach((itemImg: any) => {
           itemImg.title = item.title;
@@ -943,7 +883,7 @@ async function initData(newData: any) {
     });
   }
   if (newData !== '') {
-    selectItems.value.wbcInfo.wbcInfo[0] = selectItems.value.wbcInfo.wbcInfo[0].filter((item: any) => {
+    selectItemsVal.wbcInfo.wbcInfo[0] = selectItemsVal.wbcInfo.wbcInfo[0].filter((item: any) => {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }

@@ -1,22 +1,5 @@
 <template>
-  <div class="wbcMenu">
-    <ul>
-      <li v-if="projectBm === false" @click="pageGo('/databaseRbc')">RBC</li>
-      <li v-else @click="pageGo('/databaseWhole')">WHOLE</li>
-      <li v-if="projectBm === false" @click="pageGo('/databaseBm')">WBC</li>
-      <li v-else @click="pageGo('/databaseBm')">BM CELL</li>
-      <li class="onRight" @click="pageGo('/report')">REPORT</li>
-<!--      <li>LIS-CBC</li>-->
-    </ul>
-<!--    <div class="wbcMenuBottom">-->
-<!--      <button @click="moveWbc('up')">-->
-<!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
-<!--      </button>-->
-<!--      <button @click="moveWbc('down')">-->
-<!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
-<!--      </button>-->
-<!--    </div>-->
-  </div>
+  <ClassInfoMenu @refreshClass="refreshClass"/>
   <div class="reportSection">
     <div class="reportDiv">
       <div class="wbcDiv">
@@ -176,6 +159,7 @@ import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {useStore} from "vuex";
 import process from "process";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
+import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -201,19 +185,10 @@ onMounted(() => {
   initData();
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
-
-onUnmounted(async () => {
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
-      .then(response => {
-        instance?.appContext.config.globalProperties.$socket.emit('state', {
-          type: 'SEND_DATA',
-          payload: 'refreshDb'
-        });
-      }).catch(error => {
-        console.error('Error:', error.response.data);
-      });
-})
-
+const refreshClass = async (data: any) => {
+  selectItems.value = data;
+  await initData(data);
+}
 const printClose = () => {
   printOnOff.value = false;
 }
@@ -231,10 +206,7 @@ const pageGo = (path: string) => {
   router.push(path)
 }
 
-async function initData() {
-  console.log(clonedWbcInfo.value)
-  wbcInfo.value = [];
-  wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
+async function initData(data?: any) {
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
     wbcInfo.value = clonedWbcInfo.value;
     wbcArr.value = clonedWbcInfo.value;
@@ -243,40 +215,7 @@ async function initData() {
     wbcArr.value = selectItems.value.wbcInfo.wbcInfo[0];
   }
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
-  // const result = await getUserIpApi();
-  // await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-  //   instance?.appContext.config.globalProperties.$socket.emit('state', {
-  //     type: 'SEND_DATA',
-  //     payload: 'refreshDb'
-  //   });
-  // }).catch(error => {
-  //   console.error('Error:', error.response.data);
-  // });
 }
 
-const moveWbc = async (direction: any) => {
-  // await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
-  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
-  // const result = await getUserIpApi();
-  // await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-  //   instance?.appContext.config.globalProperties.$socket.emit('state', {
-  //     type: 'SEND_DATA',
-  //     payload: 'refreshDb'
-  //   });
-  // }).catch(error => {
-  //   console.error('Error:', error.response.data);
-  // });
-}
-
-const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-  const keepPage = sessionStorage.getItem('keepPage');
-  if(keepPage === 'true' && process.env.PROJECT_TYPE === 'pb'){
-    router.push('/databaseBm')
-  }
-  wbcInfo.value = selectItemsNewVal.wbcInfoAfter && selectItemsNewVal.wbcInfoAfter.length !== 0
-      ? selectItemsNewVal.wbcInfoAfter
-      : selectItemsNewVal.wbcInfo.wbcInfo[0];
-  await initData();
-};
 
 </script>

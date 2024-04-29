@@ -194,6 +194,7 @@ watch(() => props.wbcInfo, (newItem) => {
   nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   // console.log('classinfo_props.selectItems' , props.selectItems);
+  console.log(newItem)
 
 });
 

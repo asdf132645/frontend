@@ -8,7 +8,7 @@ import Database from '@/views/datebase/index.vue';
 import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listDetailRbc.vue';
 import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listDetailWbc.vue';
 import Report from  '@/views/datebase/commponent/detail/report/report.vue';
-import DatabaseBm from '@/views/datebase/commponent/detail/classInfo/listDetail.vue';
+import databaseDetail from '@/views/datebase/commponent/detail/classInfo/listDetail.vue';
 import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
 
 import {useStore} from "vuex";
@@ -47,9 +47,9 @@ const router = createRouter({
             component: Database,
         },
         {
-            path: '/databaseBm',
-            name: 'databaseBm',
-            component: DatabaseBm,
+            path: '/databaseDetail',
+            name: 'databaseDetail',
+            component: databaseDetail,
         },
         {
             path: '/databaseWhole',

@@ -1,20 +1,5 @@
 <template>
-  <div class="wbcMenu">
-    <ul>
-      <li class="onRight" @click="pageGo('/databaseRbc')">RBC</li>
-      <li @click="pageGo('/databaseBm')">WBC</li>
-      <li @click="pageGo('/report')">REPORT</li>
-<!--      <li>LIS-CBC</li>-->
-    </ul>
-    <div class="wbcMenuBottom">
-      <button @click="moveRbc('up')">
-        <font-awesome-icon :icon="['fas', 'circle-up']"/>
-      </button>
-      <button @click="moveRbc('down')">
-        <font-awesome-icon :icon="['fas', 'circle-down']"/>
-      </button>
-    </div>
-  </div>
+  <ClassInfoMenu @refreshClass="refreshClass"/>
 
   <div class="wbcContent">
     <div class="topClintInfo">
@@ -47,6 +32,7 @@ import {useStore} from "vuex";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const originalDbData = sessionStorage.getItem("originalDbData");
@@ -81,46 +67,11 @@ onUnmounted(async () => {
 
 const initData =  async () => {
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
-  const result = await getUserIpApi();
-  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    instance?.appContext.config.globalProperties.$socket.emit('state', {
-      type: 'SEND_DATA',
-      payload: 'refreshDb'
-    });
-  }).catch(error => {
-    console.error('Error:', error.response.data);
-  });
 }
 
-const pageGo = (path: string) => {
-  router.push(path)
-}
 
-const moveRbc = async (direction: any) => {
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id);
-  await moveFunction(direction, originalDb, selectItems, clickid, updateUpDown);
-  const result = await getUserIpApi();
-  await stateUpdateCommon(selectItems.value, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-    instance?.appContext.config.globalProperties.$socket.emit('state', {
-      type: 'SEND_DATA',
-      payload: 'refreshDb'
-    });
-    initData();
-  }).catch(error => {
-    console.error('Error:', error.response.data);
-  });
-}
-
-const updateUpDown = (selectRbc: any, selectItemsNewVal: any) => {
-  const keepPage = sessionStorage.getItem('keepPage');
-  if(keepPage === 'true' && process.env.PROJECT_TYPE === 'pb'){
-    router.push('/databaseBm')
-  }
-  // console.log(keepPage);
-  rbcInfo.value = selectItemsNewVal.rbcInfoAfter && selectItemsNewVal.rbcInfoAfter.length !== 0
-      ? selectItemsNewVal.rbcInfoAfter
-      : selectItemsNewVal.rbcInfo;
-  initData();
+const refreshClass = async (data: any) => {
+  rbcInfo.value = data.rbcInfo;
 }
 
 

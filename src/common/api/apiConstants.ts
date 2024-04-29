@@ -244,6 +244,10 @@ export const apiConstants = {
             delete:{
                 endpoint: 'runningInfo/delete',
                 requiresToken: false,
+            },
+            detail:{
+                endpoint: 'runningInfo/detail',
+                requiresToken: false,
             }
         },
         folder: {

@@ -24,3 +24,8 @@ export const deleteRunningApi = async (ids: string[]): Promise<ApiResponse<void>
     return httpClient.httpDelete(apiConstants.settings.runningInfo.delete, ids, false);
 };
 
+
+export const detailRunningApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.settings.runningInfo.detail, `${request}`, false);
+};
+

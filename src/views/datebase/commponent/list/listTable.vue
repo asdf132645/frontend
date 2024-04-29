@@ -371,7 +371,7 @@ const rowDbClick = async (item) => {
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await getUserIp(item);
-  await router.push('/databaseBm');
+  await router.push('/databaseDetail');
 
 }
 

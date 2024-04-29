@@ -1,5 +1,5 @@
 <template>
-  <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad" />
+  <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad"  />
     <div class="tilingViewerContainer">
       <div ref="tilingViewerLayer" id="tiling-viewer" ></div>
     </div>
@@ -10,9 +10,9 @@
 import {defineProps, onMounted, ref, watch, computed, nextTick} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { useStore } from "vuex";
+import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const props = defineProps(['selectItems']);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
@@ -21,7 +21,7 @@ const tilingViewerLayer = ref(null);
 const hideImageRef = ref(null);
 const newImgHeight = ref('');
 const newImgWidth = ref('');
-
+const imgLoad = ref(false);
 const hideImage = ref('');
 let viewer:any = null;
 
@@ -29,30 +29,27 @@ onMounted(async () => {
   await onImageLoad();
 });
 
+watch( () => props.selectItems, async(newItem) => {
+  await nextTick()
+  await onImageLoad();
+});
 const onImageLoad = async () => {
-
-
   const imgElement = hideImageRef.value;
-  const slotId = selectItems.value?.slotId || "";
+  const slotId = props.selectItems?.slotId || "";
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/01_Stitching_Image`;
 
   const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
   hideImage.value = imageUrl;
-  // 이미지가 로드되었는지 확인합니다.
   if (imgElement && imgElement.complete) {
     const imageHeight = imgElement.naturalHeight;
     const imageWidth = imgElement.naturalWidth;
 
-    // 이미지 높이가 0이 아닌지 확인합니다.
     if (imageHeight !== 0) {
-      console.log('이미지 높이:', imageHeight);
       newImgHeight.value = imageHeight;
       newImgWidth.value = imageWidth;
-
-      // 이미지 높이를 얻은 후 initElement 함수를 호출합니다.
+      console.log(imageHeight)
       await initElement(imageHeight);
     }
-    console.log('???')
 
   }
 };
@@ -63,7 +60,7 @@ const initElement = async (imageHeight: any) => {
   if (viewer) {
     viewer.destroy();
   }
-  const slotId = selectItems.value?.slotId || "";
+  const slotId = props.selectItems?.slotId || "";
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/01_Stitching_Image`;
 
   const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
@@ -99,7 +96,7 @@ const initElement = async (imageHeight: any) => {
 
     viewer.addHandler("zoom", function () {
       const tilingViewerElement: any = document.getElementById("tiling-viewer");
-      tilingViewerElement && (tilingViewerElement.style.height = '80vh')
+      // tilingViewerElement && (tilingViewerElement.style.height = '80vh')
     })
 
 
