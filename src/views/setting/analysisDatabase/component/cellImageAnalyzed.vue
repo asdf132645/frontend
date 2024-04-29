@@ -13,7 +13,7 @@
       <!--Common analysis values-->
       <tr>
         <th rowspan="4" v-if="projectType === 'pb'">WBC diff analysis values</th>
-        <th v-if="projectType === 'bm'">BM diff analysis values</th>
+        <th v-if="projectType === 'classInfo'">BM diff analysis values</th>
         <th>Cell analyzing count</th>
         <td>
           <select v-model='pbAnalysisType'>
@@ -68,7 +68,7 @@
         </td>
       </tr>
       <tr>
-        <th v-if="projectType === 'bm'"></th>
+        <th v-if="projectType === 'classInfo'"></th>
         <th>Stitch count</th>
         <td>
           <select v-model='stitchCount'>

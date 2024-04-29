@@ -164,7 +164,7 @@
 <script setup lang="ts">
 
 
-import WbcClass from "@/views/datebase/commponent/detail/bm/commonRightInfo/classInfo.vue";
+import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import {computed, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {WbcInfo} from "@/store/modules/analysis/wbcclassification";

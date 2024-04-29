@@ -1,25 +1,31 @@
 <template>
   <div class="wbcMenu">
     <ul>
-      <li @click="pageGo('/databaseRbc')">RBC</li>
-      <li class="onRight" @click="pageGo('/databaseWbc')">WBC</li>
-      <li @click="pageGo('/report')">REPORT</li>
-<!--      <li>LIS-CBC</li>-->
+      <template v-if="['bm', 'pb'].includes(projectType)">
+        <li @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')">
+          {{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}
+        </li>
+        <li class="onRight" @click="pageGo(projectType === 'bm' ? '/databaseBm' : '/databaseWbc')">
+          {{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}
+        </li>
+        <li @click="pageGo('/report')">REPORT</li>
+      </template>
+      <!--      <li>LIS-CBC</li>-->
     </ul>
-    <div class="wbcMenuBottom">
-      <button @click="moveWbc('up')">
-        <font-awesome-icon :icon="['fas', 'circle-up']"/>
-      </button>
-      <button @click="moveWbc('down')">
-        <font-awesome-icon :icon="['fas', 'circle-down']"/>
-      </button>
-    </div>
+    <!--    <div class="wbcMenuBottom">-->
+    <!--      <button @click="moveWbc('up')">-->
+    <!--        <font-awesome-icon :icon="['fas', 'circle-up']"/>-->
+    <!--      </button>-->
+    <!--      <button @click="moveWbc('down')">-->
+    <!--        <font-awesome-icon :icon="['fas', 'circle-down']"/>-->
+    <!--      </button>-->
+    <!--    </div>-->
   </div>
 
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{ getTestTypeText(selectItems?.testType) }} Smear</li>
+        <li>{{ getBmTestTypeText(selectItems?.testType) }}</li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
@@ -29,7 +35,7 @@
       </ul>
     </div>
     <div class="databaseWbcRight">
-      <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
 
     <div class="databaseWbcLeft">
@@ -40,73 +46,77 @@
           />
           Cell Marking
         </button>
-        <button @click="imgSetOpen">
-          <font-awesome-icon :icon="['fas', 'gear']" />
-          IMG Setting</button>
         <button @click="excelDownload">
-          <font-awesome-icon :icon="['fas', 'file-csv']" />
+          <font-awesome-icon :icon="['fas', 'file-csv']"/>
           Excel
         </button>
-        <div class="imgSet" v-if="imgSet">
-          <div>
-            <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-            Size {{ imageSize }}
-            <input
-                type="range"
-                min="150"
-                max="600"
-                v-model="imageSize"
-                @input="changeImageSize"
-            />
-            <button class="resetBtn mb2" @click="imgSizeReset">SIZE Reset</button>
-          </div>
-          <div>
-            <font-awesome-icon :icon="['fas', 'sun']"/>
-            Brightness {{ imgBrightness }}
-            <input
-                type="range"
-                min="50"
-                max="600"
-                v-model="imgBrightness"
-                @input="changeImgBrightness"
-            />
-            <button class="resetBtn mb2" @click="brightnessReset">Brightness Reset</button>
-          </div>
-          <div>
-            <font-awesome-icon :icon="['fas', 'palette']"/>
-            RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}`}} ]
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[0]"
-                @input="changeImageRgb"
-            />
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[1]"
-                @input="changeImageRgb"
-            />
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[2]"
-                @input="changeImageRgb"
-            />
-            RGB Select a Class
-            <select v-model="selectSizeTitle" class="selectSizeTitle">
-              <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
-            </select>
-            <button class="resetBtn" @click="rgbReset">RGB Reset</button>
-          </div>
+        <div class="imgSetWrap" ref="imgSetWrap">
+          <button @click="imgSetOpen">
+            <font-awesome-icon :icon="['fas', 'gear']"/>
+            IMG Setting
+          </button>
+          <div class="imgSet" v-if="imgSet">
+            <div>
+              <font-awesome-icon :icon="['fas', 'plus-minus']"/>
+              Size {{ imageSize }}
+              <input
+                  type="range"
+                  min="150"
+                  max="600"
+                  v-model="imageSize"
+                  @input="changeImageSize"
+              />
+              <button class="resetBtn mb2" @click="imgSizeReset">SIZE Reset</button>
+            </div>
+            <div>
+              <font-awesome-icon :icon="['fas', 'sun']"/>
+              Brightness {{ imgBrightness }}
+              <input
+                  type="range"
+                  min="50"
+                  max="600"
+                  v-model="imgBrightness"
+                  @input="changeImgBrightness"
+              />
+              <button class="resetBtn mb2" @click="brightnessReset">Brightness Reset</button>
+            </div>
+            <div>
+              <font-awesome-icon :icon="['fas', 'palette']"/>
+              RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}` }} ]
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[0]"
+                  @input="changeImageRgb"
+              />
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[1]"
+                  @input="changeImageRgb"
+              />
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[2]"
+                  @input="changeImageRgb"
+              />
+              RGB Select a Class
+              <select v-model="selectSizeTitle" class="selectSizeTitle">
+                <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
+              </select>
+              <button class="resetBtn" @click="rgbReset">RGB Reset</button>
+            </div>
 
+          </div>
         </div>
         <button @click="rollbackChanges" class="rollbackButton">
-          <font-awesome-icon :icon="['fas', 'rotate-left']" />
-          Rollback</button>
+          <font-awesome-icon :icon="['fas', 'rotate-left']"/>
+          Rollback
+        </button>
       </div>
 
       <div>
@@ -121,7 +131,9 @@
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div>
-              <p class="mt1"><input type="checkbox" @input="allCheckChange($event,item.title)">{{ item?.title }}
+              <p class="mt1">
+                <!--                <input type="checkbox" @input="allCheckChange($event,item.title)">-->
+                {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
@@ -129,15 +141,18 @@
                   :class="{
                     'border-changed': isBorderChanged(image),
                     'selected-image': isSelected(image),
-                     'wbcImgWrapLi': true
+                    'wbcImgWrapLi': true
                   }"
-                  @click="selectImage(itemIndex, imageIndex)"
+                  @click="selectImage(itemIndex, imageIndex, item)"
                   @dblclick="openModal(image, item)"
               >
                 <div style="position: relative; height: 150px">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
-                    <span>{{ replaceFileNamePrefix(image.fileName) }} <font-awesome-icon
-                        :icon="['fas', 'arrow-right']"/>  {{ image.title }}</span>
+                    <div>{{ replaceFileNamePrefix(image.fileName) }}
+                      <font-awesome-icon
+                          :icon="['fas', 'arrow-right']"/>
+                      {{ image.title }}
+                    </div>
                   </div>
                   <img :src="getImageUrl(image.fileName, item.id, item.title)"
                        :width="image.width ? image.width : '150px'"
@@ -178,7 +193,6 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import WbcClass from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
 import * as XLSX from 'xlsx';
 import router from "@/router";
 import {
@@ -190,11 +204,11 @@ import {
 } from "@/common/defines/constFile/classification";
 import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
-import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
-import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -206,13 +220,14 @@ const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const commonDataGet = computed(() => store.state.commonModule);
+const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
 const isCtrlKeyPressed = ref(false);
 const draggedCircleIndex = ref<number | null>(null);
+const draggedCircleIndexArr = ref<any>([]);
 const draggedCircleImgIndex = ref<number | null>(null);
 const selectedClickImages = ref<any>([]);
 const shiftClickImages = ref<any>([]);
@@ -236,11 +251,12 @@ const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
-// const commnDataGet =
-// commonUpdateCounts
-const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
+const projectType = ref<any>('bm');
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
+const selectItemIamgeArr = ref<any>([]);
 onMounted(async () => {
+  projectType.value = process.env.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
@@ -254,6 +270,8 @@ onMounted(async () => {
   }).catch(error => {
     console.error('Error:', error.response.data);
   });
+  document.addEventListener('click', handleClickOutside);
+
 });
 onUnmounted(async () => {
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
@@ -266,8 +284,16 @@ onUnmounted(async () => {
       }).catch(error => {
         console.error('Error:', error.response.data);
       });
+  document.addEventListener('click', handleClickOutside);
+
 })
 
+const handleClickOutside = (event: any) => {
+  // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
+  if (!event.target.closest('.imgSetWrap')) {
+    imgSet.value = false; // imgSet.value를 false로 설정
+  }
+};
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
@@ -305,7 +331,7 @@ const getWbcCustomClasses = async () => {
           if (item?.abbreviation === '') {
             return;
           }
-          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${item?.abbreviation}`;
+          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
           deleteRunningApi({path: filePath})
         }
       });
@@ -314,7 +340,7 @@ const getWbcCustomClasses = async () => {
     wbcCustomItems.value = data;
     for (const item of newData) { // 커스텀클래스 폴더 생성
       const {className, abbreviation, customNum} = item;
-      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${customNum}_${abbreviation}`;
+      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
       await fileSysPost({path: filePath});
 
       const wbcPush = {
@@ -431,6 +457,10 @@ const zoomOut = () => {
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
+});
+
+watch(wbcInfo.value, (newVal) => {
+  console.log(newVal)
 });
 
 const pageGo = (path: string) => {
@@ -608,15 +638,20 @@ const moveWbc = async (direction: any) => {
   // });
 }
 
+
 const drawCellMarker = async () => {
   cellMarkerIcon.value = !cellMarkerIcon.value
 
   if (cellMarkerIcon.value) {
     let url = '';
-    if (selectItems.value.testType === '01' || selectItems.value.testType === '04') {
-      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${selectItems.value.slotId}.json`
-    } else {
-      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/05_BF_Classification/${selectItems.value.slotId}.json`
+    if (projectType.value === 'pb') {
+      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/${
+          selectItems.value.testType === '01' || selectItems.value.testType === '04'
+              ? '01_WBC_Classification'
+              : '05_BF_Classification'
+      }/${selectItems.value.slotId}.json`;
+    } else if (projectType.value === 'bm') {
+      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${selectItems.value.slotId}.json`
     }
     const response = await readJsonFile({fullPath: url});
 
@@ -668,8 +703,10 @@ const allCheckChange = (event: any, title: string) => {
 const allCheckInsert = () => {
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
+  selectItemIamgeArr.value = [];
   for (const idx in wbcInfo.value) {
     if (allCheck.value === wbcInfo.value[idx].title) {
+      selectItemIamgeArr.value.push(wbcInfo.value[idx])
       for (const idxKey in wbcInfo.value[idx].images) {
         selectedClickImages.value.push({
           id: wbcInfo.value[idx].id,
@@ -698,6 +735,7 @@ function rgbReset() {
   imageRgb.value = [0, 0, 0];
   changeImageRgb();
 }
+
 function imgSizeReset() {
   imageSize.value = 150;
   wbcInfo.value.forEach((item: any) => {
@@ -753,7 +791,6 @@ function changeImgBrightness(event: any) {
 function changeImageSize(event: any) {
   wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      console.log(event?.target)
       // 현재 이미지의 width와 height
       let currentWidth = event?.target?.value;
       let currentHeight = event?.target?.value;
@@ -780,6 +817,7 @@ function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
+  console.log(draggedCircleIndexArr.value)
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     // 이미지를 한 개만 드래그한 경우
@@ -795,19 +833,10 @@ async function onDropCircle(item: any) {
     // 이미지를 한 개만 드래그한 경우에만 이동 API 호출
     await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
   } else {
-    // 여러 이미지를 드래그한 경우
-    for (const selectedImage of selectedClickImages.value) {
-      item.images.push(selectedImage);
-      // 드롭된 위치에 이미지 추가
-      const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
-      if (matchingItemIndex !== -1) {
-        wbcInfo.value[matchingItemIndex].images.push(selectedImage);
-      } else {
-        console.error('일치하는 id를 가진 요소 없음');
-      }
-      // 여러 이미지를 드래그한 경우에도 이동 API 호출
-      await moveImage(matchingItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
-    }
+    const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
+    // 여러 이미지를 드래그한 경우에도 이동 API 호출
+    await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false, '', wbcInfo.value);
+
   }
 }
 
@@ -818,6 +847,7 @@ function handleBodyClick(event: Event) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
+    selectItemIamgeArr.value = [];
   }
 }
 
@@ -833,8 +863,14 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 
   // 이미지 이동 단축키 확인
-  if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-    moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+  if(projectType.value === 'pb'){
+    if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+      moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+    }
+  }else if (projectType.value === 'bm'){
+    if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+      moveSelectedImagesToTargetItem(wbcHotKeysItems.value.find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+    }
   }
 }
 
@@ -925,9 +961,11 @@ function onDragStart(itemIndex: any, imageIndex: any) {
   draggedImageIndex.value = imageIndex;
   draggedCircleImgIndex.value = imageIndex;
   draggedCircleIndex.value = itemIndex;
+  draggedCircleIndexArr.value.push(itemIndex);
 }
 
-function selectImage(itemIndex: any, imageIndex: any) {
+function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
+
   // 쉬프트 키를 누른 경우
   if (isShiftKeyPressed.value) {
     // 현재 선택한 이미지
@@ -940,28 +978,46 @@ function selectImage(itemIndex: any, imageIndex: any) {
 
     // 선택된 이미지 초기화
     selectedClickImages.value = [];
+    selectItemIamgeArr.value = [];
     // 범위 내의 이미지 선택
     for (let i = startIndex; i <= endIndex; i++) {
-      selectedClickImages.value.push({
-        id: wbcInfo.value[itemIndex].id,
-        title: wbcInfo.value[itemIndex].title,
-        ...wbcInfo.value[itemIndex].images[i],
-      });
+      // 최대 10개까지만 선택 가능
+      if (selectedClickImages.value.length < 10) {
+        selectedClickImages.value.push({
+          id: wbcInfo.value[itemIndex].id,
+          title: wbcInfo.value[itemIndex].title,
+          ...wbcInfo.value[itemIndex].images[i],
+        });
+        selectItemIamgeArr.value.push(classInfoitem);
+      }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
+      selectItemIamgeArr.value = [];
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
-      return
+      selectItemIamgeArr.value.push(classInfoitem);
+      return;
     }
-    if (!isSelected(selectedImage)) {
-      selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+
+    // 선택된 이미지가 배열에 있는지 확인
+    const imageIndexInSelected = selectedClickImages.value.findIndex((img: any) => img === selectedImage);
+
+    if (imageIndexInSelected === -1) {
+      // 이미지를 선택하고 10개 미만일 때만 추가
+      if (selectedClickImages.value.length < 10) {
+        selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+        selectItemIamgeArr.value.push(classInfoitem);
+      }
     } else {
-      selectedClickImages.value = selectedClickImages.value.filter((img: any) => img !== selectedImage);
+      // 이미 선택된 이미지를 다시 클릭하면 선택 해제
+      selectedClickImages.value.splice(imageIndexInSelected, 1);
+      selectItemIamgeArr.value.splice(imageIndexInSelected, 1);
     }
   }
 }
+
 
 function isSelected(image: any) {
   const imageFileName = image.fileName;
@@ -981,6 +1037,7 @@ async function onDrop(targetItemIndex: any) {
   }
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
+  selectItemIamgeArr.value = [];
   shiftClickImages.value = [];
 }
 
@@ -994,59 +1051,109 @@ async function originalOnDrop(targetItemIndex: number) {
   }
 }
 
-async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string) {
+async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string, wbcInfosArr?: any) {
   const {slotId} = selectItems.value;
   const arrType = selectedImagesToMove;
-  try {
-    // 선택된 이미지 배열에 대해 반복
-    for (const selectedImage of arrType) {
-      const fileName = selectedImage.fileName;
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${selectedImage.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${draggedItem.id}_${draggedItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${targetItem.id}_${targetItem.title}`;
-      // 이미지 이동 API 호출
-      const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${fileName}`);
-      if (keyMove === 'keyMove') {
-        if (response) {
-          // 선택된 이미지 초기화
-          selectedClickImages.value = [];
-          shiftClickImages.value = [];
-          await updateOriginalDb();
-        }
-        return;
+  let sourceFolders = [];
+  let destinationFolders = [];
+  let fileNames = [];
+
+
+  // 선택된 이미지 배열에 대해 반복
+  for (const selectedImage of arrType) {
+    const fileName = selectedImage.fileName;
+    fileNames.push(fileName)
+    if (!wbcInfosArr) {
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      destinationFolders.push(destinationFolder);
+      sourceFolders.push(sourceFolder);
+    }
+    if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
+      let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+      if (res) {
+        // 선택된 이미지 초기화
+        selectedClickImages.value = [];
+        selectItemIamgeArr.value = [];
+        shiftClickImages.value = [];
+        await updateOriginalDb();
       }
-      if (response) {
-        // 드래그된 이미지를 원래 위치에서 제거
+      return;
+    }
+    if (!wbcInfosArr) {
+      let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+      // 드래그된 이미지를 원래 위치에서 제거
+      if (res) {
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
         draggedItem.images.splice(draggedImageIndex, 1);
         // 드롭된 위치에 이미지를 삽입
         wbcInfo.value[targetItemIndex].images.push(selectedImage);
-        // Count 업데이트 옮겨진 곳
-        const newCountPlus = parseInt(wbcInfo.value[targetItemIndex].count) + 1;
-        wbcInfo.value[targetItemIndex].count = newCountPlus.toString();
-        // 옮기는 곳
-        const newCountMinus = parseInt(wbcInfo.value[draggedItemIndex.value].count) - 1;
-        wbcInfo.value[draggedItemIndex.value].count = newCountMinus.toString();
+
         wbcInfo.value = removeDuplicateImages(wbcInfo.value);
         wbcInfo.value.forEach((item: any) => {
+          item.count = item.images.length;
           if (item.images.length > 0) {
             item.images.forEach((itemImg: any) => {
               itemImg.title = item.title;
             })
           }
         });
-      } else {
-        console.error('이미지 이동 실패:', fileName);
       }
     }
-    // 선택된 이미지 초기화
-    selectedClickImages.value = [];
-    shiftClickImages.value = [];
-    // 원본 데이터베이스 업데이트
-    await updateOriginalDb();
-  } catch (error) {
-    console.error('에러:', error);
+
   }
+  if (wbcInfosArr) {
+    for (const seItem of selectItemIamgeArr.value) {
+      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${seItem.id}_${seItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      destinationFolders.push(destinationFolder);
+      sourceFolders.push(sourceFolder);
+    }
+    // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
+    let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+    if (res) {
+      // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
+      const targetItem = wbcInfo.value[targetItemIndex];
+      for (const seItem of removeDuplicatesByProperty(selectItemIamgeArr.value, 'title')) {
+        const findImage = selectedImagesToMove.filter(item => item.title === seItem.title);
+        targetItem.images.push(...findImage);
+        targetItem.count = targetItem.images.length;
+        // draggedItem.title을 가진 객체의 images 배열에서 draggedItem.images의 fileName과 일치하는 이미지 제거
+        const draggedItemIdx = wbcInfo.value.findIndex(item => item.title === seItem.title);
+        if (draggedItemIdx !== -1) {
+          const draggedItemObj = wbcInfo.value[draggedItemIdx];
+          const selectedImagesFileNames = selectedImagesToMove.map(image => image.fileName);
+          const filteredImages = draggedItemObj.images.filter(image => !selectedImagesFileNames.includes(image.fileName));
+          // 새로 생성한 배열을 draggedItemObj의 images 배열에 할당
+          draggedItemObj.images = filteredImages;
+          draggedItemObj.count = draggedItemObj.images.length;
+        }
+      }
+      for (const images of selectedImagesToMove) {
+        images.title = wbcInfo.value[targetItemIndex].title;
+      }
+    }
+  }
+  // 선택된 이미지 초기화
+  selectedClickImages.value = [];
+  selectItemIamgeArr.value = [];
+  shiftClickImages.value = [];
+  // 원본 데이터베이스 업데이트
+  await updateOriginalDb();
+}
+
+function removeDuplicatesByProperty(array: any, property: any) {
+  const seen = new Set();
+  return array.filter((item: any) => {
+    const key = item[property];
+    if (seen.has(key)) {
+      return false; // 중복된 객체는 제거
+    } else {
+      seen.add(key);
+      return true; // 처음 등장한 객체는 유지
+    }
+  });
 }
 
 function removeDuplicateImages(data: any[]): any[] {
@@ -1067,6 +1174,7 @@ function removeDuplicateImages(data: any[]): any[] {
 
 async function updateOriginalDb(notWbcAfterSave?: string) {
   console.log('updateOriginalDb')
+  let originalDbVal: any = [];
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
@@ -1105,12 +1213,13 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
         filteredItem.wbcInfoAfter = clonedWbcInfo;
       });
     }
-    originalDb.value = filteredItems;
+    originalDbVal = filteredItems;
+    // console.log('???')
   }
 
 
   //updateRunningApi 호출
-  await updateRunningApiPost(clonedWbcInfo, originalDb.value);
+  await updateRunningApiPost(clonedWbcInfo, originalDbVal);
 }
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
@@ -1126,13 +1235,12 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
 }
 
 function getImageUrl(imageName: any, id: string, title: string): string {
-  console.log(pbiaRootPath.value)
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
   const slotId = selectItems.value.slotId || "";
-  const folderPath = `${pbiaRootPath.value}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
@@ -1147,8 +1255,10 @@ async function rollbackChanges() {
     draggedItemIndex.value = null;
     draggedImageIndex.value = null;
     draggedCircleIndex.value = null;
+    draggedCircleIndexArr.value = [];
     draggedCircleImgIndex.value = null;
     selectedClickImages.value = [];
+    selectItemIamgeArr.value = [];
     shiftClickImages.value = [];
 
     // 현재 상태에서 이전 상태로 이미지 롤백
@@ -1187,8 +1297,8 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   findUndefinedImages(prevWbcInfo, currentWbcInfo, destinationFolderInfo);
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
-    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
-    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/01_WBC_Classification/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
+    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
+    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
 
     if (response) {
@@ -1199,5 +1309,12 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   await updateOriginalDb();
 }
 
+const projectTypeReturn = (type: string): any => {
+  if (type === 'bm') {
+    return '04_BM_Classification';
+  } else if (type === 'pb') {
+    return '01_WBC_Classification';
+  }
+}
 
 </script>
