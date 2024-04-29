@@ -1,4 +1,5 @@
 <template>
+  <div v-if="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
   <ClassInfoMenu @refreshClass="refreshClass"/>
   <div class="wbcContent">
     <div class="topClintInfo">
@@ -110,7 +111,7 @@
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div>
               <p class="mt1">
-                <!--                <input type="checkbox" @input="allCheckChange($event,item.title)">-->
+                <input type="checkbox" @input="allCheckChange($event,item.title)" :checked="selectedTitle === item.title">
                 {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
@@ -167,7 +168,7 @@
 
 <script setup lang="ts">
 import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
-import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
+import {moveClassImagePost, moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
@@ -183,11 +184,12 @@ import {
 import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import process from "process";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 
+const selectedTitle = ref('');
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
 const originalDbData = sessionStorage.getItem("originalDbData");
@@ -199,6 +201,7 @@ const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
+const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
@@ -230,8 +233,7 @@ const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
+const allcheckBtn = ref(false);
 
 const selectItemIamgeArr = ref<any>([]);
 
@@ -251,6 +253,7 @@ const handleClickOutside = (event: any) => {
   // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
   if (!event.target.closest('.imgSetWrap')) {
     imgSet.value = false; // imgSet.value를 false로 설정
+    selectedTitle.value ='';
   }
 };
 
@@ -630,7 +633,14 @@ const drawCellMarker = async () => {
 
 const allCheckChange = (event: any, title: string) => {
   allCheck.value = event.target.checked ? title : '';
-  console.log(allCheck.value)
+  if (event.target.checked) {
+    // 선택된 항목을 저장
+    selectedTitle.value = title;
+  } else {
+    // 선택된 항목을 해제
+    selectedTitle.value = '';
+  }
+
   allCheckInsert();
 }
 
@@ -640,9 +650,13 @@ const allCheckInsert = () => {
   selectItemIamgeArr.value = [];
   for (const idx in wbcInfo.value) {
     if (allCheck.value === wbcInfo.value[idx].title) {
-      selectItemIamgeArr.value.push(wbcInfo.value[idx])
       for (const idxKey in wbcInfo.value[idx].images) {
         selectedClickImages.value.push({
+          id: wbcInfo.value[idx].id,
+          title: wbcInfo.value[idx].title,
+          ...wbcInfo.value[idx].images[idxKey],
+        });
+        selectItemIamgeArr.value.push({
           id: wbcInfo.value[idx].id,
           title: wbcInfo.value[idx].title,
           ...wbcInfo.value[idx].images[idxKey],
@@ -751,7 +765,6 @@ function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
-  console.log(draggedCircleIndexArr.value)
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     // 이미지를 한 개만 드래그한 경우
@@ -921,15 +934,12 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     selectItemIamgeArr.value = [];
     // 범위 내의 이미지 선택
     for (let i = startIndex; i <= endIndex; i++) {
-      // 최대 10개까지만 선택 가능
-      if (selectedClickImages.value.length < 10) {
         selectedClickImages.value.push({
           id: wbcInfo.value[itemIndex].id,
           title: wbcInfo.value[itemIndex].title,
           ...wbcInfo.value[itemIndex].images[i],
         });
         selectItemIamgeArr.value.push(classInfoitem);
-      }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
@@ -945,11 +955,8 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     const imageIndexInSelected = selectedClickImages.value.findIndex((img: any) => img === selectedImage);
 
     if (imageIndexInSelected === -1) {
-      // 이미지를 선택하고 10개 미만일 때만 추가
-      if (selectedClickImages.value.length < 10) {
         selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
         selectItemIamgeArr.value.push(classInfoitem);
-      }
     } else {
       // 이미 선택된 이미지를 다시 클릭하면 선택 해제
       selectedClickImages.value.splice(imageIndexInSelected, 1);
@@ -1011,7 +1018,12 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       sourceFolders.push(sourceFolder);
     }
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-      let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+      const data = {
+        sourceFolders,
+        destinationFolders,
+        fileNames
+      }
+      let res = await moveClassImagePost(data);
       if (res) {
         // 선택된 이미지 초기화
         selectedClickImages.value = [];
@@ -1022,7 +1034,13 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       return;
     }
     if (!wbcInfosArr) {
-      let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+      const data = {
+        sourceFolders,
+        destinationFolders,
+        fileNames
+      }
+      let res = await moveClassImagePost(data);
+      // let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
       // 드래그된 이미지를 원래 위치에서 제거
       if (res) {
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
@@ -1044,6 +1062,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
 
   }
   if (wbcInfosArr) {
+    await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
       const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${seItem.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1051,7 +1070,13 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       sourceFolders.push(sourceFolder);
     }
     // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
-    let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
+    const data = {
+      sourceFolders,
+      destinationFolders,
+      fileNames
+    }
+    let res = await moveClassImagePost(data);
+    // let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
     if (res) {
       // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
       const targetItem = wbcInfo.value[targetItemIndex];
@@ -1073,12 +1098,17 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       for (const images of selectedImagesToMove) {
         images.title = wbcInfo.value[targetItemIndex].title;
       }
+      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
+    }else{
+      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
     }
   }
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
   selectItemIamgeArr.value = [];
   shiftClickImages.value = [];
+  allCheck.value = '';
+  selectedTitle.value = '';
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
 }
@@ -1239,7 +1269,13 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   for (const index in sourceFolderInfo) {
     const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
     const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
-    const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
+    const data = {
+      sourceFolders : sourceFolder,
+      destinationFolders : destinationFolder,
+      fileNames: sourceFolderInfo[index].fileName,
+    }
+    let response = await moveClassImagePost(data);
+    // const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
 
     if (response) {
       wbcInfo.value = prevWbcInfo;

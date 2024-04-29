@@ -5,3 +5,7 @@ const httpClient = useHttpClient();
 export const moveImgPost = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.images.move, request , true);
 };
+
+export const moveClassImagePost = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.images.move, request);
+};

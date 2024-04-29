@@ -1,3 +1,4 @@
+
 export const apiConstants = {
     auth: {
         refresh: {
@@ -280,6 +281,10 @@ export const apiConstants = {
     images:{
         move: {
             endpoint: 'images/move',
+            requiresToken: false,
+        },
+        moveClassImage: {
+            endpoint: 'images/moveClassImage',
             requiresToken: false,
         }
     },
