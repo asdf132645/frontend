@@ -41,7 +41,7 @@
         <li>Count</li>
         <li>%</li>
       </ul>
-      <ul class="nth1Child">
+      <ul class="nth1Child" v-if="item?.title !== 'OT'">
         <li>{{ item?.name }}</li>
         <li>{{ item?.count }}</li>
         <li> {{ item?.percent || '-' }}</li>
@@ -65,25 +65,45 @@
       </ul>
     </div>
 
-    <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-      <div class="categories">
-        <ul class="categoryNm">
-          <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-          <li>{{ getCategoryName(nWbcItem) }}</li>
-        </ul>
-        <ul class="classNm">
-          <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
-          <li>
-            {{ nWbcItem?.count }}
-            <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItemsS?.wbcInfo?.maxWbcCount }} WBC</span>
-          </li>
-        </ul>
-        <ul class="degree">
-          <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-          <li>-</li>
+    <div v-if="projectBm">
+      <div
+          v-for="(item, idx) in wbcInfoChangeVal"
+          :key="item.id"
+          class="wbcClassDbDiv mb2"
+          draggable="true"
+          @dragstart="startDrag(idx, $event)"
+          @dragover.prevent
+          @drop="drop(idx, $event)"
+      >
+        <ul class="nth1Child" v-if="item?.title === 'OT'">
+          <li>{{ item?.name }}</li>
+          <li>{{ item?.count }}</li>
+          <li> {{ item?.percent || '-' }}</li>
         </ul>
       </div>
-    </template>
+    </div>
+
+    <div v-if="!projectBm">
+      <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
+        <div class="categories">
+          <ul class="categoryNm">
+            <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
+            <li>{{ getCategoryName(nWbcItem) }}</li>
+          </ul>
+          <ul class="classNm">
+            <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
+            <li>
+              {{ nWbcItem?.count }}
+              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItemsS?.wbcInfo?.maxWbcCount }} WBC</span>
+            </li>
+          </ul>
+          <ul class="degree">
+            <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+            <li>-</li>
+          </ul>
+        </div>
+      </template>
+    </div>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChang" :class={isBeforeClicked:isBefore}>Before</button>
       <button @click="afterChang(clonedWbcInfoStore)" :class={isBeforeClicked:!isBefore}>After</button>

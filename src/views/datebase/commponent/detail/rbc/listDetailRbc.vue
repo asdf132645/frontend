@@ -2,7 +2,7 @@
   <div class="wbcMenu">
     <ul>
       <li class="onRight" @click="pageGo('/databaseRbc')">RBC</li>
-      <li @click="pageGo('/databaseWbc')">WBC</li>
+      <li @click="pageGo('/databaseBm')">WBC</li>
       <li @click="pageGo('/report')">REPORT</li>
 <!--      <li>LIS-CBC</li>-->
     </ul>
@@ -114,7 +114,7 @@ const moveRbc = async (direction: any) => {
 const updateUpDown = (selectRbc: any, selectItemsNewVal: any) => {
   const keepPage = sessionStorage.getItem('keepPage');
   if(keepPage === 'true' && process.env.PROJECT_TYPE === 'pb'){
-    router.push('/databaseWbc')
+    router.push('/databaseBm')
   }
   // console.log(keepPage);
   rbcInfo.value = selectItemsNewVal.rbcInfoAfter && selectItemsNewVal.rbcInfoAfter.length !== 0

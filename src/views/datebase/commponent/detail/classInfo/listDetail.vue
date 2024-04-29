@@ -1,9 +1,15 @@
 <template>
   <div class="wbcMenu">
     <ul>
-      <li @click="pageGo('/databaseWhole')">WHOLE</li>
-      <li class="onRight" @click="pageGo('/databaseBm')">BM CELL</li>
-      <li @click="pageGo('/report')">REPORT</li>
+      <template v-if="['bm', 'pb'].includes(projectType)">
+        <li @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')">
+          {{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}
+        </li>
+        <li class="onRight" @click="pageGo(projectType === 'bm' ? '/databaseBm' : '/databaseWbc')">
+          {{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}
+        </li>
+        <li @click="pageGo('/report')">REPORT</li>
+      </template>
       <!--      <li>LIS-CBC</li>-->
     </ul>
     <!--    <div class="wbcMenuBottom">-->
@@ -126,7 +132,7 @@
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div>
               <p class="mt1">
-<!--                <input type="checkbox" @input="allCheckChange($event,item.title)">-->
+                <!--                <input type="checkbox" @input="allCheckChange($event,item.title)">-->
                 {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
@@ -202,7 +208,7 @@ import {getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import process from "process";
-import ClassInfo from "@/views/datebase/commponent/detail/wbc/commonRightInfo/classInfo.vue";
+import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
@@ -245,10 +251,12 @@ const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
+const projectType = ref<any>('bm');
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const selectItemIamgeArr = ref<any>([]);
 onMounted(async () => {
+  projectType.value = process.env.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
@@ -323,7 +331,7 @@ const getWbcCustomClasses = async () => {
           if (item?.abbreviation === '') {
             return;
           }
-          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${item?.abbreviation}`;
+          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
           deleteRunningApi({path: filePath})
         }
       });
@@ -332,7 +340,7 @@ const getWbcCustomClasses = async () => {
     wbcCustomItems.value = data;
     for (const item of newData) { // 커스텀클래스 폴더 생성
       const {className, abbreviation, customNum} = item;
-      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${customNum}_${abbreviation}`;
+      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
       await fileSysPost({path: filePath});
 
       const wbcPush = {
@@ -635,7 +643,16 @@ const drawCellMarker = async () => {
   cellMarkerIcon.value = !cellMarkerIcon.value
 
   if (cellMarkerIcon.value) {
-    const url = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${selectItems.value.slotId}.json`
+    let url = '';
+    if (projectType.value === 'pb') {
+      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/${
+          selectItems.value.testType === '01' || selectItems.value.testType === '04'
+              ? '01_WBC_Classification'
+              : '05_BF_Classification'
+      }/${selectItems.value.slotId}.json`;
+    } else if (projectType.value === 'bm') {
+      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${selectItems.value.slotId}.json`
+    }
     const response = await readJsonFile({fullPath: url});
 
     if (response && response.success) {
@@ -846,8 +863,14 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 
   // 이미지 이동 단축키 확인
-  if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-    moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+  if(projectType.value === 'pb'){
+    if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+      moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+    }
+  }else if (projectType.value === 'bm'){
+    if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+      moveSelectedImagesToTargetItem(wbcHotKeysItems.value.find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+    }
   }
 }
 
@@ -1040,10 +1063,10 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   for (const selectedImage of arrType) {
     const fileName = selectedImage.fileName;
     fileNames.push(fileName)
-    if(!wbcInfosArr){
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${selectedImage.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${draggedItem.id}_${draggedItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
+    if (!wbcInfosArr) {
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
@@ -1066,12 +1089,10 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         draggedItem.images.splice(draggedImageIndex, 1);
         // 드롭된 위치에 이미지를 삽입
         wbcInfo.value[targetItemIndex].images.push(selectedImage);
-        // Count 업데이트 옮겨진 곳
-        wbcInfo.value[targetItemIndex].count = wbcInfo.value[targetItemIndex].images.length;
-        // 옮기는 곳
-        wbcInfo.value[draggedItemIndex.value].count = wbcInfo.value[draggedItemIndex.value].images.length;
+
         wbcInfo.value = removeDuplicateImages(wbcInfo.value);
         wbcInfo.value.forEach((item: any) => {
+          item.count = item.images.length;
           if (item.images.length > 0) {
             item.images.forEach((itemImg: any) => {
               itemImg.title = item.title;
@@ -1083,19 +1104,12 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
 
   }
   if (wbcInfosArr) {
-    console.log(selectItemIamgeArr.value)
     for (const seItem of selectItemIamgeArr.value) {
-      const sourceFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${seItem.id}_${seItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${targetItem.id}_${targetItem.title}`;
+      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${seItem.id}_${seItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
-    // console.log('selectItemIamgeArr.value', JSON.stringify(selectItemIamgeArr.value))
-    // console.log('selectedImagesToMove', JSON.stringify(selectedImagesToMove));
-    // console.log('draggedItem', draggedItem); // 내가 클릭해서 잡은 영역
-    // console.log('targetItemIndex', targetItemIndex); // 옮겨져야하는 인덱스
-    // console.log('wbcInfo.value', wbcInfo.value);
-    // return;
     // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
     let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
     if (res) {
@@ -1128,6 +1142,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
 }
+
 function removeDuplicatesByProperty(array: any, property: any) {
   const seen = new Set();
   return array.filter((item: any) => {
@@ -1225,7 +1240,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
   const slotId = selectItems.value.slotId || "";
-  const folderPath = `${pbiaRootPath.value}/${slotId}/04_BM_Classification/${id}_${title}`;
+  const folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }
@@ -1282,8 +1297,8 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   findUndefinedImages(prevWbcInfo, currentWbcInfo, destinationFolderInfo);
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
-    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
-    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/04_BM_Classification/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
+    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
+    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
 
     if (response) {
@@ -1294,5 +1309,12 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   await updateOriginalDb();
 }
 
+const projectTypeReturn = (type: string): any => {
+  if (type === 'bm') {
+    return '04_BM_Classification';
+  } else if (type === 'pb') {
+    return '01_WBC_Classification';
+  }
+}
 
 </script>

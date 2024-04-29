@@ -21,9 +21,9 @@
               <li>
                 {{totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0' }}
               </li>
-              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">
-                100.00
-              </li>
+<!--              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">-->
+<!--                100.00-->
+<!--              </li>-->
             </ul>
           </div>
         </template>
@@ -45,6 +45,26 @@
           </li>
         </ul>
       </div>
+      <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
+        <template v-for="(category, innerIndex) in classList" :key="innerIndex">
+          <div class="categories mt1" v-if="category.title === 'OT'">
+            <ul class="categoryNm">
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
+              <li>{{ getCategoryName(category) }}</li>
+            </ul>
+            <ul class="classNm">
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
+              <li style="text-align: center">{{ category?.count }}</li>
+            </ul>
+            <ul class="degree">
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
+              <li>
+                {{totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0' }}
+              </li>
+            </ul>
+          </div>
+        </template>
+      </template>
       <!--      nonrbc-->
       <div class='mt1'>
         <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
@@ -119,7 +139,7 @@ watch([commonDataGet.value], async (newVals: any) => {
 })
 onMounted(() => {
   // const initialWbcClassList = store.state.wbcClassificationModule;
-  updateDataArray(basicBmClassList);
+  updateDataArray(basicBmClassList, null, true);
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
@@ -136,7 +156,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   }
 })
 
-const updateDataArray = async (newSlotInfo: any,parsedData?: any) => {
+const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean) => {
+
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (slotArray.wbcInfo) {
     testType.value = slotArray?.wbcInfo?.testType;
@@ -261,8 +282,8 @@ const updateCounts = async (currentSlot: any) => {
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", 'NE','GP','PA'] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE','GP','PA'];
-  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA", 'NE','GP','PA'] : ["NR", "AR", "MC", "MA", "SM", 'NE','GP','PA'];
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", 'NE','GP','PA','OT'] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE','GP','PA','OT'];
+  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA", 'NE','GP','PA','OT'] : ["NR", "AR", "MC", "MA", "SM", 'NE','GP','PA','OT'];
 
   const targetArray = testType.value === '01' || testType.value === '04' ? includesStr : includesStr2;
 
