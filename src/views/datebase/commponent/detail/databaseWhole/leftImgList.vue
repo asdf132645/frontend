@@ -33,13 +33,13 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {defineProps, nextTick, onMounted, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import axios from "axios";
 import {useStore} from "vuex";
 
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const props = defineProps(['selectItems']);
+
 const store = useStore();
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
@@ -54,7 +54,10 @@ let viewerSmall: any = null;
 onMounted(() => {
   getImgUrl();
 });
-
+watch( () => props.selectItems, async(newItem) => {
+  await nextTick()
+  getImgUrl();
+});
 const getImageUrls = (imageName: string, type: string) => {
   let folderName;
   switch (type) {
@@ -73,14 +76,14 @@ const getImageUrls = (imageName: string, type: string) => {
     default:
       break;
   }
-  const slotId = selectItems.value?.slotId || "";
+  const slotId = props.selectItems?.slotId || "";
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${folderName}`;
 
   return `${apiBaseUrl}/folders?folderPath=${folderPath}/${imageName}`;
 };
 
 const getImgUrl = () => {
-  const slotId = selectItems.value?.slotId || "";
+  const slotId = props.selectItems?.slotId || "";
 
   for (const item of strArray) {
     axios.get(`${apiBaseUrl}/folders?folderPath=${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${item}`)
