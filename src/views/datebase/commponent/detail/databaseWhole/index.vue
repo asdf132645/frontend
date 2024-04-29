@@ -6,7 +6,7 @@
       <TilingViewer :selectItems="selectItems"/>
     </div>
     <div class="leftWhole">
-      <LeftImgList/>
+      <LeftImgList :selectItems="selectItems"/>
     </div>
   </div>
   </div>
