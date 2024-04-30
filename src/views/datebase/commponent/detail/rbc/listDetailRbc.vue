@@ -52,19 +52,6 @@ onMounted(() => {
   initData();
 });
 
-onUnmounted(async () => {
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
-      .then(response => {
-        instance?.appContext.config.globalProperties.$socket.emit('state', {
-          type: 'SEND_DATA',
-          payload: 'refreshDb'
-        });
-      }).catch(error => {
-        console.error('Error:', error.response.data);
-      });
-})
-
-
 const initData =  async () => {
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
 }

@@ -41,7 +41,7 @@
         <li>Count</li>
         <li>%</li>
       </ul>
-      <ul class="nth1Child" v-if="item?.title !== 'OT'">
+      <ul class="nth1Child" v-if="item?.title !== 'OT'" @click="goClass(item.id)">
         <li>{{ item?.name }}</li>
         <li>{{ item?.count }}</li>
         <li> {{ item?.percent || '-' }}</li>
@@ -55,7 +55,7 @@
       </ul>
       <ul class="classNm">
         <li>
-          {{ selectItemsS?.wbcInfo?.totalCount || 0 }}
+          {{ totalCount || 0 }}
         </li>
       </ul>
       <ul class="degree">
@@ -75,10 +75,10 @@
           @dragover.prevent
           @drop="drop(idx, $event)"
       >
-        <ul class="nth1Child" v-if="item?.title === 'OT'">
+        <ul class="nth1Child" v-if="item?.title === 'OT'" @click="goClass(item.id)">
           <li>{{ item?.name }}</li>
           <li>{{ item?.count }}</li>
-          <li> {{ item?.percent || '-' }}</li>
+          <li> - </li>
         </ul>
       </div>
     </div>
@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
@@ -138,18 +138,21 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
+import {getOrderClassApi, putOrderClassApi} from "@/common/api/service/setting/settingApi";
 import process from "process";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
+const emits = defineEmits();
+
 const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItemsS = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
+const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
@@ -172,7 +175,7 @@ const confirmMessage = ref('');
 const orderClass = ref<any>([]);
 const projectBm = ref(false);
 const isBefore = ref(false);
-const totalCount = ref('');
+const totalCount = ref(0);
 
 onMounted(async () => {
   await getOrderClass();
@@ -181,7 +184,6 @@ onMounted(async () => {
   await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
-
 })
 // basicWbcArr
 
@@ -202,6 +204,10 @@ watch(() => clonedWbcInfoStore.value, (newItem) => {
   afterChang(newItem);
 });
 
+const goClass = (id: any) => {
+  emits('scrollEvent',id)
+}
+
 const wbcClassTileChange = (): string => {
   if (!projectBm.value){
     return 'WBC Classification';
@@ -219,6 +225,7 @@ const drop = (index: any, event: any) => {
   if (!toggleLock.value) {
     return;
   }
+  store.dispatch('commonModule/setCommonInfo', {classInfoSort: wbcInfoChangeVal.value});
   event.preventDefault();
   if (dragIndex.value !== -1) {
     const movedItem = wbcInfoChangeVal.value.splice(dragIndex.value, 1)[0];
@@ -226,6 +233,9 @@ const drop = (index: any, event: any) => {
     dragIndex.value = -1;
     updateOriginalDb();
   }
+  console.log('sdsadasd')
+
+
 };
 
 
@@ -341,10 +351,12 @@ const beforeChang = async () => {
   await getOrderClass();
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
+  console.log(wbcInfoChangeVal.value);
+  totalCountSet(wbcInfoChangeVal.value);
 
 }
 
@@ -353,11 +365,22 @@ const afterChang = (newItem: any) => {
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = selectItemsS.value.wbcInfoAfter.length !== 0 ? selectItemsS.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
+  totalCountSet(wbcInfoChangeVal.value);
+}
 
+const totalCountSet = (wbcInfoChangeVal: any) => {
+  totalCount.value = 0;
+  wbcInfoChangeVal.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      if (image.title !== 'OT' && !image.fileName.includes('OT')) {
+        totalCount.value += 1
+      }
+    });
+  });
 }
 
 async function updateOriginalDb() {
@@ -388,6 +411,11 @@ async function updateOriginalDb() {
   sessionStorage.setItem("selectItems", JSON.stringify(selectItemsS.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
+  const sortArr = sortWbcInfo(orderClass.value,wbcInfoChangeVal.value);
+  sortArr.forEach((item: any, index: any) => {
+    item.orderText = index;
+  });
+
   // originalDb 업데이트
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   if (filteredItems.length > 0) {
@@ -396,9 +424,11 @@ async function updateOriginalDb() {
     });
   }
   originalDb.value = filteredItems;
-
+  await putOrderClassApi(sortArr, userModuleDataGet.value.id);
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDb.value);
+
+  store.dispatch('commonModule/setCommonInfo', {classInfoSort: []});
 }
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
