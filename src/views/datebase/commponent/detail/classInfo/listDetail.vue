@@ -67,21 +67,21 @@
                   min="0"
                   max="255"
                   v-model="imageRgb[0]"
-                  @input="changeImageRgb"
+                  @input="changeImageRgb('')"
               />
               <input
                   type="range"
                   min="0"
                   max="255"
                   v-model="imageRgb[1]"
-                  @input="changeImageRgb"
+                  @input="changeImageRgb('')"
               />
               <input
                   type="range"
                   min="0"
                   max="255"
                   v-model="imageRgb[2]"
-                  @input="changeImageRgb"
+                  @input="changeImageRgb('')"
               />
               RGB Select a Class
               <select v-model="selectSizeTitle" class="selectSizeTitle">
@@ -111,7 +111,8 @@
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div>
               <p class="mt1">
-                <input type="checkbox" @input="allCheckChange($event,item.title)" :checked="selectedTitle === item.title">
+                <input type="checkbox" @input="allCheckChange($event,item.title)"
+                       :checked="selectedTitle === item.title">
                 {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
@@ -234,6 +235,7 @@ const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
 const allcheckBtn = ref(false);
+const opacity = ref('');
 
 const selectItemIamgeArr = ref<any>([]);
 
@@ -253,7 +255,7 @@ const handleClickOutside = (event: any) => {
   // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
   if (!event.target.closest('.imgSetWrap')) {
     imgSet.value = false; // imgSet.value를 false로 설정
-    selectedTitle.value ='';
+    selectedTitle.value = '';
   }
 };
 
@@ -681,7 +683,8 @@ const scrollToElement = (itemId: number) => {
 
 function rgbReset() {
   imageRgb.value = [0, 0, 0];
-  changeImageRgb();
+  opacity.value = '1';
+  changeImageRgb('reset');
 }
 
 function imgSizeReset() {
@@ -697,26 +700,28 @@ function imgSizeReset() {
 
 function brightnessReset() {
   imgBrightness.value = 100;
-  changeImageRgb();
+  opacity.value = '1';
+  changeImageRgb('reset');
 }
 
-function changeImageRgb() {
+function changeImageRgb(reset: string) {
   const selectedSizeTitle = selectSizeTitle.value;
   if (!selectedSizeTitle) {
-    // alert('No selected size title.');
     rgbReset();
     return;
+  }
+  if (reset !== 'reset') {
+    opacity.value = '0.85';
   }
   const red = 255 - imageRgb.value[0];
   const green = 255 - imageRgb.value[1];
   const blue = 255 - imageRgb.value[2];
-
   // 선택된 크기 타이틀과 일치하는 이미지들에 대해 크기 조절
   wbcInfo.value.forEach((item: any) => {
     if (item.title === selectedSizeTitle) {
       item.images.forEach((image: any) => {
         // 각 색상 채널 개별적으로 조절
-        image.filter = `opacity(0.85) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
+        image.filter = `opacity(${opacity.value}) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
       });
     }
   });
@@ -810,11 +815,11 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 
   // 이미지 이동 단축키 확인
-  if(projectType.value === 'pb'){
+  if (projectType.value === 'pb') {
     if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
       moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
-  }else if (projectType.value === 'bm'){
+  } else if (projectType.value === 'bm') {
     if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
       moveSelectedImagesToTargetItem(wbcHotKeysItems.value.find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
@@ -865,10 +870,10 @@ function handleKeyUp(event: KeyboardEvent) {
 
 async function initData(newData: any, upDown: any, upDownData: any) {
   let selectItemsVal: any = [];
-  if(!upDown){
+  if (!upDown) {
     wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
     selectItemsVal = selectItems.value;
-  }else{
+  } else {
     wbcInfo.value = upDownData;
     selectItemsVal = upDownData;
   }
@@ -934,12 +939,12 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     selectItemIamgeArr.value = [];
     // 범위 내의 이미지 선택
     for (let i = startIndex; i <= endIndex; i++) {
-        selectedClickImages.value.push({
-          id: wbcInfo.value[itemIndex].id,
-          title: wbcInfo.value[itemIndex].title,
-          ...wbcInfo.value[itemIndex].images[i],
-        });
-        selectItemIamgeArr.value.push(classInfoitem);
+      selectedClickImages.value.push({
+        id: wbcInfo.value[itemIndex].id,
+        title: wbcInfo.value[itemIndex].title,
+        ...wbcInfo.value[itemIndex].images[i],
+      });
+      selectItemIamgeArr.value.push(classInfoitem);
     }
   } else { // 쉬프트 키를 누르지 않은 경우
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
@@ -955,8 +960,8 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     const imageIndexInSelected = selectedClickImages.value.findIndex((img: any) => img === selectedImage);
 
     if (imageIndexInSelected === -1) {
-        selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
-        selectItemIamgeArr.value.push(classInfoitem);
+      selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
+      selectItemIamgeArr.value.push(classInfoitem);
     } else {
       // 이미 선택된 이미지를 다시 클릭하면 선택 해제
       selectedClickImages.value.splice(imageIndexInSelected, 1);
@@ -1099,7 +1104,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         images.title = wbcInfo.value[targetItemIndex].title;
       }
       await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
-    }else{
+    } else {
       await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
     }
   }
@@ -1147,6 +1152,14 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   let originalDbVal: any = [];
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
+  let totalCount = 0;
+  clonedWbcInfo.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      if (image.title !== 'OT') {
+        totalCount += 1
+      }
+    });
+  });
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
@@ -1154,7 +1167,9 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       delete image.height;
       delete image.filter;
     });
-    item.percent = selectItems.value.wbcInfo.totalCount && selectItems.value.wbcInfo.totalCount !== '0' ? ((Number(item.count) / Number(selectItems.value.wbcInfo.totalCount)) * 100).toFixed(0) : '0'
+    if(item.title !== 'OT'){
+      item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+    }
   });
 
   let uniqueImages: any = [];
@@ -1270,8 +1285,8 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
     const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
     const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     const data = {
-      sourceFolders : sourceFolder,
-      destinationFolders : destinationFolder,
+      sourceFolders: sourceFolder,
+      destinationFolders: destinationFolder,
       fileNames: sourceFolderInfo[index].fileName,
     }
     let response = await moveClassImagePost(data);
