@@ -207,6 +207,7 @@ const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
+const firstClickedImageIndex = ref(null);
 const isCtrlKeyPressed = ref(false);
 const draggedCircleIndex = ref<number | null>(null);
 const draggedCircleIndexArr = ref<any>([]);
@@ -922,30 +923,32 @@ function onDragStart(itemIndex: any, imageIndex: any) {
 }
 
 function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
-
   // 쉬프트 키를 누른 경우
   if (isShiftKeyPressed.value) {
-    // 현재 선택한 이미지
-    shiftClickImages.value.push(imageIndex);
-    // 시작과 끝 인덱스 결정
-    const start = shiftClickImages.value[0];
-    const end = shiftClickImages.value[shiftClickImages.value.length - 1];
-    const startIndex = start > end ? end : start;
-    const endIndex = start > end ? start : end;
+    if (firstClickedImageIndex.value !== null) {
+      // 현재 선택한 이미지
+      shiftClickImages.value.push(imageIndex);
+      // 시작과 끝 인덱스 결정
+      const start = Math.min(firstClickedImageIndex.value, imageIndex);
+      const end = Math.max(firstClickedImageIndex.value, imageIndex);
 
-    // 선택된 이미지 초기화
-    selectedClickImages.value = [];
-    selectItemIamgeArr.value = [];
-    // 범위 내의 이미지 선택
-    for (let i = startIndex; i <= endIndex; i++) {
-      selectedClickImages.value.push({
-        id: wbcInfo.value[itemIndex].id,
-        title: wbcInfo.value[itemIndex].title,
-        ...wbcInfo.value[itemIndex].images[i],
-      });
-      selectItemIamgeArr.value.push(classInfoitem);
+      // 선택된 이미지 초기화
+      selectedClickImages.value = [];
+      selectItemIamgeArr.value = [];
+      // 범위 내의 이미지 선택
+      for (let i = start; i <= end; i++) {
+        selectedClickImages.value.push({
+          id: wbcInfo.value[itemIndex].id,
+          title: wbcInfo.value[itemIndex].title,
+          ...wbcInfo.value[itemIndex].images[i],
+        });
+        selectItemIamgeArr.value.push(classInfoitem);
+      }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
+    // 처음 클릭한 이미지의 인덱스를 저장
+    firstClickedImageIndex.value = imageIndex;
+
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
@@ -970,6 +973,7 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
 }
 
 
+
 function isSelected(image: any) {
   const imageFileName = image.fileName;
   return selectedClickImages.value.some((selectedImage: any) => selectedImage.fileName === imageFileName);
@@ -980,12 +984,16 @@ async function onDrop(targetItemIndex: any) {
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
   }
+  // 화면 딜레이
+  await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
   for (const selectedImage of selectedClickImages.value) {
     const fileName = selectedImage.fileName;
     const draggedItemIndex = wbcInfo.value.findIndex((item: any) => item.images.some((img: any) => img.fileName === fileName));
     const draggedItem = wbcInfo.value[draggedItemIndex];
     await moveImage(targetItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[targetItemIndex], false);
   }
+  // 화면 딜레이 끄기
+  await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
   selectItemIamgeArr.value = [];

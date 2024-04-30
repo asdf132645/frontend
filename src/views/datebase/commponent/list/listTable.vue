@@ -344,15 +344,15 @@ const selectItem = (item) => {
 const getUserIp = async (item) => {
   try {
     const result = await getUserIpApi();
-    // await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
-    //   emits('initData');
-    //   instance?.appContext.config.globalProperties.$socket.emit('state', {
-    //     type: 'SEND_DATA',
-    //     payload: 'refreshDb'
-    //   });
-    // }).catch(error => {
-    //   console.error('Error:', error.response.data);
-    // });
+    await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
+      emits('initData');
+      instance?.appContext.config.globalProperties.$socket.emit('state', {
+        type: 'SEND_DATA',
+        payload: 'refreshDb'
+      });
+    }).catch(error => {
+      console.error('Error:', error.response.data);
+    });
   } catch (e) {
     console.log(e)
   }
@@ -370,7 +370,7 @@ const rowDbClick = async (item) => {
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
-  await getUserIp(item);
+  // await getUserIp(item);
   await router.push('/databaseDetail');
 
 }
