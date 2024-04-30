@@ -1285,21 +1285,29 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   const destinationFolderInfo: any = [];
   findUndefinedImages(currentWbcInfo, prevWbcInfo, sourceFolderInfo);
   findUndefinedImages(prevWbcInfo, currentWbcInfo, destinationFolderInfo);
+  let sourceFolders = [];
+  let destinationFolders = [];
+  let fileNames = [];
+
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
     const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
     const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
-    const data = {
-      sourceFolders: sourceFolder,
-      destinationFolders: destinationFolder,
-      fileNames: sourceFolderInfo[index].fileName,
-    }
-    let response = await moveClassImagePost(data);
-    // const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
+    sourceFolders.push(sourceFolder)
+    destinationFolders.push(destinationFolder)
+    fileNames.push(sourceFolderInfo[index].fileName)
 
-    if (response) {
-      wbcInfo.value = prevWbcInfo;
-    }
+  }
+  const data = {
+    sourceFolders: sourceFolders,
+    destinationFolders: destinationFolders,
+    fileNames: fileNames,
+  }
+  let response = await moveClassImagePost(data);
+  // const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
+
+  if (response) {
+    wbcInfo.value = prevWbcInfo;
   }
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
