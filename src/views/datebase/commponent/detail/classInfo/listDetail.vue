@@ -319,7 +319,6 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         selectItems.value.wbcInfo.wbcInfo[0].push(wbcPush);
         wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
         sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
-        console.log('foundObject');
         await updateOriginalDb('notWbcAfterSave');
       } else {
         // console.log(foundObject);
@@ -389,7 +388,7 @@ function replaceFileNamePrefix(fileName: string) {
   const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
-
+  console.log(modifiedPrefix)
   // 변경된 prefix 반환
   return modifiedPrefix;
 }
@@ -431,8 +430,7 @@ const refreshClass = async (data: any) => {
 const excelDownload = () => {
   const groundTruth = selectItems.value.wbcInfoAfter; // 실제 정답 데이터
   const predicted = selectItems.value.wbcInfo.wbcInfo[0]; // AI가 예측한 데이터
-  console.log('groundTruth:', JSON.stringify(groundTruth))
-  console.log('predicted:', JSON.stringify(predicted))
+
   const confusionMatrix: Record<CellType, Record<CellType, number>> = confusionMatrixVal;
   const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
 
@@ -722,6 +720,7 @@ function changeImageRgb(reset: string) {
       item.images.forEach((image: any) => {
         // 각 색상 채널 개별적으로 조절
         image.filter = `opacity(${opacity.value}) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
+
       });
     }
   });
@@ -1148,7 +1147,6 @@ function removeDuplicateImages(data: any[]): any[] {
 }
 
 async function updateOriginalDb(notWbcAfterSave?: string) {
-  console.log('updateOriginalDb')
   let originalDbVal: any = [];
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
@@ -1199,7 +1197,6 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       });
     }
     originalDbVal = filteredItems;
-    // console.log('???')
   }
 
 

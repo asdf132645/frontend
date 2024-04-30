@@ -1068,6 +1068,7 @@ ul.wbcInfoDbUl > li {
     position: absolute;
     color: #00000094;
     background: none;
+    z-index: 5;
 }
 
 .titleImg div {
