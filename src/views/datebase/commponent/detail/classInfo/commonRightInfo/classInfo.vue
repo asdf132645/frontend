@@ -55,7 +55,7 @@
       </ul>
       <ul class="classNm">
         <li>
-          {{ selectItemsS?.wbcInfo?.totalCount || 0 }}
+          {{ totalCount || 0 }}
         </li>
       </ul>
       <ul class="degree">
@@ -78,7 +78,7 @@
         <ul class="nth1Child" v-if="item?.title === 'OT'">
           <li>{{ item?.name }}</li>
           <li>{{ item?.count }}</li>
-          <li> {{ item?.percent || '-' }}</li>
+          <li> - </li>
         </ul>
       </div>
     </div>
@@ -150,6 +150,7 @@ const selectItemsS = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
+const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
@@ -172,7 +173,7 @@ const confirmMessage = ref('');
 const orderClass = ref<any>([]);
 const projectBm = ref(false);
 const isBefore = ref(false);
-const totalCount = ref('');
+const totalCount = ref(0);
 
 onMounted(async () => {
   await getOrderClass();
@@ -181,6 +182,9 @@ onMounted(async () => {
   await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  const classInfoSortData = sessionStorage.getItem("classInfoSort");
+  const classInfoSortVal = ref(classInfoSortData ? JSON.parse(classInfoSortData) : null);
+  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: classInfoSortVal});
 
 })
 // basicWbcArr
@@ -341,10 +345,16 @@ const beforeChang = async () => {
   await getOrderClass();
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = [];
+  if(classInfoSort.value){
+    wbcArr = classInfoSort.value
+  }else{
+    wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  }
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
+  totalCountSet();
 
 }
 
@@ -353,11 +363,28 @@ const afterChang = (newItem: any) => {
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = selectItemsS.value.wbcInfoAfter.length !== 0 ? selectItemsS.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = [];
+  if(classInfoSort.value){
+    wbcArr = classInfoSort.value
+  }else{
+    wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  }
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
 
+  totalCountSet();
+}
+
+const totalCountSet = () => {
+  totalCount.value = 0;
+  wbcInfoChangeVal.value.forEach((item: any) => {
+    item.images.forEach((image: any) => {
+      if (image.title !== 'OT') {
+        totalCount.value += 1
+      }
+    });
+  });
 }
 
 async function updateOriginalDb() {
@@ -387,6 +414,8 @@ async function updateOriginalDb() {
   selectItemsS.value.wbcInfoAfter = clonedWbcInfo;
   sessionStorage.setItem("selectItems", JSON.stringify(selectItemsS.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+  localStorage.setItem('classInfoSort',JSON.stringify(wbcInfoChangeVal.value))
+  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: wbcInfoChangeVal.value});
 
   // originalDb 업데이트
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);

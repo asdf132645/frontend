@@ -32,6 +32,7 @@ export interface CommonState {
     deviceBarcode: string;
     clonedWbcInfo: any[];
     moveImgIsBool: boolean;
+    classInfoSort: any[];
 }
 
 interface CommonModule {
@@ -70,6 +71,7 @@ interface CommonModule {
         setDeviceBarcode: (state: CommonState, value: string) => void;
         setClonedWbcInfo: (state: CommonState, value: any[]) => void;
         setMoveImgIsBool: (state: CommonState, value: boolean) => void;
+        setClassInfoSort: (state: CommonState, value: any[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -109,6 +111,7 @@ export const commonModule: CommonModule = {
         deviceBarcode: '',
         clonedWbcInfo: [],
         moveImgIsBool: false,
+        classInfoSort: [],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -209,6 +212,9 @@ export const commonModule: CommonModule = {
         },
         setMoveImgIsBool(state: CommonState, value: boolean): void {
             state.moveImgIsBool = value;
+        },
+        setClassInfoSort(state: CommonState, value: any[]): void {
+            state.classInfoSort = value;
         },
     },
     actions: {
@@ -311,6 +317,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('moveImgIsBool')) {
                 commit('setMoveImgIsBool', payload.moveImgIsBool)
+            }
+            if (payload.hasOwnProperty('classInfoSort')) {
+                commit('setClassInfoSort', payload.classInfoSort)
             }
         },
     },

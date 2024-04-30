@@ -40,7 +40,7 @@
               Size {{ imageSize }}
               <input
                   type="range"
-                  min="150"
+                  min="0"
                   max="600"
                   v-model="imageSize"
                   @input="changeImageSize"
@@ -109,14 +109,14 @@
         </ul>
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
-            <div>
+            <div v-if="item?.count !== 0">
               <p class="mt1">
                 <input type="checkbox" @input="allCheckChange($event,item.title)"
                        :checked="selectedTitle === item.title">
                 {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
-            <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)">
+            <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)" v-if="item?.count !== 0">
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                   :class="{
                     'border-changed': isBorderChanged(image),
@@ -389,7 +389,6 @@ function replaceFileNamePrefix(fileName: string) {
   const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
-  console.log(modifiedPrefix)
   // 변경된 prefix 반환
   return modifiedPrefix;
 }
@@ -749,7 +748,7 @@ function changeImageSize(event: any) {
       let currentHeight = event?.target?.value;
 
       // 크기를 더하거나 빼는 값
-      const sizeChange = 60;
+      const sizeChange = 0;
 
       // 이미지의 width와 height를 조절
       image.width = Number(currentWidth) + Number(sizeChange);
