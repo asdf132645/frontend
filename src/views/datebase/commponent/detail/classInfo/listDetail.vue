@@ -14,7 +14,8 @@
       </ul>
     </div>
     <div class="databaseWbcRight">
-      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'
+                 @scrollEvent="scrollToElement"/>
     </div>
 
     <div class="databaseWbcLeft">
@@ -40,7 +41,7 @@
               Size {{ imageSize }}
               <input
                   type="range"
-                  min="0"
+                  min="80"
                   max="600"
                   v-model="imageSize"
                   @input="changeImageSize"
@@ -83,10 +84,10 @@
                   v-model="imageRgb[2]"
                   @input="changeImageRgb('')"
               />
-<!--              RGB Select a Class-->
-<!--              <select v-model="selectSizeTitle" class="selectSizeTitle">-->
-<!--                <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>-->
-<!--              </select>-->
+              <!--              RGB Select a Class-->
+              <!--              <select v-model="selectSizeTitle" class="selectSizeTitle">-->
+              <!--                <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>-->
+              <!--              </select>-->
               <button class="resetBtn" @click="rgbReset">RGB Reset</button>
             </div>
 
@@ -116,7 +117,8 @@
                 {{ item?.title }}
                 ({{ item?.count }})</p>
             </div>
-            <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)" v-if="item?.count !== 0">
+            <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)"
+                v-if="item?.count !== 0">
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                   :class="{
                     'border-changed': isBorderChanged(image),
@@ -182,13 +184,20 @@ import {
   confusionMatrixVal,
   MetricsVal
 } from "@/common/defines/constFile/classification";
-import {getBfHotKeysApi, getWbcCustomClassApi, getWbcWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
+import {
+  getBfHotKeysApi,
+  getOrderClassApi,
+  getWbcCustomClassApi,
+  getWbcWbcHotKeysApi
+} from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
-import {getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBarcodeImageUrl, getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import process from "process";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
+import {commonModule} from "@/store/modules/commonModule";
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const selectedTitle = ref('');
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
@@ -203,6 +212,7 @@ const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
 const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
+const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
@@ -239,7 +249,7 @@ const allcheckBtn = ref(false);
 const opacity = ref('');
 
 const selectItemIamgeArr = ref<any>([]);
-
+const orderClass = ref<any>([]);
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
@@ -327,6 +337,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     }
     await getWbcHotKeyClasses();
     await getBfHotKeyClasses();
+    await getOrderClass();
     await initData(newData, upDown, upDownData);
   } catch (e) {
     console.log(e);
@@ -421,6 +432,13 @@ const zoomOut = () => {
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
+
+watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 순서 변경시 감지하여 재정렬
+  await getOrderClass();
+  const sortArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  await sortWbcInfo(wbcInfo.value, sortArr);
+});
+
 
 const refreshClass = async (data: any) => {
   selectItems.value = data;
@@ -717,11 +735,11 @@ function changeImageRgb(reset: string) {
   // 선택된 크기 타이틀과 일치하는 이미지들에 대해 크기 조절
   wbcInfo.value.forEach((item: any) => {
     // if (item.title === selectedSizeTitle) {
-      item.images.forEach((image: any) => {
-        // 각 색상 채널 개별적으로 조절
-        image.filter = `opacity(${opacity.value}) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
+    item.images.forEach((image: any) => {
+      // 각 색상 채널 개별적으로 조절
+      image.filter = `opacity(${opacity.value}) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
 
-      });
+    });
     // }
   });
 
@@ -904,8 +922,23 @@ async function initData(newData: any, upDown: any, upDownData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
-  const sortArr = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
+}
+
+const getOrderClass = async () => {
+  try {
+    const result = await getOrderClassApi(String(userModuleDataGet.value.id));
+    if (result) {
+      if (result?.data.length === 0) {
+        orderClass.value = [];
+      } else {
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 function onDragOver() {
@@ -970,7 +1003,6 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     }
   }
 }
-
 
 
 function isSelected(image: any) {
@@ -1172,7 +1204,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       delete image.height;
       delete image.filter;
     });
-    if(item.title !== 'OT'){
+    if (item.title !== 'OT') {
       item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
     }
   });
