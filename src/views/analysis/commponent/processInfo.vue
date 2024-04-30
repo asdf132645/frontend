@@ -39,7 +39,7 @@ const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const siteCd = ref('');
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-const chatRunningData = computed(() => store.state.chatRunningData);
+const chatRunningData = computed(() => store.state.commonModule.chatRunningData);
 
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
@@ -63,12 +63,10 @@ onMounted(() => {
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
 
-watch([chatRunningData.value], async (data: any) => {
+watch(() => chatRunningData.value, (data) => {
   try {
-    const textDecoder = new TextDecoder('utf-8');
-    const stringData = textDecoder.decode(data);
 
-    const parsedData = JSON.parse(stringData);
+    const parsedData = data;
     if(parsedData.jobCmd === 'RUNNING_INFO'){
       const currentSlot = parsedData?.slotInfo;
       if (currentSlot) {
@@ -102,7 +100,7 @@ watch([chatRunningData.value], async (data: any) => {
   } catch (e) {
     // console.log(e)
   }
-}, {deep: true});
+});
 
 
 // 실행정보를 가지고 온다.
