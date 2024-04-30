@@ -473,6 +473,7 @@ button.saveBtn, .defaultBtn {
 /*    border-bottom: 1px solid #494949;*/
 /*}*/
 
+
 ul.classInfo {
     width: 50%;
     display: inline-block;
@@ -483,9 +484,10 @@ ul.classInfo {
     width: 35%;
 }
 
-.classNm {
+.classNmRbc {
     display: inline-block;
     text-align: left;
+    min-width: 150px;
 }
 
 .degree {
@@ -1224,21 +1226,24 @@ button.searchClass {
 }
 
 .wbcDiv {
-    width: 20%;
-    margin-right: 20px;
+    width: 25%;
+    margin-right: 10px;
     padding-right: 10px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 2px #000;
+    border: 1px solid #303744;
+    padding: 3px;
 }
 
 .reportDetail {
-    width: 57%;
+    width: 56%;
     background: #ffffff;
-    margin-left: 10px;
     color: #696969;
     font-size: 0.8rem;
-    margin-top: 20px;
+    margin: 15px;
     overflow-y: auto;
     max-height: 87vh;
-    border: 1px solid #fff;
+    box-shadow: 2px 2px 2px #000;
 }
 
 li.onRight {
@@ -1626,7 +1631,11 @@ ul.wbcHotKeysItems {
 }
 
 .rbcDiv {
-    width: 20%;
+    width: 28%;
+    box-shadow: 2px 2px 2px #000;
+    border: 1px solid #303744;
+    padding: 3px;
+    border-radius: 4px;
 }
 
 ul.normalItems {
