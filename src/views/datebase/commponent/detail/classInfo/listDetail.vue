@@ -110,7 +110,7 @@
         </ul>
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
-            <div v-if="item?.count !== 0">
+            <div v-if="item?.count !== '0' && item?.count !== 0">
               <p class="mt1">
                 <input type="checkbox" @input="allCheckChange($event,item.title)"
                        :checked="selectedTitle === item.title">
@@ -118,7 +118,7 @@
                 ({{ item?.count }})</p>
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)"
-                v-if="item?.count !== 0">
+                v-if="item?.count !== '0' && item?.count !== 0">
               <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
                   :class="{
                     'border-changed': isBorderChanged(image),
