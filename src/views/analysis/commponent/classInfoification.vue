@@ -97,6 +97,7 @@ const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
+const chatRunningData = computed(() => storeEm.state.chatRunningData);
 const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
 const siteCd = ref('');
@@ -137,12 +138,8 @@ watch([commonDataGet.value], async (newVals: any) => {
     slideProceeding.value = newVals.slideProceeding;
   }
 })
-onMounted(() => {
-  // const initialWbcClassList = store.state.wbcClassificationModule;
-  updateDataArray(basicBmClassList, null, true);
-});
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+watch([chatRunningData.value], async (data: any) => {
   try {
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
@@ -154,7 +151,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   } catch (e) {
     // console.log(e)
   }
-})
+}, {deep: true});
+
+onMounted(() => {
+  // const initialWbcClassList = store.state.wbcClassificationModule;
+  updateDataArray(basicBmClassList, null, true);
+});
+
 
 const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean) => {
 

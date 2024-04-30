@@ -38,10 +38,9 @@ const processInfo = computed(() => store.state.commonModule.processInfo);
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const siteCd = ref('');
-
-// 스토어 end
-
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+const chatRunningData = computed(() => store.state.chatRunningData);
+
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
 const prevOilCount = ref<string | null>(null);
@@ -64,7 +63,7 @@ onMounted(() => {
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+watch([chatRunningData.value], async (data: any) => {
   try {
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
@@ -103,7 +102,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   } catch (e) {
     // console.log(e)
   }
-})
+}, {deep: true});
 
 
 // 실행정보를 가지고 온다.
