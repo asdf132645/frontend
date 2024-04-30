@@ -355,7 +355,8 @@ const beforeChang = async () => {
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
-  totalCountSet();
+  console.log(wbcInfoChangeVal.value);
+  totalCountSet(wbcInfoChangeVal.value);
 
 }
 
@@ -368,14 +369,14 @@ const afterChang = (newItem: any) => {
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
-  totalCountSet();
+  totalCountSet(wbcInfoChangeVal.value);
 }
 
-const totalCountSet = () => {
+const totalCountSet = (wbcInfoChangeVal: any) => {
   totalCount.value = 0;
-  wbcInfoChangeVal.value.forEach((item: any) => {
+  wbcInfoChangeVal.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      if (image.title !== 'OT') {
+      if (image.title !== 'OT' && !image.fileName.includes('OT')) {
         totalCount.value += 1
       }
     });

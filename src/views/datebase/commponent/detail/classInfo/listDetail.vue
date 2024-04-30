@@ -922,7 +922,8 @@ async function initData(newData: any, upDown: any, upDownData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
-  const sortArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+  const sortArr = orderClass.value.length !== 0 ? oArr : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
 }
 
