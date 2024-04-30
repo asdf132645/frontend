@@ -33,6 +33,7 @@ export interface CommonState {
     clonedWbcInfo: any[];
     moveImgIsBool: boolean;
     classInfoSort: any[];
+    chatRunningData: any[];
 }
 
 interface CommonModule {
@@ -72,6 +73,7 @@ interface CommonModule {
         setClonedWbcInfo: (state: CommonState, value: any[]) => void;
         setMoveImgIsBool: (state: CommonState, value: boolean) => void;
         setClassInfoSort: (state: CommonState, value: any[]) => void;
+        setChatRunningData: (state: CommonState, value: any[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -112,6 +114,7 @@ export const commonModule: CommonModule = {
         clonedWbcInfo: [],
         moveImgIsBool: false,
         classInfoSort: [],
+        chatRunningData: [],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -215,6 +218,9 @@ export const commonModule: CommonModule = {
         },
         setClassInfoSort(state: CommonState, value: any[]): void {
             state.classInfoSort = value;
+        },
+        setChatRunningData(state: CommonState, value: any[]): void {
+            state.chatRunningData = value;
         },
     },
     actions: {
@@ -320,6 +326,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('classInfoSort')) {
                 commit('setClassInfoSort', payload.classInfoSort)
+            }
+            if (payload.hasOwnProperty('chatRunningData')) {
+                commit('setChatRunningData', payload.chatRunningData)
             }
         },
     },

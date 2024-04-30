@@ -23,6 +23,7 @@
           <!-- <button class="searchClass" @click="refresh">Refresh</button> -->
         </div>
         <div class="filterDivBox" v-if="classListToggle">
+          {{  }}
           <div class="nrCount">
             <span>NR count</span>
             <input type="text" v-model="nrCount"/>

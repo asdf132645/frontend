@@ -199,12 +199,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }else{
       hideAlert();
     }
+    await store.dispatch('commonModule/setCommonInfo', {chatRunningData: []});
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
-
 
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
@@ -230,6 +230,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
+        await store.dispatch('commonModule/setCommonInfo', {chatRunningData: parseDataWarp});
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoStore(parseDataWarp);

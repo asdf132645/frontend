@@ -1,7 +1,8 @@
 <template>
   <div :class="[bmIsBoolen ? 'bmclass' : '']">
     <h3 class="titleText">
-      <template v-if="bmIsBoolen"><span class="greenColor">BM</span> <span class="greenColor">C</span>lassification</template>
+      <template v-if="bmIsBoolen"><span class="greenColor">BM</span> <span class="greenColor">C</span>lassification
+      </template>
       <template v-else><span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification</template>
     </h3>
     <div>
@@ -19,11 +20,13 @@
             <ul class="degree">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
-                {{totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0' }}
+                {{
+                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
+                }}
               </li>
-<!--              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">-->
-<!--                100.00-->
-<!--              </li>-->
+              <!--              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">-->
+              <!--                100.00-->
+              <!--              </li>-->
             </ul>
           </div>
         </template>
@@ -59,7 +62,9 @@
             <ul class="degree">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
-                {{totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0' }}
+                {{
+                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
+                }}
               </li>
             </ul>
           </div>
@@ -75,7 +80,8 @@
             </ul>
             <ul class="classNm">
               <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li>{{ nWbcItem?.count }} <span v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ maxWbcCount }} WBC</span></li>
+              <li>{{ nWbcItem?.count }} <span
+                  v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ maxWbcCount }} WBC</span></li>
             </ul>
             <ul class="degree">
               <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
@@ -93,10 +99,12 @@
 import {computed, ref, onMounted, watch, defineProps, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
+
 const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
 const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
+const chatRunningData = computed(() => storeEm.state.commonModule.chatRunningData);
 const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
 const siteCd = ref('');
@@ -133,30 +141,29 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
 })
 
 watch([commonDataGet.value], async (newVals: any) => {
-  if(newVals){
+  if (newVals) {
     slideProceeding.value = newVals.slideProceeding;
   }
 })
+watch(() => chatRunningData.value, (data) => {
+  try {
+
+    const parsedData = data;
+    if (parsedData.jobCmd === 'RUNNING_INFO') {
+      updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
+    }
+  } catch (e) {
+    // console.log(e)
+  }
+});
+
 onMounted(() => {
   // const initialWbcClassList = store.state.wbcClassificationModule;
   updateDataArray(basicBmClassList, null, true);
 });
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  try {
-    const textDecoder = new TextDecoder('utf-8');
-    const stringData = textDecoder.decode(data);
 
-    const parsedData = JSON.parse(stringData);
-    if(parsedData.jobCmd === 'RUNNING_INFO'){
-      await updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
-    }
-  } catch (e) {
-    // console.log(e)
-  }
-})
-
-const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean) => {
+const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolean) => {
 
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (slotArray.wbcInfo) {
@@ -186,7 +193,7 @@ const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean)
     const nonRbcWbcInfoArray = wbcInfoArray
         .flat()  // 중첩 배열을 평탄화
         .filter((item: any) =>
-            ['NR', 'AR', 'GP', 'PA', 'MC', 'MA', 'GP', 'PA','SM'].includes(item?.title)
+            ['NR', 'AR', 'GP', 'PA', 'MC', 'MA', 'GP', 'PA', 'SM'].includes(item?.title)
         );
     nonWbcClassList.value = nonRbcWbcInfoArray;
 
@@ -198,7 +205,7 @@ const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean)
   if (slotArray && slotArray.wbcInfo) {
     const currentSlot = slotArray.wbcInfo;
     if (currentSlot && currentSlot?.stateCd === '03') {
-      if(currentSlot.wbcCount === '00'){
+      if (currentSlot.wbcCount === '00') {
         return;
       }
       await updateCounts(currentSlot);
@@ -208,7 +215,7 @@ const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean)
   await updatePercentages();
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
-  if(iCasStatArr.lastIndexOf("2") !== -1){
+  if (iCasStatArr.lastIndexOf("2") !== -1) {
     classArr.value[iCasStatArr.lastIndexOf("2")] = {
       wbcInfo: dspWbcClassList.value,
       nonRbcClassList: nonWbcClassList,
@@ -232,15 +239,11 @@ const updateDataArray = async (newSlotInfo: any,parsedData?: any, type?:boolean)
 };
 
 
-
-
-
-
 const calculateWbcPercentages = (
     classList: WbcInfo[],
     wbcList: WbcInfo[]
 ) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", "OT"]:["AR", "NR", "GP", "PA", "MC", "MA", "SM","OT"]
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", "OT"] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", "OT"]
   const total = classList
       .filter(
           (category) =>
@@ -282,8 +285,8 @@ const updateCounts = async (currentSlot: any) => {
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", 'NE','GP','PA','OT'] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE','GP','PA','OT'];
-  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA", 'NE','GP','PA','OT'] : ["NR", "AR", "MC", "MA", "SM", 'NE','GP','PA','OT'];
+  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", 'NE', 'GP', 'PA', 'OT'] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'];
+  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA", 'NE', 'GP', 'PA', 'OT'] : ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'];
 
   const targetArray = testType.value === '01' || testType.value === '04' ? includesStr : includesStr2;
 
@@ -302,7 +305,6 @@ const updatePercentages = async () => {
   });
   dspWbcClassList.value = percent;
 };
-
 
 
 const getCategoryName = (category: WbcInfo) => category?.name;
