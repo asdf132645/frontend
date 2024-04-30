@@ -1009,9 +1009,11 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox {
+    display: flex;
+    flex-direction: column;
     position: absolute;
     background: #000;
-    max-width: 917px;
+    max-width: 317px;
     padding: 10px;
     border: 1px solid #fff;
     top: 0;
@@ -1027,6 +1029,13 @@ table.defaultTable tbody td {
     margin-bottom: 5px;
 }
 
+.filterDivBox input {
+    width: 85%;
+}
+
+.filterDivBox select {
+    width: 89%;
+}
 
 .selectedTr {
     border: 3px solid #6effc9;
@@ -1361,6 +1370,8 @@ select.stopDivSelect {
 .lastTestType label {
     display: inline-block;
     text-align: left;
+    position: relative;
+    left: -15px;
 }
 
 .lastTestType label input {
@@ -1693,15 +1704,15 @@ ul.normalItems li div span:last-child {
 }
 
 .image-container {
-    overflow: hidden;
+    /*overflow: hidden;*/
     position: relative;
     width: 40%;
     height: 92.2vh;
 }
 
 .tilingViewerContainer {
-    position: relative;
-    /*top: 40%;*/
+    /*position: relative;*/
+    /*추가*/
 }
 
 .dbBmImageContainer {

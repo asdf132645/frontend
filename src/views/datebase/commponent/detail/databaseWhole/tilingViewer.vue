@@ -1,6 +1,6 @@
 <template>
   <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad"  />
-    <div class="tilingViewerContainer">
+    <div class="tilingViewerContainer" style="height: 100%" id="tiling-container">
       <div ref="tilingViewerLayer" id="tiling-viewer" ></div>
     </div>
 </template>
@@ -91,12 +91,25 @@ const initElement = async (imageHeight: any) => {
       const aspectRatio = imageHeight / imageWidth;
 
       const dynamicHeight = containerWidth * aspectRatio;
+      tilingViewerElement.style.width = `${containerWidth}px`;
       tilingViewerElement.style.height = `${dynamicHeight}px`;
+      tilingViewerElement.style.position = 'absolute';
+      tilingViewerElement.style.left = '50%';
+      tilingViewerElement.style.top = '50%';
+      tilingViewerElement.style.transform = 'translate(-50%, -50%)';
     });
 
+    // tilingViewerLayer.value.addEventListener("wheel", () => {
+    //   console.log('wheel')
+    //
+    //   const tilingViewerElement: any = document.getElementById("tiling-viewer");
+    //   tilingViewerElement.style.height = '100vh';
+    // })
+
     viewer.addHandler("zoom", function () {
-      const tilingViewerElement: any = document.getElementById("tiling-viewer");
-      // tilingViewerElement && (tilingViewerElement.style.height = '80vh')
+      console.log('zoom')
+      const tilingViewerElement: any = document.getElementById("tiling-viewer")
+      // tilingViewerElement && (tilingViewerElement.style.height = '1000px');
     })
 
 
