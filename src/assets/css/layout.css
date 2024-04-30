@@ -452,10 +452,18 @@ button.saveBtn, .defaultBtn {
     justify-content: space-between;
     align-items: flex-start;
     text-align: left;
-    padding: 2px 0;
+    padding: 2px;
     margin-left: 15px;
     position: relative;
     border-bottom: 1px solid #494949;
+}
+
+.classAttribute {
+    background: #252629;
+}
+
+.classTotal {
+    color: #29c7ca;
 }
 
 .categoriesBm {
@@ -969,6 +977,7 @@ table.defaultTable thead th .table{
     background: #c7cad1;
 }
 
+
 table.defaultTable thead th, table.defaultTable tbody td {
     padding: 10px;
     font-size: 0.9rem;
@@ -1013,14 +1022,18 @@ table.defaultTable tbody td {
     flex-direction: column;
     position: absolute;
     background: #000;
-    max-width: 317px;
+    max-width: 300px;
     padding: 10px;
     border: 1px solid #fff;
     top: 0;
 }
 
 .filterDivBox div {
-    padding: 10px;
+    /*padding: 10px;*/
+    vertical-align: top;
+    display: flex;
+    flex-direction: column;
+    padding: 0.7rem;
 }
 
 .filterDivBox span {
@@ -1038,7 +1051,8 @@ table.defaultTable tbody td {
 }
 
 .selectedTr {
-    border: 3px solid #6effc9;
+    border: 3px solid #29c7ca;
+    background: #29c7ca;
 }
 
 h3.titleH3 {
@@ -1066,9 +1080,6 @@ ul.wbcInfoDbUl > li {
     vertical-align: middle;
 }
 
-.filterDivBox > div {
-    vertical-align: top;
-}
 
 .circle {
     text-align: center;
@@ -1434,6 +1445,15 @@ select.selectSizeTitle {
     padding: 3px;
 }
 
+.sizeContainer {
+    position: absolute;
+    left: 20%;
+    background: #000;
+    width: 200px;
+    padding: 12px;
+    /*border: 1px solid #ccc;*/
+}
+
 button.resetBtn {
     background: none;
     color: #fff;
@@ -1553,7 +1573,9 @@ ul.cellImgBox.print {
     background: none;
     color: #fff;
     border: 1px solid #fff;
+    border-radius: 3px;
     padding: 10px;
+    width: 65px;
     margin-right: 10px;
     cursor: pointer;
 }

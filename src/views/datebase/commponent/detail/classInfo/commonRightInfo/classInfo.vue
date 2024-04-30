@@ -36,7 +36,7 @@
         @dragover.prevent
         @drop="drop(idx, $event)"
       >
-      <ul class="nth1Child" v-if="idx === 0">
+      <ul class="nth1Child classAttribute" v-if="idx === 0">
         <li>Class</li>
         <li>Count</li>
         <li>%</li>
@@ -47,7 +47,7 @@
         <li> {{ item?.percent || '-' }}</li>
       </ul>
     </div>
-    <div class="categories">
+    <div class="categories classTotal">
       <ul class="categoryNm">
         <li>
           Total
@@ -59,7 +59,7 @@
         </li>
       </ul>
       <ul class="degree">
-        <li class="degreeTotal">
+        <li>
           100.00
         </li>
       </ul>
