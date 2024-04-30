@@ -1079,6 +1079,7 @@ ul.wbcInfoDbUl > li {
     position: absolute;
     color: #00000094;
     background: none;
+    z-index: 5;
 }
 
 .titleImg div {
@@ -1829,7 +1830,16 @@ ul.normalItems li div span:last-child {
     border: 1px solid black;
     border-radius: 5px;
 }
-
+.moveImgIsBool {
+    position: absolute;
+    z-index: 99999;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    padding-top: 28%;
+    background: #00000073;
+    font-size: 2rem;
+}
 .searchInputBox {
     padding: 8px;
     border-radius: 5px;
