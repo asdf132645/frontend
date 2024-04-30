@@ -83,10 +83,10 @@
                   v-model="imageRgb[2]"
                   @input="changeImageRgb('')"
               />
-              RGB Select a Class
-              <select v-model="selectSizeTitle" class="selectSizeTitle">
-                <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>
-              </select>
+<!--              RGB Select a Class-->
+<!--              <select v-model="selectSizeTitle" class="selectSizeTitle">-->
+<!--                <option v-for="(item) in wbcInfo" :key="item.id" :value="item.title">{{ item.title }}</option>-->
+<!--              </select>-->
               <button class="resetBtn" @click="rgbReset">RGB Reset</button>
             </div>
 
@@ -716,13 +716,13 @@ function changeImageRgb(reset: string) {
   const blue = 255 - imageRgb.value[2];
   // 선택된 크기 타이틀과 일치하는 이미지들에 대해 크기 조절
   wbcInfo.value.forEach((item: any) => {
-    if (item.title === selectedSizeTitle) {
+    // if (item.title === selectedSizeTitle) {
       item.images.forEach((image: any) => {
         // 각 색상 채널 개별적으로 조절
         image.filter = `opacity(${opacity.value}) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
 
       });
-    }
+    // }
   });
 
 }

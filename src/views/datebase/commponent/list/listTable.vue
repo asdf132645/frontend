@@ -344,15 +344,15 @@ const selectItem = (item) => {
 const getUserIp = async (item) => {
   try {
     const result = await getUserIpApi();
-    await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
-      emits('initData');
-      instance?.appContext.config.globalProperties.$socket.emit('state', {
-        type: 'SEND_DATA',
-        payload: 'refreshDb'
-      });
-    }).catch(error => {
-      console.error('Error:', error.response.data);
-    });
+    // await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
+    //   emits('initData');
+    //   instance?.appContext.config.globalProperties.$socket.emit('state', {
+    //     type: 'SEND_DATA',
+    //     payload: 'refreshDb'
+    //   });
+    // }).catch(error => {
+    //   console.error('Error:', error.response.data);
+    // });
   } catch (e) {
     console.log(e)
   }
