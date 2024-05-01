@@ -1,7 +1,7 @@
 <template>
   <div v-if="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
   <ClassInfoMenu @refreshClass="refreshClass"/>
-  <div class="wbcContent">
+  <div class="wbcContent" >
     <div class="topClintInfo">
       <ul>
         <li>{{ getBmTestTypeText(selectItems?.testType) }}</li>
@@ -19,7 +19,7 @@
     </div>
 
     <div class="databaseWbcLeft">
-      <div class="imgMenuSetDiv">
+      <div class="imgMenuSetDiv" @mouseleave="hideSizeControl">
         <button type="button" @click="drawCellMarker">
           <font-awesome-icon
               :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -30,24 +30,32 @@
           <font-awesome-icon :icon="['fas', 'file-csv']"/>
           Excel
         </button>
+        <!--size-->
+        <button @mouseover="showSizeControl">
+          <font-awesome-icon :icon="['fas', 'plus-minus']"/>
+          Size</button>
+        <div v-show="showSize" class="sizeContainer">
+          <div>
+            Size {{ imageSize }}
+            <font-awesome-icon :icon="['fas', 'undo']"  @click="imgSizeReset"/>
+            <input
+                type="range"
+                min="80"
+                max="600"
+                v-model="imageSize"
+                @input="changeImageSize"
+            />
+<!--            <button class="resetBtn mb2" @click="imgSizeReset">Size Reset</button>-->
+          </div>
+
+        </div>
         <div class="imgSetWrap" ref="imgSetWrap">
           <button @click="imgSetOpen">
             <font-awesome-icon :icon="['fas', 'gear']"/>
             IMG Setting
           </button>
           <div class="imgSet" v-if="imgSet">
-            <div>
-              <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-              Size {{ imageSize }}
-              <input
-                  type="range"
-                  min="80"
-                  max="600"
-                  v-model="imageSize"
-                  @input="changeImageSize"
-              />
-              <button class="resetBtn mb2" @click="imgSizeReset">SIZE Reset</button>
-            </div>
+
             <div>
               <font-awesome-icon :icon="['fas', 'sun']"/>
               Brightness {{ imgBrightness }}
@@ -250,6 +258,8 @@ const opacity = ref('');
 
 const selectItemIamgeArr = ref<any>([]);
 const orderClass = ref<any>([]);
+const showSize = ref(false);
+
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
@@ -261,6 +271,14 @@ onMounted(async () => {
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
+
+const showSizeControl = () => {
+  showSize.value = true;
+};
+
+const hideSizeControl = () => {
+  showSize.value = false;
+};
 
 const handleClickOutside = (event: any) => {
   // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
