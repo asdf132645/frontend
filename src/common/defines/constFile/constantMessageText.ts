@@ -2,6 +2,8 @@ interface Messages {
     [key: string]: string;
 }
 export  const messages: Messages = {
+    Logout: 'Would you like to log out?',
+
     // login page
     GET_POSITION_LIST: 'getPositionList',
     GET_LOGIN_HISTORY: 'getLoginHistory',

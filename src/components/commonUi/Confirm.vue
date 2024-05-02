@@ -1,4 +1,3 @@
-<!-- Alert.vue -->
 <template>
   <div v-if="isVisible" class="alert" :class="typeClass">
     <p class="mb1">

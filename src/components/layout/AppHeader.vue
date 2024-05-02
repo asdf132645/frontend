@@ -111,6 +111,15 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :type="confirmType"
+      :message="confirmMessage"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
 </template>
 
 <script setup lang="ts">
@@ -125,6 +134,7 @@ import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
+import Confirm from "@/components/commonUi/Confirm.vue";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -135,7 +145,9 @@ const logOutBox = ref(false);
 const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
 
 const instance = getCurrentInstance();
-
+const showConfirm = ref(false);
+const confirmType = ref('');
+const confirmMessage = ref('');
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const oilCount = ref(0);
 const isDoorOpen = ref('');
@@ -181,6 +193,19 @@ const updateDateTime = () => {
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
   currentTime.value = now.toLocaleTimeString('en-US');
 };
+const handleOkConfirm = () => {
+  showConfirm.value = false;
+  sessionStorage.clear();
+  router.push('user/login');
+  store.commit('resetStore');
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  }
+}
+
+const hideConfirm = () => {
+  showConfirm.value = false;
+}
 
 onMounted(async () => {
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
@@ -257,15 +282,8 @@ const logOutBoxOn = () => {
   logOutBox.value = !logOutBox.value;
 }
 const logout = () => {
-  sessionStorage.clear();
-  router.push('user/login');
-  store.commit('resetStore');
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  }
-  logOutBox.value = false;
-
-
+  confirmMessage.value = messages.Logout;
+  showConfirm.value = true;
 }
 
 const oilCountChangeVal = (): string => {
