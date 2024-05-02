@@ -161,7 +161,12 @@ main.bmComponent {
 
 .lastLiM {
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 9px;
 }
+
 
 .display-flex > div {
     vertical-align: middle;
@@ -171,15 +176,10 @@ main.bmComponent {
 }
 
 .logOutBox {
-    position: relative;
-    left: 10px;
-    top: 5px;
-    background-color: #494949;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    text-align: center;
-    border-radius: 5px;
+    border:1px solid #fff;
+    box-sizing: border-box;
+    padding: 5px;
+    border-radius: 4px;
     cursor: pointer;
 }
 
@@ -190,11 +190,12 @@ main.bmComponent {
     top: 0;
     background: #252629;
     height: 4rem;
-    padding: 0 33px;
+    padding: 0 20px;
     padding-top: 16px !important;
     color: #fff;
     border-left: 1px solid #515a67;
 }
+
 
 span.icoText {
     margin-left: 7px;
@@ -452,10 +453,18 @@ button.saveBtn, .defaultBtn {
     justify-content: space-between;
     align-items: flex-start;
     text-align: left;
-    padding: 2px 0;
+    padding: 2px;
     margin-left: 15px;
     position: relative;
     border-bottom: 1px solid #494949;
+}
+
+.classAttribute {
+    background: #252629;
+}
+
+.classTotal {
+    color: #29c7ca;
 }
 
 .categoriesBm {
@@ -969,6 +978,7 @@ table.defaultTable thead th .table{
     background: #c7cad1;
 }
 
+
 table.defaultTable thead th, table.defaultTable tbody td {
     padding: 10px;
     font-size: 0.9rem;
@@ -1013,14 +1023,18 @@ table.defaultTable tbody td {
     flex-direction: column;
     position: absolute;
     background: #000;
-    max-width: 317px;
+    max-width: 300px;
     padding: 10px;
     border: 1px solid #fff;
     top: 0;
 }
 
 .filterDivBox div {
-    padding: 10px;
+    /*padding: 10px;*/
+    vertical-align: top;
+    display: flex;
+    flex-direction: column;
+    padding: 0.7rem;
 }
 
 .filterDivBox span {
@@ -1038,7 +1052,8 @@ table.defaultTable tbody td {
 }
 
 .selectedTr {
-    border: 3px solid #6effc9;
+    border: 3px solid #29c7ca;
+    background: #29c7ca;
 }
 
 h3.titleH3 {
@@ -1066,9 +1081,6 @@ ul.wbcInfoDbUl > li {
     vertical-align: middle;
 }
 
-.filterDivBox > div {
-    vertical-align: top;
-}
 
 .circle {
     text-align: center;
@@ -1434,6 +1446,22 @@ select.selectSizeTitle {
     padding: 3px;
 }
 
+.sizeContainer {
+    position:absolute;
+    left: 9%;
+    background: #000;
+    padding: 5px;
+    max-width: 300px;
+}
+
+.sizeContainer div {
+    text-align: center;
+}
+
+.sizeContainer div input, .sizeContainer div button {
+    width: 250px;
+}
+
 button.resetBtn {
     background: none;
     color: #fff;
@@ -1553,7 +1581,9 @@ ul.cellImgBox.print {
     background: none;
     color: #fff;
     border: 1px solid #fff;
+    border-radius: 3px;
     padding: 10px;
+    width: 65px;
     margin-right: 10px;
     cursor: pointer;
 }

@@ -24,14 +24,14 @@
       <col width="5%"/>
       <col width="5%"/>
       <col width="5%"/>
-      <col width="7%"/>
+      <col width="9%"/>
       <col width="8%"/>
       <col width="8%"/>
-      <col width="8%"/>
+      <col width="12%"/>
       <col width="19%"/>
-      <col width="7%"/>
+      <col width="11%"/>
       <col width="5%"/>
-      <col width="20%"/>
+      <col width="25%"/>
       <col width="3%"/>
     </colgroup>
     <tbody v-if="dbData.length !== 0">
