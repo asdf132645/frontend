@@ -196,7 +196,6 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   // console.log('classinfo_props.selectItems' , props.selectItems);
-  console.log(newItem)
 
 });
 
@@ -233,9 +232,6 @@ const drop = (index: any, event: any) => {
     dragIndex.value = -1;
     updateOriginalDb();
   }
-  console.log('sdsadasd')
-
-
 };
 
 
@@ -373,7 +369,7 @@ const afterChang = (newItem: any) => {
 }
 const shouldRenderCategory = (title: string) => {
   // siteCd와 testType을 입력으로 getStringArrayBySiteCd 함수를 호출
-  const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.siteCd.testType);
+  const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value.siteCd?.testType);
   // category.title이 targetArray에 포함되어 있는지 확인
   return !targetArray.includes(title);
 };
@@ -411,7 +407,7 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
         }
       } else {
         // 해당 siteCd와 testType에 따라 targetArray를 가져옴
-        const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+        const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
 
         // 원래 파일 이름을 보존
         const originalFileName = image.fileName;
@@ -450,7 +446,7 @@ async function updateOriginalDb() {
           totalCount += 1
         }
       } else {
-        const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+        const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
         }
@@ -469,7 +465,7 @@ async function updateOriginalDb() {
         item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+      const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
       if (!targetArray.includes(item.title)) {
         item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
       }

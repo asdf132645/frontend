@@ -1240,7 +1240,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
           totalCount += 1
         }
       }else{
-        const targetArray = getStringArrayBySiteCd(selectItems.value.siteCd, selectItems.value.testType);
+        const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
         }
@@ -1260,7 +1260,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
         item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
       }
     }else{
-      const targetArray = getStringArrayBySiteCd(selectItems.value.siteCd, selectItems.value.testType);
+      const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
       if (!targetArray.includes(item.title)) {
         item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
       }

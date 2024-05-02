@@ -121,7 +121,6 @@ const initDataExecut =async () =>{
 
 watch(commonDataGet.value, (value, oldValue) => {
   if(value.loginSetData === ''){
-    console.log(value.resFlag)
     initDataExecut();
     store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
   }

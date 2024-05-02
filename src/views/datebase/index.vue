@@ -23,8 +23,7 @@
           <!-- <button class="searchClass" @click="refresh">Refresh</button> -->
         </div>
         <div class="filterDivBox" v-if="classListToggle">
-          {{  }}
-          <div class="nrCount">
+          <div class="nrCount" v-if="!bmClassIsBoolen">
             <span>NR count</span>
             <input type="text" v-model="nrCount"/>
           </div>
@@ -75,7 +74,7 @@ import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
 import {getCurrentInstance, onMounted, ref} from "vue";
 import {getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
+import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
 import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
@@ -103,7 +102,6 @@ const bmClassIsBoolen = ref(false);
 const instance = getCurrentInstance();
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
-  console.log(data)
   await initDbData();
 })
 onMounted(async () => {
@@ -226,18 +224,22 @@ const getDbData = async (type: string, pageNum?: number) => {
 
         // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
+        if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
+          dbGetData.value = dbGetData.value.sort((a, b) => {
+            const dateA = moment(a.createDate, 'YYYYMMDDHHmmssSSS');
+            const dateB = moment(b.createDate, 'YYYYMMDDHHmmssSSS');
+
+            // Moment.js의 diff 메서드를 사용하여 날짜 차이 계산
+            return dateB.diff(dateA);
+          });
+
+          console.log(dbGetData.value);
+        }
+
+
         // 마지막 조회 결과 저장
         saveLastSearchParams();
       }
-    }
-    if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
-      dbGetData.value = dbGetData.value.sort((a, b) => {
-        const dateA = new Date(a.createDate);
-        const dateB = new Date(b.createDate);
-
-        // 내림차순 정렬
-        return dateB.getTime() - dateA.getTime();
-      });
     }
   } catch (e) {
     console.error(e);
