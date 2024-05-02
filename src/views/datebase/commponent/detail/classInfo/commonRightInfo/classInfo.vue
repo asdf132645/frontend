@@ -35,7 +35,7 @@
         @dragstart="startDrag(idx, $event)"
         @dragover.prevent
         @drop="drop(idx, $event)"
-      >
+    >
       <ul class="nth1Child classAttribute" v-if="idx === 0">
         <li>Class</li>
         <li>Count</li>
@@ -78,7 +78,7 @@
         <ul class="nth1Child" v-if="item?.title === 'OT'" @click="goClass(item.id)">
           <li>{{ item?.name }}</li>
           <li>{{ item?.count }}</li>
-          <li> - </li>
+          <li> -</li>
         </ul>
       </div>
     </div>
@@ -94,7 +94,9 @@
             <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
             <li>
               {{ nWbcItem?.count }}
-              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItemsS?.wbcInfo?.maxWbcCount }} WBC</span>
+              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
+                  selectItemsS?.wbcInfo?.maxWbcCount
+                }} WBC</span>
             </li>
           </ul>
           <ul class="degree">
@@ -205,13 +207,13 @@ watch(() => clonedWbcInfoStore.value, (newItem) => {
 });
 
 const goClass = (id: any) => {
-  emits('scrollEvent',id)
+  emits('scrollEvent', id)
 }
 
 const wbcClassTileChange = (): string => {
-  if (!projectBm.value){
+  if (!projectBm.value) {
     return 'WBC Classification';
-  }else{
+  } else {
     return 'BM Classification';
   }
 }
@@ -406,22 +408,30 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
           totalCount.value += 1;
         }
       } else {
+        // 해당 siteCd와 testType에 따라 targetArray를 가져옴
         const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
 
-        // 파일 이름에서 'NES'를 'NS'로 치환하고, 'NEB'를 'NB'로 치환
-        let modifiedFileName = image.fileName.replace('NES', 'NS');
+        // 원래 파일 이름을 보존
+        const originalFileName = image.fileName;
+
+        // 'NES'를 'NS'로 치환
+        let modifiedFileName = originalFileName.replace('NES', 'NS');
+        // 'NEB'를 'NB'로 치환
         modifiedFileName = modifiedFileName.replace('NEB', 'NB');
 
         // image.title이 targetArray에 포함되지 않는지 확인
         const titleInArray = targetArray.includes(image.title);
 
-        // 치환된 파일 이름을 사용하여 targetArray의 문자열을 포함하는지 확인
+        // 치환된 파일 이름(modifiedFileName)을 사용하여 targetArray의 문자열을 포함하는지 확인
         const fileNameContainsTitle = targetArray.some(str => modifiedFileName.includes(str));
 
-        // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 카운터 증가
+        // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 totalCount.value 증가
         if (!titleInArray && !fileNameContainsTitle) {
           totalCount.value += 1;
         }
+
+        // 필요에 따라 원래 파일 이름을 다시 설정 (여기서는 특별한 경우는 없지만 원래 이름을 되돌려놓을 수 있음)
+        image.fileName = originalFileName;
       }
     });
   });
@@ -433,11 +443,11 @@ async function updateOriginalDb() {
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      if(projectBm.value){
+      if (projectBm.value) {
         if (image.title !== 'OT') {
           totalCount += 1
         }
-      }else{
+      } else {
         const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
@@ -452,11 +462,11 @@ async function updateOriginalDb() {
       delete image.height;
       delete image.filter;
     });
-    if(projectBm.value) {
+    if (projectBm.value) {
       if (item.title !== 'OT') {
         item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
       }
-    }else{
+    } else {
       const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
       if (!targetArray.includes(item.title)) {
         item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
@@ -469,7 +479,7 @@ async function updateOriginalDb() {
   sessionStorage.setItem("selectItems", JSON.stringify(selectItemsS.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
-  const sortArr = sortWbcInfo(orderClass.value,wbcInfoChangeVal.value);
+  const sortArr = sortWbcInfo(orderClass.value, wbcInfoChangeVal.value);
   sortArr.forEach((item: any, index: any) => {
     item.orderText = index;
   });
