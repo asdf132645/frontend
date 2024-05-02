@@ -867,31 +867,25 @@ async function handleKeyDown(event: KeyboardEvent) {
 async function moveSelectedImagesToTargetItem(targetItem: any) {
   const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.title);
   const selectedImages = selectedClickImages.value;
-  console.log(selectedImages)
-  // 선택된 이미지를 타겟 아이템으로 이동
-
-  // 여러 이미지를 드래그한 경우에도 이동 API 호출
-  await moveImage(targetIndex, selectedClickImages.value, targetItem, wbcInfo.value[targetIndex], true, 'keyMove');
 
   for (const selectedImage of selectedImages) {
     const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
     const sourceItem = wbcInfo.value[sourceItemIndex];
     const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
     if (imageIndex !== -1) {
-      // 이미지를 타겟 아이템으로 이동
-      const image = sourceItem.images.splice(imageIndex, 1)[0];
-      image.title = wbcInfo.value[targetIndex].title;
-      wbcInfo.value[targetIndex].images.push(image);
-      // 카운트 업데이트
-      sourceItem.count--;
-      wbcInfo.value[targetIndex].count++;
-
       // 이동된 이미지 정보를 moveImage 함수로 전달하여 데이터 업데이트
       await moveImage(targetIndex, [{
         fileName: selectedImage.fileName,
         id: selectedImage.id,
         title: selectedImage.title
       }], targetItem, wbcInfo.value[targetIndex], true, 'keyMove');
+      // 이미지를 타겟 아이템으로 이동
+      // const image = sourceItem.images.splice(imageIndex, 1)[0];
+      // image.title = wbcInfo.value[targetIndex].title;
+      // wbcInfo.value[targetIndex].images.push(image);
+      // // 카운트 업데이트
+      // sourceItem.count--;
+      // wbcInfo.value[targetIndex].count++;
     }
   }
 
@@ -1084,7 +1078,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     if (!wbcInfosArr) {
       if (keyMove === 'keyMove') {
         const matchingItem = basicBmClassList.find(item => item.title === selectedImage.title);
-        console.log(matchingItem)
         const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
             `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
         const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1103,17 +1096,29 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         sourceFolders,
         destinationFolders,
         fileNames
-      }
-      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
-      let res = await moveClassImagePost(data);
+      };
+      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+      const res = await moveClassImagePost(data);
       if (res) {
+        // 이미지를 타겟 아이템으로 이동
+        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
+        const sourceItem = wbcInfo.value[sourceItemIndex];
+        const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
+        if (imageIndex !== -1) {
+          const image = sourceItem.images.splice(imageIndex, 1)[0];
+          image.title = wbcInfo.value[targetItemIndex].title;
+          wbcInfo.value[targetItemIndex].images.push(image);
+          // 카운트 업데이트
+          sourceItem.count--;
+          wbcInfo.value[targetItemIndex].count++;
+        }
+
         // 선택된 이미지 초기화
         selectedClickImages.value = [];
         selectItemIamgeArr.value = [];
         shiftClickImages.value = [];
         await updateOriginalDb();
-        await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
-
+        await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
       }
       return;
     }
