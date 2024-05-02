@@ -132,7 +132,6 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     processData(data?.categories);
   } catch (e) {
-    console.log(e);
     saveHttpType.value = 'post';
     await combindDegree();
   }
