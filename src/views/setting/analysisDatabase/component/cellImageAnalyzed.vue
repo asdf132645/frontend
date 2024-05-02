@@ -12,9 +12,9 @@
       </tr>
       <!--Common analysis values-->
       <tr>
-        <th rowspan="4" v-if="projectType === 'pb'">WBC diff analysis values</th>
-        <th v-if="projectType === 'classInfo'">BM diff analysis values</th>
-        <th>Cell analyzing count</th>
+        <th rowspan="4" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
+        <th v-if="projectType === 'classInfo'">BM Diff Analysis Values</th>
+        <th>Cell Analyzing Count</th>
         <td>
           <select v-model='pbAnalysisType'>
             <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -22,7 +22,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Wbc Position margin</th>
+        <th>Wbc Position Margin</th>
         <td>
           <select v-model='wbcPositionMargin'>
             <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -30,7 +30,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Rbc Position margin</th>
+        <th>Rbc Position Margin</th>
         <td>
           <select v-model='rbcPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -38,7 +38,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Plt Position margin</th>
+        <th>Plt Position Margin</th>
         <td>
           <select v-model='pltPositionMargin'>
             <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -47,7 +47,7 @@
       </tr>
       <!--WBC diff analysis values-->
       <tr v-if="projectType === 'pb'">
-        <th>WBC diff</th>
+        <th>WBC Diff</th>
         <th>Cell Analyzing Count</th>
         <td>
           <select v-model='pbAnalysisType'>
@@ -57,7 +57,7 @@
       </tr>
       <!--      PBS analysis values-->
       <tr v-if="projectType === 'pb'">
-        <th rowspan="2">PBS analysis values</th>
+        <th rowspan="2">PBS Analysis Values</th>
         <th>
           Cell Analyzing Count
         </th>
@@ -69,7 +69,7 @@
       </tr>
       <tr>
         <th v-if="projectType === 'classInfo'"></th>
-        <th>Stitch count</th>
+        <th>Stitch Count</th>
         <td>
           <select v-model='stitchCount'>
             <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -78,8 +78,8 @@
       </tr>
       <!--      BF analysis values-->
       <tr v-if="projectType === 'pb'">
-        <th>BF analysis values</th>
-        <th>Cell analyzing count:</th>
+        <th>BF Analysis Values</th>
+        <th>Cell Analyzing Count</th>
         <td>
           <select v-model='bfAnalysisType'>
             <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -122,6 +122,7 @@
         <td>
           <font-awesome-icon
               :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              class="iconSize"
               @click="toggleKeepPage"
           />
         </td>

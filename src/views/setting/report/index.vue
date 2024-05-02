@@ -6,7 +6,7 @@
         <button @click="selectTab('LisCode')" :class="{ 'active': selectedTab === 'LisCode' }">Lis Code</button>
         <button @click="selectTab('CbcCode')" :class="{ 'active': selectedTab === 'CbcCode' }">CBC Code</button>
         <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">File Path Set &
-          LisHotKey
+          Lis Hot Key
         </button>
         <button @click="selectTab('countSet')" :class="{ 'active': selectedTab === 'countSet' }">Count Set</button>
       </div>

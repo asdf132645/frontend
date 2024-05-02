@@ -2,15 +2,15 @@
   <div>
     <ul class="customSettingContainer">
       <li>
-        <p class="mb1">Gripper open</p>
+        <p class="mb1">Gripper Open</p>
         <button @click="onGripperOpen" type="button" class="defaultBtn">OK</button>
       </li>
       <li class="mt2">
-        <p class="mb1">Camera reset</p>
+        <p class="mb1">Camera Reset</p>
         <button type="button" class="defaultBtn" @click="onCameraReset">OK</button>
       </li>
       <li class="mt2">
-        <p class="mb1">Charge remaining count</p>
+        <p class="mb1">Charge Remaining Count</p>
         <button type="button" class="defaultBtn">Scan</button>
       </li>
     </ul>
