@@ -196,7 +196,6 @@ watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   // console.log('classinfo_props.selectItems' , props.selectItems);
-  console.log(newItem)
 
 });
 
@@ -233,9 +232,6 @@ const drop = (index: any, event: any) => {
     dragIndex.value = -1;
     updateOriginalDb();
   }
-  console.log('sdsadasd')
-
-
 };
 
 

@@ -38,7 +38,6 @@ export const onCameraResetWebSocket = (userId: string) => {
 
 
 const sendMessage = (payload: object) => {
-    console.log(payload)
     instance?.appContext.config.globalProperties.$socket.emit('message', {
         type: 'SEND_DATA',
         payload: payload

@@ -140,7 +140,6 @@ const getRbcDegreeData = async () => {
 
 
 const processData = (data: any): void => {
-  console.log(data)
   const categoryMap = new Map();
 
   data.forEach((item: any) => {
