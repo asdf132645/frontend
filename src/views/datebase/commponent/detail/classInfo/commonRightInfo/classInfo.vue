@@ -401,23 +401,28 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
   totalCount.value = 0;
   wbcInfoChangeVal.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      if(projectBm.value){
+      if (projectBm.value) {
         if (image.title !== 'OT' && !image.fileName.includes('OT')) {
-          totalCount.value += 1
+          totalCount.value += 1;
         }
-      }else{
+      } else {
         const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+
+        // 파일 이름에서 'NES'를 'NS'로 치환하고, 'NEB'를 'NB'로 치환
+        let modifiedFileName = image.fileName.replace('NES', 'NS');
+        modifiedFileName = modifiedFileName.replace('NEB', 'NB');
+
         // image.title이 targetArray에 포함되지 않는지 확인
         const titleInArray = targetArray.includes(image.title);
-        // image.fileName이 targetArray의 문자열을 포함하지 않는지 확인
-        const fileNameContainsTitle = targetArray.some(str => image.fileName.includes(str));
+
+        // 치환된 파일 이름을 사용하여 targetArray의 문자열을 포함하는지 확인
+        const fileNameContainsTitle = targetArray.some(str => modifiedFileName.includes(str));
 
         // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 카운터 증가
         if (!titleInArray && !fileNameContainsTitle) {
           totalCount.value += 1;
         }
       }
-
     });
   });
 }
