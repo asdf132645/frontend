@@ -182,7 +182,6 @@ const totalCount = ref(0);
 onMounted(async () => {
   await getOrderClass();
   memo.value = props.selectItems.memo;
-  nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
@@ -195,7 +194,6 @@ watch(userModuleDataGet.value, (newUserId) => {
 
 watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
-  nonRbcClassList.value = props.selectItems?.wbcInfo?.nonRbcClassList;
   barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   // console.log('classinfo_props.selectItems' , props.selectItems);
   console.log(newItem)
