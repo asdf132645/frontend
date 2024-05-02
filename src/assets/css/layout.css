@@ -1743,6 +1743,12 @@ ul.normalItems li div span:last-child {
     height: 92.2vh;
 }
 
+
+.dbWbcImageContainer {
+    overflow-y: auto;
+    max-height: 400px;
+}
+
 .tilingViewerContainer {
     /*position: relative;*/
     /*추가*/
