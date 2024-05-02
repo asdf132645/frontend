@@ -375,7 +375,7 @@ const shouldRenderCategory = (title: string) => {
 };
 
 const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
-  if (!siteCd && siteCd === ''){
+  if (!siteCd && siteCd === '') {
     siteCd = '0000';
     testType = '01';
   }
@@ -400,38 +400,54 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 const totalCountSet = (wbcInfoChangeVal: any) => {
   totalCount.value = 0;
   wbcInfoChangeVal.forEach((item: any) => {
-    item.images.forEach((image: any) => {
-      if (projectBm.value) {
-        if (image.title !== 'OT' && !image.fileName.includes('OT')) {
-          totalCount.value += 1;
-        }
-      } else {
-        // 해당 siteCd와 testType에 따라 targetArray를 가져옴
-        const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
-
-        // 원래 파일 이름을 보존
-        const originalFileName = image.fileName;
-
-        // 'NES'를 'NS'로 치환
-        let modifiedFileName = originalFileName.replace('NES', 'NS');
-        // 'NEB'를 'NB'로 치환
-        modifiedFileName = modifiedFileName.replace('NEB', 'NB');
-
-        // image.title이 targetArray에 포함되지 않는지 확인
-        const titleInArray = targetArray.includes(image.title);
-
-        // 치환된 파일 이름(modifiedFileName)을 사용하여 targetArray의 문자열을 포함하는지 확인
-        const fileNameContainsTitle = targetArray.some(str => modifiedFileName.includes(str));
-
-        // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 totalCount.value 증가
-        if (!titleInArray && !fileNameContainsTitle) {
-          totalCount.value += 1;
-        }
-
-        // 필요에 따라 원래 파일 이름을 다시 설정 (여기서는 특별한 경우는 없지만 원래 이름을 되돌려놓을 수 있음)
-        image.fileName = originalFileName;
+    if (projectBm.value) {
+      if (item.title !== 'OT') {
+        totalCount.value += Number(item.count);
       }
-    });
+    } else {
+      // 해당 siteCd와 testType에 따라 targetArray를 가져옴
+      const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
+
+
+      // image.title이 targetArray에 포함되지 않는지 확인
+      const titleInArray = targetArray.includes(item.title);
+      // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 totalCount.value 증가
+      if (!titleInArray) {
+        totalCount.value += Number(item.count);
+      }
+    }
+    // item.images.forEach((image: any) => {
+    //   if (projectBm.value) {
+    //     if (image.title !== 'OT' && !image.fileName.includes('OT')) {
+    //       totalCount.value += 1;
+    //     }
+    //   } else {
+    //     // 해당 siteCd와 testType에 따라 targetArray를 가져옴
+    //     const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
+    //
+    //     // 원래 파일 이름을 보존
+    //     const originalFileName = image.fileName;
+    //
+    //     // 'NES'를 'NS'로 치환
+    //     let modifiedFileName = originalFileName.replace('NES', 'NS');
+    //     // 'NEB'를 'NB'로 치환
+    //     modifiedFileName = modifiedFileName.replace('NEB', 'NB');
+    //
+    //     // image.title이 targetArray에 포함되지 않는지 확인
+    //     const titleInArray = targetArray.includes(image.title);
+    //
+    //     // 치환된 파일 이름(modifiedFileName)을 사용하여 targetArray의 문자열을 포함하는지 확인
+    //     const fileNameContainsTitle = targetArray.some(str => modifiedFileName.includes(str));
+    //
+    //     // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 totalCount.value 증가
+    //     if (!titleInArray && !fileNameContainsTitle) {
+    //       totalCount.value += 1;
+    //     }
+    //
+    //     // 필요에 따라 원래 파일 이름을 다시 설정 (여기서는 특별한 경우는 없지만 원래 이름을 되돌려놓을 수 있음)
+    //     image.fileName = originalFileName;
+    //   }
+    // });
   });
 }
 
