@@ -21,7 +21,7 @@
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
                 {{
-                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
+                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed((Number(category?.count) / Number(totalCount)) === 0 ? 0 : 1) : '0'
                 }}
               </li>
               <!--              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">-->
