@@ -118,7 +118,6 @@ const rbcDegreeStandard = ref<any>([]);
 const commonDataGet = computed(() => store.state.commonModule);
 const instance = getCurrentInstance();
 const rbcArr = computed(() => store.state.commonModule.rbcArr);
-const chatRunningData = computed(() => store.state.commonModule.chatRunningData);
 
 
 watch([runningInfoModule.value], (newVal: any) => {
@@ -146,17 +145,21 @@ onMounted(async () => {
   await updateDataArray(initialRbcClassList,'');
 });
 
-watch(() => chatRunningData.value, (data) => {
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
-    const parsedData = data;
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
+
+    const parsedData = JSON.parse(stringData);
     if(parsedData.jobCmd === 'RUNNING_INFO'){
       // console.log()
       // updateDataArray(parsedData.slotInfo);
-      updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
+     await updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
     }
   } catch (e) {
+    // console.log(e)
   }
-});
+})
 
 const lowPowerPath = ref([]);
 const updateDataArray = async (newSlotInfo: any[], parsedData: any) => {
