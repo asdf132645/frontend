@@ -205,7 +205,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
-
+    console.log(parseDataWarp)
     // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
