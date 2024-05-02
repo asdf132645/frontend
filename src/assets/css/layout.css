@@ -1261,10 +1261,11 @@ button.searchClass {
     background: #ffffff;
     color: #696969;
     font-size: 0.8rem;
-    margin: 15px;
     overflow-y: auto;
     max-height: 87vh;
     box-shadow: 2px 2px 2px #000;
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
 li.onRight {
@@ -1538,6 +1539,7 @@ select.selectSizeTitle {
     text-align: right;
     padding: 5px;
 }
+
 h3.printDetailTitle {
     margin: 40px 0;
     font-size: 1.2rem;
@@ -1944,6 +1946,7 @@ button.rollbackButton {
 .alertButton {
     border: none;
     background-color: #29c7ca;
+    width: 65px;
     color: #fff;
     padding: 10px;
     margin: 3px;

@@ -24,17 +24,3 @@ const okConfirm = () => {
     emit('okConfirm');
 }
 </script>
-
-<style scoped>
-
-.confirmBtn {
-  padding: 10px 20px;
-  margin-right: 3px;
-  cursor: pointer;
-  border: none;
-  border-radius: 3px;
-  color: white;
-}
-
-
-</style>

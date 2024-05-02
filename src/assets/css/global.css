@@ -74,7 +74,7 @@ select:hover {
 
 /* 수직 스크롤바 */
 ::-webkit-scrollbar {
-    width: 3px; /* 스크롤바 너비 조정 */
+    width: 8px; /* 스크롤바 너비 조정 */
 }
 
 ::-webkit-scrollbar-track {
