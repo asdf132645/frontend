@@ -41,7 +41,7 @@
         <li>Count</li>
         <li>%</li>
       </ul>
-      <ul class="nth1Child" v-if="item?.title !== 'OT'" @click="goClass(item.id)">
+      <ul class="nth1Child" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)">
         <li>{{ item?.name }}</li>
         <li>{{ item?.count }}</li>
         <li> {{ item?.percent || '-' }}</li>
@@ -371,6 +371,12 @@ const afterChang = (newItem: any) => {
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
   totalCountSet(wbcInfoChangeVal.value);
 }
+const shouldRenderCategory = (title: string) => {
+  // siteCd와 testType을 입력으로 getStringArrayBySiteCd 함수를 호출
+  const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.siteCd.testType);
+  // category.title이 targetArray에 포함되어 있는지 확인
+  return !targetArray.includes(title);
+};
 
 const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
   // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
