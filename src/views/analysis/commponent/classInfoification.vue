@@ -325,15 +325,15 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 const updatePercentages = async () => {
   const percent = dspWbcClassList.value.map((classList: any) => {
     return classList.map((category: any) => {
-      // Calculate and update percentage
       return {
         ...category,
-        percent: totalCount.value && totalCount.value !== '0' ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(0) : '0'
+        percent: totalCount.value && totalCount.value !== '0' ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(1) : '0'
       };
     });
   });
   dspWbcClassList.value = percent;
 };
+
 
 
 const getCategoryName = (category: WbcInfo) => category?.name;

@@ -394,7 +394,7 @@ const getWbcHotKeyClasses = async () => {
 function isBorderChanged(image: any) {
   const prefix = image.fileName.split('_')[0];
 
-  const replacements = {
+  const replacements: any = {
     'NES': 'NS',
     'NEB': 'NB'
   };
@@ -407,7 +407,7 @@ function isBorderChanged(image: any) {
 }
 
 function replaceFileNamePrefix(fileName: string) {
-  const replacements = {
+  const replacements: any = {
     'NES': 'NS',
     'NEB': 'NB'
   };
@@ -415,7 +415,7 @@ function replaceFileNamePrefix(fileName: string) {
   const prefix = fileName.split('_')[0];
 
   // 대체 규칙에 따라 prefix를 변경
-  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+  const modifiedPrefix: any = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
   // 변경된 prefix 반환
@@ -524,7 +524,6 @@ const excelDownload = () => {
 
 
   const metrics: MetricsVal = metricsArrVal;
-  console.log(metricsArrVal);
   // 오차 행렬의 Total 값 계산
   cellTypes.forEach((trueType) => {
     cellTypes.forEach((predictedType) => {
@@ -1275,16 +1274,17 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       }
     }
 
-    if(projectType.value === 'bm') {
+    if (projectType.value === 'bm') {
       if (item.title !== 'OT') {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1) || 0;
       }
-    }else{
+    } else {
       const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
       if (!targetArray.includes(item.title)) {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1) || 0;
       }
     }
+
   });
 
   let uniqueImages: any = [];

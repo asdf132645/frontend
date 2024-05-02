@@ -478,12 +478,12 @@ async function updateOriginalDb() {
     });
     if (projectBm.value) {
       if (item.title !== 'OT') {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1) || 0;
       }
     } else {
       const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
       if (!targetArray.includes(item.title)) {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1) || 0;
       }
     }
   });
