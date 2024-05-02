@@ -45,6 +45,7 @@ table {
 
 html {
     background: #ffffff;
+    user-select: none;
 }
 
 a{
