@@ -879,13 +879,6 @@ async function moveSelectedImagesToTargetItem(targetItem: any) {
         id: selectedImage.id,
         title: selectedImage.title
       }], targetItem, wbcInfo.value[targetIndex], true, 'keyMove');
-      // 이미지를 타겟 아이템으로 이동
-      // const image = sourceItem.images.splice(imageIndex, 1)[0];
-      // image.title = wbcInfo.value[targetIndex].title;
-      // wbcInfo.value[targetIndex].images.push(image);
-      // // 카운트 업데이트
-      // sourceItem.count--;
-      // wbcInfo.value[targetIndex].count++;
     }
   }
 
@@ -1070,28 +1063,17 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   let destinationFolders = [];
   let fileNames = [];
 
-  // console.log(draggedItem)
   // 선택된 이미지 배열에 대해 반복
   for (const selectedImage of arrType) {
     const fileName = selectedImage.fileName;
     fileNames.push(fileName)
-    if (!wbcInfosArr) {
-      if (keyMove === 'keyMove') {
-        const matchingItem = basicBmClassList.find(item => item.title === selectedImage.title);
-        const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
-            `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
-        const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
-        destinationFolders.push(destinationFolder);
-        sourceFolders.push(sourceFolder);
-      }else{
-        const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
-            `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
-        const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
-        destinationFolders.push(destinationFolder);
-        sourceFolders.push(sourceFolder);
-      }
-    }
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
+      const matchingItem = basicBmClassList.find(item => item.title === selectedImage.title);
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      destinationFolders.push(destinationFolder);
+      sourceFolders.push(sourceFolder);
       const data = {
         sourceFolders,
         destinationFolders,
@@ -1122,7 +1104,12 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       }
       return;
     }
-    if (!wbcInfosArr) {
+    if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      destinationFolders.push(destinationFolder);
+      sourceFolders.push(sourceFolder);
       const data = {
         sourceFolders,
         destinationFolders,
@@ -1149,15 +1136,16 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     }
 
   }
-  if (wbcInfosArr) {
+  if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
-      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${seItem.title}`;
+      const matchingItem = basicBmClassList.find(item => item.title === seItem.title);
+
+      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
-    // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
     const data = {
       sourceFolders,
       destinationFolders,
