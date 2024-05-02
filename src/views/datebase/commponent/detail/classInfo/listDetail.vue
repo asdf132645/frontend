@@ -1276,12 +1276,18 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
     if (projectType.value === 'bm') {
       if (item.title !== 'OT') {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1) || 0;
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);
+        item.percent = (Number(percentage) === Math.floor(Number(percentage)))
+            ? Math.floor(Number(percentage)).toString()
+            : percentage;
       }
     } else {
       const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1) || 0;
+      if (!targetArray.includes(item.title)) { // 퍼센트를 소수점 한 자리까지 계산
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 부분이 0이면 정수만, 아니면 소수점 한 자리까지 표시
+        item.percent = (Number(percentage) === Math.floor(Number(percentage)))
+            ? Math.floor(Number(percentage)).toString()
+            : percentage;
       }
     }
 
