@@ -9,6 +9,7 @@ export interface SystemInfo {
     oCasStat: string;
     jobCmd: string;
     siteCd: string;
+    deviceBarcode: string;
     isDoorOpen: string;
     oilCount: string;
     storageSize: string;
@@ -52,6 +53,7 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
             oCasStat: '',
             jobCmd: '',
             siteCd: '',
+            deviceBarcode: '',
             isDoorOpen: '',
             oilCount: '',
             storageSize: '',

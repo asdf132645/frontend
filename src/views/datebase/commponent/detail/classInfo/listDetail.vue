@@ -1204,6 +1204,26 @@ function removeDuplicateImages(data: any[]): any[] {
   });
 }
 
+const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
+  // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
+  const arraysBySiteCd: any = {
+    '0006': {
+      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+      includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    },
+  };
+
+  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
+  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+  };
+
+  // testType에 따라 적절한 배열을 반환
+  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
+};
+
+
 async function updateOriginalDb(notWbcAfterSave?: string) {
   let originalDbVal: any = [];
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
@@ -1211,9 +1231,17 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      if (image.title !== 'OT') {
-        totalCount += 1
+      if(projectType.value === 'bm'){
+        if (image.title !== 'OT') {
+          totalCount += 1
+        }
+      }else{
+        const targetArray = getStringArrayBySiteCd(selectItems.value.siteCd, selectItems.value.testType);
+        if (!targetArray.includes(image.title)) {
+          totalCount += 1;
+        }
       }
+
     });
   });
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
@@ -1223,8 +1251,15 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       delete image.height;
       delete image.filter;
     });
-    if (item.title !== 'OT') {
-      item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+    if(projectType.value === 'bm') {
+      if (item.title !== 'OT') {
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+      }
+    }else{
+      const targetArray = getStringArrayBySiteCd(selectItems.value.siteCd, selectItems.value.testType);
+      if (!targetArray.includes(item.title)) {
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+      }
     }
   });
 

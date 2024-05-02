@@ -49,6 +49,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
+const embeddedStatus = computed(() => store.state.embeddedStatusModule);
 const dataBaseSetDataModule = computed(() => store.state.dataBaseSetDataModule);
 
 const instance = getCurrentInstance();
@@ -409,6 +410,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           isNsNbIntegration: isNsNbIntegration,
           memo: '',
           rbcMemo: '',
+          siteCd: embeddedStatus.value.sysInfo.siteCd,
+          deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
         }
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 

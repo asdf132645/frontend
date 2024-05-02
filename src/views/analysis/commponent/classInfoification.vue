@@ -238,12 +238,21 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
   });
 };
 
+const getIncludesStrBySiteCd = (siteCd: string): string[] => {
+  // siteCd 값에 따른 includesStr 배열을 정의
+  const arraysBySiteCd: any = {
+    '0006': ["AR", "NR", "GP", "PA", "SM", "MC", "MA", "OT"],
+  };
 
+  return arraysBySiteCd[siteCd] || ["AR", "NR", "GP", "PA", "MC", "MA", "SM", "OT"];
+};
+
+// 퍼센트 계산 하는 부분
 const calculateWbcPercentages = (
     classList: WbcInfo[],
     wbcList: WbcInfo[]
 ) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", "OT"] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", "OT"]
+  const includesStr = getIncludesStrBySiteCd(siteCd.value);
   const total = classList
       .filter(
           (category) =>
@@ -285,13 +294,33 @@ const updateCounts = async (currentSlot: any) => {
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
-  const includesStr = siteCd.value === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", 'NE', 'GP', 'PA', 'OT'] : ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'];
-  const includesStr2 = siteCd.value === '0006' ? ["NR", "AR", "MC", "MA", 'NE', 'GP', 'PA', 'OT'] : ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'];
+  // siteCd와 testType을 입력으로 getStringArrayBySiteCd 함수를 호출
+  const targetArray = getStringArrayBySiteCd(siteCd.value, testType.value);
 
-  const targetArray = testType.value === '01' || testType.value === '04' ? includesStr : includesStr2;
-
+  // category.title이 targetArray에 포함되어 있는지 확인
   return !targetArray.includes(category.title);
 };
+
+
+const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
+  // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
+  const arraysBySiteCd: any = {
+    '0006': {
+      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+      includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    },
+  };
+
+  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
+  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+  };
+
+  // testType에 따라 적절한 배열을 반환
+  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
+};
+
 
 const updatePercentages = async () => {
   const percent = dspWbcClassList.value.map((classList: any) => {

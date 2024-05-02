@@ -372,13 +372,46 @@ const afterChang = (newItem: any) => {
   totalCountSet(wbcInfoChangeVal.value);
 }
 
+const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
+  // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
+  const arraysBySiteCd: any = {
+    '0006': {
+      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+      includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    },
+  };
+
+  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
+  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+  };
+
+  // testType에 따라 적절한 배열을 반환
+  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
+};
+
 const totalCountSet = (wbcInfoChangeVal: any) => {
   totalCount.value = 0;
   wbcInfoChangeVal.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      if (image.title !== 'OT' && !image.fileName.includes('OT')) {
-        totalCount.value += 1
+      if(projectBm.value){
+        if (image.title !== 'OT' && !image.fileName.includes('OT')) {
+          totalCount.value += 1
+        }
+      }else{
+        const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+        // image.title이 targetArray에 포함되지 않는지 확인
+        const titleInArray = targetArray.includes(image.title);
+        // image.fileName이 targetArray의 문자열을 포함하지 않는지 확인
+        const fileNameContainsTitle = targetArray.some(str => image.fileName.includes(str));
+
+        // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 카운터 증가
+        if (!titleInArray && !fileNameContainsTitle) {
+          totalCount.value += 1;
+        }
       }
+
     });
   });
 }
@@ -389,8 +422,15 @@ async function updateOriginalDb() {
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
-      if (image.title !== 'OT') {
-        totalCount += 1
+      if(projectBm.value){
+        if (image.title !== 'OT') {
+          totalCount += 1
+        }
+      }else{
+        const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+        if (!targetArray.includes(image.title)) {
+          totalCount += 1;
+        }
       }
     });
   });
@@ -401,8 +441,15 @@ async function updateOriginalDb() {
       delete image.height;
       delete image.filter;
     });
-    if(item.title !== 'OT'){
-      item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+    if(projectBm.value) {
+      if (item.title !== 'OT') {
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+      }
+    }else{
+      const targetArray = getStringArrayBySiteCd(selectItemsS.value.siteCd, selectItemsS.value.testType);
+      if (!targetArray.includes(item.title)) {
+        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+      }
     }
   });
 
