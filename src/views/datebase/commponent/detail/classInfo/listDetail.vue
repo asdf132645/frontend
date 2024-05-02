@@ -136,7 +136,7 @@
                   @click="selectImage(itemIndex, imageIndex, item)"
                   @dblclick="openModal(image, item)"
               >
-                <div style="position: relative; height: 150px">
+                <div style="position: relative;">
                   <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
                     <div>{{ replaceFileNamePrefix(image.fileName) }}
                       <font-awesome-icon
@@ -455,6 +455,10 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
   await getOrderClass();
   const sortArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
+});
+
+watch(() => imageSize.value, () => {
+  drawCellMarker();
 });
 
 
