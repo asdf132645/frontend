@@ -1205,6 +1205,10 @@ function removeDuplicateImages(data: any[]): any[] {
 }
 
 const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
+  if (!siteCd && siteCd === ''){
+    siteCd = '0000';
+    testType = '01';
+  }
   // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
   const arraysBySiteCd: any = {
     '0006': {
