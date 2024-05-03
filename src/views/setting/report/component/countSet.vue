@@ -1,6 +1,6 @@
 <template>
   <div class="alignDiv" style="text-align: center">
-    <p class="mb2"> [ Min count ] </p>
+    <p class="mb2"> [ Min Count ] </p>
     <ul>
       <li v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Giant Platelet</p>
@@ -11,7 +11,7 @@
         <input type="text" v-model="minCountArr[0].minPaCount" class="form-control form-control-sm">
       </li>
     </ul>
-    <p class="mb2 mt4"> [ Running count ] </p>
+    <p class="mb2 mt4"> [ Running Count ] </p>
     <table class="defaultTable" style="margin: auto;">
       <thead>
         <tr>

@@ -263,7 +263,6 @@ h3.titleText {
 .execute {
     text-align: center;
     background: #fff;
-    /* border: 1px solid #28c7c7; */
     padding: 19px;
     display: flex;
     justify-content: space-between;
@@ -447,6 +446,10 @@ button.saveBtn, .defaultBtn {
     border-bottom: 1px solid #494949;
 }
 
+.nth1ChildOrder:hover{
+    color: #29c7ca;
+}
+
 /*동그라미 끝*/
 .categories, .nth1Child {
     display: flex;
@@ -473,16 +476,6 @@ button.saveBtn, .defaultBtn {
     justify-content: space-between;
 }
 
-/*.categories::after, .nth1Child::after {*/
-/*    content: '';*/
-/*    position: absolute;*/
-/*    bottom: 0;*/
-/*    left: 0;*/
-/*    width: 65%;*/
-/*    border-bottom: 1px solid #494949;*/
-/*}*/
-
-
 ul.classInfo {
     width: 50%;
     display: inline-block;
@@ -502,7 +495,6 @@ ul.classInfo {
 .degree {
     display: inline-block;
     width: 15%;
-    /*text-align: right;*/
 }
 
 ul.nth1Child li {
@@ -1022,22 +1014,19 @@ table.defaultTable tbody td {
     display: flex;
     flex-direction: column;
     position: absolute;
-    background: #000;
-    max-width: 300px;
-    padding: 10px;
-    border: 1px solid #fff;
     top: 0;
+    background: #000;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #fff;
+    max-width: 280px;
 }
 
-.filterDivBox div {
-    /*padding: 10px;*/
-    vertical-align: top;
-    display: flex;
-    flex-direction: column;
-    padding: 0.7rem;
+.filterDivBox > div {
+    padding-bottom: 2rem;
 }
 
-.filterDivBox span {
+.filterDivBox > div > span {
     border-bottom: 1px solid white;
     display: inline-block;
     margin-bottom: 5px;
@@ -1048,7 +1037,7 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox select {
-    width: 89%;
+    width: 95%;
 }
 
 .selectedTr {
@@ -1089,7 +1078,7 @@ ul.wbcInfoDbUl > li {
 
 .titleImg {
     position: absolute;
-    color: #00000094;
+    color: #000;
     background: none;
     z-index: 5;
 }
@@ -1097,7 +1086,11 @@ ul.wbcInfoDbUl > li {
 .titleImg div {
     font-weight: bold;
     font-size: 19px;
-    background: #fff;
+    background: #37B9C8;
+}
+
+.cellImg {
+    vertical-align: top;
 }
 
 .hh3title {
@@ -1132,13 +1125,8 @@ ul.wbcImgWrap > li {
     min-height: 150px;
 }
 
-ul.wbcImgWrap > li > img {
-    /*max-width: 150px;*/
-    /*max-height: 150px;*/
-}
-
 .selected-image {
-    border: 2px solid #20eaa7 !important;
+    border: 3px solid #20eaa7 !important;
     margin: 3px !important;
 }
 
@@ -1196,11 +1184,6 @@ ul.leftWbcInfo {
     text-align: right;
 }
 
-.border-changed {
-    /* border: 2px solid #3fff00;
-    margin: 3px !important; */
-}
-
 .wbcClassDbDiv > div > p {
     display: inline-block;
     width: 33%;
@@ -1241,6 +1224,10 @@ button.searchClass {
     cursor: pointer;
 }
 
+button.searchClass:hover{
+    color: #000;
+    background: #fff;
+}
 .reportDiv > div {
     display: inline-block;
     vertical-align: top;
@@ -1261,10 +1248,11 @@ button.searchClass {
     background: #ffffff;
     color: #696969;
     font-size: 0.8rem;
-    margin: 15px;
     overflow-y: auto;
     max-height: 87vh;
     box-shadow: 2px 2px 2px #000;
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
 li.onRight {
@@ -1333,12 +1321,14 @@ table.reportTable tr th {
 
 ul.wbcInfoFilter > li {
     display: inline-block;
+    width: 40px;
+    padding: 2px;
 }
 
 ul.wbcInfoFilter > li > input, ul.wbcInfoFilter > li > label {
     display: inline-block;
     width: 39%;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 ul.wbcInfoFilter {
@@ -1378,13 +1368,6 @@ span.wbcClose {
 
 select.stopDivSelect {
     margin-top: 5px;
-}
-
-.lastTestType label {
-    display: inline-block;
-    text-align: left;
-    position: relative;
-    left: -15px;
 }
 
 .lastTestType label input {
@@ -1538,6 +1521,7 @@ select.selectSizeTitle {
     text-align: right;
     padding: 5px;
 }
+
 h3.printDetailTitle {
     margin: 40px 0;
     font-size: 1.2rem;
@@ -1735,15 +1719,15 @@ ul.normalItems li div span:last-child {
 }
 
 .image-container {
-    /*overflow: hidden;*/
     position: relative;
     width: 40%;
     height: 92.2vh;
 }
 
-.tilingViewerContainer {
-    /*position: relative;*/
-    /*추가*/
+
+.dbWbcImageContainer {
+    overflow-y: auto;
+    max-height: 400px;
 }
 
 .dbBmImageContainer {
@@ -1901,7 +1885,7 @@ button.rollbackButton {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform:translate(-50%,-50%);
     z-index: 9999;
     padding: 45px 0;
     width: 400px;
@@ -1944,6 +1928,7 @@ button.rollbackButton {
 .alertButton {
     border: none;
     background-color: #29c7ca;
+    width: 65px;
     color: #fff;
     padding: 10px;
     margin: 3px;

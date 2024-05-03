@@ -3,7 +3,7 @@
     <div class="settingTabSubButtons">
       <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
       <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
-      <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device controls</button>
+      <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
       <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
         {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
       </button>

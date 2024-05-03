@@ -6,14 +6,14 @@
       <h3 class="orderTitle hh3title">Order Information</h3>
       <ul class="orderListUi">
         <li>Order ID <span>{{ selectedItem?.slotId }}</span>  </li>
-        <li>LIS status <span>No data sent or receuved from LIS</span>  </li>
-        <li>Type of order <span>No data sent or receuved from LIS</span>
+        <li>LIS status <span>No data sent or received from LIS</span>  </li>
+        <li>Type of order <span>No data sent or received from LIS</span>
           <span v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>
           <span v-else>{{ selectedItem?.testType }}</span>
         </li> 
         <li>NS, NB Integration <span>{{ selectedItem?.isNsNbIntegration }}</span>  </li>
         <li>Patient ID <span>{{ selectedItem?.patientId }}</span>  </li>
-        <li>Patient name <span>{{ selectedItem?.patientNm }}</span>  </li>
+        <li>Patient Name <span>{{ selectedItem?.patientNm }}</span>  </li>
         <li>
           <img :src="pilePath" style="width: 235px"/>
         </li>
@@ -22,10 +22,10 @@
     <div>
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
       <ul>
-        <li>Analyzed date <span>{{ formatDateString(selectedItem?.createDate) }}</span></li>
-        <li>Signed state <span>{{ selectedItem?.signedState }}</span></li>
-        <li>Signed of date <span>{{ selectedItem?.signedOfDate }}</span></li>
-        <li>Signed user ID <span>{{ selectedItem?.signedUserId }}</span></li>
+        <li>Analyzed Date <span>{{ formatDateString(selectedItem?.createDate) }}</span></li>
+        <li>Signed State <span>{{ selectedItem?.signedState }}</span></li>
+        <li>Signed of Date <span>{{ selectedItem?.signedOfDate }}</span></li>
+        <li>Signed User ID <span>{{ selectedItem?.signedUserId }}</span></li>
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">
           <div v-if="showClassificationResults(selectedItem?.classificationResult)">
             <div v-for="result in selectedItem.classificationResult" :key="result.title">
