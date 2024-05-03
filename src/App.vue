@@ -180,19 +180,19 @@ onMounted(async () => {
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('messageSent', emitSocketData);
-  // 웹 워커 생성
-  worker.value = new Worker(new URL('./webWorker/index.ts', import.meta.url));
-
-  // 웹 워커 이벤트 리스너 등록
-  worker.value.onmessage = function(event) {
-    // 웹 워커에서 수신한 메시지 처리
-    workerMessage.value = event.data;
-    console.log(event)
-  };
-
-  // 웹 워커로 메시지 보내기
-  const dataToSend = 'Hello, Worker!';
-  worker.value.postMessage(dataToSend);
+  // // 웹 워커 생성
+  // worker.value = new Worker(new URL('./webWorker/index.ts', import.meta.url));
+  //
+  // // 웹 워커 이벤트 리스너 등록
+  // worker.value.onmessage = function(event) {
+  //   // 웹 워커에서 수신한 메시지 처리
+  //   workerMessage.value = event.data;
+  //   console.log(event)
+  // };
+  //
+  // // 웹 워커로 메시지 보내기
+  // const dataToSend = 'Hello, Worker!';
+  // worker.value.postMessage(dataToSend);
 });
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', leave);
