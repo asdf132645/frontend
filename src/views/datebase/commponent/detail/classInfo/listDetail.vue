@@ -394,7 +394,7 @@ const getWbcHotKeyClasses = async () => {
 function isBorderChanged(image: any) {
   const prefix = image.fileName.split('_')[0];
 
-  const replacements = {
+  const replacements: any = {
     'NES': 'NS',
     'NEB': 'NB'
   };
@@ -407,7 +407,7 @@ function isBorderChanged(image: any) {
 }
 
 function replaceFileNamePrefix(fileName: string) {
-  const replacements = {
+  const replacements: any = {
     'NES': 'NS',
     'NEB': 'NB'
   };
@@ -415,7 +415,7 @@ function replaceFileNamePrefix(fileName: string) {
   const prefix = fileName.split('_')[0];
 
   // 대체 규칙에 따라 prefix를 변경
-  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+  const modifiedPrefix: any = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
   // 변경된 prefix 반환
@@ -528,7 +528,6 @@ const excelDownload = () => {
 
 
   const metrics: MetricsVal = metricsArrVal;
-  console.log(metricsArrVal);
   // 오차 행렬의 Total 값 계산
   cellTypes.forEach((trueType) => {
     cellTypes.forEach((predictedType) => {
@@ -809,6 +808,7 @@ function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
+  console.log(draggedItem)
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     // 이미지를 한 개만 드래그한 경우
@@ -842,7 +842,7 @@ function handleBodyClick(event: Event) {
   }
 }
 
-function handleKeyDown(event: KeyboardEvent) {
+async function handleKeyDown(event: KeyboardEvent) {
   // 쉬프트 키가 눌렸는지 확인
   if (event.shiftKey) {
     isShiftKeyPressed.value = true;
@@ -852,37 +852,30 @@ function handleKeyDown(event: KeyboardEvent) {
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
   }
-
+  addToRollbackHistory();
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
     if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-      moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+       await moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
   } else if (projectType.value === 'bm') {
     if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-      moveSelectedImagesToTargetItem(wbcHotKeysItems.value.find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+      await moveSelectedImagesToTargetItem(wbcHotKeysItems.value.find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
   }
+
+
 }
 
 async function moveSelectedImagesToTargetItem(targetItem: any) {
   const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.title);
   const selectedImages = selectedClickImages.value;
 
-  // 선택된 이미지를 타겟 아이템으로 이동
   for (const selectedImage of selectedImages) {
     const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
     const sourceItem = wbcInfo.value[sourceItemIndex];
     const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
     if (imageIndex !== -1) {
-      // 이미지를 타겟 아이템으로 이동
-      const image = sourceItem.images.splice(imageIndex, 1)[0];
-      image.title = wbcInfo.value[targetIndex].title;
-      wbcInfo.value[targetIndex].images.push(image);
-      // 카운트 업데이트
-      sourceItem.count--;
-      wbcInfo.value[targetIndex].count++;
-
       // 이동된 이미지 정보를 moveImage 함수로 전달하여 데이터 업데이트
       await moveImage(targetIndex, [{
         fileName: selectedImage.fileName,
@@ -997,6 +990,8 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
           title: wbcInfo.value[itemIndex].title,
           ...wbcInfo.value[itemIndex].images[i],
         });
+        // console.log(wbcInfo.value[itemIndex])
+        // console.log(classInfoitem)
         selectItemIamgeArr.value.push(classInfoitem);
       }
     }
@@ -1071,42 +1066,59 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   let destinationFolders = [];
   let fileNames = [];
 
-
   // 선택된 이미지 배열에 대해 반복
   for (const selectedImage of arrType) {
     const fileName = selectedImage.fileName;
     fileNames.push(fileName)
-    if (!wbcInfosArr) {
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+    if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
+      const matchingItem = basicBmClassList.find(item => item.title === selectedImage.title);
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
-    }
-    if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
       const data = {
         sourceFolders,
         destinationFolders,
         fileNames
-      }
-      let res = await moveClassImagePost(data);
+      };
+      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+      const res = await moveClassImagePost(data);
       if (res) {
+        // 이미지를 타겟 아이템으로 이동
+        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
+        const sourceItem = wbcInfo.value[sourceItemIndex];
+        const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
+        if (imageIndex !== -1) {
+          const image = sourceItem.images.splice(imageIndex, 1)[0];
+          image.title = wbcInfo.value[targetItemIndex].title;
+          wbcInfo.value[targetItemIndex].images.push(image);
+          // 카운트 업데이트
+          sourceItem.count--;
+          wbcInfo.value[targetItemIndex].count++;
+        }
+
         // 선택된 이미지 초기화
         selectedClickImages.value = [];
         selectItemIamgeArr.value = [];
         shiftClickImages.value = [];
         await updateOriginalDb();
+        await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
       }
       return;
     }
-    if (!wbcInfosArr) {
+    if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
+      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
+          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      destinationFolders.push(destinationFolder);
+      sourceFolders.push(sourceFolder);
       const data = {
         sourceFolders,
         destinationFolders,
         fileNames
       }
       let res = await moveClassImagePost(data);
-      // let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
       // 드래그된 이미지를 원래 위치에서 제거
       if (res) {
         const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
@@ -1127,15 +1139,16 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     }
 
   }
-  if (wbcInfosArr) {
+  if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
-      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${seItem.id}_${seItem.title}`;
+      const matchingItem = basicBmClassList.find(item => item.title === seItem.title);
+
+      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
-    // sourceFolders, destinationFolders, imageNames를 moveImgPost 함수에 전달
     const data = {
       sourceFolders,
       destinationFolders,
@@ -1265,16 +1278,23 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
       }
     }
 
-    if(projectType.value === 'bm') {
+    if (projectType.value === 'bm') {
       if (item.title !== 'OT') {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);
+        item.percent = (Number(percentage) === Math.floor(Number(percentage)))
+            ? Math.floor(Number(percentage)).toString()
+            : percentage;
       }
-    }else{
+    } else {
       const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+      if (!targetArray.includes(item.title)) { // 퍼센트를 소수점 한 자리까지 계산
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 부분이 0이면 정수만, 아니면 소수점 한 자리까지 표시
+        item.percent = (Number(percentage) === Math.floor(Number(percentage)))
+            ? Math.floor(Number(percentage)).toString()
+            : percentage;
       }
     }
+
   });
 
   let uniqueImages: any = [];

@@ -478,14 +478,17 @@ async function updateOriginalDb() {
     });
     if (projectBm.value) {
       if (item.title !== 'OT') {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
       const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
       if (!targetArray.includes(item.title)) {
-        item.percent = ((Number(item.count) / Number(totalCount)) * 100).toFixed(0) || 0
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     }
+
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장

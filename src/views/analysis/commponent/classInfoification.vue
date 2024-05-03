@@ -21,7 +21,7 @@
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
                 {{
-                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
+                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed((Number(category?.count) / Number(totalCount)) === 0 ? 0 : 1) : '0'
                 }}
               </li>
               <!--              <li v-if="innerIndex === dspWbcClassList.length && dspWbcClassList.length !== 1">-->
@@ -325,15 +325,25 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 const updatePercentages = async () => {
   const percent = dspWbcClassList.value.map((classList: any) => {
     return classList.map((category: any) => {
-      // Calculate and update percentage
+      const percentage = totalCount.value && totalCount.value !== '0'
+          ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(1)
+          : '0';
+
+      // 퍼센트를 정수와 비교해서 정수일 경우 정수만, 그렇지 않으면 소수점 한 자리까지 표시
+      const formattedPercent = (Number(percentage) === Math.floor(Number(percentage)))
+          ? Math.floor(Number(percentage)).toString()
+          : percentage;
+
       return {
         ...category,
-        percent: totalCount.value && totalCount.value !== '0' ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(0) : '0'
+        percent: formattedPercent,
       };
     });
   });
   dspWbcClassList.value = percent;
 };
+
+
 
 
 const getCategoryName = (category: WbcInfo) => category?.name;
