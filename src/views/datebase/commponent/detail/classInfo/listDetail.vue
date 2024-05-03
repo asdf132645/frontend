@@ -457,11 +457,6 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
   await sortWbcInfo(wbcInfo.value, sortArr);
 });
 
-watch(() => imageSize.value, () => {
-  drawCellMarker();
-});
-
-
 const refreshClass = async (data: any) => {
   selectItems.value = data;
   await getWbcCustomClasses(true, data);

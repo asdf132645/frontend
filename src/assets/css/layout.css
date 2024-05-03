@@ -263,7 +263,6 @@ h3.titleText {
 .execute {
     text-align: center;
     background: #fff;
-    /* border: 1px solid #28c7c7; */
     padding: 19px;
     display: flex;
     justify-content: space-between;
@@ -496,7 +495,6 @@ ul.classInfo {
 .degree {
     display: inline-block;
     width: 15%;
-    /*text-align: right;*/
 }
 
 ul.nth1Child li {
@@ -1721,7 +1719,6 @@ ul.normalItems li div span:last-child {
 }
 
 .image-container {
-    /*overflow: hidden;*/
     position: relative;
     width: 40%;
     height: 92.2vh;
