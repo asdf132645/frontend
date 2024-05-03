@@ -20,7 +20,7 @@
 
     <div class="databaseWbcLeft">
       <div class="imgMenuSetDiv" @mouseleave="hideSizeControl">
-        <button type="button" @click="drawCellMarker">
+        <button type="button" @click="drawCellMarker(false)">
           <font-awesome-icon
               :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
           />
@@ -611,8 +611,10 @@ const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, n
 };
 
 
-const drawCellMarker = async () => {
-  cellMarkerIcon.value = !cellMarkerIcon.value
+const drawCellMarker = async (imgResize?: boolean) => {
+  if(!imgResize){
+    cellMarkerIcon.value = !cellMarkerIcon.value
+  }
 
   if (cellMarkerIcon.value) {
     let url = '';
@@ -790,6 +792,7 @@ function changeImageSize(event: any) {
       image.height = Number(currentHeight) + Number(sizeChange);
     });
   });
+  drawCellMarker(true);
 }
 
 
