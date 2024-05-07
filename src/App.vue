@@ -75,11 +75,7 @@ const orderList = computed(() => store.state.commonModule.orderList);
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
 
-const worker = ref<Worker | null>(null);
-
-// 웹 워커에서 수신한 메시지를 저장할 변수
-const workerMessage = ref<string>('');
-
+const worker = ref<any>(null);
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
@@ -181,18 +177,48 @@ onMounted(async () => {
   }
   EventBus.subscribe('messageSent', emitSocketData);
   // 웹 워커 생성
-  // worker.value = new Worker(new URL('./webWorker/index.ts', import.meta.url));
-  //
-  // // 웹 워커 이벤트 리스너 등록
-  // worker.value.onmessage = function(event) {
-  //   // 웹 워커에서 수신한 메시지 처리
-  //   workerMessage.value = event.data;
-  //   console.log(event)
-  // };
-  //
-  // // 웹 워커로 메시지 보내기
-  // const dataToSend = 'Hello, Worker!';
-  // worker.value.postMessage(dataToSend);
+  worker.value = new Worker(new URL('./webWorker/index.ts', import.meta.url));
+  worker.value.onmessage = (event: any) => {
+    const result = event.data;
+    if(result.changeData){ // 데이터 계속 업데이트
+      runningArr.value[result.iCasStatArrTwoLastIndexOf] = result.savedData;
+    }
+
+    if(result.slideProceedingBool){
+      store.dispatch('commonModule/setCommonInfo', {slideProceeding: result.slideProceeding});
+    }
+
+    if (result.slideBooleanTrue){
+      store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+    }
+
+    if (result.updatedState) {
+      if(result.updatedState === 'changeSlideSave'){ // 슬라이드 교체
+        console.log('슬라이드 교체')
+        store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+        store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
+        saveTestHistory(runningArr.value[result?.iCasStatArrThreeLastIndexOf],runningArr.value[result.iCasStatArrThreeLastIndexOf]?.slotInfo?.slotNo);
+        store.dispatch('commonModule/setCommonInfo', {runningSlotId: result.slotId});
+        store.dispatch('commonModule/setCommonInfo', {slotIndex: result.lastCompleteIndex});
+      }
+      if (result.updatedState === 'runningInfoStop' && !commonDataGet.value.runningInfoStop) {
+        console.log('스탑')
+        tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
+        store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+        store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+        saveTestHistory(result.savedData,result.savedData?.slotInfo?.slotNo);
+        return;
+      } else if (result.updatedState === 'pause') {
+        tcpReq().embedStatus.pause.reqUserId = userId.value;
+        store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.pause});
+        tcpReq().embedStatus.pause.reqUserId = userId.value;
+        store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
+      }
+
+    }
+  };
+
+
 });
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', leave);
@@ -205,7 +231,14 @@ onBeforeUnmount(() => {
     clearInterval(countingInterRunval);
     countingInterRunval = null;
   }
+  if (worker.value) {
+    worker.value.terminate();
+    worker.value = null;
+  }
 });
+
+
+
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   if(commonDataGet.value.viewerCheck !== 'main'){
@@ -232,7 +265,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
         break;
       case 'INIT':
-        // sendSettingInfo();
+        sendSettingInfo();
         break;
       case 'START':
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
@@ -253,7 +286,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
-        await runningInfoCheckStore(parseDataWarp);
+        // await runningInfoCheckStore(parseDataWarp);
+          console.log(slotIndex.value)
+        const workerData = { parseDataWarp: parseDataWarp, slotIndex: slotIndex.value };
+        worker.value.postMessage(workerData);
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -290,7 +326,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
         await rbcInfoStore(parseDataWarp);
-        await runningInfoCheckStore(parseDataWarp);
+        // await runningInfoCheckStore(parseDataWarp);
+        if (parseDataWarp && slotIndex.value !== undefined) {
+          const workerData = { parseDataWarp: parseDataWarp, slotIndex: slotIndex.value };
+          if (worker.value) {
+            worker.value.postMessage(workerData);
+          }
+        }
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
@@ -311,155 +353,104 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
     }
 
-    async function runningInfoCheckStore (data: any | undefined) {
-      const regex = /[1,2,9]/g;
-      if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
-        const dataICasStat = String(data?.iCasStat);
-        const currentSlot = data?.slotInfo;
-        const str: any = data?.iCasStat;
-        const iCasStatArr: any = [...str];
-        const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
-        // const existingIndex = runningArr.value.findIndex((item: any) => item?.slotInfo?.slotNo === data?.slotInfo?.slotNo);
-
-        if (iCasStatArr.lastIndexOf("2") === 0) {
-          await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-        }
-        // 데이터 넣는 부분
-        if(iCasStatArr.lastIndexOf("2") !== -1){
-          runningArr.value[iCasStatArr.lastIndexOf("2")] = data;
-        }
-
-        // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
-        if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
-          tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-          await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-          await saveTestHistory(data,data?.slotInfo?.slotNo);
-          return;
-        }
-        if (data?.iCasStat.indexOf("2") !== -1) {
-          await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
-        }
-        //슬라이드 변경시 데이터 저장
-        if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
-          tcpReq().embedStatus.pause.reqUserId = userId.value;
-          await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.pause});
-          tcpReq().embedStatus.pause.reqUserId = userId.value;
-          await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
-        } else {
-          if (lastCompleteIndex !== slotIndex.value) {
-            console.log('save')
-            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
-            await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
-            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
-            await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
-          }
-        }
-
-      }
-
-    }
-
-    async function saveTestHistory (params: any, idx: any, slotId?: any, lastCompleteIndex?: any) {
-      const completeSlot = params.slotInfo;
-      if (completeSlot) {
-        completeSlot.userId = userId.value;
-        completeSlot.cassetId = params.cassetId;
-        // PB 비정상 클래스 체크
-        completeSlot.isNormal = 'Y'
-
-        if (completeSlot.analysisType === '01') {
-          completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
-        }
-
-        const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
-        const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        const processInfoElements = processInfo.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        const orderListElements = orderList.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        // rbcArr
-        const matchedWbcInfo = classElements[0];
-        const newWbcInfo = {
-          wbcInfo: matchedWbcInfo?.wbcInfo,
-          nonRbcClassList: matchedWbcInfo?.nonRbcClassList,
-          totalCount: matchedWbcInfo?.totalCount,
-          maxWbcCount: matchedWbcInfo?.maxWbcCount,
-        }
-
-        const newObj = {
-          slotNo: completeSlot.slotNo,
-          state: false,
-          submit: 'Ready',
-          submitDate: '',
-          traySlot: '1-' + idx,
-          barcodeNo: completeSlot.barcodeNo,
-          patientId: completeSlot.patientId,
-          patientNm: completeSlot.patientNm,
-          gender: completeSlot.gender,
-          birthDay: completeSlot.birthDay,
-          wbcCount: completeSlot.wbcCount,
-          slotId: completeSlot.slotId,
-          orderDttm: completeSlot.orderDttm,
-          testType: completeSlot.testType,
-          analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
-          createDate: tcpReq().embedStatus.settings.reqDttm,
-          pltCount: completeSlot.pltCount,
-          malariaCount: completeSlot.malariaCount,
-          maxRbcCount: completeSlot.maxRbcCount,
-          stateCd: completeSlot.stateCd,
-          tactTime: completeSlot.tactTime,
-          maxWbcCount: completeSlot.maxWbcCount,
-          lowPowerPath: completeSlot.lowPowerPath,
-          runningPath: completeSlot.runningPath,
-          wbcInfo: newWbcInfo,
-          wbcInfoAfter: [],
-          rbcInfo: rbcArrElements[0].rbcInfo,
-          bminfo: completeSlot.bminfo,
-          userId: userId.value,
-          cassetId: completeSlot.cassetId,
-          isNormal: completeSlot.isNormal,
-          processInfo: processInfoElements[0].processInfo,
-          orderList: orderListElements[0].orderList,
-          signedState: '',
-          signedOfDate: '',
-          signedUserId: '',
-          classificationResult: [],
-          isNsNbIntegration: isNsNbIntegration,
-          memo: '',
-          rbcMemo: '',
-          siteCd: embeddedStatus.value.sysInfo.siteCd,
-          deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
-        }
-        await saveRunningInfo(newObj, slotId, lastCompleteIndex);
-
-
-      }
-    }
-    async function saveRunningInfo (runningInfo: any, slotId: any, last: any) {
-      try {
-        let result: ApiResponse<void>;
-        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
-
-        if (result) {
-          if(slotId){
-            console.log('save successful');
-          }
-          instance?.appContext.config.globalProperties.$socket.emit('state', {
-            type: 'SEND_DATA',
-            payload: 'refreshDb'
-          });
-          // alert('성공~')
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
   } catch (error) {
     console.error(error);
   }
 });
+async function saveTestHistory (params: any, idx: any, slotId?: any, lastCompleteIndex?: any) {
+  const completeSlot = params.slotInfo;
+  if (completeSlot) {
+    completeSlot.userId = userId.value;
+    completeSlot.cassetId = params.cassetId;
+    // PB 비정상 클래스 체크
+    completeSlot.isNormal = 'Y'
 
+    if (completeSlot.analysisType === '01') {
+      completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
+    }
+
+    const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
+    const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+    const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+    const processInfoElements = processInfo.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+    const orderListElements = orderList.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+    // rbcArr
+    const matchedWbcInfo = classElements[0];
+    const newWbcInfo = {
+      wbcInfo: matchedWbcInfo?.wbcInfo,
+      nonRbcClassList: matchedWbcInfo?.nonRbcClassList,
+      totalCount: matchedWbcInfo?.totalCount,
+      maxWbcCount: matchedWbcInfo?.maxWbcCount,
+    }
+
+    const newObj = {
+      slotNo: completeSlot.slotNo,
+      state: false,
+      submit: 'Ready',
+      submitDate: '',
+      traySlot: '1-' + idx,
+      barcodeNo: completeSlot.barcodeNo,
+      patientId: completeSlot.patientId,
+      patientNm: completeSlot.patientNm,
+      gender: completeSlot.gender,
+      birthDay: completeSlot.birthDay,
+      wbcCount: completeSlot.wbcCount,
+      slotId: completeSlot.slotId,
+      orderDttm: completeSlot.orderDttm,
+      testType: completeSlot.testType,
+      analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
+      createDate: tcpReq().embedStatus.settings.reqDttm,
+      pltCount: completeSlot.pltCount,
+      malariaCount: completeSlot.malariaCount,
+      maxRbcCount: completeSlot.maxRbcCount,
+      stateCd: completeSlot.stateCd,
+      tactTime: completeSlot.tactTime,
+      maxWbcCount: completeSlot.maxWbcCount,
+      lowPowerPath: completeSlot.lowPowerPath,
+      runningPath: completeSlot.runningPath,
+      wbcInfo: newWbcInfo,
+      wbcInfoAfter: [],
+      rbcInfo: rbcArrElements[0].rbcInfo,
+      bminfo: completeSlot.bminfo,
+      userId: userId.value,
+      cassetId: completeSlot.cassetId,
+      isNormal: completeSlot.isNormal,
+      processInfo: processInfoElements[0].processInfo,
+      orderList: orderListElements[0].orderList,
+      signedState: '',
+      signedOfDate: '',
+      signedUserId: '',
+      classificationResult: [],
+      isNsNbIntegration: isNsNbIntegration,
+      memo: '',
+      rbcMemo: '',
+      siteCd: embeddedStatus.value.sysInfo.siteCd,
+      deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
+    }
+    await saveRunningInfo(newObj, slotId, lastCompleteIndex);
+
+
+  }
+}
+async function saveRunningInfo (runningInfo: any, slotId: any, last: any) {
+  try {
+    let result: ApiResponse<void>;
+    result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
+
+    if (result) {
+      if(slotId){
+        console.log('save successful');
+      }
+      instance?.appContext.config.globalProperties.$socket.emit('state', {
+        type: 'SEND_DATA',
+        payload: 'refreshDb'
+      });
+      // alert('성공~')
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;

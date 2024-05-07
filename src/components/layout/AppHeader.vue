@@ -197,7 +197,7 @@ const handleOkConfirm = () => {
   showConfirm.value = false;
   sessionStorage.clear();
   router.push('user/login');
-  store.commit('resetStore');
+  // store.commit('resetStore');
   if (document.fullscreenElement) {
     document.exitFullscreen();
   }

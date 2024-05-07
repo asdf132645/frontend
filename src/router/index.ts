@@ -1,16 +1,5 @@
 // router/index.vue
 import {createRouter, createWebHistory} from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
-import JoinView from '@/views/join/index.vue';
-import loginView from '@/views/login/index.vue';
-import setting from '@/views/setting/index.vue'
-import Database from '@/views/datebase/index.vue';
-import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listDetailRbc.vue';
-import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listDetailWbc.vue';
-import Report from  '@/views/datebase/commponent/detail/report/report.vue';
-import databaseDetail from '@/views/datebase/commponent/detail/classInfo/listDetail.vue';
-import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
-
 import {useStore} from "vuex";
 
 const router = createRouter({
@@ -19,52 +8,52 @@ const router = createRouter({
         {
             path: '/',
             name: 'HomeView',
-            component: HomeView,
+            component: () => import('@/views/HomeView.vue'), // 동적 임포트
         },
         {
             path: '/analysis',
             name: 'AnalysisView',
-            component: HomeView,
+            component: () => import('@/views/HomeView.vue'), // 동적 임포트
         },
         {
             path: '/user/join',
             name: 'join',
-            component: JoinView,
+            component: () => import('@/views/join/index.vue'), // 동적 임포트
         },
         {
             path: '/user/login',
             name: 'login',
-            component: loginView,
+            component: () => import('@/views/login/index.vue'), // 동적 임포트
         },
         {
             path: '/setting',
             name: 'setting',
-            component: setting,
+            component: () => import('@/views/setting/index.vue'), // 동적 임포트
         },
         {
             path: '/database',
             name: 'database',
-            component: Database,
+            component: () => import('@/views/datebase/index.vue'), // 동적 임포트
         },
         {
             path: '/databaseDetail',
             name: 'databaseDetail',
-            component: databaseDetail,
+            component: () => import('@/views/datebase/commponent/detail/classInfo/listDetail.vue'), // 동적 임포트
         },
         {
             path: '/databaseWhole',
             name: 'databaseWhole',
-            component: DatabaseWhole,
+            component: () => import('@/views/datebase/commponent/detail/databaseWhole/index.vue'), // 동적 임포트
         },
         {
             path: '/databaseRbc',
             name: 'databaseRbc',
-            component: DatabaseRbc,
+            component: () => import('@/views/datebase/commponent/detail/rbc/listDetailRbc.vue'), // 동적 임포트
         },
         {
             path: '/report',
             name: 'report',
-            component: Report,
+            component: () => import('@/views/datebase/commponent/detail/report/report.vue'), // 동적 임포트
         }
     ],
 });

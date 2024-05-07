@@ -1,58 +1,82 @@
-// // worker.ts
-// // 웹 워커의 코드
-// self.addEventListener('message', (event) => {
-//     const data = event.data;
-//
-//     // 받은 데이터를 처리합니다.
-//     console.log('웹 워커가 받은 데이터:', data);
-//
-//     // 처리한 결과를 메인 스레드로 보냅니다.
-//     self.postMessage(`웹 워커가 처리한 결과: ${data}`);
-// });
-//
-// const socket = new WebSocket('ws://192.168.0.131:3003', );
-//
-// socket.addEventListener('open', (data) => {
-//     console.log(data);
-// });
-//
-//
-// socket.addEventListener('message', (event) => {
-//     const data = event.data;
-//     console.log('웹 워커가 웹 소켓 서버로부터 받은 메시지:', data);
-//
-//     // 데이터가 JSON 형식인지 확인하고 파싱합니다.
-//     try {
-//         const parsedData = JSON.parse(data);
-//
-//         // 이벤트 유형을 확인하고 원하는 처리를 수행합니다.
-//         if (parsedData.event === 'chat') {
-//             console.log('웹 워커가 받은 chat 메시지:', parsedData.data);
-//             // chat 이벤트에 대한 처리 수행
-//         } else if (parsedData.event === '0') {
-//             console.log('초기 핸드셰이크 메시지 수신:', parsedData);
-//         } else {
-//             console.log('알려지지 않은 이벤트 수신:', parsedData);
-//         }
-//     } catch (e) {
-//         console.error('데이터 파싱 오류:', e);
-//     }
-// });
-//
-// // socket.on('chat', async (data: an) => {
-// //     //
-// //     console.log(data)
-// // })
-//
-// socket.addEventListener('chat', (event) => {
-//     console.log('chackckckckck', event);
-// });
-//
-// // 필요한 경우 추가 이벤트 핸들러를 추가할 수 있습니다.
-// socket.addEventListener('close', () => {
-//     console.log('웹 워커: 웹 소켓 서버 연결이 끊어졌습니다.');
-// });
-//
-// socket.addEventListener('error', (error) => {
-//     console.error('웹 워커: 웹 소켓 서버 오류:', error);
-// });
+
+// 웹 워커에서 실행할 함수
+import {tcpReq} from "@/common/tcpRequest/tcpReq";
+
+async function runningInfoCheckStore(data: any, slotIndex: any) {
+    const regex = /[1,2,9]/g;
+    const result: any = {
+        running: false,
+        savedData: null,
+        updatedState: null,
+        slideProceeding: null,
+        iCasStatArrTwoLastIndexOf: '',
+        iCasStatArrThreeLastIndexOf: '',
+        slotId: '',
+        lastCompleteIndex: '',
+        changeSavedData: null,
+        changeData: false,
+        slideProceedingBool: false,
+        slideBooleanTrue: false
+    };
+    result.updatedState = '';
+    if (String(data?.iCasStat) !== '999999999999') {
+        const dataICasStat = String(data?.iCasStat);
+        const currentSlot = data?.slotInfo;
+        const str: any = data?.iCasStat;
+        const iCasStatArr: any = [...str];
+        const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
+
+        if (iCasStatArr.lastIndexOf("2") === 0) {
+            result.slideBooleanTrue = true;
+            result.running = true;
+        }else{
+            result.slideBooleanTrue = false;
+        }
+
+        if (iCasStatArr.lastIndexOf("2") !== -1) {
+            result.changeData = true;
+            result.savedData = data;
+            result.iCasStatArrTwoLastIndexOf = iCasStatArr.lastIndexOf("2");
+        }else{
+            result.changeData = false;
+        }
+
+        if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
+            result.updatedState = 'runningInfoStop';
+            result.savedData = data;
+            return result;
+        }
+
+        if (data?.iCasStat.indexOf("2") !== -1) {
+            result.slideProceedingBool = true;
+            result.slideProceeding = data?.iCasStat.indexOf("2");
+        }else{
+            result.slideProceedingBool = false;
+        }
+
+        if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {
+            result.updatedState = 'pause';
+            return result;
+        } else {
+            if(lastCompleteIndex !== slotIndex){
+                result.updatedState = 'changeSlideSave';
+                result.changeSavedData = data;
+                result.iCasStatArrTwoLastIndexOf = iCasStatArr.lastIndexOf("2");
+                console.log(iCasStatArr);
+                result.iCasStatArrThreeLastIndexOf = iCasStatArr.lastIndexOf("3");
+                result.slotId = currentSlot?.slotId;
+                result.lastCompleteIndex = lastCompleteIndex;
+            }
+        }
+    }
+
+    return result;
+}
+
+// 웹 워커에서 받은 데이터를 처리하고 메인 스레드로 결과를 보냄
+self.onmessage = async function(event: any) {
+    const data = event.data.parseDataWarp;
+    const slotIndex = event.data.slotIndex;
+    const result = await runningInfoCheckStore(data, slotIndex);
+    self.postMessage(result);
+};
