@@ -180,7 +180,7 @@ onMounted(async () => {
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('messageSent', emitSocketData);
-  // // 웹 워커 생성
+  // 웹 워커 생성
   // worker.value = new Worker(new URL('./webWorker/index.ts', import.meta.url));
   //
   // // 웹 워커 이벤트 리스너 등록

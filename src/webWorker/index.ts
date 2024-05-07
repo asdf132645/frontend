@@ -1,30 +1,58 @@
-// // 웹 워커 코드
-// declare function importScripts(...urls: string[]): void;
-// import SockJS from 'sockjs-client';
+// // worker.ts
+// // 웹 워커의 코드
+// self.addEventListener('message', (event) => {
+//     const data = event.data;
 //
-// importScripts('https://cdn.jsdelivr.net/npm/sockjs-client@1.5.2/dist/sockjs.min.js');
+//     // 받은 데이터를 처리합니다.
+//     console.log('웹 워커가 받은 데이터:', data);
 //
-// // SockJS 인스턴스 생성
-// const sockjs = new SockJS('http://192.168.0.131:3002');
+//     // 처리한 결과를 메인 스레드로 보냅니다.
+//     self.postMessage(`웹 워커가 처리한 결과: ${data}`);
+// });
 //
-// // 연결 이벤트 처리
-// sockjs.onopen = function () {
-//     console.log('웹 워커: SockJS 서버에 연결되었습니다.');
-// };
+// const socket = new WebSocket('ws://192.168.0.131:3003', );
 //
-// // 메시지 수신 이벤트 처리
-// sockjs.onmessage = function (event: any) {
-//     console.log('웹 워커가 SockJS 서버로부터 받은 메시지:', event.data);
-//     // 받은 메시지를 원하는 대로 처리한 후 메인 스레드로 전달
-//     self.postMessage(event.data);
-// };
+// socket.addEventListener('open', (data) => {
+//     console.log(data);
+// });
 //
-// // 연결 종료 이벤트 처리
-// sockjs.onclose = function () {
-//     console.log('웹 워커: SockJS 서버 연결이 끊어졌습니다.');
-// };
 //
-// // 오류 이벤트 처리
-// sockjs.onerror = function (error: any) {
-//     console.error('웹 워커: SockJS 서버 오류:', error);
-// };
+// socket.addEventListener('message', (event) => {
+//     const data = event.data;
+//     console.log('웹 워커가 웹 소켓 서버로부터 받은 메시지:', data);
+//
+//     // 데이터가 JSON 형식인지 확인하고 파싱합니다.
+//     try {
+//         const parsedData = JSON.parse(data);
+//
+//         // 이벤트 유형을 확인하고 원하는 처리를 수행합니다.
+//         if (parsedData.event === 'chat') {
+//             console.log('웹 워커가 받은 chat 메시지:', parsedData.data);
+//             // chat 이벤트에 대한 처리 수행
+//         } else if (parsedData.event === '0') {
+//             console.log('초기 핸드셰이크 메시지 수신:', parsedData);
+//         } else {
+//             console.log('알려지지 않은 이벤트 수신:', parsedData);
+//         }
+//     } catch (e) {
+//         console.error('데이터 파싱 오류:', e);
+//     }
+// });
+//
+// // socket.on('chat', async (data: an) => {
+// //     //
+// //     console.log(data)
+// // })
+//
+// socket.addEventListener('chat', (event) => {
+//     console.log('chackckckckck', event);
+// });
+//
+// // 필요한 경우 추가 이벤트 핸들러를 추가할 수 있습니다.
+// socket.addEventListener('close', () => {
+//     console.log('웹 워커: 웹 소켓 서버 연결이 끊어졌습니다.');
+// });
+//
+// socket.addEventListener('error', (error) => {
+//     console.error('웹 워커: 웹 소켓 서버 오류:', error);
+// });

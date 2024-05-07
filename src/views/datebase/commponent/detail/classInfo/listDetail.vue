@@ -722,6 +722,7 @@ function rgbReset() {
 }
 
 function imgSizeReset() {
+  drawCellMarker(true);
   imageSize.value = 150;
   wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {

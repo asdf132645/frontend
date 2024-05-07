@@ -200,8 +200,9 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
+  console.log('newItem', newItem)
   afterChang(newItem);
-});
+}, {deep: true});
 
 const goClass = (id: any) => {
   emits('scrollEvent', id)
@@ -356,7 +357,8 @@ const beforeChang = async () => {
 
 }
 
-const afterChang = (newItem: any) => {
+const afterChang = async (newItem: any) => {
+  await getOrderClass();
   isBefore.value = false;
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
   const wbcInfo = selectItemsS.value.wbcInfoAfter.length !== 0 ? selectItemsS.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
@@ -368,9 +370,8 @@ const afterChang = (newItem: any) => {
   totalCountSet(wbcInfoChangeVal.value);
 }
 const shouldRenderCategory = (title: string) => {
-  // siteCd와 testType을 입력으로 getStringArrayBySiteCd 함수를 호출
+  // 제외할 클래스들 정의
   const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value.siteCd?.testType);
-  // category.title이 targetArray에 포함되어 있는지 확인
   return !targetArray.includes(title);
 };
 
@@ -379,8 +380,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
     siteCd = '0000';
     testType = '01';
   }
-  // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
-  const arraysBySiteCd: any = {
+  const arraysBySiteCd: any = { // 0006 -> 삼광
     '0006': {
       includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
       includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
@@ -393,7 +393,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
     includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
   };
 
-  // testType에 따라 적절한 배열을 반환
+  // testType에 따라 제외할 부분 정의
   return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
 };
 
@@ -405,49 +405,14 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
         totalCount.value += Number(item.count);
       }
     } else {
-      // 해당 siteCd와 testType에 따라 targetArray를 가져옴
       const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
 
 
-      // image.title이 targetArray에 포함되지 않는지 확인
       const titleInArray = targetArray.includes(item.title);
-      // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 totalCount.value 증가
       if (!titleInArray) {
         totalCount.value += Number(item.count);
       }
     }
-    // item.images.forEach((image: any) => {
-    //   if (projectBm.value) {
-    //     if (image.title !== 'OT' && !image.fileName.includes('OT')) {
-    //       totalCount.value += 1;
-    //     }
-    //   } else {
-    //     // 해당 siteCd와 testType에 따라 targetArray를 가져옴
-    //     const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
-    //
-    //     // 원래 파일 이름을 보존
-    //     const originalFileName = image.fileName;
-    //
-    //     // 'NES'를 'NS'로 치환
-    //     let modifiedFileName = originalFileName.replace('NES', 'NS');
-    //     // 'NEB'를 'NB'로 치환
-    //     modifiedFileName = modifiedFileName.replace('NEB', 'NB');
-    //
-    //     // image.title이 targetArray에 포함되지 않는지 확인
-    //     const titleInArray = targetArray.includes(image.title);
-    //
-    //     // 치환된 파일 이름(modifiedFileName)을 사용하여 targetArray의 문자열을 포함하는지 확인
-    //     const fileNameContainsTitle = targetArray.some(str => modifiedFileName.includes(str));
-    //
-    //     // titleInArray가 false이고 fileNameContainsTitle이 false인 경우 totalCount.value 증가
-    //     if (!titleInArray && !fileNameContainsTitle) {
-    //       totalCount.value += 1;
-    //     }
-    //
-    //     // 필요에 따라 원래 파일 이름을 다시 설정 (여기서는 특별한 경우는 없지만 원래 이름을 되돌려놓을 수 있음)
-    //     image.fileName = originalFileName;
-    //   }
-    // });
   });
 }
 
@@ -517,6 +482,7 @@ async function updateOriginalDb() {
 }
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
+  // 러닝 인포 디비에 다시 재저장
   try {
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response) {
