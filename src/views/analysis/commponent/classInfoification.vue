@@ -21,7 +21,7 @@
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
                 {{
-                  totalCount && totalCount !== '0' ? ((Number(category?.count) / 100) * Number(totalCount)).toFixed((Number(category?.count) / Number(totalCount)) === 0 ? 0 : 1) : '0'
+                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed((Number(category?.count) / Number(totalCount)) === 0 ? 0 : 1) : '0'
                 }}
               </li>
             </ul>
@@ -60,7 +60,7 @@
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
               <li>
                 {{
-                  totalCount && totalCount !== '0' ? ((Number(category?.count) / 100) * Number(totalCount)).toFixed(0) : '0'
+                  totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
                 }}
               </li>
             </ul>
@@ -250,25 +250,21 @@ const calculateWbcPercentages = (
     wbcList: WbcInfo[]
 ) => {
   const includesStr = getIncludesStrBySiteCd(siteCd.value);
-  const total = classList
-      .filter(
-          (category) =>
-              !includesStr.includes(category.title)
-      )
-      .reduce((acc, category) => {
-        const matchingWbcItem = wbcList.find(
-            (wbcItem) => category.id === wbcItem.id
-        );
 
-        if (matchingWbcItem) {
-          category.count = matchingWbcItem.count;
-          return acc + Number(matchingWbcItem.count);
-        }
+  let total = 0;
 
-        return acc;
-      }, 0);
+  for (let category of classList) {
+    if (!includesStr.includes(category.title)) {
+      for (let wbcItem of wbcList) {
+        total += Number(wbcItem.count);
+      }
+    }
+  }
+
   return total;
 };
+
+
 
 
 const updateCounts = async (currentSlot: any) => {
@@ -323,7 +319,7 @@ const updatePercentages = async () => {
   const percent = dspWbcClassList.value.map((classList: any) => {
     return classList.map((category: any) => {
       const percentage = totalCount.value && totalCount.value !== '0'
-          ? ((Number(category.count) / 100) *  Number(totalCount.value)).toFixed(1)
+          ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(1)
           : '0';
 
       // 퍼센트를 정수와 비교해서 정수일 경우 정수만, 그렇지 않으면 소수점 한 자리까지 표시
