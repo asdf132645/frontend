@@ -443,13 +443,13 @@ async function updateOriginalDb() {
     });
     if (projectBm.value) {
       if (item.title !== 'OT') {
-        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+        const percentage = ((Number(item.count) / 100) * Number(totalCount)).toFixed(1);  // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
       const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
       if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        const percentage = ((Number(item.count) / 100) * Number(totalCount)).toFixed(1); // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     }
