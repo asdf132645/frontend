@@ -24,7 +24,6 @@ const router = useRouter();
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
-import {RunningInfo, SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {
@@ -34,14 +33,12 @@ import {
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {RuningInfo} from "@/common/api/service/runningInfo/dto/runningInfoDto";
-import {parseDateString} from "@/common/lib/utils/dateUtils";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
 import EventBus from "@/eventBus/eventBus";
-import {getAllUsersApi, getUserApi, getUserIpApi} from "@/common/api/service/user/userApi";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 import * as process from "process";
-import {faL} from "@fortawesome/free-solid-svg-icons";
+import lodash from 'lodash';
 
 
 const showAlert = ref(false);
@@ -50,10 +47,8 @@ const alertMessage = ref('');
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
 const embeddedStatus = computed(() => store.state.embeddedStatusModule);
-const dataBaseSetDataModule = computed(() => store.state.dataBaseSetDataModule);
 
 const instance = getCurrentInstance();
-const runningSlotId = computed(() => store.state.commonModule.runningSlotId);
 const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -93,22 +88,26 @@ const getUserIp = async (ip: string) => {
 }
 
 watch(reqArr.value, async (newVal, oldVal) => {
-  // 새 값이 특정 조건을 충족하는지 확인
-  if (newVal.reqArr) {
-    const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr); // 중복된 jobCmd를 제거하여 유니크한 배열 생성
-    // 유니크한 reqArr 배열에 항목이 있는지 확인
-    if (uniqueReqArr.length > 0) {
-      // console.log(uniqueReqArr)
-      if (uniqueReqArr.length > 1) {
-        const notSysRunInfo = uniqueReqArr.filter((item: any) => (item.jobCmd !== 'SYSINFO' && item.jobCmd !== 'RUNNING_INFO'));
-        await sendMessage(notSysRunInfo[0]);
-      } else {
-        await sendMessage(uniqueReqArr[0]);
-      }
-      await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
-    }
+  if (!newVal.reqArr) return;  // 조건을 단순화하여 바로 리턴
+
+  const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
+
+  if (uniqueReqArr.length === 0) return;
+
+  // `notSysRunInfo` 생성 최적화
+  const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
+
+  // `notSysRunInfo`와 `uniqueReqArr` 처리
+  if (notSysRunInfo.length > 0) {
+    await sendMessage(notSysRunInfo[0]);
+  } else {
+    await sendMessage(uniqueReqArr[0]);
   }
+
+  // `reqArrPaste` 상태 초기화
+  await store.dispatch('commonModule/setCommonInfo', { reqArrPaste: [] });
 });
+
 
 // jobCmd가 중복되지 않도록 배열 필터링
 const removeDuplicateJobCmd = (reqArr: any) => {
@@ -173,9 +172,11 @@ onMounted(async () => {
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
+
   EventBus.subscribe('messageSent', emitSocketData);
 
 });
+
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', leave);
 

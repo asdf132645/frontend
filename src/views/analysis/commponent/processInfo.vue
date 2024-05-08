@@ -88,13 +88,13 @@ watch(() => chatRunningData.value, (data) => {
             slotId: parsedData.slotInfo.slotId
           };
         }
-        store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-          slotInfo: [
-            {
-              processInfo: processInfoItem.value,
-            },
-          ]
-        });
+        // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+        //   slotInfo: [
+        //     {
+        //       processInfo: processInfoItem.value,
+        //     },
+        //   ]
+        // });
       }
     }
   } catch (e) {

@@ -91,14 +91,13 @@ watch(() => chatRunningData.value, (data) => {
             analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
             state: currentSlot.stateCd,
           });
-          // 업데이트된 데이터를 데이터베이스에 전달합니다.
-          store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-            slotInfo: [
-              {
-                orderList: dspOrderList.value,
-              },
-            ]
-          });
+          // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+          //   slotInfo: [
+          //     {
+          //       orderList: dspOrderList.value,
+          //     },
+          //   ]
+          // });
         }
       }
     }

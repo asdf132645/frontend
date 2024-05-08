@@ -50,10 +50,8 @@ const alertMessage = ref('');
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
 const embeddedStatus = computed(() => store.state.embeddedStatusModule);
-const dataBaseSetDataModule = computed(() => store.state.dataBaseSetDataModule);
 
 const instance = getCurrentInstance();
-const runningSlotId = computed(() => store.state.commonModule.runningSlotId);
 const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');

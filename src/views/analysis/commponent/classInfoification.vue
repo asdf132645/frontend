@@ -99,12 +99,11 @@ import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/w
 
 const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
-const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
+// const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
 const chatRunningData = computed(() => storeEm.state.commonModule.chatRunningData);
-const slotIndex = computed(() => storeEm.state.commonModule.slotIndex);
 
-const siteCd = ref('');
+const siteCd = computed(() => storeEm.state.embeddedStatusModule.sysInfo.siteCd);
 
 interface SlotInfo {
   stateCd: string;
@@ -127,32 +126,37 @@ const nonWbcClassList = ref<any[]>([]);
 const testType = ref<string>("");
 const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
-const slideProceeding = ref('0');
 const instance = getCurrentInstance();
 const classArr = computed(() => storeEm.state.commonModule.classArr);
-watch([embeddedStatusJobCmd.value], async (newVal) => {
-  if (newVal.length > 0) {
-    const sysInfo = newVal[0].sysInfo;
-    siteCd.value = sysInfo.siteCd;
-  }
-})
+let previousData: any = null;
 
-watch([commonDataGet.value], async (newVals: any) => {
-  if (newVals) {
-    slideProceeding.value = newVals.slideProceeding;
+function arraysAreEqual(arr1: any, arr2: any) {
+  if (arr1.length !== arr2.length) {
+    return false;
   }
-})
-watch(() => chatRunningData.value, (data) => {
+  return arr1.every((element: any, index: any) => element === arr2[index]);
+}
+
+
+
+watch(() => chatRunningData.value, (data: any) => {
+  if (previousData !== null && arraysAreEqual(data, previousData)) {
+    return; // 데이터가 동일한 경우 처리 x
+  }
+
   try {
-
     const parsedData = data;
     if (parsedData.jobCmd === 'RUNNING_INFO') {
-      updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
+      updateDataArray({ wbcInfo: parsedData.slotInfo }, parsedData);
     }
   } catch (e) {
-    // console.log(e)
+    console.error(e);
   }
+
+  // 현재 데이터를 이전 데이터로 업데이트
+  previousData = data;
 });
+
 
 onMounted(() => {
   // const initialWbcClassList = store.state.wbcClassificationModule;
@@ -221,22 +225,21 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
       slotId: parsedData.slotInfo.slotId
     };
   }
-  await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-    slotInfo: [
-      {
-        wbcInfo: {
-          wbcInfo: dspWbcClassList.value,
-          nonRbcClassList: nonWbcClassList,
-          totalCount: totalCount.value,
-          maxWbcCount: maxWbcCount.value,
-        },
-      },
-    ]
-  });
+  // await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+  //   slotInfo: [
+  //     {
+  //       wbcInfo: {
+  //         wbcInfo: dspWbcClassList.value,
+  //         nonRbcClassList: nonWbcClassList,
+  //         totalCount: totalCount.value,
+  //         maxWbcCount: maxWbcCount.value,
+  //       },
+  //     },
+  //   ]
+  // });
 };
 
 const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {
-  // 기본값을 할당해줍니다. 이 부분은 이미 잘 처리되고 있습니다.
   if (!siteCd || siteCd === '') {
     siteCd = '0000';
     testType = '01';

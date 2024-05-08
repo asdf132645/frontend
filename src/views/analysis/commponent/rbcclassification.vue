@@ -304,13 +304,13 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       slotId: parsedData.slotInfo.slotId,
     };
   }
-  store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-    slotInfo: [
-      {
-        rbcInfo: rbcInfo,
-      },
-    ]
-  });
+  // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+  //   slotInfo: [
+  //     {
+  //       rbcInfo: rbcInfo,
+  //     },
+  //   ]
+  // });
 };
 
 
