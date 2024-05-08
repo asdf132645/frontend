@@ -123,26 +123,46 @@ async function getRunningInfoDetail(id: any) {
 }
 
 const moveWbc = async (direction: any) => {
-  await getOrderClass();
+  await getOrderClass(); // 클래스 정보를 업데이트
 
   const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
   const nextDbIndex = direction === 'up' ? originalDb.value[currentDbIndex - 1] : originalDb.value[currentDbIndex + 1];
-  if (nextDbIndex) {
-    const res = await getRunningInfoDetail(nextDbIndex.id);
-    if (res && Object.keys(resData.value?.wbcInfo).length !== 0) {
-      selectItems.value = resData.value;
-      sessionStorage.setItem('selectItems', JSON.stringify(resData.value));
 
-      const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter ;
-      let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
-      sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
-      sessionStorage.setItem('dbBaseTrClickId', String(nextDbIndex.id));
-      await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: sortedWbcInfo}); // 클래스 인포에서 사용
-      await updateUpDown(resData.value?.wbcInfo.wbcInfo[0], resData.value);
+  if (nextDbIndex) {
+    await processNextDbIndex(nextDbIndex, direction, currentDbIndex);
+  }
+};
+
+const processNextDbIndex = async (nextDbIndex: any, direction: any, currentDbIndex: number) => {
+  const res = await getRunningInfoDetail(nextDbIndex.id);
+
+  if (res && Object.keys(resData.value?.wbcInfo).length !== 0) {
+    await handleDataResponse(nextDbIndex, res);
+  } else {
+    const newNextDbIndex = direction === 'up' ? originalDb.value[currentDbIndex - 2] : originalDb.value[currentDbIndex + 2];
+    if (newNextDbIndex) {
+      const fallbackRes = await getRunningInfoDetail(newNextDbIndex.id);
+      if (fallbackRes && Object.keys(resData.value?.wbcInfo).length !== 0) {
+        await handleDataResponse(newNextDbIndex, fallbackRes);
+      }
     }
   }
-}
+};
+
+const handleDataResponse = async (dbIndex: any, res: any) => {
+  selectItems.value = resData.value;
+  sessionStorage.setItem('selectItems', JSON.stringify(resData.value));
+
+  const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
+
+  sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
+  sessionStorage.setItem('dbBaseTrClickId', String(dbIndex.id));
+
+  await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: sortedWbcInfo});
+  await updateUpDown(resData.value?.wbcInfo.wbcInfo[0], resData.value);
+};
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   emits('refreshClass', selectItemsNewVal);

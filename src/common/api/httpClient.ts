@@ -24,6 +24,7 @@ export function useHttpClient() {
         const options: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
+                'Cache-Control': 'public, max-age=3600' // 응답을 1시간 동안 캐싱하도록 지정
             },
         };
 
