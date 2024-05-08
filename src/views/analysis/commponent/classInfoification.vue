@@ -209,7 +209,7 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
   }
-  await updatePercentages();
+  // await updatePercentages();
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
   if (iCasStatArr.lastIndexOf("2") !== -1) {
@@ -235,23 +235,24 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
   });
 };
 
-const getIncludesStrBySiteCd = (siteCd: string, testType: any): string[] => {
-  if (!siteCd && siteCd === ''){
+const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {
+  // 기본값을 할당해줍니다. 이 부분은 이미 잘 처리되고 있습니다.
+  if (!siteCd || siteCd === '') {
     siteCd = '0000';
     testType = '01';
   }
-  // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
+
   const arraysBySiteCd: any = {
     '0006': {
-      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
-      includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", "NE", "GP", "PA", "OT"],
+      includesStr2: ["NR", "AR", "MC", "MA", "SM", "NE", "GP", "PA", "OT"],
     },
   };
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", "NE", "GP", "PA", "OT"],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", "NE", "GP", "PA", "OT"],
   };
 
   // testType에 따라 적절한 배열을 반환
@@ -263,15 +264,13 @@ const calculateWbcPercentages = (
     classList: WbcInfo[],
     wbcList: WbcInfo[]
 ) => {
-  const includesStr = getIncludesStrBySiteCd(siteCd.value, testType.value);
 
+  const includesStr = getIncludesStrBySiteCd(siteCd.value, testType.value);
   let total = 0;
 
   for (let category of classList) {
     if (!includesStr.includes(category.title)) {
-      for (let wbcItem of wbcList) {
-        total += Number(wbcItem.count);
-      }
+      total += Number(category.count);
     }
   }
 
@@ -330,12 +329,12 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
 
 const updatePercentages = async () => {
+
   const percent = dspWbcClassList.value.map((classList: any) => {
     return classList.map((category: any) => {
       const percentage = totalCount.value && totalCount.value !== '0'
           ? ((Number(category.count) / Number(totalCount.value)) * 100).toFixed(1)
           : '0';
-
       // 퍼센트를 정수와 비교해서 정수일 경우 정수만, 그렇지 않으면 소수점 한 자리까지 표시
       const formattedPercent = (Number(percentage) === Math.floor(Number(percentage)))
           ? Math.floor(Number(percentage)).toString()
