@@ -73,6 +73,7 @@ export function useHttpClient() {
         const options: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache', // 캐시 무효화
             },
         };
 
@@ -94,6 +95,7 @@ export function useHttpClient() {
         const options: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache', // 캐시 무효화
             },
         };
 
