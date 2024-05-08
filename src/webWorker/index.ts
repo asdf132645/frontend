@@ -41,17 +41,17 @@ async function runningInfoCheckStore(data: any, slotIndex: any) {
             result.changeData = false;
         }
 
-        if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
-            result.updatedState = 'runningInfoStop';
-            result.savedData = data;
-            return result;
-        }
-
         if (data?.iCasStat.indexOf("2") !== -1) {
             result.slideProceedingBool = true;
             result.slideProceeding = data?.iCasStat.indexOf("2");
         }else{
             result.slideProceedingBool = false;
+        }
+
+        if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111') {
+            result.updatedState = 'runningInfoStop';
+            result.savedData = data;
+            return result;
         }
 
         if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {
@@ -66,6 +66,7 @@ async function runningInfoCheckStore(data: any, slotIndex: any) {
                 result.iCasStatArrThreeLastIndexOf = iCasStatArr.lastIndexOf("3");
                 result.slotId = currentSlot?.slotId;
                 result.lastCompleteIndex = lastCompleteIndex;
+                return result;
             }
         }
     }

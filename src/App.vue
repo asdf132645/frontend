@@ -202,7 +202,7 @@ onMounted(async () => {
         store.dispatch('commonModule/setCommonInfo', {slotIndex: result.lastCompleteIndex});
       }
       if (result.updatedState === 'runningInfoStop' && !commonDataGet.value.runningInfoStop) {
-        console.log('스탑')
+        // console.log('마지막 세이브')
         tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
         store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
         store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
