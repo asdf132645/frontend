@@ -84,7 +84,7 @@ const getUserIp = async (userId: string) => {
   try {
     const result = await getUserIpApi();
     console.log('process.env.MAIN_API', process.env.MAIN_API === result.data)
-    if(result.data === process.env.MAIN_API){
+    if(result.data === process.env.MAIN_API || result.data === '1'){
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount(userId, String(process.env.MAIN_API), 'main');
     }else{
