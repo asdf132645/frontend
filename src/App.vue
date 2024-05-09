@@ -39,6 +39,7 @@ import EventBus from "@/eventBus/eventBus";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import * as process from "process";
 import lodash from 'lodash';
+import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 
 
 const showAlert = ref(false);
@@ -395,7 +396,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           maxWbcCount: completeSlot.maxWbcCount,
           lowPowerPath: completeSlot.lowPowerPath,
           runningPath: completeSlot.runningPath,
-          wbcInfo: newWbcInfo,
+          wbcInfo:Object.keys(newWbcInfo).length === 0  ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo:[basicBmClassList]} : newWbcInfo,
           wbcInfoAfter: [],
           rbcInfo: rbcArrElements[0].rbcInfo,
           bminfo: completeSlot.bminfo,

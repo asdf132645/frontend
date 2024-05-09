@@ -30,6 +30,12 @@ watch(() => props.selectedItem, () => {
 });
 
 function createAllImages(): void {
+  if(!props.selectedItem?.wbcInfo){
+    return;
+  }
+  if(Object.keys(props.selectedItem?.wbcInfo).length === 0){
+    return
+  }
   allImages.value = props.selectedItem?.wbcInfo?.wbcInfo[0]?.reduce((acc: any, item: any) => {
     if (item.images && item.images.length > 0) {
       acc.push({

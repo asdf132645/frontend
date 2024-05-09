@@ -35,7 +35,7 @@
               <option>ASC</option>
             </select>
           </div>
-          <div class="wbcInfoFilter">
+          <div class="wbcInfoFilter" v-if="!bmClassIsBoolen">
             <span>WBC Info Filter</span>
             <ul class="wbcInfoFilter">
               <li v-for="(item, idx) in titleItem" :key="idx">
