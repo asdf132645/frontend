@@ -1,7 +1,7 @@
 <template>
   <div v-if="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
   <ClassInfoMenu @refreshClass="refreshClass"/>
-  <div class="wbcContent" >
+  <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
         <li>{{ getBmTestTypeText(selectItems?.testType) }}</li>
@@ -33,11 +33,12 @@
         <!--size-->
         <button @mouseover="showSizeControl">
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-          Size</button>
+          Size
+        </button>
         <div v-show="showSize" class="sizeContainer">
           <div>
             Size {{ imageSize }}
-            <font-awesome-icon :icon="['fas', 'undo']"  @click="imgSizeReset"/>
+            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>
             <input
                 type="range"
                 min="80"
@@ -45,7 +46,7 @@
                 v-model="imageSize"
                 @input="changeImageSize"
             />
-<!--            <button class="resetBtn mb2" @click="imgSizeReset">Size Reset</button>-->
+            <!--            <button class="resetBtn mb2" @click="imgSizeReset">Size Reset</button>-->
           </div>
 
         </div>
@@ -127,35 +128,40 @@
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)"
                 v-if="item?.count !== '0' && item?.count !== 0">
-              <li v-for="(image, imageIndex) in item.images" :key="image.fileName"
-                  :class="{
+              <template v-for="(image, imageIndex) in item.images" :key="image.fileName">
+                <li
+                    :class="{
                     'border-changed': isBorderChanged(image),
                     'selected-image': isSelected(image),
                     'wbcImgWrapLi': true
                   }"
-                  @click="selectImage(itemIndex, imageIndex, item)"
-                  @dblclick="openModal(image, item)"
-              >
-                <div style="position: relative;">
-                  <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
-                    <div>{{ replaceFileNamePrefix(image.fileName) }}
-                      <font-awesome-icon
-                          :icon="['fas', 'arrow-right']"/>
-                      {{ image.title }}
+                    @click="selectImage(itemIndex, imageIndex, item)"
+                    @dblclick="openModal(image, item)"
+                    v-show="!hiddenImages[`${item.id}-${image.fileName}`]"
+                >
+                  <div style="position: relative;">
+                    <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
+                      <div>{{ replaceFileNamePrefix(image.fileName) }}
+                        <font-awesome-icon
+                            :icon="['fas', 'arrow-right']"/>
+                        {{ image.title }}
+                      </div>
                     </div>
+                    <img :src="getImageUrl(image.fileName, item.id, item.title)"
+                         :width="image.width ? image.width : '150px'"
+                         :height="image.height ? image.height : '150px'"
+                         :style="{ filter: image.filter }"
+                         @dragstart="onDragStart(itemIndex, imageIndex)"
+                         draggable="true"
+                         class="cellImg"
+                         ref="cellRef"
+                         @error="hideImage(item.id, image.fileName)"
+                         v-show="!hiddenImages[`${item.id}-${image.fileName}`]"
+                    />
+                    <div class="center-point" :style="image.coordinates"></div>
                   </div>
-                  <img :src="getImageUrl(image.fileName, item.id, item.title)"
-                       :width="image.width ? image.width : '150px'"
-                       :height="image.height ? image.height : '150px'"
-                       :style="{ filter: image.filter }"
-                       @dragstart="onDragStart(itemIndex, imageIndex)"
-                       draggable="true"
-                       class="cellImg"
-                       ref="cellRef"
-                  />
-                  <div class="center-point" :style="image.coordinates"></div>
-                </div>
-              </li>
+                </li>
+              </template>
             </ul>
           </li>
         </ul>
@@ -259,6 +265,7 @@ const opacity = ref('');
 const selectItemIamgeArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const showSize = ref(false);
+const hiddenImages = ref<{ [key: string]: boolean }>({});
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
@@ -271,6 +278,10 @@ onMounted(async () => {
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
+
+function hideImage(id: string, fileName: string) {
+  hiddenImages.value[`${id}-${fileName}`] = true;
+}
 
 const showSizeControl = () => {
   showSize.value = true;
@@ -611,7 +622,7 @@ const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, n
 
 
 const drawCellMarker = async (imgResize?: boolean) => {
-  if(!imgResize){
+  if (!imgResize) {
     cellMarkerIcon.value = !cellMarkerIcon.value
   }
 
@@ -855,7 +866,7 @@ async function handleKeyDown(event: KeyboardEvent) {
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
     if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-       await moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+      await moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
   } else if (projectType.value === 'bm') {
     if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
@@ -1081,7 +1092,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         destinationFolders,
         fileNames
       };
-      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
       const res = await moveClassImagePost(data);
       if (res) {
         // 이미지를 타겟 아이템으로 이동
@@ -1102,7 +1113,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         selectItemIamgeArr.value = [];
         shiftClickImages.value = [];
         await updateOriginalDb();
-        await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+        await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
       }
       return;
     }
@@ -1221,7 +1232,7 @@ function removeDuplicateImages(data: any[]): any[] {
 }
 
 const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
-  if (!siteCd && siteCd === ''){
+  if (!siteCd && siteCd === '') {
     siteCd = '0000';
     testType = '01';
   }
@@ -1250,11 +1261,11 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
-    if(projectType.value === 'bm'){
+    if (projectType.value === 'bm') {
       if (item.title !== 'OT') {
         totalCount += Number(item.count);
       }
-    }else{
+    } else {
       const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
       if (!targetArray.includes(item.title)) {
         totalCount += Number(item.count);
