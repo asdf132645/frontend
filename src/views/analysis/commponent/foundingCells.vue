@@ -82,7 +82,7 @@ function getImageUrl(types: RunningPathItem[] | undefined): string[] {
   const fileName = types?.path.match(/[^\\]*$/);
 
   // 이미지의 URL 생성 후 배열에 추가
-  const imageUrl = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${fileName}`;
+  const imageUrl = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${fileName}`;
   imageUrls.unshift(imageUrl);
 
   return imageUrls;
