@@ -3,8 +3,10 @@
   <div>
     <AppHeader
         v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
-    <main class='content' :class="{ 'bmComponent': projectBm }">
-      <router-view/>
+    <main class="content" :class="{ bmComponent: projectBm }">
+      <keep-alive :include="['MyComponent']">
+        <router-view />
+      </keep-alive>
     </main>
     <Alert
         v-if="showAlert"
