@@ -219,6 +219,9 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
 
   rbcInfo.forEach((rbcCategory: any) => {
     rbcCategory.classInfo.forEach((rbcClass: any) => {
+      if(!rbcDegreeStandard.value){
+        return;
+      }
       rbcDegreeStandard.value.forEach((degreeStandard: any) => {
         if (
             degreeStandard.category_id === rbcCategory.categoryId &&
