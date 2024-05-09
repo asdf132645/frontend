@@ -2,12 +2,17 @@
   <div class="mt1">
     <transition name="fade" mode="out-in">
       <div class="slider" v-if="images.length > 0">
-        <img v-for="type in images" :key="type.id" :src="getImageUrl(type)" alt="Slide" />
+        <template v-for="type in images" :key="type.id">
+          <img
+              :src="getImageUrl(type)"
+              v-if="getImageUrl(type)"
+              alt="Slide"
+          />
+        </template>
       </div>
     </transition>
   </div>
 </template>
-
 
 
 <script setup lang="ts">
@@ -79,14 +84,19 @@ function getImageUrl(types: RunningPathItem[] | undefined): string[] {
   const folderPath = types?.path.match(/^(.*\\)\d+_Real_Time\\/)?.[0];
 
   // 파일 경로에서 파일 이름 부분 추출
-  const fileName = types?.path.match(/[^\\]*$/);
+  const fileName = types?.path.match(/[^\\]*$/)[0];
 
-  // 이미지의 URL 생성 후 배열에 추가
+  // 이미지의 URL 생성
   const imageUrl = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${fileName}`;
-  imageUrls.unshift(imageUrl);
+
+  // URL이 `undefined`, 빈 문자열, 또는 `null`이 아닌 경우만 배열에 추가
+  if (imageUrl) {
+    imageUrls.unshift(imageUrl);
+  }
 
   return imageUrls;
 }
+
 
 
 

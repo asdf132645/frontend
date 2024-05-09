@@ -403,8 +403,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           userId: userId.value,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
-          processInfo: processInfoElements[0].processInfo,
-          orderList: orderListElements[0].orderList,
+          processInfo: processInfoElements[0]?.processInfo,
+          orderList: orderListElements[0]?.orderList,
           signedState: '',
           signedOfDate: '',
           signedUserId: '',
@@ -415,6 +415,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           siteCd: embeddedStatus.value.sysInfo.siteCd,
           deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
         }
+        console.log('newObj',newObj)
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
 
