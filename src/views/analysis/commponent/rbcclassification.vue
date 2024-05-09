@@ -152,9 +152,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     const parsedData = JSON.parse(stringData);
     if(parsedData.jobCmd === 'RUNNING_INFO'){
-      // console.log()
-      // updateDataArray(parsedData.slotInfo);
-     await updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
+      await updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
     }
   } catch (e) {
     // console.log(e)

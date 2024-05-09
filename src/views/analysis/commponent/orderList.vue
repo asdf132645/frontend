@@ -60,26 +60,26 @@ const instance = getCurrentInstance();
 const dspOrderList = ref<any>([]);
 const siteCd = ref('');
 
-watch(() => chatRunningData.value, (data) => {
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
 
-    const parsedData = data;
-    if (parsedData.jobCmd === 'RUNNING_INFO') {
+    const parsedData = JSON.parse(stringData);
+    if(parsedData.jobCmd === 'RUNNING_INFO'){
       const currentSlot = parsedData?.slotInfo
       if (currentSlot) {
         const barcodeNo = currentSlot.barcodeNo;
         const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
         const str: any = parsedData?.iCasStat ?? '';
         const iCasStatArr: any = [...str];
-        if (iCasStatArr.lastIndexOf("2") !== -1) {
+        if(iCasStatArr.lastIndexOf("2") !== -1){
           orderList.value[iCasStatArr.lastIndexOf("2")] = {
-            orderList: {
-              barcodeId: barcodeNo,
+            orderList: {barcodeId: barcodeNo,
               patientName: currentSlot.patientNm,
               orderDate: stringToDateTime(currentSlot.orderDttm),
               analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-              state: currentSlot.stateCd,
-            },
+              state: currentSlot.stateCd,},
             slotId: parsedData.slotInfo.slotId
           };
         }
@@ -91,6 +91,7 @@ watch(() => chatRunningData.value, (data) => {
             analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
             state: currentSlot.stateCd,
           });
+          // 업데이트된 데이터를 데이터베이스에 전달합니다.
           // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           //   slotInfo: [
           //     {
@@ -104,7 +105,7 @@ watch(() => chatRunningData.value, (data) => {
   } catch (e) {
     // console.log(e)
   }
-});
+})
 
 watch([embeddedStatusJobCmd.value], async (newVals) => {
   // console.log('감시시작')

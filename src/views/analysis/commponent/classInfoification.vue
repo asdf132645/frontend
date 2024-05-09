@@ -128,38 +128,23 @@ const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
 const instance = getCurrentInstance();
 const classArr = computed(() => storeEm.state.commonModule.classArr);
-let previousData: any = null;
 
-function arraysAreEqual(arr1: any, arr2: any) {
-  if (arr1.length !== arr2.length) {
-    return false;
-  }
-  return arr1.every((element: any, index: any) => element === arr2[index]);
-}
-
-
-
-watch(() => chatRunningData.value, (data: any) => {
-  if (previousData !== null && arraysAreEqual(data, previousData)) {
-    return; // 데이터가 동일한 경우 처리 x
-  }
-
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
-    const parsedData = data;
-    if (parsedData.jobCmd === 'RUNNING_INFO') {
-      updateDataArray({ wbcInfo: parsedData.slotInfo }, parsedData);
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
+
+    const parsedData = JSON.parse(stringData);
+    if(parsedData.jobCmd === 'RUNNING_INFO'){
+      await updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
     }
   } catch (e) {
-    console.error(e);
+    // console.log(e)
   }
-
-  // 현재 데이터를 이전 데이터로 업데이트
-  previousData = data;
-});
+})
 
 
 onMounted(() => {
-  // const initialWbcClassList = store.state.wbcClassificationModule;
   updateDataArray(basicBmClassList, null, true);
 });
 

@@ -63,10 +63,12 @@ onMounted(() => {
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
 
-watch(() => chatRunningData.value, (data) => {
+instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   try {
+    const textDecoder = new TextDecoder('utf-8');
+    const stringData = textDecoder.decode(data);
 
-    const parsedData = data;
+    const parsedData = JSON.parse(stringData);
     if(parsedData.jobCmd === 'RUNNING_INFO'){
       const currentSlot = parsedData?.slotInfo;
       if (currentSlot) {
@@ -100,8 +102,7 @@ watch(() => chatRunningData.value, (data) => {
   } catch (e) {
     // console.log(e)
   }
-});
-
+})
 
 // 실행정보를 가지고 온다.
 
