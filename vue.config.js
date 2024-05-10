@@ -16,6 +16,9 @@ module.exports = {
         "process": require.resolve("process/browser")
       }
     },
+    optimization: {
+      minimize: true, // 코드 최소화
+    },
     plugins: [
       new PurgeCSSPlugin({
         paths: glob.sync([
