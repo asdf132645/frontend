@@ -473,7 +473,8 @@ const stateUpdate = async (itemVal, pcIp) => {
 const editData = async (item) => {
   openLayer();
   itemObj.value = JSON.parse(JSON.stringify(item));
-  itemObj.value.testType = getTestTypeText(item?.testType);
+  itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType)
+
 
 }
 

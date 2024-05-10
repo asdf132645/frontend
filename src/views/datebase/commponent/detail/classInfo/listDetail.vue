@@ -141,7 +141,7 @@
                 >
                   <div style="position: relative;">
                     <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
-                      <div>{{ replaceFileNamePrefix(image.fileName) }}
+                      <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
                         <font-awesome-icon
                             :icon="['fas', 'arrow-right']"/>
                         {{ image.title }}
