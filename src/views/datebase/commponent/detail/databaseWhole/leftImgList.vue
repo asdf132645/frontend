@@ -5,27 +5,27 @@
     <ul class="">
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index">
-        <img :src="getImageUrls(image, 'particle')" alt="Partical Image"
+        <img :src="getImageUrlsSmallImg(image, 'particle')" alt="Partical Image"
              @dblclick="openInViewer(getImageUrls(image, 'particle'))">
       </li>
     </ul>
     <ul class="">
       <p>Ideal Zone</p>
       <li v-for="(image, index) in idealZoneImages" :key="index" style="width:100px">
-        <img :src="getImageUrls(image, 'idealZone')" @dblclick="openInViewer(getImageUrls(image, 'idealZone'))">
+        <img :src="getImageUrlsSmallImg(image, 'idealZone')" @dblclick="openInViewer(getImageUrls(image, 'idealZone'))">
       </li>
     </ul>
     <ul class="">
       <div>
         <p>Ideal stitch</p>
         <li v-for="(image, index) in idealStitchImages" :key="index">
-          <img :src="getImageUrls(image, 'idealStitch')" @dblclick="openInViewer(getImageUrls(image, 'idealStitch'))">
+          <img :src="getImageUrlsSmallImg(image, 'idealStitch')" @dblclick="openInViewer(getImageUrls(image, 'idealStitch'))">
         </li>
       </div>
       <div>
         <p>Megakaryocyte</p>
         <li v-for="(image, index) in megaImages" :key="index">
-          <img :src="getImageUrls(image, 'mega')" @dblclick="openInViewer(getImageUrls(image, 'mega'))">
+          <img :src="getImageUrlsSmallImg(image, 'mega')" @dblclick="openInViewer(getImageUrls(image, 'mega'))">
         </li>
       </div>
     </ul>
@@ -82,6 +82,30 @@ const getImageUrls = (imageName: string, type: string) => {
   return `${apiBaseUrl}/folders?folderPath=${folderPath}/${imageName}`;
 };
 
+const getImageUrlsSmallImg = (imageName: string, type: string) => {
+  let folderName;
+  switch (type) {
+    case 'particle':
+      folderName = '02_Particle_Image';
+      break;
+    case 'idealZone':
+      folderName = '03_Cell_Ideal_Image';
+      break;
+    case 'idealStitch':
+      folderName = '04_Cell_Ideal_Stitch_Image';
+      break;
+    case 'mega':
+      folderName = '05_Mega_Image';
+      break;
+    default:
+      break;
+  }
+  const slotId = props.selectItems?.slotId || "";
+  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${folderName}`;
+
+  return `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}`;
+};
+
 const getImgUrl = () => {
   const slotId = props.selectItems?.slotId || "";
 
@@ -90,10 +114,10 @@ const getImgUrl = () => {
         .then(response => {
           switch (item) {
             case '02_Particle_Image':
-              paImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+              paImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 7);
               break;
             case '03_Cell_Ideal_Image':
-              idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+              idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 14);
               break;
             case '04_Cell_Ideal_Stitch_Image':
               idealStitchImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
