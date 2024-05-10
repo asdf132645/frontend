@@ -319,6 +319,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
+  wbcInfo.value = [];
   try {
     const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
 
@@ -911,6 +912,7 @@ function handleKeyUp(event: KeyboardEvent) {
 }
 
 async function initData(newData: any, upDown: any, upDownData: any) {
+  wbcInfo.value = [];
   let selectItemsVal: any = [];
   if (!upDown) {
     wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;

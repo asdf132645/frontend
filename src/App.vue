@@ -208,7 +208,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
-    // await store.dispatch('commonModule/setCommonInfo', {resFlag: true});
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
@@ -312,18 +311,21 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if (iCasStatArr.lastIndexOf("2") !== -1) {
           runningArr.value[iCasStatArr.lastIndexOf("2")] = data;
         }
+        if (data?.iCasStat.indexOf("2") !== -1) {
+          await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
+        }
+
 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
+          console.log(dataICasStat)
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
           await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
           await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
           await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
         }
-        if (data?.iCasStat.indexOf("2") !== -1) {
-          await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
-        }
+
         //슬라이드 변경시 데이터 저장
         if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
           tcpReq().embedStatus.pause.reqUserId = userId.value;
