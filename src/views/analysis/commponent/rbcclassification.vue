@@ -95,11 +95,12 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, computed, defineProps} from "vue";
+import {ref, onMounted, computed, defineProps, watch} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
+const props = defineProps(['bmIsBoolen','parsedData']);
 
 const store = useStore();
 const dspRbcClassList = ref<RbcInfo[][]>([]);
@@ -113,7 +114,6 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
 const rbcArr = computed(() => store.state.commonModule.rbcArr);
-const props = defineProps([ 'parsedData']);
 
 
 onMounted(async () => {
@@ -121,8 +121,16 @@ onMounted(async () => {
   const initialRbcClassList = store.state.rbcClassificationModule;
   await getRbcDegreeData();
   await updateDataArray(initialRbcClassList,'');
-  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
+
+watch(
+    () => props.parsedData, // 감시할 데이터
+    (newVal, oldVal) => {
+      // 데이터 변경 시 실행할 코드
+      runningInfoGet(newVal);
+    },
+    { deep: true }
+);
 
 const runningInfoGet = async (data: any) => {
   const parsedData = data
@@ -283,6 +291,7 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       rbcInfo: rbcInfo,
       slotId: parsedData.slotInfo.slotId,
     };
+
   }
 };
 

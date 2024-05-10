@@ -39,14 +39,6 @@ import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 import EventBus from "@/eventBus/eventBus";
 
-interface OrderItem {
-  barcodeId: string;
-  patientName: string;
-  orderDate: string;
-  analyzedDttm?: string;
-  state: string;
-}
-
 // 스토어
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
@@ -56,10 +48,13 @@ const props = defineProps(['parsedData']);
 // end 스토어
 const dspOrderList = ref<any>([]);
 const siteCd = ref('');
-onMounted(() => {
-  EventBus.subscribe('runningInfoData', runningInfoGet);
-})
-
+watch(
+    () => props.parsedData,
+    (newVal, oldVal) => {
+      runningInfoGet(newVal);
+    },
+    { deep: true }
+);
 const runningInfoGet = async (data: any) => {
   const parsedData = data
   if(parsedData.jobCmd === 'RUNNING_INFO'){

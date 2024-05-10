@@ -408,7 +408,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           runningPath: completeSlot.runningPath,
           wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
           wbcInfoAfter: [],
-          rbcInfo: rbcArrElements[0].rbcInfo,
+          rbcInfo: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           bminfo: completeSlot.bminfo,
           userId: userId.value,
           cassetId: completeSlot.cassetId,

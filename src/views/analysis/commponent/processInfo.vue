@@ -28,11 +28,11 @@
 
 
 <script setup lang="ts">
-import {ref, computed, watch, onMounted, getCurrentInstance} from "vue";
+import {ref, computed, watch, onMounted, getCurrentInstance, defineProps} from "vue";
 import {useStore} from "vuex";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import process from "process";
-import EventBus from "@/eventBus/eventBus";
+const props = defineProps([ 'parsedData']);
 
 // 스토어
 const store = useStore();
@@ -59,8 +59,16 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
 onMounted(() => {
   prevOilCount.value = embeddedStatusJobCmd.value[0]?.sysInfo.oilCount;
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
-  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
+
+watch(
+    () => props.parsedData,
+    (newVal, oldVal) => {
+      runningInfoGet(newVal);
+    },
+    { deep: true }
+);
+
 
 const runningInfoGet = async (data: any) => {
   const parsedData = data

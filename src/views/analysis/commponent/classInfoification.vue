@@ -93,12 +93,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, watch, defineProps, getCurrentInstance} from "vue";
+import {computed, ref, onMounted, watch, defineProps, getCurrentInstance, nextTick} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
 import EventBus from "@/eventBus/eventBus";
 
-const props = defineProps(['bmIsBoolen']);
+const props = defineProps(['bmIsBoolen','parsedData']);
 const storeEm = useStore();
 // const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
 const commonDataGet = computed(() => storeEm.state.commonModule);
@@ -136,7 +136,14 @@ onMounted(() => {
   updateDataArray(basicBmClassList, null, true);
   EventBus.subscribe('runningInfoData', runningInfoGet);
 });
-
+watch(
+    () => props.parsedData, // 감시할 데이터
+    (newVal, oldVal) => {
+      // 데이터 변경 시 실행할 코드
+      runningInfoGet(newVal);
+    },
+    { deep: true }
+);
 const runningInfoGet = async (data: any) => {
   const parsedData = data
   if(parsedData.jobCmd === 'RUNNING_INFO'){

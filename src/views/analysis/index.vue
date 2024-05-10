@@ -35,7 +35,6 @@ onMounted(async () => {
 });
 
 const runningInfoGet = async (data: any) => {
-  parsedData.value = [];
   parsedData.value = data;
 }
 
