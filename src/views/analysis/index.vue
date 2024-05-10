@@ -24,16 +24,18 @@ import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
 import {onMounted, ref} from "vue";
 import EventBus from "@/eventBus/eventBus";
+
 const bmIsBoolen = ref(false);
 const parsedData = ref<any>(null);
 onMounted(async () => {
-  if(process.env.PROJECT_TYPE === 'bm'){
+  if (process.env.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
   }
   EventBus.subscribe('runningInfoData', runningInfoGet);
 });
 
 const runningInfoGet = async (data: any) => {
+  parsedData.value = [];
   parsedData.value = data;
 }
 

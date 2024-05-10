@@ -142,7 +142,8 @@ const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
-const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
+// const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
+const viewerCheckData = 'main';
 
 const instance = getCurrentInstance();
 const showConfirm = ref(false);

@@ -200,7 +200,6 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
-  console.log('newItem', newItem)
   afterChang(newItem);
 }, {deep: true});
 

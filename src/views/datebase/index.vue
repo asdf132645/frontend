@@ -232,10 +232,7 @@ const getDbData = async (type: string, pageNum?: number) => {
             // Moment.js의 diff 메서드를 사용하여 날짜 차이 계산
             return dateB.diff(dateA);
           });
-
-          console.log(dbGetData.value);
         }
-
 
         // 마지막 조회 결과 저장
         saveLastSearchParams();

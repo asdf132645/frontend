@@ -98,8 +98,11 @@ import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
 import EventBus from "@/eventBus/eventBus";
 
-const props = defineProps(['bmIsBoolen', 'parsedData']);
+const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
+// const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
+const commonDataGet = computed(() => storeEm.state.commonModule);
+const chatRunningData = computed(() => storeEm.state.commonModule.chatRunningData);
 
 const siteCd = computed(() => storeEm.state.embeddedStatusModule.sysInfo.siteCd);
 
@@ -131,14 +134,8 @@ const classArr = computed(() => storeEm.state.commonModule.classArr);
 
 onMounted(() => {
   updateDataArray(basicBmClassList, null, true);
+  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
-
-watch(() => props.parsedData, (newValue, oldValue) => {
-  if (newValue !== oldValue) {
-    runningInfoGet(newValue);
-  }
-});
-
 
 const runningInfoGet = async (data: any) => {
   const parsedData = data

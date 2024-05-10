@@ -95,7 +95,7 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, computed, defineProps, watch} from "vue";
+import {ref, onMounted, computed, defineProps} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
@@ -121,14 +121,8 @@ onMounted(async () => {
   const initialRbcClassList = store.state.rbcClassificationModule;
   await getRbcDegreeData();
   await updateDataArray(initialRbcClassList,'');
+  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
-
-watch(() => props.parsedData, (newValue, oldValue) => {
-  if (newValue !== oldValue) {
-    runningInfoGet(newValue);
-  }
-});
-
 
 const runningInfoGet = async (data: any) => {
   const parsedData = data
