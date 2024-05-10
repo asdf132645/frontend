@@ -4,7 +4,7 @@
     <AppHeader
         v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class="content" :class="{ bmComponent: projectBm }">
-      <router-view />
+      <router-view/>
     </main>
     <Alert
         v-if="showAlert"
@@ -40,6 +40,7 @@ import {getUserIpApi} from "@/common/api/service/user/userApi";
 import * as process from "process";
 import lodash from 'lodash';
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
+import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 
 
 const showAlert = ref(false);
@@ -106,7 +107,7 @@ watch(reqArr.value, async (newVal, oldVal) => {
   }
 
   // `reqArrPaste` 상태 초기화
-  await store.dispatch('commonModule/setCommonInfo', { reqArrPaste: [] });
+  await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
 });
 
 
@@ -174,7 +175,7 @@ onMounted(async () => {
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
 
-  EventBus.subscribe('messageSent', emitSocketData);
+  EventBus.subscribe('executeAction', emitSocketData);
 
 });
 
@@ -192,17 +193,16 @@ onBeforeUnmount(() => {
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  if(commonDataGet.value.viewerCheck !== 'main'){
+  if (commonDataGet.value.viewerCheck !== 'main') {
     return;
   }
   try {
-    if(typeof data === 'string'){
+    if (typeof data === 'string') {
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
-    }else{
+    } else {
       hideAlert();
     }
-    await store.dispatch('commonModule/setCommonInfo', {chatRunningData: []});
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
@@ -228,11 +228,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
-        await store.dispatch('commonModule/setCommonInfo', {chatRunningData: parseDataWarp});
+        EventBus.publish('runningInfoData', parseDataWarp);
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoStore(parseDataWarp);
@@ -246,7 +246,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
         break;
@@ -258,7 +258,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
@@ -267,7 +267,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
         break;
@@ -281,13 +281,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{},{},{},{},{},{},{},{},{},{},{},{}]});
+        await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
         break;
       case 'ERROR_CLEAR':
         console.log('err')
@@ -295,7 +295,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
     }
 
-    async function runningInfoCheckStore (data: any | undefined) {
+    async function runningInfoCheckStore(data: any | undefined) {
       const regex = /[1,2,9]/g;
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
         const dataICasStat = String(data?.iCasStat);
@@ -309,7 +309,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         }
         // 데이터 넣는 부분
-        if(iCasStatArr.lastIndexOf("2") !== -1){
+        if (iCasStatArr.lastIndexOf("2") !== -1) {
           runningArr.value[iCasStatArr.lastIndexOf("2")] = data;
         }
 
@@ -318,7 +318,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
           await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
           await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-          await saveTestHistory(data,data?.slotInfo?.slotNo);
+          await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
         }
         if (data?.iCasStat.indexOf("2") !== -1) {
@@ -335,7 +335,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
             console.log('save')
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")],runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
+            await saveTestHistory(runningArr.value[iCasStatArr.lastIndexOf("3")], runningArr.value[iCasStatArr.lastIndexOf("3")]?.slotInfo?.slotNo);
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
             await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
           }
@@ -345,7 +345,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     }
 
-    async function saveTestHistory (params: any, idx: any, slotId?: any, lastCompleteIndex?: any) {
+    async function saveTestHistory(params: any, idx: any, slotId?: any, lastCompleteIndex?: any) {
       const completeSlot = params.slotInfo;
       if (completeSlot) {
         completeSlot.userId = userId.value;
@@ -360,8 +360,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        const processInfoElements = processInfo.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        const orderListElements = orderList.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        // const processInfoElements = processInfo.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        // const orderListElements = orderList.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         // rbcArr
         const matchedWbcInfo = classElements[0];
         const newWbcInfo = {
@@ -370,6 +370,14 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           totalCount: matchedWbcInfo?.totalCount,
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
+        const processInfoItem = {
+          cassetteNo: '',
+          barcodeId: completeSlot.barcodeNo,
+          patientId: completeSlot.patientId,
+          patientName: completeSlot.patientNm,
+          orderDate: stringToDateTime(completeSlot.orderDttm),
+          analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
+        };
 
         const newObj = {
           slotNo: completeSlot.slotNo,
@@ -396,15 +404,24 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           maxWbcCount: completeSlot.maxWbcCount,
           lowPowerPath: completeSlot.lowPowerPath,
           runningPath: completeSlot.runningPath,
-          wbcInfo:Object.keys(newWbcInfo).length === 0  ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo:[basicBmClassList]} : newWbcInfo,
+          wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
           wbcInfoAfter: [],
           rbcInfo: rbcArrElements[0].rbcInfo,
           bminfo: completeSlot.bminfo,
           userId: userId.value,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
-          processInfo: processInfoElements[0]?.processInfo,
-          orderList: orderListElements[0]?.orderList,
+          processInfo: {
+            processInfo: processInfoItem,
+            slotId: completeSlot.slotId
+          },
+          orderList: {
+            barcodeId: completeSlot.barcodeNo,
+            patientName: completeSlot.patientNm,
+            orderDate: stringToDateTime(completeSlot.orderDttm),
+            analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
+            state: completeSlot.stateCd,
+          },
           signedState: '',
           signedOfDate: '',
           signedUserId: '',
@@ -415,19 +432,20 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           siteCd: embeddedStatus.value.sysInfo.siteCd,
           deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
         }
-        console.log('newObj',newObj)
+        console.log('newObj', newObj)
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
 
       }
     }
-    async function saveRunningInfo (runningInfo: any, slotId: any, last: any) {
+
+    async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
         let result: ApiResponse<void>;
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
         if (result) {
-          if(slotId){
+          if (slotId) {
             console.log('save successful');
           }
           instance?.appContext.config.globalProperties.$socket.emit('state', {
@@ -466,7 +484,6 @@ const emitSocketData = async (payload: object) => {
 };
 
 
-
 const sendSettingInfo = () => {
   const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
 
@@ -499,7 +516,6 @@ const getNormalRange = async () => {
 }
 
 
-
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
   const executeAfterDelay = async () => {
@@ -529,7 +545,7 @@ const cellImgGet = async (newUserId: string) => {
         sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
-        sessionStorage.setItem('keepPage',String(data?.keepPage));
+        sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }
 

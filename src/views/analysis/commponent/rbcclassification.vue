@@ -95,47 +95,24 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, watch, computed, getCurrentInstance} from "vue";
+import {ref, onMounted, computed} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
-import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
-import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
+import EventBus from "@/eventBus/eventBus";
 
 const store = useStore();
-const runningInfoModule = computed(() => store.state.runningInfoModule);
 const dspRbcClassList = ref<RbcInfo[][]>([]);
 const malariaCount = ref('');
 const maxRbcCount = ref('');
 const pltCount = ref('');
 const testType = ref<string>("01");
 const bfSelectModeList = ref<any>([]);
-const wholeSlideImgRef = ref(null);
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
-const commonDataGet = computed(() => store.state.commonModule);
-const instance = getCurrentInstance();
 const rbcArr = computed(() => store.state.commonModule.rbcArr);
-
-
-watch([runningInfoModule.value], (newVal: any) => {
-  if (newVal.length > 0) {
-    const firstItem = newVal[0].runningInfo;
-    if (firstItem) {
-      if (firstItem.jobCmd === 'RUNNING_INFO') {
-        const currentSlot = firstItem?.slotInfo;
-
-        if (currentSlot && currentSlot?.stateCd === '03') {
-          malariaCount.value = currentSlot.malariaCount;
-          maxRbcCount.value = currentSlot.maxRbcCount;
-          pltCount.value = currentSlot.pltCount;
-        }
-      }
-    }
-  }
-});
 
 
 onMounted(async () => {
@@ -143,24 +120,25 @@ onMounted(async () => {
   const initialRbcClassList = store.state.rbcClassificationModule;
   await getRbcDegreeData();
   await updateDataArray(initialRbcClassList,'');
+  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  try {
-    const textDecoder = new TextDecoder('utf-8');
-    const stringData = textDecoder.decode(data);
-
-    const parsedData = JSON.parse(stringData);
-    if(parsedData.jobCmd === 'RUNNING_INFO'){
-      await updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
+const runningInfoGet = async (data: any) => {
+  const parsedData = data
+  if(parsedData.jobCmd === 'RUNNING_INFO'){
+    const currentSlot = data?.slotInfo;
+    if (currentSlot && currentSlot?.stateCd === '03') {
+      malariaCount.value = currentSlot.malariaCount;
+      maxRbcCount.value = currentSlot.maxRbcCount;
+      pltCount.value = currentSlot.pltCount;
     }
-  } catch (e) {
-    // console.log(e)
+    await updateDataArray({rbcInfo: parsedData.slotInfo}, parsedData);
   }
-})
+}
+
 
 const lowPowerPath = ref([]);
-const updateDataArray = async (newSlotInfo: any[], parsedData: any) => {
+const updateDataArray = async (newSlotInfo: any, parsedData: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
 
   if (Array.isArray(slotArray.rbcInfo)) {
@@ -305,13 +283,6 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       slotId: parsedData.slotInfo.slotId,
     };
   }
-  // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-  //   slotInfo: [
-  //     {
-  //       rbcInfo: rbcInfo,
-  //     },
-  //   ]
-  // });
 };
 
 

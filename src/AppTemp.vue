@@ -249,7 +249,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }else{
       hideAlert();
     }
-    await store.dispatch('commonModule/setCommonInfo', {chatRunningData: []});
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 

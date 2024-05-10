@@ -96,12 +96,10 @@
 import {computed, ref, onMounted, watch, defineProps, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
+import EventBus from "@/eventBus/eventBus";
 
 const props = defineProps(['bmIsBoolen']);
 const storeEm = useStore();
-// const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
-const commonDataGet = computed(() => storeEm.state.commonModule);
-const chatRunningData = computed(() => storeEm.state.commonModule.chatRunningData);
 
 const siteCd = computed(() => storeEm.state.embeddedStatusModule.sysInfo.siteCd);
 
@@ -129,25 +127,19 @@ const maxWbcCount = ref<string>('');
 const instance = getCurrentInstance();
 const classArr = computed(() => storeEm.state.commonModule.classArr);
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  try {
-    const textDecoder = new TextDecoder('utf-8');
-    const stringData = textDecoder.decode(data);
-
-    const parsedData = JSON.parse(stringData);
-    if(parsedData.jobCmd === 'RUNNING_INFO'){
-      await updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
-    }
-  } catch (e) {
-    // console.log(e)
-  }
-})
 
 
 onMounted(() => {
   updateDataArray(basicBmClassList, null, true);
+  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
 
+const runningInfoGet = async (data: any) => {
+  const parsedData = data
+  if(parsedData.jobCmd === 'RUNNING_INFO'){
+    await updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
+  }
+}
 
 const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolean) => {
 
@@ -210,18 +202,6 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
       slotId: parsedData.slotInfo.slotId
     };
   }
-  // await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-  //   slotInfo: [
-  //     {
-  //       wbcInfo: {
-  //         wbcInfo: dspWbcClassList.value,
-  //         nonRbcClassList: nonWbcClassList,
-  //         totalCount: totalCount.value,
-  //         maxWbcCount: maxWbcCount.value,
-  //       },
-  //     },
-  //   ]
-  // });
 };
 
 const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {

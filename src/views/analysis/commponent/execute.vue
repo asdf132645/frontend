@@ -176,7 +176,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: object) => {
-  EventBus.publish('messageSent', payload);
+  EventBus.publish('executeAction', payload);
 };
 const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {

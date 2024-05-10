@@ -15,7 +15,7 @@
           {{ siteCd === '0019' ? 'Order Date' : 'Analyzed Date' }}
         </span>
         <span class="proVal">
-          {{ siteCd === '0019' ? processInfoItem?.orderDate  : processInfoItem?.analyzedDttm }}
+          {{ siteCd === '0019' ? processInfoItem?.analyzedDttm   : processInfoItem?.orderDate }}
         </span>
       </li>
       <li>
@@ -32,14 +32,12 @@ import {ref, computed, watch, onMounted, getCurrentInstance} from "vue";
 import {useStore} from "vuex";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import process from "process";
-const processInfo = computed(() => store.state.commonModule.processInfo);
+import EventBus from "@/eventBus/eventBus";
 
 // 스토어
 const store = useStore();
-const runningInfoModule = computed(() => store.state.runningInfoModule);
 const siteCd = ref('');
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-const chatRunningData = computed(() => store.state.commonModule.chatRunningData);
 
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
@@ -61,48 +59,28 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
 onMounted(() => {
   prevOilCount.value = embeddedStatusJobCmd.value[0]?.sysInfo.oilCount;
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  try {
-    const textDecoder = new TextDecoder('utf-8');
-    const stringData = textDecoder.decode(data);
-
-    const parsedData = JSON.parse(stringData);
-    if(parsedData.jobCmd === 'RUNNING_INFO'){
-      const currentSlot = parsedData?.slotInfo;
-      if (currentSlot) {
-        processInfoItem.value = {
-          cassetteNo: '',
-          barcodeId: currentSlot.barcodeNo,
-          patientId: currentSlot.patientId,
-          patientName: currentSlot.patientNm,
-          // wbcCount: currentSlot.maxWbcCount,
-          orderDate: stringToDateTime(currentSlot.orderDttm),
-          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-        };
-        // processInfo
-        const str: any = parsedData?.iCasStat ?? '';
-        const iCasStatArr: any = [...str];
-        if(iCasStatArr.lastIndexOf("2") !== -1){
-          processInfo.value[iCasStatArr.lastIndexOf("2")] = {
-            processInfo: processInfoItem.value,
-            slotId: parsedData.slotInfo.slotId
-          };
-        }
-        // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-        //   slotInfo: [
-        //     {
-        //       processInfo: processInfoItem.value,
-        //     },
-        //   ]
-        // });
-      }
+const runningInfoGet = async (data: any) => {
+  const parsedData = data
+  if(parsedData.jobCmd === 'RUNNING_INFO'){
+    const currentSlot = parsedData?.slotInfo;
+    if (currentSlot) {
+      processInfoItem.value = {
+        cassetteNo: '',
+        barcodeId: currentSlot.barcodeNo,
+        patientId: currentSlot.patientId,
+        patientName: currentSlot.patientNm,
+        // wbcCount: currentSlot.maxWbcCount,
+        orderDate: stringToDateTime(currentSlot.orderDttm),
+        analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+      };
     }
-  } catch (e) {
-    // console.log(e)
   }
-})
+}
+
+
 
 // 실행정보를 가지고 온다.
 

@@ -32,11 +32,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, getCurrentInstance, nextTick, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, onMounted, ref, watch} from "vue";
 import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
+import EventBus from "@/eventBus/eventBus";
 
 interface OrderItem {
   barcodeId: string;
@@ -48,64 +49,35 @@ interface OrderItem {
 
 // 스토어
 const store = useStore();
-const runningInfoModule = computed(() => store.state.runningInfoModule);
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const runningArr = computed(() => store.state.commonModule.runningArr);
-const orderList = computed(() => store.state.commonModule.orderList);
-const chatRunningData = computed(() => store.state.commonModule.chatRunningData);
-
-const instance = getCurrentInstance();
 
 // end 스토어
 const dspOrderList = ref<any>([]);
 const siteCd = ref('');
+onMounted(() => {
+  EventBus.subscribe('runningInfoData', runningInfoGet);
+})
 
-instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  try {
-    const textDecoder = new TextDecoder('utf-8');
-    const stringData = textDecoder.decode(data);
-
-    const parsedData = JSON.parse(stringData);
-    if(parsedData.jobCmd === 'RUNNING_INFO'){
-      const currentSlot = parsedData?.slotInfo
-      if (currentSlot) {
-        const barcodeNo = currentSlot.barcodeNo;
-        const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
-        const str: any = parsedData?.iCasStat ?? '';
-        const iCasStatArr: any = [...str];
-        if(iCasStatArr.lastIndexOf("2") !== -1){
-          orderList.value[iCasStatArr.lastIndexOf("2")] = {
-            orderList: {barcodeId: barcodeNo,
-              patientName: currentSlot.patientNm,
-              orderDate: stringToDateTime(currentSlot.orderDttm),
-              analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-              state: currentSlot.stateCd,},
-            slotId: parsedData.slotInfo.slotId
-          };
-        }
-        if (existingItemIndex === -1 && barcodeNo !== '') {
-          dspOrderList.value.push({
-            barcodeId: barcodeNo,
-            patientName: currentSlot.patientNm,
-            orderDate: stringToDateTime(currentSlot.orderDttm),
-            analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-            state: currentSlot.stateCd,
-          });
-          // 업데이트된 데이터를 데이터베이스에 전달합니다.
-          // store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-          //   slotInfo: [
-          //     {
-          //       orderList: dspOrderList.value,
-          //     },
-          //   ]
-          // });
-        }
+const runningInfoGet = async (data: any) => {
+  const parsedData = data
+  if(parsedData.jobCmd === 'RUNNING_INFO'){
+    const currentSlot = parsedData?.slotInfo
+    if (currentSlot) {
+      const barcodeNo = currentSlot.barcodeNo;
+      const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+      if (existingItemIndex === -1 && barcodeNo !== '') {
+        dspOrderList.value.push({
+          barcodeId: barcodeNo,
+          patientName: currentSlot.patientNm,
+          orderDate: stringToDateTime(currentSlot.orderDttm),
+          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+          state: currentSlot.stateCd,
+        });
       }
     }
-  } catch (e) {
-    // console.log(e)
   }
-})
+}
 
 watch([embeddedStatusJobCmd.value], async (newVals) => {
   // console.log('감시시작')
