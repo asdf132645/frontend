@@ -1350,6 +1350,18 @@ ul.wbcInfoFilter {
     padding-top: 10%;
 }
 
+.wbcModalImageContent {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.wbcModalImageContent > .buttons > button {
+    background: #2c2d2c;
+    color: white;
+}
+
 span.wbcClose {
     position: absolute;
     top: 0;
