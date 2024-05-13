@@ -463,8 +463,9 @@ const rbcAppUpdate = (data: any) => {
 }
 
 const classAppUpdateLast = (data: any) => {
-  console.log('classAppUpdateLast',data);
   classArr.value[data.iCasStat] = data.classInfo;
+  console.log('app vue 에서 받아오는 데이터',classArr.value);
+
 }
 
 // jobCmd가 중복되지 않도록 배열 필터링
