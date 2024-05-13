@@ -170,11 +170,13 @@
       <div class="wbcModal" v-if="modalOpen">
         <div class="wbc-modal-content">
           <span class="wbcClose" @click="closeModal">&times;</span>
-          <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
-               class="modal-image"/>
-          <div class="buttons">
-            <button @click="zoomIn">+</button>
-            <button @click="zoomOut">-</button>
+          <div class="wbcModalImageContent">
+            <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
+                 class="modal-image"/>
+            <div class="buttons">
+              <button @click="zoomIn">+</button>
+              <button @click="zoomOut">-</button>
+            </div>
           </div>
         </div>
       </div>
