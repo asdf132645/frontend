@@ -93,16 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, watch, defineProps, getCurrentInstance, nextTick} from "vue";
+import {computed, ref, onMounted, watch, defineProps, getCurrentInstance, defineEmits} from "vue";
 import {useStore} from "vuex";
 import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
 import EventBus from "@/eventBus/eventBus";
 
 const props = defineProps(['bmIsBoolen','parsedData']);
 const storeEm = useStore();
-// const embeddedStatusJobCmd = computed(() => storeEm.state.embeddedStatusModule);
-const commonDataGet = computed(() => storeEm.state.commonModule);
-const chatRunningData = computed(() => storeEm.state.commonModule.chatRunningData);
 
 const siteCd = computed(() => storeEm.state.embeddedStatusModule.sysInfo.siteCd);
 
@@ -114,12 +111,6 @@ interface SlotInfo {
   wbcInfo: WbcInfo[];
 }
 
-interface RootState {
-  wbcClassificationModule: WbcInfo[];
-  runningInfoModule: { slotInfo: SlotInfo[] };
-}
-
-const store = useStore<RootState>();
 const dspWbcClassList = ref<any>([]);
 const dspBfClassList = ref<any[]>([]);
 const nonWbcClassList = ref<any[]>([]);
@@ -127,7 +118,8 @@ const nonWbcClassList = ref<any[]>([]);
 const testType = ref<string>("");
 const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
-const instance = getCurrentInstance();
+const emits = defineEmits();
+
 const classArr = computed(() => storeEm.state.commonModule.classArr);
 
 
@@ -204,13 +196,17 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
   if (iCasStatArr.lastIndexOf("2") !== -1) {
-    classArr.value[iCasStatArr.lastIndexOf("2")] = {
-      wbcInfo: dspWbcClassList.value,
-      nonRbcClassList: nonWbcClassList,
-      totalCount: totalCount.value,
-      maxWbcCount: maxWbcCount.value,
-      slotId: parsedData.slotInfo.slotId
+    const data = {
+      classInfo:{
+        wbcInfo: dspWbcClassList.value,
+        nonRbcClassList: nonWbcClassList,
+        totalCount: totalCount.value,
+        maxWbcCount: maxWbcCount.value,
+        slotId: parsedData.slotInfo.slotId
+      },
+      iCasStatArr: iCasStatArr.lastIndexOf("2")
     };
+    emits('classInfoUpdate',data)
   }
 };
 

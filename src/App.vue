@@ -5,6 +5,7 @@
         v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class="content" :class="{ bmComponent: projectBm }">
       <router-view/>
+      <Analysis @classAppUpdate="classAppUpdate" @rbcAppUpdate="rbcAppUpdate" :parsedData="parsedDataProps" v-if="router.currentRoute.value.path === '/'"/>
     </main>
     <Alert
         v-if="showAlert"
@@ -41,7 +42,7 @@ import * as process from "process";
 import lodash from 'lodash';
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
-
+import Analysis from "@/views/analysis/index.vue";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -64,14 +65,12 @@ const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr = computed(() => store.state.commonModule.runningArr);
-const classArr = computed(() => store.state.commonModule.classArr);
-const rbcArr = computed(() => store.state.commonModule.rbcArr);
-const processInfo = computed(() => store.state.commonModule.processInfo);
-const orderList = computed(() => store.state.commonModule.orderList);
+const classArr = ref<any>([{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
+const rbcArr = ref<any>([{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
 
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
-
+const parsedDataProps = ref<any>({});
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
@@ -109,20 +108,6 @@ watch(reqArr.value, async (newVal, oldVal) => {
   // `reqArrPaste` 상태 초기화
   await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
 });
-
-
-// jobCmd가 중복되지 않도록 배열 필터링
-const removeDuplicateJobCmd = (reqArr: any) => {
-  const uniqueJobCmds = new Set(); // 중복을 체크하기 위한 Set 생성
-  const uniqueReqArr: any = []; // 중복되지 않은 jobCmd를 담을 배열
-  reqArr.forEach((req: any) => {
-    if (!uniqueJobCmds.has(req.jobCmd)) {
-      uniqueJobCmds.add(req.jobCmd); // Set에 jobCmd 추가
-      uniqueReqArr.push(req); // 유니크한 jobCmd인 경우 배열에 추가
-    }
-  });
-  return uniqueReqArr;
-};
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -231,7 +216,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
-        EventBus.publish('runningInfoData', parseDataWarp);
+        // EventBus.publish('runningInfoData', parseDataWarp);
+        parsedDataProps.value = parseDataWarp;
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoStore(parseDataWarp);
@@ -464,6 +450,27 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     console.error(error);
   }
 });
+
+const rbcAppUpdate = (data: any) => {
+  rbcArr.value[data.iCasStat] = data.rbc;
+}
+
+const classAppUpdate = (data: any) => {
+  classArr.value[data.iCasStat] = data.classInfo;
+}
+
+// jobCmd가 중복되지 않도록 배열 필터링
+const removeDuplicateJobCmd = (reqArr: any) => {
+  const uniqueJobCmds = new Set(); // 중복을 체크하기 위한 Set 생성
+  const uniqueReqArr: any = []; // 중복되지 않은 jobCmd를 담을 배열
+  reqArr.forEach((req: any) => {
+    if (!uniqueJobCmds.has(req.jobCmd)) {
+      uniqueJobCmds.add(req.jobCmd); // Set에 jobCmd 추가
+      uniqueReqArr.push(req); // 유니크한 jobCmd인 경우 배열에 추가
+    }
+  });
+  return uniqueReqArr;
+};
 
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;

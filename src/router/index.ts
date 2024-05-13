@@ -16,11 +16,11 @@ import {useStore} from "vuex";
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        {
-            path: '/',
-            name: 'HomeView',
-            component: HomeView,
-        },
+        // {
+        //     path: '/',
+        //     name: 'HomeView',
+        //     component: HomeView,
+        // },
         {
             path: '/analysis',
             name: 'AnalysisView',

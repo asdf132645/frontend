@@ -1,13 +1,13 @@
 <template>
   <div class="contentLeft">
     <Execute/>
-    <ProcessInfo :parsedData="parsedData"/>
-    <orderList :parsedData="parsedData"/>
+    <ProcessInfo :parsedData="props.parsedData"/>
+    <orderList :parsedData="props.parsedData"/>
   </div>
   <div class="contentRight">
     <workingView class="contentRightChild"/>
-    <rbcclassification :parsedData="parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
-    <wbcclassification :parsedData="parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
+    <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
+    <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <div class="contentBottom">
       <FoundingCells/>
     </div>
@@ -22,20 +22,24 @@ import orderList from './commponent/orderList.vue';
 import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
-import {onMounted, ref} from "vue";
-import EventBus from "@/eventBus/eventBus";
+import {defineEmits, defineProps, onMounted, ref} from "vue";
+const emits = defineEmits();
 
 const bmIsBoolen = ref(false);
-const parsedData = ref<any>(null);
+const props = defineProps(['parsedData']);
+
 onMounted(async () => {
   if (process.env.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
   }
-  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
 
-const runningInfoGet = async (data: any) => {
-  parsedData.value = data;
+const rbcUpdate = (data: any) => {
+  emits('rbcAppUpdate', data);
+}
+
+const classInfoUpdate = (data: any) => {
+  emits('classAppUpdate', data);
 }
 
 </script>

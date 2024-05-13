@@ -95,7 +95,7 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, computed, defineProps, watch} from "vue";
+import {ref, onMounted, computed, defineProps, watch, defineEmits} from "vue";
 import {useStore} from "vuex";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
@@ -113,7 +113,7 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
-const rbcArr = computed(() => store.state.commonModule.rbcArr);
+const emits = defineEmits();
 
 
 onMounted(async () => {
@@ -287,11 +287,14 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
   if(iCasStatArr.lastIndexOf("2") !== -1){
-    rbcArr.value[iCasStatArr.lastIndexOf("2")] = {
-      rbcInfo: rbcInfo,
-      slotId: parsedData.slotInfo.slotId,
-    };
-
+    const data = {
+      rbc:{
+        rbcInfo: rbcInfo,
+        slotId: parsedData.slotInfo.slotId,
+      },
+      iCasStat: iCasStatArr.lastIndexOf("2")
+    }
+    emits('rbcUpdate',data);
   }
 };
 
