@@ -97,6 +97,14 @@ const alertType = ref('');
 const alertMessage = ref('');
 const testTypeArr = ref<any>([]);
 
+watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
+  if (newUserId.id === '') {
+    return;
+  }
+  userId.value = newUserId.id;
+  await initDataExecut();
+});
+
 onMounted(async () => {
   await initDataExecut();
 });
@@ -106,7 +114,8 @@ const initDataExecut =async () =>{
   testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
 
   countType.value = process.env.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
-  userId.value = getStoredUser.id;
+  // userId.value = getStoredUser.id;
+  
   await nextTick();
   await cellImgGet();
   initData();
@@ -297,7 +306,7 @@ const initData = () => {
 }
 
 const cellImgGet = async () => {
-  console.log('cellimg')
+  console.log(userId.value)
   try {
     const result = await getCellImgApi(String(userId.value));
     if (result) {
