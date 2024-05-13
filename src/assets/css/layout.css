@@ -1946,3 +1946,15 @@ button.rollbackButton {
 .blinkColor {
     color: red;
 }
+
+
+.slider img {
+    width: 150px;
+    height: 150px;
+}
+
+.slider {
+    width: 100%;
+    height: 152px;
+    overflow: hidden;
+}

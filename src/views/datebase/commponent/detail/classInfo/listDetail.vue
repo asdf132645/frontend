@@ -643,6 +643,7 @@ const drawCellMarker = async (imgResize?: boolean) => {
     if (response && response.success) {
       const jsonImageDat = response.data;
       wbcInfo.value.forEach((item: any) => {
+        if (item.images.length === 0) return;
         item.images.forEach((image: any) => {
           const imageElement: any = cellRef.value;
           const foundItem = jsonImageDat.find((item: any) => item?.FILE_NM === image?.fileName);
@@ -936,12 +937,13 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   } else {
     wbcInfo.value = selectItemsVal.wbcInfo.wbcInfo[0];
     selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if (item.images.length > 0) {
-        item.images.forEach((itemImg: any) => {
-          itemImg.title = item.title;
-        })
+      if(item.images){
+        if (item.images.length > 0) {
+          item.images.forEach((itemImg: any) => {
+            itemImg.title = item.title;
+          })
+        }
       }
-
     });
   }
   if (newData !== '') {
