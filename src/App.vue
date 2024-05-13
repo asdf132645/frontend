@@ -213,6 +213,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
+        classArr.value = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+        rbcArr.value  = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
@@ -267,6 +269,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]});
+        classArr.value = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+        rbcArr.value  = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
@@ -347,10 +351,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
         const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
+        console.log(classArr.value);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        // const processInfoElements = processInfo.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        // const orderListElements = orderList.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        // rbcArr
+
         const matchedWbcInfo = classElements[0];
         const newWbcInfo = {
           wbcInfo: matchedWbcInfo?.wbcInfo,
