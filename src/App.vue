@@ -459,6 +459,7 @@ const rbcAppUpdate = (data: any) => {
 }
 
 const classAppUpdate = (data: any) => {
+  console.log('classAppUpdate',data);
   classArr.value[data.iCasStat] = data.classInfo;
 }
 
