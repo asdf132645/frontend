@@ -6,6 +6,7 @@ const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
 module.exports = {
   devServer: {
     port: 8080, // 또는 원하는 포트 번호
+    publicPath: '/',
   },
   configureWebpack: {
     resolve: {
@@ -16,9 +17,9 @@ module.exports = {
         "process": require.resolve("process/browser")
       }
     },
-    optimization: {
-      minimize: true, // 코드 최소화
-    },
+    // optimization: {
+    //   minimize: true, // 코드 최소화
+    // },
     plugins: [
       new PurgeCSSPlugin({
         paths: glob.sync([

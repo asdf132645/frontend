@@ -1347,7 +1347,7 @@ ul.wbcInfoFilter {
     height: 100%;
     left: 0;
     background: rgb(49 49 49 / 88%);
-    padding-top: 10%;
+    /*padding-top: 10%;*/
 }
 
 .wbcModalImageContent {
@@ -1954,7 +1954,22 @@ button.rollbackButton {
 .iconSize {
     font-size: 20px;
 }
+.wbcModalImageContent .buttons {
+    position: absolute;
+    left: 38%;
+    bottom: -58%;
+}
 
+.wbc-modal-content .buttons {
+    position: absolute;
+    left: 47%;
+    bottom: 92px;
+}
+
+.wbc-modal-content {
+    position: relative;
+    height: 100%;
+}
 .blinkColor {
     color: red;
 }
