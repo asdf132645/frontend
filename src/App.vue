@@ -193,9 +193,9 @@ onBeforeUnmount(() => {
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
-  // if (commonDataGet.value.viewerCheck !== 'main') {
-  //   return;
-  // }
+  if (commonDataGet.value.viewerCheck !== 'main') {
+    return;
+  }
   try {
     if (typeof data === 'string') {
       await showSuccessAlert(messages.TCP_DiSCONNECTED);

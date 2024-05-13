@@ -1,5 +1,5 @@
 <template>
-  <div v-if="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
+  <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
   <ClassInfoMenu @refreshClass="refreshClass"/>
   <div class="wbcContent">
     <div class="topClintInfo">
@@ -42,7 +42,7 @@
             <input
                 type="range"
                 min="80"
-                max="600"
+                max="300"
                 v-model="imageSize"
                 @input="changeImageSize"
             />
@@ -55,7 +55,7 @@
             <font-awesome-icon :icon="['fas', 'gear']"/>
             IMG Setting
           </button>
-          <div class="imgSet" v-if="imgSet">
+          <div class="imgSet" v-show="imgSet">
 
             <div>
               <font-awesome-icon :icon="['fas', 'sun']"/>
@@ -119,7 +119,7 @@
         </ul>
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
-            <div v-if="item?.count !== '0' && item?.count !== 0">
+            <div v-show="item?.count !== '0' && item?.count !== 0">
               <p class="mt1">
                 <input type="checkbox" @input="allCheckChange($event,item.title)"
                        :checked="selectedTitle === item.title">
@@ -127,7 +127,7 @@
                 ({{ item?.count }})</p>
             </div>
             <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)"
-                v-if="item?.count !== '0' && item?.count !== 0">
+                v-show="item?.count !== '0' && item?.count !== 0">
               <template v-for="(image, imageIndex) in item.images" :key="image.fileName">
                 <li
                     :class="{
@@ -140,14 +140,14 @@
                     v-show="!hiddenImages[`${item.id}-${image.fileName}`]"
                 >
                   <div style="position: relative;">
-                    <div class="titleImg" v-if="replaceFileNamePrefix(image.fileName) !== image.title">
+                    <div class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== image.title">
                       <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
                         <font-awesome-icon
                             :icon="['fas', 'arrow-right']"/>
                         {{ image.title }}
                       </div>
                     </div>
-                    <img :src="getImageUrl(image.fileName, item.id, item.title)"
+                    <img :src="getImageUrl(image.fileName, item.id, item.title, '')"
                          :width="image.width ? image.width : '150px'"
                          :height="image.height ? image.height : '150px'"
                          :style="{ filter: image.filter }"
@@ -167,7 +167,7 @@
         </ul>
       </div>
       <!-- 모달 창 -->
-      <div class="wbcModal" v-if="modalOpen">
+      <div class="wbcModal" v-show="modalOpen">
         <div class="wbc-modal-content">
           <span class="wbcClose" @click="closeModal">&times;</span>
           <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
@@ -437,7 +437,7 @@ function replaceFileNamePrefix(fileName: string) {
 
 const openModal = (image: any, item: any) => {
   modalOpen.value = true;
-  selectedImageSrc.value = getImageUrl(image.fileName, item.id, item.title);
+  selectedImageSrc.value = getImageUrl(image.fileName, item.id, item.title, 'getImageRealTime');
 };
 
 const closeModal = () => {
@@ -449,14 +449,22 @@ const imgSetOpen = () => {
 }
 
 const zoomIn = () => {
-  modalImageWidth.value = `${parseFloat(modalImageWidth.value) + 50}px`;
-  modalImageHeight.value = `${parseFloat(modalImageHeight.value) + 50}px`;
+  let newWidth = Math.min(parseFloat(modalImageWidth.value) + 50, 400);
+  let newHeight = Math.min(parseFloat(modalImageHeight.value) + 50, 400);
+
+  modalImageWidth.value = `${newWidth}px`;
+  modalImageHeight.value = `${newHeight}px`;
 };
 
+
 const zoomOut = () => {
-  modalImageWidth.value = `${parseFloat(modalImageWidth.value) - 50}px`;
-  modalImageHeight.value = `${parseFloat(modalImageHeight.value) - 50}px`;
+  let newWidth = Math.max(parseFloat(modalImageWidth.value) - 50, 150);
+  let newHeight = Math.max(parseFloat(modalImageHeight.value) - 50, 150);
+
+  modalImageWidth.value = `${newWidth}px`;
+  modalImageHeight.value = `${newHeight}px`;
 };
+
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -1348,14 +1356,20 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   }
 }
 
-function getImageUrl(imageName: any, id: string, title: string): string {
+function getImageUrl(imageName: any, id: string, title: string, highImg: string): string {
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
   const slotId = selectItems.value.slotId || "";
   const folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
-  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+  let url = '';
+  if(highImg === 'getImageRealTime'){
+    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  }else{
+    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+  }
+  return url;
 
 }
 
