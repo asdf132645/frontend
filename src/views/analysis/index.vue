@@ -40,7 +40,7 @@ const rbcUpdate = (data: any) => {
 
 const classInfoUpdate = (data: any) => {
   console.log('중간',data)
-  emits('classAppUpdate', data);
+  emits('classAppUpdateLast', data);
 }
 
 </script>

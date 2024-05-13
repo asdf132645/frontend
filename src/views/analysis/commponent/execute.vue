@@ -115,7 +115,7 @@ const initDataExecut =async () =>{
 
   countType.value = process.env.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
   // userId.value = getStoredUser.id;
-  
+
   await nextTick();
   await cellImgGet();
   initData();

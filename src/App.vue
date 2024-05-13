@@ -5,7 +5,7 @@
         v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class="content" :class="{ bmComponent: projectBm }">
       <router-view/>
-      <Analysis @classAppUpdate="classAppUpdate"
+      <Analysis @classAppUpdateLast="classAppUpdateLast"
                 @rbcAppUpdate="rbcAppUpdate"
                 :parsedData="parsedDataProps"
                 :isClass="router.currentRoute.value.path === '/'"
@@ -462,8 +462,8 @@ const rbcAppUpdate = (data: any) => {
   rbcArr.value[data.iCasStat] = data.rbc;
 }
 
-const classAppUpdate = (data: any) => {
-  console.log('classAppUpdate',data);
+const classAppUpdateLast = (data: any) => {
+  console.log('classAppUpdateLast',data);
   classArr.value[data.iCasStat] = data.classInfo;
 }
 
