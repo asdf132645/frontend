@@ -120,9 +120,6 @@ const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
 const emits = defineEmits();
 
-const classArr = computed(() => storeEm.state.commonModule.classArr);
-
-
 
 onMounted(() => {
   updateDataArray(basicBmClassList, null, true);

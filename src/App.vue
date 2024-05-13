@@ -459,12 +459,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 });
 
 const rbcAppUpdate = (data: any) => {
-  rbcArr.value[data.iCasStat] = data.rbc;
+  rbcArr.value[data.iCasStatArr] = data.rbc;
 }
 
 const classAppUpdateLast = (data: any) => {
-  classArr.value[data.iCasStat] = data.classInfo;
+  classArr.value[data.iCasStatArr] = data.classInfo;
   console.log('app vue 에서 받아오는 데이터',classArr.value);
+  console.log('iCasStatArr',data.iCasStatArr);
 
 }
 
