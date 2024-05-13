@@ -62,7 +62,7 @@ interface CommonModule {
         setFirstLoading: (state: CommonState, value: boolean) => void;
         setSlotIndex: (state: CommonState, value: number) => void;
         setViewerCheck: (state: CommonState, value: string) => void;
-        setRunningArr: (state: CommonState, value: any[]) => void;
+        setRunningArr: (state: CommonState, value: any) => void;
         setClassArr: (state: CommonState, value: any[]) => void;
         setRbcArr: (state: CommonState, value: any[]) => void;
         setProcessInfo: (state: CommonState, value: any[]) => void;

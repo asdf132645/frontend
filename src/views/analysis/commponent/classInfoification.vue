@@ -192,6 +192,9 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
   // await updatePercentages();
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
+  // if(lastCompleteIndex !== slotIndex.value){
+  //   return;
+  // }
   if (iCasStatArr.lastIndexOf("2") !== -1) {
     const data = {
       classInfo:{
@@ -204,6 +207,9 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
       iCasStatArr: iCasStatArr.lastIndexOf("2")
     };
     emits('classInfoUpdate',data)
+  }
+  if(iCasStatArr.lastIndexOf("3")){
+
   }
 };
 

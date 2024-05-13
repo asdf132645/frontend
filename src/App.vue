@@ -68,7 +68,7 @@ let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
-const runningArr: any = computed(() => store.state.commonModule.runningArr);
+const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
 
@@ -227,7 +227,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoStore(parseDataWarp);
-        await rbcInfoStore(parseDataWarp);
+        // await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         break;
       case 'STOP':
@@ -305,11 +305,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
         }
 
-        // 데이터 넣는 부분
-        if (iCasStatArr.lastIndexOf("2") !== -1) {
-          runningArr.value = data;
-        }
-
 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
@@ -336,6 +331,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
             await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
           }
+        }
+
+        // 데이터 넣는 부분
+        if (iCasStatArr.lastIndexOf("2") !== -1) {
+          runningArr.value = data;
+          console.log(runningArr.value)
         }
 
       }
