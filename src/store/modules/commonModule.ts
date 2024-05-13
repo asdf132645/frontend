@@ -22,7 +22,7 @@ export interface CommonState {
     firstLoading: boolean;
     slotIndex: number;
     viewerCheck: string;
-    runningArr: any[];
+    runningArr: any;
     classArr: any[];
     rbcArr: any[];
     processInfo: any[];
@@ -103,7 +103,7 @@ export const commonModule: CommonModule = {
         firstLoading: false,
         slotIndex: 0,
         viewerCheck: '',
-        runningArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+        runningArr: [],
         classArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         rbcArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         processInfo: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
