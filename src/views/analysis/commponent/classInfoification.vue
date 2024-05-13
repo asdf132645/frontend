@@ -206,6 +206,7 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
       },
       iCasStatArr: iCasStatArr.lastIndexOf("2")
     };
+    console.log('자식 emit')
     emits('classInfoUpdate',data)
   }
 };

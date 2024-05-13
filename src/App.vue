@@ -5,7 +5,11 @@
         v-if="router.currentRoute.value.path !== '/user/login' && router.currentRoute.value.path !== '/user/join'"/>
     <main class="content" :class="{ bmComponent: projectBm }">
       <router-view/>
-      <Analysis @classAppUpdate="classAppUpdate" @rbcAppUpdate="rbcAppUpdate" :parsedData="parsedDataProps" v-if="router.currentRoute.value.path === '/'"/>
+      <Analysis @classAppUpdate="classAppUpdate"
+                @rbcAppUpdate="rbcAppUpdate"
+                :parsedData="parsedDataProps"
+                :isClass="router.currentRoute.value.path === '/'"
+                />
     </main>
     <Alert
         v-if="showAlert"
