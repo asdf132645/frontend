@@ -63,7 +63,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
   const slotId = selectedItem.slotId || '';
   const folderPath = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
 }
 
 function hideImage(id: string, fileName: string) {

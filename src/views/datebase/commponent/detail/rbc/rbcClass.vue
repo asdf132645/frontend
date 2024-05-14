@@ -120,8 +120,6 @@ const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type']);
 const rbcInfoChangeVal = ref([]);
 const pltCount = ref('');
 const malariaCount = ref('');
-const pltLabel = 'Platelets';
-const malariaLabel = 'Malaria';
 const memo = ref('');
 const memoModal = ref(false);
 const store = useStore();
@@ -132,10 +130,8 @@ const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
-const userConfirmed = ref(false);
 const userModuleDataGet = computed(() => store.state.userModule);
 const isBefore = ref(false);
-const selectedRbc = sessionStorage.getItem("selectItemRbc");
 
 
 

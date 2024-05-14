@@ -165,6 +165,7 @@ const handleDataResponse = async (dbIndex: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
+  console.log(selectItemsNewVal)
   emits('refreshClass', selectItemsNewVal);
 };
 
