@@ -357,14 +357,13 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         images: [],
         title: abbreviation,
       };
-      const foundObject = selectItems.value.wbcInfo.wbcInfo[0].find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
+      const wbcinfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter :selectItems.value.wbcInfo.wbcInfo[0]
+      const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
       if (!foundObject) {
-        selectItems.value.wbcInfo.wbcInfo[0].push(wbcPush);
-        wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
+        wbcinfo.push(wbcPush);
+        wbcInfo.value = wbcinfo;
         sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
         await updateOriginalDb('notWbcAfterSave');
-      } else {
-        // console.log(foundObject);
       }
     }
     await getWbcHotKeyClasses();
@@ -877,8 +876,8 @@ async function handleKeyDown(event: KeyboardEvent) {
   addToRollbackHistory();
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
-    if (event.key && (selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-      await moveSelectedImagesToTargetItem((selectItems.value.testType === '01' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+    if (event.key && (selectItems.value.testType === '01' || selectItems.value.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+      await moveSelectedImagesToTargetItem((selectItems.value.testType === '01' || selectItems.value.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
   } else if (projectType.value === 'bm') {
     if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
@@ -940,7 +939,6 @@ async function initData(newData: any, upDown: any, upDownData: any) {
       if (correspondingItem) {
         correspondingItem.images.forEach((item: any) => {
           item.title = title;
-
         })
       }
     });
