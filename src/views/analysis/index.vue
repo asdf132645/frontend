@@ -2,7 +2,7 @@
   <div class="contentLeft" v-show="props.isClass">
     <Execute />
     <ProcessInfo :parsedData="props.parsedData"/>
-    <orderList :parsedData="props.parsedData"/>
+    <orderList :parsedData="props.parsedData" :startStatus="props.startStatus"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
     <workingView :parsedData="props.parsedData" class="contentRightChild"/>
@@ -26,7 +26,7 @@ import {defineEmits, defineProps, onMounted, ref, watch} from "vue";
 const emits = defineEmits();
 
 const bmIsBoolen = ref(false);
-const props = defineProps(['parsedData','isClass']);
+const props = defineProps(['parsedData','isClass', 'startStatus']);
 
 onMounted(async () => {
   if (process.env.PROJECT_TYPE === 'bm') {

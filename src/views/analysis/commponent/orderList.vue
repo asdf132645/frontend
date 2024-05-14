@@ -40,7 +40,7 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 // 스토어
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-const props = defineProps(['parsedData']);
+const props = defineProps(['parsedData', 'startStatus']);
 
 // end 스토어
 const dspOrderList = ref<any>([]);
@@ -49,6 +49,16 @@ watch(
     () => props.parsedData,
     (newVal) => {
       runningInfoGet(newVal);
+    },
+    { deep: true }
+);
+
+watch(
+    () => props.startStatus,
+    (newVal) => {
+      if(newVal === true){
+        dspOrderList.value = [];
+      }
     },
     { deep: true }
 );

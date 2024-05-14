@@ -9,6 +9,7 @@
                 @rbcAppUpdate="rbcAppUpdate"
                 :parsedData="parsedDataProps"
                 :isClass="router.currentRoute.value.path === '/'"
+                :startStatus="startStatus"
                 />
     </main>
     <Alert
@@ -75,6 +76,7 @@ const rbcArr = ref<any>([]);
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
+const startStatus = ref(false);
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
@@ -215,6 +217,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        startStatus.value = true;
         classArr.value = [];
         rbcArr.value  = [];
         runningInfoBoolen.value = true;
@@ -236,6 +239,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
+        startStatus.value = false;
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
@@ -257,6 +261,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
+        startStatus.value = false;
         runningInfoBoolen.value = false;
         break;
       case 'RESTART':
@@ -267,6 +272,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         runningInfoBoolen.value = true;
+        startStatus.value = true;
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
