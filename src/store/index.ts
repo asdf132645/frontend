@@ -18,8 +18,8 @@ const store = createStore({
     modules: {
         userModule,
         executeModule,
-        rbcClassificationModule,
-        wbcClassificationModule,
+        // rbcClassificationModule,
+        // wbcClassificationModule,
         workingViewModule,
         embeddedStatusModule,
         orderListModule,

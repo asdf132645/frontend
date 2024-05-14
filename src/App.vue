@@ -28,7 +28,7 @@ import AppHeader from "@/components/layout/AppHeader.vue";
 const router = useRouter();
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
-import {sysInfoStore, runningInfoStore, rbcInfoStore} from '@/common/lib/storeSetData/common';
+import {sysInfoStore, runningInfoStore } from '@/common/lib/storeSetData/common';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {
@@ -201,13 +201,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
-        await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: true});
         break;
       case 'INIT':
         // sendSettingInfo();
         break;
       case 'START':
-        await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
         await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
@@ -225,7 +223,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // EventBus.publish('runningInfoData', parseDataWarp);
         parsedDataProps.value = parseDataWarp;
         runningInfoBoolen.value = true;
-        await store.dispatch('commonModule/setCommonInfo', {startInfoBoolen: false});
         await runningInfoStore(parseDataWarp);
         // await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
@@ -264,7 +261,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
-        await rbcInfoStore(parseDataWarp);
+        // await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});

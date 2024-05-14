@@ -16,15 +16,11 @@
 
 
 <script setup lang="ts">
-import {ref, watch, computed} from 'vue';
-import { useStore } from 'vuex';
-import { SlotInfo } from '@/store/modules/testPageCommon/ruuningInfo';
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {ref, watch, defineProps} from 'vue';
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const props = defineProps([ 'parsedData']);
 
-const store = useStore();
 const images = ref<RunningPathItem[]>([]);
-const runningInfoModule = computed(() => store.state.runningInfoModule);
 
 
 interface RunningPathItem {
@@ -32,41 +28,43 @@ interface RunningPathItem {
   id: string;
 }
 
+watch(
+    () => props.parsedData,
+    (newVal, oldVal) => {
+      const slotInfo = newVal?.slotInfo;
+      if (slotInfo) {
+        let accumulatedRunningPath: any = {};
 
+        if (slotInfo.stateCd === '03' && slotInfo.runningPath && slotInfo.runningPath.length > 0) {
+          const runningPath: RunningPathItem[] = slotInfo.runningPath.map((pathItem: any) => ({
+            ...pathItem,
+            // path: pathItem.path + '?' + getDateTimeStr(),
+            path: pathItem.path,
+            id: generateUniqueId()
+          }));
 
-watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
-  const firstItem = JSON.parse(JSON.stringify(newSlot))
-  const slotInfo = firstItem[0].runningInfo?.slotInfo;
-  if (slotInfo) {
-    let accumulatedRunningPath: any = {};
-
-    if (slotInfo.stateCd === '03' && slotInfo.runningPath && slotInfo.runningPath.length > 0) {
-      const runningPath: RunningPathItem[] = slotInfo.runningPath.map((pathItem: any) => ({
-        ...pathItem,
-        // path: pathItem.path + '?' + getDateTimeStr(),
-        path: pathItem.path,
-        id: generateUniqueId()
-      }));
-
-      accumulatedRunningPath = runningPath;
-    }
-
-    if (accumulatedRunningPath.length > 0) {
-      // 이미지 배열을 순회하며 중복 확인
-      let isDuplicate = false;
-      for (const image of accumulatedRunningPath) {
-        if (!images.value.find(existingImage => existingImage.path === image.path)) {
-          // 중복되지 않는 경우에만 이미지 배열에 추가
-          images.value.unshift(image);
-        } else {
-          isDuplicate = true;
-          break;
+          accumulatedRunningPath = runningPath;
         }
-      }
-    }
 
-  }
-});
+        if (accumulatedRunningPath.length > 0) {
+          // 이미지 배열을 순회하며 중복 확인
+          let isDuplicate = false;
+          for (const image of accumulatedRunningPath) {
+            if (!images.value.find(existingImage => existingImage.path === image.path)) {
+              // 중복되지 않는 경우에만 이미지 배열에 추가
+              images.value.unshift(image);
+            } else {
+              isDuplicate = true;
+              break;
+            }
+          }
+        }
+
+      }
+    },
+    { deep: true }
+);
+
 
 function generateUniqueId() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

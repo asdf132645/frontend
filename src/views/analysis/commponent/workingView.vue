@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount, watch, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, watch, computed, defineProps} from 'vue';
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
@@ -62,6 +62,7 @@ const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const timeDataGet = computed(() => store.state.timeModule);
+const props = defineProps([ 'parsedData']);
 
 
 // 스토어
@@ -132,7 +133,6 @@ watch([timeDataGet.value], async (newVals: any) => {
   const getItem = sessionStorage.getItem('totalElapsedTimeCount');
   totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
 });
-
 
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {

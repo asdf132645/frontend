@@ -24,10 +24,10 @@ export const runningInfoStore = async (data: any) => {
     await store.dispatch('runningInfoModule/setRunningInfo', data);
 }
 
-export const wbcInfoStore = async (data: any) => {
-    await store.dispatch('wbcClassificationModule/setWbcInfo', data.slotInfo);
-}
+// export const wbcInfoStore = async (data: any) => {
+//     await store.dispatch('wbcClassificationModule/setWbcInfo', data.slotInfo);
+// }
 
-export const rbcInfoStore = async (data: any) => {
-    await store.dispatch('rbcClassificationModule/setRbcInfo', data.slotInfo);
-}
+// export const rbcInfoStore = async (data: any) => {
+//     await store.dispatch('rbcClassificationModule/setRbcInfo', data.slotInfo);
+// }

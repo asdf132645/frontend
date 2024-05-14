@@ -118,9 +118,9 @@ const emits = defineEmits();
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
-  const initialRbcClassList = store.state.rbcClassificationModule;
+
   await getRbcDegreeData();
-  await updateDataArray(initialRbcClassList,'');
+  await updateDataArray({rbcInfo: props.parsedData.slotInfo},'');
 });
 
 watch(

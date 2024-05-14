@@ -123,7 +123,6 @@ const emits = defineEmits();
 
 onMounted(() => {
   updateDataArray(basicBmClassList, null, true);
-  EventBus.subscribe('runningInfoData', runningInfoGet);
 });
 watch(
     () => props.parsedData, // 감시할 데이터

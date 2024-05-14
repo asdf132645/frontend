@@ -1,15 +1,15 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <Execute/>
+    <Execute />
     <ProcessInfo :parsedData="props.parsedData"/>
     <orderList :parsedData="props.parsedData"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <workingView class="contentRightChild"/>
+    <workingView :parsedData="props.parsedData" class="contentRightChild"/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <div class="contentBottom">
-      <FoundingCells/>
+      <FoundingCells :parsedData="props.parsedData"/>
     </div>
   </div>
 </template>
