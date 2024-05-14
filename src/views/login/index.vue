@@ -113,11 +113,13 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
     const result = await putUserDataApi(user);
     if (result) {
       showSuccessAlert('login successful.');
-      await document.documentElement.requestFullscreen();
+
       if(viewerCheck === 'main'){
         await router.push('/');
+        await document.documentElement.requestFullscreen();
       }else{
         await router.push('/dataBase');
+        await document.documentElement.requestFullscreen();
       }
       await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
