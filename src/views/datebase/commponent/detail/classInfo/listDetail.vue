@@ -1366,7 +1366,7 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string)
   const slotId = selectItems.value.slotId || "";
   const folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
-  if(highImg === 'getImageRealTime'){
+  if(highImg === 'getImageRealTime' || projectType.value === 'pb'){
     url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   }else{
     url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;

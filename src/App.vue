@@ -254,6 +254,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         runningInfoBoolen.value = false;
+        startStatus.value = false;
         break;
       case 'PAUSE':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
