@@ -6,7 +6,7 @@
         <img
             v-for="image in imageSet.images"
             :key="image.fileName"
-            class="dbBmImages"
+            class="dbRightImages"
             :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)"
             @error="hideImage(imageSet.id, image.fileName)"
             v-show="!hiddenImages[`${imageSet.id}-${image.fileName}`]"
