@@ -1093,7 +1093,8 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     const fileName = selectedImage.fileName;
     fileNames.push(fileName)
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-      const matchingItem = basicBmClassList.find(item => item.title === selectedImage.title);
+      const classInfoBagic =  process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      const matchingItem = classInfoBagic.find(item => item.title === selectedImage.title);
       const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
           `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1164,7 +1165,8 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
-      const matchingItem = basicBmClassList.find(item => item.title === seItem.title);
+      const classInfoBagic =  process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      const matchingItem = classInfoBagic.find(item => item.title === seItem.title);
 
       const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
