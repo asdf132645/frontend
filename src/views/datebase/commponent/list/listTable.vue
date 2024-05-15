@@ -62,7 +62,7 @@
         <td> {{ formatDateString(item?.createDate) }}</td>
         <td> {{ item?.tactTime }}</td>
         <td> {{ item?.submit }}</td>
-        <td> {{ item?.submitDate.split("T")[0] }}</td>
+        <td> {{ formatDateString(item?.submitDate) }}</td>
         <td>
           <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
         </td>
