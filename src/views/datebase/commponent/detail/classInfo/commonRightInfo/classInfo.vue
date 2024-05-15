@@ -147,14 +147,13 @@ const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
+import moment from 'moment';
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItemsS = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
-const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
-const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const barcodeImg = ref('');
 const userId = ref('');
 const memo = ref('');
@@ -254,11 +253,12 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
+  const localTime = moment.utc("2024-05-15T21:32:00.728Z").local();
   const updatedRuningInfo = props.originalDb
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
         // id가 일치하는 경우 해당 항목의 submit 값을 변경
-        const updatedItem = {...item, signedState: 'Submit', signedOfDate: new Date(), signedUserId: item.id};
+        const updatedItem = {...item, signedState: 'Submit', signedOfDate: localTime.format(), signedUserId: item.id, submitDate: localTime.format()};
         // updatedItem의 내용을 변경
         updatedItem.submit = 'Submit'; // 예시로 필드를 추가하거나 변경
         return updatedItem;

@@ -20,18 +20,18 @@
     </tr>
     </thead>
     <colgroup>
-      <col width="5%"/>
-      <col width="5%"/>
-      <col width="5%"/>
-      <col width="5%"/>
-      <col width="9%"/>
-      <col width="8%"/>
-      <col width="8%"/>
-      <col width="12%"/>
-      <col width="19%"/>
-      <col width="11%"/>
-      <col width="5%"/>
-      <col width="25%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="15%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="15%"/>
       <col width="3%"/>
     </colgroup>
     <tbody v-if="dbData.length !== 0">
@@ -62,7 +62,7 @@
         <td> {{ formatDateString(item?.createDate) }}</td>
         <td> {{ item?.tactTime }}</td>
         <td> {{ item?.submit }}</td>
-        <td> {{ item?.signedOfDate }}</td>
+        <td> {{ item?.submitDate.split("T")[0] }}</td>
         <td>
           <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
         </td>

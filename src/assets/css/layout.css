@@ -984,7 +984,7 @@ table.defaultTable tbody td {
 }
 
 .listBox {
-    width: 34%;
+    width: 29%;
     display: inline-block;
     vertical-align: top;
     text-align: left;
@@ -999,7 +999,7 @@ table.defaultTable tbody td {
 }
 
 .listBoxTable {
-    width: 65%;
+    width: 70%;
     display: inline-block;
     text-align: left;
     background: #252629;
