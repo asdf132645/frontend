@@ -26,7 +26,7 @@
         </option>
       </select>
 <!--      {{ isInit }}-->
-      <div class="initBtn" @click="sendInit" v-if="btnStatus !== 'isRunning'" :class="{'isInitDisabled': isInit === 'Y'}">
+      <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
         />
