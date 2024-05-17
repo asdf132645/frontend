@@ -1138,7 +1138,7 @@ ul.wbcImgWrap > li {
 }
 
 .selected-image {
-    border: 3px solid #20eaa7 !important;
+    outline: 3px solid #20eaa7 !important;
     margin: 3px !important;
 }
 
