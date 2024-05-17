@@ -1253,6 +1253,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
     siteCd = '0000';
     testType = '01';
   }
+  console.log(testType)
   // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
   const arraysBySiteCd: any = {
     '0006': {

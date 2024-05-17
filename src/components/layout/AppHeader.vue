@@ -41,9 +41,6 @@
               </li>
             </ul>
           </div>
-          <div class="projectVersion">
-            {{ projectVersion }}
-          </div>
           <div class="iconHeaderMenu">
           <ul>
             <li class="alarm">
