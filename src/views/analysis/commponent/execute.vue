@@ -26,7 +26,7 @@
         </option>
       </select>
 <!--      {{ isInit }}-->
-      <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
+      <div class="initBtn" @click="sendInit" v-if="btnStatus !== 'isRunning'" :class="{'isInitDisabled': isInit === 'Y'}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
         />
@@ -285,7 +285,7 @@ const hideAlert = () => {
 
 
 const sendInit = () => { // 장비 초기화 진행
-  if(isInit.value === 'Y'){
+  if(isInit.value === 'Y' || btnStatus.value === "isRunning"){
     showSuccessAlert(messages.alreadyInitialized);
     return;
   }
@@ -296,7 +296,6 @@ const sendInit = () => { // 장비 초기화 진행
 const initData = () => {
   const newObj = {...embeddedStatusJobCmd.value}
   const runInfoObj = {...runInfo.value};
-  // console.log('isInit 값:', newObj.isInit);
   isInit.value = newObj.isInit;
   isPause.value = newObj.isPause;
   userStop.value = newObj.userStop;
