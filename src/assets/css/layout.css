@@ -1066,11 +1066,16 @@ ul.wbcInfoDbUl > li {
     border-radius: 100%;
     height: 50px;
     width: 50px;
+    min-width: 50px;
     font-size: 0.8rem;
     vertical-align: middle;
 }
 
-
+.projectVersion {
+    position: absolute;
+    right: 28%;
+    top: 3%;
+}
 .circle {
     text-align: center;
     padding-top: 7px;
@@ -1107,6 +1112,7 @@ ul.wbcInfoDbUl {
     justify-content: space-between;
     margin-top: 20px;
     margin-bottom: 20px;
+    overflow-x: auto;
 }
 
 ul.wbcInfoDbUl .circle {
@@ -2017,6 +2023,7 @@ li.cbcLi {
     bottom: 100px;
     left: 36px;
     font-size: 0.8rem;
+    cursor: pointer;
 }
 
 .cbcLi svg {
@@ -2026,4 +2033,8 @@ li.cbcLi {
 p.menuIco {
     font-size: 1.2rem;
     margin-bottom: 10px;
+}
+
+.onRight.cbcLi {
+    color: #29c7ca;
 }

@@ -41,6 +41,9 @@
               </li>
             </ul>
           </div>
+          <div class="projectVersion">
+            {{ projectVersion }}
+          </div>
           <div class="iconHeaderMenu">
           <ul>
             <li class="alarm">
@@ -156,6 +159,7 @@ const storagePercent = ref(0);
 const eqStatCd = ref('');
 const runInfo = computed(() => store.state.commonModule);
 const commonDataGet = computed(() => store.state.commonModule);
+const projectVersion = ref<any>('');
 
 const eqStatCdData = ref({
   icon: ['fas', 'person'],
@@ -221,7 +225,7 @@ onMounted(async () => {
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
   }
-  
+  projectVersion.value = process.env.PROJECT_VERSUON;
 });
 
 

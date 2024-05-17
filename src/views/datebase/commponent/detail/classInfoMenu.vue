@@ -26,7 +26,7 @@
       </template>
 
     </ul>
-    <div @click="lisCbcClick" class="cbcLi">
+    <div @click="lisCbcClick" :class='{ "onRight": cbcLayer, "cbcLi": true }'>
       <font-awesome-icon :icon="['fas', 'desktop']"/>
       <p>LIS-CBC</p>
     </div>
