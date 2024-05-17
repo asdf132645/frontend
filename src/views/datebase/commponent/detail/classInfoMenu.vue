@@ -6,16 +6,30 @@
             :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"
             @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')"
         >
-          {{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}
+          <p class="menuIco">
+            <font-awesome-icon :icon="['fas', 'virus']"/>
+          </p>
+          <p>{{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}</p>
         </li>
         <li :class='{ "onRight": isActive("/databaseDetail") }' @click="pageGo('/databaseDetail')">
-          {{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}
+          <p class="menuIco">
+            <font-awesome-icon :icon="['fas', 'disease']"/>
+          </p>
+          <p>{{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}</p>
         </li>
-        <li :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">REPORT</li>
-        <li @click="lisCbcClick">LIS-CBC</li>
+        <li :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
+          <p class="menuIco">
+            <font-awesome-icon :icon="['fas', 'clipboard']"/>
+          </p>
+          <p>REPORT</p>
+        </li>
       </template>
 
     </ul>
+    <div @click="lisCbcClick" class="cbcLi">
+      <font-awesome-icon :icon="['fas', 'desktop']"/>
+      <p>LIS-CBC</p>
+    </div>
     <div class="wbcMenuBottom">
       <button @click="moveWbc('up')">
         <font-awesome-icon :icon="['fas', 'circle-up']"/>
@@ -175,7 +189,7 @@ const isActive = (path: string) => {
   return route.path === path;
 };
 
-const lisCbcClick  = () => {
+const lisCbcClick = () => {
   //
   store.dispatch('commonModule/setCommonInfo', {cbcLayer: !cbcLayer.value});
 }

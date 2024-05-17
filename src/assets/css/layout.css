@@ -1180,7 +1180,7 @@ h3.wbcClassInfoLeft {
 
 ul.leftWbcInfo {
     display: inline-block;
-    width: 55%;
+    width: 54%;
     text-align: right;
 }
 
@@ -1499,7 +1499,7 @@ select.selectSizeTitle {
 .wbcMenu ul {
     position: absolute;
     margin-top: 20px;
-    width: 6%;
+    width: 7%;
 }
 
 .reportSection {
@@ -2006,4 +2006,24 @@ button.rollbackButton {
 
 h1.titleCbc {
     margin-top: 10px;
+}
+
+li.cbcLi {
+    margin-top: 40px;
+}
+
+.cbcLi {
+    position: absolute;
+    bottom: 100px;
+    left: 36px;
+    font-size: 0.8rem;
+}
+
+.cbcLi svg {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+p.menuIco {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
 }
