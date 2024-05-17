@@ -13,8 +13,8 @@
           </li>
         </ul>
         <div class="mt1 loginFooter">
-          <input type="checkbox">
-          <label class="loginLabel">Save Login Profile</label>
+          <input type="checkbox" id="checked" v-model="isAutoLoginEnabled">
+          <label class="loginLabel" for="checked">Save Login Profile</label>
         </div>
         <div class='loginBtn'>
           <button type="button" @click="loginUser">Login</button>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import {getCurrentInstance, ref} from "vue";
+import {getCurrentInstance, ref, onMounted} from "vue";
 import {getUserApi, getUserIpApi, login, putUserDataApi} from "@/common/api/service/user/userApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
@@ -51,6 +51,21 @@ const instance = getCurrentInstance();
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const isAutoLoginEnabled = ref(false);
+
+onMounted(() => {
+  isAutoLogginable();
+})
+
+/** 자동 로그인 확인 */
+const isAutoLogginable = () => {
+  const getStoredUser = JSON.parse(localStorage.getItem('user') || '{}');
+  if (getStoredUser.userId && getStoredUser.password) {
+    idVal.value = getStoredUser.userId;
+    password.value = getStoredUser.password;
+    loginUser();
+  }
+};
 
 
 const goJoinPage = () => {
@@ -70,6 +85,10 @@ const loginUser = async () => {
       await firstSaveOrderClass(String(result.data?.user.id));
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
+
+      if (isAutoLoginEnabled.value) {
+        localStorage.setItem('user', JSON.stringify((result.data.user)))
+      }
       await getUserIp(result?.data?.user.userId);
 
     }else{
@@ -80,6 +99,7 @@ const loginUser = async () => {
     console.log(e);
   }
 }
+
 const getUserIp = async (userId: string) => {
   try {
     const result = await getUserIpApi();

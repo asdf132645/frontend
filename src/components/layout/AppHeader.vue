@@ -274,7 +274,6 @@ const hideAlert = () => {
   showAlert.value = false;
 };
 
-
 const isActive = (path: string) => {
   return route.path === path;
 };
@@ -285,6 +284,7 @@ const logOutBoxOn = () => {
 const logout = () => {
   confirmMessage.value = messages.Logout;
   showConfirm.value = true;
+  localStorage.removeItem('user')
 }
 
 const oilCountChangeVal = (): string => {
