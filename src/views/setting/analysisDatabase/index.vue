@@ -11,7 +11,7 @@
         {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
       </button>
       <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
-      <button v-if="projectType === 'pb'" @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
+      <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
       <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
         {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
       </button>
