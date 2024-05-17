@@ -12,8 +12,9 @@
           {{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}
         </li>
         <li :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">REPORT</li>
+        <li @click="lisCbcClick">LIS-CBC</li>
       </template>
-      <!--      <li>LIS-CBC</li>-->
+
     </ul>
     <div class="wbcMenuBottom">
       <button @click="moveWbc('up')">
@@ -53,6 +54,7 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const route = useRoute();
 const orderClass = ref<any>([]);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
@@ -172,5 +174,10 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
 const isActive = (path: string) => {
   return route.path === path;
 };
+
+const lisCbcClick  = () => {
+  //
+  store.dispatch('commonModule/setCommonInfo', {cbcLayer: !cbcLayer.value});
+}
 
 </script>

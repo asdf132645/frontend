@@ -1,6 +1,7 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
   <ClassInfoMenu @refreshClass="refreshClass"/>
+
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
@@ -13,12 +14,13 @@
         <li>{{ selectItems?.createDate }}</li>
       </ul>
     </div>
-    <div class="databaseWbcRight">
+    <LisCbc v-if="cbcLayer"/>
+    <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'
                  @scrollEvent="scrollToElement"/>
     </div>
 
-    <div class="databaseWbcLeft">
+    <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <div class="imgMenuSetDiv" @mouseleave="hideSizeControl">
         <button type="button" @click="drawCellMarker(false)">
           <font-awesome-icon
@@ -186,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, defineEmits, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveClassImagePost, moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -214,6 +216,7 @@ import process from "process";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import {commonModule} from "@/store/modules/commonModule";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
 const selectedTitle = ref('');
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
@@ -226,7 +229,7 @@ const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const commonDataGetSiteCd = computed(() => store.state.embeddedStatusModule.sysInfo.siteCd);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
@@ -268,6 +271,7 @@ const selectItemIamgeArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const showSize = ref(false);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
+const emits = defineEmits();
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
@@ -357,7 +361,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         images: [],
         title: abbreviation,
       };
-      const wbcinfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter :selectItems.value.wbcInfo.wbcInfo[0]
+      const wbcinfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : selectItems.value.wbcInfo.wbcInfo[0]
       const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
       if (!foundObject) {
         wbcinfo.push(wbcPush);
@@ -465,7 +469,6 @@ const zoomOut = () => {
   modalImageWidth.value = `${newWidth}px`;
   modalImageHeight.value = `${newHeight}px`;
 };
-
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -945,7 +948,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   } else {
     wbcInfo.value = selectItemsVal.wbcInfo.wbcInfo[0];
     selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if(item.images){
+      if (item.images) {
         if (item.images.length > 0) {
           item.images.forEach((itemImg: any) => {
             itemImg.title = item.title;
@@ -1093,7 +1096,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     const fileName = selectedImage.fileName;
     fileNames.push(fileName)
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-      const classInfoBagic =  process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      const classInfoBagic = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       const matchingItem = classInfoBagic.find(item => item.title === selectedImage.title);
       const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
           `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
@@ -1165,7 +1168,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
-      const classInfoBagic =  process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      const classInfoBagic = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       const matchingItem = classInfoBagic.find(item => item.title === seItem.title);
 
       const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
@@ -1366,9 +1369,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string)
   const slotId = selectItems.value.slotId || "";
   const folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
-  if(highImg === 'getImageRealTime' || projectType.value === 'pb'){
+  if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
     url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
-  }else{
+  } else {
     url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
   }
   return url;

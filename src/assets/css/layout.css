@@ -1985,3 +1985,25 @@ button.rollbackButton {
     height: 152px;
     overflow: hidden;
 }
+
+.cbcDiv {
+    display: inline-block;
+    width: 20%;
+    margin-left: 41px;
+    background: #252629;
+    border: 1px solid #fff;
+    height: 94%;
+    margin-right: 4px;
+}
+
+.databaseWbcRight.cbcLayer {
+    width: 20%;
+}
+
+.databaseWbcLeft.cbcLayer {
+    width: 56%;
+}
+
+h1.titleCbc {
+    margin-top: 10px;
+}

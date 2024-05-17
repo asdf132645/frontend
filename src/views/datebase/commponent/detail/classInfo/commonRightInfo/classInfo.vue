@@ -131,7 +131,7 @@
 
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
-import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
+import {getBarcodeDetailImageUrl, getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
@@ -182,7 +182,7 @@ onMounted(async () => {
   await getOrderClass();
   memo.value = props.selectItems.memo;
   await afterChang(clonedWbcInfoStore.value);
-  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 })
 // basicWbcArr
@@ -193,7 +193,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 
 watch(() => props.wbcInfo, (newItem) => {
   memo.value = props.selectItems.memo;
-  barcodeImg.value = getBarcodeImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   // console.log('classinfo_props.selectItems' , props.selectItems);
 
 });

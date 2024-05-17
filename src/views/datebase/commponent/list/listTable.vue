@@ -59,10 +59,10 @@
         <td> {{ item?.barcodeNo }}</td>
         <td> {{ item?.patientId }}</td>
         <td> {{ item?.patientNm }}</td>
-        <td> {{ formatDateString(item?.createDate) }}</td>
+        <td> {{ item?.createDate === '' ? '' : formatDateString(item?.createDate) }}</td>
         <td> {{ item?.tactTime }}</td>
         <td> {{ item?.submit }}</td>
-        <td> {{ formatDateString(item?.submitDate) }}</td>
+        <td> {{ item?.submitDate === '' ? '' : formatDateString(item?.submitDate) }}</td>
         <td>
           <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
         </td>

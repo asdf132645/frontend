@@ -34,6 +34,7 @@ export interface CommonState {
     moveImgIsBool: boolean;
     classInfoSort: any[];
     chatRunningData: any[];
+    cbcLayer: boolean;
 }
 
 interface CommonModule {
@@ -74,6 +75,7 @@ interface CommonModule {
         setMoveImgIsBool: (state: CommonState, value: boolean) => void;
         setClassInfoSort: (state: CommonState, value: any[]) => void;
         setChatRunningData: (state: CommonState, value: any[]) => void;
+        setCbcLayer: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -115,6 +117,7 @@ export const commonModule: CommonModule = {
         moveImgIsBool: false,
         classInfoSort: [],
         chatRunningData: [],
+        cbcLayer: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -221,6 +224,9 @@ export const commonModule: CommonModule = {
         },
         setChatRunningData(state: CommonState, value: any[]): void {
             state.chatRunningData = value;
+        },
+        setCbcLayer(state: CommonState, value: boolean): void {
+            state.cbcLayer = value;
         },
     },
     actions: {
@@ -329,6 +335,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('chatRunningData')) {
                 commit('setChatRunningData', payload.chatRunningData)
+            }
+            if (payload.hasOwnProperty('cbcLayer')) {
+                commit('setCbcLayer', payload.cbcLayer)
             }
         },
     },

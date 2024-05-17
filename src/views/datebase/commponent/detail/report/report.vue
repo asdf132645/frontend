@@ -116,7 +116,7 @@
                 <div class="categories">
                   <ul class="categoryNm">
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-                    <li>{{ category.categoryNm }}</li>
+                    <li>{{ category?.categoryNm }}</li>
                   </ul>
                   <ul class="classNm">
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
@@ -150,7 +150,7 @@
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import {computed, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {WbcInfo} from "@/store/modules/analysis/wbcclassification";
+import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
@@ -160,6 +160,7 @@ import {useStore} from "vuex";
 import process from "process";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
+import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -172,7 +173,6 @@ const originalDbData = sessionStorage.getItem("originalDbData");
 const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const printOnOff = ref(false);
 const printContent = ref(null);
-const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const rbcInfo = ref([]);
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const userModuleDataGet = computed(() => store.state.userModule);
@@ -180,9 +180,11 @@ const instance = getCurrentInstance();
 const projectBm = ref(false);
 const wbcArr = ref<any>([]);
 const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
+const orderClass = ref<any>([]);
 
-onMounted(() => {
-  initData();
+onMounted(async () => {
+  await getOrderClass();
+  await initData();
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
 const refreshClass = async (data: any) => {
@@ -205,17 +207,51 @@ const printStart = () => {
 const pageGo = (path: string) => {
   router.push(path)
 }
+const getOrderClass = async () => {
+  try {
+    const result = await getOrderClassApi(String(userModuleDataGet.value.id));
+    if (result) {
+      if (result?.data.length === 0) {
+        orderClass.value = [];
+      } else {
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 async function initData(data?: any) {
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
-    wbcInfo.value = clonedWbcInfo.value;
-    wbcArr.value = clonedWbcInfo.value;
+    let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    const sortedWbcInfo = sortWbcInfo(clonedWbcInfo.value, wbcArrs);
+    wbcInfo.value = sortedWbcInfo;
+    wbcArr.value = sortedWbcInfo;
   } else {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0];
-    wbcArr.value = selectItems.value.wbcInfo.wbcInfo[0];
+    let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    const sortedWbcInfo = sortWbcInfo(selectItems.value.wbcInfo.wbcInfo[0], wbcArrs);
+    wbcInfo.value = sortedWbcInfo;
+    wbcArr.value = sortedWbcInfo;
   }
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
 }
+const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  return newSortArr;
+};
 
 
 </script>
