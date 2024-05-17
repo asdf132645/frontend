@@ -3,7 +3,7 @@
     <nav> 
       <div class='appHeaderLeft' :class="{ 'bmComponent': projectBm }" v-if="!appHeaderLeftHidden">
         <div class="borderLine">
-          <span class="greenColor">U</span>IMD
+          <img src="@/assets/celli.png" class="headerLogo"/>
         </div>
         <router-link :to="noRouterPush ? '#' : '/setting'"
                      :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
@@ -135,6 +135,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);

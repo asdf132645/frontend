@@ -67,6 +67,12 @@
     font-size: 0.8rem;
 }
 
+.headerLogo {
+    width: 80px;
+    position: relative;
+    bottom: 4px;
+}
+
 main.content {
     background: #25313b;
 }
