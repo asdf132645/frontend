@@ -65,6 +65,13 @@
       <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -78,12 +85,14 @@ import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
 import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const userId = ref('');
 const dbGetData = ref<any[]>([]);
-const emits = defineEmits();
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 
 const startDate = ref(new Date());
@@ -233,7 +242,7 @@ const getDbData = async (type: string, pageNum?: number) => {
             return dateB.diff(dateA);
           });
         }
-
+        console.log(dbGetData.value)
         // 마지막 조회 결과 저장
         saveLastSearchParams();
       }
@@ -245,6 +254,12 @@ const getDbData = async (type: string, pageNum?: number) => {
 };
 
 const search = () => {
+  const diffInMs = endDate.value.getTime() - startDate.value.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  if (diffInDays > 30) {
+    showSuccessAlert("You cannot select a period of more than 30 days.");
+    return;
+  }
   getDbData('search');
 };
 
@@ -256,5 +271,12 @@ const loadMoreData = async () => {
   page.value += 1;
   await getDbData('loadMoreData');
 };
+const showSuccessAlert = async (message: string) => {
+  showAlert.value = true;
+  alertMessage.value = message;
+};
 
+const hideAlert = () => {
+  showAlert.value = false;
+};
 </script>

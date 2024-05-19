@@ -128,7 +128,7 @@ main.bmComponent {
 
 .borderLine {
     margin: 0 auto;
-    padding-top: 31px;
+    padding-top: 26px;
     padding-bottom: 25px;
     font-size: 1.5rem;
     font-weight: 500;
@@ -136,7 +136,7 @@ main.bmComponent {
     margin-bottom: 0px;
     display: inline-block;
     color: #ffffff;
-    background: #29c7ca;
+    background: #ffffff;
     margin-left: 0;
     text-align: center;
 }
