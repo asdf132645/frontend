@@ -75,9 +75,11 @@
              </thead>
              <tbody>
              <tr v-for="(item) in wbcArr" :key="item.id" class="wbcClassDbDiv">
-               <td>{{ item?.name }}</td>
-               <td>{{ item?.count }}</td>
-               <td> {{ item?.percent || '-' }}</td>
+               <template v-if="shouldRenderCategory(item.title)">
+                 <td>{{ item?.name }}</td>
+                 <td>{{ item?.count }}</td>
+                 <td> {{ item?.percent || '-' }}</td>
+               </template>
              </tr>
              <tr>
                <td>total</td>
@@ -87,27 +89,27 @@
              </tbody>
            </table>
 
+           <h3 class="reportH3 mb1 pl0">non-WBC</h3>
            <table class="tableClass" v-if="!projectBm">
              <colgroup>
-               <col width="37%">
-               <col width="20%">
+               <col width="40%">
                <col width="20%">
                <col width="20%">
              </colgroup>
              <tbody>
-             <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
-               <tr>
-                 <td>{{ getCategoryName(nWbcItem) }}</td>
-                 <td>
-                   {{ nWbcItem?.count }}
-                   <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
-                 </td>
-                 <td v-if="outerIndex === 0"></td>
-                 <td>-</td>
-               </tr>
-             </template>
+               <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
+                 <tr>
+                   <td>{{ getCategoryName(nWbcItem) }}</td>
+                   <td>
+                     {{ nWbcItem?.count }}
+                     <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
+                   </td>
+                   <td>-</td>
+                 </tr>
+               </template>
              </tbody>
            </table>
+
          </div>
           <div class="rbcRight" v-if="!projectBm">
             <h3 class="reportH3 mb1 pl0">RBC classification result</h3>
@@ -166,6 +168,7 @@ const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
 
 const selectItemsData = sessionStorage.getItem("selectItems");
+const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const wbcInfo = ref<any>(null);
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
@@ -187,6 +190,36 @@ onMounted(async () => {
   await initData();
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
 });
+
+const shouldRenderCategory = (title: string) => {
+  // 제외할 클래스들 정의
+  const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value.siteCd?.testType);
+  return !targetArray.includes(title);
+};
+console.log("이거", selectItems.value.wbcInfo?.nonRbcClassList);
+
+const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
+  if (!siteCd && siteCd === '') {
+    siteCd = '0000';
+    testType = '01';
+  }
+  const arraysBySiteCd: any = { // 0006 -> 삼광
+    '0006': {
+      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+      includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    },
+  };
+
+  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
+  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+  };
+
+  // testType에 따라 제외할 부분 정의
+  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
+};
+
 const refreshClass = async (data: any) => {
   selectItems.value = data;
   await initData(data);
