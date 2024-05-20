@@ -1138,8 +1138,7 @@ ul.wbcImgWrap > li {
 }
 
 .selected-image {
-    border: 2px solid #20eaa7 !important;
-    margin: 3.4px !important;
+    outline: solid #20eaa7 !important;
 }
 
 .databaseWbcRight {
