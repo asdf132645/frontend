@@ -285,7 +285,7 @@ const hideAlert = () => {
 
 
 const sendInit = () => { // 장비 초기화 진행
-  if(isInit.value === 'Y' || btnStatus.value === "isRunning" || btnStatus.value === "isInit"){
+  if(isInit.value === 'Y' || btnStatus.value === "isRunning"){
     showSuccessAlert(messages.alreadyInitialized);
     return;
   }
