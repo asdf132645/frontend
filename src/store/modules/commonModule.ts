@@ -31,6 +31,7 @@ export interface CommonState {
     siteCd: string;
     deviceBarcode: string;
     clonedWbcInfo: any[];
+    clonedRbcInfo: any[];
     moveImgIsBool: boolean;
     classInfoSort: any[];
     chatRunningData: any[];
@@ -72,6 +73,7 @@ interface CommonModule {
         setSiteCd: (state: CommonState, value: string) => void;
         setDeviceBarcode: (state: CommonState, value: string) => void;
         setClonedWbcInfo: (state: CommonState, value: any[]) => void;
+        setClonedRbcInfo: (state: CommonState, value: any[]) => void;
         setMoveImgIsBool: (state: CommonState, value: boolean) => void;
         setClassInfoSort: (state: CommonState, value: any[]) => void;
         setChatRunningData: (state: CommonState, value: any[]) => void;
@@ -114,6 +116,7 @@ export const commonModule: CommonModule = {
         siteCd: '',
         deviceBarcode: '',
         clonedWbcInfo: [],
+        clonedRbcInfo: [],
         moveImgIsBool: false,
         classInfoSort: [],
         chatRunningData: [],
@@ -215,6 +218,9 @@ export const commonModule: CommonModule = {
         },
         setClonedWbcInfo(state: CommonState, value: any[]): void {
             state.clonedWbcInfo = value;
+        },
+        setClonedRbcInfo(state: CommonState, value: any[]): void {
+            state.clonedRbcInfo = value;
         },
         setMoveImgIsBool(state: CommonState, value: boolean): void {
             state.moveImgIsBool = value;
@@ -325,7 +331,10 @@ export const commonModule: CommonModule = {
                 commit('setDeviceBarcode', payload.deviceBarcode);
             }
             if (payload.hasOwnProperty('clonedWbcInfo')) {
-                commit('setClonedWbcInfo', payload.clonedWbcInfo)
+                commit('setClonedWbcInfo', payload.clonedWbcInfo);
+            }
+            if (payload.hasOwnProperty('clonedRbcInfo')) {
+                commit('setClonedRbcInfo', payload.clonedRbcInfo);
             }
             if (payload.hasOwnProperty('moveImgIsBool')) {
                 commit('setMoveImgIsBool', payload.moveImgIsBool)

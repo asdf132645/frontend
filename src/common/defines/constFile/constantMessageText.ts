@@ -242,6 +242,7 @@ export  const messages: Messages = {
     SET_RBC_RED_VALUE: 'setRbcRedValue',
     SET_RBC_GREEN_VALUE: 'setRbcGreenValue',
     SET_RBC_BLUE_VALUE: 'setRbcBlueValue',
+    SET_CLONED_RBC_INFO: 'setClonedRbcInfo',
 
     UPDATE_OIL_COUNT: 'updateOilCount',
     SET_RESULT_LIST: 'setResultList',

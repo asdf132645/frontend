@@ -363,6 +363,7 @@ const rowDbClick = async (item) => {
   if (item.state) {
     return;
   }
+
   let wbcInfoData = [];
   if(Object.keys(item?.wbcInfo).length === 0){
     wbcInfoData = projectType.value !== 'bm' ? basicWbcArr : basicBmClassList;
@@ -378,6 +379,7 @@ const rowDbClick = async (item) => {
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
+  await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo});
   // await getUserIp(item);
   await router.push('/databaseDetail');
 
