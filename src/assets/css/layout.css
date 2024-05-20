@@ -473,7 +473,24 @@ button.saveBtn, .defaultBtn {
 }
 
 .classTotal {
+    display: flex;
     color: #29c7ca;
+    align-items: center;
+}
+
+.classTotal > :nth-child(1) {
+    width: 40%;
+    text-align: left;
+}
+
+.classTotal > :nth-child(2) {
+    width: 40%;
+    text-align: center;
+}
+
+.classTotal > :nth-child(3) {
+    text-align: center;
+    width: 20%;
 }
 
 .categoriesBm {
