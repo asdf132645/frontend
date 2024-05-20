@@ -1139,8 +1139,7 @@ ul.wbcImgWrap > li {
 }
 
 .selected-image {
-    border: 2px solid #20eaa7 !important;
-    margin: 3.4px !important;
+    outline: solid #20eaa7 !important;
 }
 
 .databaseWbcRight {
@@ -1903,6 +1902,32 @@ ul.normalItems li div span:last-child {
 button.rollbackButton {
     position: absolute;
     right: -20px;
+}
+
+/* setting/version */
+.versionContainer {
+    width: 700px;
+    margin: 50px auto 0;
+}
+
+.versionContainer > ul {
+    display: flex;
+    flex-direction: column;
+}
+
+.versionContainer > ul > li {
+    width: 550px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 8px auto;
+    gap: 100px;
+    font-size: 1rem;
+}
+
+.versionContainer > ul > li > span {
+    display: flex;
+    width: 300px;
 }
 
 /* alert */

@@ -270,6 +270,7 @@ const loadMoreData = async () => {
   page.value += 1;
   await getDbData('loadMoreData');
 };
+
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertMessage.value = message;

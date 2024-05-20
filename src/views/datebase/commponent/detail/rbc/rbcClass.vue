@@ -16,7 +16,7 @@
         </li>
       </ul>
     </div>
-    <template v-for="(classList, outerIndex) in [rbcInfoChangeVal]" :key="outerIndex">
+    <template v-for="(classList, outerIndex) in [isBefore ? clonedRbcInfoStore : rbcInfoChangeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories">
           <ul class="categoryNm">
@@ -126,14 +126,13 @@ const store = useStore();
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-
 const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const clonedRbcInfoStore = computed(() => store.state.commonModule.clonedRbcInfo);
 const isBefore = ref(false);
-
-
+const hoveredClass = ref('')
 
 onMounted(() => {
   pltCount.value = props.selectItems?.pltCount;
@@ -152,14 +151,13 @@ watch(() => props.selectItems, (newItem) => {
 
 const beforeChange = () => {
   isBefore.value = true;
-  rbcInfoChangeVal.value = props.rbcInfo;
+  // rbcInfoChangeVal.value = props.rbcInfo;
 }
 
 const afterChange = () => {
   isBefore.value = false;
   rbcInfoChangeVal.value = props.rbcInfo;
 }
-
 
 const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
   if (isBefore.value) {
