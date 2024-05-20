@@ -140,6 +140,7 @@
                     @click="selectImage(itemIndex, imageIndex, item)"
                     @dblclick="openModal(image, item)"
                     v-show="!hiddenImages[`${item.id}-${image.fileName}`]"
+                    @contextmenu="handleRightClick($event, image, item)"
                 >
                   <div style="position: relative;">
                     <div class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== image.title">
@@ -165,6 +166,14 @@
                 </li>
               </template>
             </ul>
+          </li>
+        </ul>
+      </div>
+      <!--   우클릭 항목 메뉴   -->
+      <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }" class="context-menu detail">
+        <ul>
+          <li  v-for="(item, itemIdx) in wbcInfo" :key="itemIdx" @click="moveSelectedImages(item, itemIdx)">
+            {{ item.name }}
           </li>
         </ul>
       </div>
@@ -268,10 +277,14 @@ const allcheckBtn = ref(false);
 const opacity = ref('');
 
 const selectItemIamgeArr = ref<any>([]);
+const moveRightClickArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const showSize = ref(false);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
-const emits = defineEmits();
+const contextMenuVisible = ref(false);
+const contextMenuX = ref(0);
+const contextMenuY = ref(0);
+const targetItem = ref<any>(null);
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
@@ -284,6 +297,11 @@ onMounted(async () => {
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
+const handleRightClick = (event: MouseEvent, image: any, item: any) => {
+  event.preventDefault(); // 기본 컨텍스트 메뉴가 나타나는 것을 방지합니다
+  console.log('우클릭한 항목:', selectItemIamgeArr.value);
+  openContextMenu(event,item);
+};
 
 function hideImage(id: string, fileName: string) {
   hiddenImages.value[`${id}-${fileName}`] = true;
@@ -304,6 +322,29 @@ const handleClickOutside = (event: any) => {
     selectedTitle.value = '';
   }
 };
+document.addEventListener('click', (event) => {
+  if (contextMenuVisible.value) {
+    contextMenuVisible.value = false;
+  }
+});
+const openContextMenu = (event: MouseEvent, item: any) => {
+  contextMenuVisible.value = true;
+  contextMenuX.value = event.clientX;
+  contextMenuY.value = event.clientY;
+  targetItem.value = item;
+};
+
+const moveSelectedImages = async (item: any, itemIdx: any) => {
+  addToRollbackHistory();
+  const draggedItem = wbcInfo.value[itemIdx];
+  if (targetItem.value) {
+    const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
+    await moveImage(matchingItemIndex, selectedClickImages.value, draggedItem, wbcInfo.value[matchingItemIndex], false, '', wbcInfo.value);
+    contextMenuVisible.value = false;
+  }
+  contextMenuVisible.value = false;
+};
+
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사
@@ -709,19 +750,18 @@ const allCheckInsert = () => {
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
   selectItemIamgeArr.value = [];
+  moveRightClickArr.value = [];
   for (const idx in wbcInfo.value) {
     if (allCheck.value === wbcInfo.value[idx].title) {
       for (const idxKey in wbcInfo.value[idx].images) {
-        selectedClickImages.value.push({
+        const item = {
           id: wbcInfo.value[idx].id,
           title: wbcInfo.value[idx].title,
           ...wbcInfo.value[idx].images[idxKey],
-        });
-        selectItemIamgeArr.value.push({
-          id: wbcInfo.value[idx].id,
-          title: wbcInfo.value[idx].title,
-          ...wbcInfo.value[idx].images[idxKey],
-        });
+        };
+        selectedClickImages.value.push(item);
+        selectItemIamgeArr.value.push(item);
+
       }
     }
   }
@@ -858,7 +898,7 @@ async function onDropCircle(item: any) {
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;
   // 클릭한 요소 또는 그 부모 중에 .wbcImgWrap 클래스를 가지고 있지 않으면
-  if (!target.closest('.wbcImgWrapLi')) {
+  if (!target.closest('.wbcImgWrapLi') && !target.closest('.context-menu')) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
@@ -1176,6 +1216,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
+    console.log(selectItemIamgeArr.value)
     const data = {
       sourceFolders,
       destinationFolders,
@@ -1354,6 +1395,10 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response) {
+      if (cellMarkerIcon.value) {
+        // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기
+        await drawCellMarker(true);
+      }
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -1448,7 +1493,6 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
     fileNames: fileNames,
   }
   let response = await moveClassImagePost(data);
-  // const response = await moveImgPost(`sourceFolder=${sourceFolder}&destinationFolder=${destinationFolder}&imageName=${sourceFolderInfo[index].fileName}`);
 
   if (response) {
     wbcInfo.value = prevWbcInfo;

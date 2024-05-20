@@ -242,7 +242,6 @@ const getDbData = async (type: string, pageNum?: number) => {
             return dateB.diff(dateA);
           });
         }
-        console.log(dbGetData.value)
         // 마지막 조회 결과 저장
         saveLastSearchParams();
       }

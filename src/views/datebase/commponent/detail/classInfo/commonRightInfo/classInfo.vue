@@ -95,7 +95,7 @@
             <li>
               {{ nWbcItem?.count }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
-                  selectItemsS?.wbcInfo?.maxWbcCount
+                  selectItemsSessionStorageData?.wbcInfo?.maxWbcCount
                 }} WBC</span>
             </li>
           </ul>
@@ -131,13 +131,12 @@
 
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
-import {getBarcodeDetailImageUrl, getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
+import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
-import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {getOrderClassApi, putOrderClassApi} from "@/common/api/service/setting/settingApi";
@@ -151,7 +150,7 @@ import moment from 'moment';
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItemsS = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const barcodeImg = ref('');
@@ -258,7 +257,13 @@ const onCommit = async () => {
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
         // id가 일치하는 경우 해당 항목의 submit 값을 변경
-        const updatedItem = {...item, signedState: 'Submit', signedOfDate: localTime.format(), signedUserId: item.id, submitDate: localTime.format()};
+        const updatedItem = {
+          ...item,
+          signedState: 'Submit',
+          signedOfDate: localTime.format(),
+          signedUserId: item.id,
+          submitDate: localTime.format()
+        };
         // updatedItem의 내용을 변경
         updatedItem.submit = 'Submit'; // 예시로 필드를 추가하거나 변경
         return updatedItem;
@@ -298,7 +303,7 @@ const resRunningItem = async (updatedRuningInfo: any) => {
     })
     if (response) {
       showSuccessAlert('success');
-      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItemsS.value.id);
+      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
       memo.value = filteredItems[0].memo;
@@ -344,23 +349,27 @@ const getOrderClass = async () => {
 
 const beforeChang = async () => {
   isBefore.value = true;
+  const selectItemsData = sessionStorage.getItem("selectItems");
+  selectItemsSessionStorageData.value = selectItemsData ? JSON.parse(selectItemsData) : null;
+  const originalDbData = sessionStorage.getItem("originalDbData");
+  originalDb.value = originalDbData ? JSON.parse(originalDbData) : null;
   await getOrderClass();
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
   const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
-  console.log(wbcInfoChangeVal.value);
   totalCountSet(wbcInfoChangeVal.value);
+
 
 }
 
 const afterChang = async (newItem: any) => {
   await getOrderClass();
   isBefore.value = false;
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
-  const wbcInfo = selectItemsS.value.wbcInfoAfter.length !== 0 ? selectItemsS.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
+  const wbcInfo = selectItemsSessionStorageData.value.wbcInfoAfter.length !== 0 ? selectItemsSessionStorageData.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
@@ -370,7 +379,7 @@ const afterChang = async (newItem: any) => {
 }
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value.siteCd?.testType);
+  const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value.siteCd?.testType);
   return !targetArray.includes(title);
 };
 
@@ -404,7 +413,7 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
         totalCount.value += Number(item.count);
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
+      const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
 
 
       const titleInArray = targetArray.includes(item.title);
@@ -426,7 +435,7 @@ async function updateOriginalDb() {
           totalCount += 1
         }
       } else {
-        const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
+        const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
         }
@@ -446,7 +455,7 @@ async function updateOriginalDb() {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsS.value?.siteCd, selectItemsS.value?.testType);
+      const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
       if (!targetArray.includes(item.title)) {
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
@@ -456,8 +465,8 @@ async function updateOriginalDb() {
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
-  selectItemsS.value.wbcInfoAfter = clonedWbcInfo;
-  sessionStorage.setItem("selectItems", JSON.stringify(selectItemsS.value));
+  selectItemsSessionStorageData.value.wbcInfoAfter = clonedWbcInfo;
+  sessionStorage.setItem("selectItems", JSON.stringify(selectItemsSessionStorageData.value));
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoChangeVal.value);
@@ -466,7 +475,7 @@ async function updateOriginalDb() {
   });
 
   // originalDb 업데이트
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsS.value.id);
+  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
   if (filteredItems.length > 0) {
     filteredItems.forEach((filteredItem: any) => {
       filteredItem.wbcInfoAfter = clonedWbcInfo;

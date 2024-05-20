@@ -489,7 +489,7 @@ ul.classInfo {
 
 .categoryNm {
     display: inline-block;
-    width: 35%;
+    width: 28%;
 }
 
 .classNmRbc {
@@ -500,7 +500,7 @@ ul.classInfo {
 
 .degree {
     display: inline-block;
-    width: 15%;
+    width: 20%;
 }
 
 ul.nth1Child li {
@@ -538,6 +538,7 @@ ul.nth1Child > :nth-child(3) {
 .categories > ul > li {
     padding-top: 10px;
     font-size: 0.8rem;
+    min-height: 14px;
 }
 
 .categories > ul > li > svg {
