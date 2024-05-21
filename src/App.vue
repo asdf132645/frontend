@@ -224,11 +224,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = true;
         break;
       case 'RUNNING_INFO':
-        // EventBus.publish('runningInfoData', parseDataWarp);
         parsedDataProps.value = parseDataWarp;
         runningInfoBoolen.value = true;
         await runningInfoStore(parseDataWarp);
-        // await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         break;
       case 'STOP':
@@ -268,7 +266,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'RESTART':
         await runningInfoStore(parseDataWarp);
-        // await rbcInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
@@ -341,7 +338,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // 데이터 넣는 부분
         if (iCasStatArr.lastIndexOf("2") !== -1) {
           runningArr.value = data;
-          console.log(runningArr.value)
         }
 
       }
@@ -471,9 +467,6 @@ const rbcAppUpdate = (data: any) => {
 
 const classAppUpdateLast = (data: any) => {
   classArr.value[data.iCasStatArr] = data.classInfo;
-  console.log('app vue 에서 받아오는 데이터',classArr.value);
-  console.log('iCasStatArr',data.iCasStatArr);
-
 }
 
 // jobCmd가 중복되지 않도록 배열 필터링

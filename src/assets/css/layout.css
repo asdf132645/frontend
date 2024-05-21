@@ -1160,8 +1160,9 @@ ul.wbcImgWrap > li {
     outline: solid #20eaa7 !important;
 }
 .context-menu.detail {
-    height: 200px;
+    height: 250px;
     overflow-y: auto;
+    text-align: left;
 }
 .databaseWbcRight {
     display: inline-block;

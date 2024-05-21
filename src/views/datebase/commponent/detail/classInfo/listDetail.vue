@@ -330,7 +330,7 @@ document.addEventListener('click', (event) => {
 const openContextMenu = (event: MouseEvent, item: any) => {
   contextMenuVisible.value = true;
   contextMenuX.value = event.clientX;
-  contextMenuY.value = event.clientY;
+  contextMenuY.value = event.clientY - 250;
   targetItem.value = item;
 };
 
@@ -1173,7 +1173,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       }
       return;
     }
+    // wbcInfosArr => 원에다가 움직이거나 우클릭 해서 클래스 옮길 시 사용 하는 부분임
     if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
+
       const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
           `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1205,25 +1207,28 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     }
 
   }
-  if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우
+  if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우, 또는 우클릭 해서 클래스 이동시 사용
+    // destinationFolders -> 이동 되는 폴더
+    // sourceFolders -> 기존 폴더
+    // targetItemIndex -> 이동되어야하는 아이템 인덱스
+    // findImage - > 움직여야하는 이미지
+    // draggedItemIdx - > 기존 폴더 위치
+    // moveImgIsBool = > 사용자가 이미지 이동 시 다른 동작 못하도록 막는 레이어임
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
       const classInfoBagic = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       const matchingItem = classInfoBagic.find(item => item.title === seItem.title);
-
       const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
-    console.log(selectItemIamgeArr.value)
     const data = {
       sourceFolders,
       destinationFolders,
       fileNames
     }
     let res = await moveClassImagePost(data);
-    // let res = await moveImgPost(`sourceFolders=${sourceFolders}&destinationFolders=${destinationFolders}&imageNames=${fileNames}`);
     if (res) {
       // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
       const targetItem = wbcInfo.value[targetItemIndex];
@@ -1231,12 +1236,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         const findImage = selectedImagesToMove.filter(item => item.title === seItem.title);
         targetItem.images.push(...findImage);
         targetItem.count = targetItem.images.length;
-        // draggedItem.title을 가진 객체의 images 배열에서 draggedItem.images의 fileName과 일치하는 이미지 제거
-        const draggedItemIdx = wbcInfo.value.findIndex(item => item.title === seItem.title);
+        const draggedItemIdx = wbcInfo.value.findIndex((item: any) => item.title === seItem.title);
         if (draggedItemIdx !== -1) {
           const draggedItemObj = wbcInfo.value[draggedItemIdx];
           const selectedImagesFileNames = selectedImagesToMove.map(image => image.fileName);
-          const filteredImages = draggedItemObj.images.filter(image => !selectedImagesFileNames.includes(image.fileName));
+          const filteredImages = draggedItemObj.images.filter((image: any) => !selectedImagesFileNames.includes(image.fileName));
           // 새로 생성한 배열을 draggedItemObj의 images 배열에 할당
           draggedItemObj.images = filteredImages;
           draggedItemObj.count = draggedItemObj.images.length;
@@ -1272,6 +1276,8 @@ function removeDuplicatesByProperty(array: any, property: any) {
     }
   });
 }
+
+
 
 function removeDuplicateImages(data: any[]): any[] {
   const uniqueFileNames = new Set<string>();

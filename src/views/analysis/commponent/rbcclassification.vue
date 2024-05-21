@@ -182,8 +182,8 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
   let totalCount = 0;
   let sizeTotal = 0;
   let chromiaTotal = 0;
-  const rbcInfo = (JSON.parse(JSON.stringify(rbcInfos)));
-
+  const originalData = parsedData.length === 0 ?  (JSON.parse(JSON.stringify(rbcInfos))) : (JSON.parse(JSON.stringify(parsedData?.slotInfo?.rbcInfo)));
+  const rbcInfo = parsedData.length === 0 ?  (JSON.parse(JSON.stringify(rbcInfos))) : (JSON.parse(JSON.stringify(parsedData?.slotInfo?.rbcInfo)));
   rbcInfo.forEach((rbcCategory: any) => {
     rbcCategory.classInfo.forEach((rbcClass: any) => {
       // size total
@@ -204,12 +204,13 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
     });
   });
 
-  rbcInfo.forEach((rbcCategory: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any) => {
+  rbcInfo.forEach((rbcCategory: any, idx1: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
       if(!rbcDegreeStandard.value){
         return;
       }
       rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
         if (
             degreeStandard.category_id === rbcCategory.categoryId &&
             degreeStandard.class_id === rbcClass.classId
@@ -240,6 +241,7 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
           else if (percent < Number(degreeStandard.degree3)) setDegree('2');
           // 3
           else setDegree('3');
+
         }
       });
     });
