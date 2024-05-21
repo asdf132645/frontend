@@ -5,7 +5,8 @@
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <workingView :parsedData="props.parsedData" class="contentRightChild"/>
+    <workingView :parsedData="props.parsedData" class="contentRightChild" v-if="pbVersion !== '100a'"/>
+    <WorkingView100A :parsedData="props.parsedData" class="contentRightChild" v-else/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <div class="contentBottom">
@@ -23,14 +24,17 @@ import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
 import {defineEmits, defineProps, onMounted, ref, watch} from "vue";
+import WorkingView100A from "@/views/analysis/commponent/workingView100A.vue";
 const emits = defineEmits();
 
 const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus']);
-
+const pbVersion = ref<any>('');
 onMounted(async () => {
   if (process.env.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
+  }else {
+    pbVersion.value = process.env.PB_VERSION;
   }
 });
 

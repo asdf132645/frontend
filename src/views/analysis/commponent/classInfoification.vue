@@ -140,7 +140,6 @@ const runningInfoGet = async (data: any) => {
 }
 
 const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolean) => {
-
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (slotArray.wbcInfo) {
     testType.value = slotArray?.wbcInfo?.testType;
@@ -206,9 +205,6 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
       iCasStatArr: iCasStatArr.lastIndexOf("2")
     };
     emits('classInfoUpdate',data)
-  }
-  if(iCasStatArr.lastIndexOf("3")){
-
   }
 };
 

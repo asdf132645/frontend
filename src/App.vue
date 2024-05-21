@@ -77,7 +77,7 @@ const viewerCheckApp = ref('');
 const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
 const startStatus = ref(false);
-const pbVersion = ref('');
+const pbVersion = ref<any>('');
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
@@ -142,7 +142,9 @@ onMounted(async () => {
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
-
+  if(!projectBm.value){
+    pbVersion.value = process.env.PB_VERSION;
+  }
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
@@ -291,6 +293,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }
 
     async function runningInfoCheckStore(data: any | undefined) {
+      console.log(data)
       const regex = /[1,2,9]/g;
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
         const dataICasStat = String(data?.iCasStat);
@@ -310,10 +313,16 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
-          console.log(dataICasStat)
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-          await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+          if(pbVersion.value !== '100a'){
+            await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+            await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+          }else{
+            if(data?.workingDone === 'Y'){
+              await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+              await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+            }
+          }
           await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
         }
@@ -334,6 +343,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
             await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
           }
         }
+
+
 
         // 데이터 넣는 부분
         if (iCasStatArr.lastIndexOf("2") !== -1) {
@@ -358,7 +369,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
         const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
-        console.log(classArr.value);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
 
         const matchedWbcInfo = classElements[0];
@@ -430,7 +440,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           siteCd: embeddedStatus.value.sysInfo.siteCd,
           deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
         }
-        console.log('newObj', newObj)
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
 

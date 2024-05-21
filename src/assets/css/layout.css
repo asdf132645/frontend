@@ -556,9 +556,12 @@ ul.nth1Child > :nth-child(3) {
     padding-top: 10px;
     font-size: 0.8rem;
     min-height: 14px;
-    margin-bottom: 2px;
+    /*margin-bottom: 2px;*/
 }
 
+ul.slideContent.pb100a {
+    width: 78%;
+}
 .categories > ul > li > svg {
     margin-right: 2px;
 }

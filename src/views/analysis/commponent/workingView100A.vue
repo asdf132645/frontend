@@ -1,8 +1,8 @@
 <template>
-  <div class="mt2">
+  <div>
     <h3 class="titleText"><span class="greenColor">W</span>orking <span class="greenColor">V</span>iew </h3>
     <div>
-      <p>{{ changeWqStatCd() }}</p>
+      <p :class="{'blinkColor': isBlinking}">{{ changeWqStatCd() }}</p>
       <p>{{ wbcCount }}</p>
 
       <div class="circular-progress-bar mt2">
@@ -26,41 +26,38 @@
               :stroke-dashoffset="dashoffset"
           />
         </svg>
-        <p class="slideTime"> {{ slideTime }} </p>
+        <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
       </div>
       <p class="slideTime1 mt2">Number of WBCs</p>
-      <p> {{ commonDataGet.totalSlideTime }} </p>
+      <p> {{ timeDataGet.totalSlideTime }} </p>
 
     </div>
     <div class='slideCardWrap'>
       <!-- input -->
-      <ul class='slideContent'>
+      <ul class='slideContent pb100a'>
+        <p>INPUT : {{ casExistChangeText(iCasExist) }}</p>
         <li v-for="item in slideCardData.input" :key="item.slotNo"
             :class="getSlotStateClass(item.slotState,'input')"></li>
-        <p class="mt1">INPUT</p>
-      </ul>
-      <!-- output -->
-      <ul class='slideContent'>
-        <li v-for="item in slideCardData.output" :key="item.slotNo"
-            :class="getSlotStateClass(item.slotState,'output')"></li>
-        <p class="mt1">OUTPUT</p>
+        <p class="mt1">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
       </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount, watch, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, watch, computed, defineProps} from 'vue';
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
-import {slideCard} from "@/common/defines/constFile/analysis";
+import {slideCard, slideCard100a} from "@/common/defines/constFile/analysis";
 
 // 스토어
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
+const timeDataGet = computed(() => store.state.timeModule);
+const props = defineProps([ 'parsedData']);
 
 
 // 스토어
@@ -79,11 +76,13 @@ const slideTime = ref('');
 const totalSlideTime = ref('');
 let countingInterval: any = null;
 let countingIntervalTotal: any = null;
-const slideCardData = ref(slideCard);
-let elapsedTimeCount = 0;
+const slideCardData = ref(slideCard100a);
 let totalElapsedTimeCount = ref(0);
-let totalCountingStarted = false;
-
+let elapsedTimeCount = ref(0);
+const isBlinking = ref(false);
+let interval: any = ref(null);
+const iCasExist = ref<any>('0');
+const oCasExist = ref<any>('0');
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
@@ -91,6 +90,9 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
   if (commonDataGet.value.isRunningState) {
     updateInputState(sysInfo.iCasStat, slideCardData.value.input);
     updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+  } else {
+    stopTotalCounting();
+    stopCounting();
   }
   const regex = /[1,2,9]/g;
   const dataICasStat = String(sysInfo?.iCasStat);
@@ -106,23 +108,33 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
 // 장비가 슬라이드 검사를 완료 할때 감시
 watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals));
+  // console.log(timeDataGet.value);
 
-  if (!newValsObj[0].startEmbedded) { // 슬라이드 검사가 끝난 후
+  if (!newValsObj[0].startEmbedded) {
     stopCounting();
-  } else {
+  } else if(newValsObj[0].runningSlotId === '' && newValsObj[0].startEmbedded) {
     startTotalCounting();
   }
 
+
   if (!newValsObj[0].isRunningState) {
-    stopCounting();
     stopTotalCounting();
+    stopCounting();
   }
+});
+watch([timeDataGet.value], async (newVals: any) => {
+  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
+  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
+
+  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
+  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
 });
 
 
-watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
+watch([runningInfoModule.value], (newSlot: any) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
-
+  iCasExist.value = slotArray[0]?.runningInfo?.iCasExist;
+  oCasExist.value = slotArray[0]?.runningInfo?.oCasExist;
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
     startCounting();
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
@@ -136,11 +148,9 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
   if (slotArray[0].runningInfo) {
 
-    const currentSlot = slotArray[0].runningInfo.slotInfo.find((item: any) => {
-      return item.stateCd === '03';
-    });
+    const currentSlot = slotArray[0].runningInfo.slotInfo;
 
-    if (currentSlot) {
+    if (currentSlot && currentSlot?.stateCd === '03') {
       wbcCount.value = Number(currentSlot.wbcCount);
       maxWbcCount.value = Number(currentSlot.maxWbcCount);
 
@@ -154,9 +164,31 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   }
 });
 
+const casExistChangeText = (val: string) => {
+  switch (val) {
+    case '0':
+      return 'EMPTY';
+    case '1':
+      return 'EXIST';
+    case '2':
+      return 'FULL';
+  }
+}
+
+watch(()=>eqStatCd.value, (newVal) => {
+  if (newVal === '05') {
+    interval.value = setInterval(() => {
+      isBlinking.value = !isBlinking.value;
+    }, 1000);
+
+  } else {
+    isBlinking.value = false;
+    clearInterval(interval.value);
+  }
+})
+
 
 onMounted(() => {
-  totalCountingStarted = false;
   eqStatCd.value = '01';
   slideCardData.value.input.forEach(item => {
     item.slotState = '0';
@@ -165,14 +197,37 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
-  slideTime.value = getCountToTime(0);
-  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-  if (getItem) {
-    totalElapsedTimeCount.value = Number(getItem);
-  }else{
-    totalElapsedTimeCount.value = 0;
+  if (commonDataGet.value.isRunningState){
+    const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
+    elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
+
+    const getItem = sessionStorage.getItem('totalElapsedTimeCount');
+    totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
+
+    startTotalCounting();
+    startCounting();
   }
+
 });
+onBeforeUnmount(() => {
+  if (countingInterval) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
+
+  if (countingIntervalTotal) {
+    clearInterval(countingIntervalTotal);
+    countingIntervalTotal = null;
+  }
+
+  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
+  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
+
+  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
+  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
+});
+
+
 
 const updateInputState = (source: string, target: any[]): void => {
   // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준
@@ -181,61 +236,63 @@ const updateInputState = (source: string, target: any[]): void => {
   });
 }
 
-const stopCounting = () => {
-  if (countingInterval !== null) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
-  slideTime.value = getCountToTime(0);
-};
 
 const startCounting = (): void => {
-  if (countingInterval) {
-    clearInterval(countingInterval);
+  if (!countingInterval) {
+    countingInterval = setInterval(() => {
+      if (commonDataGet.value.isRunningState) {
+        elapsedTimeCount.value += 1;
+        timeNum.value = elapsedTimeCount.value % 60;
+        sessionStorage.setItem('elapsedTimeCount', String(elapsedTimeCount.value));
+        store.dispatch('timeModule/setTimeInfo', {slideTime: getCountToTime(elapsedTimeCount.value)});
+      }
+    }, 1000);
   }
-
-  elapsedTimeCount = 0;
-  countingInterval = setInterval(() => {
-    elapsedTimeCount += 1;
-    timeNum.value = elapsedTimeCount % 60;
-    // sessionStorage.setItem('elapsedTimeCount', String(elapsedTimeCount));
-    slideTime.value = getCountToTime(elapsedTimeCount);
-  }, 1000);
 
   onBeforeUnmount(() => {
     if (countingInterval) {
       clearInterval(countingInterval);
+      countingInterval = null;
     }
   });
 };
 
+
 const startTotalCounting = (): void => {
-  if (countingIntervalTotal) {
-    clearInterval(countingIntervalTotal);
+  if (!countingIntervalTotal) {
+    countingIntervalTotal = setInterval(() => {
+      if (commonDataGet.value.isRunningState) {
+        totalElapsedTimeCount.value += 1;
+        sessionStorage.setItem('totalElapsedTimeCount', String(totalElapsedTimeCount.value));
+        store.dispatch('timeModule/setTimeInfo', {totalSlideTime: getCountToTime(totalElapsedTimeCount.value)});
+      }
+    }, 1000);
   }
-  // totalElapsedTimeCount.value = 0;
-  countingIntervalTotal = setInterval(() => {
-    totalElapsedTimeCount.value += 1;
-    sessionStorage.setItem('totalElapsedTimeCount', String(totalElapsedTimeCount.value));
-    store.dispatch('commonModule/setCommonInfo', {totalSlideTime: getCountToTime(totalElapsedTimeCount.value)});
-  }, 1000);
 
   onBeforeUnmount(() => {
     if (countingIntervalTotal) {
       clearInterval(countingIntervalTotal);
+      countingIntervalTotal = null;
     }
   });
 };
 
+const stopCounting = () => {
+  clearInterval(countingInterval);
+  countingInterval = null;
+  elapsedTimeCount.value = 0;
+  slideTime.value = getCountToTime(0);
+  sessionStorage.removeItem('elapsedTimeCount');
+  store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
+};
 
 const stopTotalCounting = (): void => {
-  if (countingIntervalTotal !== null) {
-    clearInterval(countingIntervalTotal);
-    countingIntervalTotal = null;
-  }
+  clearInterval(countingIntervalTotal);
+  countingIntervalTotal = null;
+  totalElapsedTimeCount.value = 0;
   totalSlideTime.value = getCountToTime(0);
   sessionStorage.removeItem('totalElapsedTimeCount');
-  store.dispatch('commonModule/setCommonInfo', {totalSlideTime: '00:00:00'});
+  store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
 };
 
 
