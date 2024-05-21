@@ -5,7 +5,7 @@
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{ getBmTestTypeText(selectItems?.testType) }}</li>
+        <li>{{ projectType === 'bm' ?  getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)  }}</li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
@@ -218,13 +218,11 @@ import {
   getWbcWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
-import {getBarcodeImageUrl, getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import process from "process";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {commonModule} from "@/store/modules/commonModule";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
 const selectedTitle = ref('');
@@ -234,7 +232,6 @@ const originalDbData = sessionStorage.getItem("originalDbData");
 const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
-const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
@@ -273,7 +270,6 @@ const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
-const allcheckBtn = ref(false);
 const opacity = ref('');
 
 const selectItemIamgeArr = ref<any>([]);
@@ -872,7 +868,6 @@ function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
-  console.log(draggedItem)
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     // 이미지를 한 개만 드래그한 경우
@@ -916,7 +911,8 @@ async function handleKeyDown(event: KeyboardEvent) {
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
   }
-  addToRollbackHistory();
+
+
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
     if (event.key && (selectItems.value.testType === '01' || selectItems.value.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
@@ -934,12 +930,13 @@ async function handleKeyDown(event: KeyboardEvent) {
 async function moveSelectedImagesToTargetItem(targetItem: any) {
   const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.title);
   const selectedImages = selectedClickImages.value;
-
+  addToRollbackHistory();
   for (const selectedImage of selectedImages) {
     const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
     const sourceItem = wbcInfo.value[sourceItemIndex];
     const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
     if (imageIndex !== -1) {
+      console.log('??SDSDSD')
       // 이동된 이미지 정보를 moveImage 함수로 전달하여 데이터 업데이트
       await moveImage(targetIndex, [{
         fileName: selectedImage.fileName,
@@ -1300,7 +1297,6 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
     siteCd = '0000';
     testType = '01';
   }
-  console.log(testType)
   // 사전을 사용하여 각 siteCd에 따라 반환할 배열을 정의
   const arraysBySiteCd: any = {
     '0006': {

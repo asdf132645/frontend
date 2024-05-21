@@ -5,6 +5,7 @@
         <li
             :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"
             @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')"
+            v-if="projectType !== 'pb' || (selectItems?.testType !== '01' && projectType === 'pb')"
         >
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'virus']"/>
