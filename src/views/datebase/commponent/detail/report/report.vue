@@ -196,7 +196,6 @@ const shouldRenderCategory = (title: string) => {
   const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value.siteCd?.testType);
   return !targetArray.includes(title);
 };
-console.log("이거", selectItems.value.wbcInfo?.nonRbcClassList);
 
 const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
   if (!siteCd && siteCd === '') {
