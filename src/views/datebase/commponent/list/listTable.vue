@@ -237,7 +237,7 @@ watchEffect(async () => {
     const observer = new IntersectionObserver(handleIntersection, {
       root: null,
       rootMargin: '0px',
-      threshold: 0.8,
+      threshold: 0.5,
     });
     if (loadMoreRef.value) {
       observer.observe(loadMoreRef.value);
