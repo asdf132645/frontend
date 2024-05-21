@@ -1,15 +1,16 @@
 export const testTypeList = [
     {value: '01', text: 'PB standard'},
     {value: '04', text: 'PB premium'},
-    {value: '02', text: 'Body fluid default'},
-    {value: '03', text: 'Body fluid select'}
+    // {value: '02', text: 'Body fluid default'},
+    // {value: '03', text: 'Body fluid select'}
 ];
 
 export const testBmTypeList = [
-    {value: '02', text: 'BM smear'},
+    {value: '02', text: 'BM wedge'},
     {value: '03', text: 'Touch print'},
     {value: '04', text: 'BM biopsy'},
-    {value: '05', text: 'Clot section'}
+    {value: '05', text: 'Clot section'},
+    {value: '06', text: 'BM squash'},
 ];
 
 export const AnalysisList = [
