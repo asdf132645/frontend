@@ -77,6 +77,7 @@ const viewerCheckApp = ref('');
 const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
 const startStatus = ref(false);
+const pbVersion = ref('');
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
