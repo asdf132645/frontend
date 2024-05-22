@@ -320,9 +320,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
 
         if(pbVersion.value === '100a'){
-          const regex = /^[03]*$/;
-          if(regex.test(dataICasStat)){
-            console.log('reset')
+          if(data?.iCasChange === '1'){
             pb100aCassette.value = 'reset';
           }else{
             pb100aCassette.value = '';

@@ -48,7 +48,7 @@ const siteCd = ref('');
 watch(
     () => props.parsedData,
     (newVal) => {
-      console.log(newVal)
+      console.log('parsedData',newVal)
       runningInfoGet(newVal);
     },
     { deep: true }
@@ -58,8 +58,8 @@ watch(
     () => props.pb100aCassette,
     (newVal) => {
       if(newVal === 'reset'){
-        console.log('pb100aCassette')
         dspOrderList.value = [];
+        console.log('pb100aCassette 초기화',dspOrderList.value)
       }
     },
     { deep: true }
@@ -71,7 +71,6 @@ watch(
     (newVal) => {
       if(newVal === true){
         dspOrderList.value = [];
-        console.log(dspOrderList.value)
       }
     },
     { deep: true }
