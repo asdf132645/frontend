@@ -48,6 +48,7 @@ const siteCd = ref('');
 watch(
     () => props.parsedData,
     (newVal) => {
+      console.log(newVal)
       runningInfoGet(newVal);
     },
     { deep: true }
@@ -57,6 +58,7 @@ watch(
     () => props.pb100aCassette,
     (newVal) => {
       if(newVal === 'reset'){
+        console.log('pb100aCassette')
         dspOrderList.value = [];
       }
     },
@@ -69,6 +71,7 @@ watch(
     (newVal) => {
       if(newVal === true){
         dspOrderList.value = [];
+        console.log(dspOrderList.value)
       }
     },
     { deep: true }
@@ -81,7 +84,9 @@ const runningInfoGet = async (data: any) => {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
       if (existingItemIndex === -1 && barcodeNo !== '') {
-        dspOrderList.value[dspOrderList.value.length - 1].state = '3';
+        if(dspOrderList.value.length > 1){
+          dspOrderList.value[dspOrderList.value.length - 1].state = '3';
+        }
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,

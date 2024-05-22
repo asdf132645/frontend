@@ -87,10 +87,10 @@ const oCasExist = ref<any>('0');
 watch(
     () => props.pb100aCassette,
     (newVal) => {
-      console.log(newVal)
       if(newVal === 'reset'){
         stopTotalCounting();
         startTotalCounting();
+        stopCounting();
       }
     },
     { deep: true }
