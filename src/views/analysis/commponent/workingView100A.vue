@@ -57,7 +57,7 @@ const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData']);
+const props = defineProps([ 'parsedData','pb100aCassette']);
 
 
 // 스토어
@@ -83,6 +83,18 @@ const isBlinking = ref(false);
 let interval: any = ref(null);
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
+
+watch(
+    () => props.pb100aCassette,
+    (newVal) => {
+      console.log(newVal)
+      if(newVal === 'reset'){
+        stopTotalCounting();
+        startTotalCounting();
+      }
+    },
+    { deep: true }
+);
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;

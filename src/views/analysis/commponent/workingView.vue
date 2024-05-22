@@ -87,6 +87,8 @@ let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
 let interval: any = ref(null);
 
+
+
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
   eqStatCd.value = newData.sysInfo.eqStatCd;

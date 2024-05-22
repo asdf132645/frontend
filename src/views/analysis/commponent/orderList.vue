@@ -40,7 +40,7 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 // 스토어
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-const props = defineProps(['parsedData', 'startStatus']);
+const props = defineProps(['parsedData', 'startStatus','pb100aCassette']);
 
 // end 스토어
 const dspOrderList = ref<any>([]);
@@ -52,6 +52,17 @@ watch(
     },
     { deep: true }
 );
+
+watch(
+    () => props.pb100aCassette,
+    (newVal) => {
+      if(newVal === 'reset'){
+        dspOrderList.value = [];
+      }
+    },
+    { deep: true }
+);
+
 
 watch(
     () => props.startStatus,
@@ -70,6 +81,7 @@ const runningInfoGet = async (data: any) => {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
       if (existingItemIndex === -1 && barcodeNo !== '') {
+        dspOrderList.value[dspOrderList.value.length - 1].state = '3';
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
