@@ -293,7 +293,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }
 
     async function runningInfoCheckStore(data: any | undefined) {
-      console.log(data)
       const regex = /[1,2,9]/g;
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
         const dataICasStat = String(data?.iCasStat);
@@ -326,7 +325,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
         }
-
+        await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         //슬라이드 변경시 데이터 저장
         if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
           tcpReq().embedStatus.pause.reqUserId = userId.value;
@@ -336,7 +335,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         } else {
           if (lastCompleteIndex !== slotIndex.value) {
             console.log('save')
-            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'afterChange'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotNo);
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
