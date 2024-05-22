@@ -17,7 +17,8 @@ onMounted(() => {
   projectVersion.value = [
     {key: 'AI Version', name: process.env.AI_VERSION as string},
     {key: 'Web Frontend Version', name: process.env.WEB_FRONTEND_VERSION as string},
-    {key: 'Web Backend Version', name: process.env.WEB_BACKEND_VERSION as string}
+    {key: 'Web Backend Version', name: process.env.WEB_BACKEND_VERSION as string},
+    {key: 'PB Version', name: process.env.PB_VERSION as string}
   ];
 })
 
