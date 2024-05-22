@@ -26,7 +26,10 @@
           <ul class="classNmRbc">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-              <li>{{ classInfo?.classNm }}</li>
+              <li>
+                <span>{{ classInfo?.classNm }}</span>
+                <input type="checkbox" @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId)">
+              </li>
             </template>
           </ul>
           <ul class="degree">
@@ -105,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -132,7 +135,9 @@ const confirmMessage = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const clonedRbcInfoStore = computed(() => store.state.commonModule.clonedRbcInfo);
 const isBefore = ref(false);
-const hoveredClass = ref('')
+const classInfoArr = ref<any>([]);
+const emits = defineEmits();
+
 
 onMounted(() => {
   pltCount.value = props.selectItems?.pltCount;
@@ -158,6 +163,20 @@ const afterChange = () => {
   isBefore.value = false;
   rbcInfoChangeVal.value = props.rbcInfo;
 }
+
+const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string) => {
+  if (isChecked) {
+    if (!classInfoArr.value.includes(classNm)) {
+      classInfoArr.value.push({classNm: classNm, categoryId: categoryId});
+    }
+  } else {
+    classInfoArr.value = classInfoArr.value.filter(name => name.classNm !== classNm);
+
+  }
+  emits('classInfoArrUpdate',classInfoArr.value)
+};
+
+
 
 const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
   if (isBefore.value) {

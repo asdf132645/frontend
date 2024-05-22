@@ -109,13 +109,15 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, onMounted, ref, watch} from 'vue';
+import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
 import Malaria from './Malaria.vue';
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {useStore} from "vuex";
 
-const props = defineProps(['rbcInfo', 'selectItems', 'type']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr']);
 const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
@@ -142,12 +144,35 @@ const rulerWidth = ref(0);
 const viewBoxWH = ref(150);
 const tilingViewerLayer = ref(null);
 const tileExist = ref(true);
+const store = useStore();
+const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
+const rbcClassList = ref<any>([]);
+const classInfoArr = ref<any>([]);
 
 onMounted(() => {
   initElement();
+  rbcMarker();
 });
 
+// classInfoArr
+
+watch(() => props.classInfoArr, (newItem) => {
+  rbcMarker();
+  console.log(JSON.stringify(newItem));
+  classInfoArr.value = newItem;
+
+});
+const rbcMarker =  async () => {
+  let url = '';
+  url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const response = await readJsonFile({fullPath: url});
+  console.log(JSON.stringify(response?.data[0].rbcClassList))
+  rbcClassList.value = response?.data[0].rbcClassList;
+}
+
+
 watch(() => props.selectItems, (newItem) => {
+  rbcMarker();
   const tilingViewerLayer = document.getElementById('tiling-viewer');
   if (tilingViewerLayer) {
     tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
@@ -164,6 +189,45 @@ watch(() => props.selectItems, (newItem) => {
   }
 
 });
+watch(classInfoArr, (newArr) => {
+  updateOverlays(newArr);
+}, { deep: true });
+
+// Function to update overlays based on classInfoArr
+const updateOverlays = (classInfoArr) => {
+  viewer.clearOverlays();
+  const colors = {
+    'Microcyte': 'red',
+    'Normal': 'green',
+    'Macrocyte': 'blue',
+  };
+
+  classInfoArr.forEach(info => {
+    rbcClassList.value.forEach(category => {
+      category.classInfo.forEach(classItem => {
+        if (classItem.classNm === info.classNm && category.categoryId === info.categoryId) {
+          const element = document.createElement('div');
+          element.style.border = `2px solid ${colors[info.classNm] || 'black'}`;
+          element.style.width = '50px';
+          element.style.height = '50px';
+          element.style.position = 'absolute';
+
+          const posX = parseFloat(classItem.posX);
+          const posY = parseFloat(classItem.posY);
+          const overlayRect = viewer.viewport.imageToViewportRectangle(posX, posY, 50, 50); // 이미지 좌표를 뷰포트 좌표로 변환
+
+          viewer.addOverlay({
+            element: element,
+            location: overlayRect
+          });
+        }
+      });
+    });
+  });
+};
+
+
+
 
 const initElement = async () => {
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
