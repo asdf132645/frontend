@@ -89,7 +89,7 @@
              </tbody>
            </table>
 
-           <h3 class="reportH3 mb1 pl0">non-WBC</h3>
+           <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList" class="reportH3 mb1 pl0">non-WBC</h3>
            <table class="tableClass" v-if="!projectBm">
              <colgroup>
                <col width="40%">
@@ -196,7 +196,6 @@ const shouldRenderCategory = (title: string) => {
   const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value.siteCd?.testType);
   return !targetArray.includes(title);
 };
-console.log("이거", selectItems.value.wbcInfo?.nonRbcClassList);
 
 const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
   if (!siteCd && siteCd === '') {
