@@ -87,6 +87,8 @@ let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
 let interval: any = ref(null);
 
+
+
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
   eqStatCd.value = newData.sysInfo.eqStatCd;
@@ -125,14 +127,6 @@ watch([commonDataGet.value], async (newVals: any) => {
     stopCounting();
   }
 });
-watch([timeDataGet.value], async (newVals: any) => {
-  // console.log(newVals[0].slideTime)
-  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
-
-  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
-});
 
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
@@ -146,6 +140,11 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
       clearInterval(countingInterval);
       countingInterval = null;
     }
+  }
+  // afterChange
+  if (slotArray[0].changeSlideState?.changeSlide.value === 'afterChange') {
+    stopCounting();
+    startCounting();
   }
 
 
@@ -190,34 +189,6 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
-  if (commonDataGet.value.isRunningState){
-    const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-    elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
-
-    const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-    totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
-
-    startTotalCounting();
-    startCounting();
-  }
-
-});
-onBeforeUnmount(() => {
-  if (countingInterval) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
-
-  if (countingIntervalTotal) {
-    clearInterval(countingIntervalTotal);
-    countingIntervalTotal = null;
-  }
-
-  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
-
-  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
 });
 
 

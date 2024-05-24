@@ -10,6 +10,7 @@
                 :parsedData="parsedDataProps"
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
+                :pb100aCassette="pb100aCassette"
                 />
     </main>
     <Alert
@@ -78,6 +79,7 @@ const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
 const startStatus = ref(false);
 const pbVersion = ref<any>('');
+const pb100aCassette = ref<any>('');
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
@@ -211,19 +213,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // sendSettingInfo();
         break;
       case 'START':
-        await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
-        await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
-        await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
-        await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
-        await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
-        await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
-        startStatus.value = true;
-        classArr.value = [];
-        rbcArr.value  = [];
-        runningInfoBoolen.value = true;
+        await runnStart();
         break;
       case 'RUNNING_INFO':
         parsedDataProps.value = parseDataWarp;
@@ -244,18 +234,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
-        await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-        await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
-        await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false}); // 임베디드 상태가 죽음을 알려준다.
-        await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
-        await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
-        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
-        await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
-        await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
-        runningInfoBoolen.value = false;
-        startStatus.value = false;
+        await runnComp();
         break;
       case 'PAUSE':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
@@ -292,8 +271,38 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
     }
 
+    async function runnComp() {
+      await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+      await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
+      await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false});
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
+      await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
+      await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+      await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+      await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
+      await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
+      runningInfoBoolen.value = false;
+      startStatus.value = false;
+    }
+
+    async function runnStart () {
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
+      await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
+      await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
+      await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
+      await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
+      await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
+      await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+      await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+      await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+      startStatus.value = true;
+      classArr.value = [];
+      rbcArr.value  = [];
+      runningInfoBoolen.value = true;
+    }
+
     async function runningInfoCheckStore(data: any | undefined) {
-      console.log(data)
       const regex = /[1,2,9]/g;
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
         const dataICasStat = String(data?.iCasStat);
@@ -310,7 +319,13 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
         }
 
-
+        if(pbVersion.value === '100a'){
+          if(data?.iCasChange === '1'){
+            pb100aCassette.value = 'reset';
+          }else{
+            pb100aCassette.value = '';
+          }
+        }
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
@@ -327,6 +342,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           return;
         }
 
+        await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
         //슬라이드 변경시 데이터 저장
         if (currentSlot?.isLowPowerScan === 'Y' && currentSlot?.testType === '03') {// running info 종료
           tcpReq().embedStatus.pause.reqUserId = userId.value;
@@ -336,7 +352,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         } else {
           if (lastCompleteIndex !== slotIndex.value) {
             console.log('save')
-            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'});
+            await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'afterChange'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotNo);
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});

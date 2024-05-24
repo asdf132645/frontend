@@ -182,8 +182,8 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
   let totalCount = 0;
   let sizeTotal = 0;
   let chromiaTotal = 0;
-  const originalData = !parsedData  ?  (JSON.parse(JSON.stringify(rbcInfos))) : (JSON.parse(JSON.stringify(parsedData?.slotInfo?.rbcInfo)));
-  const rbcInfo = !parsedData ?  (JSON.parse(JSON.stringify(rbcInfos))) : (JSON.parse(JSON.stringify(parsedData?.slotInfo?.rbcInfo)));
+  const originalData = parsedData.length === 0 || !parsedData ?  (JSON.parse(JSON.stringify(rbcInfos))) : (JSON.parse(JSON.stringify(parsedData?.slotInfo?.rbcInfo)));
+  const rbcInfo = parsedData.length === 0 || !parsedData ?  (JSON.parse(JSON.stringify(rbcInfos))) : (JSON.parse(JSON.stringify(parsedData?.slotInfo?.rbcInfo)));
   rbcInfo.forEach((rbcCategory: any) => {
     rbcCategory.classInfo.forEach((rbcClass: any) => {
       // size total

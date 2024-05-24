@@ -14,11 +14,11 @@
       </ul>
     </div>
     <div class="databaseWbcRight">
-      <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <RbcClass @classInfoArrUpdate="classInfoArrUpdate" :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
 
     <div class="databaseWbcLeft">
-      <RbcImageList :rbcInfo="rbcInfo" :selectItems="selectItems" type='listTable'/>
+      <RbcImageList :classInfoArr="classInfoArr" :rbcInfo="rbcInfo" :selectItems="selectItems" type='listTable'/>
     </div>
   </div>
 </template>
@@ -39,6 +39,7 @@ const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const store = useStore();
 const rbcInfo = ref(null);
+const classInfoArr = ref<any>([]);
 
 
 onMounted(() => {
@@ -54,5 +55,9 @@ const refreshClass = async (data: any) => {
   selectItems.value = data;
 }
 
+const classInfoArrUpdate = (data: any) => {
+  // console.log(data);
+  classInfoArr.value = data;
+}
 
 </script>

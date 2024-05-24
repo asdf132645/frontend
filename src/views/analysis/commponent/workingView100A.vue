@@ -57,7 +57,7 @@ const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData']);
+const props = defineProps([ 'parsedData','pb100aCassette']);
 
 
 // 스토어
@@ -83,6 +83,18 @@ const isBlinking = ref(false);
 let interval: any = ref(null);
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
+
+watch(
+    () => props.pb100aCassette,
+    (newVal) => {
+      if(newVal === 'reset'){
+        stopTotalCounting();
+        startTotalCounting();
+        stopCounting();
+      }
+    },
+    { deep: true }
+);
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
@@ -122,13 +134,6 @@ watch([commonDataGet.value], async (newVals: any) => {
     stopCounting();
   }
 });
-watch([timeDataGet.value], async (newVals: any) => {
-  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
-
-  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
-});
 
 
 watch([runningInfoModule.value], (newSlot: any) => {
@@ -143,6 +148,11 @@ watch([runningInfoModule.value], (newSlot: any) => {
       clearInterval(countingInterval);
       countingInterval = null;
     }
+  }
+  if (slotArray[0].changeSlideState?.changeSlide.value === 'afterChange') {
+    console.log('afterChange')
+    stopCounting();
+    startCounting();
   }
 
 
@@ -197,34 +207,6 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
-  if (commonDataGet.value.isRunningState){
-    const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-    elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
-
-    const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-    totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
-
-    startTotalCounting();
-    startCounting();
-  }
-
-});
-onBeforeUnmount(() => {
-  if (countingInterval) {
-    clearInterval(countingInterval);
-    countingInterval = null;
-  }
-
-  if (countingIntervalTotal) {
-    clearInterval(countingIntervalTotal);
-    countingIntervalTotal = null;
-  }
-
-  const getTimeSlide = sessionStorage.getItem('elapsedTimeCount');
-  elapsedTimeCount.value = getTimeSlide ? Number(getTimeSlide) : 0;
-
-  const getItem = sessionStorage.getItem('totalElapsedTimeCount');
-  totalElapsedTimeCount.value = getItem ? Number(getItem) : 0;
 });
 
 

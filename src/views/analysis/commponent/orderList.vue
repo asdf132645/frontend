@@ -40,7 +40,7 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 // 스토어
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-const props = defineProps(['parsedData', 'startStatus']);
+const props = defineProps(['parsedData', 'startStatus','pb100aCassette']);
 
 // end 스토어
 const dspOrderList = ref<any>([]);
@@ -48,10 +48,23 @@ const siteCd = ref('');
 watch(
     () => props.parsedData,
     (newVal) => {
+      console.log('parsedData',newVal)
       runningInfoGet(newVal);
     },
     { deep: true }
 );
+
+watch(
+    () => props.pb100aCassette,
+    (newVal) => {
+      if(newVal === 'reset'){
+        dspOrderList.value = [];
+        console.log('pb100aCassette 초기화',dspOrderList.value)
+      }
+    },
+    { deep: true }
+);
+
 
 watch(
     () => props.startStatus,
@@ -70,6 +83,9 @@ const runningInfoGet = async (data: any) => {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
       if (existingItemIndex === -1 && barcodeNo !== '') {
+        if(dspOrderList.value.length > 1){
+          dspOrderList.value[dspOrderList.value.length - 1].state = '3';
+        }
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
