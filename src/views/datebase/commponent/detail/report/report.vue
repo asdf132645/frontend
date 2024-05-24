@@ -89,7 +89,7 @@
              </tbody>
            </table>
 
-           <h3 class="reportH3 mb1 pl0">non-WBC</h3>
+           <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList" class="reportH3 mb1 pl0">non-WBC</h3>
            <table class="tableClass" v-if="!projectBm">
              <colgroup>
                <col width="40%">
