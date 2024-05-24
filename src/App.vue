@@ -194,7 +194,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   }
   try {
     if (typeof data === 'string') {
-      await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      // await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     } else {
       hideAlert();
@@ -359,9 +359,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
             await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
           }
         }
-
-
-
         // 데이터 넣는 부분
         if (iCasStatArr.lastIndexOf("2") !== -1) {
           runningArr.value = data;

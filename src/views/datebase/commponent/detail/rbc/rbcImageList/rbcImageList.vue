@@ -100,7 +100,7 @@
     </div>
     <div class="tiling-viewer-box">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer"></div>
+      <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer" style="width: 100%;"></div>
       <div v-else>
         <span>Tile does not exist.</span>
       </div>
@@ -121,7 +121,7 @@ const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr']);
 const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
-let viewer: any = null;
+let viewer: any = ref<any>(null);
 const imgSet = ref(false);
 const imgBrightness = ref(100);
 const imageRgb = ref([0, 0, 0]);
@@ -148,31 +148,36 @@ const store = useStore();
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
 const rbcClassList = ref<any>([]);
 const classInfoArr = ref<any>([]);
+const canvasOverlay = ref<any>(null);
 
 onMounted(() => {
   initElement();
-  rbcMarker();
 });
 
 // classInfoArr
 
 watch(() => props.classInfoArr, (newItem) => {
-  rbcMarker();
-  console.log(JSON.stringify(newItem));
-  classInfoArr.value = newItem;
+  rbcMarker(newItem);
+},{ deep: true });
 
-});
-const rbcMarker =  async () => {
+const rbcMarker = async (newItem: any) => {
   let url = '';
   url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
   const response = await readJsonFile({fullPath: url});
-  console.log(JSON.stringify(response?.data[0].rbcClassList))
   rbcClassList.value = response?.data[0].rbcClassList;
+  classInfoArr.value = newItem;
+  if(newItem.length === 0){
+    let ctx = canvasOverlay.value.getContext('2d');
+    let canvas = canvasOverlay.value;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+  }else{
+    drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
+  }
 }
 
 
 watch(() => props.selectItems, (newItem) => {
-  rbcMarker();
   const tilingViewerLayer = document.getElementById('tiling-viewer');
   if (tilingViewerLayer) {
     tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
@@ -189,37 +194,24 @@ watch(() => props.selectItems, (newItem) => {
   }
 
 });
-watch(classInfoArr, (newArr) => {
-  updateOverlays(newArr);
-}, { deep: true });
-
-// Function to update overlays based on classInfoArr
-const updateOverlays = (classInfoArr) => {
-  viewer.clearOverlays();
-  const colors = {
-    'Microcyte': 'red',
-    'Normal': 'green',
-    'Macrocyte': 'blue',
+const drawRbcMarker = (classInfoArr: any) => {
+  const colors: any = {
+    '01': 'red',
+    '02': 'green',
+    '03': 'blue',
+    '05': 'brown',
   };
 
-  classInfoArr.forEach(info => {
-    rbcClassList.value.forEach(category => {
-      category.classInfo.forEach(classItem => {
+  let ctx = canvasOverlay.value.getContext('2d'); // canvasOverlay를 직접 사용
+  classInfoArr.forEach((info: any) => {
+    rbcClassList.value.forEach((category: any) => {
+      category.classInfo.forEach((classItem: any) => {
         if (classItem.classNm === info.classNm && category.categoryId === info.categoryId) {
-          const element = document.createElement('div');
-          element.style.border = `2px solid ${colors[info.classNm] || 'black'}`;
-          element.style.width = '50px';
-          element.style.height = '50px';
-          element.style.position = 'absolute';
-
-          const posX = parseFloat(classItem.posX);
-          const posY = parseFloat(classItem.posY);
-          const overlayRect = viewer.viewport.imageToViewportRectangle(posX, posY, 50, 50); // 이미지 좌표를 뷰포트 좌표로 변환
-
-          viewer.addOverlay({
-            element: element,
-            location: overlayRect
-          });
+          ctx.lineWidth = '2';
+          ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
+          let rectPath = new Path2D();
+          rectPath.rect(classItem.posX - 20, classItem.posY - 20, 40, 40)
+          ctx.stroke(rectPath)
         }
       });
     });
@@ -227,83 +219,97 @@ const updateOverlays = (classInfoArr) => {
 };
 
 
-
-
 const initElement = async () => {
   const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
-
     const tilesInfo = await fetchTilesInfo(folderPath);
 
     if (tilesInfo.length !== 0) {
-
-      viewer = OpenSeadragon({
+      viewer.value = OpenSeadragon({
         id: "tiling-viewer",
         animationTime: 0.4,
         navigatorSizeRatio: 0.25,
         showNavigator: true,
         sequenceMode: true,
         defaultZoomLevel: 1,
-        prefixUrl:`${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+        prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
         tileSources: tilesInfo,
+        showReferenceStrip: false,
         gestureSettingsMouse: {clickToZoom: false},
       });
 
+      // 마그니파이어 설정
       new OpenSeadragon.MouseTracker({
-        element: viewer.element,
+        element: viewer.value.element,
         moveHandler: function (event: any) {
           if (!isMagnifyingGlass.value) {
-            if (document.getElementById('magCanvas') !== null) {
-              viewer.element.removeChild(document.getElementById('magCanvas'))
+            const magCanvas = document.getElementById('magCanvas');
+            if (magCanvas) {
+              viewer.value.element.removeChild(magCanvas);
             }
             return;
           }
 
-          const {canvas} = viewer.drawer;
-          if (document.getElementById('magCanvas') !== null) {
-            viewer.element.removeChild(document.getElementById('magCanvas'))
-          }
+          const {canvas} = viewer.value.drawer;
+          const magCanvas = document.createElement('canvas');
+          const magCtx = magCanvas.getContext('2d');
+          canvasOverlay.value = magCanvas
+          if (magCtx) {
+            const magWidth = 200;
+            const magHeight = 200;
+            const zoomLevel = 5;
 
-          const magWidth = 200
-          const magHeight = 200
-          const zoomLevel = 5
+            magCanvas.id = 'magCanvas';
+            magCanvas.style.position = 'absolute';
+            magCanvas.style.left = `${event.position.x - (magWidth / 2)}px`;
+            magCanvas.style.top = `${event.position.y - (magHeight / 2)}px`;
+            magCanvas.style.border = '1px solid';
+            magCanvas.style.borderRadius = '50%';
+            magCanvas.style.width = `${magWidth}px`;
+            magCanvas.style.height = `${magHeight}px`;
+            magCanvas.style.zIndex = '0';
 
-          const magCanvas = document.createElement('canvas')
-          magCanvas.id = 'magCanvas'
-          magCanvas.style.position = 'absolute'
-          magCanvas.style.left = (event.position.x - (magWidth / 2)) + 'px'
-          magCanvas.style.top = (event.position.y - (magHeight / 2)) + 'px'
-          magCanvas.style.border = '1px solid'
-          magCanvas.style.borderRadius = '50%'
-          magCanvas.style.width = magWidth + 'px'
-          magCanvas.style.height = magHeight + 'px'
-          magCanvas.style.zIndex = '0'
+            viewer.value.element.appendChild(magCanvas);
 
-          viewer.element.appendChild(magCanvas)
-          const magCtx = magCanvas.getContext('2d')
-          magCtx?.drawImage(canvas,
-              event.position.x - ((magWidth / 2) / 4),
-              event.position.y - ((magHeight / 2) / 4),
-              magWidth,
-              magHeight,
-              0,
-              0,
-              magWidth * zoomLevel,
-              (magHeight / 2) * zoomLevel
-          )
-          if (event.position.y <= 0 || event.position.x <= 0) {
-            magCanvas.style.visibility = 'hidden'
-          } else {
-            magCanvas.style.visibility = 'visible'
+            magCtx.drawImage(
+                canvas,
+                event.position.x - (magWidth / 8),
+                event.position.y - (magHeight / 8),
+                magWidth,
+                magHeight,
+                0,
+                0,
+                magWidth * zoomLevel,
+                magHeight * zoomLevel
+            );
+
+            magCanvas.style.visibility = event.position.y <= 0 || event.position.x <= 0 ? 'hidden' : 'visible';
+
           }
         },
       });
-    }
 
+      const canvas = document.createElement('canvas');
+      const overlay = viewer.value.addOverlay({
+        element: canvas,
+        location: new OpenSeadragon.Rect(0, 0, 1, 1), // 캔버스가 뷰어 전체를 덮도록 설정
+      });
+
+
+      viewer.value.addHandler('open', function (event: any) {
+        canvas.width = 3317;
+        canvas.height = 3311;
+        overlay.canvas = canvas;
+        canvasOverlay.value = canvas;
+      });
+
+
+    }
   } catch (err) {
     console.error('Error:', err);
   }
 };
+
 
 const fetchTilesInfo = async (folderPath: string) => {
   console.log(folderPath)
@@ -328,8 +334,8 @@ const fetchTilesInfo = async (folderPath: string) => {
             Overlap: "1",
             TileSize: "1024",
             Size: {
-              Height: "3295",
-              Width: "3349"
+              Height: "3311",
+              Width: "3317"
             }
           }
         });
@@ -409,7 +415,7 @@ const rgbReset = () => {
 // Grid
 const onClickGrid = () => {
   isGrid.value = !isGrid.value;
-  viewer.addHandler('zoom', drawLines);
+  viewer.value.addHandler('zoom', drawLines);
   if (isGrid.value) {
     drawLines();
   } else {
@@ -420,9 +426,9 @@ const onClickGrid = () => {
 const drawLines = () => {
   removeGridLines();
   if (isGrid.value) {
-    const imageHeight = viewer.world.getItemAt(0).getContentSize().y;
-    const imageWidth = viewer.world.getItemAt(0).getContentSize().x;
-    const zoom = viewer.viewport.getZoom();
+    const imageHeight = viewer.value.world.getItemAt(0).getContentSize().y;
+    const imageWidth = viewer.value.world.getItemAt(0).getContentSize().x;
+    const zoom = viewer.value.viewport.getZoom();
 
     const maxNumberOfLines = 400;
     const numberOfLines = Math.round(maxNumberOfLines / zoom);
@@ -449,7 +455,7 @@ const drawLine = (x: number, y: number, width: number, height: number, color: st
   lineElement.style.background = color;
   lineElement.style.userSelect = 'none';
   lineElement.style.pointerEvents = 'none';
-  viewer.container.appendChild(lineElement);
+  viewer.value.container.appendChild(lineElement);
 };
 
 const removeGridLines = () => {
@@ -496,13 +502,13 @@ const drawRuler = (ruler: any) => {
     element.style.height = rulerPos.value.height + 'px'
 
     if (rulerPos.value.left === 0) {
-      element.style.left = (viewer.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
+      element.style.left = (viewer.value.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
     } else {
       element.style.left = rulerPos.value.left + 'px'
     }
 
     if (rulerPos.value.top === 0) {
-      element.style.top = (viewer.canvas.clientHeight / 2) - (rulerPos.value.height / 2) + 'px'
+      element.style.top = (viewer.value.canvas.clientHeight / 2) - (rulerPos.value.height / 2) + 'px'
     } else {
       element.style.top = rulerPos.value.top + 'px'
     }
@@ -576,7 +582,7 @@ const drawRuler = (ruler: any) => {
   }
 };
 
-const refreshRuler = (element, rulerSize, ruler) => {
+const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   if (typeof rulerSize === 'object') {
     rulerSize = rulerSize.value;
   }
@@ -589,7 +595,7 @@ const refreshRuler = (element, rulerSize, ruler) => {
     rSize = rSize + (0.06 * (rulerSize - 5))
   }
 
-  let zoomRatio = viewer.viewport.viewportToImageZoom(viewer.viewport.getZoom())
+  let zoomRatio = viewer.value.viewport.viewportToImageZoom(viewer.value.viewport.getZoom())
 
   if (zoomRatio > 1) {
     zoomRatio = zoomRatio * 1.02
@@ -747,6 +753,7 @@ span {
 .tiling-viewer-box {
   max-width: 100%;
   overflow: hidden;
+  position: relative; /* 수정 */
 }
 
 #tiling-viewer {

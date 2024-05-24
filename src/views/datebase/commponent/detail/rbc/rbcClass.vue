@@ -21,14 +21,14 @@
         <div class="categories">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-            <li>{{ getCategoryName(category) }}</li>
+            <li>{{ getCategoryName(category) }} {{ category.categoryId }}</li>
           </ul>
           <ul class="classNmRbc">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
               <li>
                 <span>{{ classInfo?.classNm }}</span>
-                <input type="checkbox" @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId)">
+                <input type="checkbox" @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
               </li>
             </template>
           </ul>
@@ -164,21 +164,20 @@ const afterChange = () => {
   rbcInfoChangeVal.value = props.rbcInfo;
 }
 
-const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string) => {
+const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
   if (isChecked) {
-    if (!classInfoArr.value.includes(classNm)) {
-      classInfoArr.value.push({classNm: classNm, categoryId: categoryId});
+    if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId)) {
+      classInfoArr.value.push({classNm: classNm, categoryId: categoryId, classId: classId});
     }
   } else {
-    classInfoArr.value = classInfoArr.value.filter(name => name.classNm !== classNm);
-
+    classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId));
   }
-  emits('classInfoArrUpdate',classInfoArr.value)
+  emits('classInfoArrUpdate', classInfoArr.value);
 };
 
 
 
-const onClickDegree = (category, classInfo, degreeIndex, isNormal = false) => {
+const onClickDegree = (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
   if (isBefore.value) {
     return;
   }

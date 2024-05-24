@@ -56,7 +56,6 @@ const refreshClass = async (data: any) => {
 }
 
 const classInfoArrUpdate = (data: any) => {
-  // console.log(data);
   classInfoArr.value = data;
 }
 

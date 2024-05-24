@@ -563,10 +563,7 @@ ul.nth1Child > :nth-child(3) {
     vertical-align: middle;
     min-width: 80%;
 }
-.openseadragon-canvas > div {
-    position: relative!important;
-    height: 100%!important;
-}
+
 .overlay-element {
     background: none transparent;
     border: none;
