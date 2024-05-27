@@ -90,7 +90,6 @@ const getNormalRange = async () => {
         const data = result.data;
         normalItems.value = data;
       }
-      console.log(result);
     }
   } catch (e) {
     console.log(e);

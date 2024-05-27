@@ -41,7 +41,12 @@ import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {firstCellImgSet, firstSaveOrderClass} from "@/common/lib/commonfunction/settingFunctions";
+import {
+  firstCellImgSet,
+  firstCreateRbcDegreeData,
+  firstSaveNormalRange,
+  firstSaveOrderClass
+} from "@/common/lib/commonfunction/settingFunctions";
 
 // 스토어
 const store = useStore();
@@ -83,6 +88,8 @@ const loginUser = async () => {
     if (result?.data?.user) {
       await firstCellImgSet(String(result?.data?.user.id));
       await firstSaveOrderClass(String(result.data?.user.id));
+      await firstSaveNormalRange(String(result.data?.user.id));
+      await firstCreateRbcDegreeData(String(result.data?.user.id));
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
 

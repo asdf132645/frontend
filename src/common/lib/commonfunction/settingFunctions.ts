@@ -1,17 +1,27 @@
-import {ref} from 'vue';
+import {reactive, ref} from 'vue';
 import {
     getCellImgApi,
     createCellImgApi,
     createOrderClassApi,
-    putOrderClassApi, getOrderClassApi
+    putOrderClassApi,
+    getOrderClassApi,
+    createNormalRangeApi,
+    updateBfNormalRangeApi,
+    getNormalRangeApi,
+    createRbcDegreeApi, putRbcDegreeApi, getRbcDegreeApi
 } from '@/common/api/service/setting/settingApi';
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import process from "process";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {ApiResponse} from "@/common/api/httpClient";
+import {defaultRbcDegree, normalRange, rbcClassList} from "@/common/defines/constFile/settings";
 
 const saveHttpType = ref('');
 const cellimgId = ref('');
 const orderHttpType = ref('');
+const normalItems = ref<any>(normalRange);
+const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
+
 const projectType = process.env.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
@@ -109,4 +119,68 @@ export const firstSaveOrderClass = async (userId: any) => {
     } catch (e) {
         console.log(e);
     }
+}
+
+export const firstSaveNormalRange = async (userId: any) => {
+    try {
+        const result = await getNormalRangeApi(String(userId));
+        if (result) {
+            if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
+                await createNormalRangeApi({normalRangeItems: normalItems.value , userId: Number(userId)});
+            }
+        }
+
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+export const firstCreateRbcDegreeData = async (userId: any) => {
+    await combindDegree();
+    const rbcDegreeList: any = [];
+
+    rbcClassListArr.value.forEach((category: any) => {
+        category.classInfo.forEach((classItem: any) => {
+            rbcDegreeList.push({
+                category_id: category.categoryId,
+                category_nm: category.categoryNm,
+                class_id: classItem.classId,
+                class_nm: classItem.classNm,
+                degree1: classItem.degree1,
+                degree2: classItem.degree2,
+                degree3: classItem.degree3,
+            });
+        });
+    });
+
+    try {
+        const result = await getRbcDegreeApi(String(userId));
+        if(!result.data){
+            await createRbcDegreeApi({categories: rbcDegreeList, userId: Number(userId)});
+        }
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+const combindDegree = async () => {
+    rbcClassListArr.value = rbcClassList.rbcClassList.map((category: any) => {
+        return {
+            ...category,
+            classInfo: category.classInfo.map((classItem: any) => {
+                const defaultDegree = defaultRbcDegree.find(
+                    (defaultItem) =>
+                        defaultItem.categoryId === category.categoryId &&
+                        defaultItem.classId === classItem.classId
+                );
+
+                return {
+                    ...classItem,
+                    degree1: defaultDegree?.degree1 || 0,
+                    degree2: defaultDegree?.degree2 || 0,
+                    degree3: defaultDegree?.degree3 || 0,
+                };
+            }),
+        };
+    });
 }
