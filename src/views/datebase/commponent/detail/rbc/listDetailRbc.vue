@@ -14,11 +14,11 @@
       </ul>
     </div>
     <div class="databaseWbcRight">
-      <RbcClass @classInfoArrUpdate="classInfoArrUpdate" :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
+      <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable' :allCheckClear="allCheckClear"/>
     </div>
 
     <div class="databaseWbcLeft">
-      <RbcImageList :classInfoArr="classInfoArr" :rbcInfo="rbcInfo" :selectItems="selectItems" type='listTable'/>
+      <RbcImageList @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
   </div>
 </template>
@@ -32,7 +32,6 @@ import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 
-const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const originalDbData = sessionStorage.getItem("originalDbData");
 const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const selectItemsData = sessionStorage.getItem("selectItems");
@@ -40,23 +39,33 @@ const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const store = useStore();
 const rbcInfo = ref(null);
 const classInfoArr = ref<any>([]);
-
+const allCheckClear = ref<boolean>(false);
+const isBefore = ref(false);
 
 onMounted(() => {
   initData();
 });
 
 const initData = async () => {
-  rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
+  rbcInfo.value = selectItems.value;
+}
+
+const isBeforeUpdate = (val: boolean) => {
+  isBefore.value = val;
 }
 
 const refreshClass = async (data: any) => {
-  rbcInfo.value = data.rbcInfo;
+  rbcInfo.value = data;
   selectItems.value = data;
+  allCheckClear.value = !allCheckClear.value;
 }
 
 const classInfoArrUpdate = (data: any) => {
   classInfoArr.value = data;
+}
+
+const unChecked = () => {
+  allCheckClear.value = !allCheckClear.value;
 }
 
 </script>

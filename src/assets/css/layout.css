@@ -555,7 +555,7 @@ ul.nth1Child > :nth-child(3) {
 .categories > ul > li {
     padding-top: 10px;
     font-size: 0.8rem;
-    min-height: 14px;
+    height: 17px;
     /*margin-bottom: 2px;*/
 }
 .categories > ul > li > span {
@@ -572,7 +572,7 @@ ul.nth1Child > :nth-child(3) {
     position: absolute !important; /* Ensure position is absolute */
     border: 2px solid; /* Ensure border is visible */
 }
-.categories > ul > li > input {
+.categories > ul > li > div {
     display: inline-block;
     vertical-align: middle;
     width: 12%;
@@ -2112,4 +2112,14 @@ p.menuIco {
 
 .onRight.cbcLi {
     color: #29c7ca;
+}
+
+.rbc-select-box{
+    position: absolute;
+    z-index: 99999;
+    background: #fff;
+    color: #000;
+    min-width: 195px;
+    height: 300px;
+    overflow-y: scroll;
 }

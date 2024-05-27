@@ -48,7 +48,7 @@ const siteCd = ref('');
 watch(
     () => props.parsedData,
     (newVal) => {
-      console.log('parsedData',newVal)
+      // console.log('parsedData',newVal)
       runningInfoGet(newVal);
     },
     { deep: true }

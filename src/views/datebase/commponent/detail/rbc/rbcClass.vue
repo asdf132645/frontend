@@ -21,21 +21,27 @@
         <div class="categories">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-            <li>{{ getCategoryName(category) }} {{ category.categoryId }}</li>
+            <li>{{ getCategoryName(category) }}</li>
           </ul>
           <ul class="classNmRbc">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
-            <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+            <template v-for="(classInfo, classIndex) in category?.classInfo"
+                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li>
                 <span>{{ classInfo?.classNm }}</span>
-                <input type="checkbox" @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
+                <div v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
+                  <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
+                         v-model="checkedClassIndices"
+                         @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
+                </div>
               </li>
             </template>
           </ul>
           <ul class="degree">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
-            <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-              <li  v-if="classInfo.classId !== '01' || category.categoryId === '05'">
+            <template v-for="(classInfo, classIndex) in category?.classInfo"
+                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
+              <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
                 <font-awesome-icon
                     :icon="['fas', 'circle']"
                     v-for="degreeIndex in 4" :key="degreeIndex"
@@ -47,7 +53,7 @@
                 />
               </li>
               <li v-else>
-                <div  v-if="classInfo.degree === '0'">
+                <div v-if="classInfo.degree === '0'">
                   <font-awesome-icon
                       @click="onClickDegree(category, classInfo, '0', true)"
                       :icon="['fas', 'circle']"
@@ -65,23 +71,39 @@
           </ul>
         </div>
       </template>
-      
+
     </template>
-       <!--orders-->
-        <div>
-          <div class="categories">
-            <ul class="categoryNm">
-              <li>Others</li>
-            </ul>
-            <ul class="classNmRbc">
-              <li>Platelets</li>
-              <li>Malaria</li>
-            </ul>
-            <ul class="degree">
-              <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
-              <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
-            </ul>
-          </div>
+    <!--orders-->
+    <div>
+      <div class="categories">
+        <ul class="categoryNm">
+          <li>Others</li>
+        </ul>
+        <ul class="classNmRbc">
+          <li>
+            <span>Platelets</span>
+            <div>
+              <input type="checkbox"
+                     value="9-9-1"
+                     v-model="checkedClassIndices"
+                     @change="updateClassInfoArr('Giant Platelet', $event.target.checked, '04', '01')">
+            </div>
+          </li>
+          <li>
+            <span>Malaria</span>
+            <div>
+              <input type="checkbox"
+                     value="9-9-2"
+                     v-model="checkedClassIndices"
+                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
+            </div>
+          </li>
+        </ul>
+        <ul class="degree">
+          <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
+        </ul>
+      </div>
     </div>
     <div v-if="type !== 'report'" class="beforeAfterBtn">
       <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>
@@ -104,7 +126,7 @@
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
-  
+
 </template>
 
 <script setup lang="ts">
@@ -118,9 +140,9 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
-
-const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type']);
-const rbcInfoChangeVal = ref([]);
+const checkedClassIndices = ref<any>([]);
+const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type', 'allCheckClear']);
+const rbcInfoChangeVal = ref<any>([]);
 const pltCount = ref('');
 const malariaCount = ref('');
 const memo = ref('');
@@ -137,17 +159,23 @@ const clonedRbcInfoStore = computed(() => store.state.commonModule.clonedRbcInfo
 const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
-
+const maxRbcCount = ref('');
 
 onMounted(() => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems.rbcMemo;
+  maxRbcCount.value = props.selectItems?.maxRbcCount;
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  rbcInfoChangeVal.value = newItem;
+  rbcInfoChangeVal.value = newItem.rbcInfoAfter;
 });
+
+watch(() => props.allCheckClear, (newItem) => {
+  checkedClassIndices.value = [];
+  classInfoArr.value = [];
+}, {deep: true})
 
 watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
@@ -156,35 +184,37 @@ watch(() => props.selectItems, (newItem) => {
 
 const beforeChange = () => {
   isBefore.value = true;
-  // rbcInfoChangeVal.value = props.rbcInfo;
+  emits('isBeforeUpdate', true);
+  rbcInfoChangeVal.value = props.rbcInfo.rbcInfo;
 }
 
 const afterChange = () => {
   isBefore.value = false;
-  rbcInfoChangeVal.value = props.rbcInfo;
+  emits('isBeforeUpdate', false);
+  rbcInfoChangeVal.value = props.rbcInfo.rbcInfoAfter;
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
   if (isChecked) {
-    if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId)) {
+    if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId && item.categoryId === categoryId)) {
       classInfoArr.value.push({classNm: classNm, categoryId: categoryId, classId: classId});
     }
   } else {
-    classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId));
+    classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId && item.categoryId === categoryId));
   }
+
   emits('classInfoArrUpdate', classInfoArr.value);
 };
 
 
-
-const onClickDegree = (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
+const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
   if (isBefore.value) {
     return;
   }
-  
-  const rbcInfoAfter = rbcInfoChangeVal.value.map(rbc => {
-    return rbc.classInfo.map(item => {
-      if (item.classNm === classInfo.classNm && category.categoryNm === rbc.categoryNm) {
+
+  const rbcInfoAfter = rbcInfoChangeVal.value.map((rbc: any) => {
+    return rbc?.classInfo.map((item: any) => {
+      if (item.classNm === classInfo.classNm && category.categoryNm === rbc?.categoryNm) {
         if (isNormal) {
           item.degree = String(Number(item.degree) === 0 ? 1 : 0);
         } else {
@@ -195,9 +225,9 @@ const onClickDegree = (category: any, classInfo: any, degreeIndex: any, isNormal
     });
   });
 
-  const updatedSelectItems = {
+  const updatedSelectItems: any = {
     ...props.selectItems,
-    rbcInfoAfter: props.selectItems.rbcInfo.map((rbcItem, index) => {
+    rbcInfoAfter: props.selectItems.rbcInfo.map((rbcItem: any, index: any) => {
       return {
         ...rbcItem,
         classInfo: rbcInfoAfter[index]
@@ -205,17 +235,24 @@ const onClickDegree = (category: any, classInfo: any, degreeIndex: any, isNormal
     })
   };
 
-  const rbcAfter = props.selectItems.rbcInfo.map((rbcItem, index) => {
+  const rbcAfter = props.selectItems.rbcInfo.map((rbcItem: any, index: any) => {
     return {
       ...rbcItem,
       classInfo: rbcInfoAfter[index]
     };
   })
-
   sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcAfter));
   sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
-};
+  const updatedRuningInfo = props.originalDb
+      .filter((item: any) => item.id === props.selectItems.id)
+      .map((item: any) => {
+        const updatedItem = {...item, rbcInfoAfter: rbcAfter};
+        return updatedItem;
+      });
 
+  await resRunningItem(updatedRuningInfo, false);
+
+};
 
 
 const memoOpen = () => {
@@ -234,18 +271,21 @@ const memoChange = async () => {
     }
     return item;
   });
-  await resRunningItem(updatedRuningInfo);
+  await resRunningItem(updatedRuningInfo, true);
   memoModal.value = false;
 }
 
-const resRunningItem = async (updatedRuningInfo: any) => {
+const resRunningItem = async (updatedRuningInfo: any, alertShow: any) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: updatedRuningInfo
     })
     if (response) {
-      showSuccessAlert('success');
+      if (alertShow) {
+        showSuccessAlert('success');
+      }
+
       const filteredItems = updatedRuningInfo.filter((item: any) => item.id === props.selectItems.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
@@ -263,7 +303,7 @@ const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top: 0, behavior: 'smooth'});
 };
 
 

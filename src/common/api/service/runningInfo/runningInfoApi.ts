@@ -11,6 +11,11 @@ export const updateRunningApi = async (request: { userId: number; runingInfoDtoI
     return httpClient.httpPut(apiConstants.settings.runningInfo.update, request, '',true);
 };
 
+export const jsonCreatePost = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.jsonReader.jsonCreate, request, '', true);
+};
+
+
 export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiResponse<RunningInfoRes | undefined>> => {
     const queryString = Object.entries(req)
         .filter(([key, value]) => value !== undefined)  // undefined 값은 제외

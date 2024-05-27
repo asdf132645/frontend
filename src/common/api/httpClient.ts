@@ -40,11 +40,11 @@ export function useHttpClient() {
     };
 
 
-    const httpPost = async <T>(url: Endpoint, payload: GenericObject, contentType?: string): Promise<ApiResponse<T>> => {
-        return httpPostAct(url.endpoint, payload, contentType);
+    const httpPost = async <T>(url: Endpoint, payload: GenericObject, contentType?: string, formData = false): Promise<ApiResponse<T>> => {
+        return httpPostAct(url.endpoint, payload, contentType, formData);
     };
 
-    const httpPostAct = async <T>(url: string, payload: GenericObject, contentType?: string): Promise<ApiResponse<T>> => {
+    const httpPostAct = async <T>(url: string, payload: GenericObject, contentType?: string, formData = false): Promise<ApiResponse<T>> => {
 
         const options: AxiosRequestConfig = {
             headers: {
@@ -53,6 +53,12 @@ export function useHttpClient() {
         };
         if (contentType === 'blob'){
             options.responseType = 'blob';
+        }
+
+        if(formData){
+            options.headers =  {
+                'Content-Type': 'multipart/form-data',
+            }
         }
 
         axios.defaults.withCredentials = true;

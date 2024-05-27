@@ -292,6 +292,10 @@ export const apiConstants = {
         get: {
             endpoint: 'jsonReader/send',
             requiresToken: false,
+        },
+        jsonCreate: {
+            endpoint: 'jsonReader/upload',
+            requiresToken: false,
         }
     },
     pdf:{

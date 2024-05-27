@@ -100,24 +100,62 @@
     </div>
     <div class="tiling-viewer-box">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer" style="width: 100%;"></div>
+      <div v-else-if="activeTab !== 'malaria' && tileExist"
+           ref="tilingViewerLayer"
+           id="tiling-viewer" style="width: 100%;"
+           @contextmenu.prevent="rbcClassRightClick"></div>
       <div v-else>
         <span>Tile does not exist.</span>
       </div>
+
     </div>
+  </div>
+  <div v-if="showSelect" class="rbc-select-box" :style="{ left: `${selectBoxX}px`, top: `${selectBoxY}px` }">
+    <template v-for="(classList, outerIndex) in [selectItems.rbcInfo]" :key="outerIndex">
+      <template v-for="(category, innerIndex) in classList" :key="innerIndex">
+        <div class="categories" v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
+          <ul class="categoryNm">
+            <li>{{ category.categoryNm }}</li>
+          </ul>
+          <ul class="classNmRbc">
+            <template v-for="(classInfo, classIndex) in category?.classInfo"
+                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
+              <li @click="moveRbcClassEvent(category.categoryId, classInfo.classId, classInfo.classNm)">
+                <span>{{ classInfo?.classNm }}</span>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </template>
+      <div class="categories">
+        <ul class="categoryNm">
+          <li>Others</li>
+        </ul>
+        <ul class="classNmRbc">
+          <li @click="moveRbcClassEvent('04', '01', 'Giant Platelet')">
+            <span>Platelets</span>
+          </li>
+          <li @click="moveRbcClassEvent('05', '03', 'Malaria')">
+            <span>Malaria</span>
+          </li>
+        </ul>
+      </div>
+
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
 import Malaria from './Malaria.vue';
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
+import pako from 'pako';
 
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'originalDb', 'isBefore']);
 const activeTab = ref('lowMag');
 const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
@@ -129,6 +167,7 @@ const isGrid = ref(false);
 const isMagnifyingGlass = ref(false);
 const ruler = ref(null);
 const activeRuler = ref('None');
+const showSelect = ref<any>(false);
 const rulerPos = ref({
   prevPosX: 0,
   prevPosY: 0,
@@ -146,33 +185,144 @@ const tilingViewerLayer = ref(null);
 const tileExist = ref(true);
 const store = useStore();
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
-const rbcClassList = ref<any>([]);
+const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);
 const canvasOverlay = ref<any>(null);
+const drawPath = ref<any>([]);
+const moveRbcClass = ref<any>([]);
+const selectBoxX = ref(0);
+const selectBoxY = ref(0);
+const emits = defineEmits();
 
 onMounted(() => {
   initElement();
-});
+  document.addEventListener('click', closeSelectBox);
 
-// classInfoArr
+});
+watch(() => props.isBefore, (newItem) => {
+  removeRbcMarker();
+  removeDiv();
+  emits('unChecked')
+}, {deep: true})
+const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
+  // categoryId에 해당하는 객체를 찾음
+  let category = rbcInfoPathAfter.value.find((item: any) => item.categoryId === categoryId);
+
+  // categoryId에 해당하는 객체가 없으면 새로 추가
+  if (!category) {
+    category = {
+      categoryId: categoryId,
+      classInfo: []
+    };
+    rbcInfoPathAfter.value.push(category);
+  }
+
+  for (const moveRbcClassItem of moveRbcClass.value) {
+    for (const argument of rbcInfoPathAfter.value) {
+      // 기존 부분 삭제
+      if (moveRbcClassItem.categoryId === argument.categoryId) {
+        const foundElementIndex = argument.classInfo.findIndex((el: any) => Number(el.posX) === moveRbcClassItem.posX + 20 && Number(el.posY) === moveRbcClassItem.posY + 20);
+        if (foundElementIndex !== -1) {
+          argument.classInfo.splice(foundElementIndex, 1);
+        }
+      }
+      //기존 부분을 li 클릭 한 곳으로 이동
+      if (argument.categoryId === categoryId) {
+        argument.classInfo.push({
+          classNm: classNm,
+          classId: classId,
+          posX: moveRbcClassItem.posX + 20,
+          posY: moveRbcClassItem.posY + 20
+        })
+      }
+    }
+  }
+  await removeDiv();
+  await rbcInfoPathAfterJsonCreate(rbcInfoPathAfter.value);
+  await drawRbcMarker(classInfoArr.value);
+
+}
+
+const removeDiv = async () => {
+  const existingOverlays = document.getElementsByClassName('overlayElement');
+  const overlaysArray = Array.from(existingOverlays); // HTMLCollection을 배열로 변환
+
+  // 모든 오버레이 제거
+  overlaysArray.forEach(overlay => {
+    viewer.value.removeOverlay(overlay);
+  });
+
+  showSelect.value = false;
+};
+
+
+const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
+  const jsonString = JSON.stringify(jsonData);
+  const utf8Data = new TextEncoder().encode(jsonString);
+  const compressedData = pako.deflate(utf8Data);
+  const blob = new Blob([compressedData], {type: 'application/octet-stream'});
+  const formData = new FormData();
+  formData.append('file', blob, `${props.selectItems.slotId}_new.json`);
+  const filePath = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
+  try {
+    const response = await fetch(`http://localhost:3002/jsonReader/upload?filePath=${filePath}`, {
+      method: 'POST',
+      body: formData,
+    });
+    const responseData = await response.json();
+    console.log(responseData);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+const closeSelectBox = (event: MouseEvent) => {
+  const selectBox = document.querySelector('.rbc-select-box');
+  if (selectBox && !selectBox.contains(event.target as Node)) {
+    showSelect.value = false; // 셀렉트 박스 닫기
+  }
+};
 
 watch(() => props.classInfoArr, (newItem) => {
+  if (newItem.length === 0) {
+    removeDiv();
+    removeRbcMarker();
+  }
+
   rbcMarker(newItem);
-},{ deep: true });
+}, {deep: true});
+
+const rbcClassRightClick = (event: MouseEvent) => {
+  if (props.isBefore || classInfoArr.value.length === 0) {
+    return;
+  }
+
+  showSelect.value = true;
+
+  if (event.currentTarget instanceof HTMLElement) {
+    selectBoxX.value = event.clientX;
+    selectBoxY.value = event.clientY - 300;
+  }
+};
+
 
 const rbcMarker = async (newItem: any) => {
-  let url = '';
-  url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+
+  const url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response = await readJsonFile({fullPath: url});
-  rbcClassList.value = response?.data[0].rbcClassList;
+  if (response.data === 'not file' || props.isBefore) {
+    const url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+    const response = await readJsonFile({fullPath: url});
+    rbcInfoPathAfter.value = response?.data[0].rbcClassList;
+  } else {
+    rbcInfoPathAfter.value = response?.data;
+  }
+
   classInfoArr.value = newItem;
-  if(newItem.length === 0){
-    let ctx = canvasOverlay.value.getContext('2d');
-    let canvas = canvasOverlay.value;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-  }else{
-    drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
+  if (newItem.length === 0) {
+    removeRbcMarker();
+  } else {
+    await drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
   }
 }
 
@@ -194,7 +344,17 @@ watch(() => props.selectItems, (newItem) => {
   }
 
 });
-const drawRbcMarker = (classInfoArr: any) => {
+
+const removeRbcMarker = () => {
+  let ctx = canvasOverlay.value.getContext('2d'); // canvasOverlay를 직접 사용
+  let canvas = canvasOverlay.value;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath();
+  drawPath.value = [];
+  return ctx;
+}
+
+const drawRbcMarker = async (classInfoArr: any) => {
   const colors: any = {
     '01': 'red',
     '02': 'green',
@@ -202,16 +362,24 @@ const drawRbcMarker = (classInfoArr: any) => {
     '05': 'brown',
   };
 
-  let ctx = canvasOverlay.value.getContext('2d'); // canvasOverlay를 직접 사용
+  const ctx = removeRbcMarker();
   classInfoArr.forEach((info: any) => {
-    rbcClassList.value.forEach((category: any) => {
+    rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
         if (classItem.classNm === info.classNm && category.categoryId === info.categoryId) {
           ctx.lineWidth = '2';
           ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
           let rectPath = new Path2D();
-          rectPath.rect(classItem.posX - 20, classItem.posY - 20, 40, 40)
+          rectPath.rect(classItem.posX - 20, classItem.posY - 20, 40, 40);
+          drawPath.value.push({
+            categoryId: info.categoryId,
+            classNm: info.classNm,
+            classId: info.classId,
+            posX: classItem.posX - 20,
+            posY: classItem.posY - 20,
+          })
           ctx.stroke(rectPath)
+
         }
       });
     });
@@ -299,9 +467,135 @@ const initElement = async () => {
       viewer.value.addHandler('open', function (event: any) {
         canvas.width = 3317;
         canvas.height = 3311;
+        canvas.id = 'myCanvas';
         overlay.canvas = canvas;
         canvasOverlay.value = canvas;
       });
+
+
+      viewer.value.addHandler('canvas-click', async (event: any) => {
+        if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
+          const clickPos = viewer.value.viewport.pointFromPixel(event.position);
+          const canvasPos = {
+            x: clickPos.x * viewer.value.source.width,
+            y: clickPos.y * viewer.value.source.height
+          };
+
+
+          // 클릭된 아이템 확인
+          for (const item of drawPath.value) {
+            const itemPos = item;
+            const width = 40; // 아이템의 너비
+            const height = 40; // 아이템의 높이
+
+            // 클릭된 아이템 확인
+            if (
+                canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
+                canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
+            ) {
+              const categoryId = item.categoryId;
+              const color = 'lightgreen'; // 연한 연두색
+              if (event.originalEvent.ctrlKey) { // 컨트롤 키를 눌렀을 때
+                moveRbcClass.value.push(item)
+                const element = document.createElement('ol');
+                element.className = 'overlayElement';
+                element.id = 'overlayElement';
+                element.setAttribute('data-category-id', categoryId);
+                element.setAttribute('data-class-nm', item.classNm);
+                element.style.width = '40px';
+                element.style.backgroundColor = color;
+                element.style.height = '40px';
+                element.style.position = 'absolute';
+                element.style.opacity = '0.5';
+
+                const posX = parseFloat(itemPos.posX);
+                const posY = parseFloat(itemPos.posY);
+                const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                viewer.value.addOverlay({
+                  element: element,
+                  location: overlayRect
+                });
+              }else{
+                if (
+                    canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
+                    canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
+                ) {
+                  // 클릭된 아이템 처리
+                  const categoryId = item.categoryId;
+                  const color = 'lightgreen'; // 연한 연두색
+                  const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find(classItem => classItem.classNm === item.classNm);
+                  if (classInfo) {
+                    moveRbcClass.value = [item];
+                    const existingOverlay = document.getElementById('overlayElement');
+                    if (existingOverlay) {
+                      viewer.value.removeOverlay(existingOverlay);
+                    }
+
+                    const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.classNm}"]`);
+                    if (previousOverlay) {
+                      const posX = parseFloat(itemPos.posX);
+                      const posY = parseFloat(itemPos.posY);
+                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                      viewer.value.updateOverlay(previousOverlay, overlayRect);
+                    } else {
+
+                      const element = document.createElement('ol');
+                      element.className = 'overlayElement';
+                      element.id = 'overlayElement';
+                      element.setAttribute('data-category-id', categoryId);
+                      element.setAttribute('data-class-nm', item.classNm);
+                      element.style.width = '40px';
+                      element.style.backgroundColor = color;
+                      element.style.height = '40px';
+                      element.style.position = 'absolute';
+                      element.style.opacity = '0.5';
+
+                      const posX = parseFloat(itemPos.posX);
+                      const posY = parseFloat(itemPos.posY);
+                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                      viewer.value.addOverlay({
+                        element: element,
+                        location: overlayRect
+                      });
+                    }
+                  }
+                }
+              }
+              break;
+            }
+          }
+        } else { // 쉬프트 키를 눌렀을 때
+
+          for (const item of drawPath.value) {
+            if(item.classNm === "Normal"){
+              return;
+            }
+            const itemPos = item;
+            const categoryId = item.categoryId;
+            const color = 'lightgreen'; // 연한 연두색
+            moveRbcClass.value.push(item)
+            const element = document.createElement('ol');
+            element.className = 'overlayElement';
+            element.id = 'overlayElement';
+            element.setAttribute('data-category-id', categoryId);
+            element.setAttribute('data-class-nm', item.classNm);
+            element.style.width = '40px';
+            element.style.backgroundColor = color;
+            element.style.height = '40px';
+            element.style.position = 'absolute';
+            element.style.opacity = '0.5';
+
+            const posX = parseFloat(itemPos.posX);
+            const posY = parseFloat(itemPos.posY);
+            const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+            viewer.value.addOverlay({
+              element: element,
+              location: overlayRect
+            });
+          }
+        }
+      });
+
 
 
     }
@@ -310,9 +604,7 @@ const initElement = async () => {
   }
 };
 
-
 const fetchTilesInfo = async (folderPath: string) => {
-  console.log(folderPath)
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);
 
