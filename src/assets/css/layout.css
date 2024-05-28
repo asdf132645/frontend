@@ -463,7 +463,7 @@ button.saveBtn, .defaultBtn {
     align-items: flex-start;
     text-align: left;
     padding: 2px;
-    margin-left: 15px;
+    /*margin-left: 15px;*/
     position: relative;
     border-bottom: 1px solid #494949;
 }
@@ -1226,6 +1226,24 @@ ul.cellImgBox {
 ul.cellImgBox input {
     width: 13px;
 }
+.reportSection.cbcLayer {
+    display: inline-flex;
+}
+
+.reportSection.cbcLayer .reportDiv {
+    width: 76.5%;
+    padding-left: 8px;
+}
+
+.reportSection.cbcLayer .cbcDiv {
+    margin-top: 10px;
+    height: 91vh;
+    margin-left: 47px;
+}
+
+.reportSection.cbcLayer ul.leftWbcInfo {
+    width: 50%;
+}
 
 ul.leftWbcInfo li {
     display: inline-block;
@@ -1236,7 +1254,7 @@ ul.leftWbcInfo li {
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
-    margin-left: 13px;
+    /*margin-left: 13px;*/
 }
 
 ul.leftWbcInfo {

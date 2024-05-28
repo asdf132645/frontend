@@ -31,13 +31,14 @@
                 <span>{{ classInfo?.classNm }}</span>
                 <div v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
+                         v-show="!except"
                          v-model="checkedClassIndices"
                          @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
                 </div>
               </li>
             </template>
           </ul>
-          <ul class="degree">
+          <ul class="degree analysis">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
@@ -85,6 +86,7 @@
             <div>
               <input type="checkbox"
                      value="9-9-1"
+                     v-show="!except"
                      v-model="checkedClassIndices"
                      @change="updateClassInfoArr('Giant Platelet', $event.target.checked, '04', '01')">
             </div>
@@ -93,13 +95,14 @@
             <span>Malaria</span>
             <div>
               <input type="checkbox"
+                     v-show="!except"
                      value="9-9-2"
                      v-model="checkedClassIndices"
                      @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
             </div>
           </li>
         </ul>
-        <ul class="degree">
+        <ul class="degree analysis">
           <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
           <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
         </ul>
@@ -138,6 +141,7 @@ import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
+import {useRouter} from "vue-router";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
@@ -160,16 +164,24 @@ const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
 const maxRbcCount = ref('');
+const router = useRouter();
+const except = ref(false);
 
 onMounted(() => {
+  if(router.currentRoute.value.path === '/report'){
+    rbcInfoChangeVal.value = props.selectItems.rbcInfoAfter;
+    console.log(props.selectItems.rbcInfoAfter)
+  }
+
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems.rbcMemo;
   maxRbcCount.value = props.selectItems?.maxRbcCount;
+  except.value = router.currentRoute.value.path === '/report';
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  rbcInfoChangeVal.value = newItem.rbcInfoAfter;
+  rbcInfoChangeVal.value = props.selectItems.rbcInfoAfter;
 });
 
 watch(() => props.allCheckClear, (newItem) => {

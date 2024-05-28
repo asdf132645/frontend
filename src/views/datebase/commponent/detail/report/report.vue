@@ -1,12 +1,14 @@
 <template>
+
   <ClassInfoMenu @refreshClass="refreshClass"/>
-  <div class="reportSection">
+  <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
+    <LisCbc v-if="cbcLayer"/>
     <div class="reportDiv">
       <div class="wbcDiv">
         <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
       </div>
       <div class="rbcDiv" v-if="!projectBm">
-        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report' />
+        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
       </div>
       <div class="reportDetail">
         <div class="reportTitle">
@@ -58,59 +60,61 @@
           </table>
         </div>
         <div class="reportDivBottom">
-         <div class="wbcLeft">
-           <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
-           <table class="tableClass">
-             <colgroup>
-               <col width="40%">
-               <col width="20%">
-               <col width="20%">
-             </colgroup>
-             <thead>
-             <tr>
-               <th>Class</th>
-               <th>Count</th>
-               <th>%</th>
-             </tr>
-             </thead>
-             <tbody>
-             <tr v-for="(item) in wbcArr" :key="item.id" class="wbcClassDbDiv">
-               <template v-if="shouldRenderCategory(item.title)">
-                 <td>{{ item?.name }}</td>
-                 <td>{{ item?.count }}</td>
-                 <td> {{ item?.percent || '-' }}</td>
-               </template>
-             </tr>
-             <tr>
-               <td>total</td>
-               <td>{{ selectItems?.wbcInfo?.totalCount || 0 }}</td>
-               <td>100.00</td>
-             </tr>
-             </tbody>
-           </table>
+          <div class="wbcLeft">
+            <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
+            <table class="tableClass">
+              <colgroup>
+                <col width="40%">
+                <col width="20%">
+                <col width="20%">
+              </colgroup>
+              <thead>
+              <tr>
+                <th>Class</th>
+                <th>Count</th>
+                <th>%</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item) in wbcArr" :key="item.id" class="wbcClassDbDiv">
+                <template v-if="shouldRenderCategory(item.title)">
+                  <td>{{ item?.name }}</td>
+                  <td>{{ item?.count }}</td>
+                  <td> {{ item?.percent || '-' }}</td>
+                </template>
+              </tr>
+              <tr>
+                <td>total</td>
+                <td>{{ selectItems?.wbcInfo?.totalCount || 0 }}</td>
+                <td>100.00</td>
+              </tr>
+              </tbody>
+            </table>
 
-           <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList" class="reportH3 mb1 pl0">non-WBC</h3>
-           <table class="tableClass" v-if="!projectBm">
-             <colgroup>
-               <col width="40%">
-               <col width="20%">
-               <col width="20%">
-             </colgroup>
-             <tbody>
-               <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
-                 <tr v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
-                   <td>{{ getCategoryName(nWbcItem) }}</td>
-                   <td>
-                     {{ nWbcItem?.count }}
-                     <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
-                   </td>
-                   <td>-</td>
-                 </tr>
-               </template>
-             </tbody>
-           </table>
+            <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList" class="reportH3 mb1 pl0">non-WBC</h3>
+            <table class="tableClass" v-if="!projectBm">
+              <colgroup>
+                <col width="40%">
+                <col width="20%">
+                <col width="20%">
+              </colgroup>
+              <tbody>
+              <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
+                <tr v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+                  <td>{{ getCategoryName(nWbcItem) }}</td>
+                  <td>
+                    {{ nWbcItem?.count }}
+                    <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
+                        selectItems?.wbcInfo?.maxWbcCount
+                      }} WBC</span>
+                  </td>
+                  <td>-</td>
+                </tr>
+              </template>
+              </tbody>
+            </table>
 
-         </div>
+          </div>
           <div class="rbcRight" v-if="!projectBm">
             <h3 class="reportH3 mb1 pl0">RBC classification result</h3>
             <template v-for="(classList, outerIndex) in [rbcInfo]" :key="outerIndex">
@@ -162,6 +166,7 @@ import process from "process";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
+import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -183,6 +188,7 @@ const projectBm = ref(false);
 const wbcArr = ref<any>([]);
 const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 const orderClass = ref<any>([]);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 
 onMounted(async () => {
   await getOrderClass();
@@ -226,9 +232,9 @@ const printClose = () => {
   printOnOff.value = false;
 }
 const wbcClassTileChange = (): string => {
-  if (!projectBm.value){
+  if (!projectBm.value) {
     return 'WBC Classification';
-  }else{
+  } else {
     return 'BM Classification';
   }
 }
@@ -267,6 +273,7 @@ async function initData(data?: any) {
   }
   rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
 }
+
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 

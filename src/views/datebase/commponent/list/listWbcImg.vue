@@ -33,8 +33,9 @@ onMounted(() => {
 });
 
 watch(() => props.selectedItem, () => {
+  allImages.value = [];
   createAllImages();
-});
+},{deep: true});
 
 function createAllImages(): void {
   if (!props.selectedItem?.wbcInfo) {
