@@ -32,10 +32,10 @@
       <p>LIS-CBC</p>
     </div>
     <div class="wbcMenuBottom">
-      <button @click="moveWbc('up')">
+      <button @click="moveWbc('up')" :disabled="isButtonDisabled">
         <font-awesome-icon :icon="['fas', 'circle-up']"/>
       </button>
-      <button @click="moveWbc('down')">
+      <button @click="moveWbc('down')" :disabled="isButtonDisabled">
         <font-awesome-icon :icon="['fas', 'circle-down']"/>
       </button>
     </div>
@@ -70,6 +70,8 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const route = useRoute();
 const orderClass = ref<any>([]);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
+const isButtonDisabled = ref(false);
+let timeoutId: number | undefined = undefined;
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
@@ -140,6 +142,10 @@ async function getRunningInfoDetail(id: any) {
 }
 
 const moveWbc = async (direction: any) => {
+  if (timeoutId !== undefined) {
+    clearTimeout(timeoutId);
+  }
+  isButtonDisabled.value = true; // 버튼 비활성화
   await getOrderClass(); // 클래스 정보를 업데이트
 
   const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
@@ -148,6 +154,11 @@ const moveWbc = async (direction: any) => {
   if (nextDbIndex) {
     await processNextDbIndex(nextDbIndex, direction, currentDbIndex);
   }
+
+  timeoutId = window.setTimeout(() => {
+    isButtonDisabled.value = false;
+  }, 700);
+
 };
 
 const processNextDbIndex = async (nextDbIndex: any, direction: any, currentDbIndex: number) => {
@@ -182,7 +193,10 @@ const handleDataResponse = async (dbIndex: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-  console.log(selectItemsNewVal)
+  console.log(selectItemsNewVal);
+  if(projectType.value === 'pb' && selectItems.value?.testType === '01'){
+    pageGo('/databaseDetail');
+  }
   emits('refreshClass', selectItemsNewVal);
 };
 
