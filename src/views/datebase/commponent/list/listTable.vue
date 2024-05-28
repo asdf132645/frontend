@@ -372,7 +372,6 @@ const rowDbClick = async (item) => {
     wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   }
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
-  // basicWbcArr
 
   sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
@@ -380,7 +379,7 @@ const rowDbClick = async (item) => {
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo});
-  // await getUserIp(item);
+  await getUserIp(item);
   await router.push('/databaseDetail');
 
 }

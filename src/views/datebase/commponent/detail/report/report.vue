@@ -156,7 +156,6 @@ import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/w
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
-import {moveFunction, stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {useStore} from "vuex";
 import process from "process";

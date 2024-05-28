@@ -50,7 +50,7 @@
               <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/><span>ALL</span></label>
               <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
                 <span>Diff</span></label>
-              <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
+              <label><input type="checkbox" value="02" @change="changeTestType('04')" :checked="testType === '04'"/>
                 <span>PBS</span></label>
             </div>
 

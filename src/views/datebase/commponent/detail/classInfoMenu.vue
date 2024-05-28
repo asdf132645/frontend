@@ -55,14 +55,16 @@ import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
+import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 const emits = defineEmits();
 const projectType = ref<any>('bm');
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const selectItemsData = ref(sessionStorage.getItem("selectItems"));
+const selectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
 const resData = ref<any>([]);
-const originalDbData = sessionStorage.getItem("originalDbData");
-const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
+const originalDbData = ref(sessionStorage.getItem("originalDbData"));
+const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
 const wbcInfo = ref<any>([]);
 const instance = getCurrentInstance();
 const store = useStore();
@@ -72,23 +74,52 @@ const orderClass = ref<any>([]);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const isButtonDisabled = ref(false);
 let timeoutId: number | undefined = undefined;
+const pageMoveDeleteStop = ref(false);
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;
   await getRunningInfoDetail(selectItems.value.id);
+  pageMoveDeleteStop.value = true;
 });
 
 onUnmounted(async () => {
-  // await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
-  //     .then(response => {
-  //       instance?.appContext.config.globalProperties.$socket.emit('state', {
-  //         type: 'SEND_DATA',
-  //         payload: 'refreshDb'
-  //       });
-  //     }).catch(error => {
-  //       console.error('Error:', error.response.data);
-  //     });
+  console.log('stateDeleteCommon');
+  if(pageMoveDeleteStop.value){
+    await deleteConnectionStatus();
+  }
 })
+
+const deleteConnectionStatus = async ()  => {
+  const originalDbData = ref(sessionStorage.getItem("originalDbData"));
+  const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
+  console.log(originalDb)
+  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+      .then(response => {
+        instance?.appContext.config.globalProperties.$socket.emit('state', {
+          type: 'SEND_DATA',
+          payload: 'refreshDb'
+        });
+      }).catch(error => {
+        console.error('Error:', error.response.data);
+      });
+}
+
+const upDownBlockAccess = async (selectItems: any) => {
+  try {
+    const result = await getUserIpApi();
+    await stateUpdateCommon(selectItems, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
+      emits('initData');
+      instance?.appContext.config.globalProperties.$socket.emit('state', {
+        type: 'SEND_DATA',
+        payload: 'refreshDb'
+      });
+    }).catch(error => {
+      console.error('Error:', error.response.data);
+    });
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 const getOrderClass = async () => {
   try {
@@ -106,7 +137,8 @@ const getOrderClass = async () => {
 }
 
 const pageGo = (path: string) => {
-  router.push(path)
+  router.push(path);
+  pageMoveDeleteStop.value = false;
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
@@ -142,6 +174,7 @@ async function getRunningInfoDetail(id: any) {
 }
 
 const moveWbc = async (direction: any) => {
+
   if (timeoutId !== undefined) {
     clearTimeout(timeoutId);
   }
@@ -198,6 +231,9 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
     pageGo('/databaseDetail');
   }
   emits('refreshClass', selectItemsNewVal);
+  pageMoveDeleteStop.value = true;
+  await deleteConnectionStatus();
+  await upDownBlockAccess(selectItemsNewVal);
 };
 
 const isActive = (path: string) => {
