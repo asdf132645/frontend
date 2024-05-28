@@ -42,7 +42,7 @@
                 <li>{{ classInfo?.classNm }}</li>
               </template>
             </ul>
-            <ul class="degree">
+            <ul class="degree analysis">
               <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
               <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                 <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
@@ -84,7 +84,7 @@
           <li>Platelets</li>
           <li>Malaria</li>
         </ul>
-        <ul class="degree">
+        <ul class="degree analysis">
           <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
           <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
         </ul>

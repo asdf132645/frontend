@@ -5,7 +5,7 @@
       </template>
       <template v-else><span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification</template>
     </h3>
-    <div>
+    <div class="analysisWbc">
       <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories" v-if="shouldRenderCategory(category)">

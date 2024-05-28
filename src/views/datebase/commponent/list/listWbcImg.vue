@@ -28,6 +28,7 @@ const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
 
 onMounted(() => {
+  allImages.value = [];
   createAllImages();
 });
 

@@ -508,7 +508,12 @@ ul.classInfo {
     display: inline-block;
     width: 29%;
 }
-
+ul.degree.analysis {
+    width: 20%;
+}
+.analysisWbc .categories > ul > li {
+    height: 14px;
+}
 .classNmRbc {
     display: inline-block;
     text-align: left;
