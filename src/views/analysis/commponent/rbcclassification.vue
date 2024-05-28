@@ -296,7 +296,6 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       },
       iCasStatArr: iCasStatArr.lastIndexOf("2")
     }
-    console.log(data)
     emits('rbcUpdate',data);
   }
 };

@@ -2147,3 +2147,13 @@ p.menuIco {
     height: 300px;
     overflow-y: scroll;
 }
+
+
+@media screen and (max-width: 1900px) {
+    .contentRight > div[data-v-c20ace0e]:first-child {
+        width: 20%;
+    }
+    .contentRightChild {
+        overflow-y: auto;
+    }
+}

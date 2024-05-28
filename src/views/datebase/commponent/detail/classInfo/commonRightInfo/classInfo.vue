@@ -88,7 +88,7 @@
         <div class="categories" v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-            <li>{{ getCategoryName(nWbcItem) }}</li>
+            <li>{{  getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul class="classNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
@@ -147,7 +147,6 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
 
-const getCategoryName = (category: WbcInfo) => category?.name;
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
@@ -293,6 +292,15 @@ const memoOpen = () => {
 const memoCancel = () => {
   memoModal.value = false;
 }
+
+const getStringValue = (title: string): string => {
+  if(title === 'Artifact(Smudge)' && props.selectItems.siteCd === '0006'){
+    return "Artifact";
+  }else{
+    return title;
+  }
+};
+
 
 const resRunningItem = async (updatedRuningInfo: any) => {
   try {

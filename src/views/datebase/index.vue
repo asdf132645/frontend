@@ -94,8 +94,11 @@ const dbGetData = ref<any[]>([]);
 const showAlert = ref(false);
 const alertMessage = ref('');
 
+const today = new Date();
+const thirtyDaysAgo = new Date(today);
+thirtyDaysAgo.setDate(today.getDate() - 30);
 
-const startDate = ref(new Date());
+const startDate = ref(thirtyDaysAgo);
 const endDate = ref(new Date());
 const searchText = ref('');
 const searchType = ref('barcodeNo');
