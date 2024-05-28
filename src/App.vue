@@ -426,7 +426,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           lowPowerPath: completeSlot.lowPowerPath,
           runningPath: completeSlot.runningPath,
           wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
-          wbcInfoAfter: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
+          wbcInfoAfter: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0],
           rbcInfo: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           rbcInfoAfter: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           bminfo: completeSlot.bminfo,

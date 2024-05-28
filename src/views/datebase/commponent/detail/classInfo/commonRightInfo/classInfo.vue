@@ -85,7 +85,7 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-        <div class="categories">
+        <div class="categories" v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
             <li>{{ getCategoryName(nWbcItem) }}</li>
@@ -94,9 +94,8 @@
             <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
             <li>
               {{ nWbcItem?.count }}
-              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
-                  selectItemsSessionStorageData?.wbcInfo?.maxWbcCount
-                }} WBC</span>
+              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
+                / {{ selectItemsSessionStorageData?.wbcInfo?.maxWbcCount }} WBC</span>
             </li>
           </ul>
           <ul class="degree">
@@ -159,7 +158,7 @@ const memo = ref('');
 const memoModal = ref(false);
 const wbcInfoChangeVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
-const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA'];
+const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
@@ -388,7 +387,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
     siteCd = '0000';
     testType = '01';
   }
-  const arraysBySiteCd: any = { // 0006 -> 삼광
+  const arraysBySiteCd: any = { // 0006 -> 고대
     '0006': {
       includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
       includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
@@ -397,8 +396,8 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC","SM", "MA", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", 'NE',"SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 제외할 부분 정의

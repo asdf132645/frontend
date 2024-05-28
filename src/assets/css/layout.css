@@ -506,7 +506,7 @@ ul.classInfo {
 
 .categoryNm {
     display: inline-block;
-    width: 28%;
+    width: 29%;
 }
 
 .classNmRbc {
@@ -517,7 +517,7 @@ ul.classInfo {
 
 .degree {
     display: inline-block;
-    width: 20%;
+    width: 9%;
 }
 
 ul.nth1Child li {
@@ -561,7 +561,8 @@ ul.nth1Child > :nth-child(3) {
 .categories > ul > li > span {
     display: inline-block;
     vertical-align: middle;
-    min-width: 80%;
+    min-width: 56%;
+    font-size: 0.7rem;
 }
 
 .overlay-element {

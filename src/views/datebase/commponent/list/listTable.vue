@@ -371,18 +371,47 @@ const rowDbClick = async (item) => {
   }else{
     wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   }
-  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
 
+  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
   sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
   sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
+
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo});
   await getUserIp(item);
   await router.push('/databaseDetail');
 
 }
+const getStringArrayBySiteCd = (siteCd, testType) => {
+  if (!siteCd && siteCd === '') {
+    siteCd = '0000';
+    testType = '01';
+  }
+  const arraysBySiteCd = {
+    '0006': {
+      includesStr: ['SM'],
+      includesStr2: ['SM'],
+    },
+  };
+
+  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
+  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
+    includesStr: ["SM"],
+    includesStr2: ["SM"],
+  };
+  // testType에 따라 제외할 부분 정의
+  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
+};
+const filterWbcInfoBySiteAndTestType = (wbcInfo, siteCd, testType) => {
+  // getStringArrayBySiteCd 함수로부터 해당 siteCd 및 testType에 따른 필터링에 사용될 배열을 가져옴
+  const filterArray = getStringArrayBySiteCd(siteCd, testType);
+
+  // wbcInfo 배열에서 filterArray에 있는 title을 가진 항목들을 필터링하여 반환
+  return wbcInfo.filter(item => !filterArray.includes(item.title));
+};
+
 
 
 const getRbcDegreeData = async () => {

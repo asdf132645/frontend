@@ -98,7 +98,7 @@
              </colgroup>
              <tbody>
                <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
-                 <tr>
+                 <tr v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
                    <td>{{ getCategoryName(nWbcItem) }}</td>
                    <td>
                      {{ nWbcItem?.count }}
@@ -201,7 +201,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
     siteCd = '0000';
     testType = '01';
   }
-  const arraysBySiteCd: any = { // 0006 -> 삼광
+  const arraysBySiteCd: any = { // 0006 -> 고대
     '0006': {
       includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
       includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
@@ -210,8 +210,8 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 제외할 부분 정의

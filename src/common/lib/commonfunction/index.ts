@@ -28,8 +28,6 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
 }
 
 export const stateUpdateCommon = async (itemVal: any, pcIp: any, dbdata: any, id: any) => {
-    console.log(itemVal);
-    console.log(dbdata)
     try {
         const updatedRuningInfo = {
             id: itemVal.id,

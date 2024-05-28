@@ -5,7 +5,10 @@
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{ projectType === 'bm' ?  getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)  }}</li>
+        <li>{{
+            projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)
+          }}
+        </li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
@@ -112,12 +115,14 @@
 
       <div>
         <ul class="wbcInfoDbUl">
-          <li v-for="(item) in wbcInfo" :key="item.id" @click="scrollToElement(item.id)">
-            <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
-              <p>{{ item?.title }}</p>
-              <p>{{ item?.count }}</p>
-            </div>
-          </li>
+          <template v-for="(item) in wbcInfo" :key="item.id" >
+            <li @click="scrollToElement(item.id)" v-show="selectItems.siteCd !== '0006' && item?.title !== 'SM'">
+              <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
+                <p>{{ item?.title }}</p>
+                <p>{{ item?.count }}</p>
+              </div>
+            </li>
+          </template>
         </ul>
         <ul class="cellImgBox">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
@@ -170,9 +175,10 @@
         </ul>
       </div>
       <!--   우클릭 항목 메뉴   -->
-      <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }" class="context-menu detail">
+      <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }"
+           class="context-menu detail">
         <ul>
-          <li  v-for="(item, itemIdx) in wbcInfo" :key="itemIdx" @click="moveSelectedImages(item, itemIdx)">
+          <li v-for="(item, itemIdx) in wbcInfo" :key="itemIdx" @click="moveSelectedImages(item, itemIdx)">
             {{ item.name }}
           </li>
         </ul>
@@ -283,6 +289,8 @@ const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 
 onMounted(async () => {
+  selectItems.value = selectItemsData ? JSON.parse(selectItemsData) : null;
+  console.log(selectItems.value.siteCd)
   projectType.value = process.env.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -296,7 +304,7 @@ onUnmounted(async () => {
 const handleRightClick = (event: MouseEvent, image: any, item: any) => {
   event.preventDefault(); // 기본 컨텍스트 메뉴가 나타나는 것을 방지합니다
   console.log('우클릭한 항목:', selectItemIamgeArr.value);
-  openContextMenu(event,item);
+  openContextMenu(event, item);
 };
 
 function hideImage(id: string, fileName: string) {
@@ -1275,7 +1283,6 @@ function removeDuplicatesByProperty(array: any, property: any) {
 }
 
 
-
 function removeDuplicateImages(data: any[]): any[] {
   const uniqueFileNames = new Set<string>();
 
@@ -1308,7 +1315,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
     includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 적절한 배열을 반환

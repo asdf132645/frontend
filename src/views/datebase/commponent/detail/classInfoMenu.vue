@@ -83,7 +83,6 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  console.log('stateDeleteCommon');
   if(pageMoveDeleteStop.value){
     await deleteConnectionStatus();
   }
@@ -92,7 +91,6 @@ onUnmounted(async () => {
 const deleteConnectionStatus = async ()  => {
   const originalDbData = ref(sessionStorage.getItem("originalDbData"));
   const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
-  console.log(originalDb)
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
       .then(response => {
         instance?.appContext.config.globalProperties.$socket.emit('state', {
@@ -226,7 +224,6 @@ const handleDataResponse = async (dbIndex: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-  console.log(selectItemsNewVal);
   if(projectType.value === 'pb' && selectItems.value?.testType === '01'){
     pageGo('/databaseDetail');
   }

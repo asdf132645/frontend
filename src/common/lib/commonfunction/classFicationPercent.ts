@@ -4,7 +4,7 @@ export const calculateWbcPercentages = (
     classList: any[],
     siteCd: any
 ) => {
-    const includesStr = siteCd === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA"]:["AR", "NR", "GP", "PA", "MC", "MA", "SM"];
+    const includesStr = siteCd === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", "SM"]:["AR", "NR", "GP", "PA", "MC", "MA"];
     const total = classList
         .filter(
             (category) =>
