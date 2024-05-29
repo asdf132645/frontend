@@ -85,12 +85,12 @@
               <tr style="padding-bottom: 5px;">
                 <th style="text-align: left; padding: 5px 0;">Others</th>
                 <th style="text-align: left; padding: 5px 0;">Platelets</th>
-                <th style="text-align: left; padding: 5px 0;">{{ selectItems?.pltCount }} PLT / 1000 RBC</th>
+                <th style="text-align: left; padding: 5px 0;">{{ selectItems?.rbcInfo.pltCount }} PLT / 1000 RBC</th>
               </tr>
               <tr style="padding-bottom: 5px;">
                 <th></th>
                 <th style="text-align: left; padding: 5px 0;">Malaria</th>
-                <th style="text-align: left; padding: 5px 0;">{{ selectItems.malariaCount }} / {{ selectItems.maxRbcCount }} RBC</th>
+                <th style="text-align: left; padding: 5px 0;">{{ selectItems?.rbcInfo?.malariaCount }} / {{ selectItems.maxRbcCount }} RBC</th>
               </tr>
               <tr style="padding-bottom: 5px;">
                 <th></th>

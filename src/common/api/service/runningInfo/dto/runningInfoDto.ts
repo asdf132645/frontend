@@ -55,7 +55,7 @@ interface RuningInfo {
     orderDttm: Date;
     testType: string;
     analyzedDttm: Date;
-    pltCount: string;
+    // pltCount: string;
     malariaCount: string;
     maxRbcCount: string;
     stateCd: string;

@@ -312,6 +312,10 @@ export const apiConstants = {
         delete: {
             endpoint: 'filesystem/delete-folder',
             requiresToken: false,
+        },
+        readGet:{
+            endpoint: 'file/read',
+            requiresToken: false,
         }
     }
 

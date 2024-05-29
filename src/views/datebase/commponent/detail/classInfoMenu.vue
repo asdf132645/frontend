@@ -1,6 +1,7 @@
 <template>
   <div class="wbcMenu">
     <ul>
+
       <template v-if="['bm', 'pb'].includes(projectType)">
         <li
             :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"

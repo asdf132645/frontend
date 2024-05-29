@@ -39,7 +39,7 @@ export interface SlotInfo {
     testType: string;
     analyzedDttm: string;
     malariaCount: string;
-    pltCount: string;
+    // pltCount: string;
     maxWbcCount: string;
     maxRbcCount: string;
     stateCd: string;

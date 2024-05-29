@@ -46,9 +46,9 @@ export interface SlotInfo {
     testType: string;
     analyzedDttm: string;
     malariaCount: string;
-    pltCount: string;
-    maxWbcCount: string;
-    maxRbcCount: string;
+    // pltCount: string;
+    // maxWbcCount: string;
+    // maxRbcCount: string;
     stateCd: string;
     isLowPowerScan: string;
     tactTime: string;

@@ -173,10 +173,10 @@ onMounted(() => {
     console.log(props.selectItems.rbcInfoAfter)
   }
 
-  pltCount.value = props.selectItems?.pltCount;
-  malariaCount.value = props.selectItems?.malariaCount;
+  pltCount.value = props.selectItems?.rbcInfo.pltCount;
+  malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
   memo.value = props.selectItems.rbcMemo;
-  maxRbcCount.value = props.selectItems?.maxRbcCount;
+  maxRbcCount.value = props.selectItems?.rbcInfo?.maxRbcCount;
   except.value = router.currentRoute.value.path === '/report';
 });
 
@@ -197,7 +197,8 @@ watch(() => props.selectItems, (newItem) => {
 const beforeChange = () => {
   isBefore.value = true;
   emits('isBeforeUpdate', true);
-  rbcInfoChangeVal.value = props.rbcInfo.rbcInfo;
+  console.log(props.rbcInfo.rbcInfo.rbcClass)
+  rbcInfoChangeVal.value = props.rbcInfo.rbcInfo.rbcClass;
 }
 
 const afterChange = () => {

@@ -11,7 +11,7 @@
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
-                />
+      />
     </main>
     <Alert
         v-if="showAlert"
@@ -30,7 +30,7 @@ import AppHeader from "@/components/layout/AppHeader.vue";
 const router = useRouter();
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
-import {sysInfoStore, runningInfoStore } from '@/common/lib/storeSetData/common';
+import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {
@@ -144,7 +144,7 @@ onMounted(async () => {
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
-  if(!projectBm.value){
+  if (!projectBm.value) {
     pbVersion.value = process.env.PB_VERSION;
   }
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
@@ -257,7 +257,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         classArr.value = [];
-        rbcArr.value  = [];
+        rbcArr.value = [];
         break;
       case 'RECOVERY':
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
@@ -286,7 +286,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       startStatus.value = false;
     }
 
-    async function runnStart () {
+    async function runnStart() {
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
@@ -298,7 +298,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
       startStatus.value = true;
       classArr.value = [];
-      rbcArr.value  = [];
+      rbcArr.value = [];
       runningInfoBoolen.value = true;
     }
 
@@ -319,10 +319,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
         }
 
-        if(pbVersion.value === '100a'){
-          if(data?.iCasChange === '1'){
+        if (pbVersion.value === '100a') {
+          if (data?.iCasChange === '1') {
             pb100aCassette.value = 'reset';
-          }else{
+          } else {
             pb100aCassette.value = '';
           }
         }
@@ -330,11 +330,11 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          if(pbVersion.value !== '100a'){
+          if (pbVersion.value !== '100a') {
             await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
             await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-          }else{
-            if(data?.workingDone === 'Y'){
+          } else {
+            if (data?.workingDone === 'Y') {
               await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
               await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
             }
@@ -418,9 +418,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           testType: completeSlot.testType,
           analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
           createDate: tcpReq().embedStatus.settings.reqDttm,
-          pltCount: completeSlot.pltCount,
-          malariaCount: completeSlot.malariaCount,
-          maxRbcCount: completeSlot.maxRbcCount,
+          // pltCount: completeSlot.pltCount,
+          // malariaCount: completeSlot.malariaCount,
+          // maxRbcCount: completeSlot.maxRbcCount,
           stateCd: completeSlot.stateCd,
           tactTime: completeSlot.tactTime,
           maxWbcCount: completeSlot.maxWbcCount,
@@ -428,27 +428,32 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           runningPath: completeSlot.runningPath,
           wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
           wbcInfoAfter: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0],
-          rbcInfo: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
+          rbcInfo: !projectBm.value ? {
+            pltCount: completeSlot.pltCount,
+            malariaCount: completeSlot.malariaCount,
+            maxRbcCount: completeSlot.maxRbcCount,
+            rbcClass: rbcArrElements[0].rbcInfo,
+          } : [],
           rbcInfoAfter: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           bminfo: completeSlot.bminfo,
           userId: userId.value,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
-          processInfo: {
-            processInfo: processInfoItem,
-            slotId: completeSlot.slotId
-          },
-          orderList: {
-            barcodeId: completeSlot.barcodeNo,
-            patientName: completeSlot.patientNm,
-            orderDate: stringToDateTime(completeSlot.orderDttm),
-            analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
-            state: completeSlot.stateCd,
-          },
+          // processInfo: {
+          //   processInfo: processInfoItem,
+          //   slotId: completeSlot.slotId
+          // },
+          // orderList: {
+          //   barcodeId: completeSlot.barcodeNo,
+          //   patientName: completeSlot.patientNm,
+          //   orderDate: stringToDateTime(completeSlot.orderDttm),
+          //   analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
+          //   state: completeSlot.stateCd,
+          // },
           signedState: '',
           signedOfDate: '',
           signedUserId: '',
-          classificationResult: [],
+          // classificationResult: [],
           isNsNbIntegration: isNsNbIntegration,
           memo: '',
           rbcMemo: '',
