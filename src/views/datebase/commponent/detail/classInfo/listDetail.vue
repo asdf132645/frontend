@@ -17,7 +17,7 @@
         <li>{{ selectItems?.createDate }}</li>
       </ul>
     </div>
-    <LisCbc v-if="cbcLayer"/>
+    <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'
                  @scrollEvent="scrollToElement"/>

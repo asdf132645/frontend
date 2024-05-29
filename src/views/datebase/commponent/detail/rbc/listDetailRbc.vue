@@ -2,6 +2,7 @@
   <ClassInfoMenu @refreshClass="refreshClass"/>
 
   <div class="wbcContent">
+
     <div class="topClintInfo">
       <ul>
         <li>{{ getTestTypeText(selectItems?.testType) }} Smear</li>
@@ -13,24 +14,26 @@
         <li>{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
-    <div class="databaseWbcRight">
+    <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
+    <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
       <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable' :allCheckClear="allCheckClear"/>
     </div>
 
-    <div class="databaseWbcLeft">
+    <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <RbcImageList @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
+import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
 const originalDbData = sessionStorage.getItem("originalDbData");
 const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
@@ -41,6 +44,7 @@ const rbcInfo = ref(null);
 const classInfoArr = ref<any>([]);
 const allCheckClear = ref<boolean>(false);
 const isBefore = ref(false);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 
 onMounted(() => {
   initData();

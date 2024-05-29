@@ -2,7 +2,7 @@
 
   <ClassInfoMenu @refreshClass="refreshClass"/>
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
-    <LisCbc v-if="cbcLayer"/>
+    <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div class="reportDiv">
       <div class="wbcDiv">
         <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
