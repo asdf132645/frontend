@@ -317,6 +317,12 @@ export const apiConstants = {
             endpoint: 'file/read',
             requiresToken: false,
         }
+    },
+    fileTxtRead: {
+        get:{
+            endpoint: 'file/read',
+            requiresToken: false,
+        }
     }
 
 };

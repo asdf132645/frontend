@@ -289,6 +289,7 @@ const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 
 onMounted(async () => {
+  wbcInfo.value = [];
   selectItems.value = selectItemsData ? JSON.parse(selectItemsData) : null;
   console.log(selectItems.value.siteCd)
   projectType.value = process.env.PROJECT_TYPE;

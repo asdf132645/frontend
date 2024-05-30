@@ -41,6 +41,10 @@ const initCbcData = (newVal: any) => {
     })
   }else if (newVal.siteCd === '0006' || newVal.siteCd === '0019'){
     //  C:/Users/user/Desktop/IA_MSG/CBC
+
+    // if (}){
+    //
+    // }
   }
 }
 

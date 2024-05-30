@@ -9,3 +9,4 @@ export const fileSysPost = async (request: any): Promise<ApiResponse<any | undef
 export const deleteRunningApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.filesystem.delete, request, false);
 };
+
