@@ -13,3 +13,7 @@ export const pdfPost = async (request: any): Promise<ApiResponse<any | undefined
 export const readFileTxt = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.fileTxtRead.get, `${request}`, true);
 };
+
+export const readH7File = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.H7Read.post, request, 'text/plain');
+};

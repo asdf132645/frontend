@@ -54,6 +54,11 @@ export function useHttpClient() {
         if (contentType === 'blob'){
             options.responseType = 'blob';
         }
+        if (contentType === 'text/plain'){
+            options.headers=  {
+                'Content-Type': 'text/plain',
+            }
+        }
 
         if(formData){
             options.headers =  {

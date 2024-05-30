@@ -47,12 +47,9 @@
 import {computed, defineEmits, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
 import router from "@/router";
 
-// const clickid = ref(sessionStorage.getItem('dbBaseTrClickId'));
 import {ApiResponse} from "@/common/api/httpClient";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-// import {stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
-// import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
@@ -87,6 +84,7 @@ onUnmounted(async () => {
   if(pageMoveDeleteStop.value){
     await deleteConnectionStatus();
   }
+  await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
 })
 
 const deleteConnectionStatus = async ()  => {

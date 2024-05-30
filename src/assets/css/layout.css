@@ -2111,6 +2111,8 @@ button.rollbackButton {
 
 h1.titleCbc {
     margin-top: 10px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
 }
 
 li.cbcLi {
@@ -2147,7 +2149,17 @@ p.menuIco {
     height: 300px;
     overflow-y: scroll;
 }
-
+table.cbcTable {
+    text-align: left;
+}
+.cbcDivWarp {
+    overflow-y: scroll;
+    height: 82vh;
+}
+table.cbcTable td {
+    padding: 9px;
+    font-size: 0.8rem;
+}
 
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {

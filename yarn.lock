@@ -1466,10 +1466,17 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^16":
-  version "16.18.87"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.87.tgz"
-  integrity sha512-+IzfhNirR/MDbXz6Om5eHV54D9mQlEMGag6AgEzlju0xH3M8baCXYwqQ6RKgGMpn9wSTx6Ltya/0y4Z8eSfdLw==
+"@types/node@*", "@types/node@^20.12.13":
+  version "20.12.13"
+  resolved "https://registry.npmjs.org/@types/node/-/node-20.12.13.tgz"
+  integrity sha512-gBGeanV41c1L171rR7wjbMiEpEI/l5XFQdLLfhr/REwpgDy/4U8y89+i8kRiLzDyZdOkXh+cRaTetUnCYutoXA==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^16":
+  version "16.18.97"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.97.tgz"
+  integrity sha512-4muilE1Lbfn57unR+/nT9AFjWk0MtWi5muwCEJqnOvfRQDbSfLCUdN7vCIg8TYuaANfhLOV85ve+FNpiUsbSRg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.4"
@@ -3761,6 +3768,13 @@ events@^3.2.0:
   resolved "https://registry.npmjs.org/events/-/events-3.3.0.tgz"
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
+exec-sh@^0.2.0:
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/exec-sh/-/exec-sh-0.2.2.tgz"
+  integrity sha512-FIUCJz1RbuS0FKTdaAafAByGS0CPvU3R0MeHxgtl+djzCc//F8HakL8GzmVNZanasTbTAY/3DRFA0KpVqj/eAw==
+  dependencies:
+    merge "^1.2.0"
+
 execa@^0.8.0:
   version "0.8.0"
   resolved "https://registry.npmjs.org/execa/-/execa-0.8.0.tgz"
@@ -4240,6 +4254,11 @@ highlight.js@^10.7.1:
   version "10.7.3"
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz"
   integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
+
+hl7@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/hl7/-/hl7-1.1.1.tgz"
+  integrity sha512-wl5QH3vXKiZ6KYzD1qnPQq2/akDgD3vDkqemx2i2+8sY8al0CUAY8Q4ve9E4GI/iC3XwunuHWcflZ6Jj8TIJgA==
 
 hosted-git-info@^2.1.4:
   version "2.8.9"
@@ -4939,6 +4958,11 @@ merge-stream@^2.0.0:
   resolved "https://registry.npmjs.org/merge-stream/-/merge-stream-2.0.0.tgz"
   integrity sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==
 
+merge@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/merge/-/merge-1.2.1.tgz"
+  integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
+
 merge2@^1.3.0, merge2@^1.4.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
@@ -5011,7 +5035,7 @@ minimatch@^5.0.1:
   dependencies:
     brace-expansion "^2.0.1"
 
-minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6:
+minimist@^1.1.0, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6:
   version "1.2.8"
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
@@ -5051,6 +5075,11 @@ moment@*, moment@^2.29.4, moment@^2.30.1:
   version "2.30.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
+moment@2.24.0:
+  version "2.24.0"
+  resolved "https://registry.npmjs.org/moment/-/moment-2.24.0.tgz"
+  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
 mrmime@^2.0.0:
   version "2.0.0"
@@ -6324,6 +6353,15 @@ signal-exit@^3.0.0, signal-exit@^3.0.2, signal-exit@^3.0.3:
   resolved "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.7.tgz"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
 
+simple-hl7@^3.2.4:
+  version "3.2.4"
+  resolved "https://registry.npmjs.org/simple-hl7/-/simple-hl7-3.2.4.tgz"
+  integrity sha512-6cPKdJT+/By26WraM7ZjimVMWaf7xxCbbWLPwLPEuaKeSMQrRmJJ4+whN7pJE1+72uY7glJjdgIVkhHMLQAhiQ==
+  dependencies:
+    moment "2.24.0"
+    utils-merge "1.0.0"
+    watch "0.16.0"
+
 sirv@^2.0.3:
   version "2.0.4"
   resolved "https://registry.npmjs.org/sirv/-/sirv-2.0.4.tgz"
@@ -6815,6 +6853,11 @@ typescript@*, "typescript@>= 2.7", typescript@>=2, "typescript@>=2.8.0 || >= 3.2
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.5.tgz"
   integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
 
+undici-types@~5.26.4:
+  version "5.26.5"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-5.26.5.tgz"
+  integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
+
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-2.0.0.tgz"
@@ -6884,6 +6927,11 @@ utila@~0.4:
   version "0.4.0"
   resolved "https://registry.npmjs.org/utila/-/utila-0.4.0.tgz"
   integrity sha512-Z0DbgELS9/L/75wZbro8xAnT50pBVFQZ+hUEueGDU5FN51YSCYM+jdxsfCiHjwNP/4LCDD0i/graKpeBnOXKRA==
+
+utils-merge@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.0.tgz"
+  integrity sha512-HwU9SLQEtyo+0uoKXd1nkLqigUWLB+QuNQR4OcmB73eWqksM5ovuqcycks2x043W8XVb75rG1HQ0h93TMXkzQQ==
 
 utils-merge@1.0.1:
   version "1.0.1"
@@ -6996,6 +7044,14 @@ vuex@^4.1.0:
   integrity sha512-hmV6UerDrPcgbSy9ORAtNXDr9M4wlNP4pEFKye4ujJF8oqgFFuxDCdOLS3eNoRTtq5O3hoBDh9Doj1bQMYHRbQ==
   dependencies:
     "@vue/devtools-api" "^6.0.0-beta.11"
+
+watch@0.16.0:
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/watch/-/watch-0.16.0.tgz"
+  integrity sha512-EvFxSN6YhYV9esnZJsyGKZ9wPPnoL0ONgR9UNJHmoTktCuO7DHP0DdSS3iUxVHTol3Qs3M8NYKyJjpG46JW1GQ==
+  dependencies:
+    exec-sh "^0.2.0"
+    minimist "^1.1.0"
 
 watchpack@^2.4.0:
   version "2.4.0"

@@ -323,6 +323,12 @@ export const apiConstants = {
             endpoint: 'file/read',
             requiresToken: false,
         }
+    },
+    H7Read: {
+        post: {
+            endpoint: 'hl7/parse',
+            requiresToken: false,
+        }
     }
 
 };
