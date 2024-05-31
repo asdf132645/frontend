@@ -2,7 +2,6 @@
 
 export interface CreateNormalRange {
     normalRangeItems: NormalRangeItems[];
-    userId: number;
 }
 
 export interface NormalRangeItems {
@@ -16,5 +15,4 @@ export interface NormalRangeItems {
 
 export interface NormalRangeUpdateDto {
     normalRangeItems: NormalRangeItems[];
-    userId: number;
 }

@@ -28,7 +28,7 @@
 import {ref, onMounted} from 'vue';
 import {
   createNormalRangeApi,
-  updateBfNormalRangeApi,
+  updateNormalRangeApi,
   getNormalRangeApi,
 } from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
@@ -55,9 +55,9 @@ const saveNormalRange = async () => {
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
-      result = await createNormalRangeApi({normalRangeItems: normalItems.value , userId: Number(userId.value)});
+      result = await createNormalRangeApi({normalRangeItems: normalItems.value });
     } else {
-      const updateResult = await updateBfNormalRangeApi({normalRangeItems: normalItems.value , userId: Number(userId.value)}, userId.value);
+      const updateResult = await updateNormalRangeApi({normalRangeItems: normalItems.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -79,7 +79,7 @@ const saveNormalRange = async () => {
 
 const getNormalRange = async () => {
   try {
-    const result = await getNormalRangeApi(String(userId.value));
+    const result = await getNormalRangeApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         console.log(null);

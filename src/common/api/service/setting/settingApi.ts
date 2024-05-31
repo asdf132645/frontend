@@ -93,12 +93,12 @@ export const createNormalRangeApi = async (request: CreateNormalRange): Promise<
     return httpClient.httpPost(apiConstants.settings.normalRange.create, request);
 };
 
-export const updateBfNormalRangeApi = async (request: NormalRangeUpdateDto, userId: string): Promise<ApiResponse<NormalRangeUpdateDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.normalRange.update, request, userId);
+export const updateNormalRangeApi = async (request: NormalRangeUpdateDto): Promise<ApiResponse<NormalRangeUpdateDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.normalRange.update, request);
 };
 
-export const getNormalRangeApi = async (userId: string): Promise<ApiResponse<CreateNormalRange | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.normalRange.get, userId);
+export const getNormalRangeApi = async (): Promise<ApiResponse<CreateNormalRange | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.normalRange.get);
 };
 
 export const createImagePrintApi = async (request: CreateImagePrintDto): Promise<ApiResponse<void>> => {

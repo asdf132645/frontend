@@ -6,7 +6,7 @@ import {
     putOrderClassApi,
     getOrderClassApi,
     createNormalRangeApi,
-    updateBfNormalRangeApi,
+    updateNormalRangeApi,
     getNormalRangeApi,
     createRbcDegreeApi, putRbcDegreeApi, getRbcDegreeApi
 } from '@/common/api/service/setting/settingApi';
@@ -123,10 +123,10 @@ export const firstSaveOrderClass = async (userId: any) => {
 
 export const firstSaveNormalRange = async (userId: any) => {
     try {
-        const result = await getNormalRangeApi(String(userId));
+        const result = await getNormalRangeApi();
         if (result) {
             if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-                await createNormalRangeApi({normalRangeItems: normalItems.value , userId: Number(userId)});
+                await createNormalRangeApi({normalRangeItems: normalItems.value });
             }
         }
 
