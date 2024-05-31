@@ -1,6 +1,5 @@
 export interface CreateMinCountDto {
     minCountItems: minCountItem[];
-    userId: number;
 }
 
 export interface minCountItem {
@@ -10,5 +9,4 @@ export interface minCountItem {
 
 export interface UpdateMinCountDto {
     minCountItems: minCountItem[];
-    userId: number;
 }

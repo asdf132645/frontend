@@ -180,12 +180,12 @@ export const createMinCountApi = async (request: CreateMinCountDto): Promise<Api
     return httpClient.httpPost(apiConstants.settings.minCount.create, request);
 };
 
-export const updateMinCountApi = async (request: UpdateMinCountDto, userId: string): Promise<ApiResponse<UpdateMinCountDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.minCount.update, request, userId);
+export const updateMinCountApi = async (request: UpdateMinCountDto): Promise<ApiResponse<UpdateMinCountDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.minCount.update, request);
 };
 
-export const getMinCountApi = async (userId: string): Promise<ApiResponse<minCountItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.minCount.get, userId);
+export const getMinCountApi = async (): Promise<ApiResponse<minCountItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.minCount.get);
 };
 
 // --- 드라이브

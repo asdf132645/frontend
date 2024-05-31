@@ -81,12 +81,12 @@ const saveLisCode = async () => {
     if (saveHttpType.value === 'post') {
       result = await createLisCodeApi({ lisCodeItems: lisCodeWbcArr.value, userId: Number(userId.value) });
       rbcResult = await createLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) });
-      minCountResult = await createMinCountApi({ minCountItems: minCountArr.value, userId: Number(userId.value) });
+      minCountResult = await createMinCountApi({ minCountItems: minCountArr.value });
 
     } else {
       const updateResult = await updateLisCodeApi({ lisCodeItems: lisCodeWbcArr.value, userId: Number(userId.value) }, userId.value);
       const updateRbcResult = await updateLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) }, userId.value);
-      const updateMinCountResult = await updateMinCountApi({ minCountItems: minCountArr.value, userId: Number(userId.value) }, userId.value);
+      const updateMinCountResult = await updateMinCountApi({ minCountItems: minCountArr.value });
 
       if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -97,7 +97,7 @@ const saveLisCode = async () => {
       return;
     }
 
-    if (result && rbcResult) {
+    if (result && rbcResult && minCountResult) {
       showSuccessAlert('save successful');
       saveHttpType.value = 'put';
       await getImagePrintData();
@@ -112,7 +112,7 @@ const getImagePrintData = async () => {
   try {
     const wbcResult = await getLisCodeApi(String(userId.value));
     const rbcResult = await getLisCodeRbcApi(String(userId.value));
-    const minCountResult = await getMinCountApi(String(userId.value));
+    const minCountResult = await getMinCountApi();
 
     if (wbcResult && wbcResult.data && rbcResult && rbcResult.data && minCountResult && minCountResult.data) {
       const wbcData = wbcResult.data;
