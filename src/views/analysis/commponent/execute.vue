@@ -241,7 +241,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
           "userInputStainType": "",
           "analysisType": analysisType.value,
           "bmSamplingSide": "01",
-          "cellCount": "500",
+          "cellCount": wbcCount.value,
           "department": "s",
           "stitchCount":stitchCount.value,
         }],
