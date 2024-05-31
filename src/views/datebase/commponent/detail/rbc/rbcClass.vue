@@ -16,7 +16,7 @@
         </li>
       </ul>
     </div>
-    <template v-for="(classList, outerIndex) in [isBefore ? clonedRbcInfoStore : rbcInfoChangeVal]" :key="outerIndex">
+    <template v-for="(classList, outerIndex) in [rbcInfoChangeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories">
           <ul class="categoryNm">
@@ -197,7 +197,6 @@ watch(() => props.selectItems, (newItem) => {
 const beforeChange = () => {
   isBefore.value = true;
   emits('isBeforeUpdate', true);
-  console.log(props.rbcInfo.rbcInfo.rbcClass)
   rbcInfoChangeVal.value = props.rbcInfo.rbcInfo.rbcClass;
 }
 
@@ -240,7 +239,7 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
 
   const updatedSelectItems: any = {
     ...props.selectItems,
-    rbcInfoAfter: props.selectItems.rbcInfo.map((rbcItem: any, index: any) => {
+    rbcInfoAfter: props.selectItems.rbcInfoAfter.map((rbcItem: any, index: any) => {
       return {
         ...rbcItem,
         classInfo: rbcInfoAfter[index]
@@ -248,7 +247,7 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
     })
   };
 
-  const rbcAfter = props.selectItems.rbcInfo.map((rbcItem: any, index: any) => {
+  const rbcAfter = props.selectItems.rbcInfoAfter.map((rbcItem: any, index: any) => {
     return {
       ...rbcItem,
       classInfo: rbcInfoAfter[index]
