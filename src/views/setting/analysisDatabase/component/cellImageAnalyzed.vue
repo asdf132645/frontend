@@ -16,6 +16,7 @@
         <th v-if="projectType === 'classInfo'">BM Diff Analysis Values</th>
         <th>Cell Analyzing Count</th>
         <td>
+
           <select v-model='pbAnalysisType'>
             <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
