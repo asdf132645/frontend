@@ -439,6 +439,8 @@ button.saveBtn, .defaultBtn {
 
 .classTitle {
     font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
 }
 .nth1ChildOrder {
     display: flex;
