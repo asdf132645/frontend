@@ -105,12 +105,12 @@ export const createImagePrintApi = async (request: CreateImagePrintDto): Promise
     return httpClient.httpPost(apiConstants.settings.imagePrint.create, request);
 };
 
-export const updateImagePrintApi = async (request: UpdateImagePrintsDto, userId: string): Promise<ApiResponse<UpdateImagePrintsDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.imagePrint.update, request, userId);
+export const updateImagePrintApi = async (request: UpdateImagePrintsDto): Promise<ApiResponse<UpdateImagePrintsDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.imagePrint.update, request);
 };
 
-export const getImagePrintApi = async (userId: string): Promise<ApiResponse<ImagePrintItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.imagePrint.get, userId);
+export const getImagePrintApi = async (): Promise<ApiResponse<ImagePrintItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.imagePrint.get);
 };
 
 export const createLisCodeApi = async (request: CreateLisCodeDto): Promise<ApiResponse<void>> => {
