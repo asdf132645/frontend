@@ -1,6 +1,5 @@
 <template>
   <div class="alignDiv">
-    <p class="mb2"> [ Running Count ] </p>
     <table class="defaultTable" style="margin: auto;">
       <thead>
       <tr>
