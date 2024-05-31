@@ -143,12 +143,12 @@ export const createCbcCodeRbcApi = async (request: CreateCbcCodeRbcDto): Promise
     return httpClient.httpPost(apiConstants.settings.cbcCode.create, request);
 };
 
-export const updateCbcCodeRbcApi = async (request: UpdateCbcCodeRbcDto, userId: string): Promise<ApiResponse<UpdateCbcCodeRbcDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.cbcCode.update, request, userId);
+export const updateCbcCodeRbcApi = async (request: UpdateCbcCodeRbcDto): Promise<ApiResponse<UpdateCbcCodeRbcDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.cbcCode.update, request);
 };
 
-export const getCbcCodeRbcApi = async (userId: string): Promise<ApiResponse<cbcCodeItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.cbcCode.get, userId);
+export const getCbcCodeRbcApi = async (): Promise<ApiResponse<cbcCodeItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.cbcCode.get);
 };
 // file path set
 export const createFilePathSetApi = async (request: CreateFilePathDto): Promise<ApiResponse<void>> => {

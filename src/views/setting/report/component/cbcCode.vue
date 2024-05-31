@@ -50,9 +50,9 @@ const saveCbcCode = async () => {
     let result: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value, userId: Number(userId.value) });
+      result = await createCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
     } else {
-      const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -75,7 +75,7 @@ const saveCbcCode = async () => {
 
 const getImagePrintData = async () => {
   try {
-    const result = await getCbcCodeRbcApi(String(userId.value));
+    const result = await getCbcCodeRbcApi();
 
     if (result && result.data) {
       const data = result.data;

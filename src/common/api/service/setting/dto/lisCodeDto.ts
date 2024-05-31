@@ -39,7 +39,6 @@ export interface UpdateLisCodeRbcDto {
 
 export interface CreateCbcCodeRbcDto {
     cbcCodeItems: cbcCodeItem[];
-    userId: number;
 }
 
 
@@ -52,5 +51,4 @@ export interface cbcCodeItem {
 
 export interface UpdateCbcCodeRbcDto {
     cbcCodeItems: cbcCodeItem[];
-    userId: number;
 }
