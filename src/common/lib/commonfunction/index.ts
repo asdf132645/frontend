@@ -12,13 +12,13 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
         const localDbData = [...originalDb];
         const indexToUpdate = localDbData.findIndex(item => item.pcIp === result.data && item.state);
         if (indexToUpdate !== -1) {
-            localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
+            localDbData[indexToUpdate] = {...selectItems, ...updatedRuningInfo};
         }
         const response = await updateRunningApi({
             userId: Number(id),
             runingInfoDtoItems: [localDbData[indexToUpdate]]
         })
-        sessionStorage.setItem('selectItems', JSON.stringify(localDbData[indexToUpdate]));
+        sessionStorage.setItem('selectItems', JSON.stringify(selectItems));
         sessionStorage.setItem('originalDbData', JSON.stringify(localDbData));
         return response;
     } catch (error) {

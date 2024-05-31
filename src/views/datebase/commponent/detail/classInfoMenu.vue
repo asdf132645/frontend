@@ -90,6 +90,8 @@ onUnmounted(async () => {
 const deleteConnectionStatus = async ()  => {
   const originalDbData = ref(sessionStorage.getItem("originalDbData"));
   const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
+  const selectItemsData = ref(sessionStorage.getItem("selectItems"));
+  const selectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
   await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
       .then(response => {
         instance?.appContext.config.globalProperties.$socket.emit('state', {
