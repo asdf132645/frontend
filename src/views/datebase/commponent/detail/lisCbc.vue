@@ -19,8 +19,8 @@
             <span v-if="cbcItem.cham !==''">
               ({{ cbcItem.cham }})
             </span>
+            {{ cbcItem.unit }}
           </td>
-          <td>{{ cbcItem.unit }}</td>
         </tr>
       </table>
     </div>
@@ -29,9 +29,8 @@
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.testNm }}</td>
           <td>
-            {{ cbcItem.count }}
+            {{ cbcItem.count }} {{ cbcItem.unit }}
           </td>
-          <td>{{ cbcItem.unit }}</td>
         </tr>
       </table>
     </div>

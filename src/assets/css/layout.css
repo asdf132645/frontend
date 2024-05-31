@@ -1093,8 +1093,8 @@ table.defaultTable tbody td {
 }
 
 .selectedTr {
-    border: 3px solid #29c7ca;
-    background: #29c7ca;
+    /*border: 1px solid #37a8aa;*/
+    background: #37a8aa;
 }
 
 h3.titleH3 {
