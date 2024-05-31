@@ -13,6 +13,20 @@
       <input type="text" v-model="item.code" />
     </label>
   </div>
+  <div class="alignDiv">
+    <p class="mb2"> [ Min Count ] </p>
+    <ul>
+      <li v-if="minCountArr.length > 0">
+        <p class="mb1 mt1">Giant Platelet</p>
+        <input type="text" v-model="minCountArr[0].minGpCount" class="form-control form-control-sm">
+      </li>
+      <li v-if="minCountArr.length > 0">
+        <p class="mb1 mt1">Platelet Aggregation</p>
+        <input type="text" v-model="minCountArr[0].minPaCount" class="form-control form-control-sm">
+      </li>
+    </ul>
+  </div>
+
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveLisCode()">Save</button>
   </div>
@@ -28,19 +42,22 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { lisCodeWbcOption , lisCodeRbcOption} from "@/common/defines/constFile/settings";
+import { lisCodeWbcOption , lisCodeRbcOption, minRunCount} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
-  createLisCodeApi, createLisCodeRbcApi,
-  getLisCodeApi, getLisCodeRbcApi,
-  updateLisCodeApi, updateLisCodeRbcApi
+  createLisCodeApi, createLisCodeRbcApi, createMinCountApi,
+  getLisCodeApi, getLisCodeRbcApi, getMinCountApi,
+  updateLisCodeApi, updateLisCodeRbcApi, updateMinCountApi
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
+import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
+
 
 const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
+const minCountArr = ref<minCountItem[]>([]);
 
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
@@ -59,15 +76,19 @@ const saveLisCode = async () => {
   try {
     let result: ApiResponse<void>;
     let rbcResult: ApiResponse<void>;
+    let minCountResult: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
       result = await createLisCodeApi({ lisCodeItems: lisCodeWbcArr.value, userId: Number(userId.value) });
       rbcResult = await createLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) });
+      minCountResult = await createMinCountApi({ minCountItems: minCountArr.value, userId: Number(userId.value) });
+
     } else {
       const updateResult = await updateLisCodeApi({ lisCodeItems: lisCodeWbcArr.value, userId: Number(userId.value) }, userId.value);
       const updateRbcResult = await updateLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) }, userId.value);
+      const updateMinCountResult = await updateMinCountApi({ minCountItems: minCountArr.value, userId: Number(userId.value) }, userId.value);
 
-      if (updateResult.data && updateRbcResult.data) {
+      if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
@@ -91,10 +112,12 @@ const getImagePrintData = async () => {
   try {
     const wbcResult = await getLisCodeApi(String(userId.value));
     const rbcResult = await getLisCodeRbcApi(String(userId.value));
+    const minCountResult = await getMinCountApi(String(userId.value));
 
-    if (wbcResult && wbcResult.data && rbcResult && rbcResult.data) {
+    if (wbcResult && wbcResult.data && rbcResult && rbcResult.data && minCountResult && minCountResult.data) {
       const wbcData = wbcResult.data;
       const rbcData = rbcResult.data;
+      const minCountData = minCountResult.data;
 
       if (!wbcData || (wbcData instanceof Array && wbcData.length === 0)) {
         console.log(null);
@@ -113,13 +136,19 @@ const getImagePrintData = async () => {
         saveHttpType.value = 'put';
         lisCodeRbcArr.value = rbcData;
       }
+
+      if (!minCountData || (minCountData instanceof  Array && minCountData.length === 0)) {
+        saveHttpType.value = 'post';
+        minCountArr.value = minRunCount;
+      } else {
+        saveHttpType.value = 'put';
+        minCountArr.value = minCountData;
+      }
     }
   } catch (e) {
     console.error(e);
   }
 };
-
-
 
 
 const showSuccessAlert = (message: string) => {
