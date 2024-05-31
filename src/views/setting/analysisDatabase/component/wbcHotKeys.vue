@@ -51,9 +51,9 @@ const saveWbcCustomClass = async () => {
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
-      result = await createWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value , userId: Number(userId.value)});
+      result = await createWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value});
     } else {
-      const updateResult = await updateWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value , userId: Number(userId.value)}, userId.value);
+      const updateResult = await updateWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value});
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -75,7 +75,7 @@ const saveWbcCustomClass = async () => {
 
 const getWbcHotKeyClasses = async () => {
   try {
-    const result = await getWbcWbcHotKeysApi(String(userId.value));
+    const result = await getWbcWbcHotKeysApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         console.log(null);

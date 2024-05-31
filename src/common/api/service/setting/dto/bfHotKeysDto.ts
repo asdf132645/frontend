@@ -1,7 +1,6 @@
 
 export interface CreateBfHotKeysDto {
     bfHotKeysItems: BfHotKeysItems[];
-    userId: number;
 }
 
 export interface BfHotKeysItems {
@@ -15,5 +14,4 @@ export interface BfHotKeysItems {
 
 export interface UpdateBfHotKeysDto {
     bfHotKeysItems: BfHotKeysItems[];
-    userId: number;
 }

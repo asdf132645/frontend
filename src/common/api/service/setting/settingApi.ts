@@ -68,12 +68,12 @@ export const createWbcHotKeysApi = async (request: CreateWbcHotKeysDto): Promise
     return httpClient.httpPost(apiConstants.settings.wbcHotKeys.create, request);
 };
 
-export const updateWbcHotKeysApi = async (request: UpdateWbcHotKeysDto, userId: string): Promise<ApiResponse<UpdateWbcHotKeysDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.wbcHotKeys.update, request, userId);
+export const updateWbcHotKeysApi = async (request: UpdateWbcHotKeysDto): Promise<ApiResponse<UpdateWbcHotKeysDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.wbcHotKeys.update, request);
 };
 
-export const getWbcWbcHotKeysApi = async (userId: string): Promise<ApiResponse<CreateWbcHotKeysDto | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.wbcHotKeys.get, userId);
+export const getWbcWbcHotKeysApi = async (): Promise<ApiResponse<CreateWbcHotKeysDto | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.wbcHotKeys.get);
 };
 
 
@@ -81,12 +81,12 @@ export const createBfHotKeysApi = async (request: CreateBfHotKeysDto): Promise<A
     return httpClient.httpPost(apiConstants.settings.bfHotKeys.create, request);
 };
 
-export const updateBfHotKeysApi = async (request: UpdateBfHotKeysDto, userId: string): Promise<ApiResponse<UpdateBfHotKeysDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.bfHotKeys.update, request, userId);
+export const updateBfHotKeysApi = async (request: UpdateBfHotKeysDto): Promise<ApiResponse<UpdateBfHotKeysDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.bfHotKeys.update, request);
 };
 
-export const getBfHotKeysApi = async (userId: string): Promise<ApiResponse<CreateBfHotKeysDto | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.bfHotKeys.get, userId);
+export const getBfHotKeysApi = async (): Promise<ApiResponse<CreateBfHotKeysDto | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.bfHotKeys.get);
 };
 
 export const createNormalRangeApi = async (request: CreateNormalRange): Promise<ApiResponse<void>> => {
