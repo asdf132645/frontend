@@ -37,7 +37,7 @@
     <tbody v-if="dbData.length !== 0">
     <template v-for="(item, idx) in dbData"
               :key="item.id">
-      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state }"
+      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state, checkFirst: item.signedState === 'checkFirst' }"
           @click="selectItem(item)"
           @dblclick='rowDbClick(item)'
           ref="firstRow"

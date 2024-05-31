@@ -14,10 +14,12 @@
           <button @click="memoCancel">cancel</button>
         </div>
       </li>
-      <li @click="commitConfirmed">
+      <li @click="commitConfirmed" :class="{
+    'submitted': selectItems.signedState === 'Submit',
+  }">
         <font-awesome-icon :icon="['fas', 'square-check']"/>
       </li>
-      <li>
+      <li @click="lisModalOpen">
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
       <li>
@@ -88,7 +90,7 @@
         <div class="categories" v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-            <li>{{  getStringValue(nWbcItem.name) }}</li>
+            <li>{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul class="classNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
@@ -181,6 +183,23 @@ onMounted(async () => {
   await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  // 첫 진입시
+  console.log(props.selectItems)
+  if (props.selectItems.signedState === "") {
+    const updatedRuningInfo = props.originalDb
+        .filter((item: any) => item.id === props.selectItems.id)
+        .map((item: any) => {
+          // id가 일치하는 경우 해당 항목의 submit 값을 변경
+          const updatedItem = {
+            ...item,
+            signedState: 'checkFirst',
+          };
+          // updatedItem의 내용을 변경
+          return updatedItem;
+        });
+    await resRunningItem(updatedRuningInfo, true);
+  }
+
 })
 // basicWbcArr
 
@@ -198,6 +217,10 @@ watch(() => props.wbcInfo, (newItem) => {
 watch(() => clonedWbcInfoStore.value, (newItem) => {
   afterChang(newItem);
 }, {deep: true});
+
+const lisModalOpen = () => {
+  //
+}
 
 const goClass = (id: any) => {
   emits('scrollEvent', id)
@@ -250,7 +273,7 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
-  const localTime = moment.utc("2024-05-15T21:32:00.728Z").local();
+  const localTime = moment().local();
   const updatedRuningInfo = props.originalDb
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
@@ -266,7 +289,6 @@ const onCommit = async () => {
         updatedItem.submit = 'Submit'; // 예시로 필드를 추가하거나 변경
         return updatedItem;
       });
-
   await resRunningItem(updatedRuningInfo);
 }
 
@@ -292,22 +314,24 @@ const memoCancel = () => {
 }
 
 const getStringValue = (title: string): string => {
-  if(title === 'Artifact(Smudge)' && props.selectItems.siteCd === '0006'){
+  if (title === 'Artifact(Smudge)' && props.selectItems.siteCd === '0006') {
     return "Artifact";
-  }else{
+  } else {
     return title;
   }
 };
 
 
-const resRunningItem = async (updatedRuningInfo: any) => {
+const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: updatedRuningInfo
     })
     if (response) {
-      showSuccessAlert('success');
+      if (!noAlert) {
+        showSuccessAlert('success');
+      }
       const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
@@ -402,8 +426,8 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC","SM", "MA", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", 'NE',"SM", 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 제외할 부분 정의
