@@ -9,15 +9,17 @@
       <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
         <div v-if="memoModal" class="memoModal">
-          <textarea v-model="memo"></textarea>
+          <textarea v-model="wbcMemo"></textarea>
           <button @click="memoChange">ok</button>
           <button @click="memoCancel">cancel</button>
         </div>
       </li>
-      <li @click="commitConfirmed">
+      <li @click="commitConfirmed" :class="{
+    'submitted': selectItems.signedState === 'Submit',
+  }">
         <font-awesome-icon :icon="['fas', 'square-check']"/>
       </li>
-      <li>
+      <li @click="lisModalOpen">
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
       <li>
@@ -88,7 +90,7 @@
         <div class="categories" v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-            <li>{{  getStringValue(nWbcItem.name) }}</li>
+            <li>{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul class="classNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
@@ -153,7 +155,7 @@ const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const barcodeImg = ref('');
 const userId = ref('');
-const memo = ref('');
+const wbcMemo = ref('');
 const memoModal = ref(false);
 const wbcInfoChangeVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
@@ -177,10 +179,27 @@ const totalCount = ref(0);
 
 onMounted(async () => {
   await getOrderClass();
-  memo.value = props.selectItems.memo;
+  wbcMemo.value = props.selectItems.wbcMemo;
   await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  // 첫 진입시
+  console.log(props.selectItems)
+  if (props.selectItems.signedState === "") {
+    const updatedRuningInfo = props.originalDb
+        .filter((item: any) => item.id === props.selectItems.id)
+        .map((item: any) => {
+          // id가 일치하는 경우 해당 항목의 submit 값을 변경
+          const updatedItem = {
+            ...item,
+            signedState: 'checkFirst',
+          };
+          // updatedItem의 내용을 변경
+          return updatedItem;
+        });
+    await resRunningItem(updatedRuningInfo, true);
+  }
+
 })
 // basicWbcArr
 
@@ -189,7 +208,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  memo.value = props.selectItems.memo;
+  wbcMemo.value = props.selectItems.wbcMemo;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   // console.log('classinfo_props.selectItems' , props.selectItems);
 
@@ -198,6 +217,10 @@ watch(() => props.wbcInfo, (newItem) => {
 watch(() => clonedWbcInfoStore.value, (newItem) => {
   afterChang(newItem);
 }, {deep: true});
+
+const lisModalOpen = () => {
+  //
+}
 
 const goClass = (id: any) => {
   emits('scrollEvent', id)
@@ -250,7 +273,7 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
-  const localTime = moment.utc("2024-05-15T21:32:00.728Z").local();
+  const localTime = moment().local();
   const updatedRuningInfo = props.originalDb
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
@@ -266,26 +289,23 @@ const onCommit = async () => {
         updatedItem.submit = 'Submit'; // 예시로 필드를 추가하거나 변경
         return updatedItem;
       });
-
   await resRunningItem(updatedRuningInfo);
 }
 
 
 const memoChange = async () => {
-  const updatedRuningInfo = props.originalDb.map((item: any) => {
-    if (item.id === props.selectItems.id) {
-      // id가 일치하는 경우 해당 항목의 submit 값을 변경
-      // updatedItem의 내용을 변경
-      return {...item, memo: memo.value};
-    }
-    return item;
-  });
-  await resRunningItem(updatedRuningInfo);
+  const updatedRunningInfo = props.originalDb.map((item: any) => {
+    return item.id === props.selectItems.id
+        ? {...item, wbcMemo: wbcMemo.value}
+        : item;
+  }).filter((item: any) => item.id === props.selectItems.id);
+
+  await resRunningItem(updatedRunningInfo);
   memoModal.value = false;
 }
 
 const memoOpen = () => {
-  memo.value = memo.value !== '' ? memo.value : props.selectItems.memo;
+  wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems.wbcMemo;
   memoModal.value = !memoModal.value;
 }
 
@@ -294,26 +314,28 @@ const memoCancel = () => {
 }
 
 const getStringValue = (title: string): string => {
-  if(title === 'Artifact(Smudge)' && props.selectItems.siteCd === '0006'){
+  if (title === 'Artifact(Smudge)' && props.selectItems.siteCd === '0006') {
     return "Artifact";
-  }else{
+  } else {
     return title;
   }
 };
 
 
-const resRunningItem = async (updatedRuningInfo: any) => {
+const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: updatedRuningInfo
     })
     if (response) {
-      showSuccessAlert('success');
+      if (!noAlert) {
+        showSuccessAlert('success');
+      }
       const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
       sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
       sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
-      memo.value = filteredItems[0].memo;
+      wbcMemo.value = filteredItems[0].wbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -404,8 +426,8 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC","SM", "MA", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", 'NE',"SM", 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 제외할 부분 정의

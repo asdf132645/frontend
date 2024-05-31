@@ -2,7 +2,7 @@ import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 
 export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: any) => {
-    console.log(selectItems)
+
     try {
         const result = await getUserIpApi();
         const updatedRuningInfo = {
@@ -13,7 +13,7 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
         const localDbData = [...originalDb];
         const indexToUpdate = localDbData.findIndex(item => item.pcIp === result.data && item.state);
         if (indexToUpdate !== -1) {
-            localDbData[indexToUpdate].wbcInfoAfter = selectItems.wbcInfoAfter;
+            // localDbData[indexToUpdate].wbcInfoAfter = selectItems.wbcInfoAfter;
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
         }
         const response = await updateRunningApi({
@@ -46,6 +46,7 @@ export const stateUpdateCommon = async (itemVal: any, pcIp: any, dbdata: any, id
         const indexToUpdate = localDbData.findIndex((item: any) => item.id === itemVal.id);
 
         if (indexToUpdate !== -1) {
+            localDbData[indexToUpdate].wbcInfoAfter = itemVal;
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
         }
         sessionStorage.setItem('selectItems', JSON.stringify(localDbData[indexToUpdate]));

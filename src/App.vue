@@ -436,7 +436,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           } : [],
           rbcInfoAfter: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           bminfo: completeSlot.bminfo,
-          userId: userId.value,
+          userId: userModuleDataGet.value.name,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
           // processInfo: {
@@ -455,7 +455,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           signedUserId: '',
           // classificationResult: [],
           isNsNbIntegration: isNsNbIntegration,
-          memo: '',
+          wbcMemo: '',
           rbcMemo: '',
           siteCd: embeddedStatus.value.sysInfo.siteCd,
           deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,

@@ -28,7 +28,7 @@
       </template>
 
     </ul>
-    <div @click="lisCbcClick" :class='{ "onRight": cbcLayer, "cbcLi": true }'>
+    <div @click="lisCbcClick" :class='{ "onRight": cbcLayer, "cbcLi": true }' v-if="projectType !== 'bm'">
       <font-awesome-icon :icon="['fas', 'desktop']"/>
       <p>LIS-CBC</p>
     </div>
@@ -90,16 +90,14 @@ onUnmounted(async () => {
 const deleteConnectionStatus = async ()  => {
   const originalDbData = ref(sessionStorage.getItem("originalDbData"));
   const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
-  const selectItemsData = ref(sessionStorage.getItem("selectItems"));
-  const selectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
-  await stateDeleteCommon(originalDb.value, selectItems.value, userModuleDataGet.value.id)
+  await stateDeleteCommon(originalDb.value, resData.value, userModuleDataGet.value.id)
       .then(response => {
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
           payload: 'refreshDb'
         });
       }).catch(error => {
-        console.error('Error:', error.response.data);
+        console.log('2 err')
       });
 }
 
@@ -113,7 +111,7 @@ const upDownBlockAccess = async (selectItems: any) => {
         payload: 'refreshDb'
       });
     }).catch(error => {
-      console.error('Error:', error.response.data);
+      console.log('3 err')
     });
   } catch (e) {
     console.log(e)
@@ -216,12 +214,10 @@ const handleDataResponse = async (dbIndex: any, res: any) => {
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
-
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
   sessionStorage.setItem('dbBaseTrClickId', String(dbIndex.id));
-
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: sortedWbcInfo});
-  await updateUpDown(resData.value?.wbcInfo.wbcInfo[0], resData.value);
+  await updateUpDown(resClassInfo, resData.value);
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {

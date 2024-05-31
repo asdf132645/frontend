@@ -1095,10 +1095,13 @@ table.defaultTable tbody td {
 }
 
 .selectedTr {
-    /*border: 1px solid #37a8aa;*/
     background: #37a8aa;
 }
 
+tr.checkFirst {color: #65ff9b;}
+li.submitted {
+    color: #00477e;
+}
 h3.titleH3 {
     text-align: left;
     padding: 10px;
@@ -1278,8 +1281,7 @@ ul.leftWbcInfo {
 
 
 .submittedTr {
-    background: #dff7ff;
-    color: #25313b;
+    color: #00477e;
 }
 
 .dbDataTable {

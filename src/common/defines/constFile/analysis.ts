@@ -19,7 +19,22 @@ export const wbcCountOptions = [
 ];
 
 export const bmCountOptions = [
-    {value: '500', text: '500'}
+    { value: '500', text: '500' },
+    { value: '600', text: '600' },
+    { value: '700', text: '700' },
+    { value: '800', text: '800' },
+    { value: '900', text: '900' },
+    { value: '1000', text: '1000' },
+    { value: '1100', text: '1100' },
+    { value: '1200', text: '1200' },
+    { value: '1300', text: '1300' },
+    { value: '1400', text: '1400' },
+    { value: '1500', text: '1500' },
+    { value: '1600', text: '1600' },
+    { value: '1700', text: '1700' },
+    { value: '1800', text: '1800' },
+    { value: '1900', text: '1900' },
+    { value: '2000', text: '2000' },
 ];
 
 export const stitchCountOptions = [{value: '1', text: '1 stitch'},
