@@ -198,10 +198,10 @@ export const createOrderClassApi = async (request: any): Promise<ApiResponse<voi
     return httpClient.httpPost(apiConstants.settings.classOrder.create, request);
 };
 
-export const getOrderClassApi = async (userId: string): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.classOrder.get, userId);
+export const getOrderClassApi = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.classOrder.get);
 };
 
-export const putOrderClassApi = async (request: any, userName: string): Promise<ApiResponse<any>> => {
-    return httpClient.httpPut(apiConstants.settings.classOrder.update, request, userName);
+export const putOrderClassApi = async (request: any): Promise<ApiResponse<any>> => {
+    return httpClient.httpPut(apiConstants.settings.classOrder.update, request);
 };

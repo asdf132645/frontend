@@ -76,7 +76,6 @@ export const firstCellImgSet = async (userId: string) => {
         backupPath: defaultCellImgData.backupPath,
         backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
         backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
-        userId: userId,
     };
     if (saveHttpType.value === 'post') {
         try {
@@ -104,7 +103,7 @@ export const firstSaveOrderClass = async (userId: any) => {
         orderList[index].userName = userId;
         orderList[index].orderText = index;
     }
-    const result = await getOrderClassApi(String(userId));
+    const result = await getOrderClassApi();
     if (result) {
         if (result?.data.length === 0) {
             orderHttpType.value = 'post';

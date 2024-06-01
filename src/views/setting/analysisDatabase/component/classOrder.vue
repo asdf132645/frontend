@@ -45,24 +45,18 @@ const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
 const saveHttpType = ref('');
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
-
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
   wbcInfoChangeVal.value = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  userId.value = getStoredUser.id;
   await getOrderClass();
 })
 
 const getOrderClass = async () => {
-  //getOrderClassApi
   try {
-    const result = await getOrderClassApi(String(userId.value));
+    const result = await getOrderClassApi();
     if (result) {
       if (result?.data.length === 0) {
         saveHttpType.value = 'post';
@@ -79,7 +73,6 @@ const getOrderClass = async () => {
 const saveOrderClassSave = async () => {
   let orderList: any = wbcInfoChangeVal.value;
   for (const index in orderList) {
-    orderList[index].userName = userId.value;
     orderList[index].orderText = index;
   }
   try {
@@ -87,7 +80,7 @@ const saveOrderClassSave = async () => {
     if (saveHttpType.value === 'post') {
       result = await createOrderClassApi(orderList);
     }else {
-      result = await putOrderClassApi(orderList, userId.value);
+      result = await putOrderClassApi(orderList);
     }
     if (result) {
       const text = saveHttpType.value === 'post' ? 'save successful' : messages.UPDATE_SUCCESSFULLY
