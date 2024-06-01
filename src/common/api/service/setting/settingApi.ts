@@ -55,12 +55,12 @@ export const createWbcCustomClassApi = async (request: CreateWbcCustomClassDto):
     return httpClient.httpPost(apiConstants.settings.wbcCustomClass.create, request);
 };
 
-export const updateWbcCustomClassApi = async (request: UpdateWbcCustomClassDto, userId: string): Promise<ApiResponse<UpdateWbcCustomClassDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.wbcCustomClass.update, request, userId);
+export const updateWbcCustomClassApi = async (request: UpdateWbcCustomClassDto): Promise<ApiResponse<UpdateWbcCustomClassDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.wbcCustomClass.update, request);
 };
 
-export const getWbcCustomClassApi = async (userId: string): Promise<ApiResponse<CreateWbcCustomClassDto | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.wbcCustomClass.get, userId);
+export const getWbcCustomClassApi = async (): Promise<ApiResponse<CreateWbcCustomClassDto | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.wbcCustomClass.get);
 };
 
 

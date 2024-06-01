@@ -3,7 +3,6 @@
 export interface CreateWbcCustomClassDto {
     id?: number;
     classArr: classArr[];
-    userId?: number;
 }
 
 export interface classArr {
@@ -13,5 +12,4 @@ export interface classArr {
 
 export interface UpdateWbcCustomClassDto {
     classArr: classArr[];
-    userId?: number;
 }
