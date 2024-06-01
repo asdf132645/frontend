@@ -551,7 +551,7 @@ const sendSettingInfo = () => {
 
 const getNormalRange = async () => {
   try {
-    const result = await getNormalRangeApi(String(userId.value));
+    const result = await getNormalRangeApi();
     if (result) {
       if (result?.data) {
         const data = result.data;
@@ -579,7 +579,7 @@ const sendMessage = async (payload: any) => {
 
 const cellImgGet = async (newUserId: string) => {
   try {
-    const result = await getCellImgApi(String(newUserId));
+    const result = await getCellImgApi();
     if (result) {
       if (result?.data) {
         const data = result.data;

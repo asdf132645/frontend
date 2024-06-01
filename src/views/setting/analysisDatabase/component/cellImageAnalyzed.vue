@@ -157,7 +157,7 @@
 import {createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import {nextTick, onMounted, ref} from "vue";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -192,9 +192,6 @@ const keepPage = ref(false);
 const backupPath = ref('');
 const backupStartDate = ref(new Date());
 const backupEndDate = ref(new Date());
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 const drive = ref<any>([]);
 const cellimgId = ref('');
@@ -203,14 +200,13 @@ const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const store = useStore();
 
-const handleLoginSuccess = async (userIdVal: any) => {
+const handleLoginSuccess = async () => {
   console.log('?!@!@?')
   testTypeCd.value = process.env.PROJECT_TYPE === 'bm' ? '02' : '01';
   projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   console.log(process.env.PROJECT_TYPE);
   testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
-  userId.value = userIdVal;
   await cellImgGet();
   await driveGet();
   await cellImgSet();
@@ -224,8 +220,6 @@ onMounted(async () => {
   console.log(process.env.PROJECT_TYPE);
   testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
-  userId.value = getStoredUser.id;
-
 
   await cellImgGet();
   await driveGet();
@@ -257,7 +251,7 @@ const driveGet = async () => {
 
 const cellImgGet = async () => {
   try {
-    const result = await getCellImgApi(String(userId.value));
+    const result = await getCellImgApi();
     if (result) {
       if (!result?.data) {
         console.log(null)
@@ -315,7 +309,6 @@ const cellImgSet = async () => {
     backupPath: backupPath.value,
     backupStartDate: backupStartDate.value.toISOString().split('T')[0],
     backupEndDate: backupEndDate.value.toISOString().split('T')[0],
-    userId: String(userId.value),
   }
 
   try {

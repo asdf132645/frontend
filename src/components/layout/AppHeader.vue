@@ -228,7 +228,7 @@ onMounted(async () => {
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
-  cellImgGet(newUserId.id);
+  cellImgGet();
   userId.value = newUserId.id;
 });
 
@@ -397,9 +397,9 @@ const onModalOpen = () => {
   getPercent();
 };
 
-const cellImgGet = async (newUserId: string) => {
+const cellImgGet = async () => {
   try {
-    const result = await getCellImgApi(String(newUserId));
+    const result = await getCellImgApi();
     if (result) {
       if (result?.data) {
         const data = result.data;

@@ -47,7 +47,7 @@ export const firstCellImgSet = async (userId: string) => {
     let cellImgData;
 
     // `cellImgGet` 함수를 호출하여 `cellimgId` 및 `cellImgData` 값을 가져옵니다.
-    const result = await getCellImgApi(userId);
+    const result = await getCellImgApi();
     if (result && result.data) {
         cellimgId.value = String(userId);
         cellImgData = result.data;

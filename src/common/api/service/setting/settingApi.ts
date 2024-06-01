@@ -30,8 +30,8 @@ export const createCellImgApi = async (request: any): Promise<ApiResponse<void>>
     return httpClient.httpPost(apiConstants.settings.cellImgAnalyzedPost.cellImgAdd, request);
 };
 
-export const getCellImgApi = async (userId: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGet, userId);
+export const getCellImgApi = async (): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGet);
 };
 
 export const putCellImgApi = async (request: any, id: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
@@ -198,8 +198,8 @@ export const createOrderClassApi = async (request: any): Promise<ApiResponse<voi
     return httpClient.httpPost(apiConstants.settings.classOrder.create, request);
 };
 
-export const getOrderClassApi = async (): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.classOrder.get);
+export const getOrderClassApi = async (userId: string): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.classOrder.get, userId);
 };
 
 export const putOrderClassApi = async (request: any, userName: string): Promise<ApiResponse<any>> => {
