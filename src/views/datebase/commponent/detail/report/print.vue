@@ -247,7 +247,7 @@ const printPage = async () => {
 
 const getImagePrintData = async () => {
   try {
-    const result = await getImagePrintApi(String(userId.value));
+    const result = await getImagePrintApi();
 
     if (result && result.data) {
       const data = result.data;
@@ -258,7 +258,6 @@ const getImagePrintData = async () => {
         imagePrintAndWbcArr.value = data
             .filter((item) => item.checked)
             .map((item) => item.value);
-        console.log(imagePrintAndWbcArr.value);
 
         // 이미지 프린트 및 wbc 배열에 없는 아이디 제거
         wbcInfo.value = wbcInfo.value.filter((item) =>

@@ -155,12 +155,12 @@ export const createFilePathSetApi = async (request: CreateFilePathDto): Promise<
     return httpClient.httpPost(apiConstants.settings.filePathSet.create, request);
 };
 
-export const updateFilePathSetApi = async (request: UpdateFilePathsDto, userId: string): Promise<ApiResponse<UpdateFilePathsDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.filePathSet.update, request, userId);
+export const updateFilePathSetApi = async (request: UpdateFilePathsDto): Promise<ApiResponse<UpdateFilePathsDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.filePathSet.update, request);
 };
 
-export const getFilePathSetApi = async (userId: string): Promise<ApiResponse<FilePathItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.filePathSet.get, userId);
+export const getFilePathSetApi = async (): Promise<ApiResponse<FilePathItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.filePathSet.get);
 };
 
 // minCount, runInfoWbcCount
@@ -198,8 +198,8 @@ export const createOrderClassApi = async (request: any): Promise<ApiResponse<voi
     return httpClient.httpPost(apiConstants.settings.classOrder.create, request);
 };
 
-export const getOrderClassApi = async (userId: string): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.classOrder.get, userId);
+export const getOrderClassApi = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.classOrder.get);
 };
 
 export const putOrderClassApi = async (request: any, userName: string): Promise<ApiResponse<any>> => {
