@@ -41,20 +41,12 @@
 import {onMounted, ref} from "vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
-import {AnalysisList2, minRunCount, wbcRunningCount} from "@/common/defines/constFile/settings";
+import {AnalysisList2, wbcRunningCount} from "@/common/defines/constFile/settings";
 import {runCountItem} from "@/common/api/service/setting/dto/runWbcInfoCountDto";
-import {
-  createMinCountApi,
-  createRunInfoWbcApi,
-  getMinCountApi,
-  getRunInfoApi, updateMinCountApi, updateRunInfoApi
-} from "@/common/api/service/setting/settingApi";
+import { createRunInfoWbcApi, getRunInfoApi, updateRunInfoApi } from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
 
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 const wbcRunInfoCountArr = ref<runCountItem[]>([]);
 const showAlert = ref(false);
@@ -62,13 +54,12 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getWbcRunningCountData();
 });
 
 const getWbcRunningCountData = async () => {
   try {
-    const runCountResult = await getRunInfoApi(String(userId.value));
+    const runCountResult = await getRunInfoApi();
 
     if (runCountResult && runCountResult.data) {
       const runInfoData = runCountResult.data;
@@ -92,9 +83,9 @@ const saveWbcRunningCount = async () => {
     let result: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createRunInfoWbcApi({ wbcRunCountItems: wbcRunInfoCountArr.value, userId: Number(userId.value) });
+      result = await createRunInfoWbcApi({ wbcRunCountItems: wbcRunInfoCountArr.value });
     } else {
-      const updateResult = await updateRunInfoApi({ wbcRunCountItems: wbcRunInfoCountArr.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateRunInfoApi({ wbcRunCountItems: wbcRunInfoCountArr.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);

@@ -1,6 +1,5 @@
 export interface CreateRunCountDto {
     wbcRunCountItems: runCountItem[];
-    userId: number;
 }
 
 export interface runCountItem {
@@ -13,5 +12,4 @@ export interface runCountItem {
 
 export interface UpdateRunCountDto {
     wbcRunCountItems: runCountItem[];
-    userId: number;
 }

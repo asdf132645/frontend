@@ -169,12 +169,12 @@ export const createRunInfoWbcApi = async (request: CreateRunCountDto): Promise<A
     return httpClient.httpPost(apiConstants.settings.runCount.create, request);
 };
 
-export const updateRunInfoApi = async (request: UpdateRunCountDto, userId: string): Promise<ApiResponse<UpdateRunCountDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.runCount.update, request, userId);
+export const updateRunInfoApi = async (request: UpdateRunCountDto): Promise<ApiResponse<UpdateRunCountDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.runCount.update, request);
 };
 
-export const getRunInfoApi = async (userId: string): Promise<ApiResponse<runCountItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.runCount.get, userId);
+export const getRunInfoApi = async (): Promise<ApiResponse<runCountItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.runCount.get);
 };
 // -----mincount
 export const createMinCountApi = async (request: CreateMinCountDto): Promise<ApiResponse<void>> => {
