@@ -45,9 +45,9 @@ import { ref, onMounted } from 'vue';
 import { lisCodeWbcOption , lisCodeRbcOption, minRunCount} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
-  createLisCodeApi, createLisCodeRbcApi, createMinCountApi,
-  getLisCodeApi, getLisCodeRbcApi, getMinCountApi,
-  updateLisCodeApi, updateLisCodeRbcApi, updateMinCountApi
+  createLisCodeWbcApi, createLisCodeRbcApi, createMinCountApi,
+  getLisCodeWbcApi, getLisCodeRbcApi, getMinCountApi,
+  updateLisCodeWbcApi, updateLisCodeRbcApi, updateMinCountApi
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -79,13 +79,13 @@ const saveLisCode = async () => {
     let minCountResult: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createLisCodeApi({ lisCodeItems: lisCodeWbcArr.value, userId: Number(userId.value) });
-      rbcResult = await createLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) });
+      result = await createLisCodeWbcApi({ lisCodeItems: lisCodeWbcArr.value });
+      rbcResult = await createLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value });
       minCountResult = await createMinCountApi({ minCountItems: minCountArr.value });
 
     } else {
-      const updateResult = await updateLisCodeApi({ lisCodeItems: lisCodeWbcArr.value, userId: Number(userId.value) }, userId.value);
-      const updateRbcResult = await updateLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateLisCodeWbcApi({ lisCodeItems: lisCodeWbcArr.value });
+      const updateRbcResult = await updateLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value });
       const updateMinCountResult = await updateMinCountApi({ minCountItems: minCountArr.value });
 
       if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
@@ -110,8 +110,8 @@ const saveLisCode = async () => {
 
 const getImagePrintData = async () => {
   try {
-    const wbcResult = await getLisCodeApi(String(userId.value));
-    const rbcResult = await getLisCodeRbcApi(String(userId.value));
+    const wbcResult = await getLisCodeWbcApi();
+    const rbcResult = await getLisCodeRbcApi();
     const minCountResult = await getMinCountApi();
 
     if (wbcResult && wbcResult.data && rbcResult && rbcResult.data && minCountResult && minCountResult.data) {

@@ -1,7 +1,6 @@
 // wbc
 export interface CreateLisCodeDto {
     lisCodeItems: LisCodeWbcItem[];
-    userId: number;
 }
 
 export interface LisCodeWbcItem {
@@ -12,13 +11,11 @@ export interface LisCodeWbcItem {
 
 export interface UpdateLisCodeDto {
     lisCodeItems: LisCodeWbcItem[];
-    userId: number;
 }
 
 // rbc
 export interface CreateLisCodeRbcDto {
     lisCodeItems: LisCodeRbcItem[];
-    userId: number;
 }
 
 
@@ -32,7 +29,6 @@ export interface LisCodeRbcItem {
 
 export interface UpdateLisCodeRbcDto {
     lisCodeItems: LisCodeRbcItem[];
-    userId: number;
 }
 
 //cbc

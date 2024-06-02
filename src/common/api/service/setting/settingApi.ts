@@ -113,16 +113,17 @@ export const getImagePrintApi = async (): Promise<ApiResponse<ImagePrintItem[] |
     return httpClient.httpGet(apiConstants.settings.imagePrint.get);
 };
 
-export const createLisCodeApi = async (request: CreateLisCodeDto): Promise<ApiResponse<void>> => {
+// lis code wbc
+export const createLisCodeWbcApi = async (request: CreateLisCodeDto): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.lisCode.create, request);
 };
 
-export const updateLisCodeApi = async (request: UpdateLisCodeDto, userId: string): Promise<ApiResponse<UpdateLisCodeDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.lisCode.update, request, userId);
+export const updateLisCodeWbcApi = async (request: UpdateLisCodeDto): Promise<ApiResponse<UpdateLisCodeDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.lisCode.update, request);
 };
 
-export const getLisCodeApi = async (userId: string): Promise<ApiResponse<LisCodeWbcItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.lisCode.get, userId);
+export const getLisCodeWbcApi = async (): Promise<ApiResponse<LisCodeWbcItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.lisCode.get);
 };
 
 //lise code rbc
@@ -130,12 +131,12 @@ export const createLisCodeRbcApi = async (request: CreateLisCodeRbcDto): Promise
     return httpClient.httpPost(apiConstants.settings.lisCodeRbc.create, request);
 };
 
-export const updateLisCodeRbcApi = async (request: UpdateLisCodeRbcDto, userId: string): Promise<ApiResponse<UpdateLisCodeRbcDto | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.lisCodeRbc.update, request, userId);
+export const updateLisCodeRbcApi = async (request: UpdateLisCodeRbcDto): Promise<ApiResponse<UpdateLisCodeRbcDto | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.lisCodeRbc.update, request);
 };
 
-export const getLisCodeRbcApi = async (userId: string): Promise<ApiResponse<LisCodeRbcItem[] | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.lisCodeRbc.get, userId);
+export const getLisCodeRbcApi = async (): Promise<ApiResponse<LisCodeRbcItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.lisCodeRbc.get);
 };
 
 // cbc code
