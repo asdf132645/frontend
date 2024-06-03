@@ -148,6 +148,9 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
+import {CbcWbcTestCdList_0002, spcParams} from "@/common/defines/constFile/lis";
+import axios from "axios";
+import {xml2json} from "xml-js";
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
@@ -176,6 +179,7 @@ const orderClass = ref<any>([]);
 const projectBm = ref(false);
 const isBefore = ref(false);
 const totalCount = ref(0);
+const okMessageType = ref('');
 
 onMounted(async () => {
   await getOrderClass();
@@ -199,9 +203,7 @@ onMounted(async () => {
         });
     await resRunningItem(updatedRuningInfo, true);
   }
-
 })
-// basicWbcArr
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
@@ -210,8 +212,6 @@ watch(userModuleDataGet.value, (newUserId) => {
 watch(() => props.wbcInfo, (newItem) => {
   wbcMemo.value = props.selectItems.wbcMemo;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  // console.log('classinfo_props.selectItems' , props.selectItems);
-
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
@@ -219,7 +219,9 @@ watch(() => clonedWbcInfoStore.value, (newItem) => {
 }, {deep: true});
 
 const lisModalOpen = () => {
-  //
+  showConfirm.value = true;
+  confirmMessage.value = messages.IDS_MSG_UPLOAD_LIS;
+  okMessageType.value = 'lis';
 }
 
 const goClass = (id: any) => {
@@ -261,11 +263,43 @@ const toggleLockEvent = () => {
 const commitConfirmed = () => {
   showConfirm.value = true;
   confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
+  okMessageType.value = 'commit';
 }
 
 const handleOkConfirm = () => {
-  onCommit();
+  if (okMessageType.value === 'commit') {
+    onCommit();
+  } else {
+
+  }
   showConfirm.value = false;
+}
+
+const uploadLis = () => {
+  if (props.selectItems.siteCd === '0002') {
+   const codeList = CbcWbcTestCdList_0002;
+    axios.get('http://emr012.cmcnu.or.kr/cmcnu/.live', {
+      params: spcParams
+    }).then(function (result) {
+      // 결과 처리 코드
+      const xml = result.data;
+      const json = JSON.parse(xml2json(xml, {compact: true}));
+      const cbcWorkList = json.root.spcworklist.worklist;
+      const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
+
+      const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
+        return item.testcd._cdata === 'LHR100'
+      })
+
+
+    }).catch(function (error) {
+      // 에러 처리 코드
+      console.error(error);
+    });
+
+  } else {
+
+  }
 }
 
 const hideConfirm = () => {
