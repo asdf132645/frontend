@@ -329,6 +329,17 @@ export const apiConstants = {
             endpoint: 'hl7/parse',
             requiresToken: false,
         }
+    },
+    device: {
+        getDeviceInfo: {
+            create: {
+                endpoint: 'device/create',
+                requiresToken: false,
+            },
+            get: {
+                endpoint: 'device/get',
+                requiresToken: false,
+            }
+        }
     }
-
 };

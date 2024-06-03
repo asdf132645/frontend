@@ -42,8 +42,9 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
-import EventBus from "@/eventBus/eventBus";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import {createDeviceInfoApi, getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
+import EventBus from "@/eventBus/eventBus";
 import * as process from "process";
 import lodash from 'lodash';
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
@@ -208,6 +209,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
+        await saveDeviceInfo();
         break;
       case 'INIT':
         // sendSettingInfo();
@@ -457,13 +459,39 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           isNsNbIntegration: isNsNbIntegration,
           wbcMemo: '',
           rbcMemo: '',
+        }
+
+        const deviceObj = {
           siteCd: embeddedStatus.value.sysInfo.siteCd,
           deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
         }
+
+
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
-
-
       }
+    }
+
+    async function saveDeviceInfo() {
+      const sendingDeviceItem = {
+        siteCd: embeddedStatus.value.sysInfo.siteCd,
+        deviceBarCode: embeddedStatus.value.sysInfo.deviceBarcode,
+      }
+
+      try {
+        const deviceData = await getDeviceInfoApi();
+        if (deviceData.data.length === 0) {
+          console.log('No Device Information');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      try {
+        await createDeviceInfoApi({ deviceItem: sendingDeviceItem});
+      } catch (err) {
+        console.error(err);
+      }
+      console.log("Device Information", store.state.commonModule.deviceBarcode, store.state.commonModule.siteCd);
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
@@ -530,7 +558,6 @@ const emitSocketData = async (payload: object) => {
   // console.log('sss')
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
-
 
 const sendSettingInfo = () => {
   const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
