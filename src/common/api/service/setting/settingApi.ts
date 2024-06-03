@@ -42,12 +42,12 @@ export const createRbcDegreeApi = async (request: RbcDegreeDto): Promise<ApiResp
     return httpClient.httpPost(apiConstants.settings.rbcDegree.rbcDegreeAdd, request);
 };
 
-export const putRbcDegreeApi = async (request: CellImgAnalyzedRequest, id: string): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
-    return httpClient.httpPut(apiConstants.settings.rbcDegree.rbcDegree, request, id);
+export const putRbcDegreeApi = async (request: CellImgAnalyzedRequest): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
+    return httpClient.httpPut(apiConstants.settings.rbcDegree.rbcDegree, request);
 };
 
-export const getRbcDegreeApi = async (userId: string): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.rbcDegree.rbcDegree, userId);
+export const getRbcDegreeApi = async (): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.rbcDegree.rbcDegree);
 };
 
 

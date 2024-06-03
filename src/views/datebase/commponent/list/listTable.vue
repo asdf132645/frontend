@@ -416,7 +416,7 @@ const filterWbcInfoBySiteAndTestType = (wbcInfo, siteCd, testType) => {
 
 const getRbcDegreeData = async () => {
   try {
-    const result = await getRbcDegreeApi(String(userId.value));
+    const result = await getRbcDegreeApi();
     const data = result.data;
     rbcDegreeStandard.value = data?.categories
   } catch (e) {
