@@ -960,7 +960,7 @@ const afterChang = async (newItem: any) => {
 }
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value.siteCd?.testType);
+  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
   return !targetArray.includes(title);
 };
 
@@ -994,7 +994,7 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
         totalCount.value += Number(item.count);
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
 
 
       const titleInArray = targetArray.includes(item.title);
@@ -1016,7 +1016,7 @@ async function updateOriginalDb() {
           totalCount += 1
         }
       } else {
-        const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
+        const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
         }
@@ -1036,7 +1036,7 @@ async function updateOriginalDb() {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
       if (!targetArray.includes(item.title)) {
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
