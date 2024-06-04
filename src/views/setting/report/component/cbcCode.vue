@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue';
+import { ref, onMounted } from 'vue';
 import { cbcList } from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
@@ -28,16 +28,12 @@ import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const cbcCodeArr = ref<cbcCodeItem[]>([]);
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getImagePrintData();
 });
 

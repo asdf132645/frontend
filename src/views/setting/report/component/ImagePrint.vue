@@ -27,9 +27,7 @@ import {
   getImagePrintApi,
   updateImagePrintApi
 } from "@/common/api/service/setting/settingApi";
-import { ImagePrintItem } from "@/common/api/service/setting/dto/imagePrintDto";
 import Alert from "@/components/commonUi/Alert.vue";
-import {useStore} from "vuex";
 import process from "process";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
@@ -37,19 +35,12 @@ import {messages} from '@/common/defines/constFile/constantMessageText';
 const imagePrintAndWbcArr = ref<any[]>([]);
 const selectedItems = ref<string[]>([]);
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
-const store = useStore();
-
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const userModuleDataGet = computed(() => store.state.userModule);
 
 onMounted(async () => {
-  userId.value = getStoredUser.id || userModuleDataGet.value.userId;
   await getImagePrintData();
 });
 

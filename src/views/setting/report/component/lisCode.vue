@@ -59,16 +59,12 @@ const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
 const minCountArr = ref<minCountItem[]>([]);
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getImagePrintData();
 });
 

@@ -30,11 +30,7 @@ import {bmHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
 import process from "process";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
-
 const wbcHotKeysItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
@@ -42,7 +38,6 @@ const alertMessage = ref('');
 const projectType = ref('pb');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   await getWbcHotKeyClasses();
 });

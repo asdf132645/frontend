@@ -95,30 +95,23 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, computed, defineProps, watch, defineEmits} from "vue";
-import {useStore} from "vuex";
+import {ref, onMounted, defineProps, watch, defineEmits} from "vue";
 import {RbcInfo, basicRbcArr} from "@/store/modules/analysis/rbcClassification";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 const props = defineProps(['bmIsBoolen','parsedData']);
 
-const store = useStore();
 const dspRbcClassList = ref<RbcInfo[][]>([]);
 const malariaCount = ref('');
 const maxRbcCount = ref('');
 const pltCount = ref('');
 const testType = ref<string>("01");
 const bfSelectModeList = ref<any>([]);
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const rbcDegreeStandard = ref<any>([]);
 const emits = defineEmits();
 
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
-
   await getRbcDegreeData();
   await updateDataArray({rbcInfo: props.parsedData.slotInfo},'');
 });

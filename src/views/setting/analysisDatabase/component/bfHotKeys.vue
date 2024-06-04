@@ -30,18 +30,13 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {bfHotKeys} from "@/common/defines/constFile/settings";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
-
 const bfHotKeysItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getBfHotKeyClasses();
 });
 
