@@ -210,6 +210,7 @@ const printContent = ref(null);
 const selectItemWbc = ref([]);
 const selectAllCheckbox = ref(false);
 const instance = getCurrentInstance();
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 
 onMounted(async () => {
@@ -404,9 +405,10 @@ const getStringArrayBySiteCd = (siteCd, testType) => {
   // testType에 따라 제외할 부분 정의
   return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
 };
-const filterWbcInfoBySiteAndTestType = (wbcInfo, siteCd, testType) => {
-  // getStringArrayBySiteCd 함수로부터 해당 siteCd 및 testType에 따른 필터링에 사용될 배열을 가져옴
-  const filterArray = getStringArrayBySiteCd(siteCd, testType);
+const filterWbcInfoBySiteAndTestType = (wbcInfo, testType) => {
+  // getStringArrayBySiteCd 함수로부터 해당 testType에 따른 필터링에 사용될 배열을 가져옴
+
+  const filterArray = getStringArrayBySiteCd(siteCd.value, testType);
 
   // wbcInfo 배열에서 filterArray에 있는 title을 가진 항목들을 필터링하여 반환
   return wbcInfo.filter(item => !filterArray.includes(item.title));
@@ -504,8 +506,6 @@ const editData = async (item) => {
   openLayer();
   itemObj.value = JSON.parse(JSON.stringify(item));
   itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType)
-
-
 }
 
 const openLayer = () => {

@@ -36,8 +36,8 @@ const props = defineProps([ 'parsedData']);
 
 // 스토어
 const store = useStore();
-const siteCd = ref('');
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 // processInfoItem 초기화
 const processInfoItem = ref<any>({});
@@ -52,7 +52,6 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
       processInfoItem.value.oilCount = sysInfo.oilCount;
       prevOilCount.value = sysInfo.oilCount
     }
-    siteCd.value = sysInfo.siteCd;
   }
 })
 

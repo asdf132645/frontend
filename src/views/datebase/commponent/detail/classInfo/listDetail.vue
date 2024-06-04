@@ -116,7 +116,7 @@
       <div>
         <ul class="wbcInfoDbUl">
           <template v-for="(item) in wbcInfo" :key="item.id" >
-            <li @click="scrollToElement(item.id)" v-show="selectItems.siteCd !== '0006' && item?.title !== 'SM'">
+            <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'">
               <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
                 <p>{{ item?.title }}</p>
                 <p>{{ item?.count }}</p>
@@ -245,6 +245,7 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
@@ -1344,7 +1345,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
         totalCount += Number(item.count);
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
       if (!targetArray.includes(item.title)) {
         totalCount += Number(item.count);
       }
@@ -1365,7 +1366,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
             : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItems.value?.siteCd, selectItems.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
       if (!targetArray.includes(item.title)) { // 퍼센트를 소수점 한 자리까지 계산
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 부분이 0이면 정수만, 아니면 소수점 한 자리까지 표시
         item.percent = (Number(percentage) === Math.floor(Number(percentage)))

@@ -39,12 +39,12 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 // 스토어
 const store = useStore();
-const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const props = defineProps(['parsedData', 'startStatus','pb100aCassette']);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 // end 스토어
 const dspOrderList = ref<any>([]);
-const siteCd = ref('');
+
 watch(
     () => props.parsedData,
     (newVal) => {
@@ -98,16 +98,5 @@ const runningInfoGet = async (data: any) => {
   }
 }
 
-watch([embeddedStatusJobCmd.value], async (newVals) => {
-  // console.log('감시시작')
-  const [newEmbeddedStatusJobCmd] = newVals;
-
-  await nextTick();
-  const {
-    siteCd: siteCdCode,
-  } = newEmbeddedStatusJobCmd || {};
-  siteCd.value = siteCdCode;
-
-});
 
 </script>
