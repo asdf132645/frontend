@@ -133,14 +133,20 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {barcodeImgDir, lisCodeRbcOption, lisCodeWbcOption} from "@/common/defines/constFile/settings";
 import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {getOrderClassApi, putOrderClassApi} from "@/common/api/service/setting/settingApi";
+import {
+  getFilePathSetApi,
+  getLisCodeApi,
+  getLisCodeRbcApi,
+  getOrderClassApi,
+  putOrderClassApi
+} from "@/common/api/service/setting/settingApi";
 import process from "process";
 
 const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
@@ -148,14 +154,18 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
-import {CbcWbcTestCdList_0002, spcParams} from "@/common/defines/constFile/lis";
+import {business_id, CbcWbcTestCdList_0002, eqmtcd, instcd, realUrl, spcParams} from "@/common/defines/constFile/lis";
 import axios from "axios";
 import {xml2json} from "xml-js";
+import {createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
+import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
+const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const barcodeImg = ref('');
 const userId = ref('');
 const wbcMemo = ref('');
@@ -180,7 +190,9 @@ const projectBm = ref(false);
 const isBefore = ref(false);
 const totalCount = ref(0);
 const okMessageType = ref('');
-
+const lisCodeWbcArr = ref<any>([]);
+const lisCodeRbcArr = ref<any>([]);
+const lisFilePathSetArr = ref<any>([]);
 onMounted(async () => {
   await getOrderClass();
   wbcMemo.value = props.selectItems.wbcMemo;
@@ -203,6 +215,8 @@ onMounted(async () => {
         });
     await resRunningItem(updatedRuningInfo, true);
   }
+  await getLisWbcRbcData();
+  await getLisPathData();
 })
 
 watch(userModuleDataGet.value, (newUserId) => {
@@ -217,6 +231,7 @@ watch(() => props.wbcInfo, (newItem) => {
 watch(() => clonedWbcInfoStore.value, (newItem) => {
   afterChang(newItem);
 }, {deep: true});
+
 
 const lisModalOpen = () => {
   showConfirm.value = true;
@@ -270,14 +285,14 @@ const handleOkConfirm = () => {
   if (okMessageType.value === 'commit') {
     onCommit();
   } else {
-
+    uploadLis();
   }
   showConfirm.value = false;
 }
 
 const uploadLis = () => {
   if (props.selectItems.siteCd === '0002') {
-   const codeList = CbcWbcTestCdList_0002;
+    const codeList = CbcWbcTestCdList_0002;
     axios.get('http://emr012.cmcnu.or.kr/cmcnu/.live', {
       params: spcParams
     }).then(function (result) {
@@ -291,15 +306,516 @@ const uploadLis = () => {
         return item.testcd._cdata === 'LHR100'
       })
 
+      props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+        wbcItem.testCd = ''
 
-    }).catch(function (error) {
-      // 에러 처리 코드
-      console.error(error);
+        codeList.forEach(function (code) {
+          if (wbcItem.id === code.id) {
+            wbcItem.testCd = code.cd
+          }
+        })
+      })
+
+      let wbcTemp: any = [];
+
+      // five diff push
+      props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+        fiveDiffWorkList.forEach(function (fiveDiffItem) {
+          if (wbcItem.testCd === fiveDiffItem) {
+            wbcTemp.push(wbcItem)
+
+          } else {
+            if ((wbcItem.count > 0) && wbcItem.testCd !== '') {
+              wbcTemp.push(wbcItem)
+            }
+          }
+        })
+      })
+
+      // neutrophil-seg
+      const nsPercentItem = wbcTemp.filter(function (item: any) {
+        return item.testCd === 'LHR10501'
+      })
+
+      // ANC insert
+      if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
+        const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2)
+
+        wbcTemp.push({
+          testCd: 'LHR10599',
+          percent: ancResult
+        })
+      }
+      // 유저 체크
+      checkUserAuth(userModuleDataGet.value.userId).then(function (isUserAuth) {
+        if (isUserAuth === 'succ') {
+          const params = {
+            empNo: userModuleDataGet.value.userId,
+            barcodeNo: props.selectItems.barcodeNo,
+            wbcInfo: wbcTemp
+          }
+
+          const now = new Date();
+          const year = `${now.getFullYear()}`;
+          let month = `${now.getMonth() + 1}`;
+          if (month.length === 1) {
+            month = `0${month}`;
+          }
+          let day = `${now.getDate()}`;
+          if (day.length === 1) {
+            day = `0${day}`;
+          }
+
+          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
+          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
+          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+
+          const result = params.wbcInfo
+              .filter((wbcItem: any) => wbcItem.testCd !== null && wbcItem.testCd !== '')
+              .map((wbcItem: any) => `${wbcItem.testCd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
+              .join('');
+
+          const url = `${realUrl}?submit_id=TXLII00101&business_id=${business_id}&ex_interface=${params.empNo}|${instcd}&instcd=${instcd}&userid=${params.empNo}&eqmtcd=${eqmtcd}&bcno=${params.barcodeNo}&result=${result}&testcont=MANUAL DIFFERENTIAL COUNT RESULT&testcontcd=01&execdeptcd=H1`;
+
+          axios.get(url).then(function (result) {
+            const xml = result.data;
+            const json = JSON.parse(xml2json(xml, {compact: true}));
+            const resultFlag = json.root.ResultFlag.resultflag._text;
+            if (resultFlag === 'Y') {
+              showSuccessAlert(messages.IDS_MSG_SUCCESS);
+            } else {
+              showErrorAlert(json.root.ResultFlag.error2._text);
+            }
+          }).catch(function (err) {
+            showErrorAlert(err.message);
+          })
+        } else {
+          showErrorAlert(messages.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
+        }
+      })
+
+    }).catch(function (err) {
+      showErrorAlert(err.message);
     });
-
   } else {
-
+    // lis 최종호출
+    lisLastStep();
   }
+}
+
+const lisLastStep = () => {
+  if (props.selectItems.siteCd === '0019') {
+    let data = 'H|\^&||||||||||P||' + props.selectItems.barcodeNo + '\n';
+    let seq = 0;
+
+    lisCodeWbcArr.value.forEach(function (lisCode: any) {
+      if (lisCode.code !== '') {
+        props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+          if (lisCode.IA_CD === wbcItem.id) {
+            if (Number(wbcItem.percent) > 0 || Number(wbcItem.count)) {
+              // count
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+              // percent
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+            }
+
+          }
+
+        })
+      }
+    })
+    data += 'L|1|N'
+    lisFileUrlCreate(data);
+  } else if (props.selectItems.siteCd === '0006') { // 고대 안암
+    const data = godae();
+    lisFileUrlCreate(data);
+
+  } else if (props.selectItems.siteCd === '0011') {
+    inhaDataSend();
+  } else {
+    otherDataSend();
+  }
+}
+
+const otherDataSend = async () => {
+  const url = lisFilePathSetArr.value;
+  const fileCreateRes = await createDirectory(url);
+  let msg: any;
+
+  if (fileCreateRes) {
+    const data = {
+      sendingApp: 'PBIA',
+      sendingFacility: 'PBIA',
+      receivingApp: 'LIS',
+      receivingFacility: 'LIS',
+      dateTime: getDateTimeStr(),
+      security: '',
+      messageType: ['ADT', 'R02'],
+      messageControlId: props.selectItems.barcodeNo,
+      processingId: 'P',
+      hl7VersionId: '2.5',
+      selectedItem: { /* selectedItem 데이터 */},
+      wbcInfo: props.selectItems.wbcInfoAfter,
+      result: lisCodeWbcArr.value,
+    };
+
+    const res = await readH7Message(data);
+    if (res) {
+      if (!lisFilePathSetArr.value.includes("http")) { // file
+        const data = {
+          filepath: lisFilePathSetArr.value,
+          msg: res,
+        }
+        try {
+          const createH17Res: any = await createH17(data);
+          showSuccessAlert(messages.IDS_MSG_SUCCESS);
+        } catch (error: any) {
+          showErrorAlert(error.response.data);
+        }
+      } else { // url
+        sendLisMessage(res);
+      }
+    }
+  }
+}
+
+const inhaDataSend = () => {
+  let resultStr = '';
+  const testCodeList = inhaTestCode.value.split(',');
+  let tmpList: any = [];
+  testCodeList.forEach(function (codes: any) {
+    if (codes.length > 0) {
+      var codeArray = codes.split('|')
+      var code = codeArray[0]
+      var value = codeArray[1]
+      var unit = codeArray[2]
+      var type = codeArray[3]
+      var tmpStr = ''
+
+      if (code === 'L0210') {
+        value = value + '5'
+      }
+
+      if (code === 'H1151') {
+        tmpStr += 'H9511' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1152') {
+        tmpStr += 'H9512' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1153') {
+        tmpStr += 'H9513' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1154') {
+        tmpStr += 'H9514' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1155') {
+        tmpStr += 'H9515' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1165') {
+        tmpStr += 'H9510' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1162') {
+        tmpStr += 'H9570' + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      } else if (code === 'H1101' || code === 'H1102' || code === 'H1103' ||
+          code === 'H1104' || code === 'H1105' || code === 'H1106' ||
+          code === 'H1121' || code === 'H1122' || code === 'H1123') {
+        tmpStr += code + '|' + value + '|' //+ unit // + '\\' + type
+        tmpList.push(tmpStr)
+      }
+
+    }
+  })
+
+  inhaTestCode.value = '';
+  tmpList.forEach(function (item: any) {
+    inhaTestCode.value += item + ','
+  })
+  resultStr += inhaTestCode.value;
+  let rbcTmp = '';
+  //wbc
+  lisCodeWbcArr.value.forEach(function (lisCode: any, index: any) {
+    props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+      if (lisCode.IA_CD === wbcItem.id) {
+        if (lisCode.code === 'H9600' || lisCode.code === 'H9365' ||
+            lisCode.code === 'H9366') {
+          if (Number(wbcItem.count) > 0) {
+            resultStr += lisCode.code + '|' + '1' + '|' + ','
+          } else {
+            resultStr += lisCode.code + '|' + ' ' + '|' + ','
+          }
+        } else {
+          // GP, PA
+          if (lisCode.IA_CD === '13' || lisCode.IA_CD === '14') {
+            if (Number(wbcItem.count) > Number(lisCode.MIN_COUNT)) {
+              resultStr += lisCode.code + '|' + wbcItem.percent + '|' + ','
+            } else {
+              resultStr += lisCode.code + '|' + ' ' + '|' + ','
+            }
+          } else {
+            if (Number(wbcItem.percent) > 0) {
+              resultStr += lisCode.code + '|' + wbcItem.percent + '|' + ','
+            } else {
+              resultStr += lisCode.code + '|' + ' ' + '|' + ','
+            }
+          }
+
+        }
+      }
+    })
+  })
+  // RBC
+  const specialCodes = ['H9531', 'H9535', 'H9594', 'H9571', 'H9574', 'H9595'];
+
+  lisCodeRbcArr.value.forEach(function (lisCode: any) {
+    if (lisCode.code !== '') {
+      props.selectItems.rbcInfoAfter.forEach(function (rbcItem: any) {
+        if (lisCode.categoryId === rbcItem.categoryId) {
+          for (const rbcItemElement of rbcItem.classInfo) {
+            if (lisCode.classId === rbcItemElement.classId) {
+              const degree = Number(rbcItemElement.degree) === 0 ? ' ' : specialCodes.includes(lisCode.code) ? '0' : rbcItemElement.degree;
+              rbcTmp += `${lisCode.code}|${degree}|,`;
+              resultStr += `${lisCode.code}|${degree}|,`;
+            }
+          }
+
+        }
+      })
+
+    }
+  })
+
+  const replacements = {
+    'H9531': 'H9571',
+    'H9532': 'H9572',
+    'H9533': 'H9573',
+    'H9535': 'H9574',
+    'H9536': 'H9575',
+    'H9537': 'H9576',
+    'H9534': 'H9577',
+    'H9538': 'H9578',
+    'H9542': 'H9518',
+    'H9544': 'H9520',
+    'H9546': 'H9517',
+    'H9548': 'H9519',
+    'H9550': 'H9522',
+    'H9552': 'H9521',
+    'H9554': 'H9525',
+    'H9556': 'H9524',
+    'H9558': 'H9526',
+    'H9560': 'H9523',
+    'H9562': 'H9528',
+    'H9564': 'H9530',
+    'H9594': 'H9595'
+  };
+
+  let rbcTmp2 = rbcTmp.replace(/H9531|H9532|H9533|H9535|H9536|H9537|H9534|H9538|H9542|H9544|H9546|H9548|H9550|H9552|H9554|H9556|H9558|H9560|H9562|H9564|H9594/g, match => replacements[match]);
+
+  resultStr += rbcTmp;
+  resultStr += rbcTmp2;
+
+
+  var params = {
+    url: lisFilePathSetArr.value,
+    machine: 'ADUIMD',
+    episode: props.selectItems.barcodeNo,
+    result: resultStr
+  }
+
+  axios.post(params.url + '/api/MifMain/File', {
+    machine: params.machine,
+    episode: params.episode,
+    result: params.result
+  }).then(function (result) {
+    const res = result.data[0];
+    if (res.returnCode === '0') {
+      showSuccessAlert(messages.IDS_MSG_SUCCESS);
+    } else {
+      showSuccessAlert('return code : ' + res.returnCode);
+    }
+
+  }).catch(function (err) {
+    showSuccessAlert(err.message);
+  })
+}
+
+const godae = (): string => {
+  let data = 'H|\^&||||||||||P||' + props.selectItems.barcodeNo + '\n';
+  let seq = 0;
+  let kumcMergePercent = 0;
+  let kumcBandPercent = 0;
+
+  props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+    if (wbcItem.id === '02' || wbcItem.id === '03' ||
+        wbcItem.id === '04' || wbcItem.id === '10') {
+      kumcMergePercent += Number(wbcItem.percent)
+    }
+
+    if (wbcItem.id === '72') {
+      kumcBandPercent = Number(wbcItem.percent)
+    }
+  })
+
+  if (kumcMergePercent > 0 && kumcBandPercent < 6) {
+    // seg
+    const segItem = props.selectItems.wbcInfoAfter.filter(function (item: any) {
+      return item.id === '71'
+    })
+
+    // band
+    const bandItem = props.selectItems.wbcInfoAfter.filter(function (item: any) {
+      return item.id === '72'
+    })
+
+    segItem[0].percent = (Number(segItem[0].percent) + Number(kumcBandPercent)) + ''
+    bandItem[0].percent = '0'
+  }
+  lisCodeWbcArr.value.forEach(function (lisCode: any) {
+    if (lisCode.code !== '') {
+      props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+        if (lisCode.IA_CD === wbcItem.id) {
+          // 5diff는 0이어도 데이터 올림
+          if (wbcItem.id === '01' || wbcItem.id === '71' || wbcItem.id === '05' ||
+              wbcItem.id === '07' || wbcItem.id === '08' || wbcItem.id === '09') {
+            // count
+            data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+
+            // percent
+            data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+
+          } else {
+            if (Number(wbcItem.percent) > 0) {
+              // count
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+
+              // percent
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+            }
+          }
+        }
+      })
+    }
+  })
+
+  return data += 'L|1|N'
+}
+
+const lisFileUrlCreate = async (data: any) => {
+  if (!lisFilePathSetArr.value.includes("http")) {
+    const url = lisFilePathSetArr.value;
+    const fileCreateRes = await createDirectory(url);
+    if (fileCreateRes) {
+      const parms = {
+        path: lisFilePathSetArr.value,
+        filename: `${lisFilePathSetArr.value}/${props.selectItems.barcodeNo}.lst2msg`,
+        content: data,
+      };
+      const res = await createFile(parms);
+      if (res) {
+        const updatedRuningInfo = props.originalDb
+            .filter((item: any) => item.id === props.selectItems.id)
+            .map((item: any) => {
+              // id가 일치하는 경우 해당 항목의 submit 값을 변경
+              const updatedItem = {
+                ...item,
+                signedState: 'lis',
+              };
+              // updatedItem의 내용을 변경
+              return updatedItem;
+            });
+        await resRunningItem(updatedRuningInfo, true);
+        showSuccessAlert(messages.IDS_MSG_SUCCESS);
+        if (!showAlert.value) {
+          emits('nextPage')
+        }
+      } else {
+        showErrorAlert('lis file err');
+      }
+    }
+  } else {// url 로 셋팅한 경우
+    sendLisMessage(data);
+  }
+}
+
+const sendLisMessage = (data: any) => {
+  const params = {
+    url: lisFilePathSetArr.value,
+    barcodeNo: props.selectItems.barcodeNo,
+    userId: userModuleDataGet.value.userId,
+    deviceBarcode: props.selectItems.deviceBarcode,
+    resultMsg: data
+  }
+  axios.post(params.url, {
+    barcodeNo: params.barcodeNo,
+    userid: params.userId,
+    deviceBarcode: params.deviceBarcode,
+    resultMsg: params.resultMsg
+  }).then(function (result) {
+    if (result.data.errorCode === 'E000') {
+      showSuccessAlert(messages.IDS_MSG_SUCCESS);
+    } else {
+      showErrorAlert(result.data.errorMessage);
+    }
+  }).catch(function (err) {
+    showErrorAlert(err.message);
+  })
+}
+
+const getLisWbcRbcData = async () => {
+  try {
+    const wbcResult = await getLisCodeApi(String(userModuleDataGet.value.userId));
+    const rbcResult = await getLisCodeRbcApi(String(userModuleDataGet.value.userId));
+    // console.log(wbcResult);
+    // console.log(rbcResult)
+    if (wbcResult && wbcResult.data && rbcResult && rbcResult.data) {
+      const wbcData = wbcResult.data;
+      const rbcData = rbcResult.data;
+
+      if (wbcData) {
+        lisCodeWbcArr.value = wbcData;
+      }
+      if (rbcData) {
+        lisCodeRbcArr.value = rbcData;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+const getLisPathData = async () => {
+  try {
+    const result = await getFilePathSetApi(String(userModuleDataGet.value.id));
+
+    if (result && result.data) {
+      const data = result.data;
+      lisFilePathSetArr.value = data[0].lisFilePath;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const checkUserAuth = async (empNo: any) => {
+  return new Promise((succ, fail) => {
+    if (props.selectItems.siteCd === '0002') {
+      const url = `http://emr012.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00104&business_id=li&instcd=012&userid=${empNo}`;
+      axios.get(url).then(function (result) {
+        const xml = result.data
+        const json = JSON.parse(xml2json(xml, {compact: true}));
+        const userNm = json.root.getUsernm.usernm._text;
+        if (userNm === null || userNm === '') {
+          succ('fail')
+        } else {
+          succ('succ')
+        }
+
+      }).catch(function (err) {
+        console.log('checkUserAuth :' + err.message)
+        fail(new Error(err.message))
+      })
+
+    }
+  })
 }
 
 const hideConfirm = () => {
@@ -549,7 +1065,7 @@ async function updateOriginalDb() {
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDb.value);
 
-  store.dispatch('commonModule/setCommonInfo', {classInfoSort: []});
+  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: []});
 }
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {

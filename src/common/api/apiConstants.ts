@@ -316,6 +316,14 @@ export const apiConstants = {
         readGet:{
             endpoint: 'file/read',
             requiresToken: false,
+        },
+        createDirectory: {
+            endpoint: 'file/create-directory',
+            requiresToken: false,
+        },
+        fileCreate:{
+            endpoint: 'file/createFile',
+            requiresToken: false,
         }
     },
     fileTxtRead: {
@@ -329,6 +337,17 @@ export const apiConstants = {
             endpoint: 'hl7/parse',
             requiresToken: false,
         }
+    },
+    H7Message:{
+        post: {
+            endpoint: 'hl7/message',
+            requiresToken: false,
+        }
+    },
+    Hl7Create:{
+        post: {
+            endpoint: 'hl7/hl7Create',
+            requiresToken: false,
+        }
     }
-
 };

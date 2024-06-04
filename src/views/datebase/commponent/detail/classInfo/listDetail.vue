@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <ClassInfoMenu @refreshClass="refreshClass"/>
+  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"/>
 
   <div class="wbcContent">
     <div class="topClintInfo">
@@ -19,7 +19,7 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'
+      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable' @nextPage="nextPage"
                  @scrollEvent="scrollToElement"/>
     </div>
 
@@ -287,6 +287,7 @@ const contextMenuVisible = ref(false);
 const contextMenuX = ref(0);
 const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
+const isNext = ref(false);
 
 onMounted(async () => {
   wbcInfo.value = [];
@@ -301,6 +302,15 @@ onMounted(async () => {
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
+
+const nextPage = () => {
+  isNext.value = true;
+}
+
+const isNextFalse= () => {
+  isNext.value = false;
+}
+
 const handleRightClick = (event: MouseEvent, image: any, item: any) => {
   event.preventDefault(); // 기본 컨텍스트 메뉴가 나타나는 것을 방지합니다
   console.log('우클릭한 항목:', selectItemIamgeArr.value);

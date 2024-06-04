@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
+import {computed, defineEmits, defineProps, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import router from "@/router";
 
 import {ApiResponse} from "@/common/api/httpClient";
@@ -73,6 +73,13 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const isButtonDisabled = ref(false);
 let timeoutId: number | undefined = undefined;
 const pageMoveDeleteStop = ref(false);
+const props = defineProps(['isNext']);
+
+watch(props.isNext, (newVal) => {
+  if(newVal){
+    moveWbc('down')
+  }
+});
 
 onMounted(async () => {
   projectType.value = process.env.PROJECT_TYPE;

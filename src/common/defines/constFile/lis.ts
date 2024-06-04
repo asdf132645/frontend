@@ -1,3 +1,10 @@
+export const realUrl = 'http://emr012.cmcnu.or.kr/cmcnu/.live'
+export const business_id = 'li'
+// 병원 코드
+export const instcd = '012'
+// 장비 코드 (LIS등록)
+export const eqmtcd = 'H59'
+
 export const CbcWbcTestCdList_0002 = [{
     id: '01', title: 'NS', name: 'Neutrophil-Segmented', cd: 'LHR10501'
 }, {
@@ -30,3 +37,4 @@ export const spcParams = {
     instcd: '012', // 병원 코드
     bcno: 'H59'
 }
+
