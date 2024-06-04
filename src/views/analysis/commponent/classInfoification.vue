@@ -100,8 +100,7 @@ import EventBus from "@/eventBus/eventBus";
 
 const props = defineProps(['bmIsBoolen','parsedData']);
 const storeEm = useStore();
-
-const siteCd = computed(() => storeEm.state.embeddedStatusModule.sysInfo.siteCd);
+const siteCd = computed(() => storeEm.state.commonModule.siteCd);
 
 interface SlotInfo {
   stateCd: string;
