@@ -17,3 +17,11 @@ export const readFileTxt = async (request: any): Promise<ApiResponse<void>> => {
 export const readH7File = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.H7Read.post, request, 'text/plain');
 };
+
+export const readH7Message = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.H7Message.post, request);
+};
+
+export const createH17 = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.H7Message.post, request);
+};

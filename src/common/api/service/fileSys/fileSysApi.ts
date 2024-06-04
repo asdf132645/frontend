@@ -10,3 +10,10 @@ export const deleteRunningApi = async (request: any): Promise<ApiResponse<void>>
     return httpClient.httpDelete(apiConstants.filesystem.delete, request, false);
 };
 
+export const  createDirectory = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.filesystem.createDirectory, `${request}`, true);
+};
+
+export const createFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.filesystem.fileCreate, request, '');
+};

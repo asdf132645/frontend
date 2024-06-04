@@ -149,6 +149,8 @@ const initCbcData = async (newVal: any) => {
           cbcSex.value = res.sex;
           cbcAge.value = res.age;
           inhaTestCode.value = res.testCode;
+          store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res.testCode}); // lis 에서 사용함
+
 
           const testCodeList = res.testCode.split(',');
           testCodeList.forEach(function (codes: any) {

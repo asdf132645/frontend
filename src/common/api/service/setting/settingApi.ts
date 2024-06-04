@@ -191,7 +191,7 @@ export const getMinCountApi = async (): Promise<ApiResponse<minCountItem[] | und
 
 // --- 드라이브
 export const getDrivesApi = async (): Promise<ApiResponse<any | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.folder.get, '');
+    return httpClient.httpGet(apiConstants.settings.folder.get);
 };
 
 //-- 클래스 정렬

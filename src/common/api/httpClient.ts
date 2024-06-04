@@ -15,7 +15,7 @@ interface HttpResponse<T> {
 
 export function useHttpClient() {
     const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
+    // type 용도 -> ? 쿼리 스트링으로 보낼지 여부
     const httpGet = async <T>(url: Endpoint, parameters?: string, type?: boolean): Promise<ApiResponse<T>> => {
         return httpGetAct(url.endpoint, parameters, type);
     };
@@ -61,7 +61,6 @@ export function useHttpClient() {
                 'Content-Type': 'text/plain',
             }
         }
-
         if(formData){
             options.headers =  {
                 'Content-Type': 'multipart/form-data',
@@ -79,7 +78,6 @@ export function useHttpClient() {
     };
 
     const httpPut = async <T>(url: Endpoint, payload: GenericObject, parameters?: string, type?: boolean): Promise<ApiResponse<T>> => {
-        console.log("PP", parameters)
         return httpPutAct(url.endpoint, payload, parameters, type);
     };
 

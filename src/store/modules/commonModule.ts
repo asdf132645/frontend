@@ -36,6 +36,7 @@ export interface CommonState {
     classInfoSort: any[];
     chatRunningData: any[];
     cbcLayer: boolean;
+    inhaTestCode: string;
 }
 
 interface CommonModule {
@@ -78,6 +79,7 @@ interface CommonModule {
         setClassInfoSort: (state: CommonState, value: any[]) => void;
         setChatRunningData: (state: CommonState, value: any[]) => void;
         setCbcLayer: (state: CommonState, value: boolean) => void;
+        setInhaTestCode: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -121,6 +123,7 @@ export const commonModule: CommonModule = {
         classInfoSort: [],
         chatRunningData: [],
         cbcLayer: false,
+        inhaTestCode: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -233,6 +236,9 @@ export const commonModule: CommonModule = {
         },
         setCbcLayer(state: CommonState, value: boolean): void {
             state.cbcLayer = value;
+        },
+        setInhaTestCode(state: CommonState, value: string): void {
+            state.inhaTestCode = value;
         },
     },
     actions: {
@@ -347,6 +353,10 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('cbcLayer')) {
                 commit('setCbcLayer', payload.cbcLayer)
+            }
+            // setInhaTestCode
+            if (payload.hasOwnProperty('inhaTestCode')) {
+                commit('setInhaTestCode', payload.inhaTestCode)
             }
         },
     },
