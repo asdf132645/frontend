@@ -84,6 +84,7 @@ const pb100aCassette = ref<any>('');
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
+const siteCdDvBarCode = ref(false);
 
 const getUserIp = async (ip: string) => {
   try {
@@ -142,6 +143,7 @@ const leave = (event: any) => {
 
 onMounted(async () => {
   await nextTick();
+  siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = process.env.PROJECT_TYPE === 'bm';
@@ -209,9 +211,16 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
+        const deviceInfoObj = {
+          siteCd: parseDataWarp.siteCd,
+          deviceBarCode: parseDataWarp.deviceBarcode
+        }
+        if(!siteCdDvBarCode.value){
+          await saveDeviceInfo(deviceInfoObj);
+        }
         break;
       case 'INIT':
-        // sendSettingInfo();
+        sendSettingInfo();
         break;
       case 'START':
         await runnStart();
@@ -304,7 +313,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     }
 
     async function runningInfoCheckStore(data: any | undefined) {
-      // console.log(data)
       const regex = /[1,2,9]/g;
       if (String(data?.iCasStat) !== '999999999999') { // 스캔중일때는 pass + 완료상태일때도
         const dataICasStat = String(data?.iCasStat);
@@ -317,7 +325,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         }
         if (data?.iCasStat.indexOf("2") !== -1) {
-          await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});// 실행중이라는 여부를 보낸다
+          await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});
         }
 
         if (pbVersion.value === '100a') {
@@ -460,32 +468,24 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           rbcMemo: '',
         }
 
-        const deviceInfoObj = {
-          siteCd: embeddedStatus.value.sysInfo.siteCd,
-          deviceBarCode: embeddedStatus.value.sysInfo.deviceBarcode
-        }
+
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
-        // siteCd, deviceBarCode DB 저장 logic
-        await saveDeviceInfo(deviceInfoObj);
       }
     }
 
     async function saveDeviceInfo(deviceInfo: any) {
-
       try {
         const deviceData = await getDeviceInfoApi();
         if (deviceData.data.length === 0 || !deviceData.data) {
-          console.log('No Device Information');
-          await createDeviceInfoApi({ deviceItem: deviceInfo});
-          console.log("Device Information created successfully");
-        } else {
-          console.log("Device Information found");
+          console.log('?D')
+          await createDeviceInfoApi({deviceItem: deviceInfo});
+          siteCdDvBarCode.value = true;
         }
       } catch (err) {
         console.error("Error handling device information", err);
+        siteCdDvBarCode.value = true;
       }
-      console.log("Device Information", store.state.commonModule.deviceBarcode, store.state.commonModule.siteCd);
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
