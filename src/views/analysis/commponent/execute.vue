@@ -306,7 +306,7 @@ const initData = () => {
 
 const cellImgGet = async () => {
   try {
-    const result = await getCellImgApi(String(userId.value));
+    const result = await getCellImgApi();
     if (result) {
       if (result?.data) {
         const data = result.data;

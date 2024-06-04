@@ -30,9 +30,6 @@ import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 const wbcCustomParm = [
   { customNum: 90, abbreviation: '', className: '' },
@@ -48,7 +45,6 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getWbcCustomClasses();
 });
 
@@ -56,9 +52,9 @@ const saveWbcCustomClass = async () => {
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
-      result = await createWbcCustomClassApi({ classArr: wbcCustomItems.value, userId: Number(userId.value) });
+      result = await createWbcCustomClassApi({ classArr: wbcCustomItems.value });
     } else {
-      const updateResult = await updateWbcCustomClassApi({ classArr: wbcCustomItems.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateWbcCustomClassApi({ classArr: wbcCustomItems.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -80,7 +76,7 @@ const saveWbcCustomClass = async () => {
 
 const getWbcCustomClasses = async () => {
   try {
-    const result = await getWbcCustomClassApi(String(userId.value));
+    const result = await getWbcCustomClassApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         console.log(null);

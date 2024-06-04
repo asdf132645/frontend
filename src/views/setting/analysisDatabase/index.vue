@@ -4,6 +4,7 @@
       <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
       <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
       <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
+      <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
       <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
         {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
       </button>
@@ -33,6 +34,7 @@ import WbcHotKey from "@/views/setting/analysisDatabase/component/wbcHotKeys.vue
 import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
 import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
 import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
+import WbcRunningCount from "@/views/setting/analysisDatabase/component/wbcRunningCount.vue";
 import process from "process";
 const activeTab = ref('cellImageAnalyzed');
 const projectType = ref('');
@@ -58,6 +60,8 @@ const activeTabComponent = computed(() => {
       return NormalRange;
     case 'wbcOrder':
       return WbcOrder;
+    case 'wbcRunningCount':
+      return WbcRunningCount;
     default:
       return null;
   }

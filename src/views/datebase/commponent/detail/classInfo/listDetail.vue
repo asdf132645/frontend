@@ -382,7 +382,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   wbcInfo.value = [];
   try {
-    const result = await getWbcCustomClassApi(String(userModuleDataGet.value.id));
+    const result = await getWbcCustomClassApi();
 
     const data: any = result.data;
     const newData = data.filter((item: any) => item.abbreviation);
@@ -436,7 +436,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
 
 const getBfHotKeyClasses = async () => {
   try {
-    const result = await getBfHotKeysApi(String(userModuleDataGet.value.id));
+    const result = await getBfHotKeysApi();
     if (result) {
       if (result?.data) {
         const data = result.data;
@@ -450,7 +450,7 @@ const getBfHotKeyClasses = async () => {
 
 const getWbcHotKeyClasses = async () => {
   try {
-    const result = await getWbcWbcHotKeysApi(String(userModuleDataGet.value.id));
+    const result = await getWbcWbcHotKeysApi();
     if (result) {
       if (result?.data) {
         const data = result.data;
@@ -1024,7 +1024,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
 
 const getOrderClass = async () => {
   try {
-    const result = await getOrderClassApi(String(userModuleDataGet.value.id));
+    const result = await getOrderClassApi();
     if (result) {
       if (result?.data.length === 0) {
         orderClass.value = [];

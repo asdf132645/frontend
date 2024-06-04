@@ -19,14 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import { cbcList } from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
-import {
-  createCbcCodeRbcApi,
-  getCbcCodeRbcApi,
-  updateCbcCodeRbcApi,
-} from "@/common/api/service/setting/settingApi";
+import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
@@ -49,10 +45,11 @@ const saveCbcCode = async () => {
   try {
     let result: ApiResponse<void>;
 
+    console.log(cbcCodeArr.value);
     if (saveHttpType.value === 'post') {
-      result = await createCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value, userId: Number(userId.value) });
+      result = await createCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
     } else {
-      const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -75,7 +72,7 @@ const saveCbcCode = async () => {
 
 const getImagePrintData = async () => {
   try {
-    const result = await getCbcCodeRbcApi(String(userId.value));
+    const result = await getCbcCodeRbcApi();
 
     if (result && result.data) {
       const data = result.data;
@@ -89,12 +86,11 @@ const getImagePrintData = async () => {
         cbcCodeArr.value = data;
       }
     }
-  } catch (e) {
+  }
+  catch (e) {
     console.error(e);
   }
 };
-
-
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;

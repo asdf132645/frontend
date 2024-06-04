@@ -1,6 +1,5 @@
 export interface CreateFilePathDto {
     filePathSetItems: FilePathItem[];
-    userId: number;
 }
 
 export interface FilePathItem {
@@ -11,5 +10,4 @@ export interface FilePathItem {
 
 export interface UpdateFilePathsDto {
     filePathSetItems: FilePathItem[];
-    userId: number;
 }

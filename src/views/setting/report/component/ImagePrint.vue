@@ -62,9 +62,9 @@ const saveImagePrint = async () => {
     });
 
     if (saveHttpType.value === 'post') {
-      result = await createImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value, userId: Number(userId.value) });
+      result = await createImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value });
     } else {
-      const updateResult = await updateImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value, userId: Number(userId.value) }, userId.value);
+      const updateResult = await updateImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -87,7 +87,7 @@ const saveImagePrint = async () => {
 
 const getImagePrintData = async () => {
   try {
-    const result = await getImagePrintApi(String(userId.value));
+    const result = await getImagePrintApi();
 
     if (result && result.data) {
       const data = result.data;

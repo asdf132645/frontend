@@ -320,7 +320,7 @@ const onClickBfImg = (event: any, lowPower: any) => {
 
 const getRbcDegreeData = async () => {
   try {
-    const result = await getRbcDegreeApi(String(userId.value));
+    const result = await getRbcDegreeApi();
     const data = result.data;
     rbcDegreeStandard.value = data?.categories
   } catch (e) {

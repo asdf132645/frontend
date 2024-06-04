@@ -109,9 +109,9 @@ const createRbcDegreeData = async () => {
   try {
     let result = {};
     if (saveHttpType.value === 'post') {
-      result = await createRbcDegreeApi({categories: rbcDegreeList, userId: Number(userId.value),});
+      result = await createRbcDegreeApi({categories: rbcDegreeList});
     } else {
-      result = await putRbcDegreeApi(rbcDegreeList, userId.value);
+      result = await putRbcDegreeApi(rbcDegreeList);
     }
 
     if (result) {
@@ -127,7 +127,7 @@ const createRbcDegreeData = async () => {
 
 const getRbcDegreeData = async () => {
   try {
-    const result = await getRbcDegreeApi(String(userId.value));
+    const result = await getRbcDegreeApi();
     console.log(!result.data)
     saveHttpType.value = 'put';
     const data = result.data;

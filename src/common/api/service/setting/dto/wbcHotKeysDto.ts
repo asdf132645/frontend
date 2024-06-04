@@ -10,7 +10,6 @@ export interface WbcHotKey {
 
 export interface CreateWbcHotKeysDto {
     wbcHotKeysItems:wbcHotKeysItems[];
-    userId: number;
 }
 
 export interface wbcHotKeysItems {
@@ -24,5 +23,4 @@ export interface wbcHotKeysItems {
 
 export interface UpdateWbcHotKeysDto {
     wbcHotKeysItems:wbcHotKeysItems[];
-    userId: number;
 }

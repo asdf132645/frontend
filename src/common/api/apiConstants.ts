@@ -349,5 +349,18 @@ export const apiConstants = {
             endpoint: 'hl7/hl7Create',
             requiresToken: false,
         }
+    },
+    device: {
+        getDeviceInfo: {
+            create: {
+                endpoint: 'device/create',
+                requiresToken: false,
+            },
+            get: {
+                endpoint: 'device/get',
+                requiresToken: false,
+            }
+        }
     }
+
 };

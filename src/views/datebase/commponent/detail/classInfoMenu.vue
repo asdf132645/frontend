@@ -127,7 +127,7 @@ const upDownBlockAccess = async (selectItems: any) => {
 
 const getOrderClass = async () => {
   try {
-    const result = await getOrderClassApi(String(userModuleDataGet.value.id));
+    const result = await getOrderClassApi();
     if (result) {
       if (result?.data.length === 0) {
         orderClass.value = [];

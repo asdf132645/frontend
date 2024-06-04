@@ -8,7 +8,6 @@
         <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">File Path Set &
           Lis Hot Key
         </button>
-        <button @click="selectTab('countSet')" :class="{ 'active': selectedTab === 'countSet' }">Count Set</button>
       </div>
     </div>
 
@@ -23,7 +22,6 @@ import ImagePrint from "@/views/setting/report/component/ImagePrint.vue";
 import LisCode from "@/views/setting/report/component/lisCode.vue";
 import cbcCode from "@/views/setting/report/component/cbcCode.vue";
 import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
-import CountSet from '@/views/setting/report/component/countSet.vue';
 import * as process from "process";
 
 import {computed, ref, onMounted} from "vue";
@@ -46,8 +44,6 @@ const selectedTabComponent = computed(() => {
       return cbcCode;
     case 'filePathSet':
       return FilePathSet;
-    case 'countSet':
-      return CountSet;
     default:
       return null;
   }

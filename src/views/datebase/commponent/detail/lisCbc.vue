@@ -272,7 +272,7 @@ const initCbcData = async (newVal: any) => {
 
 const getCbcPathData = async () => {
   try {
-    const result = await getFilePathSetApi(String(userModuleDataGet.value.id));
+    const result = await getFilePathSetApi();
 
     if (result && result.data) {
       const data = result.data;
@@ -285,7 +285,7 @@ const getCbcPathData = async () => {
 
 const getCbcCodeList = async () => {
   try {
-    const result = await getCbcCodeRbcApi(String(userModuleDataGet.value.id));
+    const result = await getCbcCodeRbcApi();
 
     if (result && result.data) {
       const data = result.data;

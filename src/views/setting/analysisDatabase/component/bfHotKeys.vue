@@ -49,9 +49,9 @@ const saveBfCustomClass = async () => {
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
-      result = await createBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value , userId: Number(userId.value)});
+      result = await createBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
     } else {
-      const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value , userId: Number(userId.value)}, userId.value);
+      const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -73,7 +73,7 @@ const saveBfCustomClass = async () => {
 
 const getBfHotKeyClasses = async () => {
   try {
-    const result = await getBfHotKeysApi(String(userId.value));
+    const result = await getBfHotKeysApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         console.log(null);

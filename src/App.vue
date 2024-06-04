@@ -42,8 +42,9 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
-import EventBus from "@/eventBus/eventBus";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import {createDeviceInfoApi, getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
+import EventBus from "@/eventBus/eventBus";
 import * as process from "process";
 import lodash from 'lodash';
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
@@ -457,13 +458,34 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           isNsNbIntegration: isNsNbIntegration,
           wbcMemo: '',
           rbcMemo: '',
+        }
+
+        const deviceInfoObj = {
           siteCd: embeddedStatus.value.sysInfo.siteCd,
-          deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
+          deviceBarCode: embeddedStatus.value.sysInfo.deviceBarcode
         }
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
-
+        // siteCd, deviceBarCode DB 저장 logic
+        await saveDeviceInfo(deviceInfoObj);
       }
+    }
+
+    async function saveDeviceInfo(deviceInfo: any) {
+
+      try {
+        const deviceData = await getDeviceInfoApi();
+        if (deviceData.data.length === 0 || !deviceData.data) {
+          console.log('No Device Information');
+          await createDeviceInfoApi({ deviceItem: deviceInfo});
+          console.log("Device Information created successfully");
+        } else {
+          console.log("Device Information found");
+        }
+      } catch (err) {
+        console.error("Error handling device information", err);
+      }
+      console.log("Device Information", store.state.commonModule.deviceBarcode, store.state.commonModule.siteCd);
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
@@ -531,7 +553,6 @@ const emitSocketData = async (payload: object) => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
 };
 
-
 const sendSettingInfo = () => {
   const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
 
@@ -551,7 +572,7 @@ const sendSettingInfo = () => {
 
 const getNormalRange = async () => {
   try {
-    const result = await getNormalRangeApi(String(userId.value));
+    const result = await getNormalRangeApi();
     if (result) {
       if (result?.data) {
         const data = result.data;
@@ -579,7 +600,7 @@ const sendMessage = async (payload: any) => {
 
 const cellImgGet = async (newUserId: string) => {
   try {
-    const result = await getCellImgApi(String(newUserId));
+    const result = await getCellImgApi();
     if (result) {
       if (result?.data) {
         const data = result.data;

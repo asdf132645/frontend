@@ -35,13 +35,7 @@
 import {ref, onMounted} from 'vue';
 import {lisHotKeyAndLisFilePathAndUrl} from "@/common/defines/constFile/settings";
 import {ApiResponse} from "@/common/api/httpClient";
-import {
-  createFilePathSetApi,
-  createImagePrintApi, getFilePathSetApi,
-  getImagePrintApi, updateFilePathSetApi,
-  updateImagePrintApi
-} from "@/common/api/service/setting/settingApi";
-import {ImagePrintItem} from "@/common/api/service/setting/dto/imagePrintDto";
+import { createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
@@ -58,7 +52,7 @@ const alertMessage = ref('');
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
-  await getImagePrintData();
+  await getFilePathSetData();
 });
 
 const saveFilePathSet = async () => {
@@ -66,16 +60,13 @@ const saveFilePathSet = async () => {
     let result: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value, userId: Number(userId.value)});
+      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value });
     } else {
-      const updateResult = await updateFilePathSetApi({
-        filePathSetItems: filePathSetArr.value,
-        userId: Number(userId.value)
-      }, userId.value);
+      const updateResult = await updateFilePathSetApi({ filePathSetItems: filePathSetArr.value });
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
-        await getImagePrintData();
+        await getFilePathSetData();
       } else {
         showErrorAlert('update failed');
       }
@@ -85,16 +76,16 @@ const saveFilePathSet = async () => {
     if (result) {
       showSuccessAlert('save successful');
       saveHttpType.value = 'put';
-      await getImagePrintData();
+      await getFilePathSetData();
     }
   } catch (e) {
     console.error(e);
   }
 };
 
-const getImagePrintData = async () => {
+const getFilePathSetData = async () => {
   try {
-    const result = await getFilePathSetApi(String(userId.value));
+    const result = await getFilePathSetApi();
 
     if (result && result.data) {
       const data = result.data;

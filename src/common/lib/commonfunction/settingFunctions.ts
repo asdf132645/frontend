@@ -6,7 +6,7 @@ import {
     putOrderClassApi,
     getOrderClassApi,
     createNormalRangeApi,
-    updateBfNormalRangeApi,
+    updateNormalRangeApi,
     getNormalRangeApi,
     createRbcDegreeApi, putRbcDegreeApi, getRbcDegreeApi
 } from '@/common/api/service/setting/settingApi';
@@ -47,7 +47,7 @@ export const firstCellImgSet = async (userId: string) => {
     let cellImgData;
 
     // `cellImgGet` 함수를 호출하여 `cellimgId` 및 `cellImgData` 값을 가져옵니다.
-    const result = await getCellImgApi(userId);
+    const result = await getCellImgApi();
     if (result && result.data) {
         cellimgId.value = String(userId);
         cellImgData = result.data;
@@ -76,7 +76,6 @@ export const firstCellImgSet = async (userId: string) => {
         backupPath: defaultCellImgData.backupPath,
         backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
         backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
-        userId: userId,
     };
     if (saveHttpType.value === 'post') {
         try {
@@ -104,7 +103,7 @@ export const firstSaveOrderClass = async (userId: any) => {
         orderList[index].userName = userId;
         orderList[index].orderText = index;
     }
-    const result = await getOrderClassApi(String(userId));
+    const result = await getOrderClassApi();
     if (result) {
         if (result?.data.length === 0) {
             orderHttpType.value = 'post';
@@ -123,10 +122,10 @@ export const firstSaveOrderClass = async (userId: any) => {
 
 export const firstSaveNormalRange = async (userId: any) => {
     try {
-        const result = await getNormalRangeApi(String(userId));
+        const result = await getNormalRangeApi();
         if (result) {
             if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-                await createNormalRangeApi({normalRangeItems: normalItems.value , userId: Number(userId)});
+                await createNormalRangeApi({normalRangeItems: normalItems.value });
             }
         }
 
@@ -154,9 +153,9 @@ export const firstCreateRbcDegreeData = async (userId: any) => {
     });
 
     try {
-        const result = await getRbcDegreeApi(String(userId));
+        const result = await getRbcDegreeApi();
         if(!result.data){
-            await createRbcDegreeApi({categories: rbcDegreeList, userId: Number(userId)});
+            await createRbcDegreeApi({categories: rbcDegreeList });
         }
     } catch (e) {
         console.error(e);

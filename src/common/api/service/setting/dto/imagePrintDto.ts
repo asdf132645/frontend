@@ -1,6 +1,5 @@
 export interface CreateImagePrintDto {
     imagePrintItems: ImagePrintItem[];
-    userId: number;
 }
 
 export interface ImagePrintItem {
@@ -12,5 +11,4 @@ export interface ImagePrintItem {
 
 export interface UpdateImagePrintsDto {
     imagePrintItems: ImagePrintItem[];
-    userId: number;
 }
