@@ -209,7 +209,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     switch (parseDataWarp.jobCmd) {
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
-        await saveDeviceInfo();
         break;
       case 'INIT':
         // sendSettingInfo();
@@ -461,35 +460,30 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           rbcMemo: '',
         }
 
-        const deviceObj = {
+        const deviceInfoObj = {
           siteCd: embeddedStatus.value.sysInfo.siteCd,
-          deviceBarcode: embeddedStatus.value.sysInfo.deviceBarcode,
+          deviceBarCode: embeddedStatus.value.sysInfo.deviceBarcode
         }
-
-
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
+
+        // siteCd, deviceBarCode DB 저장 logic
+        await saveDeviceInfo(deviceInfoObj);
       }
     }
 
-    async function saveDeviceInfo() {
-      const sendingDeviceItem = {
-        siteCd: embeddedStatus.value.sysInfo.siteCd,
-        deviceBarCode: embeddedStatus.value.sysInfo.deviceBarcode,
-      }
+    async function saveDeviceInfo(deviceInfo: any) {
 
       try {
         const deviceData = await getDeviceInfoApi();
-        if (deviceData.data.length === 0) {
+        if (deviceData.data.length === 0 || !deviceData.data) {
           console.log('No Device Information');
+          await createDeviceInfoApi({ deviceItem: deviceInfo});
+          console.log("Device Information created successfully");
+        } else {
+          console.log("Device Information found");
         }
       } catch (err) {
-        console.error(err);
-      }
-
-      try {
-        await createDeviceInfoApi({ deviceItem: sendingDeviceItem});
-      } catch (err) {
-        console.error(err);
+        console.error("Error handling device information", err);
       }
       console.log("Device Information", store.state.commonModule.deviceBarcode, store.state.commonModule.siteCd);
     }
