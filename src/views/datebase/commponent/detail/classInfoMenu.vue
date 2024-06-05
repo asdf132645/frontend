@@ -97,7 +97,6 @@ onUnmounted(async () => {
 const deleteConnectionStatus = async ()  => {
   const selectItemsData = ref(sessionStorage.getItem("selectItems"));
   const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
-  console.log(selectItems)
   const originalDbData = ref(sessionStorage.getItem("originalDbData"));
   const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
   await stateDeleteCommon(originalDb.value, selectItems, userModuleDataGet.value.id)
