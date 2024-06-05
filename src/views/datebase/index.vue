@@ -229,7 +229,6 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
         }
 
-
         // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {

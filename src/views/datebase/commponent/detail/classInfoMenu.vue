@@ -98,8 +98,8 @@ const deleteConnectionStatus = async ()  => {
   const selectItemsData = ref(sessionStorage.getItem("selectItems"));
   const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
   const originalDbData = ref(sessionStorage.getItem("originalDbData"));
-  const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
-  await stateDeleteCommon(originalDb.value, selectItems, userModuleDataGet.value.id)
+  const originalDb = originalDbData.value ? JSON.parse(originalDbData.value) : null;
+  await stateDeleteCommon(originalDb, selectItems.id, userModuleDataGet.value.id)
       .then(response => {
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',

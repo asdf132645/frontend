@@ -348,7 +348,7 @@ const getUserIp = async (item) => {
   try {
     const result = await getUserIpApi();
     await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
-      emits('initData');
+      // emits('initData');
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',
         payload: 'refreshDb'

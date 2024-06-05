@@ -2,40 +2,40 @@ import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {ref} from "vue";
 
-export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: any) => {
+export const stateDeleteCommon = async (originalDb: any, selectItemsId: any, id: any) => {
+    console.log(originalDb)
     try {
+        const copiedObj = JSON.parse(JSON.stringify(originalDb));
+
         const result = await getUserIpApi();
         const updatedRuningInfo = {
             pcIp: '',
             state: false,
         };
-
         const localDbData = [...originalDb];
+        console.log(localDbData)
         const indexToUpdate = localDbData.findIndex(item => item.pcIp === result.data && item.state);
         if (indexToUpdate !== -1) {
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
+            delete localDbData[indexToUpdate].wbcInfoAfter;
         }
 
-        function removeItemByName() {
-            return localDbData[indexToUpdate].filter((item: any) => item.wbcInfoAfter !== 'wbcInfoAfter');
-        }
 
-        localDbData[indexToUpdate] = removeItemByName();
+        const selectItemsData = sessionStorage.getItem("selectItems");
+        const selectItems = selectItemsData ? JSON.parse(selectItemsData) : null;
 
         const response = await updateRunningApi({
             userId: Number(id),
             runingInfoDtoItems: [localDbData[indexToUpdate]]
         })
-        const selectItemsData = ref(sessionStorage.getItem("selectItems"));
-        const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
-        const originalDbData = ref(sessionStorage.getItem("originalDbData"));
-        const originalDb2:any = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
+
 
         selectItems.pcIp = '';
         selectItems.state = false;
-        originalDb2[indexToUpdate] = selectItems;
+        copiedObj[indexToUpdate] = selectItems;
+        console.log(selectItems)
         sessionStorage.setItem('selectItems', JSON.stringify(selectItems));
-        sessionStorage.setItem('originalDbData', JSON.stringify(originalDb2));
+        sessionStorage.setItem('originalDbData', JSON.stringify(copiedObj));
         return response;
     } catch (error) {
         console.error('Error:', error);
@@ -44,13 +44,15 @@ export const stateDeleteCommon = async (originalDb: any, selectItems: any, id: a
 }
 
 export const stateUpdateCommon = async (itemVal: any, pcIp: any, dbdata: any, id: any) => {
+    const copiedObj = JSON.parse(JSON.stringify(dbdata));
+
     try {
         const updatedRuningInfo = {
             id: itemVal.id,
             pcIp: pcIp,
             state: true,
         };
-
+        const itemValObj = JSON.parse(JSON.stringify(itemVal));
         const localDbData = dbdata;
         for (const idx in localDbData) {
             localDbData[idx].pcIp = '';
@@ -60,29 +62,24 @@ export const stateUpdateCommon = async (itemVal: any, pcIp: any, dbdata: any, id
         const indexToUpdate = localDbData.findIndex((item: any) => item.id === itemVal.id);
 
         if (indexToUpdate !== -1) {
-            // localDbData[indexToUpdate].wbcInfoAfter = itemVal.wbcInfoAfter.length === 0 ? itemVal.wbcInfo.wbcInfo[0] : itemVal.wbcInfoAfter;
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
+            delete localDbData[indexToUpdate].wbcInfoAfter;
         }
 
-        function removeItemByName() {
-            return localDbData[indexToUpdate].filter((item: any) => item.wbcInfoAfter !== 'wbcInfoAfter');
+        for (const idx in copiedObj) {
+            copiedObj[idx].pcIp = '';
+            copiedObj[idx].state = false;
         }
-
-        localDbData[indexToUpdate] = removeItemByName();
-        const selectItemsData = ref(sessionStorage.getItem("selectItems"));
-        const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
-        const originalDbData = ref(sessionStorage.getItem("originalDbData"));
-        const originalDb:any = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
-
-        selectItems.id = itemVal.id
-        selectItems.pcIp = pcIp;
-        selectItems.state = true;
-        originalDb[indexToUpdate] = selectItems;
-        sessionStorage.setItem('selectItems', JSON.stringify(selectItems));
-        sessionStorage.setItem('originalDbData', JSON.stringify(originalDb));
+        itemValObj.id = itemVal.id
+        itemValObj.pcIp = pcIp;
+        itemValObj.state = true;
+        copiedObj[indexToUpdate] = itemValObj;
+        sessionStorage.setItem('selectItems', JSON.stringify(itemValObj));
+        sessionStorage.setItem('originalDbData', JSON.stringify(copiedObj));
+        console.log(copiedObj)
         const response = await updateRunningApi({
             userId: Number(id),
-            runingInfoDtoItems: [localDbData[indexToUpdate]]
+            runingInfoDtoItems: [itemValObj]
         })
         return response;
     } catch (error) {
