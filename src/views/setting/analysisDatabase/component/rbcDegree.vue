@@ -49,17 +49,12 @@ import {createRbcDegreeApi, getRbcDegreeApi, putRbcDegreeApi} from "@/common/api
 import Alert from "@/components/commonUi/Alert.vue";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
-
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('post');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getRbcDegreeData();
 });
 

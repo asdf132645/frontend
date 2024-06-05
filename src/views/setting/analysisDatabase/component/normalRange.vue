@@ -36,9 +36,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {normalRange} from "@/common/defines/constFile/settings";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 
 const normalItems = ref<any>([]);
@@ -47,7 +44,6 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getNormalRange();
 });
 

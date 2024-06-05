@@ -41,17 +41,12 @@ import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const filePathSetArr = ref<FilePathItem[]>([]);
-
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  userId.value = getStoredUser.id;
   await getFilePathSetData();
 });
 

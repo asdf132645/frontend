@@ -100,7 +100,7 @@
               </colgroup>
               <tbody>
               <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
-                <tr v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+                <tr v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'">
                   <td>{{ getCategoryName(nWbcItem) }}</td>
                   <td>
                     {{ nWbcItem?.count }}
@@ -183,12 +183,13 @@ const printContent = ref(null);
 const rbcInfo = ref([]);
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const userModuleDataGet = computed(() => store.state.userModule);
+const siteCd = computed(() => store.state.commonModule.siteCd);
+const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
 const wbcArr = ref<any>([]);
-const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 const orderClass = ref<any>([]);
-const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 
 onMounted(async () => {
   await getOrderClass();
@@ -198,7 +199,7 @@ onMounted(async () => {
 
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value.siteCd?.testType);
+  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
   return !targetArray.includes(title);
 };
 

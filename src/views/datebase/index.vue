@@ -87,9 +87,6 @@ import {formatDate} from "@/common/lib/utils/dateUtils";
 import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const dbGetData = ref<any[]>([]);
 const showAlert = ref(false);
 const alertMessage = ref('');
@@ -134,7 +131,6 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
-  userId.value = getStoredUser.id;
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();

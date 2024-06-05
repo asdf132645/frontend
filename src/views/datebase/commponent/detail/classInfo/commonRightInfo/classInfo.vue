@@ -166,6 +166,8 @@ const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectIte
 const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
+const deviceBarCode = computed(() => store.state.commonModule.deviceBarcode);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const barcodeImg = ref('');
 const userId = ref('');
 const wbcMemo = ref('');
@@ -290,7 +292,7 @@ const handleOkConfirm = () => {
 }
 
 const uploadLis = () => {
-  if (props.selectItems.siteCd === '0002') {
+  if (siteCd.value === '0002') {
     const codeList = CbcWbcTestCdList_0002;
     axios.get('http://emr012.cmcnu.or.kr/cmcnu/.live', {
       params: spcParams
@@ -403,7 +405,7 @@ const uploadLis = () => {
 }
 
 const lisLastStep = () => {
-  if (props.selectItems.siteCd === '0019') {
+  if (siteCd.value === '0019') {
     let data = 'H|\^&||||||||||P||' + props.selectItems.barcodeNo + '\n';
     let seq = 0;
 
@@ -425,11 +427,11 @@ const lisLastStep = () => {
     })
     data += 'L|1|N'
     lisFileUrlCreate(data);
-  } else if (props.selectItems.siteCd === '0006') { // 고대 안암
+  } else if (siteCd.value === '0006') { // 고대 안암
     const data = godae();
     lisFileUrlCreate(data);
 
-  } else if (props.selectItems.siteCd === '0011') {
+  } else if (siteCd.value === '0011') {
     inhaDataSend();
   } else {
     otherDataSend();
@@ -741,13 +743,13 @@ const sendLisMessage = (data: any) => {
     url: lisFilePathSetArr.value,
     barcodeNo: props.selectItems.barcodeNo,
     userId: userModuleDataGet.value.userId,
-    deviceBarcode: props.selectItems.deviceBarcode,
+    deviceBarcode: deviceBarCode.value,
     resultMsg: data
   }
   axios.post(params.url, {
     barcodeNo: params.barcodeNo,
     userid: params.userId,
-    deviceBarcode: params.deviceBarcode,
+    deviceBarcode: deviceBarCode.value,
     resultMsg: params.resultMsg
   }).then(function (result) {
     if (result.data.errorCode === 'E000') {
@@ -796,7 +798,7 @@ const getLisPathData = async () => {
 
 const checkUserAuth = async (empNo: any) => {
   return new Promise((succ, fail) => {
-    if (props.selectItems.siteCd === '0002') {
+    if (siteCd.value === '0002') {
       const url = `http://emr012.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00104&business_id=li&instcd=012&userid=${empNo}`;
       axios.get(url).then(function (result) {
         const xml = result.data
@@ -859,7 +861,7 @@ const memoCancel = () => {
 }
 
 const getStringValue = (title: string): string => {
-  if (title === 'Artifact(Smudge)' && props.selectItems.siteCd === '0006') {
+  if (title === 'Artifact(Smudge)' && siteCd.value === '0006') {
     return "Artifact";
   } else {
     return title;
@@ -953,7 +955,7 @@ const afterChang = async (newItem: any) => {
 }
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value.siteCd?.testType);
+  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
   return !targetArray.includes(title);
 };
 
@@ -987,7 +989,7 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
         totalCount.value += Number(item.count);
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
 
 
       const titleInArray = targetArray.includes(item.title);
@@ -1009,7 +1011,7 @@ async function updateOriginalDb() {
           totalCount += 1
         }
       } else {
-        const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
+        const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
         }
@@ -1029,7 +1031,7 @@ async function updateOriginalDb() {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(selectItemsSessionStorageData.value?.siteCd, selectItemsSessionStorageData.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
       if (!targetArray.includes(item.title)) {
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;

@@ -1,7 +1,7 @@
 <template>
   <div class="cbcDiv">
     <h1 class="titleCbc">CBC + DIFF</h1>
-    <div v-if="selectItems.siteCd ==='0002'" class="cbcDivWarp">
+    <div v-if="siteCd ==='0002'" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem?.tclsscrnnm._cdata }}</td>
@@ -10,7 +10,7 @@
         </tr>
       </table>
     </div>
-    <div v-if="selectItems.siteCd ==='0007'" class="cbcDivWarp">
+    <div v-if="siteCd ==='0007'" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.testNm }}</td>
@@ -56,6 +56,8 @@ const cbcAge = ref('');
 const inhaTestCode = ref('');
 const cbcFilePathSetArr: any = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const deviceBarCode = computed(() => store.state.commonModule.deviceBarcode);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcCodeList = ref<any>([]);
 const selectItemsVal = ref<any>([]);
 const originalDbData = sessionStorage.getItem("originalDbData");
@@ -75,7 +77,7 @@ onMounted(async () => {
 });
 
 const initCbcData = async (newVal: any) => {
-  if (newVal.siteCd === '0002') { // 서울 성모
+  if (siteCd.value === '0002') { // 서울 성모
     const realUrl = 'http://emr012.cmcnu.or.kr/cmcnu/.live';
     axios.get(realUrl, {
       params: {
@@ -91,9 +93,9 @@ const initCbcData = async (newVal: any) => {
     }).catch(function (err) {
       console.log(err.message)
     })
-  } else if (newVal.siteCd === '0006' || newVal.siteCd === '0019' || newVal.siteCd === '0000') { // 고대 안암 + 길
+  } else if (siteCd.value === '0006' || siteCd.value === '0019' || siteCd.value === '0000') { // 고대 안암 + 길
     let readFileTxtRes: any;
-    if(newVal.siteCd === '0000'){
+    if(siteCd.value === '0000'){
       readFileTxtRes = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
     }else{
       readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
@@ -128,9 +130,9 @@ const initCbcData = async (newVal: any) => {
     } else {
       console.log(readFileTxtRes.data.message)
     }
-  } else if (props.selectItems.siteCd === '0007') { // 삼광의료재단
+  } else if (siteCd.value === '0007') { // 삼광의료재단
     // 작업 필요
-  } else if (props.selectItems.siteCd === '0011') { // 인하대학교
+  } else if (siteCd.value === '0011') { // 인하대학교
     if (cbcFilePathSetArr.value.includes("http")) { // url 설정인 경우
       const params = {
         url: cbcFilePathSetArr.value,
@@ -185,12 +187,13 @@ const initCbcData = async (newVal: any) => {
         url: cbcFilePathSetArr.value,
         barcodeNo: props.selectItems.barcodeNo,
         userId: userModuleDataGet.value.userId,
-        deviceBarcode: props.selectItems.deviceBarcode
+        deviceBarcode: deviceBarCode.value
       }
-      var url = params.url + '?' +
+      const url = params.url + '?' +
           'barcodeNo=' + params.barcodeNo + '&' +
-          'deviceBarcode=' + params.deviceBarcode + '&' +
+          'deviceBarcode=' + deviceBarCode.value + '&' +
           'userid=' + params.userId
+
       await axios.get(url).then(async function  (result) {
         const msg: any = await readH7File(result.data);
         cbcWorkList.value = [];
