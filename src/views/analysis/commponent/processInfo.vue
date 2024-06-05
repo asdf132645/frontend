@@ -58,7 +58,7 @@ watch([embeddedStatusJobCmd.value], async (newVal) => {
 
 onMounted(() => {
   prevOilCount.value = embeddedStatusJobCmd.value[0]?.sysInfo.oilCount;
-  projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  projectBm.value = window.PROJECT_TYPE === 'bm';
 });
 
 watch(

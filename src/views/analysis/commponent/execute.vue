@@ -110,10 +110,10 @@ onMounted(async () => {
 });
 
 const initDataExecut =async () =>{
-  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
 
-  countType.value = process.env.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
+  countType.value = window.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
   // userId.value = getStoredUser.id;
 
   await nextTick();
@@ -222,7 +222,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       pltPositionMargin: pltPositionMargin || '0',
     });
     console.log(startAction);
-    if (process.env.PROJECT_TYPE === 'bm') {
+    if (window.PROJECT_TYPE === 'bm') {
       startAction = {
         "jobCmd": "START",
         "reqUserId": userId.value,
@@ -311,7 +311,7 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
         analysisType.value = data.analysisType;
-        if(process.env.PROJECT_TYPE === 'bm'){
+        if(window.PROJECT_TYPE === 'bm'){
           wbcCount.value = data.cellAnalyzingCount;
         }else{
           switch (analysisType.value) {

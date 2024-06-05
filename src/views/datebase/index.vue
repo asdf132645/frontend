@@ -118,7 +118,7 @@ instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data)
 })
 onMounted(async () => {
   await initDbData();
-  bmClassIsBoolen.value = process.env.PROJECT_TYPE === 'bm';
+  bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
 });
 
 const classListToggleEvent = () => {

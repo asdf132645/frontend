@@ -270,7 +270,7 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
@@ -292,7 +292,7 @@ const isNext = ref(false);
 onMounted(async () => {
   wbcInfo.value = [];
   selectItems.value = selectItemsData ? JSON.parse(selectItemsData) : null;
-  projectType.value = process.env.PROJECT_TYPE;
+  projectType.value = window.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
@@ -532,7 +532,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 
 watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 순서 변경시 감지하여 재정렬
   await getOrderClass();
-  const sortArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
 });
 
@@ -1018,7 +1018,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
     });
   }
   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
-  const sortArr = orderClass.value.length !== 0 ? oArr : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
 }
 
@@ -1151,7 +1151,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     const fileName = selectedImage.fileName;
     fileNames.push(fileName)
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-      const classInfoBagic = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       const matchingItem = classInfoBagic.find(item => item.title === selectedImage.title);
       const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
           `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
@@ -1231,7 +1231,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     // moveImgIsBool = > 사용자가 이미지 이동 시 다른 동작 못하도록 막는 레이어임
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
-      const classInfoBagic = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       const matchingItem = classInfoBagic.find(item => item.title === seItem.title);
       const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
       const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;

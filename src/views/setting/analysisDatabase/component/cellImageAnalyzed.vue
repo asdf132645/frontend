@@ -184,7 +184,7 @@ const pltPositionMargin = ref('0');
 const pbAnalysisType2 = ref('100');
 const stitchCount = ref('1');
 const bfAnalysisType = ref('100');
-const pbiaRootPath = ref(process.env.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
+const pbiaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
 const alarmCount = ref('5');
@@ -202,11 +202,11 @@ const store = useStore();
 
 const handleLoginSuccess = async () => {
   console.log('?!@!@?')
-  testTypeCd.value = process.env.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  console.log(process.env.PROJECT_TYPE);
-  testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
-  analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
+  testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  console.log(window.PROJECT_TYPE);
+  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
+  analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await cellImgGet();
   await driveGet();
   await cellImgSet();
@@ -215,11 +215,11 @@ const handleLoginSuccess = async () => {
 
 onMounted(async () => {
   await nextTick();
-  testTypeCd.value = process.env.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  console.log(process.env.PROJECT_TYPE);
-  testTypeArr.value = process.env.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
-  analysisVal.value = process.env.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
+  testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  console.log(window.PROJECT_TYPE);
+  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
+  analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
 
   await cellImgGet();
   await driveGet();
@@ -233,7 +233,7 @@ const driveGet = async () => {
       if (!result?.data) {
       } else {
         const data = result.data;
-        const savePlace = process.env.PROJECT_TYPE === 'bm' ? 'BMIA_proc' : 'PBIA_proc';
+        const savePlace = window.PROJECT_TYPE === 'bm' ? 'BMIA_proc' : 'PBIA_proc';
         for (const dataKey in data) {
           data[dataKey] = data[dataKey] + `\\${savePlace}`;
         }

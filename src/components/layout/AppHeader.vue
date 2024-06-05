@@ -157,7 +157,6 @@ const storagePercent = ref(0);
 const eqStatCd = ref('');
 const runInfo = computed(() => store.state.commonModule);
 const commonDataGet = computed(() => store.state.commonModule);
-const projectVersion = ref<any>('');
 
 const eqStatCdData = ref({
   icon: ['fas', 'person'],
@@ -212,7 +211,7 @@ const hideConfirm = () => {
 
 onMounted(async () => {
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
-  projectBm.value = process.env.PROJECT_TYPE === 'bm' ? true : false;
+  projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
 
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
@@ -223,7 +222,6 @@ onMounted(async () => {
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
   }
-  projectVersion.value = process.env.PROJECT_VERSUON;
 });
 
 

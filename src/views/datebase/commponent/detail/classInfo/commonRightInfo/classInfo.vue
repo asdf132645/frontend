@@ -15,7 +15,7 @@
         </div>
       </li>
       <li @click="commitConfirmed" :class="{
-    'submitted': selectItems.signedState === 'Submit',
+    'submitted': selectItems.submitState === 'Submit',
   }">
         <font-awesome-icon :icon="['fas', 'square-check']"/>
       </li>
@@ -198,17 +198,16 @@ onMounted(async () => {
   wbcMemo.value = props.selectItems.wbcMemo;
   await afterChang(clonedWbcInfoStore.value);
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
-  projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  projectBm.value = window.PROJECT_TYPE === 'bm';
   // 첫 진입시
-  console.log(props.selectItems)
-  if (props.selectItems.signedState === "") {
+  if (props.selectItems.submitState === "") {
     const updatedRuningInfo = props.originalDb
         .filter((item: any) => item.id === props.selectItems.id)
         .map((item: any) => {
           // id가 일치하는 경우 해당 항목의 submit 값을 변경
           const updatedItem = {
             ...item,
-            signedState: 'checkFirst',
+            submitState: 'checkFirst',
           };
           // updatedItem의 내용을 변경
           return updatedItem;
@@ -718,7 +717,7 @@ const lisFileUrlCreate = async (data: any) => {
               // id가 일치하는 경우 해당 항목의 submit 값을 변경
               const updatedItem = {
                 ...item,
-                signedState: 'lis',
+                submitState: 'lis',
               };
               // updatedItem의 내용을 변경
               return updatedItem;
@@ -763,8 +762,8 @@ const sendLisMessage = (data: any) => {
 
 const getLisWbcRbcData = async () => {
   try {
-    const wbcResult = await getLisCodeApi(String(userModuleDataGet.value.userId));
-    const rbcResult = await getLisCodeRbcApi(String(userModuleDataGet.value.userId));
+    const wbcResult = await getLisCodeApi();
+    const rbcResult = await getLisCodeRbcApi();
     // console.log(wbcResult);
     // console.log(rbcResult)
     if (wbcResult && wbcResult.data && rbcResult && rbcResult.data) {
@@ -827,16 +826,12 @@ const onCommit = async () => {
   const updatedRuningInfo = props.originalDb
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
-        // id가 일치하는 경우 해당 항목의 submit 값을 변경
         const updatedItem = {
           ...item,
-          signedState: 'Submit',
-          signedOfDate: localTime.format(),
+          submitState: 'Submit',
+          submitOfDate: localTime.format(),
           signedUserId: item.id,
-          submitDate: localTime.format()
         };
-        // updatedItem의 내용을 변경
-        updatedItem.submit = 'Submit'; // 예시로 필드를 추가하거나 변경
         return updatedItem;
       });
   await resRunningItem(updatedRuningInfo);
@@ -935,7 +930,7 @@ const beforeChang = async () => {
   await getOrderClass();
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
   const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
-  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
@@ -950,7 +945,7 @@ const afterChang = async (newItem: any) => {
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
   const wbcInfo = selectItemsSessionStorageData.value.wbcInfoAfter.length !== 0 ? selectItemsSessionStorageData.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
-  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));

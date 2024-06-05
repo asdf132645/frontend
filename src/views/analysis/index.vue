@@ -31,10 +31,10 @@ const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 onMounted(async () => {
-  if (process.env.PROJECT_TYPE === 'bm') {
+  if (window.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
   }else {
-    pbVersion.value = process.env.PB_VERSION;
+    pbVersion.value = window.PB_VERSION;
   }
 });
 

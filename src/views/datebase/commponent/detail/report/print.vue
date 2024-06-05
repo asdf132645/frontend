@@ -26,7 +26,7 @@
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left; padding: 5px 0;">Signed date</th>
-            <td style="text-align: left; padding: 5px 0;">{{ selectItems?.signedOfDate }}</td>
+            <td style="text-align: left; padding: 5px 0;">{{ selectItems?.submitOfDate }}</td>
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left;">Ordered Classification</th>
@@ -164,7 +164,7 @@ import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const store = useStore();
 
 const printContent = ref(null);
@@ -202,7 +202,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
   const slotId = props.selectItems.slotId || "";
-  const folderPath = process.env.PROJECT_TYPE === 'bm' ? `${pbiaRootPath}/${slotId}/04_BM_Classification/${id}_${title}` : `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = window.PROJECT_TYPE === 'bm' ? `${pbiaRootPath}/${slotId}/04_BM_Classification/${id}_${title}` : `${pbiaRootPath}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
 }

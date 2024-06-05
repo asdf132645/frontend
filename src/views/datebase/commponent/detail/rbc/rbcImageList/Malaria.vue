@@ -46,7 +46,7 @@ import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || dirName.pbiaRootPath;
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const malariaList = ref([]);
 const noMalariaList = ref([]);
 const selectedClickImages = ref<{ section: string, imgName: string, index: number }[]>([]);

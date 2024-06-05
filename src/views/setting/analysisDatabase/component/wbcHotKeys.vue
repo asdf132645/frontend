@@ -43,7 +43,7 @@ const projectType = ref('pb');
 
 onMounted(async () => {
   userId.value = getStoredUser.id;
-  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   await getWbcHotKeyClasses();
 });
 

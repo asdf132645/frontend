@@ -24,7 +24,7 @@ import {useStore} from 'vuex';
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});

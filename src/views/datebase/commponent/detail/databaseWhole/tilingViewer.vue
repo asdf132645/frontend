@@ -15,7 +15,7 @@ import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const store = useStore();
 const tilingViewerLayer = ref(null);
 const hideImageRef = ref(null);

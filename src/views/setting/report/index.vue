@@ -50,7 +50,7 @@ const selectedTabComponent = computed(() => {
 });
 
 onMounted(() => {
-  projectBm.value = process.env.PROJECT_TYPE === 'bm' ? true : false;
+  projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
 })
 
 </script>

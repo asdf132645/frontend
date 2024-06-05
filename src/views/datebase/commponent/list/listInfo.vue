@@ -23,8 +23,8 @@
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
       <ul>
         <li>Analyzed Date <span>{{ formatDateString(selectedItem?.createDate) }}</span></li>
-        <li>Signed State <span>{{ selectedItem?.signedState }}</span></li>
-        <li>Signed of Date <span>{{ selectedItem?.signedOfDate }}</span></li>
+        <li>Signed State <span>{{ selectedItem?.submitState }}</span></li>
+        <li>Signed of Date <span>{{ selectedItem?.submitOfDate }}</span></li>
         <li>Signed User ID <span>{{ selectedItem?.signedUserId }}</span></li>
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">
           <div v-if="showClassificationResults(selectedItem?.classificationResult)">
@@ -76,7 +76,7 @@ const showClassificationResults = (classificationResult) => {
   );
 
 };
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 function getImageUrl(imageName){
   return `${apiBaseUrl}/images?folder=${pbiaRootPath.value + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;

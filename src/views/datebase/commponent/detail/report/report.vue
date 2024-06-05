@@ -34,7 +34,7 @@
             </tr>
             <tr>
               <th>Signed date</th>
-              <td>{{ selectItems?.signedOfDate }}</td>
+              <td>{{ selectItems?.submitOfDate }}</td>
             </tr>
             <tr>
               <th>Patient ID</th>
@@ -193,7 +193,7 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 onMounted(async () => {
   await getOrderClass();
   await initData();
-  projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  projectBm.value = window.PROJECT_TYPE === 'bm';
 });
 
 const shouldRenderCategory = (title: string) => {
@@ -261,12 +261,12 @@ const getOrderClass = async () => {
 
 async function initData(data?: any) {
   if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
-    let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
     const sortedWbcInfo = sortWbcInfo(clonedWbcInfo.value, wbcArrs);
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   } else {
-    let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
     const sortedWbcInfo = sortWbcInfo(selectItems.value.wbcInfo.wbcInfo[0], wbcArrs);
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;

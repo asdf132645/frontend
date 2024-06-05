@@ -15,10 +15,10 @@ const projectVersion = ref<{key: string, name: string}[]>()
 
 onMounted(() => {
   projectVersion.value = [
-    {key: 'AI Version', name: process.env.AI_VERSION as string},
-    {key: 'Web Frontend Version', name: process.env.WEB_FRONTEND_VERSION as string},
-    {key: 'Web Backend Version', name: process.env.WEB_BACKEND_VERSION as string},
-    {key: 'PB Version', name: process.env.PB_VERSION as string}
+    {key: 'AI Version', name: window.AI_VERSION as string},
+    {key: 'Web Frontend Version', name: window.WEB_FRONTEND_VERSION as string},
+    {key: 'Web Backend Version', name: window.WEB_BACKEND_VERSION as string},
+    {key: 'PB Version', name: window.PB_VERSION as string}
   ];
 })
 

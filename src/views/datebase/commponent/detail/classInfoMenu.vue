@@ -82,7 +82,7 @@ watch(props.isNext, (newVal) => {
 });
 
 onMounted(async () => {
-  projectType.value = process.env.PROJECT_TYPE;
+  projectType.value = window.PROJECT_TYPE;
   await getRunningInfoDetail(selectItems.value.id);
   pageMoveDeleteStop.value = true;
 });
@@ -95,9 +95,12 @@ onUnmounted(async () => {
 })
 
 const deleteConnectionStatus = async ()  => {
+  const selectItemsData = ref(sessionStorage.getItem("selectItems"));
+  const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
+  console.log(selectItems)
   const originalDbData = ref(sessionStorage.getItem("originalDbData"));
   const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
-  await stateDeleteCommon(originalDb.value, resData.value, userModuleDataGet.value.id)
+  await stateDeleteCommon(originalDb.value, selectItems, userModuleDataGet.value.id)
       .then(response => {
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
@@ -219,7 +222,7 @@ const handleDataResponse = async (dbIndex: any, res: any) => {
   sessionStorage.setItem('selectItems', JSON.stringify(resData.value));
 
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
   sessionStorage.setItem('dbBaseTrClickId', String(dbIndex.id));

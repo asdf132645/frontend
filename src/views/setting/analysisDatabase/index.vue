@@ -67,7 +67,7 @@ const activeTabComponent = computed(() => {
   }
 });
 onMounted(async () => {
-  projectType.value = process.env.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
 })
 
 </script>

@@ -38,7 +38,8 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/vue-native-websocket.d.ts"
+    "src/vue-native-websocket.d.ts",
+    "types/**/*"
   ],
   "exclude": [
     "node_modules"

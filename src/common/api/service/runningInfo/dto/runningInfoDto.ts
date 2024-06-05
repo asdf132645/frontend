@@ -41,8 +41,6 @@ interface Order {
 interface RuningInfo {
     id?: number;
     state?: boolean;
-    submit?: string;
-    submitDate?: string;
     slotNo?: string;
     traySlot?:string;
     barcodeNo: string;
@@ -71,8 +69,8 @@ interface RuningInfo {
     isNormal: string;
     processInfo: ProcessInfo;
     orderList: Order[];
-    signedState?:string;
-    signedOfDate?: Date;
+    submitState?:string;
+    submitOfDate?: Date;
     signedUserId?:string;
     classificationResult?: any[];
     isNsNbIntegration?: string;

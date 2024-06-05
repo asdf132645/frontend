@@ -22,7 +22,7 @@ const orderHttpType = ref('');
 const normalItems = ref<any>(normalRange);
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
-const projectType = process.env.PROJECT_TYPE === 'bm';
+const projectType = window.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
     pbAnalysisType: projectType ? '500':'100',
@@ -98,7 +98,7 @@ export const firstCellImgSet = async (userId: string) => {
 
 
 export const firstSaveOrderClass = async (userId: any) => {
-    const orderList: any = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    const orderList: any = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
     for (const index in orderList) {
         orderList[index].userName = userId;
         orderList[index].orderText = index;

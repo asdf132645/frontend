@@ -22,7 +22,7 @@ import { defineProps, onMounted, ref, watch } from 'vue';
 
 const props = defineProps(['dbData', 'selectedItem']);
 const pbiaRootPath = sessionStorage.getItem('pbiaRootPath');
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});

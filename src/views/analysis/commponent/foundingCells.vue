@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import {ref, watch, defineProps} from 'vue';
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const props = defineProps([ 'parsedData']);
 
 const images = ref<RunningPathItem[]>([]);

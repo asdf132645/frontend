@@ -189,6 +189,10 @@ export const getMinCountApi = async (): Promise<ApiResponse<minCountItem[] | und
     return httpClient.httpGet(apiConstants.settings.minCount.get);
 };
 
+export const getLisCodeApi = async (): Promise<ApiResponse<LisCodeWbcItem[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.lisCode.get);
+};
+
 // --- 드라이브
 export const getDrivesApi = async (): Promise<ApiResponse<any | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.folder.get);

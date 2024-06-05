@@ -157,7 +157,7 @@ import pako from 'pako';
 
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'originalDb', 'isBefore']);
 const activeTab = ref('lowMag');
-const apiBaseUrl = process.env.APP_API_BASE_URL || 'http://192.168.0.115:3002';
+const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
 let viewer: any = ref<any>(null);
 const imgSet = ref(false);

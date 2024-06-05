@@ -91,7 +91,7 @@ export  const messages: Messages = {
     UPDATE_TEST_HISTORY: 'updateTestHistory',
     GET_TEST_HISTORY: 'getTestHistory',
     DELETE_TEST_HISTORY: 'deleteTestHistory',
-    UPDATE_SIGNED_STATE: 'updateSignedState',
+    UPDATE_SIGNED_STATE: 'updatesubmitState',
     UPDATE_TEST_HISTORY_WBC_INFO: 'updateTestHistoryWbcInfo',
     GET_RBC_COMMENT: 'getRbcComment',
     GET_WBC_COMMENT: 'getWbcComment',

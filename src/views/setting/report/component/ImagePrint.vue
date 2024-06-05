@@ -95,7 +95,7 @@ const getImagePrintData = async () => {
       if (!data || (data instanceof Array && data.length === 0)) {
         console.log(null);
         saveHttpType.value = 'post';
-        imagePrintAndWbcArr.value = process.env.PROJECT_TYPE ==='bm'? imagePrintAndBm : imagePrintAndWbc;
+        imagePrintAndWbcArr.value = window.PROJECT_TYPE ==='bm'? imagePrintAndBm : imagePrintAndWbc;
       } else {
         saveHttpType.value = 'put';
         imagePrintAndWbcArr.value = data;

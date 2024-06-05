@@ -37,7 +37,7 @@
     <tbody v-if="dbData.length !== 0">
     <template v-for="(item, idx) in dbData"
               :key="item.id">
-      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submit === 'Submit', rock: item.state, checkFirst: item.signedState === 'checkFirst' }"
+      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submitState === 'Submit', rock: item.state, checkFirst: item.submitState === 'checkFirst' }"
           @click="selectItem(item)"
           @dblclick='rowDbClick(item)'
           ref="firstRow"
@@ -61,10 +61,10 @@
         <td> {{ item?.patientNm }}</td>
         <td> {{ item?.createDate === '' ? '' : formatDateString(item?.createDate) }}</td>
         <td> {{ item?.tactTime }}</td>
-        <td> {{ item?.submit }}</td>
-        <td> {{ item?.submitDate === '' ? '' : formatDateString(item?.submitDate) }}</td>
+        <td> {{ submitStateChangeText(item?.submitState) }}</td>
+        <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
-          <font-awesome-icon v-if="item?.submit === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
+          <font-awesome-icon v-if="item?.submitState === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
         </td>
       </tr>
     </template>
@@ -124,7 +124,7 @@
           </li>
           <li>
             <span>Signed state</span>
-            <input type="text" v-model="itemObj.signedState" readonly/>
+            <input type="text" v-model="itemObj.submitState" readonly/>
           </li>
           <li>
             <span>Barcode Image</span>
@@ -213,7 +213,7 @@ const instance = getCurrentInstance();
 
 
 onMounted(async () => {
-  projectType.value = process.env.PROJECT_TYPE;
+  projectType.value = window.PROJECT_TYPE;
   try {
 
     userId.value = getStoredUser.id;
@@ -533,6 +533,18 @@ const deleteRow = async () => {
   } catch (error) {
     console.error('Error:', error);
   }
+}
+
+const submitStateChangeText = (text) => {
+  switch (text) {
+    case 'Ready':
+      return 'Ready';
+    case 'Submit':
+      return 'Submit';
+    default:
+      return 'Ready';
+  }
+
 }
 
 

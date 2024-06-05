@@ -50,7 +50,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  wbcInfoChangeVal.value = process.env.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await getOrderClass();
 })
 

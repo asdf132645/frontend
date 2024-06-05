@@ -11,7 +11,9 @@
             <button @click="memoCancel">cancel</button>
           </div>
         </li>
-        <li @click="commitConfirmed">
+        <li @click="commitConfirmed" :class="{
+    'submitted': selectItems.submitState === 'Submit',
+  }">
           <font-awesome-icon :icon="['fas', 'square-check']"/>
         </li>
       </ul>
@@ -142,6 +144,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import {useRouter} from "vue-router";
+import moment from "moment/moment";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
@@ -182,11 +185,13 @@ onMounted(() => {
 
 watch(() => props.rbcInfo, (newItem) => {
   rbcInfoChangeVal.value = props.selectItems.rbcInfoAfter;
+  afterChange();
 });
 
 watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
+
 }, {deep: true})
 
 watch(() => props.selectItems, (newItem) => {
@@ -197,7 +202,7 @@ watch(() => props.selectItems, (newItem) => {
 const beforeChange = () => {
   isBefore.value = true;
   emits('isBeforeUpdate', true);
-  rbcInfoChangeVal.value = props.rbcInfo.rbcInfo.rbcClass;
+  rbcInfoChangeVal.value = props.rbcInfo.rbcInfo.rbcClass ? props.rbcInfo.rbcInfo.rbcClass : props.rbcInfo.rbcInfo;
 }
 
 const afterChange = () => {
@@ -287,7 +292,7 @@ const memoChange = async () => {
   memoModal.value = false;
 }
 
-const resRunningItem = async (updatedRuningInfo: any, alertShow: any) => {
+const resRunningItem = async (updatedRuningInfo: any, alertShow?: any) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
@@ -344,14 +349,18 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
+  const localTime = moment().local();
   const updatedRuningInfo = props.originalDb
       .filter((item: any) => item.id === props.selectItems.id)
       .map((item: any) => {
-        const updatedItem = {...item, signedState: 'Submit', signedOfDate: new Date(), signedUserId: item.id};
-        updatedItem.submit = 'Submit';
+        const updatedItem = {
+          ...item,
+          submitState: 'Submit',
+          submitOfDate: localTime.format(),
+          signedUserId: item.id,
+        };
         return updatedItem;
       });
-
   await resRunningItem(updatedRuningInfo);
 }
 

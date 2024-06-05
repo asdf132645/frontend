@@ -25,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-import AppHeader from "@/components/layout/AppHeader.vue";
 
+import AppHeader from "@/components/layout/AppHeader.vue";
 const router = useRouter();
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
@@ -46,18 +46,17 @@ import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {createDeviceInfoApi, getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import * as process from "process";
-import lodash from 'lodash';
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import Analysis from "@/views/analysis/index.vue";
+
+
 
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const store = useStore();
 const commonDataGet = computed(() => store.state.commonModule);
-const embeddedStatus = computed(() => store.state.embeddedStatusModule);
-
 const instance = getCurrentInstance();
 const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
@@ -74,13 +73,13 @@ const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
-
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
 const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
+
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
 })
@@ -128,10 +127,12 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   cellImgGet(newUserId.id);
   userId.value = newUserId.id;
 });
+
+
 onBeforeMount(() => {
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
     type: 'SEND_DATA',
-    payload: process.env.MAIN_API
+    payload: window.MAIN_API
   });
 });
 window.addEventListener('beforeunload', function (event: any) {
@@ -146,9 +147,9 @@ onMounted(async () => {
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
-  projectBm.value = process.env.PROJECT_TYPE === 'bm';
+  projectBm.value = window.PROJECT_TYPE === 'bm';
   if (!projectBm.value) {
-    pbVersion.value = process.env.PB_VERSION;
+    pbVersion.value = window.PB_VERSION;
   }
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
@@ -215,7 +216,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           siteCd: parseDataWarp.siteCd,
           deviceBarCode: parseDataWarp.deviceBarcode
         }
-        if(!siteCdDvBarCode.value){
+        if (!siteCdDvBarCode.value) {
           await saveDeviceInfo(deviceInfoObj);
         }
         break;
@@ -413,8 +414,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         const newObj = {
           slotNo: completeSlot.slotNo,
           state: false,
-          submit: 'Ready',
-          submitDate: '',
           traySlot: '1-' + idx,
           barcodeNo: completeSlot.barcodeNo,
           patientId: completeSlot.patientId,
@@ -459,8 +458,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           //   analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
           //   state: completeSlot.stateCd,
           // },
-          signedState: '',
-          signedOfDate: '',
+          submitState: 'Ready',
+          submitOfDate: '',
           signedUserId: '',
           // classificationResult: [],
           isNsNbIntegration: isNsNbIntegration,

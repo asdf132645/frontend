@@ -101,7 +101,7 @@ main.bmComponent {
 }
 
 .rock {
-    color: #ff6363;
+    color: #ff6363 !important;
 }
 
 .topClintInfo ul li {
@@ -117,7 +117,7 @@ main.bmComponent {
     margin-bottom: 10px;
     border-bottom: 1px solid #fff;
     padding-bottom: 10px;
-    padding-top:10px;
+    padding-top: 10px;
 }
 
 .small-icon-menu {
@@ -182,7 +182,7 @@ main.bmComponent {
 }
 
 .logOutBox {
-    border:1px solid #fff;
+    border: 1px solid #fff;
     box-sizing: border-box;
     padding: 5px;
     border-radius: 4px;
@@ -288,7 +288,7 @@ h3.titleText {
 
 .initBtn:hover {
     background: #fff;
-    color:  #212121;
+    color: #212121;
 }
 
 p.startStopP {
@@ -390,7 +390,7 @@ table.settingTable {
     margin: auto;
 }
 
-table.settingTable select{
+table.settingTable select {
     padding: 6px;
 }
 
@@ -404,7 +404,7 @@ button.saveBtn, .defaultBtn {
     cursor: pointer;
 }
 
-.defaultBtn:hover, .saveBtn:hover{
+.defaultBtn:hover, .saveBtn:hover {
     background: #ffffff;
     color: #000;
 }
@@ -442,6 +442,7 @@ button.saveBtn, .defaultBtn {
     font-size: 1.2rem;
     margin-bottom: 1.2rem;
 }
+
 .nth1ChildOrder {
     display: flex;
     justify-content: space-between;
@@ -454,7 +455,7 @@ button.saveBtn, .defaultBtn {
     border-bottom: 1px solid #494949;
 }
 
-.nth1ChildOrder:hover{
+.nth1ChildOrder:hover {
     color: #29c7ca;
 }
 
@@ -510,12 +511,15 @@ ul.classInfo {
     display: inline-block;
     width: 29%;
 }
+
 ul.degree.analysis {
     width: 20%;
 }
+
 .analysisWbc .categories > ul > li {
     height: 14px;
 }
+
 .classNmRbc {
     display: inline-block;
     text-align: left;
@@ -565,6 +569,7 @@ ul.nth1Child > :nth-child(3) {
     height: 17px;
     /*margin-bottom: 2px;*/
 }
+
 .categories > ul > li > span {
     display: inline-block;
     vertical-align: middle;
@@ -580,14 +585,17 @@ ul.nth1Child > :nth-child(3) {
     position: absolute !important; /* Ensure position is absolute */
     border: 2px solid; /* Ensure border is visible */
 }
+
 .categories > ul > li > div {
     display: inline-block;
     vertical-align: middle;
     width: 12%;
 }
+
 ul.slideContent.pb100a {
     width: 78%;
 }
+
 .categories > ul > li > svg {
     margin-right: 2px;
 }
@@ -760,7 +768,7 @@ span.proSpan {
 }
 
 .joinContent input {
-    box-shadow: none!important;
+    box-shadow: none !important;
     width: 90%;
     display: inline-block;
     max-width: 250px;
@@ -876,7 +884,7 @@ input.loginInput {
 
 .immersionOilContainer {
     padding-bottom: 16px;
-    border-bottom:1px solid #fff;
+    border-bottom: 1px solid #fff;
 }
 
 .statusBarWrapper {
@@ -894,7 +902,7 @@ input.loginInput {
 }
 
 ul.settingTabBtn {
-    border:1px
+    border: 1px
 }
 
 ul.settingTabBtn li {
@@ -1020,7 +1028,7 @@ table.defaultTable thead tr {
     background: #252629;
 }
 
-table.defaultTable thead th .table{
+table.defaultTable thead th .table {
     background: #c7cad1;
 }
 
@@ -1098,10 +1106,14 @@ table.defaultTable tbody td {
     background: #37a8aa;
 }
 
-tr.checkFirst {color: #65ff9b;}
+tr.checkFirst {
+    color: #b2ffcd;
+}
+
 li.submitted {
     color: #00477e;
 }
+
 h3.titleH3 {
     text-align: left;
     padding: 10px;
@@ -1133,6 +1145,7 @@ ul.wbcInfoDbUl > li {
     right: 28%;
     top: 3%;
 }
+
 .circle {
     text-align: center;
     padding-top: 7px;
@@ -1191,11 +1204,13 @@ ul.wbcImgWrap > li {
 .selected-image {
     outline: solid #20eaa7 !important;
 }
+
 .context-menu.detail {
     height: 250px;
     overflow-y: auto;
     text-align: left;
 }
+
 .databaseWbcRight {
     display: inline-block;
     width: 24%;
@@ -1231,6 +1246,7 @@ ul.cellImgBox {
 ul.cellImgBox input {
     width: 13px;
 }
+
 .reportSection.cbcLayer {
     display: inline-flex;
 }
@@ -1307,10 +1323,11 @@ button.searchClass {
     cursor: pointer;
 }
 
-button.searchClass:hover{
+button.searchClass:hover {
     color: #000;
     background: #fff;
 }
+
 .reportDiv > div {
     display: inline-block;
     vertical-align: top;
@@ -1525,7 +1542,7 @@ select.selectSizeTitle {
 }
 
 .sizeContainer {
-    position:absolute;
+    position: absolute;
     left: 9%;
     background: #000;
     padding: 5px;
@@ -1594,7 +1611,7 @@ select.selectSizeTitle {
 .reportDiv {
     padding-left: 3%;
     display: flex;
-    padding-top:10px;
+    padding-top: 10px;
 }
 
 .reportContent {
@@ -1789,7 +1806,7 @@ ul.normalItems li div span:last-child {
 }
 
 .bmclass {
-    width: 74%!important;
+    width: 74% !important;
     min-height: 67vh;
     text-align: left;
     justify-content: flex-start;
@@ -1810,7 +1827,7 @@ ul.normalItems li div span:last-child {
     display: flex;
     justify-content: space-evenly;
     margin-left: 38px;
-    height:90vh;
+    height: 90vh;
 }
 
 .image-container {
@@ -1851,8 +1868,9 @@ ul.normalItems li div span:last-child {
     width: 50%;
     background: #252629;
     padding: 10px;
-    height:100%;
+    height: 100%;
 }
+
 .leftWhole ul p {
     text-align: left;
     border-bottom: 1px solid #fff;
@@ -1917,7 +1935,7 @@ ul.normalItems li div span:last-child {
 
 .searchUserContainer {
     text-align: left;
-    margin:30px;
+    margin: 30px;
 }
 
 .searchUserContainer select, .searchUserContainer input {
@@ -1939,6 +1957,7 @@ ul.normalItems li div span:last-child {
     border: 1px solid black;
     border-radius: 5px;
 }
+
 .moveImgIsBool {
     position: absolute;
     z-index: 99999;
@@ -1949,6 +1968,7 @@ ul.normalItems li div span:last-child {
     background: #00000073;
     font-size: 2rem;
 }
+
 .searchInputBox {
     padding: 8px;
     border-radius: 5px;
@@ -1960,7 +1980,7 @@ ul.normalItems li div span:last-child {
     color: #29c7ca;
 }
 
-.searchBtn:hover{
+.searchBtn:hover {
     cursor: pointer;
 }
 
@@ -2006,7 +2026,7 @@ button.rollbackButton {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform:translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     z-index: 9999;
     padding: 45px 0;
     width: 400px;
@@ -2026,7 +2046,8 @@ button.rollbackButton {
     right: 207px;
     top: 26px;
 }
-.imgSetWrap > button{
+
+.imgSetWrap > button {
     background: none;
     color: #ffffff;
     font-size: 1rem;
@@ -2040,6 +2061,7 @@ button.rollbackButton {
     display: inline-block;
     vertical-align: top;
 }
+
 .alert-error {
     background-color: #f8d7da;
     border-color: #f5c6cb;
@@ -2063,6 +2085,7 @@ button.rollbackButton {
 .iconSize {
     font-size: 20px;
 }
+
 .wbcModalImageContent .buttons {
     position: absolute;
     left: 38%;
@@ -2079,6 +2102,7 @@ button.rollbackButton {
     position: relative;
     height: 100%;
 }
+
 .blinkColor {
     color: red;
 }
@@ -2135,6 +2159,7 @@ li.cbcLi {
     font-size: 1.2rem;
     margin-bottom: 10px;
 }
+
 p.menuIco {
     font-size: 1.2rem;
     margin-bottom: 10px;
@@ -2144,7 +2169,7 @@ p.menuIco {
     color: #29c7ca;
 }
 
-.rbc-select-box{
+.rbc-select-box {
     position: absolute;
     z-index: 99999;
     background: #fff;
@@ -2153,13 +2178,16 @@ p.menuIco {
     height: 300px;
     overflow-y: scroll;
 }
+
 table.cbcTable {
     text-align: left;
 }
+
 .cbcDivWarp {
     overflow-y: scroll;
     height: 82vh;
 }
+
 table.cbcTable td {
     padding: 9px;
     font-size: 0.8rem;
@@ -2169,6 +2197,7 @@ table.cbcTable td {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;
     }
+
     .contentRightChild {
         overflow-y: auto;
     }
