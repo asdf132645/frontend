@@ -361,6 +361,14 @@ export const apiConstants = {
                 requiresToken: false,
             }
         }
-    }
+    },
+    connection: {
+        ip: {
+            get: {
+                endpoint: 'ip',
+                requiresToken: false,
+            }
+        }
+    },
 
 };
