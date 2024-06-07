@@ -368,26 +368,16 @@ const handleRightClick = (event: MouseEvent, image: any, item: any) => {
 };
 
 function hideImage(id: string, fileName: string, title?: string) {
-  if (isBeforeChild.value) {
-    const newImageUrl = getNewImageUrl(fileName, title);
-    if (newImageUrl) { // 새로운 이미지 URL이 존재하는 경우에만 처리
-      const imageElement = cellRefs.value[id]?.querySelector(`[src*="${fileName}"]`);
-      if (imageElement) {
-        imageElement.src = newImageUrl;
-      }
-      return;
-    }
-  }
   hiddenImages.value[`${id}-${fileName}`] = true;
 }
 
-const getNewImageUrl = (fileName: any, title: any) => {
+const getNewImageUrl = (fileName: any, title: any): any => {
   if (isBeforeChild.value) {
     const matchingImage = selectItems.value.wbcInfoAfter.find((el: any) => {
       return el.images && el.images.find((image: any) => image.fileName === fileName);
     });
     if (matchingImage.title !== title) {
-      return getImageUrl(fileName, matchingImage.id, matchingImage.title, '');
+      return { fileNameMa: fileName, idMa: matchingImage.id, titleMa: matchingImage.title };
     }
   }
   return null; // 새로운 이미지 URL이 없는 경우 null을 반환
@@ -1389,8 +1379,16 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   }
 
   const slotId = selectItems.value.slotId || "";
-  const folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
+  let folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
+  if (isBeforeChild.value) {
+
+    if(getNewImageUrl(imageName, title)){
+      const { idMa , titleMa } =getNewImageUrl(imageName, title);
+      folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${idMa}_${titleMa}`;
+    }
+
+  }
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
     url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
