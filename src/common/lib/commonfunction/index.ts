@@ -13,7 +13,6 @@ export const stateDeleteCommon = async (originalDb: any, selectItemsId: any, id:
             state: false,
         };
         const localDbData = [...originalDb];
-        console.log(localDbData)
         const indexToUpdate = localDbData.findIndex(item => item.pcIp === result.data && item.state);
         if (indexToUpdate !== -1) {
             localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
@@ -33,7 +32,6 @@ export const stateDeleteCommon = async (originalDb: any, selectItemsId: any, id:
         selectItems.pcIp = '';
         selectItems.state = false;
         copiedObj[indexToUpdate] = selectItems;
-        console.log(selectItems)
         sessionStorage.setItem('selectItems', JSON.stringify(selectItems));
         sessionStorage.setItem('originalDbData', JSON.stringify(copiedObj));
         return response;
@@ -76,7 +74,6 @@ export const stateUpdateCommon = async (itemVal: any, pcIp: any, dbdata: any, id
         copiedObj[indexToUpdate] = itemValObj;
         sessionStorage.setItem('selectItems', JSON.stringify(itemValObj));
         sessionStorage.setItem('originalDbData', JSON.stringify(copiedObj));
-        console.log(copiedObj)
         const response = await updateRunningApi({
             userId: Number(id),
             runingInfoDtoItems: [itemValObj]
