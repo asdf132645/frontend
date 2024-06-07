@@ -84,9 +84,6 @@ const runningInfoGet = async (data: any) => {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
       if (existingItemIndex === -1 && barcodeNo !== '') {
-        // if (dspOrderList.value.length > 1) {
-        //   dspOrderList.value[dspOrderList.value.length - 1].state = '04';
-        // }
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
@@ -94,6 +91,14 @@ const runningInfoGet = async (data: any) => {
           analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
           state: currentSlot.stateCd,
         });
+      }else{
+        dspOrderList.value[existingItemIndex] = {
+          barcodeId: barcodeNo,
+          patientName: currentSlot.patientNm,
+          orderDate: stringToDateTime(currentSlot.orderDttm),
+          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+          state: currentSlot.stateCd,
+        }
       }
     }
   }
