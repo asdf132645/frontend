@@ -925,6 +925,7 @@ const getOrderClass = async () => {
 
 const beforeChang = async () => {
   isBefore.value = true;
+  emits('isBefore', true);
   const selectItemsData = sessionStorage.getItem("selectItems");
   selectItemsSessionStorageData.value = selectItemsData ? JSON.parse(selectItemsData) : null;
   const originalDbData = sessionStorage.getItem("originalDbData");
@@ -943,6 +944,7 @@ const beforeChang = async () => {
 
 const afterChang = async (newItem: any) => {
   await getOrderClass();
+  emits('isBefore', false);
   isBefore.value = false;
   const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
   const wbcInfo = selectItemsSessionStorageData.value.wbcInfoAfter.length !== 0 ? selectItemsSessionStorageData.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];

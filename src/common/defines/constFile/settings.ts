@@ -37,11 +37,6 @@ export const bmAnalysisList = [
     { value: '1300', text: '1300' },
     { value: '1400', text: '1400' },
     { value: '1500', text: '1500' },
-    { value: '1600', text: '1600' },
-    { value: '1700', text: '1700' },
-    { value: '1800', text: '1800' },
-    { value: '1900', text: '1900' },
-    { value: '2000', text: '2000' },
 ];
 
 export const AnalysisList2 = [

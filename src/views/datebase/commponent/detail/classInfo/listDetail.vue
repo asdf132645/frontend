@@ -5,10 +5,7 @@
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{
-            projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)
-          }}
-        </li>
+        <li>{{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)}}</li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
@@ -20,7 +17,7 @@
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable' @nextPage="nextPage"
-                 @scrollEvent="scrollToElement"/>
+                 @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
@@ -265,7 +262,7 @@ const refsArray = ref<any[]>([]);
 const allCheck = ref('');
 const cellRef = ref(null);
 const cellMarkerIcon = ref(false);
-
+const isBeforeChild = ref(false);
 const modalOpen = ref(false);
 const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
@@ -277,7 +274,7 @@ const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
-const opacity = ref('');
+const opacity = ref('0.9');
 
 const selectItemIamgeArr = ref<any>([]);
 const moveRightClickArr = ref<any>([]);
@@ -299,10 +296,60 @@ onMounted(async () => {
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
+
+  // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
+  await imgSetLocalStorage();
+  // end
 });
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
+
+watch(imgBrightness, (newVal) => {
+  localStorage.setItem('imgBrightness', String(newVal));
+});
+
+watch(imageSize, (newVal) => {
+  localStorage.setItem('imageSize', String(newVal));
+})
+
+watch(imageRgb, (newVal) => {
+  const red = newVal[0];
+  const green = newVal[1];
+  const blue = newVal[2];
+  localStorage.setItem('imageRgb', JSON.stringify([red, green, blue]));
+},{deep: true});
+
+const imgSetLocalStorage = async () => {
+  const storedBrightness = localStorage.getItem('imgBrightness');
+  const storedRgb = localStorage.getItem('imageRgb');
+  const imageSizeCopy = localStorage.getItem('imageSize');
+  if (storedRgb) {
+    imageRgb.value = JSON.parse(storedRgb);
+  }
+  if(storedBrightness){
+    imgBrightness.value = Number(storedBrightness);
+  }
+
+  if (imageSizeCopy){
+    imageSize.value = Number(imageSizeCopy);
+  }
+
+  const red = 255 -  imageRgb.value[0];
+  const green = 255 -  imageRgb.value[1];
+  const blue = 255 -  imageRgb.value[2];
+  wbcInfo.value.forEach((item:any) => {
+    item.images.forEach((image: any) => {
+      image.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
+      image.width = Number(imageSize.value);
+      image.height = Number(imageSize.value);
+    });
+  });
+}
+
+const isBeforeDataSet = (data: any) => {
+  isBeforeChild.value = data;
+}
 
 const nextPage = () => {
   isNext.value = true;
@@ -313,8 +360,7 @@ const isNextFalse= () => {
 }
 
 const handleRightClick = (event: MouseEvent, image: any, item: any) => {
-  event.preventDefault(); // 기본 컨텍스트 메뉴가 나타나는 것을 방지합니다
-  console.log('우클릭한 항목:', selectItemIamgeArr.value);
+  event.preventDefault();
   openContextMenu(event, item);
 };
 
@@ -333,7 +379,7 @@ const hideSizeControl = () => {
 const handleClickOutside = (event: any) => {
   // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
   if (!event.target.closest('.imgSetWrap')) {
-    imgSet.value = false; // imgSet.value를 false로 설정
+    imgSet.value = false;
     selectedTitle.value = '';
   }
 };
@@ -543,152 +589,8 @@ const refreshClass = async (data: any) => {
 }
 
 const excelDownload = () => {
-  const groundTruth = selectItems.value.wbcInfoAfter; // 실제 정답 데이터
-  const predicted = selectItems.value.wbcInfo.wbcInfo[0]; // AI가 예측한 데이터
-
-  const confusionMatrix: Record<CellType, Record<CellType, number>> = confusionMatrixVal;
-  const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
-
-  // 오차 행렬 초기화
-  cellTypes.forEach((trueType) => {
-    confusionMatrix[trueType] = {};
-    cellTypes.forEach((predictedType) => {
-      confusionMatrix[trueType][predictedType] = 0;
-    });
-  });
-  const metricsArrVal: MetricsVal = {
-    NES: confusionMatrix.NES.NES,
-    NEB: confusionMatrix.NEB.NEB,
-    ME: confusionMatrix.ME.ME,
-    MY: confusionMatrix.MY.MY,
-    PR: confusionMatrix.PR.PR,
-    LY: confusionMatrix.LY.LY,
-    LR: confusionMatrix.LR.LR,
-    LA: confusionMatrix.LA.LA,
-    MO: confusionMatrix.MO.MO,
-    EO: confusionMatrix.EO.EO,
-    BA: confusionMatrix.BA.BA,
-    BL: confusionMatrix.BL.BL,
-    PC: confusionMatrix.PC.PC,
-    NR: confusionMatrix.NR.NR,
-    GP: confusionMatrix.GP.GP,
-    PA: confusionMatrix.PA.PA,
-    AR: confusionMatrix.AR.AR,
-    Total: 0,
-    Recall: 0,
-    Precision: 0,
-    F1Score: 0,
-    TruePositives: 0,
-    TrueNegatives: 0,
-    FalsePositives: 0,
-    FalseNegatives: 0,
-    Accuracy: 0,
-  };
-  // 오차 행렬 업데이트
-  groundTruth.forEach((cell: any, index: any) => {
-    const trueType = cell.title as CellType;
-    const trueImages = cell.images.map((image: any) => image.fileName);
-    const predictedType = predicted[index].title as CellType;
-    const predictedImages = predicted[index].images.map((image: any) => image.fileName);
-
-    if (cellTypes.includes(trueType) && cellTypes.includes(predictedType)) {
-      // 정답과 예측값이 같으면 대각선에 해당하므로 해당 셀에 값을 증가
-      if (trueImages.some((image) => predictedImages.includes(image))) {
-        confusionMatrix[trueType][predictedType]++;
-      }
-    } else {
-      console.warn(`Invalid cell title: trueType - ${trueType}, predictedType - ${predictedType}`);
-    }
-  });
-
-
-  const metrics: MetricsVal = metricsArrVal;
-  // 오차 행렬의 Total 값 계산
-  cellTypes.forEach((trueType) => {
-    cellTypes.forEach((predictedType) => {
-      metrics.Total += confusionMatrix[trueType][predictedType];
-    });
-  });
-
-  let truePositives = 0;
-  let trueNegatives = 0; // 수정: trueNegatives 변수 추가
-  let falsePositives = 0;
-  let falseNegatives = 0;
-  let total = 0;
-
-  cellTypes.forEach((trueType) => {
-    cellTypes.forEach((predictedType) => {
-      const count = confusionMatrix[trueType][predictedType];
-      total += count;
-
-      if (trueType === predictedType) {
-        truePositives += count;
-      } else {
-        falsePositives += count;
-        falseNegatives += confusionMatrix[predictedType][trueType];
-      }
-    });
-    trueNegatives += total - truePositives; // 수정: trueNegatives 계산
-  });
-
-  // Recall, Precision, F1-Score 계산
-  const recall = calculateRecall(truePositives, truePositives + falseNegatives);
-  const precision = calculatePrecision(truePositives, falsePositives);
-  const f1Score = calculateF1Score(recall, precision);
-
-  // 소수점까지 나타내기
-  const formattedRecall = Number(recall.toFixed(2));
-  const formattedPrecision = Number(precision.toFixed(2));
-  const formattedF1Score = Number(f1Score.toFixed(2));
-
-  // Accuracy 계산
-  const accuracy = (truePositives + trueNegatives) / total;
-  const formattedAccuracy = Number(accuracy.toFixed(2));
-
-  const excelData = formatDataForExcel(confusionMatrix, {
-    ...metrics,
-    Total: total,
-    Recall: formattedRecall,
-    Precision: formattedPrecision,
-    F1Score: formattedF1Score,
-    Accuracy: formattedAccuracy,
-  });
-
-  const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(excelData);
-  const wb: XLSX.WorkBook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'ConfusionMatrix');
-  XLSX.writeFile(wb, 'confusion_matrix.xlsx');
-
+ //
 }
-
-const formatDataForExcel = (confusionMatrix: Record<CellType, Record<CellType, number>>, metrics: MetricsVal): any[] => {
-  const cellTypes: CellType[] = ["NES", "NEB", "ME", "MY", "PR", "LY", "LR", "LA", "MO", "EO", "BA", "BL", "PC", "NR", "GP", "PA", "AR"];
-
-  const excelData: any[] = [];
-  const headerRow: any[] = [''].concat(cellTypes).concat(['Total', 'Recall', 'Precision', 'F1-Score']);
-
-  excelData.push(headerRow);
-
-  cellTypes.forEach((trueType) => {
-    const row: any[] = [trueType];
-    cellTypes.forEach((predictedType) => {
-      row.push(confusionMatrix[trueType][predictedType]);
-    });
-    row.push(metrics[`${trueType}`], metrics.Recall, metrics.Precision, metrics.F1Score);
-    excelData.push(row);
-  });
-
-  const totalRow: any[] = ['Total'];
-  cellTypes.forEach((type) => {
-    totalRow.push(metrics[`${type}`]);
-  });
-  totalRow.push(metrics.Total, 'Accuracy', metrics.Accuracy);
-
-  excelData.push(totalRow);
-
-  return excelData;
-};
-
 
 const drawCellMarker = async (imgResize?: boolean) => {
   if (!imgResize) {
@@ -797,7 +699,7 @@ const scrollToElement = (itemId: number) => {
 
 function rgbReset() {
   imageRgb.value = [0, 0, 0];
-  opacity.value = '1';
+  opacity.value = '0.9';
   changeImageRgb('reset');
 }
 
@@ -815,7 +717,7 @@ function imgSizeReset() {
 
 function brightnessReset() {
   imgBrightness.value = 100;
-  opacity.value = '1';
+  opacity.value = '0.9';
   changeImageRgb('reset');
 }
 
@@ -826,7 +728,7 @@ function changeImageRgb(reset: string) {
     return;
   }
   if (reset !== 'reset') {
-    opacity.value = '0.85';
+    opacity.value = '0.9';
   }
   const red = 255 - imageRgb.value[0];
   const green = 255 - imageRgb.value[1];
@@ -848,11 +750,12 @@ function changeImgBrightness(event: any) {
   const red = imageRgb.value[0];
   const green = imageRgb.value[1];
   const blue = imageRgb.value[2];
+  const brightness = event?.target?.value;
 
   wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {
       // 각 색상 채널 개별적으로 조절
-      image.filter = `opacity(0.85) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${event?.target?.value}%)`;
+      image.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
     });
   });
 }
@@ -864,12 +767,9 @@ function changeImageSize(event: any) {
       let currentWidth = event?.target?.value;
       let currentHeight = event?.target?.value;
 
-      // 크기를 더하거나 빼는 값
-      const sizeChange = 0;
-
       // 이미지의 width와 height를 조절
-      image.width = Number(currentWidth) + Number(sizeChange);
-      image.height = Number(currentHeight) + Number(sizeChange);
+      image.width = Number(currentWidth);
+      image.height = Number(currentHeight);
     });
   });
   drawCellMarker(true);
@@ -886,6 +786,9 @@ function addToRollbackHistory() {
 
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
+  if(isBeforeChild.value){
+    return;
+  }
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
@@ -1110,6 +1013,9 @@ function isSelected(image: any) {
 }
 
 async function onDrop(targetItemIndex: any) {
+  if(isBeforeChild.value){
+    return;
+  }
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);

@@ -19,6 +19,7 @@
             slot?.analyzedDttm ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
           }}
         </td>
+        <!--        {{ slot?.state }}-->
         <td>{{ getCommonCode('14', slot?.state) }}</td>
       </tr>
       </tbody>
@@ -32,14 +33,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps , nextTick , ref, watch} from "vue";
+import {computed, defineProps, nextTick, ref, watch} from "vue";
 import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {useStore} from "vuex";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 // 스토어
 const store = useStore();
-const props = defineProps(['parsedData', 'startStatus','pb100aCassette']);
+const props = defineProps(['parsedData', 'startStatus', 'pb100aCassette']);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 
 // end 스토어
@@ -48,44 +49,44 @@ const dspOrderList = ref<any>([]);
 watch(
     () => props.parsedData,
     (newVal) => {
-      // console.log('parsedData',newVal)
+      console.log('orderList parser',newVal)
       runningInfoGet(newVal);
     },
-    { deep: true }
+    {deep: true}
 );
 
 watch(
     () => props.pb100aCassette,
     (newVal) => {
-      if(newVal === 'reset'){
+      if (newVal === 'reset') {
         dspOrderList.value = [];
-        console.log('pb100aCassette 초기화',dspOrderList.value)
+        console.log('pb100aCassette 초기화', dspOrderList.value)
       }
     },
-    { deep: true }
+    {deep: true}
 );
 
 
 watch(
     () => props.startStatus,
     (newVal) => {
-      if(newVal === true){
+      if (newVal === true) {
         dspOrderList.value = [];
       }
     },
-    { deep: true }
+    {deep: true}
 );
 const runningInfoGet = async (data: any) => {
   const parsedData = data
-  if(parsedData.jobCmd === 'RUNNING_INFO'){
+  if (parsedData.jobCmd === 'RUNNING_INFO') {
     const currentSlot = parsedData?.slotInfo
     if (currentSlot) {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
       if (existingItemIndex === -1 && barcodeNo !== '') {
-        if(dspOrderList.value.length > 1){
-          dspOrderList.value[dspOrderList.value.length - 1].state = '3';
-        }
+        // if (dspOrderList.value.length > 1) {
+        //   dspOrderList.value[dspOrderList.value.length - 1].state = '04';
+        // }
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
