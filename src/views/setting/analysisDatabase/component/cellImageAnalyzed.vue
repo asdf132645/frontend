@@ -140,6 +140,7 @@
           </select>
           <Datepicker v-model="backupStartDate"></Datepicker>
           <Datepicker v-model="backupEndDate"></Datepicker>
+          <button class="backupBtn" @click="createBackup">backup</button>
         </div>
       </div>
     </div>
@@ -170,8 +171,10 @@ import {
 import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {useStore} from "vuex";
-import { messages } from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 import EventBus from "@/eventBus/eventBus";
+import moment from "moment";
+import {backUpDate} from "@/common/api/service/backup/wbcApi";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -192,8 +195,9 @@ const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
 const alarmCount = ref('5');
 const keepPage = ref(false);
-const backupStartDate = ref(new Date());
-const backupEndDate = ref(new Date());
+const backupStartDate = ref(moment().local().toDate());
+const backupEndDate = ref(moment().local().toDate());
+
 const saveHttpType = ref('');
 const drive = ref<any>([]);
 const backupDrive = ref<any>([]);
@@ -203,17 +207,19 @@ const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const store = useStore();
 
-const handleLoginSuccess = async () => {
-  console.log('?!@!@?')
-  testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb'
-  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
-  analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
-  await cellImgGet();
-  await driveGet();
-  await cellImgSet();
-}
+const createBackup = async () => {
+  const backupDto = {
+    startDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 시작일
+    endDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 종료일
+    backupPath: backupRootPath.value, // 백업 경로
+    sourceFolderPath: `${pbiaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
+  };
 
+  const res = await backUpDate(backupDto);
+  if(res){
+    console.log(res)
+  }
+}
 
 onMounted(async () => {
   await nextTick();
@@ -282,8 +288,8 @@ const cellImgGet = async () => {
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;
         keepPage.value = data.keepPage;
-        backupStartDate.value = new Date(data.backupStartDate);
-        backupEndDate.value = new Date(data.backupEndDate);
+        backupStartDate.value = moment(data.backupStartDate).local().toDate();
+        backupEndDate.value = moment(data.backupEndDate).local().toDate();
       }
     }
   } catch (e) {
@@ -309,8 +315,8 @@ const cellImgSet = async () => {
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
     backupPath: backupRootPath.value,
-    backupStartDate: backupStartDate.value.toISOString().split('T')[0],
-    backupEndDate: backupEndDate.value.toISOString().split('T')[0],
+    backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+    backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
   }
 
   try {
@@ -334,7 +340,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
       sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
-      sessionStorage.setItem('keepPage',String(data?.keepPage));
+      sessionStorage.setItem('keepPage', String(data?.keepPage));
       console.log(result)
     }
 
