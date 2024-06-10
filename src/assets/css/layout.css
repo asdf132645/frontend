@@ -1121,6 +1121,10 @@ h3.titleH3 {
     padding: 10px;
 }
 
+.settingDatePickers > select {
+    max-width: 165px;
+}
+
 h3.titleH3 button {
     color: #fff;
     border: 1px solid #fff;

@@ -20,12 +20,11 @@
       <select v-model="wbcCount" :disabled="isRunningState">
         <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState" >
+      <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState">
         <option v-for="option in stitchCountOptions" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>
       </select>
-<!--      {{ isInit }}-->
       <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
@@ -45,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, getCurrentInstance, computed, watch, onMounted, nextTick} from "vue";
+import {ref, computed, watch, onMounted, nextTick} from "vue";
 
 import {useStore} from "vuex";
 import {
@@ -59,8 +58,7 @@ import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import process from "process";
-import {testBmTypeList, testTypeList} from "@/common/defines/constFile/settings";
+import {testBmTypeList} from "@/common/defines/constFile/settings";
 
 
 const store = useStore();
@@ -77,21 +75,13 @@ const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
 const userId = ref('');
-
 const analysisType = ref();
 const wbcCount = ref();
 const stitchCount = ref();
 const bfSelectFiles = ref([]);
-
-// 스토어 end
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
 const commonDataGet = computed(() => store.state.commonModule);
-
-//내부 변수
 const showStopBtn = ref(false);
 const btnStatus = ref('');
-
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -109,7 +99,7 @@ onMounted(async () => {
   await initDataExecut();
 });
 
-const initDataExecut =async () =>{
+const initDataExecut = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
 
@@ -129,7 +119,7 @@ const initDataExecut =async () =>{
 }
 
 watch(commonDataGet.value, (value) => {
-  if(value.loginSetData === ''){
+  if (value.loginSetData === '') {
     initDataExecut();
     store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
   }
@@ -243,7 +233,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
           "bmSamplingSide": "01",
           "cellCount": wbcCount.value,
           "department": "s",
-          "stitchCount":stitchCount.value,
+          "stitchCount": stitchCount.value,
         }],
         "runningMode": "00",
         "positionMargin": "0"
@@ -285,7 +275,7 @@ const hideAlert = () => {
 
 
 const sendInit = () => { // 장비 초기화 진행
-  if(isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value){
+  if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
     showSuccessAlert(messages.alreadyInitialized);
     return;
   }
@@ -311,9 +301,9 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
         analysisType.value = data.analysisType;
-        if(window.PROJECT_TYPE === 'bm'){
+        if (window.PROJECT_TYPE === 'bm') {
           wbcCount.value = data.cellAnalyzingCount;
-        }else{
+        } else {
           switch (analysisType.value) {
             case '01':
               wbcCount.value = data.cellAnalyzingCount;

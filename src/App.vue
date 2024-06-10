@@ -45,12 +45,9 @@ import {useRouter} from "vue-router";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {createDeviceInfoApi, getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
-import * as process from "process";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import Analysis from "@/views/analysis/index.vue";
-
-
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -99,7 +96,7 @@ const getUserIp = async (ip: string) => {
 }
 
 watch(reqArr.value, async (newVal, oldVal) => {
-  if (!newVal.reqArr) return;  // 조건을 단순화하여 바로 리턴
+  if (!newVal.reqArr) return;
 
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
 
@@ -402,14 +399,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           totalCount: matchedWbcInfo?.totalCount,
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
-        const processInfoItem = {
-          cassetteNo: '',
-          barcodeId: completeSlot.barcodeNo,
-          patientId: completeSlot.patientId,
-          patientName: completeSlot.patientNm,
-          orderDate: stringToDateTime(completeSlot.orderDttm),
-          analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
-        };
 
         const newObj = {
           slotNo: completeSlot.slotNo,
@@ -466,8 +455,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           wbcMemo: '',
           rbcMemo: '',
         }
-
-
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
 
       }

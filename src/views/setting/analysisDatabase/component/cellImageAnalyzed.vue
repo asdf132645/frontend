@@ -135,7 +135,9 @@
       <div class="backupDivChild">
         <h5 class="mb1">Backup and Restore</h5>
         <div class="settingDatePickers">
-          <input placeholder="Backup Path" type="text" readonly v-model='backupPath' class="backupInput">
+          <select v-model='backupRootPath'>
+            <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
+          </select>
           <Datepicker v-model="backupStartDate"></Datepicker>
           <Datepicker v-model="backupEndDate"></Datepicker>
         </div>
@@ -185,15 +187,16 @@ const pbAnalysisType2 = ref('100');
 const stitchCount = ref('1');
 const bfAnalysisType = ref('100');
 const pbiaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
+const backupRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup');
 const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
 const alarmCount = ref('5');
 const keepPage = ref(false);
-const backupPath = ref('');
 const backupStartDate = ref(new Date());
 const backupEndDate = ref(new Date());
 const saveHttpType = ref('');
 const drive = ref<any>([]);
+const backupDrive = ref<any>([]);
 const cellimgId = ref('');
 const projectType = ref('pb');
 
@@ -203,8 +206,7 @@ const store = useStore();
 const handleLoginSuccess = async () => {
   console.log('?!@!@?')
   testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  console.log(window.PROJECT_TYPE);
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb'
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await cellImgGet();
@@ -217,7 +219,6 @@ onMounted(async () => {
   await nextTick();
   testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  console.log(window.PROJECT_TYPE);
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
 
@@ -233,13 +234,18 @@ const driveGet = async () => {
       if (!result?.data) {
       } else {
         const data = result.data;
+        const saveData = JSON.parse(JSON.stringify(data));
+        const backUpData = JSON.parse(JSON.stringify(data));
+
         const savePlace = window.PROJECT_TYPE === 'bm' ? 'BMIA_proc' : 'PBIA_proc';
+        const backupPlace = window.PROJECT_TYPE === 'bm' ? 'BM_backup' : 'PB_backup';
         for (const dataKey in data) {
-          data[dataKey] = data[dataKey] + `\\${savePlace}`;
+          saveData[dataKey] = saveData[dataKey] + `\\${savePlace}`;
+          backUpData[dataKey] = backUpData[dataKey] + `\\${backupPlace}`;
         }
-        drive.value = data;
+        drive.value = saveData;
+        backupDrive.value = backUpData;
       }
-      console.log(result)
 
     }
 
@@ -270,20 +276,16 @@ const cellImgGet = async () => {
         pbAnalysisType2.value = data.pbAnalysisType2;
         stitchCount.value = data.stitchCount;
         bfAnalysisType.value = data.bfAnalysisType;
-        pbiaRootPath.value = data.pbiaRootPath
+        pbiaRootPath.value = data.pbiaRootPath;
+        backupRootPath.value = data.backupPath;
         isNsNbIntegration.value = data.isNsNbIntegration;
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;
         keepPage.value = data.keepPage;
-        backupPath.value = data.backupPath;
         backupStartDate.value = new Date(data.backupStartDate);
         backupEndDate.value = new Date(data.backupEndDate);
-
       }
-      console.log(result)
-
     }
-
   } catch (e) {
 
     console.log(e);
@@ -306,7 +308,7 @@ const cellImgSet = async () => {
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
-    backupPath: backupPath.value,
+    backupPath: backupRootPath.value,
     backupStartDate: backupStartDate.value.toISOString().split('T')[0],
     backupEndDate: backupEndDate.value.toISOString().split('T')[0],
   }

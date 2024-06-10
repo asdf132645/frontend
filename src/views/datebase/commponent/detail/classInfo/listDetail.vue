@@ -5,7 +5,9 @@
   <div class="wbcContent">
     <div class="topClintInfo">
       <ul>
-        <li>{{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)}}</li>
+        <li>
+          {{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}
+        </li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>
@@ -16,7 +18,8 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable' @nextPage="nextPage"
+      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'
+                 @nextPage="nextPage"
                  @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
     </div>
 
@@ -58,7 +61,6 @@
             IMG Setting
           </button>
           <div class="imgSet" v-show="imgSet">
-
             <div>
               <font-awesome-icon :icon="['fas', 'sun']"/>
               Brightness {{ imgBrightness }}
@@ -100,6 +102,7 @@
 
           </div>
         </div>
+        <button v-if="false" @click="classCompare">Class Compare</button>
         <button @click="rollbackChanges" class="rollbackButton">
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
@@ -108,7 +111,7 @@
 
       <div>
         <ul class="wbcInfoDbUl">
-          <template v-for="(item) in wbcInfo" :key="item.id" >
+          <template v-for="(item) in wbcInfo" :key="item.id">
             <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'">
               <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
                 <p>{{ item?.title }}</p>
@@ -117,7 +120,7 @@
             </li>
           </template>
         </ul>
-        <ul class="cellImgBox">
+        <ul class="cellImgBox" v-if="!classCompareShow">
           <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
             <div v-show="item?.count !== '0' && item?.count !== 0">
               <p class="mt1">
@@ -166,6 +169,28 @@
             </ul>
           </li>
         </ul>
+        <div v-else>
+          <div>
+            <select>
+              <option>1</option>
+            </select>
+            <div>
+              <div v-show="wbcInfo[0]?.count !== '0' && wbcInfo[0]?.count !== 0">
+                <p class="mt1">
+                  <input type="checkbox" @input="allCheckChange($event,wbcInfo[0].title)"
+                         :checked="selectedTitle === wbcInfo[0].title">
+                  {{ wbcInfo[0]?.title }}
+                  ({{ wbcInfo[0]?.count }})</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <select>
+              <option>1</option>
+            </select>
+            <div></div>
+          </div>
+        </div>
       </div>
       <!--   우클릭 항목 메뉴   -->
       <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }"
@@ -283,7 +308,7 @@ const contextMenuX = ref(0);
 const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 const isNext = ref(false);
-
+const classCompareShow = ref(false);
 onMounted(async () => {
   wbcInfo.value = [];
   selectItems.value = selectItemsData ? JSON.parse(selectItemsData) : null;
@@ -313,15 +338,18 @@ watch(imageSize, (newVal) => {
 watch(isBeforeChild, (newVal) => {
   // console.log('ssss')
   getWbcCustomClasses(false, null);
-},{deep: true});
+}, {deep: true});
 
 watch(imageRgb, (newVal) => {
   const red = newVal[0];
   const green = newVal[1];
   const blue = newVal[2];
   localStorage.setItem('imageRgb', JSON.stringify([red, green, blue]));
-},{deep: true});
+}, {deep: true});
 
+const classCompare = () => {
+  classCompareShow.value = !classCompareShow.value;
+}
 
 const imgSetLocalStorage = async () => {
   const storedBrightness = localStorage.getItem('imgBrightness');
@@ -330,18 +358,18 @@ const imgSetLocalStorage = async () => {
   if (storedRgb) {
     imageRgb.value = JSON.parse(storedRgb);
   }
-  if(storedBrightness){
+  if (storedBrightness) {
     imgBrightness.value = Number(storedBrightness);
   }
 
-  if (imageSizeCopy){
+  if (imageSizeCopy) {
     imageSize.value = Number(imageSizeCopy);
   }
 
-  const red = 255 -  imageRgb.value[0];
-  const green = 255 -  imageRgb.value[1];
-  const blue = 255 -  imageRgb.value[2];
-  wbcInfo.value.forEach((item:any) => {
+  const red = 255 - imageRgb.value[0];
+  const green = 255 - imageRgb.value[1];
+  const blue = 255 - imageRgb.value[2];
+  wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {
       image.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
       image.width = Number(imageSize.value);
@@ -358,7 +386,7 @@ const nextPage = () => {
   isNext.value = true;
 }
 
-const isNextFalse= () => {
+const isNextFalse = () => {
   isNext.value = false;
 }
 
@@ -377,7 +405,7 @@ const getNewImageUrl = (fileName: any, title: any): any => {
       return el.images && el.images.find((image: any) => image.fileName === fileName);
     });
     if (matchingImage.title !== title) {
-      return { fileNameMa: fileName, idMa: matchingImage.id, titleMa: matchingImage.title };
+      return {fileNameMa: fileName, idMa: matchingImage.id, titleMa: matchingImage.title};
     }
   }
   return null; // 새로운 이미지 URL이 없는 경우 null을 반환
@@ -405,7 +433,7 @@ document.addEventListener('click', (event) => {
   }
 });
 const openContextMenu = (event: MouseEvent, item: any) => {
-  if (isBeforeChild.value){
+  if (isBeforeChild.value) {
     return;
   }
   contextMenuVisible.value = true;
@@ -483,9 +511,9 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         title: abbreviation,
       };
       let wbcinfo = [];
-      if(isBeforeChild.value){
+      if (isBeforeChild.value) {
         wbcinfo = selectItems.value.wbcInfo.wbcInfo[0];
-      }else{
+      } else {
         wbcinfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : selectItems.value.wbcInfo.wbcInfo[0];
       }
       const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
@@ -613,7 +641,7 @@ const refreshClass = async (data: any) => {
 }
 
 const excelDownload = () => {
- //
+  //
 }
 
 const drawCellMarker = async (imgResize?: boolean) => {
@@ -712,11 +740,6 @@ const setRef = (itemId: any) => {
   return (el: any) => {
     if (el) {
       refsArray.value[itemId] = el;
-
-      if (!cellRefs.value[itemId]) {
-        cellRefs.value[itemId] = {};
-      }
-      cellRefs.value[itemId] = el;
     }
   };
 };
@@ -818,7 +841,7 @@ function addToRollbackHistory() {
 
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
-  if(isBeforeChild.value){
+  if (isBeforeChild.value) {
     return;
   }
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
@@ -1044,7 +1067,7 @@ function isSelected(image: any) {
 }
 
 async function onDrop(targetItemIndex: any) {
-  if(isBeforeChild.value){
+  if (isBeforeChild.value) {
     return;
   }
   addToRollbackHistory();
@@ -1383,8 +1406,8 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   let url = '';
   if (isBeforeChild.value) {
 
-    if(getNewImageUrl(imageName, title)){
-      const { idMa , titleMa } =getNewImageUrl(imageName, title);
+    if (getNewImageUrl(imageName, title)) {
+      const {idMa, titleMa} = getNewImageUrl(imageName, title);
       folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${idMa}_${titleMa}`;
     }
 
