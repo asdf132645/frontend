@@ -27,6 +27,7 @@
 <script setup lang="ts">
 
 import AppHeader from "@/components/layout/AppHeader.vue";
+
 const router = useRouter();
 import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
@@ -76,6 +77,7 @@ const parsedDataProps = ref<any>({});
 const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
+const deleteData = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getUserIp(ip)
@@ -97,7 +99,11 @@ const getUserIp = async (ip: string) => {
 
 watch(reqArr.value, async (newVal, oldVal) => {
   if (!newVal.reqArr) return;
-
+  if (deleteData.value) {
+    deleteData.value = false;
+    await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
+    return
+  }
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
 
   if (uniqueReqArr.length === 0) return;
@@ -193,9 +199,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   if (commonDataGet.value.viewerCheck !== 'main') {
     return;
   }
+  deleteData.value = false;
   try {
     if (typeof data === 'string') {
-      // await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     } else {
       hideAlert();
@@ -573,6 +580,8 @@ const getNormalRange = async () => {
 
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
+  console.log(payload.jobCmd === 'SYSINFO')
+  console.log(payload.jobCmd === 'RUNNING_INFO')
   const executeAfterDelay = async () => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
@@ -581,6 +590,9 @@ const sendMessage = async (payload: any) => {
   };
 
   await executeAfterDelay();
+  if (payload.jobCmd === 'RUNNING_INFO' || payload.jobCmd === 'SYSINFO') {
+    deleteData.value = true;
+  }
 };
 
 
