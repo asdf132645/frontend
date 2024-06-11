@@ -49,7 +49,6 @@ const dspOrderList = ref<any>([]);
 watch(
     () => props.parsedData,
     (newVal) => {
-      console.log('orderList parser',newVal)
       runningInfoGet(newVal);
     },
     {deep: true}
