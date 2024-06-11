@@ -199,7 +199,8 @@ onMounted(async () => {
   await getOrderClass();
   wbcMemo.value = props.selectItems.wbcMemo;
   await afterChang(clonedWbcInfoStore.value);
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = window.PROJECT_TYPE === 'bm';
   // 첫 진입시
   if (props.selectItems.submitState === "") {
@@ -226,7 +227,8 @@ watch(userModuleDataGet.value, (newUserId) => {
 
 watch(() => props.wbcInfo, (newItem) => {
   wbcMemo.value = props.selectItems.wbcMemo;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', pbiaRootDir.value, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {

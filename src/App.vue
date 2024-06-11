@@ -202,6 +202,14 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
+      instance?.appContext.config.globalProperties.$socket.emit('message', {
+        type: 'SEND_DATA',
+        payload: {
+          jobCmd: 'clientExit',
+          reqUserId: '',
+          reqDttm: '',
+        }
+      });
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     } else {

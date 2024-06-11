@@ -62,7 +62,8 @@ onMounted(async () => {
 
 async function getImageList(folderName: string, list: []) {
   const slotId = props.selectItems.slotId || '';
-  const folderPath = `${pbiaRootPath}/${slotId}/${dirName.rbcClassDirName}/${folderName}`;
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath;
+  const folderPath = `${path}/${slotId}/${dirName.rbcClassDirName}/${folderName}`;
 
   try {
     const response = await fetch(`${apiBaseUrl}/folders?folderPath=${folderPath}`);
@@ -143,7 +144,9 @@ function onDrop(targetSection: string) {
 
 async function moveImage(targetSection: string, imgName: string) {
   const slotId = props.selectItems.slotId || '';
-  const path = `${pbiaRootPath}/${slotId}/${dirName.rbcClassDirName}`
+  const pathNew = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath;
+
+  const path = `${pathNew}/${slotId}/${dirName.rbcClassDirName}`
   const sourceFolder = targetSection === 'malaria' ? `${path}/${dirName.noMalariaDirName}` : `${path}/${dirName.malariaDirName}`;
   const destinationFolder = targetSection === 'malaria' ? `${path}/${dirName.malariaDirName}` : `${path}/${dirName.noMalariaDirName}`;
 

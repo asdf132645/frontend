@@ -947,7 +947,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
     wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
     selectItemsVal = selectItems.value;
   } else {
-    wbcInfo.value = upDownData;
+    wbcInfo.value = upDownData.wbcInfoAfter.length !== 0 ? upDownData.wbcInfoAfter : upDownData.wbcInfo.wbcInfo[0];
     selectItemsVal = upDownData;
   }
   if (selectItemsVal.wbcInfoAfter && selectItemsVal.wbcInfoAfter.length !== 0 && !isBeforeChild.value) {
