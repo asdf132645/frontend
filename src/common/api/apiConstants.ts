@@ -361,6 +361,12 @@ export const apiConstants = {
                 requiresToken: false,
             }
         }
+    },
+    backUp:{
+        backUpDate:{
+            endpoint: 'backup/post',
+            requiresToken: false,
+        }
     }
 
 };

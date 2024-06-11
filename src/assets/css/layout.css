@@ -1122,9 +1122,15 @@ h3.titleH3 {
 }
 
 .settingDatePickers > select {
-    max-width: 165px;
+    max-width: 130px;
 }
-
+button.backupBtn {
+    margin-left: 14px;
+    background: #a9fff6;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
 h3.titleH3 button {
     color: #fff;
     border: 1px solid #fff;
