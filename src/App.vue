@@ -580,8 +580,6 @@ const getNormalRange = async () => {
 
 // 메시지를 보내는 함수
 const sendMessage = async (payload: any) => {
-  console.log(payload.jobCmd === 'SYSINFO')
-  console.log(payload.jobCmd === 'RUNNING_INFO')
   const executeAfterDelay = async () => {
     instance?.appContext.config.globalProperties.$socket.emit('message', {
       type: 'SEND_DATA',
@@ -590,9 +588,7 @@ const sendMessage = async (payload: any) => {
   };
 
   await executeAfterDelay();
-  if (payload.jobCmd === 'RUNNING_INFO' || payload.jobCmd === 'SYSINFO') {
-    deleteData.value = true;
-  }
+  deleteData.value = true;
 };
 
 

@@ -263,7 +263,7 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
-const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
+const pbiaRootPath = ref<any>(store.state.commonModule.pbiaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
@@ -318,7 +318,8 @@ onMounted(async () => {
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
-
+  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.pbiaRootPath;
+  pbiaRootPath.value = path;
   // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
   await imgSetLocalStorage();
   // end
@@ -637,6 +638,8 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 
 const refreshClass = async (data: any) => {
   selectItems.value = data;
+  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.pbiaRootPath;
+  pbiaRootPath.value = path;
   await getWbcCustomClasses(true, data);
 }
 
