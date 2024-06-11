@@ -77,7 +77,8 @@ const getImageUrls = (imageName: string, type: string) => {
       break;
   }
   const slotId = props.selectItems?.slotId || "";
-  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${folderName}`;
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+  const folderPath = `${path}/${slotId}/${folderName}`;
 
   return `${apiBaseUrl}/folders?folderPath=${folderPath}/${imageName}`;
 };
@@ -101,16 +102,18 @@ const getImageUrlsSmallImg = (imageName: string, type: string) => {
       break;
   }
   const slotId = props.selectItems?.slotId || "";
-  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${folderName}`;
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+  const folderPath = `${path}/${slotId}/${folderName}`;
 
   return `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}`;
 };
 
 const getImgUrl = () => {
   const slotId = props.selectItems?.slotId || "";
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
 
   for (const item of strArray) {
-    axios.get(`${apiBaseUrl}/folders?folderPath=${sessionStorage.getItem('pbiaRootPath')}/${slotId}/${item}`)
+    axios.get(`${apiBaseUrl}/folders?folderPath=${path}/${slotId}/${item}`)
         .then(response => {
           switch (item) {
             case '02_Particle_Image':

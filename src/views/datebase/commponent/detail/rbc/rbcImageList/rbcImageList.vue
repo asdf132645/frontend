@@ -263,7 +263,8 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
   formData.append('file', blob, `${props.selectItems.slotId}_new.json`);
-  const filePath = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath.value;
+  const filePath = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
   try {
     const response = await fetch(`http://localhost:3002/jsonReader/upload?filePath=${filePath}`, {
       method: 'POST',
@@ -307,11 +308,12 @@ const rbcClassRightClick = (event: MouseEvent) => {
 
 
 const rbcMarker = async (newItem: any) => {
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath.value;
 
-  const url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response = await readJsonFile({fullPath: url});
   if (response.data === 'not file' || props.isBefore) {
-    const url = `${pbiaRootPath.value}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+    const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
     const response = await readJsonFile({fullPath: url});
     rbcInfoPathAfter.value = response?.data[0].rbcClassList;
   } else {
@@ -388,7 +390,9 @@ const drawRbcMarker = async (classInfoArr: any) => {
 
 
 const initElement = async () => {
-  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath.value;
+
+  const folderPath = `${path}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
 

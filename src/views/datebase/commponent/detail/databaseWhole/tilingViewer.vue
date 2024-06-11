@@ -10,8 +10,6 @@
 import {defineProps, onMounted, ref, watch, computed, nextTick} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { useStore } from "vuex";
-import {getBarcodeImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const props = defineProps(['selectItems']);
 const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
@@ -35,7 +33,8 @@ watch( () => props.selectItems, async(newItem) => {
 const onImageLoad = async (bool: boolean) => {
   const imgElement = hideImageRef.value;
   const slotId = props.selectItems?.slotId || "";
-  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/01_Stitching_Image`;
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+  const folderPath = `${path}/${slotId}/01_Stitching_Image`;
 
   const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
   hideImage.value = imageUrl;
@@ -60,7 +59,9 @@ const initElement = async (imageHeight: any, bool: boolean) => {
     viewer.destroy();
   }
   const slotId = props.selectItems?.slotId || "";
-  const folderPath = `${sessionStorage.getItem('pbiaRootPath')}/${slotId}/01_Stitching_Image`;
+  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+
+  const folderPath = `${path}/${slotId}/01_Stitching_Image`;
 
   const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
   hideImage.value = imageUrl;
