@@ -155,7 +155,7 @@ export const firstCreateRbcDegreeData = async (userId: any) => {
     try {
         const result = await getRbcDegreeApi();
         if(!result.data){
-            await createRbcDegreeApi({categories: rbcDegreeList });
+            await createRbcDegreeApi(rbcDegreeList);
         }
     } catch (e) {
         console.error(e);
