@@ -1,7 +1,6 @@
 // src/rbcDegree/dto/rbcDegree.dto.ts
 export interface RbcDegreeDto {
     categories: CategoryDto[];
-    userId?: number;
 }
 
 export interface CategoryDto {
@@ -28,7 +27,6 @@ export interface ClassItem {
 
 export interface RbcDegreeRes {
     categories: Category[];
-    userId?: number;
     id?: number;
 }
 

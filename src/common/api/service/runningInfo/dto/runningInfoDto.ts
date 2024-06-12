@@ -19,25 +19,6 @@ interface ClassInfo {
     degree: string;
 }
 
-interface ProcessInfo {
-    cassetteNo: number;
-    barcodeId: string;
-    patientId: string;
-    patientName: string;
-    wbcCount: string;
-    orderDate: string;
-    analyzedDttm: string;
-}
-
-interface Order {
-    id: string;
-    barcodeId: string;
-    patientName: string;
-    orderDate: string;
-    analyzedDttm: string;
-    state: string;
-}
-
 interface RuningInfo {
     id?: number;
     state?: boolean;
@@ -53,9 +34,6 @@ interface RuningInfo {
     orderDttm: Date;
     testType: string;
     analyzedDttm: Date;
-    // pltCount: string;
-    malariaCount: string;
-    maxRbcCount: string;
     stateCd: string;
     tactTime: string;
     maxWbcCount: string;
@@ -63,18 +41,16 @@ interface RuningInfo {
     runningPath: any[];
     wbcInfo: WbcInfo[];
     rbcInfo: RbcInfo[];
-    bminfo: any[];
     userId: number;
     cassetId: string;
     isNormal: string;
-    processInfo: ProcessInfo;
-    orderList: Order[];
     submitState?:string;
     submitOfDate?: Date;
     signedUserId?:string;
-    classificationResult?: any[];
     isNsNbIntegration?: string;
+    rootPath?: string;
 }
+
 
 interface RunningInfoRes {
     data: RuningInfo[];
@@ -95,4 +71,4 @@ interface RuningInfoApiRequest {
 }
 
 
-export { RuningInfo, WbcInfo, RbcInfo, ClassInfo, ProcessInfo, Order, RunningInfoRes, RuningInfoApiRequest };
+export { RuningInfo, WbcInfo, RbcInfo, ClassInfo, RunningInfoRes, RuningInfoApiRequest };
