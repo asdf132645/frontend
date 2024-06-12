@@ -462,7 +462,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           //   analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
           //   state: completeSlot.stateCd,
           // },
-          submitState: 'Ready',
+          submitState: '',
           submitOfDate: '',
           signedUserId: '',
           // classificationResult: [],

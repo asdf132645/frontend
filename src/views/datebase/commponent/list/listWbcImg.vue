@@ -58,7 +58,6 @@ function createAllImages(): void {
 
 function getImageUrl(imageName: any, id: string, title: string): string {
   const { selectedItem } = props;
-  console.log(selectedItem?.rootPath)
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!selectedItem?.wbcInfo?.wbcInfo || selectedItem?.wbcInfo?.wbcInfo.length === 0) {
     return '';
