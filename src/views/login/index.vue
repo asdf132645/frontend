@@ -86,7 +86,7 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
-      await firstCellImgSet(String(result?.data?.user.id));
+      await firstCellImgSet();
       await firstSaveOrderClass(String(result.data?.user.id));
       await firstSaveNormalRange(String(result.data?.user.id));
       await firstCreateRbcDegreeData(String(result.data?.user.id));
@@ -110,10 +110,9 @@ const loginUser = async () => {
 const getUserIp = async (userId: string) => {
   try {
     const result = await getUserIpApi();
-    console.log('window.MAIN_API', window.MAIN_API === result.data)
-    if(result.data === window.MAIN_API || result.data === '1'){
+    if(result.data === '1' || window.APP_API_BASE_URL.includes(result.data)){
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
-      await updateAccount(userId, String(window.MAIN_API), 'main');
+      await updateAccount(userId, String(result.data), 'main');
     }else{
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
       await updateAccount(userId, result.data, 'viewer');
