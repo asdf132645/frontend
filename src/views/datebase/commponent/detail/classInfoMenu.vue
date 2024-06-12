@@ -41,6 +41,14 @@
       </button>
     </div>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -55,8 +63,12 @@ import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const emits = defineEmits();
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 const projectType = ref<any>('bm');
 const selectItemsData = ref(sessionStorage.getItem("selectItems"));
 const selectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
@@ -93,7 +105,9 @@ onUnmounted(async () => {
   }
   await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
 })
-
+const hideAlert = () => {
+  showAlert.value = false;
+};
 const deleteConnectionStatus = async ()  => {
   const selectItemsData = ref(sessionStorage.getItem("selectItems"));
   const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
@@ -172,6 +186,7 @@ async function getRunningInfoDetail(id: any) {
     if (result) {
       // console.log(result);
       resData.value = result.data;
+      console.log(resData.value.state);
     }
   } catch (e) {
     console.error(e);
@@ -202,7 +217,12 @@ const moveWbc = async (direction: any) => {
 
 const processNextDbIndex = async (nextDbIndex: any, direction: any, currentDbIndex: number) => {
   const res = await getRunningInfoDetail(nextDbIndex.id);
-
+  if (resData.value.state){
+    showAlert.value = true;
+    alertType.value = 'success';
+    alertMessage.value = 'Someone else is editing.';
+    return;
+  }
   if (res && Object.keys(resData.value?.wbcInfo).length !== 0) {
     await handleDataResponse(nextDbIndex, res);
   } else {

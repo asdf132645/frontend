@@ -37,7 +37,7 @@
     <tbody v-if="dbData.length !== 0">
     <template v-for="(item, idx) in dbData"
               :key="item.id">
-      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submitState === 'Submit', rock: item.state, checkFirst: item.submitState === 'checkFirst' }"
+      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submitState === 'Submit', rock: item.state && item.pcIp !== myIp, checkFirst: item.submitState === 'checkFirst' }"
           @click="selectItem(item)"
           @dblclick='rowDbClick(item)'
           ref="firstRow"
@@ -64,7 +64,8 @@
         <td> {{ submitStateChangeText(item?.submitState) }}</td>
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
-          <font-awesome-icon v-if="item?.submitState === 'Ready'" :icon="['fas', 'pen-to-square']" @click="editData(item)"/>
+          <font-awesome-icon v-if="item?.submitState === 'Ready'" :icon="['fas', 'pen-to-square']"
+                             @click="editData(item)"/>
         </td>
       </tr>
     </template>
@@ -188,7 +189,7 @@ const projectType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-
+const myIp = ref('');
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
@@ -214,6 +215,7 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 
 
 onMounted(async () => {
+  myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
   projectType.value = window.PROJECT_TYPE;
   try {
 
@@ -290,7 +292,7 @@ const rowRightClick = (item, event) => {
     return;
   }
   rightClickItem.value = item;
-  if(Object.keys(item?.wbcInfo).length !== 0){
+  if (Object.keys(item?.wbcInfo).length !== 0) {
     const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
     const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
     selectItemWbc.value = sortedArray;
@@ -300,7 +302,6 @@ const rowRightClick = (item, event) => {
     contextMenu.value.y = event.clientY;
     contextMenu.value.visible = true;
   }
-  // console.log('우클릭된 아이템:', props.dbData.filter(item => item.checked).length);
 };
 
 const handleCheckboxChange = (item) => {
@@ -320,7 +321,7 @@ const handleIntersection = (entries, observer) => {
 
 const showSuccessAlert = (message) => {
   showAlert.value = true;
-  alertType.value = 'success';
+  alertType.value = 'error';
   alertMessage.value = message;
 };
 
@@ -366,10 +367,10 @@ const rowDbClick = async (item) => {
   }
 
   let wbcInfoData = [];
-  if(Object.keys(item?.wbcInfo).length === 0){
+  if (Object.keys(item?.wbcInfo).length === 0) {
     wbcInfoData = projectType.value !== 'bm' ? basicWbcArr : basicBmClassList;
-    item.wbcInfo = projectType.value !== 'bm' ? {wbcInfo: [basicWbcArr]} : {wbcInfo:[basicBmClassList]};
-  }else{
+    item.wbcInfo = projectType.value !== 'bm' ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
+  } else {
     wbcInfoData = item?.wbcInfo?.wbcInfo[0];
   }
 
@@ -413,7 +414,6 @@ const filterWbcInfoBySiteAndTestType = (wbcInfo, testType) => {
   // wbcInfo 배열에서 filterArray에 있는 title을 가진 항목들을 필터링하여 반환
   return wbcInfo.filter(item => !filterArray.includes(item.title));
 };
-
 
 
 const getRbcDegreeData = async () => {
@@ -521,7 +521,13 @@ const deleteRow = async () => {
     }
 
     const idsToDelete = selectedItems.map(item => item.id);
-    const response = await deleteRunningApi(idsToDelete);
+    const path = selectedItems?.rootPath !== '' && selectedItems?.rootPath ? selectedItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+    const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
+    const req = {
+      ids: idsToDelete,
+      rootPath: rootArr
+    }
+    const response = await deleteRunningApi(req);
 
     if (response.success) {
       showSuccessAlert('Items deleted successfully');

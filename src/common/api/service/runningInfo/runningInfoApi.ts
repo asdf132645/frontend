@@ -25,8 +25,8 @@ export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiRespo
     return httpClient.httpGet(apiConstants.settings.runningInfo.get,`${queryString}`, true);
 };
 
-export const deleteRunningApi = async (ids: string[]): Promise<ApiResponse<void>> => {
-    return httpClient.httpDelete(apiConstants.settings.runningInfo.delete, ids, false);
+export const deleteRunningApi = async (req: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpDelete(apiConstants.settings.runningInfo.delete, req, true);
 };
 
 

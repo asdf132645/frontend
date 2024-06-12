@@ -110,12 +110,15 @@ const loginUser = async () => {
 const getUserIp = async (userId: string) => {
   try {
     const result = await getUserIpApi();
-    if(result.data === '1' || window.APP_API_BASE_URL.includes(result.data)){
+    if (result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data))) {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount(userId, String(result.data), 'main');
+      sessionStorage.setItem('pcIp', JSON.stringify(result.data));
+
     }else{
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
       await updateAccount(userId, result.data, 'viewer');
+      sessionStorage.setItem('pcIp', JSON.stringify(result.data));
     }
   } catch (e) {
     console.log(e);

@@ -204,6 +204,7 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       }
       rbcDegreeStandard.value.forEach((degreeStandard: any) => {
         rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
+        console.log(rbcClass.originalDegree)
         if (
             degreeStandard.category_id === rbcCategory.categoryId &&
             degreeStandard.class_id === rbcClass.classId

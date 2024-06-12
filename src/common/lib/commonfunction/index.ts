@@ -3,7 +3,6 @@ import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {ref} from "vue";
 
 export const stateDeleteCommon = async (originalDb: any, selectItemsId: any, id: any) => {
-    console.log(originalDb)
     try {
         const copiedObj = JSON.parse(JSON.stringify(originalDb));
 
