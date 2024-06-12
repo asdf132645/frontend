@@ -401,6 +401,9 @@ function hideImage(id: string, fileName: string, title?: string) {
 }
 
 const getNewImageUrl = (fileName: any, title: any): any => {
+  if(selectItems.value.wbcInfoAfter.length === 0){
+    return null;
+  }
   if (isBeforeChild.value) {
     const matchingImage = selectItems.value.wbcInfoAfter.find((el: any) => {
       return el.images && el.images.find((image: any) => image.fileName === fileName);

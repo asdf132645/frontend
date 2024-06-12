@@ -564,7 +564,7 @@ ul.nth1Child > :nth-child(3) {
 }
 
 .categories > ul > li {
-    padding-top: 10px;
+    padding-top: 5px;
     font-size: 0.8rem;
     height: 17px;
     /*margin-bottom: 2px;*/
