@@ -12,10 +12,11 @@
             <input class="loginInput" type="password" v-model="password" placeholder="password">
           </li>
         </ul>
-        <div class="mt1 loginFooter">
-          <input type="checkbox" id="checked" v-model="isAutoLoginEnabled">
-          <label class="loginLabel" for="checked">Save Login Profile</label>
-        </div>
+<!-- 자동 로그인시 Fullscreen이 안되는 문제가 발생하여 보류 -->
+<!--        <div class="mt1 loginFooter">-->
+<!--          <input type="checkbox" id="checked" v-model="isAutoLoginEnabled">-->
+<!--          <label class="loginLabel" for="checked">Save Login Profile</label>-->
+<!--        </div>-->
         <div class='loginBtn'>
           <button type="button" @click="loginUser">Login</button>
           <button type="button" @click="goJoinPage">Add User</button>
