@@ -7,9 +7,11 @@
             v-for="image in imageSet.images"
             :key="image.fileName"
             class="dbRightImages"
+            :class="['dbRightImages', {'selected-image': isSelectedImage(`${imageSet.id}-${image.fileName}`)}]"
             :src="getImageUrl(image.fileName, imageSet.id, imageSet.title)"
             @error="hideImage(imageSet.id, image.fileName)"
             v-show="!hiddenImages[`${imageSet.id}-${image.fileName}`]"
+            @click="clickImage(`${imageSet.id}-${image.fileName}`)"
         />
       </template>
     </div>
@@ -26,6 +28,7 @@ const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
+const selectedImage = ref('');
 
 onMounted(() => {
   allImages.value = [];
@@ -36,6 +39,19 @@ watch(() => props.selectedItem, () => {
   allImages.value = [];
   createAllImages();
 },{deep: true});
+
+
+const clickImage = (selectImageText: string) => {
+  if (selectedImage.value === selectImageText) {
+    selectedImage.value = '';
+  } else {
+    selectedImage.value = selectImageText
+  }
+}
+
+const isSelectedImage = (selectImageText: string) => {
+  return selectedImage.value === selectImageText;
+}
 
 function createAllImages(): void {
   if (!props.selectedItem?.wbcInfo) {
@@ -54,6 +70,7 @@ function createAllImages(): void {
     }
     return acc;
   }, []) || [];
+
 }
 
 function getImageUrl(imageName: any, id: string, title: string): string {
