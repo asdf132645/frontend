@@ -33,15 +33,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, nextTick, ref, watch} from "vue";
+import {computed, defineProps, ref, watch} from "vue";
 import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
-import {useStore} from "vuex";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 
 // 스토어
-const store = useStore();
 const props = defineProps(['parsedData', 'startStatus', 'pb100aCassette']);
-const siteCd = computed(() => store.state.commonModule.siteCd);
 
 // end 스토어
 const dspOrderList = ref<any>([]);

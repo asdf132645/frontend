@@ -172,16 +172,12 @@ const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
 const commonDataGet = computed(() => store.state.commonModule);
 const pbiaRootPath = commonDataGet.value.pbiaRootPath;
-const storedUser = sessionStorage.getItem('user');
-const getStoredUser = JSON.parse(storedUser || '{}');
-const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
 
 onMounted(async () => {
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
-  userId.value = getStoredUser.id || userModuleDataGet.value.userId;
   await getImagePrintData();
   await printPage();
 
