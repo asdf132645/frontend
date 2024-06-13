@@ -420,7 +420,7 @@ const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi();
     const data = result.data;
-    rbcDegreeStandard.value = data?.categories
+    rbcDegreeStandard.value = data
   } catch (e) {
     // console.log(e);
   }

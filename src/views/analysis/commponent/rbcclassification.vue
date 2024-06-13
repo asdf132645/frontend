@@ -316,7 +316,6 @@ const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi();
     const data = result.data;
-    console.log(data);
     rbcDegreeStandard.value = data;
   } catch (e) {
     // console.log(e);
