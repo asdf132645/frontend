@@ -1,7 +1,7 @@
 <!-- Alert.vue -->
 <template>
   <div v-if="isVisible" class="alert" :class="typeClass">
-    <p class="mb1">
+    <p class="mb1 alertMessage">
       {{ message }}
     </p>
     <button class="alertButton" @click="hideAlert">Close</button>

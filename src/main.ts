@@ -5,6 +5,7 @@ import router from './router';
 import store from './store';
 import './assets/css/global.css';
 import './assets/css/layout.css';
+import './assets/css/layoutExtraWide.css';
 import './assets/css/icoBtn.css';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
