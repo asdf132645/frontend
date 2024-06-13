@@ -18,7 +18,7 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='listTable'
+      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" type='listTable'
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
     </div>
@@ -223,7 +223,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveClassImagePost, moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import * as XLSX from 'xlsx';
@@ -245,7 +245,6 @@ import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSy
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import process from "process";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
@@ -253,8 +252,6 @@ const cellRefs: any = ref({});
 const selectedTitle = ref('');
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
-const originalDbData = sessionStorage.getItem("originalDbData");
-const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const store = useStore();
@@ -1371,13 +1368,11 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
 
     // originalDb 업데이트
-    const filteredItems = originalDb.value.filter((item: any) => item.id === selectItems.value.id);
-    if (filteredItems.length > 0) {
-      filteredItems.forEach((filteredItem: any) => {
-        filteredItem.wbcInfoAfter = clonedWbcInfo;
-      });
+    const res: any = await detailRunningApi(String(selectItems.value.id));
+    if (res) {
+      res.data.wbcInfoAfter = clonedWbcInfo;
     }
-    originalDbVal = filteredItems;
+    originalDbVal = [res.data];
   }
 
 

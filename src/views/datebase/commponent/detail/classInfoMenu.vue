@@ -56,12 +56,16 @@ import {computed, defineEmits, defineProps, getCurrentInstance, onMounted, onUnm
 import router from "@/router";
 
 import {ApiResponse} from "@/common/api/httpClient";
-import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {
+  clearPcIpState,
+  detailRunningApi,
+  pageUpDownRunnIngApi,
+  updatePcIpStateApi
+} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-import {stateDeleteCommon, stateUpdateCommon} from "@/common/lib/commonfunction";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
 import Alert from "@/components/commonUi/Alert.vue";
 
@@ -73,8 +77,6 @@ const projectType = ref<any>('bm');
 const selectItemsData = ref(sessionStorage.getItem("selectItems"));
 const selectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
 const resData = ref<any>([]);
-const originalDbData = ref(sessionStorage.getItem("originalDbData"));
-const originalDb = ref(originalDbData.value ? JSON.parse(originalDbData.value) : null);
 const wbcInfo = ref<any>([]);
 const instance = getCurrentInstance();
 const store = useStore();
@@ -86,9 +88,10 @@ const isButtonDisabled = ref(false);
 let timeoutId: number | undefined = undefined;
 const pageMoveDeleteStop = ref(false);
 const props = defineProps(['isNext']);
+const ipAddress = ref<any>('');
 
 watch(props.isNext, (newVal) => {
-  if(newVal){
+  if (newVal) {
     moveWbc('down')
   }
 });
@@ -97,10 +100,12 @@ onMounted(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getRunningInfoDetail(selectItems.value.id);
   pageMoveDeleteStop.value = true;
+  const ip = await getUserIpApi();
+  ipAddress.value = ip.data;
 });
 
 onUnmounted(async () => {
-  if(pageMoveDeleteStop.value){
+  if (pageMoveDeleteStop.value) {
     await deleteConnectionStatus();
   }
   await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
@@ -108,12 +113,11 @@ onUnmounted(async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-const deleteConnectionStatus = async ()  => {
-  const selectItemsData = ref(sessionStorage.getItem("selectItems"));
-  const selectItems = selectItemsData.value ? JSON.parse(selectItemsData.value) : null;
-  const originalDbData = ref(sessionStorage.getItem("originalDbData"));
-  const originalDb = originalDbData.value ? JSON.parse(originalDbData.value) : null;
-  await stateDeleteCommon(originalDb, selectItems.id, userModuleDataGet.value.id)
+const deleteConnectionStatus = async () => {
+  sessionStorage.setItem('dbBaseTrClickId', String(selectItems.value.id));
+
+  const req = `oldPcIp=${ipAddress.value}`
+  await clearPcIpState(req)
       .then(response => {
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
@@ -126,9 +130,9 @@ const deleteConnectionStatus = async ()  => {
 
 const upDownBlockAccess = async (selectItems: any) => {
   try {
-    const result = await getUserIpApi();
-    await stateUpdateCommon(selectItems, result.data, [...originalDb.value], userModuleDataGet.value.id).then(response => {
-      emits('initData');
+    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value.id}&newPcIp=${ipAddress.value}`
+    await updatePcIpStateApi(req).then(response => {
+      // emits('initData');
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',
         payload: 'refreshDb'
@@ -184,14 +188,25 @@ async function getRunningInfoDetail(id: any) {
     result = await detailRunningApi(String(id));
 
     if (result) {
-      // console.log(result);
       resData.value = result.data;
-      console.log(resData.value.state);
     }
   } catch (e) {
     console.error(e);
   }
   return resData.value;
+}
+
+async function pageUpDownRunnIng(id: number, step: string, type: string) {
+  try {
+    const req = `id=${id}&step=${step}&type=${type}`
+    const res = await pageUpDownRunnIngApi(req);
+    if (res) {
+      console.log(res.data);
+      resData.value = res.data;
+    }
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const moveWbc = async (direction: any) => {
@@ -201,13 +216,7 @@ const moveWbc = async (direction: any) => {
   }
   isButtonDisabled.value = true; // 버튼 비활성화
   await getOrderClass(); // 클래스 정보를 업데이트
-
-  const currentDbIndex = originalDb.value.findIndex((item: any) => item.id === selectItems.value.id);
-  const nextDbIndex = direction === 'up' ? originalDb.value[currentDbIndex - 1] : originalDb.value[currentDbIndex + 1];
-
-  if (nextDbIndex) {
-    await processNextDbIndex(nextDbIndex, direction, currentDbIndex);
-  }
+  await processNextDbIndex(direction, selectItems.value.id);
 
   timeoutId = window.setTimeout(() => {
     isButtonDisabled.value = false;
@@ -215,28 +224,18 @@ const moveWbc = async (direction: any) => {
 
 };
 
-const processNextDbIndex = async (nextDbIndex: any, direction: any, currentDbIndex: number) => {
-  const res = await getRunningInfoDetail(nextDbIndex.id);
-  if (resData.value.state){
+const processNextDbIndex = async (direction: any, id: number) => {
+  const res: any = await pageUpDownRunnIng(id, '1', direction);
+  if (resData.value.state) {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';
     return;
   }
-  if (res && Object.keys(resData.value?.wbcInfo).length !== 0) {
-    await handleDataResponse(nextDbIndex, res);
-  } else {
-    const newNextDbIndex = direction === 'up' ? originalDb.value[currentDbIndex - 2] : originalDb.value[currentDbIndex + 2];
-    if (newNextDbIndex) {
-      const fallbackRes = await getRunningInfoDetail(newNextDbIndex.id);
-      if (fallbackRes && Object.keys(resData.value?.wbcInfo).length !== 0) {
-        await handleDataResponse(newNextDbIndex, fallbackRes);
-      }
-    }
-  }
+  await handleDataResponse(res?.id, res);
 };
 
-const handleDataResponse = async (dbIndex: any, res: any) => {
+const handleDataResponse = async (dbId: any, res: any) => {
   selectItems.value = resData.value;
   sessionStorage.setItem('selectItems', JSON.stringify(resData.value));
 
@@ -244,18 +243,17 @@ const handleDataResponse = async (dbIndex: any, res: any) => {
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
-  sessionStorage.setItem('dbBaseTrClickId', String(dbIndex.id));
+  sessionStorage.setItem('dbBaseTrClickId', String(dbId));
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: sortedWbcInfo});
   await updateUpDown(resClassInfo, resData.value);
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-  if(projectType.value === 'pb' && selectItems.value?.testType === '01'){
+  if (projectType.value === 'pb' && selectItems.value?.testType === '01') {
     pageGo('/databaseDetail');
   }
   emits('refreshClass', selectItemsNewVal);
   pageMoveDeleteStop.value = true;
-  await deleteConnectionStatus();
   await upDownBlockAccess(selectItemsNewVal);
 };
 

@@ -137,7 +137,7 @@
 <script setup lang="ts">
 import {ref, defineProps, watch, onMounted, computed, defineEmits} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -148,7 +148,7 @@ import moment from "moment/moment";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type', 'allCheckClear']);
+const props = defineProps(['rbcInfo', 'selectItems','type', 'allCheckClear']);
 const rbcInfoChangeVal = ref<any>([]);
 const pltCount = ref('');
 const malariaCount = ref('');
@@ -260,14 +260,12 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   })
   sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcAfter));
   sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
-  const updatedRuningInfo = props.originalDb
-      .filter((item: any) => item.id === props.selectItems.id)
-      .map((item: any) => {
-        const updatedItem = {...item, rbcInfoAfter: rbcAfter};
-        return updatedItem;
-      });
-
-  await resRunningItem(updatedRuningInfo, false);
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedItem = {
+    rbcInfoAfter: rbcAfter,
+  };
+  const updatedRuningInfo ={...result.data,...updatedItem }
+  await resRunningItem([updatedRuningInfo], false);
 
 };
 
@@ -282,13 +280,12 @@ const memoCancel = () => {
 }
 
 const memoChange = async () => {
-  const updatedRuningInfo = props.originalDb.map((item: any) => {
-    if (item.id === props.selectItems.id) {
-      return {...item, rbcMemo: memo.value};
-    }
-    return item;
-  });
-  await resRunningItem(updatedRuningInfo, true);
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedItem = {
+    rbcMemo: memo.value,
+  };
+  const updatedRuningInfo ={...result.data,...updatedItem }
+  await resRunningItem([updatedRuningInfo], true);
   memoModal.value = false;
 }
 
@@ -296,17 +293,16 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: updatedRuningInfo
+      runingInfoDtoItems: [updatedRuningInfo]
     })
     if (response) {
       if (alertShow) {
         showSuccessAlert('success');
       }
 
-      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === props.selectItems.id);
-      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
-      sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
-      memo.value = filteredItems[0].rbcMemo;
+      const filteredItems = updatedRuningInfo;
+      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems));
+      memo.value = filteredItems.rbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -349,18 +345,16 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
+
   const localTime = moment().local();
-  const updatedRuningInfo = props.originalDb
-      .filter((item: any) => item.id === props.selectItems.id)
-      .map((item: any) => {
-        const updatedItem = {
-          ...item,
-          submitState: 'Submit',
-          submitOfDate: localTime.format(),
-          signedUserId: item.id,
-        };
-        return updatedItem;
-      });
+
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedItem = {
+    submitState: 'Submit',
+    submitOfDate: localTime.format(),
+    signedUserId: userModuleDataGet.value.userId,
+  };
+  const updatedRuningInfo ={...result.data,...updatedItem }
   await resRunningItem(updatedRuningInfo);
 }
 
