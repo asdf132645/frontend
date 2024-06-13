@@ -84,6 +84,11 @@ const loginUser = async () => {
     password: password.value,
   }
 
+  if (user.userId === '' || user.password === '') {
+    showSuccessAlert('Login failed.');
+    return;
+  }
+
   try {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
