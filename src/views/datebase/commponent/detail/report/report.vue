@@ -240,9 +240,11 @@ const wbcClassTileChange = (): string => {
 const printStart = () => {
   printOnOff.value = true;
 }
+
 const pageGo = (path: string) => {
   router.push(path)
 }
+
 const getOrderClass = async () => {
   try {
     const result = await getOrderClassApi();
@@ -250,7 +252,7 @@ const getOrderClass = async () => {
       if (result?.data.length === 0) {
         orderClass.value = [];
       } else {
-        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
       }
     }
   } catch (e) {

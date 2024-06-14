@@ -18,7 +18,6 @@
           <th>Employee</th>
           <th>Subscription Date</th>
           <th>Latest Date</th>
-          <th>State</th>
         </tr>
       </thead>
       <tbody>
@@ -30,7 +29,6 @@
           <td>{{ user.employeeNo }}</td>
           <td>{{ date(user.subscriptionDate) }}</td>
           <td>{{ date(user.latestDate) }}</td>
-          <td>{{ user.state }}</td>
         </tr>
       </tbody>
     </table>
@@ -38,12 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
-import { getAllUsersApi, getUserApi } from "@/common/api/service/user/userApi";
-import { UserResponse, User  } from '@/common/api/service/user/dto/userDto'
-import {ApiResponse} from "@/common/api/httpClient";
-
-
+import { onMounted, ref } from "vue";
+import { getAllUsersApi  } from "@/common/api/service/user/userApi";
+import { User } from '@/common/api/service/user/dto/userDto'
 
 onMounted(async () => {
   currentUserId.value = getStoredUser.id;

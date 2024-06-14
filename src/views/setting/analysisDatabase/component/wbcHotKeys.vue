@@ -2,8 +2,8 @@
   <div>
     <ul class="wbcHotKeysItems">
       <li v-for="item in wbcHotKeysItems" :key="item.id">
-        <span>{{ item.title }}</span>
-        <span>{{ item.name }}</span>
+        <span>{{ item.abbreviation }}</span>
+        <span>{{ item.fullNm }}</span>
         <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
     </ul>
@@ -21,9 +21,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted} from 'vue';
-import {
-  createWbcHotKeysApi, updateWbcHotKeysApi, getWbcWbcHotKeysApi,
-} from "@/common/api/service/setting/settingApi";
+import {createWbcHotKeysApi, updateWbcHotKeysApi, getWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {bmHotKeys, wbcHotKeys} from "@/common/defines/constFile/settings";
@@ -70,17 +68,15 @@ const saveWbcCustomClass = async () => {
 
 const getWbcHotKeyClasses = async () => {
   try {
-    const result = await getWbcWbcHotKeysApi();
+    const result = await getWbcHotKeysApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         wbcHotKeysItems.value = projectType.value ==='bm' ? bmHotKeys : wbcHotKeys;
         // bmHotKeys
       } else {
         saveHttpType.value = 'put';
-        const data = result.data;
-        wbcHotKeysItems.value = data;
+        wbcHotKeysItems.value = result.data;
       }
     }
   } catch (e) {

@@ -29,10 +29,10 @@ const defaultCellImgData = {
     wbcPositionMargin: '0',
     rbcPositionMargin: '0',
     pltPositionMargin: '0',
-    pbAnalysisType2: '100',
+    pbsAnalysisType: '100',
     stitchCount: '1',
     bfAnalysisType: '100',
-    pbiaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
+    iaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
     isAlarm: false,
     alarmCount: '5',
@@ -63,10 +63,10 @@ export const firstCellImgSet = async () => {
         wbcPositionMargin: defaultCellImgData.wbcPositionMargin,
         rbcPositionMargin: defaultCellImgData.rbcPositionMargin,
         pltPositionMargin: defaultCellImgData.pltPositionMargin,
-        pbAnalysisType2: defaultCellImgData.pbAnalysisType2,
+        pbsAnalysisType: defaultCellImgData.pbsAnalysisType,
         stitchCount: defaultCellImgData.stitchCount,
         bfAnalysisType: defaultCellImgData.bfAnalysisType,
-        pbiaRootPath: defaultCellImgData.pbiaRootPath,
+        iaRootPath: defaultCellImgData.iaRootPath,
         isNsNbIntegration: defaultCellImgData.isNsNbIntegration,
         isAlarm: defaultCellImgData.isAlarm,
         alarmCount: defaultCellImgData.alarmCount,
@@ -83,7 +83,7 @@ export const firstCellImgSet = async () => {
                 sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.wbcPositionMargin));
                 sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.rbcPositionMargin));
                 sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.pltPositionMargin));
-                sessionStorage.setItem('pbiaRootPath', String(defaultCellImgData?.pbiaRootPath));
+                sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
                 sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
             }
         } catch (e) {
@@ -99,7 +99,7 @@ export const firstSaveOrderClass = async (userId: any) => {
     const orderList: any = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
     for (const index in orderList) {
         orderList[index].userName = userId;
-        orderList[index].orderText = index;
+        orderList[index].orderIdx = index;
     }
     const result = await getOrderClassApi();
     if (result) {

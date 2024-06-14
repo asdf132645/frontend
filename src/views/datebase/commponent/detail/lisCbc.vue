@@ -13,7 +13,7 @@
     <div v-if="siteCd ==='0007'" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
-          <td>{{ cbcItem.testNm }}</td>
+          <td>{{ cbcItem.classNm }}</td>
           <td>
             {{ cbcItem.count }}
             <span v-if="cbcItem.cham !==''">
@@ -27,7 +27,7 @@
     <div v-else class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
-          <td>{{ cbcItem.testNm }}</td>
+          <td>{{ cbcItem.classNm }}</td>
           <td>
             {{ cbcItem.count }} {{ cbcItem.unit }}
           </td>
@@ -56,7 +56,7 @@ const cbcAge = ref('');
 const inhaTestCode = ref('');
 const cbcFilePathSetArr: any = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const deviceBarCode = computed(() => store.state.commonModule.deviceBarcode);
+const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcCodeList = ref<any>([]);
 const selectItemsVal = ref<any>([]);
@@ -111,7 +111,7 @@ const initCbcData = async (newVal: any) => {
 
         if (!excludedTitles.includes(title)) {
           const unit = title.includes('%') ? '%' : '';
-          cbcWorkList.value.push({testNm: title, count: value, unit: unit});
+          cbcWorkList.value.push({classNm: title, count: value, unit: unit});
         } else {
           switch (title) {
             case 'PT_NO':
@@ -162,7 +162,7 @@ const initCbcData = async (newVal: any) => {
             cbcCodeList.value.forEach(function (cbcCode: any) {
               if (cbcCode.cd === code) {
                 const obj = {
-                  testNm: cbcCode.testCd,
+                  classNm: cbcCode.classCd,
                   count: value,
                   unit: unit
                 }
@@ -186,11 +186,11 @@ const initCbcData = async (newVal: any) => {
         url: cbcFilePathSetArr.value,
         barcodeNo: props.selectItems.barcodeNo,
         userId: userModuleDataGet.value.userId,
-        deviceBarcode: deviceBarCode.value
+        deviceBarcode: deviceSerialNm.value
       }
       const url = params.url + '?' +
           'barcodeNo=' + params.barcodeNo + '&' +
-          'deviceBarcode=' + deviceBarCode.value + '&' +
+          'deviceBarcode=' + deviceSerialNm.value + '&' +
           'userid=' + params.userId
 
       await axios.get(url).then(async function  (result) {
@@ -201,7 +201,7 @@ const initCbcData = async (newVal: any) => {
             cbcCodeList.value.forEach(function (cbcCode: any) {
               if (cbcCode.CBC_CD === cbcSegment.getField(3)) {
                 var obj = {
-                  testNm: cbcCode.cd,
+                  classNm: cbcCode.cd,
                   count: cbcSegment?.getField(5),
                   unit: cbcSegment?.getField(6)
                 }
@@ -233,7 +233,7 @@ const initCbcData = async (newVal: any) => {
               //CBC_CD = > cbcCode.cd, CD_NM => cbcCode.testCd
               if (cbcCode.cd === cbcSegment.getField(3)) {
                 const obj = {
-                  testNm: cbcCode.cd,
+                  classNm: cbcCode.cd,
                   count: cbcSegment.getField(5),
                   unit: cbcSegment.getField(6)
                 }

@@ -23,7 +23,7 @@ import {useStore} from 'vuex';
 
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
-const pbiaRootPath = computed(() => store.state.commonModule.pbiaRootPath);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 const allImages = ref([]);
@@ -64,7 +64,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
 
   const slotId = selectedItem.slotId || '';
-  const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : pbiaRootPath.value;
+  const path = selectedItem?.rootPath !== '' && selectedItem?.rootPath ? selectedItem?.rootPath : iaRootPath.value;
   const folderPath = `${path}/${slotId}/04_BM_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 }

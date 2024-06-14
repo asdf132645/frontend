@@ -5,10 +5,10 @@ export interface CellImgAnalyzedRequest {
     wbcPositionMargin: string;
     rbcPositionMargin: string;
     pltPositionMargin: string;
-    pbAnalysisType2: string;
+    pbsAnalysisType: string;
     stitchCount: string;
     bfAnalysisType: string;
-    pbiaRootPath: string;
+    iaRootPath: string;
     isNsNbIntegration: boolean;
     isAlarm: boolean;
     alarmCount: string;
@@ -16,7 +16,6 @@ export interface CellImgAnalyzedRequest {
     backupPath: string;
     backupStartDate: string;
     backupEndDate: string;
-    userId: string;
 }
 
 // Response Interface
@@ -27,10 +26,10 @@ export interface CellImgAnalyzedResponse {
     wbcPositionMargin: string;
     rbcPositionMargin: string;
     pltPositionMargin: string;
-    pbAnalysisType2: string;
+    pbsAnalysisType: string;
     stitchCount: string;
     bfAnalysisType: string;
-    pbiaRootPath: string;
+    iaRootPath: string;
     isNsNbIntegration: boolean;
     isAlarm: boolean;
     alarmCount: string;
@@ -38,5 +37,4 @@ export interface CellImgAnalyzedResponse {
     backupPath: string;
     backupStartDate: Date;
     backupEndDate: Date;
-    userId: string;
 }

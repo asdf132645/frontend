@@ -4,10 +4,8 @@ export interface CreateBfHotKeysDto {
 }
 
 export interface BfHotKeysItems {
-    title: string;
-    name: string;
-    count: number;
-    percent: number;
+    abbreviation: string;
+    fullNm: string;
     key: string;
     order: number;
 }

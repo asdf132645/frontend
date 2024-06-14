@@ -3,7 +3,7 @@
     <ul class="normalItems">
       <li v-for="item in normalItems" :key="item.id">
         <div>
-          {{ item.title }} - {{ item.name }}
+          {{ item.abbreviation }} - {{ item.fullNm }}
         </div>
         <div class="mt1">
           <span><input v-model="item.min" type="text" maxlength="25" placeholder="class name"/></span>
@@ -78,13 +78,11 @@ const getNormalRange = async () => {
     const result = await getNormalRangeApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         normalItems.value = normalRange;
       } else {
         saveHttpType.value = 'put';
-        const data = result.data;
-        normalItems.value = data;
+        normalItems.value = result.data;
       }
     }
   } catch (e) {

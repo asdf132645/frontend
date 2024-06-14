@@ -1,11 +1,9 @@
 export interface WbcHotKey {
     id: string;
-    title: string;
-    name: string;
-    count: number;
-    percent: number;
+    abbreviation: string;
+    fullNm: string;
     key: string;
-    order: number;
+    orderIdx: number;
 }
 
 export interface CreateWbcHotKeysDto {
@@ -13,12 +11,10 @@ export interface CreateWbcHotKeysDto {
 }
 
 export interface wbcHotKeysItems {
-    title: string;
-    name: string;
-    count: number;
-    percent: number;
+    abbreviation: string;
+    fullNm: string;
     key: string;
-    order: number;
+    orderIdx: number;
 }
 
 export interface UpdateWbcHotKeysDto {

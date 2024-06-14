@@ -1,8 +1,8 @@
 <script>
 async function moveImage(targetItemIndex: number, selectedImages: any[], draggedItem: any, targetItem: any) {
   const {slotId} = selectItems.value;
-  const sourceFolder = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${draggedItem.id}_${draggedItem.title}`;
-  const destinationFolder = `${pbiaRootPath}/${slotId}/01_WBC_Classification/${targetItem.id}_${targetItem.title}`;
+  const sourceFolder = `${iaRootPath}/${slotId}/01_WBC_Classification/${draggedItem.id}_${draggedItem.title}`;
+  const destinationFolder = `${iaRootPath}/${slotId}/01_WBC_Classification/${targetItem.id}_${targetItem.title}`;
 
   try {
 // 선택된 이미지 배열에 대해 반복

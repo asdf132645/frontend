@@ -3,8 +3,8 @@
 <!--        {{ bfHotKeysItems }}-->
     <ul class="wbcHotKeysItems">
       <li v-for="item in bfHotKeysItems" :key="item.id">
-        <span>{{ item.title }}</span>
-        <span>{{ item.name }}</span>
+        <span>{{ item.abbreviation }}</span>
+        <span>{{ item.fullNm }}</span>
         <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
     </ul>
@@ -71,13 +71,11 @@ const getBfHotKeyClasses = async () => {
     const result = await getBfHotKeysApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         bfHotKeysItems.value = bfHotKeys;
       } else {
         saveHttpType.value = 'put';
-        const data = result.data;
-        bfHotKeysItems.value = data;
+        bfHotKeysItems.value = result.data;
       }
     }
   } catch (e) {

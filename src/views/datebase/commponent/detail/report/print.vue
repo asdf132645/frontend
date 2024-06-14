@@ -171,7 +171,7 @@ const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
 const commonDataGet = computed(() => store.state.commonModule);
-const pbiaRootPath = commonDataGet.value.pbiaRootPath;
+const iaRootPath = commonDataGet.value.iaRootPath;
 const userModuleDataGet = computed(() => store.state.userModule);
 const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
@@ -197,7 +197,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootPath;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath;
   const slotId = props.selectItems.slotId || "";
   const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;

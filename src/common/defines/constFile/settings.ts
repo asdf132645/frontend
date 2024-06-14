@@ -99,45 +99,45 @@ export const searchUserType = [
 ];
 
 export const cbcList = [
-    {cd: '01', testCd: '', testNm: 'WBC Diff. Count', isSelected: true},
-    {cd: '02', testCd: '', testNm: 'Seg.-neutrophils', isSelected: true},
-    {cd: '03', testCd: '', testNm: 'Band-neutrophils', isSelected: true},
-    {cd: '04', testCd: '', testNm: 'Lymphocytes', isSelected: true},
-    {cd: '05', testCd: '', testNm: 'Monocytes', isSelected: true},
-    {cd: '06', testCd: '', testNm: 'Eosinophils', isSelected: true},
-    {cd: '07', testCd: '', testNm: 'Basophils', isSelected: true},
-    {cd: '08', testCd: '', testNm: 'Metamyelocytes', isSelected: true},
-    {cd: '09', testCd: '', testNm: 'Myelocytes', isSelected: true},
-    {cd: '10', testCd: '', testNm: 'Promyelocytes', isSelected: true},
-    {cd: '11', testCd: '', testNm: 'Blasts', isSelected: true},
-    {cd: '12', testCd: '', testNm: 'Immature cells', isSelected: true},
-    {cd: '13', testCd: '', testNm: 'Atypical cells', isSelected: true},
-    {cd: '14', testCd: '', testNm: 'Atypical lymphocyte', isSelected: true},
-    {cd: '15', testCd: '', testNm: 'Activated lymphocyte', isSelected: true},
-    {cd: '16', testCd: '', testNm: 'Prolymphocytes', isSelected: true},
-    {cd: '17', testCd: '', testNm: 'Promonocytes', isSelected: true},
-    {cd: '18', testCd: '', testNm: 'Plasma cells', isSelected: true},
-    {cd: '19', testCd: '', testNm: 'Nucleated RBC', isSelected: true},
-    {cd: '20', testCd: '', testNm: 'Others', isSelected: true},
-    {cd: '21', testCd: '', testNm: 'Atypical Lymphoid cells', isSelected: true},
-    {cd: '22', testCd: '', testNm: 'Leukemic cells', isSelected: true},
-    {cd: '23', testCd: '', testNm: 'Abnormal lymphocyte', isSelected: true},
-    {cd: '24', testCd: '', testNm: 'Reactive lymphocyte', isSelected: true},
-    {cd: '25', testCd: '', testNm: 'Plasmacytoid lymphocyte', isSelected: true},
-    {cd: '26', testCd: '', testNm: 'ANC calc', isSelected: true},
-    {cd: '27', testCd: '', testNm: 'WBC', isSelected: true},
-    {cd: '28', testCd: '', testNm: 'RBC', isSelected: true},
-    {cd: '29', testCd: '', testNm: 'HGB', isSelected: true},
-    {cd: '30', testCd: '', testNm: 'HCT', isSelected: true},
-    {cd: '31', testCd: '', testNm: 'MCV', isSelected: true},
-    {cd: '32', testCd: '', testNm: 'MCH', isSelected: true},
-    {cd: '33', testCd: '', testNm: 'MCHC', isSelected: true},
-    {cd: '34', testCd: '', testNm: 'RDW', isSelected: true},
-    {cd: '35', testCd: '', testNm: 'Platelet', isSelected: true},
-    {cd: '36', testCd: '', testNm: 'PCT', isSelected: true},
-    {cd: '37', testCd: '', testNm: 'MPV', isSelected: true},
-    {cd: '38', testCd: '', testNm: 'PDW', isSelected: true},
-    {cd: '39', testCd: '', testNm: 'ESR', isSelected: true}
+    {cd: '01', classCd: '', classNm: 'WBC Diff. Count', isSelected: true},
+    {cd: '02', classCd: '', classNm: 'Seg.-neutrophils', isSelected: true},
+    {cd: '03', classCd: '', classNm: 'Band-neutrophils', isSelected: true},
+    {cd: '04', classCd: '', classNm: 'Lymphocytes', isSelected: true},
+    {cd: '05', classCd: '', classNm: 'Monocytes', isSelected: true},
+    {cd: '06', classCd: '', classNm: 'Eosinophils', isSelected: true},
+    {cd: '07', classCd: '', classNm: 'Basophils', isSelected: true},
+    {cd: '08', classCd: '', classNm: 'Metamyelocytes', isSelected: true},
+    {cd: '09', classCd: '', classNm: 'Myelocytes', isSelected: true},
+    {cd: '10', classCd: '', classNm: 'Promyelocytes', isSelected: true},
+    {cd: '11', classCd: '', classNm: 'Blasts', isSelected: true},
+    {cd: '12', classCd: '', classNm: 'Immature cells', isSelected: true},
+    {cd: '13', classCd: '', classNm: 'Atypical cells', isSelected: true},
+    {cd: '14', classCd: '', classNm: 'Atypical lymphocyte', isSelected: true},
+    {cd: '15', classCd: '', classNm: 'Activated lymphocyte', isSelected: true},
+    {cd: '16', classCd: '', classNm: 'Prolymphocytes', isSelected: true},
+    {cd: '17', classCd: '', classNm: 'Promonocytes', isSelected: true},
+    {cd: '18', classCd: '', classNm: 'Plasma cells', isSelected: true},
+    {cd: '19', classCd: '', classNm: 'Nucleated RBC', isSelected: true},
+    {cd: '20', classCd: '', classNm: 'Others', isSelected: true},
+    {cd: '21', classCd: '', classNm: 'Atypical Lymphoid cells', isSelected: true},
+    {cd: '22', classCd: '', classNm: 'Leukemic cells', isSelected: true},
+    {cd: '23', classCd: '', classNm: 'Abnormal lymphocyte', isSelected: true},
+    {cd: '24', classCd: '', classNm: 'Reactive lymphocyte', isSelected: true},
+    {cd: '25', classCd: '', classNm: 'Plasmacytoid lymphocyte', isSelected: true},
+    {cd: '26', classCd: '', classNm: 'ANC calc', isSelected: true},
+    {cd: '27', classCd: '', classNm: 'WBC', isSelected: true},
+    {cd: '28', classCd: '', classNm: 'RBC', isSelected: true},
+    {cd: '29', classCd: '', classNm: 'HGB', isSelected: true},
+    {cd: '30', classCd: '', classNm: 'HCT', isSelected: true},
+    {cd: '31', classCd: '', classNm: 'MCV', isSelected: true},
+    {cd: '32', classCd: '', classNm: 'MCH', isSelected: true},
+    {cd: '33', classCd: '', classNm: 'MCHC', isSelected: true},
+    {cd: '34', classCd: '', classNm: 'RDW', isSelected: true},
+    {cd: '35', classCd: '', classNm: 'Platelet', isSelected: true},
+    {cd: '36', classCd: '', classNm: 'PCT', isSelected: true},
+    {cd: '37', classCd: '', classNm: 'MPV', isSelected: true},
+    {cd: '38', classCd: '', classNm: 'PDW', isSelected: true},
+    {cd: '39', classCd: '', classNm: 'ESR', isSelected: true}
 ];
 
 export const rbcClassList = {
@@ -256,7 +256,8 @@ export const rbcClassList = {
     currentRbcResults: null
 };
 
-export const defaultRbcDegree = [{
+export const defaultRbcDegree = [
+{
     categoryId: '01',
     classId: '02',
     degree1: '5',
@@ -362,241 +363,244 @@ export const defaultRbcDegree = [{
 
 export const wbcHotKeys = [
     {
-        id: '01', title: 'NE', name: 'Neutrophil', count: 0, percent: 0, key: '', order: 1
+        id: '01', abbreviation: 'NE', fullNm: 'Neutrophil', key: '', orderIdx: 1
     },
     {
-        id: '02', title: 'ME', name: 'Metamyelocyte', count: 0, percent: 0, key: '', order: 4
+        id: '02', abbreviation: 'ME', fullNm: 'Metamyelocyte', key: '', orderIdx: 4
     },
     {
-        id: '03', title: 'MY', name: 'Myelocyte', count: 0, percent: 0, key: '', order: 5
+        id: '03', abbreviation: 'MY', fullNm: 'Myelocyte', key: '', orderIdx: 5
     },
     {
-        id: '04', title: 'PR', name: 'Promyelocyte', count: 0, percent: 0, key: '', order: 6
+        id: '04', abbreviation: 'PR', fullNm: 'Promyelocyte', key: '', orderIdx: 6
     },
     {
-        id: '05', title: 'LY', name: 'Lymphocyte', count: 0, percent: 0, key: '', order: 7
+        id: '05', abbreviation: 'LY', fullNm: 'Lymphocyte', key: '', orderIdx: 7
     },
     {
-        id: '07', title: 'MO', name: 'Monocyte', count: 0, percent: 0, key: '', order: 10
+        id: '07', abbreviation: 'MO', fullNm: 'Monocyte', key: '', orderIdx: 10
     },
     {
-        id: '08', title: 'EO', name: 'Eosinophil', count: 0, percent: 0, key: '', order: 11
+        id: '08', abbreviation: 'EO', fullNm: 'Eosinophil', key: '', orderIdx: 11
     },
     {
-        id: '09', title: 'BA', name: 'Basophil', count: 0, percent: 0, key: '', order: 12
+        id: '09', abbreviation: 'BA', fullNm: 'Basophil', key: '', orderIdx: 12
     },
     {
-        id: '10', title: 'BL', name: 'Blast', count: 0, percent: 0, key: '', order: 13
+        id: '10', abbreviation: 'BL', fullNm: 'Blast', key: '', orderIdx: 13
     }, {
-        id: '11', title: 'PC', name: 'Plasma cell', count: 0, percent: 0, key: '', order: 14
+        id: '11', abbreviation: 'PC', fullNm: 'Plasma cell', key: '', orderIdx: 14
     }, {
-        id: '12', title: 'NR', name: 'nRBC', count: 0, percent: 0, key: '', order: 15
+        id: '12', abbreviation: 'NR', fullNm: 'nRBC', key: '', orderIdx: 15
     }, {
-        id: '13', title: 'GP', name: 'Giant platelet', count: 0, percent: 0, key: '', order: 16
+        id: '13', abbreviation: 'GP', fullNm: 'Giant platelet', key: '', orderIdx: 16
     }, {
-        id: '14', title: 'PA', name: 'Platelet aggregation', count: 0, percent: 0, key: '', order: 17
+        id: '14', abbreviation: 'PA', fullNm: 'Platelet aggregation', key: '', orderIdx: 17
     },
     {
-        id: '15', title: 'AR', name: 'Artifact(Smudge)', count: 0, percent: 0, key: '', order: 19
+        id: '15', abbreviation: 'AR', fullNm: 'Artifact(Smudge)', key: '', orderIdx: 19
     },
     {
-        id: '16', title: 'MA', name: 'Malaria', count: 0, percent: 0, key: '', order: 18
+        id: '16', abbreviation: 'MA', fullNm: 'Malaria', key: '', orderIdx: 18
     },
     {
-        id: '61', title: 'LR', name: 'Reactive lymphocyte', count: 0, percent: 0, key: '', order: 8
+        id: '61', abbreviation: 'LR', fullNm: 'Reactive lymphocyte', key: '', orderIdx: 8
     },
     {
-        id: '62', title: 'LA', name: 'Abnormal lymphocyte', count: 0, percent: 0, key: '', order: 9
+        id: '62', abbreviation: 'LA', fullNm: 'Abnormal lymphocyte', key: '', orderIdx: 9
     },
     {
-        id: '71', title: 'NS', name: 'Neutrophil-Segmented', count: 0, percent: 0, key: '', order: 2
+        id: '71', abbreviation: 'NS', fullNm: 'Neutrophil-Segmented', key: '', orderIdx: 2
     }, {
-        id: '72', title: 'NB', name: 'Neutrophil-Band', count: 0, percent: 0, key: '', order: 3
+        id: '72', abbreviation: 'NB', fullNm: 'Neutrophil-Band', key: '', orderIdx: 3
     },]
-export const bmHotKeys = [{
-    id: '01', title: 'NE', name: 'Neutrophil', count: 0, percent: 0, order: 1
+export const bmHotKeys = [
+{
+    id: '01', abbreviation: 'NE', fullNm: 'Neutrophil', key: '', orderIdx: 1
 }, {
-    id: '71', title: 'NS', name: 'Neutrophil-Segmented', count: 0, percent: 0, key: '', order: 2
+    id: '71', abbreviation: 'NS', fullNm: 'Neutrophil-Segmented', key: '', orderIdx: 2
 }, {
-    id: '72', title: 'NB', name: 'Neutrophil-Band', count: 0, percent: 0, key: '', order: 3
+    id: '72', abbreviation: 'NB', fullNm: 'Neutrophil-Band', key: '', orderIdx: 3
 }, {
-    id: '02', title: 'ME', name: 'Metamyelocyte', count: 0, percent: 0, order: 4
+    id: '02', abbreviation: 'ME', fullNm: 'Metamyelocyte', key: '', orderIdx: 4
 }, {
-    id: '03', title: 'MY', name: 'Myelocyte', count: 0, percent: 0, order: 5
+    id: '03', abbreviation: 'MY', fullNm: 'Myelocyte', key: '', orderIdx: 5
 }, {
-    id: '04', title: 'PR', name: 'Promyelocyte', count: 0, percent: 0, order: 6
+    id: '04', abbreviation: 'PR', fullNm: 'Promyelocyte', key: '', orderIdx: 6
 }, {
-    id: '05', title: 'LY', name: 'Lymphocyte', count: 0, percent: 0, order: 7
+    id: '05', abbreviation: 'LY', fullNm: 'Lymphocyte', key: '', orderIdx: 7
 }, {
-    id: '06', title: 'LA', name: 'Abnormal lymphocyte', count: 0, percent: 0, order: 8
+    id: '06', abbreviation: 'LA', fullNm: 'Abnormal lymphocyte', key: '', orderIdx: 8
 }, {
-    id: '07', title: 'MO', name: 'Monocyte', count: 0, percent: 0, order: 9
+    id: '07', abbreviation: 'MO', fullNm: 'Monocyte', key: '', orderIdx: 9
 }, {
-    id: '08', title: 'EO', name: 'Eosinophil', count: 0, percent: 0, order: 10
+    id: '08', abbreviation: 'EO', fullNm: 'Eosinophil', key: '', orderIdx: 10
 }, {
-    id: '09', title: 'BA', name: 'Basophil', count: 0, percent: 0, order: 11
+    id: '09', abbreviation: 'BA', fullNm: 'Basophil', key: '', orderIdx: 11
 }, {
-    id: '10', title: 'BL', name: 'Blast', count: 0, percent: 0, order: 12
+    id: '10', abbreviation: 'BL', fullNm: 'Blast', key: '', orderIdx: 12
 }, {
-    id: '11', title: 'PC', name: 'Plasma cell', count: 0, percent: 0, order: 13
+    id: '11', abbreviation: 'PC', fullNm: 'Plasma cell', key: '', orderIdx: 13
 }, {
-    id: '12', title: 'ON', name: 'Orthochromic Normoblast', count: 0, percent: 0, order: 14
+    id: '12', abbreviation: 'ON', fullNm: 'Orthochromic Normoblast', key: '', orderIdx: 14
 }, {
-    id: '13', title: 'PN', name: 'Polychromic Normoblast', count: 0, percent: 0, order: 15
+    id: '13', abbreviation: 'PN', fullNm: 'Polychromic Normoblast', key: '', orderIdx: 15
 }, {
-    id: '14', title: 'BN', name: 'Basophilic Normoblast', count: 0, percent: 0, order: 16
+    id: '14', abbreviation: 'BN', fullNm: 'Basophilic Normoblast', key: '', orderIdx: 16
 }, {
-    id: '15', title: 'PE', name: 'Proerythroblast', count: 0, percent: 0, order: 17
+    id: '15', abbreviation: 'PE', fullNm: 'Proerythroblast', key: '', orderIdx: 17
 }, {
-    id: '16', title: 'HC', name: 'Histiocyte', count: 0, percent: 0, order: 18
+    id: '16', abbreviation: 'HC', fullNm: 'Histiocyte', key: '', orderIdx: 18
 }, {
-    id: '17', title: 'OT', name: 'Others', count: 0, percent: 0, order: 19
+    id: '17', abbreviation: 'OT', fullNm: 'Others', key: '', orderIdx: 19
 }]
-export const bfHotKeys = [{
-    id: '01', title: 'NE', name: 'Neutrophil', count: 0, percent: 0, key: '', order: 1
+export const bfHotKeys = [
+{
+    id: '01', abbreviation: 'NE', fullNm: 'Neutrophil', key: '', orderIdx: 1
 }, {
-    id: '02', title: 'LY', name: 'Lymphocyte', count: 0, percent: 0, key: '', order: 2
+    id: '02', abbreviation: 'LY', fullNm: 'Lymphocyte', key: '', orderIdx: 2
 }, {
-    id: '03', title: 'MO', name: 'Monocyte', count: 0, percent: 0, key: '', order: 3
+    id: '03', abbreviation: 'MO', fullNm: 'Monocyte', key: '', orderIdx: 3
 }, {
-    id: '04', title: 'EO', name: 'Eosinophil', count: 0, percent: 0, key: '', order: 4
+    id: '04', abbreviation: 'EO', fullNm: 'Eosinophil', key: '', orderIdx: 4
 }, {
-    id: '05', title: 'BA', name: 'Basophil', count: 0, percent: 0, key: '', order: 5
+    id: '05', abbreviation: 'BA', fullNm: 'Basophil', key: '', orderIdx: 5
 }, {
-    id: '06', title: 'BL', name: 'Blast', count: 0, percent: 0, key: '', order: 6
+    id: '06', abbreviation: 'BL', fullNm: 'Blast', key: '', orderIdx: 6
 }, {
-    id: '07', title: 'PC', name: 'Plasma cell', count: 0, percent: 0, key: '', order: 7
+    id: '07', abbreviation: 'PC', fullNm: 'Plasma cell', key: '', orderIdx: 7
 }, {
-    id: '08', title: 'NR', name: 'NRBC', count: 0, percent: 0, key: '', order: 8
+    id: '08', abbreviation: 'NR', fullNm: 'NRBC', key: '', orderIdx: 8
 }, {
-    id: '09', title: 'AR', name: 'Artifact(Smudge)', count: 0, percent: 0, key: '', order: 9
+    id: '09', abbreviation: 'AR', fullNm: 'Artifact(Smudge)', key: '', orderIdx: 9
 }, {
-    id: '10', title: 'MC', name: 'Malignant cell', count: 0, percent: 0, key: '', order: 10
+    id: '10', abbreviation: 'MC', fullNm: 'Malignant cell', key: '', orderIdx: 10
 }, {
-    id: '11', title: 'MT', name: 'Mesothelial cell', count: 0, percent: 0, key: '', order: 11
+    id: '11', abbreviation: 'MT', fullNm: 'Mesothelial cell', key: '', orderIdx: 11
 }]
 
-export const normalRange = [{
-    title: 'NE',
-    name: 'Neutrophil',
+export const normalRange = [
+{
+    abbreviation: 'NE',
+    fullNm: 'Neutrophil',
     classId: '01',
     min: 42,
     max: 85,
     unit: '%'
 }, {
-    title: 'ME',
-    name: 'Metamyelocyte',
+    abbreviation: 'ME',
+    fullNm: 'Metamyelocyte',
     classId: '02',
     min: 0,
     max: 100,
     unit: '%'
 }, {
-    title: 'MY',
-    name: 'Myelocyte',
+    abbreviation: 'MY',
+    fullNm: 'Myelocyte',
     classId: '03',
     min: 0,
     max: 100,
     unit: '%'
 }, {
-    title: 'PR',
-    name: 'Promyelocyte',
+    abbreviation: 'PR',
+    fullNm: 'Promyelocyte',
     classId: '04',
     min: 0,
     max: 100,
     unit: '%'
 }, {
-    title: 'LY',
-    name: 'Lymphocyte',
+    abbreviation: 'LY',
+    fullNm: 'Lymphocyte',
     classId: '05',
     min: 11,
     max: 49,
     unit: '%'
 }, {
-    title: 'MO',
-    name: 'Monocyte',
+    abbreviation: 'MO',
+    fullNm: 'Monocyte',
     classId: '07',
     min: 0,
     max: 9,
     unit: '%'
 }, {
-    title: 'EO',
-    name: 'Eosinophil',
+    abbreviation: 'EO',
+    fullNm: 'Eosinophil',
     classId: '08',
     min: 0,
     max: 6,
     unit: '%'
 }, {
-    title: 'BA',
-    name: 'Basophil',
+    abbreviation: 'BA',
+    fullNm: 'Basophil',
     classId: '09',
     min: 0,
     max: 2,
     unit: '%'
 }, {
-    title: 'BL',
-    name: 'Blast',
+    abbreviation: 'BL',
+    fullNm: 'Blast',
     classId: '10',
     min: 0,
     max: 100,
     unit: '%'
 }, {
-    title: 'PC',
-    name: 'Plasma cell',
+    abbreviation: 'PC',
+    fullNm: 'Plasma cell',
     classId: '11',
     min: 0,
     max: 100,
     unit: '%'
 }, {
-    title: 'NR',
-    name: 'nRBC',
+    abbreviation: 'NR',
+    fullNm: 'nRBC',
     classId: '12',
     min: 0,
     max: 100,
     unit: 'Count'
 }, {
-    title: 'GP',
-    name: 'Giant platelet',
+    abbreviation: 'GP',
+    fullNm: 'Giant platelet',
     classId: '13',
     min: 0,
     max: 100,
     unit: 'Count'
 }, {
-    title: 'PA',
-    name: 'Platelet aggregation',
+    abbreviation: 'PA',
+    fullNm: 'Platelet aggregation',
     classId: '14',
     min: 0,
     max: 100,
     unit: 'Count'
 }, {
-    title: 'AR',
-    name: 'Artifact(Smudge)',
+    abbreviation: 'AR',
+    fullNm: 'Artifact(Smudge)',
     classId: '15',
     min: 0,
     max: 100,
     unit: 'Count'
 }, {
-    title: 'MA',
-    name: 'Malaria',
+    abbreviation: 'MA',
+    fullNm: 'Malaria',
     classId: '16',
     min: 0,
     max: 100,
     unit: 'Count'
 },
-    {
-        title: 'LR',
-        name: 'Reactive lymphocyte',
-        classId: '61',
-        min: 0,
-        max: 100,
-        unit: '%'
-    }, {
-        title: 'LA',
-        name: 'Abnormal lymphocyte',
-        classId: '62',
-        min: 0,
-        max: 100,
-        unit: '%'
-    },
+{
+    abbreviation: 'LR',
+    fullNm: 'Reactive lymphocyte',
+    classId: '61',
+    min: 0,
+    max: 100,
+    unit: '%'
+}, {
+    abbreviation: 'LA',
+    fullNm: 'Abnormal lymphocyte',
+    classId: '62',
+    min: 0,
+    max: 100,
+    unit: '%'
+},
 ]
 
 export const imagePrintAndWbc = [
@@ -621,7 +625,8 @@ export const imagePrintAndWbc = [
     { text: 'Artifact(Smudge)', value: '15', code: '' ,checked: false},
     { text: 'rbcPrintModel', value: '99999', code: '' ,checked: false},
 ]
-export const imagePrintAndBm = [{
+export const imagePrintAndBm = [
+{
     text: 'Neutrophil',
     value: '01'
 }, {
@@ -728,29 +733,24 @@ export const lisCodeRbcOption = [
     { categoryId: '05', categoryNm: 'Inclusion Body', classId: '02', classNm: 'Basophilic Stippling', code: '0' }
 ];
 
-
-
 export const minRunCount = [
-    { minGpCount:0, minPaCount:0, },
+    { minGPCount:0, minPACount:0, },
 ]
 
-export const wbcRunningCount = [{
-    id: '01',
+export const wbcRunningCount = [
+{
     min: 0,
     max: 700,
     wbcCount: 50
 }, {
-    id: '02',
     min: 701,
     max: 1000,
     wbcCount: 100
 }, {
-    id: '03',
     min: 1001,
     max: 2000,
     wbcCount: 150
 }, {
-    id: '04',
     min: 2001,
     max: 3000,
     wbcCount: 250
@@ -775,5 +775,5 @@ export const dirName = {
     bfDirName: '02_LowPower_Image',
     bfHighDirName: '03_HighPower_Image',
     bfClassDirName: '05_BF_Classification',
-    pbiaRootPath: 'D:/ia_proc',
+    iaRootPath: 'D:/ia_proc',
 }

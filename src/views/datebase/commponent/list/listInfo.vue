@@ -47,19 +47,19 @@ import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
 
 const props = defineProps(['selectedItem']);
-const pbiaRootPath = ref('');
+const iaRootPath = ref('');
 const pilePath = ref('');
 
 
 onMounted(() => {
-  // pbiaRootPath가 존재하면 getImageUrl 함수 호출
-  pbiaRootPath.value = sessionStorage.getItem('pbiaRootPath');
-  if (pbiaRootPath.value) {
+  // iaRootPath가 존재하면 getImageUrl 함수 호출
+  iaRootPath.value = sessionStorage.getItem('iaRootPath');
+  if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg');
   }
 });
 watch(() => props.selectedItem, (newSelectedItem) => {
-  if (pbiaRootPath.value) {
+  if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
 });
@@ -79,7 +79,7 @@ const showClassificationResults = (classificationResult) => {
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 function getImageUrl(imageName){
-  const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : pbiaRootPath.value;
+  const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;
   return `${apiBaseUrl}/images?folder=${path + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
 }
 

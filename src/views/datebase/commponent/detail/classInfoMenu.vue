@@ -152,7 +152,7 @@ const getOrderClass = async () => {
       if (result?.data.length === 0) {
         orderClass.value = [];
       } else {
-        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
       }
     }
   } catch (e) {
@@ -169,8 +169,8 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
-    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
+    const nameA = basicWbcArr.findIndex((item: any) => item.abbreviation === a.abbreviation);
+    const nameB = basicWbcArr.findIndex((item: any) => item.abbreviation === b.abbreviation);
 
     // 이름이 없는 경우는 배열 맨 뒤로 배치
     if (nameA === -1) return 1;
