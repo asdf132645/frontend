@@ -315,7 +315,7 @@ onMounted(async () => {
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.pbiaRootPath;
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.pbiaRootPath;
   pbiaRootPath.value = path;
   // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
   await imgSetLocalStorage();
@@ -638,7 +638,7 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 
 const refreshClass = async (data: any) => {
   selectItems.value = data;
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.pbiaRootPath;
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.pbiaRootPath;
   pbiaRootPath.value = path;
   await getWbcCustomClasses(true, data);
 }

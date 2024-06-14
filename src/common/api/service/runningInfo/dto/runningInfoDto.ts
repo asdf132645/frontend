@@ -48,7 +48,7 @@ interface RuningInfo {
     submitOfDate?: Date;
     submitUserId?:string;
     isNsNbIntegration?: string;
-    rootPath?: string;
+    img_drive_root_path?: string;
 }
 
 

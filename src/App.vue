@@ -448,7 +448,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           } : [],
           rbcInfoAfter: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           bminfo: completeSlot.bminfo,
-          userId: userModuleDataGet.value.name,
+          // userId: userModuleDataGet.value.name,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
           // processInfo: {

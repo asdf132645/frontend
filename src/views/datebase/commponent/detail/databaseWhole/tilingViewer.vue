@@ -33,7 +33,7 @@ watch( () => props.selectItems, async(newItem) => {
 const onImageLoad = async (bool: boolean) => {
   const imgElement = hideImageRef.value;
   const slotId = props.selectItems?.slotId || "";
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+  const path = props.selectItems?.img_drive_root_path  !== '' && props.selectItems?.img_drive_root_path  ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('pbiaRootPath');
   const folderPath = `${path}/${slotId}/01_Stitching_Image`;
 
   const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
@@ -59,7 +59,7 @@ const initElement = async (imageHeight: any, bool: boolean) => {
     viewer.destroy();
   }
   const slotId = props.selectItems?.slotId || "";
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+  const path = props.selectItems?.img_drive_root_path  !== '' && props.selectItems?.img_drive_root_path  ? props.selectItems?.img_drive_root_path  : sessionStorage.getItem('pbiaRootPath');
 
   const folderPath = `${path}/${slotId}/01_Stitching_Image`;
 

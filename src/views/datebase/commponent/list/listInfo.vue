@@ -79,7 +79,7 @@ const showClassificationResults = (classificationResult) => {
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
 function getImageUrl(imageName){
-  const path = props.selectedItem?.rootPath !== '' && props.selectedItem?.rootPath ? props.selectedItem?.rootPath : pbiaRootPath.value;
+  const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : pbiaRootPath.value;
   return `${apiBaseUrl}/images?folder=${path + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
 }
 
