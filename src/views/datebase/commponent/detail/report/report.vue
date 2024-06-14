@@ -270,7 +270,7 @@ async function initData(data?: any) {
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   }
-  rbcInfo.value = selectItemRbc ? JSON.parse(selectItemRbc) : null;
+  rbcInfo.value = selectItems.value.rbcInfoAfter.length !== 0 && selectItems.value.rbcInfoAfter ? selectItems.value.rbcInfoAfter : selectItems.value.rbcInfo.rbcInfo;
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
