@@ -405,7 +405,7 @@ const getNewImageUrl = (fileName: any, title: any): any => {
     const matchingImage = selectItems.value.wbcInfoAfter.find((el: any) => {
       return el.images && el.images.find((image: any) => image.fileName === fileName);
     });
-    if (matchingImage.title !== title) {
+    if (matchingImage && matchingImage.title !== title) {
       return {fileNameMa: fileName, idMa: matchingImage.id, titleMa: matchingImage.title};
     }
   }
