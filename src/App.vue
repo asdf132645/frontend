@@ -472,7 +472,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           rbcMemo: '',
         }
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
-
       }
     }
 
@@ -482,6 +481,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if (deviceData.data.length === 0 || !deviceData.data) {
           console.log('?D')
           await createDeviceInfoApi({deviceItem: deviceInfo});
+          siteCdDvBarCode.value = true;
+        } else {
           siteCdDvBarCode.value = true;
         }
       } catch (err) {
