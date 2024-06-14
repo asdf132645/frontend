@@ -81,7 +81,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
 
   const slotId = selectedItem.slotId || '';
-  const path = selectedItem?.rootPath !== '' && selectedItem?.rootPath ? selectedItem?.rootPath : pbiaRootPath;
+  const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : pbiaRootPath;
   const folderPath = `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
 }

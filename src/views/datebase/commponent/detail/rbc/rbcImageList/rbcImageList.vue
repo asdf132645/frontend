@@ -263,7 +263,7 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
   formData.append('file', blob, `${props.selectItems.slotId}_new.json`);
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath.value;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootPath.value;
   const filePath = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
   try {
     const response = await fetch(`http://localhost:3002/jsonReader/upload?filePath=${filePath}`, {
@@ -308,7 +308,7 @@ const rbcClassRightClick = (event: MouseEvent) => {
 
 
 const rbcMarker = async (newItem: any) => {
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath.value;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootPath.value;
 
   const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response = await readJsonFile({fullPath: url});
@@ -390,7 +390,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
 
 
 const initElement = async () => {
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : pbiaRootPath.value;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootPath.value;
 
   const folderPath = `${path}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {

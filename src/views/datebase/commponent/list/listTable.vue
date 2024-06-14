@@ -460,11 +460,11 @@ const deleteRow = async () => {
     }
 
     const idsToDelete = selectedItems.map(item => item.id);
-    const path = selectedItems?.rootPath !== '' && selectedItems?.rootPath ? selectedItems?.rootPath : sessionStorage.getItem('pbiaRootPath');
+    const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('pbiaRootPath');
     const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
     const req = {
       ids: idsToDelete,
-      rootPath: rootArr
+      img_drive_root_path: rootArr
     }
     const response = await deleteRunningApi(req);
 
