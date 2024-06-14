@@ -4,7 +4,7 @@ import {RuningInfo, RuningInfoApiRequest, RunningInfoRes} from "@/common/api/ser
 import * as http from "http";
 const httpClient = useHttpClient();
 
-export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: RuningInfo }): Promise<ApiResponse<void>> => {
+export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: any }): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.runningInfo.create, request);
 };
 
@@ -17,7 +17,7 @@ export const jsonCreatePost = async (request: any): Promise<ApiResponse<any | un
 };
 
 
-export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiResponse<RunningInfoRes | undefined>> => {
+export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiResponse<any | undefined>> => {
     const queryString = Object.entries(req)
         .filter(([key, value]) => value !== undefined)  // undefined 값은 제외
         .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)

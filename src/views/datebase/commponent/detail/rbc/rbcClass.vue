@@ -208,7 +208,10 @@ const beforeChange = () => {
 const afterChange = () => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
-  rbcInfoChangeVal.value = props.rbcInfo.rbcInfoAfter;
+  if(props.rbcInfo.rbcInfoAfter){
+    rbcInfoChangeVal.value = props.rbcInfo.rbcInfoAfter;
+
+  }
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
@@ -352,7 +355,7 @@ const onCommit = async () => {
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
-    signedUserId: userModuleDataGet.value.userId,
+    submitUserId: userModuleDataGet.value.userId,
   };
   const updatedRuningInfo ={...result.data,...updatedItem }
   await resRunningItem(updatedRuningInfo);

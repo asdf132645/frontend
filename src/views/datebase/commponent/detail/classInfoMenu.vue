@@ -226,7 +226,7 @@ const moveWbc = async (direction: any) => {
 
 const processNextDbIndex = async (direction: any, id: number) => {
   const res: any = await pageUpDownRunnIng(id, '1', direction);
-  if (resData.value.state) {
+  if (resData.value.lock_status) {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';

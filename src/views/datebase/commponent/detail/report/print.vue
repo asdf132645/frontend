@@ -22,7 +22,7 @@
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left; padding: 5px 0;">Signed by ID</th>
-            <td style="text-align: left; padding: 5px 0;">{{ selectItems?.signedUserId }}</td>
+            <td style="text-align: left; padding: 5px 0;">{{ selectItems?.submitUserId }}</td>
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left; padding: 5px 0;">Signed date</th>

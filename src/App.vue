@@ -177,7 +177,7 @@ onMounted(async () => {
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
-
+  console.log(window.APP_API_BASE_URL)
   EventBus.subscribe('executeAction', emitSocketData);
 
 });
@@ -417,7 +417,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
         const newObj = {
           slotNo: completeSlot.slotNo,
-          state: false,
+          lock_status: false,
           traySlot: '1-' + idx,
           barcodeNo: completeSlot.barcodeNo,
           patientId: completeSlot.patientId,
@@ -429,15 +429,15 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           orderDttm: completeSlot.orderDttm,
           testType: completeSlot.testType,
           analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
-          createDate: tcpReq().embedStatus.settings.reqDttm,
+          // createDate: tcpReq().embedStatus.settings.reqDttm,
           // pltCount: completeSlot.pltCount,
           // malariaCount: completeSlot.malariaCount,
           // maxRbcCount: completeSlot.maxRbcCount,
-          stateCd: completeSlot.stateCd,
+          // stateCd: completeSlot.stateCd,
           tactTime: completeSlot.tactTime,
           maxWbcCount: completeSlot.maxWbcCount,
-          lowPowerPath: completeSlot.lowPowerPath,
-          runningPath: completeSlot.runningPath,
+          bf_lowPowerPath: completeSlot.bf_lowPowerPath,
+          // runningPath: completeSlot.runningPath,
           wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
           wbcInfoAfter: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0],
           rbcInfo: !projectBm.value ? {
@@ -464,7 +464,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           // },
           submitState: '',
           submitOfDate: '',
-          signedUserId: '',
+          submitUserId: '',
           // classificationResult: [],
           isNsNbIntegration: isNsNbIntegration,
           wbcMemo: '',

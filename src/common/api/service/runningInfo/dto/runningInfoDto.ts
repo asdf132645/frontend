@@ -46,14 +46,14 @@ interface RuningInfo {
     isNormal: string;
     submitState?:string;
     submitOfDate?: Date;
-    signedUserId?:string;
+    submitUserId?:string;
     isNsNbIntegration?: string;
     rootPath?: string;
 }
 
 
 interface RunningInfoRes {
-    data: RuningInfo[];
+    data: any[];
     total: number;
     page: number;
 }

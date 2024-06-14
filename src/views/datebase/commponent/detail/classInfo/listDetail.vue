@@ -13,7 +13,7 @@
         <li>{{ selectItems?.cbcPatientNo }}</li>
         <li>{{ selectItems?.patientName }}</li>
         <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
-        <li>{{ selectItems?.createDate }}</li>
+        <li>{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
