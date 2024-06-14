@@ -30,7 +30,7 @@
             </tr>
             <tr>
               <th>Signed by ID</th>
-              <td>{{ selectItems?.signedUserId }}</td>
+              <td>{{ selectItems?.submitUserId }}</td>
             </tr>
             <tr>
               <th>Signed date</th>

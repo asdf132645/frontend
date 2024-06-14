@@ -37,7 +37,7 @@
     <tbody v-if="dbData.length !== 0">
     <template v-for="(item, idx) in dbData"
               :key="item.id">
-      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submitState === 'Submit', rock: item.state && item.pcIp !== myIp, checkFirst: item.submitState === 'checkFirst' }"
+      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submitState === 'Submit', rock: item.lock_status && item.pcIp !== myIp, checkFirst: item.submitState === 'checkFirst' }"
           @click="selectItem(item)"
           @dblclick='rowDbClick(item)'
           ref="firstRow"
@@ -52,14 +52,14 @@
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon
-              :icon="['fas', `${!item?.state ? 'lock-open' : 'lock' }`]"
+              :icon="['fas', `${!item?.lock_status ? 'lock-open' : 'lock' }`]"
           />
         </td>
         <td> {{ item?.traySlot }}</td>
         <td> {{ item?.barcodeNo }}</td>
         <td> {{ item?.patientId }}</td>
         <td> {{ item?.patientNm }}</td>
-        <td> {{ item?.createDate === '' ? '' : formatDateString(item?.createDate) }}</td>
+        <td> {{ item?.analyzedDttm === '' ? '' : formatDateString(item?.analyzedDttm) }}</td>
         <td> {{ item?.tactTime }}</td>
         <td> {{ submitStateChangeText(item?.submitState) }}</td>
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
@@ -362,7 +362,7 @@ const getUserIp = async (item) => {
   }
 }
 const rowDbClick = async (item) => {
-  if (item.state) {
+  if (item.lock_status) {
     return;
   }
 

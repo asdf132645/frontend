@@ -233,8 +233,8 @@ const getDbData = async (type: string, pageNum?: number) => {
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
           dbGetData.value = dbGetData.value.sort((a, b) => {
-            const dateA = moment(a.createDate, 'YYYYMMDDHHmmssSSS');
-            const dateB = moment(b.createDate, 'YYYYMMDDHHmmssSSS');
+            const dateA = moment(a.analyzedDttm, 'YYYYMMDDHHmmssSSS');
+            const dateB = moment(b.analyzedDttm, 'YYYYMMDDHHmmssSSS');
 
             // Moment.js의 diff 메서드를 사용하여 날짜 차이 계산
             return dateB.diff(dateA);
