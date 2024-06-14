@@ -133,9 +133,9 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import {barcodeImgDir, lisCodeRbcOption, lisCodeWbcOption} from "@/common/defines/constFile/settings";
-import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -147,9 +147,8 @@ import {
   getOrderClassApi,
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
-import process from "process";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'originalDb', 'type']);
+const props = defineProps(['wbcInfo', 'selectItems', 'type']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -172,14 +171,12 @@ const barcodeImg = ref('');
 const userId = ref('');
 const wbcMemo = ref('');
 const memoModal = ref(false);
-const wbcInfoChangeVal = ref<any>([]);
+const wbcInfoChangeVal: any = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
 const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
-const originalDbData = sessionStorage.getItem("originalDbData");
-const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -204,17 +201,11 @@ onMounted(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   // 첫 진입시
   if (props.selectItems.submitState === "") {
-    const updatedRuningInfo = props.originalDb
-        .filter((item: any) => item.id === props.selectItems.id)
-        .map((item: any) => {
-          // id가 일치하는 경우 해당 항목의 submit 값을 변경
-          const updatedItem = {
-            ...item,
-            submitState: 'checkFirst',
-          };
-          // updatedItem의 내용을 변경
-          return updatedItem;
-        });
+    const result: any = await detailRunningApi(String(props.selectItems.id));
+    const updatedItem = {
+      submitState: 'checkFirst',
+    };
+    const updatedRuningInfo ={...result.data,...updatedItem }
     await resRunningItem(updatedRuningInfo, true);
   }
   await getLisWbcRbcData();
@@ -588,7 +579,7 @@ const inhaDataSend = () => {
     }
   })
 
-  const replacements = {
+  const replacements: any = {
     'H9531': 'H9571',
     'H9532': 'H9572',
     'H9533': 'H9573',
@@ -612,7 +603,7 @@ const inhaDataSend = () => {
     'H9594': 'H9595'
   };
 
-  let rbcTmp2 = rbcTmp.replace(/H9531|H9532|H9533|H9535|H9536|H9537|H9534|H9538|H9542|H9544|H9546|H9548|H9550|H9552|H9554|H9556|H9558|H9560|H9562|H9564|H9594/g, match => replacements[match]);
+  let rbcTmp2: any = rbcTmp.replace(/H9531|H9532|H9533|H9535|H9536|H9537|H9534|H9538|H9542|H9544|H9546|H9548|H9550|H9552|H9554|H9556|H9558|H9560|H9562|H9564|H9594/g, match => replacements[match]);
 
   resultStr += rbcTmp;
   resultStr += rbcTmp2;
@@ -715,17 +706,11 @@ const lisFileUrlCreate = async (data: any) => {
       };
       const res = await createFile(parms);
       if (res) {
-        const updatedRuningInfo = props.originalDb
-            .filter((item: any) => item.id === props.selectItems.id)
-            .map((item: any) => {
-              // id가 일치하는 경우 해당 항목의 submit 값을 변경
-              const updatedItem = {
-                ...item,
-                submitState: 'lis',
-              };
-              // updatedItem의 내용을 변경
-              return updatedItem;
-            });
+        const result: any = await detailRunningApi(String(props.selectItems.id));
+        const updatedItem = {
+          submitState: 'lis',
+        };
+        const updatedRuningInfo ={...result.data,...updatedItem }
         await resRunningItem(updatedRuningInfo, true);
         showSuccessAlert(messages.IDS_MSG_SUCCESS);
         if (!showAlert.value) {
@@ -768,8 +753,6 @@ const getLisWbcRbcData = async () => {
   try {
     const wbcResult = await getLisCodeApi();
     const rbcResult = await getLisCodeRbcApi();
-    // console.log(wbcResult);
-    // console.log(rbcResult)
     if (wbcResult && wbcResult.data && rbcResult && rbcResult.data) {
       const wbcData = wbcResult.data;
       const rbcData = rbcResult.data;
@@ -827,29 +810,27 @@ const hideConfirm = () => {
 
 const onCommit = async () => {
   const localTime = moment().local();
-  const updatedRuningInfo = props.originalDb
-      .filter((item: any) => item.id === props.selectItems.id)
-      .map((item: any) => {
-        const updatedItem = {
-          ...item,
-          submitState: 'Submit',
-          submitOfDate: localTime.format(),
-          signedUserId: item.id,
-        };
-        return updatedItem;
-      });
+
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedItem = {
+    submitState: 'Submit',
+    submitOfDate: localTime.format(),
+    signedUserId: userModuleDataGet.value.userId,
+  };
+  const updatedRuningInfo ={...result.data,...updatedItem }
   await resRunningItem(updatedRuningInfo);
 }
 
 
 const memoChange = async () => {
-  const updatedRunningInfo = props.originalDb.map((item: any) => {
-    return item.id === props.selectItems.id
-        ? {...item, wbcMemo: wbcMemo.value}
-        : item;
-  }).filter((item: any) => item.id === props.selectItems.id);
 
-  await resRunningItem(updatedRunningInfo);
+  const updatedItem = {
+    wbcMemo: wbcMemo.value
+  };
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedRuningInfo ={...result.data,...updatedItem }
+
+  await resRunningItem(updatedRuningInfo);
   memoModal.value = false;
 }
 
@@ -875,16 +856,15 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: updatedRuningInfo
+      runingInfoDtoItems: [updatedRuningInfo]
     })
     if (response) {
       if (!noAlert) {
         showSuccessAlert('success');
       }
-      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
-      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
-      sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
-      wbcMemo.value = filteredItems[0].wbcMemo;
+      const filteredItems = updatedRuningInfo;
+      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems));
+      wbcMemo.value = filteredItems.wbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -930,11 +910,9 @@ const beforeChang = async () => {
   emits('isBefore', true);
   const selectItemsData = sessionStorage.getItem("selectItems");
   selectItemsSessionStorageData.value = selectItemsData ? JSON.parse(selectItemsData) : null;
-  const originalDbData = sessionStorage.getItem("originalDbData");
-  originalDb.value = originalDbData ? JSON.parse(originalDbData) : null;
   await getOrderClass();
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
-  const wbcInfo = filteredItems[0].wbcInfo.wbcInfo[0]
+  const filteredItems: any = await detailRunningApi(String(selectItemsSessionStorageData.value.id));
+  const wbcInfo = filteredItems.data.wbcInfo.wbcInfo[0];
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
@@ -948,8 +926,8 @@ const afterChang = async (newItem: any) => {
   await getOrderClass();
   emits('isBefore', false);
   isBefore.value = false;
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
-  const wbcInfo = selectItemsSessionStorageData.value.wbcInfoAfter.length !== 0 ? selectItemsSessionStorageData.value.wbcInfoAfter : filteredItems[0].wbcInfo.wbcInfo[0];
+  const filteredItems: any =  await detailRunningApi(String(selectItemsSessionStorageData.value.id));
+  const wbcInfo = selectItemsSessionStorageData.value.wbcInfoAfter.length !== 0 ? selectItemsSessionStorageData.value.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
@@ -1055,16 +1033,13 @@ async function updateOriginalDb() {
   });
 
   // originalDb 업데이트
-  const filteredItems = originalDb.value.filter((item: any) => item.id === selectItemsSessionStorageData.value.id);
-  if (filteredItems.length > 0) {
-    filteredItems.forEach((filteredItem: any) => {
-      filteredItem.wbcInfoAfter = clonedWbcInfo;
-    });
+  const res: any = await detailRunningApi(String(selectItemsSessionStorageData.value.id));
+  if (res) {
+    res.data.wbcInfoAfter = clonedWbcInfo;
   }
-  originalDb.value = filteredItems;
   await putOrderClassApi(sortArr);
   //updateRunningApi 호출
-  await updateRunningApiPost(clonedWbcInfo, originalDb.value);
+  await updateRunningApiPost(clonedWbcInfo, [res.data]);
 
   await store.dispatch('commonModule/setCommonInfo', {classInfoSort: []});
 }

@@ -64,7 +64,9 @@
         <td> {{ submitStateChangeText(item?.submitState) }}</td>
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
-          <font-awesome-icon v-if="item?.submitState === 'Ready'" :icon="['fas', 'pen-to-square']"
+
+          <font-awesome-icon v-if="item?.submitState === 'checkFirst' || item?.submitState === ''"
+                             :icon="['fas', 'pen-to-square']"
                              @click="editData(item)"/>
         </td>
       </tr>
@@ -164,14 +166,13 @@ import {
 } from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
-import {deleteRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getUserIpApi} from "@/common/api/service/user/userApi";
-import {stateUpdateCommon} from "@/common/lib/commonfunction";
 import moment from "moment";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 
@@ -184,7 +185,6 @@ const visible = ref(false);
 const itemObj = ref({});
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
-const commonDataGet = computed(() => store.state.commonModule);
 const projectType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
@@ -348,14 +348,14 @@ const selectItem = (item) => {
 const getUserIp = async (item) => {
   try {
     const result = await getUserIpApi();
-    await stateUpdateCommon(item, result.data, [...props.dbData], userModuleDataGet.value.id).then(response => {
-      // emits('initData');
+    const req = `oldPcIp=${result.data}&newEntityId=${item.id}&newPcIp=${result.data}`
+    await updatePcIpStateApi(req).then(response => {
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',
         payload: 'refreshDb'
       });
     }).catch(error => {
-      console.error('Error:', error.response.data);
+      console.log('3 err')
     });
   } catch (e) {
     console.log(e)
@@ -378,7 +378,6 @@ const rowDbClick = async (item) => {
   sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
   sessionStorage.setItem('selectItems', JSON.stringify(item));
-  sessionStorage.setItem('originalDbData', JSON.stringify(props.dbData));
 
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
@@ -386,34 +385,6 @@ const rowDbClick = async (item) => {
   await router.push('/databaseDetail');
 
 }
-const getStringArrayBySiteCd = (siteCd, testType) => {
-  if (!siteCd && siteCd === '') {
-    siteCd = '0000';
-    testType = '01';
-  }
-  const arraysBySiteCd = {
-    '0006': {
-      includesStr: ['SM'],
-      includesStr2: ['SM'],
-    },
-  };
-
-  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
-  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["SM"],
-    includesStr2: ["SM"],
-  };
-  // testType에 따라 제외할 부분 정의
-  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
-};
-const filterWbcInfoBySiteAndTestType = (wbcInfo, testType) => {
-  // getStringArrayBySiteCd 함수로부터 해당 testType에 따른 필터링에 사용될 배열을 가져옴
-
-  const filterArray = getStringArrayBySiteCd(siteCd.value, testType);
-
-  // wbcInfo 배열에서 filterArray에 있는 title을 가진 항목들을 필터링하여 반환
-  return wbcInfo.filter(item => !filterArray.includes(item.title));
-};
 
 
 const getRbcDegreeData = async () => {
@@ -468,43 +439,11 @@ const dbDataEditSet = async () => {
   }
 }
 
-const stateUpdate = async (itemVal, pcIp) => {
-  try {
-    const updatedRuningInfo = {
-      id: itemVal.id,
-      pcIp: pcIp,
-      state: true,
-    };
-
-    const localDbData = [...props.dbData];
-
-    const indexToUpdate = localDbData.findIndex(item => item.id === itemVal.id);
-
-    if (indexToUpdate !== -1) {
-      localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
-    }
-
-    const response = await updateRunningApi({
-      userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [localDbData[indexToUpdate]]
-    })
-    if (response) {
-      await emits('initData');
-      await instance?.appContext.config.globalProperties.$socket.emit('state', {
-        type: 'SEND_DATA',
-        payload: 'refreshDb'
-      });
-    } else {
-      console.error('백엔드가 디비에 저장 실패함');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
 
 const editData = async (item) => {
   openLayer();
   itemObj.value = JSON.parse(JSON.stringify(item));
+  itemObj.value.submitState = ['','Ready','checkFirst'].includes(itemObj.value.submitState) ? '' : itemObj.value.submitState;
   itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType)
 }
 

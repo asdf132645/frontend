@@ -44,7 +44,7 @@ import axios from "axios";
 import {readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {getCbcCodeRbcApi, getFilePathSetApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -60,8 +60,7 @@ const deviceBarCode = computed(() => store.state.commonModule.deviceBarcode);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcCodeList = ref<any>([]);
 const selectItemsVal = ref<any>([]);
-const originalDbData = sessionStorage.getItem("originalDbData");
-const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
+
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
   await getCbcPathData();
@@ -255,21 +254,17 @@ const initCbcData = async (newVal: any) => {
   selectItemsVal.value.cbcPatientNm = cbcPatientNm.value;
   selectItemsVal.value.cbcSex = cbcSex.value;
   selectItemsVal.value.cbcAge = cbcAge.value;
-  const updatedRuningInfo = {
+  const req = {
     cbcPatientNo: cbcPatientNo.value,
     cbcPatientNm: cbcPatientNm.value,
     cbcSex: cbcSex.value,
     cbcAge: cbcAge.value,
   };
 
-  const localDbData = [...originalDb.value];
-  const indexToUpdate = localDbData.findIndex(item => item.id === selectItemsVal.value.id);
-  if (indexToUpdate !== -1) {
-    localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
-  }
-  sessionStorage.setItem('selectItems', JSON.stringify(localDbData[indexToUpdate]));
-  sessionStorage.setItem('originalDbData', JSON.stringify(localDbData));
-  await updateRunningApiPost([localDbData[indexToUpdate]]);
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedRuningInfo ={...result.data,...req }
+  sessionStorage.setItem('selectItems', JSON.stringify(updatedRuningInfo));
+  await updateRunningApiPost([updatedRuningInfo]);
 
 }
 

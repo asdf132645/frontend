@@ -249,6 +249,18 @@ export const apiConstants = {
             detail:{
                 endpoint: 'runningInfo/detail',
                 requiresToken: false,
+            },
+            pageUpDown:{
+                endpoint:'runningInfo/pageUpDown',
+                requiresToken: false,
+            },
+            updatePcIpState:{
+                endpoint:'runningInfo/updatePcIpState',
+                requiresToken: false,
+            },
+            clearPcIpState:{
+                endpoint:'runningInfo/clearPcIpState',
+                requiresToken: false,
             }
         },
         folder: {

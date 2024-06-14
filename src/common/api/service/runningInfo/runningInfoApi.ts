@@ -1,6 +1,7 @@
 import {apiConstants} from "@/common/api/apiConstants";
 import {useHttpClient, ApiResponse} from '@/common/api/httpClient';
 import {RuningInfo, RuningInfoApiRequest, RunningInfoRes} from "@/common/api/service/runningInfo/dto/runningInfoDto";
+import * as http from "http";
 const httpClient = useHttpClient();
 
 export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: RuningInfo }): Promise<ApiResponse<void>> => {
@@ -29,8 +30,18 @@ export const deleteRunningApi = async (req: any): Promise<ApiResponse<void>> => 
     return httpClient.httpDelete(apiConstants.settings.runningInfo.delete, req, true);
 };
 
-
 export const detailRunningApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.settings.runningInfo.detail, `${request}`, false);
 };
 
+export const pageUpDownRunnIngApi = async (req: any): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.runningInfo.pageUpDown, `${req}`, true)
+}
+
+export const updatePcIpStateApi = async (req: any): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.runningInfo.updatePcIpState, `${req}`, true);
+}
+
+export const clearPcIpState = async (req: any): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.runningInfo.clearPcIpState, `${req}`, true)
+}

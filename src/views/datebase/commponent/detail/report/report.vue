@@ -5,10 +5,10 @@
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div class="reportDiv">
       <div class="wbcDiv">
-        <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
+        <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'/>
       </div>
       <div class="rbcDiv" v-if="!projectBm">
-        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" :originalDb="originalDb" type='report'/>
+        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'/>
       </div>
       <div class="reportDetail">
         <div class="reportTitle">
@@ -176,8 +176,6 @@ const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectIte
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
 const wbcInfo = ref<any>(null);
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
-const originalDbData = sessionStorage.getItem("originalDbData");
-const originalDb = ref(originalDbData ? JSON.parse(originalDbData) : null);
 const printOnOff = ref(false);
 const printContent = ref(null);
 const rbcInfo = ref([]);

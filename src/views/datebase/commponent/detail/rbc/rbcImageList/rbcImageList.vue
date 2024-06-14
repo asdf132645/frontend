@@ -155,7 +155,7 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'originalDb', 'isBefore']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
