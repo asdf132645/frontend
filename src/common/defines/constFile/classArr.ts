@@ -44,7 +44,8 @@ export const basicWbcArr = [
 
 ]
 
-export const basicBmClassList = [{
+export const basicBmClassList = [
+{
     id: '01', title: 'NE', name: 'Neutrophil', count: 0, percent: 0, order: 1
 }, {
     id: '71', title: 'NS', name: 'Neutrophil-Segmented', count: 0, percent: 0, key: '', order: 2

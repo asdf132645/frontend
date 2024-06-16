@@ -2,7 +2,7 @@
   <div class="alignDiv">
     <p class="mb4"> [ WBC ] </p>
     <label v-for="item in lisCodeWbcArr" :key="item.value">
-      <p class="mb1">{{ item.text }}</p>
+      <p class="mb1">{{ item.classNm }}</p>
       <input type="text" v-model="item.code" />
     </label>
   </div>

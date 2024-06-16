@@ -5,7 +5,6 @@ export interface CreateImagePrintDto {
 export interface ImagePrintItem {
     text: string;
     value: string;
-    code: string;
     checked: boolean;
 }
 
