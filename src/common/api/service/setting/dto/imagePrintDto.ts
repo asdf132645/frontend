@@ -3,7 +3,7 @@ export interface CreateImagePrintDto {
 }
 
 export interface ImagePrintItem {
-    text: string;
+    classNm: string;
     value: string;
     checked: boolean;
 }

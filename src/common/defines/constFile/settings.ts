@@ -604,86 +604,48 @@ export const normalRange = [
 ]
 
 export const imagePrintAndWbc = [
-    { text: 'Neutrophil', value: '01', code: '', checked: false },
-    { text: 'Neutrophil-Segmented', value: '71', code: '', checked: false },
-    { text: 'Neutrophil-Band', value: '72', code: '', checked: false },
-    { text: 'Metamyelocyte', value: '02', code: '',checked: false },
-    { text: 'Myelocyte', value: '03', code: '',checked: false },
-    { text: 'Promyelocyte', value: '04', code: '', checked: false },
-    { text: 'Lymphocyte', value: '05', code: '', checked: false },
-    { text: 'Reactive lymphocyte', value: '61', code: '', checked: false },
-    { text: 'Abnormal lymphocyte', value: '62', code: '', checked: false },
-    { text: 'Monocyte', value: '07', code: '',checked: false },
-    { text: 'Eosinophil', value: '08', code: '', checked: false },
-    { text: 'Basophil', value: '09', code: '' ,checked: false},
-    { text: 'Blast', value: '10', code: '' ,checked: false},
-    { text: 'Plasma cell', value: '11', code: '' ,checked: false},
-    { text: 'nRBC', value: '12', code: '' ,checked: false},
-    { text: 'Giant platelet', value: '13', code: '' ,checked: false},
-    { text: 'Platelet aggregation', value: '14', code: '' ,checked: false},
-    { text: 'Malaria', value: '16', code: '' ,checked: false},
-    { text: 'Artifact(Smudge)', value: '15', code: '' ,checked: false},
-    { text: 'rbcPrintModel', value: '99999', code: '' ,checked: false},
+    { classNm: 'Neutrophil', value: '01', checked: false },
+    { classNm: 'Neutrophil-Segmented', value: '71', checked: false },
+    { classNm: 'Neutrophil-Band', value: '72', checked: false },
+    { classNm: 'Metamyelocyte', value: '02', checked: false },
+    { classNm: 'Myelocyte', value: '03', checked: false },
+    { classNm: 'Promyelocyte', value: '04', checked: false },
+    { classNm: 'Lymphocyte', value: '05', checked: false },
+    { classNm: 'Reactive lymphocyte', value: '61', checked: false },
+    { classNm: 'Abnormal lymphocyte', value: '62', checked: false },
+    { classNm: 'Monocyte', value: '07', checked: false },
+    { classNm: 'Eosinophil', value: '08', checked: false },
+    { classNm: 'Basophil', value: '09', checked: false},
+    { classNm: 'Blast', value: '10', checked: false},
+    { classNm: 'Plasma cell', value: '11', checked: false},
+    { classNm: 'nRBC', value: '12', checked: false},
+    { classNm: 'Giant platelet', value: '13', checked: false},
+    { classNm: 'Platelet aggregation', value: '14', checked: false},
+    { classNm: 'Malaria', value: '16', checked: false},
+    { classNm: 'Artifact(Smudge)', value: '15', checked: false},
+    { classNm: 'rbcPrintModel', value: '99999', checked: false},
 ]
 export const imagePrintAndBm = [
-{
-    text: 'Neutrophil',
-    value: '01'
-}, {
-    text: 'Neutrophil-Segmented',
-    value: '71'
-}, {
-    text: 'Neutrophil-Band',
-    value: '72'
-}, {
-    text: 'Metamyelocyte',
-    value: '02'
-}, {
-    text: 'Myelocyte',
-    value: '03'
-}, {
-    text: 'Promyelocyte',
-    value: '04'
-}, {
-    text: 'Lymphocyte',
-    value: '05'
-}, {
-    text: 'Abnormal lymphocyte',
-    value: '06'
-}, {
-    text: 'Monocyte',
-    value: '07'
-}, {
-    text: 'Eosinophil',
-    value: '08'
-}, {
-    text: 'Basophil',
-    value: '09'
-}, {
-    text: 'Blast',
-    value: '10'
-}, {
-    text: 'Plasma cell',
-    value: '11'
-}, {
-    text: 'Orthochromic Normoblast',
-    value: '12'
-}, {
-    text: 'Polychromic Normoblast',
-    value: '13'
-}, {
-    text: 'Basophilic Normoblast',
-    value: '14'
-}, {
-    text: 'Proerythroblast',
-    value: '15'
-}, {
-    text: 'Histiocyte',
-    value: '16'
-}, {
-    text: 'Others',
-    value: '17'
-}];
+    { classNm: 'Neutrophil', value: '01', checked: false },
+    { classNm: 'Neutrophil-Segmented', value: '71', checked: false },
+    { classNm: 'Neutrophil-Band', value: '72', checked: false },
+    { classNm: 'Metamyelocyte', value: '02', checked: false },
+    { classNm: 'Myelocyte', value: '03', checked: false },
+    { classNm: 'Promyelocyte', value: '04', checked: false },
+    { classNm: 'Lymphocyte', value: '05', checked: false },
+    { classNm: 'Abnormal lymphocyte', value: '06', checked: false },
+    { classNm: 'Monocyte', value: '07', checked: false },
+    { classNm: 'Eosinophil', value: '08', checked: false },
+    { classNm: 'Basophil', value: '09', checked: false },
+    { classNm: 'Blast', value: '10', checked: false },
+    { classNm: 'Plasma cell', value: '11', checked: false },
+    { classNm: 'Orthochromic Normoblast', value: '12', checked: false },
+    { classNm: 'Polychromic Normoblast', value: '13', checked: false },
+    { classNm: 'Basophilic Normoblast', value: '14', checked: false },
+    { classNm: 'Proerythroblast', value: '15', checked: false },
+    { classNm: 'Histiocyte', value: '16', checked: false },
+    { classNm: 'Others', value: '17', checked: false }
+];
 
 
 export const lisCodeWbcOption = [
