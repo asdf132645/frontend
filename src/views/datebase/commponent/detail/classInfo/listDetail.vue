@@ -909,11 +909,11 @@ async function handleKeyDown(event: KeyboardEvent) {
 }
 
 async function moveSelectedImagesToTargetItem(targetItem: any) {
-  const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.abbreviation);
+  const targetIndex = wbcInfo.value.findIndex((item: any) =>  (item.title || item.abbreviation) === (targetItem.title || targetItem.abbreviation));
   const selectedImages = selectedClickImages.value;
   addToRollbackHistory();
   for (const selectedImage of selectedImages) {
-    const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
+    const sourceItemIndex = wbcInfo.value.findIndex((item: any) => (item.title || item.abbreviation) === (selectedImage.title || selectedImage.abbreviation));
     const sourceItem = wbcInfo.value[sourceItemIndex];
     const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
     if (imageIndex !== -1) {
