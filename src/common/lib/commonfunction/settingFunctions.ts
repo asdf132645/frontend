@@ -95,10 +95,9 @@ export const firstCellImgSet = async () => {
 
 
 
-export const firstSaveOrderClass = async (userId: any) => {
+export const firstSaveOrderClass = async () => {
     const orderList: any = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
     for (const index in orderList) {
-        orderList[index].userName = userId;
         orderList[index].orderIdx = index;
     }
     const result = await getOrderClassApi();
@@ -118,7 +117,7 @@ export const firstSaveOrderClass = async (userId: any) => {
     }
 }
 
-export const firstSaveNormalRange = async (userId: any) => {
+export const firstSaveNormalRange = async () => {
     try {
         const result = await getNormalRangeApi();
         if (result) {
@@ -132,7 +131,7 @@ export const firstSaveNormalRange = async (userId: any) => {
     }
 };
 
-export const firstCreateRbcDegreeData = async (userId: any) => {
+export const firstCreateRbcDegreeData = async () => {
     await combindDegree();
     const rbcDegreeList: any = [];
 

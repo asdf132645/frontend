@@ -93,9 +93,9 @@ const loginUser = async () => {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
       await firstCellImgSet();
-      await firstSaveOrderClass(String(result.data?.user.id));
-      await firstSaveNormalRange(String(result.data?.user.id));
-      await firstCreateRbcDegreeData(String(result.data?.user.id));
+      await firstSaveOrderClass();
+      await firstSaveNormalRange();
+      await firstCreateRbcDegreeData();
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
 
