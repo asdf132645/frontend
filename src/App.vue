@@ -147,6 +147,8 @@ const leave = (event: any) => {
 
 onMounted(async () => {
   await nextTick();
+  await cellImgGet();
+  console.log(iaRootDir.value)
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
@@ -602,7 +604,7 @@ const sendMessage = async (payload: any) => {
 };
 
 
-const cellImgGet = async (newUserId: string) => {
+const cellImgGet = async (newUserId?: string) => {
   try {
     const result = await getCellImgApi();
     if (result) {
