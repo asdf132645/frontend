@@ -154,7 +154,7 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, onMounted, onUnmounted, ref} from "vue";
+import {computed, getCurrentInstance, onMounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";

@@ -822,12 +822,11 @@ const onCommit = async () => {
 
 
 const memoChange = async () => {
-
   const updatedItem = {
     wbcMemo: wbcMemo.value
   };
   const result: any = await detailRunningApi(String(props.selectItems.id));
-  const updatedRuningInfo ={...result.data,...updatedItem }
+  const updatedRuningInfo = {...result.data,...updatedItem }
 
   await resRunningItem(updatedRuningInfo);
   memoModal.value = false;

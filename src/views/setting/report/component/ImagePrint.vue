@@ -1,8 +1,8 @@
 <template>
   <div class="settingImagePrint">
-    <label v-for="item in imagePrintAndWbcArr" :key="item.value">
-      <div>{{ item.classNm }}</div>
-      <div><input type="checkbox" :value="item.value" v-model="selectedItems" /></div>
+    <label v-for="item in imagePrintAndWbcArr" :key="item.id">
+      <div>{{ item.fullNm }}</div>
+      <div><input type="checkbox" :value="item.classId" v-model="selectedItems" /></div>
     </label>
   </div>
   <div class="mt1">
@@ -49,7 +49,7 @@ const saveImagePrint = async () => {
     let result: ApiResponse<void>;
 
     imagePrintAndWbcArr.value.forEach((item) => {
-      item.checked = selectedItems.value.includes(item.value);
+      item.checked = selectedItems.value.includes(item.classId);
     });
 
     if (saveHttpType.value === 'post') {
@@ -89,9 +89,10 @@ const getImagePrintData = async () => {
       } else {
         saveHttpType.value = 'put';
         imagePrintAndWbcArr.value = data;
-        selectedItems.value = data.filter((item) => item.checked).map((item) => item.value);
+        selectedItems.value = data.filter((item) => item.checked).map((item) => item.classId);
       }
     }
+    console.log(imagePrintAndWbcArr.value);
   } catch (e) {
     console.error(e);
   }
