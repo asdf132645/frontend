@@ -815,7 +815,7 @@ const onCommit = async () => {
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
-    submitUserId: userModuleDataGet.value.userId,
+    submitUserId: userModuleDataGet.value.name,
   };
   const updatedRuningInfo ={...result.data,...updatedItem }
   await resRunningItem(updatedRuningInfo);

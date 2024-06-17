@@ -61,10 +61,9 @@
         <td> {{ item?.patientNm }}</td>
         <td> {{ item?.analyzedDttm === '' ? '' : formatDateString(item?.analyzedDttm) }}</td>
         <td> {{ item?.tactTime }}</td>
-        <td> {{ submitStateChangeText(item?.submitState) }}</td>
+        <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
-
           <font-awesome-icon v-if="item?.submitState === 'checkFirst' || item?.submitState === ''"
                              :icon="['fas', 'pen-to-square']"
                              @click="editData(item)"/>
@@ -480,12 +479,12 @@ const deleteRow = async () => {
   }
 }
 
-const submitStateChangeText = (text) => {
+const submitStateChangeText = (text, submitUserId) => {
   switch (text) {
     case 'Ready':
       return 'Ready';
     case 'Submit':
-      return 'Submit';
+      return `Submit (${submitUserId})`;
     default:
       return 'Ready';
   }
