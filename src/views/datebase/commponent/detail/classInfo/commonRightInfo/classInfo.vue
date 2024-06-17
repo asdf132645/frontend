@@ -876,8 +876,8 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => item.abbreviation === a.title);
-    const nameB = basicWbcArr.findIndex((item: any) => item.abbreviation === b.title);
+    const nameA = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (a.title || a.abbreviation));
+    const nameB = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (b.title || b.abbreviation));
 
     // 이름이 없는 경우는 배열 맨 뒤로 배치
     if (nameA === -1) return 1;

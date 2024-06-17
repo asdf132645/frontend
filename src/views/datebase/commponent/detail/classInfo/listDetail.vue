@@ -1156,7 +1156,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     }
     // wbcInfosArr => 원에다가 움직이거나 우클릭 해서 클래스 옮길 시 사용 하는 부분임
     if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
-
       const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
           `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
       const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1202,7 +1201,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
       const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.abbreviation === seItem.abbreviation);
+      const matchingItem = classInfoBagic.find(item => item.abbreviation === (seItem.title || seItem.abbreviation));
       const sourceFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
       const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
