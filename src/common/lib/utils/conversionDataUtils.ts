@@ -40,7 +40,7 @@ export const getBmTestTypeText = (value: string) => {
     return matchingOption ? matchingOption.text : '';
 };
 
-export const getBarcodeDetailImageUrl = (imageName: string, pbiaRootPath: string, slotId: string, barcodeDirName: string): string => {
+export const getBarcodeDetailImageUrl = (imageName: string, iaRootPath: string, slotId: string, barcodeDirName: string): string => {
     const baseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-    return `${baseUrl}/images/getImageRealTime?folder=${pbiaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}`;
+    return `${baseUrl}/images/getImageRealTime?folder=${iaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}`;
 }

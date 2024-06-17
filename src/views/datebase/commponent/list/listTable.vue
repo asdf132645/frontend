@@ -390,7 +390,7 @@ const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi();
     const data = result.data;
-    rbcDegreeStandard.value = data?.categories
+    rbcDegreeStandard.value = data
   } catch (e) {
     // console.log(e);
   }
@@ -459,7 +459,7 @@ const deleteRow = async () => {
     }
 
     const idsToDelete = selectedItems.map(item => item.id);
-    const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('pbiaRootPath');
+    const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
     const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
     const req = {
       ids: idsToDelete,

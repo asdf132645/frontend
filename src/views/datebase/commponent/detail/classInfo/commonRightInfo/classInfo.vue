@@ -162,10 +162,10 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
-const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
-const deviceBarCode = computed(() => store.state.commonModule.deviceBarcode);
+const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const barcodeImg = ref('');
 const userId = ref('');
@@ -297,15 +297,15 @@ const uploadLis = () => {
       const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
       const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
-        return item.testcd._cdata === 'LHR100'
+        return item.classCd._cdata === 'LHR100'
       })
 
       props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
-        wbcItem.testCd = ''
+        wbcItem.classCd = ''
 
         codeList.forEach(function (code) {
           if (wbcItem.id === code.id) {
-            wbcItem.testCd = code.cd
+            wbcItem.classCd = code.cd
           }
         })
       })
@@ -315,11 +315,10 @@ const uploadLis = () => {
       // five diff push
       props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
         fiveDiffWorkList.forEach(function (fiveDiffItem) {
-          if (wbcItem.testCd === fiveDiffItem) {
+          if (wbcItem.classCd === fiveDiffItem) {
             wbcTemp.push(wbcItem)
-
           } else {
-            if ((wbcItem.count > 0) && wbcItem.testCd !== '') {
+            if ((wbcItem.count > 0) && wbcItem.classCd !== '') {
               wbcTemp.push(wbcItem)
             }
           }
@@ -328,7 +327,7 @@ const uploadLis = () => {
 
       // neutrophil-seg
       const nsPercentItem = wbcTemp.filter(function (item: any) {
-        return item.testCd === 'LHR10501'
+        return item.classCd === 'LHR10501'
       })
 
       // ANC insert
@@ -336,7 +335,7 @@ const uploadLis = () => {
         const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2)
 
         wbcTemp.push({
-          testCd: 'LHR10599',
+          classCd: 'LHR10599',
           percent: ancResult
         })
       }
@@ -365,8 +364,8 @@ const uploadLis = () => {
           const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
 
           const result = params.wbcInfo
-              .filter((wbcItem: any) => wbcItem.testCd !== null && wbcItem.testCd !== '')
-              .map((wbcItem: any) => `${wbcItem.testCd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
+              .filter((wbcItem: any) => wbcItem.classCd !== null && wbcItem.classCd !== '')
+              .map((wbcItem: any) => `${wbcItem.classCd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
               .join('');
 
           const url = `${realUrl}?submit_id=TXLII00101&business_id=${business_id}&ex_interface=${params.empNo}|${instcd}&instcd=${instcd}&userid=${params.empNo}&eqmtcd=${eqmtcd}&bcno=${params.barcodeNo}&result=${result}&testcont=MANUAL DIFFERENTIAL COUNT RESULT&testcontcd=01&execdeptcd=H1`;
@@ -730,13 +729,13 @@ const sendLisMessage = (data: any) => {
     url: lisFilePathSetArr.value,
     barcodeNo: props.selectItems.barcodeNo,
     userId: userModuleDataGet.value.userId,
-    deviceBarcode: deviceBarCode.value,
+    deviceBarcode: deviceSerialNm.value,
     resultMsg: data
   }
   axios.post(params.url, {
     barcodeNo: params.barcodeNo,
     userid: params.userId,
-    deviceBarcode: deviceBarCode.value,
+    deviceBarcode: deviceSerialNm.value,
     resultMsg: params.resultMsg
   }).then(function (result) {
     if (result.data.errorCode === 'E000') {
@@ -877,8 +876,8 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => item.title === a.title);
-    const nameB = basicWbcArr.findIndex((item: any) => item.title === b.title);
+    const nameA = basicWbcArr.findIndex((item: any) => item.abbreviation === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.abbreviation === b.title);
 
     // 이름이 없는 경우는 배열 맨 뒤로 배치
     if (nameA === -1) return 1;
@@ -897,7 +896,7 @@ const getOrderClass = async () => {
       if (result?.data.length === 0) {
         orderClass.value = [];
       } else {
-        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
       }
     }
   } catch (e) {
@@ -918,8 +917,6 @@ const beforeChang = async () => {
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));
   totalCountSet(wbcInfoChangeVal.value);
-
-
 }
 
 const afterChang = async (newItem: any) => {
@@ -1029,7 +1026,7 @@ async function updateOriginalDb() {
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoChangeVal.value);
   sortArr.forEach((item: any, index: any) => {
-    item.orderText = index;
+    item.orderIdx = index;
   });
 
   // originalDb 업데이트
@@ -1037,6 +1034,7 @@ async function updateOriginalDb() {
   if (res) {
     res.data.wbcInfoAfter = clonedWbcInfo;
   }
+
   await putOrderClassApi(sortArr);
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, [res.data]);

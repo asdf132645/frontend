@@ -278,8 +278,8 @@ export  const messages: Messages = {
     GET_IS_CBC_SHOW: 'getIsCbcShow',
     SET_SITE_CD: 'setSiteCd',
     GET_SITE_CD: 'getSiteCd',
-    SET_DEVICE_BARCODE: 'setDeviceBarcode',
-    GET_DEVICE_BARCODE: 'getDeviceBarcode',
+    SET_DEVICE_SERIALNUM: 'setDeviceSerialNm',
+    GET_DEVICE_SERIALNUM: 'getDeviceSerialNm',
 
     SELECT_BF_HOT_KEY: 'selectBfHotKey',
     SELECT_WBC_HOT_KEY: 'selectWbcHotKey',

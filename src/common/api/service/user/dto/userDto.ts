@@ -6,7 +6,6 @@ export interface CreateUser {
     userType: string;
     subscriptionDate?: Date;
     latestDate?: Date;
-    state?: string;
 }
 
 export interface loginUser {
@@ -29,6 +28,5 @@ export interface User {
     userType: string;
     subscriptionDate: string;
     latestDate: string;
-    state?: string;
     [key: string]:any;
 }

@@ -14,7 +14,7 @@ export const sysInfoStore = async (data: any) => {
 
         const deviceInfoData = {
             siteCd: data.siteCd,
-            deviceBarcode: data.deviceBarcode
+            deviceSerialNm: data.deviceSerialNm
         }
 
         await store.dispatch('commonModule/setCommonInfo', deviceInfoData);

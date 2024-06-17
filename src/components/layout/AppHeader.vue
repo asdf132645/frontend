@@ -144,7 +144,6 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
 const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
-// const viewerCheckData = 'main';
 
 const instance = getCurrentInstance();
 const showConfirm = ref(false);
@@ -411,8 +410,8 @@ const cellImgGet = async () => {
         sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
-        sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
-        await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(data?.pbiaRootPath)});
+        sessionStorage.setItem('iaRootPath', data?.iaRootPath);
+        await store.dispatch('commonModule/setCommonInfo', {iaRootPath: String(data?.iaRootPath)});
 
       }
     }

@@ -3,8 +3,8 @@ export interface CreateMinCountDto {
 }
 
 export interface minCountItem {
-    minGpCount: number;
-    minPaCount: number;
+    minGPCount: number;
+    minPACount: number;
 }
 
 export interface UpdateMinCountDto {

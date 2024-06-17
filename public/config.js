@@ -1,4 +1,4 @@
-window.APP_API_BASE_URL='http://192.168.0.131:3002';
+window.APP_API_BASE_URL='http://127.0.0.1:3002';
 window.PROJECT_TYPE='pb';
 window.MAIN_API='127.0.0.1'; // MAIN_API 고정
 window.PROJECT_VERSION='0.0.81v';

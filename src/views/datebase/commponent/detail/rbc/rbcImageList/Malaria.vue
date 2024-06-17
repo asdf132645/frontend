@@ -45,7 +45,7 @@ import { dirName } from "@/common/defines/constFile/settings";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 
 const props = defineProps(['selectItems']);
-const pbiaRootPath = sessionStorage.getItem('pbiaRootPath') || dirName.pbiaRootPath;
+const iaRootPath = sessionStorage.getItem('iaRootPath') || dirName.iaRootPath;
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const malariaList = ref([]);
 const noMalariaList = ref([]);
@@ -62,7 +62,7 @@ onMounted(async () => {
 
 async function getImageList(folderName: string, list: []) {
   const slotId = props.selectItems.slotId || '';
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootPath;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath;
   const folderPath = `${path}/${slotId}/${dirName.rbcClassDirName}/${folderName}`;
 
   try {
@@ -144,7 +144,7 @@ function onDrop(targetSection: string) {
 
 async function moveImage(targetSection: string, imgName: string) {
   const slotId = props.selectItems.slotId || '';
-  const pathNew = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootPath;
+  const pathNew = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : iaRootPath;
 
   const path = `${pathNew}/${slotId}/${dirName.rbcClassDirName}`
   const sourceFolder = targetSection === 'malaria' ? `${path}/${dirName.noMalariaDirName}` : `${path}/${dirName.malariaDirName}`;

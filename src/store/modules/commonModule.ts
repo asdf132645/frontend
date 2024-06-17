@@ -11,7 +11,7 @@ export interface CommonState {
     bfSelectFiles: any[];
     slideProceeding: string;
     totalSlideTime: string;
-    pbiaRootPath: string;
+    iaRootPath: string;
     runningSlotId: string;
     isRequestInProgress: boolean;
     startInfoBoolen: boolean;
@@ -29,7 +29,7 @@ export interface CommonState {
     orderList: any[];
     loginSetData: string;
     siteCd: string;
-    deviceBarcode: string;
+    deviceSerialNm: string;
     clonedWbcInfo: any[];
     clonedRbcInfo: any[];
     moveImgIsBool: boolean;
@@ -52,7 +52,7 @@ interface CommonModule {
         setBfSelectFiles: (state: CommonState, value: []) => void;
         setSlideProceeding: (state: CommonState, value: string) => void;
         setTotalSlideTime: (state: CommonState, value: string) => void;
-        setPbiaRootPath: (state: CommonState, value: string) => void;
+        setIaRootPath: (state: CommonState, value: string) => void;
         setRunningSlotId: (state: CommonState, value: string) => void;
         setIsRequestInProgress: (state: CommonState, value: boolean) => void;
         setStartInfoBoolen: (state: CommonState, value: boolean) => void;
@@ -72,7 +72,7 @@ interface CommonModule {
         setOrderList: (state: CommonState, value: any[]) => void;
         setLoginSetData: (state: CommonState, value: string) => void;
         setSiteCd: (state: CommonState, value: string) => void;
-        setDeviceBarcode: (state: CommonState, value: string) => void;
+        setDeviceSerialNm: (state: CommonState, value: string) => void;
         setClonedWbcInfo: (state: CommonState, value: any[]) => void;
         setClonedRbcInfo: (state: CommonState, value: any[]) => void;
         setMoveImgIsBool: (state: CommonState, value: boolean) => void;
@@ -98,7 +98,7 @@ export const commonModule: CommonModule = {
         bfSelectFiles: [],
         slideProceeding: '',
         totalSlideTime: '00:00:00',
-        pbiaRootPath: '',
+        iaRootPath: '',
         runningSlotId: '',
         isRequestInProgress: false,
         startInfoBoolen: false,
@@ -116,7 +116,7 @@ export const commonModule: CommonModule = {
         orderList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         loginSetData: '',
         siteCd: '',
-        deviceBarcode: '',
+        deviceSerialNm: '',
         clonedWbcInfo: [],
         clonedRbcInfo: [],
         moveImgIsBool: false,
@@ -153,8 +153,8 @@ export const commonModule: CommonModule = {
         setTotalSlideTime(state: CommonState, value: string): void {
             state.totalSlideTime = value;
         },
-        setPbiaRootPath(state: CommonState, value: string): void {
-            state.pbiaRootPath = value;
+        setIaRootPath(state: CommonState, value: string): void {
+            state.iaRootPath = value;
         },
         setRunningSlotId(state: CommonState, value: string): void {
             state.runningSlotId = value;
@@ -213,8 +213,8 @@ export const commonModule: CommonModule = {
         setLoginSetData(state: CommonState, value: string): void {
             state.loginSetData = value;
         },
-        setDeviceBarcode(state: CommonState, value: string): void {
-            state.deviceBarcode = value;
+        setDeviceSerialNm(state: CommonState, value: string): void {
+            state.deviceSerialNm = value;
         },
         setSiteCd(state: CommonState, value: string): void {
             state.siteCd = value;
@@ -273,8 +273,8 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('totalSlideTime')) {
                 commit('setTotalSlideTime', payload.totalSlideTime);
             }
-            if (payload.hasOwnProperty('pbiaRootPath')) {
-                commit('setPbiaRootPath', payload.pbiaRootPath);
+            if (payload.hasOwnProperty('iaRootPath')) {
+                commit('setIaRootPath', payload.iaRootPath);
             }
             if (payload.hasOwnProperty('runningSlotId')) {
                 commit('setRunningSlotId', payload.runningSlotId);
@@ -333,8 +333,8 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('siteCd')) {
                 commit('setSiteCd', payload.siteCd);
             }
-            if (payload.hasOwnProperty('deviceBarcode')) {
-                commit('setDeviceBarcode', payload.deviceBarcode);
+            if (payload.hasOwnProperty('deviceSerialNm')) {
+                commit('setDeviceSerialNm', payload.deviceSerialNm);
             }
             if (payload.hasOwnProperty('clonedWbcInfo')) {
                 commit('setClonedWbcInfo', payload.clonedWbcInfo);

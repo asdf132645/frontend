@@ -1,8 +1,8 @@
 <template>
   <div class="joinContent">
-    <p class="mt2 mb4">CREATE ACCOUNT</p>
+    <p class="mt2 mb4 ">CREATE ACCOUNT</p>
     <div>
-      <ul>
+      <ul class="joinWrapper">
         <li>
           <span class="loginTitle">ID</span>
           <input class="loginInput" type="text" v-model="idVal">

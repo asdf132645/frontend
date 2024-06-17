@@ -66,7 +66,7 @@ const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
-const pbiaRootDir = computed(() => store.state.commonModule.pbiaRootPath);
+const iaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -135,7 +135,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 onBeforeMount(() => {
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
     type: 'SEND_DATA',
-    payload: window.MAIN_API
+    payload: window.APP_API_BASE_URL
   });
 });
 window.addEventListener('beforeunload', function (event: any) {
@@ -154,6 +154,7 @@ onMounted(async () => {
   if (!projectBm.value) {
     pbVersion.value = window.PB_VERSION;
   }
+
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
@@ -226,7 +227,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await sysInfoStore(parseDataWarp);
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
-          deviceBarCode: parseDataWarp.deviceBarcode
+          deviceSerialNm: parseDataWarp.deviceSerialNm
         }
         if (!siteCdDvBarCode.value) {
           await saveDeviceInfo(deviceInfoObj);
@@ -471,7 +472,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           rbcMemo: '',
         }
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
-
       }
     }
 
@@ -481,6 +481,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if (deviceData.data.length === 0 || !deviceData.data) {
           console.log('?D')
           await createDeviceInfoApi({deviceItem: deviceInfo});
+          siteCdDvBarCode.value = true;
+        } else {
           siteCdDvBarCode.value = true;
         }
       } catch (err) {
@@ -561,7 +563,7 @@ const sendSettingInfo = () => {
     jobCmd: 'SETTINGS',
     reqUserId: '',
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
-    pbiaRootDir: pbiaRootDir.value || '',
+    iaRootDir: iaRootDir.value || '',
     oilCount: '1000',
     isOilReset: 'N',
     deviceType: '01',
@@ -606,8 +608,8 @@ const cellImgGet = async (newUserId: string) => {
     if (result) {
       if (result?.data) {
         const data = result.data;
-        sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
-        await store.dispatch('commonModule/setCommonInfo', {pbiaRootPath: String(data?.pbiaRootPath)});
+        sessionStorage.setItem('iaRootPath', data?.iaRootPath);
+        await store.dispatch('commonModule/setCommonInfo', {iaRootPath: String(data?.iaRootPath)});
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });

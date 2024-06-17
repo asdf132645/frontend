@@ -239,7 +239,7 @@ import {
   getBfHotKeysApi,
   getOrderClassApi,
   getWbcCustomClassApi,
-  getWbcWbcHotKeysApi
+  getWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
@@ -260,7 +260,7 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
-const pbiaRootPath = ref<any>(store.state.commonModule.pbiaRootPath);
+const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
@@ -315,8 +315,8 @@ onMounted(async () => {
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.pbiaRootPath;
-  pbiaRootPath.value = path;
+  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
+  iaRootPath.value = path;
   // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
   await imgSetLocalStorage();
   // end
@@ -492,7 +492,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           if (item?.abbreviation === '') {
             return;
           }
-          const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
+          const filePath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
           deleteRunningApi({path: filePath})
         }
       });
@@ -501,7 +501,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     wbcCustomItems.value = data;
     for (const item of newData) { // 커스텀클래스 폴더 생성
       const {className, abbreviation, customNum} = item;
-      const filePath = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
+      const filePath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
       await fileSysPost({path: filePath});
 
       const wbcPush = {
@@ -550,7 +550,7 @@ const getBfHotKeyClasses = async () => {
 
 const getWbcHotKeyClasses = async () => {
   try {
-    const result = await getWbcWbcHotKeysApi();
+    const result = await getWbcHotKeysApi();
     if (result) {
       if (result?.data) {
         const data = result.data;
@@ -638,8 +638,8 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 
 const refreshClass = async (data: any) => {
   selectItems.value = data;
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.pbiaRootPath;
-  pbiaRootPath.value = path;
+  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
+  iaRootPath.value = path;
   await getWbcCustomClasses(true, data);
 }
 
@@ -655,13 +655,13 @@ const drawCellMarker = async (imgResize?: boolean) => {
   if (cellMarkerIcon.value) {
     let url = '';
     if (projectType.value === 'pb') {
-      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/${
+      url = `${iaRootPath.value}/${selectItems.value.slotId}/${
           selectItems.value.testType === '01' || selectItems.value.testType === '04'
               ? '01_WBC_Classification'
               : '05_BF_Classification'
       }/${selectItems.value.slotId}.json`;
     } else if (projectType.value === 'bm') {
-      url = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${selectItems.value.slotId}.json`
+      url = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${selectItems.value.slotId}.json`
     }
     const response = await readJsonFile({fullPath: url});
 
@@ -978,7 +978,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
-  const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+  const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
 }
@@ -990,7 +990,7 @@ const getOrderClass = async () => {
       if (result?.data.length === 0) {
         orderClass.value = [];
       } else {
-        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
       }
     }
   } catch (e) {
@@ -1116,10 +1116,10 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     fileNames.push(fileName)
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
       const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.title === selectedImage.title);
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      const matchingItem = classInfoBagic.find(item => item.abbreviation === selectedImage.abbreviation);
+      const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
+          `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
+      const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
       const data = {
@@ -1157,9 +1157,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     // wbcInfosArr => 원에다가 움직이거나 우클릭 해서 클래스 옮길 시 사용 하는 부분임
     if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
 
-      const sourceFolder = type ? `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
-          `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
+          `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+      const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
       const data = {
@@ -1202,9 +1202,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     for (const seItem of selectItemIamgeArr.value) {
       const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.title === seItem.title);
-      const sourceFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
-      const destinationFolder = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+      const matchingItem = classInfoBagic.find(item => item.abbreviation === seItem.abbreviation);
+      const sourceFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
+      const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
       destinationFolders.push(destinationFolder);
       sourceFolders.push(sourceFolder);
     }
@@ -1403,13 +1403,13 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   }
 
   const slotId = selectItems.value.slotId || "";
-  let folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
+  let folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
   if (isBeforeChild.value) {
 
     if (getNewImageUrl(imageName, title)) {
       const {idMa, titleMa} = getNewImageUrl(imageName, title);
-      folderPath = `${pbiaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${idMa}_${titleMa}`;
+      folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${idMa}_${titleMa}`;
     }
 
   }
@@ -1478,8 +1478,8 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
 
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
-    const sourceFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
-    const destinationFolder = `${pbiaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
+    const sourceFolder = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
+    const destinationFolder = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     sourceFolders.push(sourceFolder)
     destinationFolders.push(destinationFolder)
     fileNames.push(sourceFolderInfo[index].fileName)

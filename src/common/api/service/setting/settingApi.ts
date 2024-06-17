@@ -72,10 +72,9 @@ export const updateWbcHotKeysApi = async (request: UpdateWbcHotKeysDto): Promise
     return httpClient.httpPut(apiConstants.settings.wbcHotKeys.update, request);
 };
 
-export const getWbcWbcHotKeysApi = async (): Promise<ApiResponse<CreateWbcHotKeysDto | undefined>> => {
+export const getWbcHotKeysApi = async (): Promise<ApiResponse<CreateWbcHotKeysDto | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.wbcHotKeys.get);
 };
-
 
 export const createBfHotKeysApi = async (request: CreateBfHotKeysDto): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.bfHotKeys.create, request);
@@ -164,7 +163,7 @@ export const getFilePathSetApi = async (): Promise<ApiResponse<FilePathItem[] | 
     return httpClient.httpGet(apiConstants.settings.filePathSet.get);
 };
 
-// minCount, runInfoWbcCount
+// runInfoWbcCount
 export const createRunInfoWbcApi = async (request: CreateRunCountDto): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.runCount.create, request);
 };
@@ -176,7 +175,7 @@ export const updateRunInfoApi = async (request: UpdateRunCountDto): Promise<ApiR
 export const getRunInfoApi = async (): Promise<ApiResponse<runCountItem[] | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.runCount.get);
 };
-// -----mincount
+// minCount
 export const createMinCountApi = async (request: CreateMinCountDto): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.minCount.create, request);
 };

@@ -309,7 +309,7 @@ const cellImgGet = async () => {
               wbcCount.value = data.cellAnalyzingCount;
               break;
             case '04':
-              wbcCount.value = data.pbAnalysisType2;
+              wbcCount.value = data.pbsAnalysisType;
               break;
             default:
               wbcCount.value = data.bfAnalysisType;

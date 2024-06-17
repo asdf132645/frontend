@@ -1,7 +1,7 @@
 <template>
   <div class="settingImagePrint">
     <label v-for="item in imagePrintAndWbcArr" :key="item.value">
-      <div>{{ item.text }}</div>
+      <div>{{ item.classNm }}</div>
       <div><input type="checkbox" :value="item.value" v-model="selectedItems" /></div>
     </label>
   </div>
@@ -84,7 +84,6 @@ const getImagePrintData = async () => {
       const data = result.data;
 
       if (!data || (data instanceof Array && data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         imagePrintAndWbcArr.value = window.PROJECT_TYPE ==='bm'? imagePrintAndBm : imagePrintAndWbc;
       } else {

@@ -2,7 +2,7 @@
   <div class="alignDiv">
     <p class="mb4"> [ WBC ] </p>
     <label v-for="item in lisCodeWbcArr" :key="item.value">
-      <p class="mb1">{{ item.text }}</p>
+      <p class="mb1">{{ item.classNm }}</p>
       <input type="text" v-model="item.code" />
     </label>
   </div>
@@ -18,11 +18,11 @@
     <ul>
       <li v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Giant Platelet</p>
-        <input type="text" v-model="minCountArr[0].minGpCount" class="form-control form-control-sm">
+        <input type="text" v-model="minCountArr[0].minGPCount" class="form-control form-control-sm">
       </li>
       <li v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Platelet Aggregation</p>
-        <input type="text" v-model="minCountArr[0].minPaCount" class="form-control form-control-sm">
+        <input type="text" v-model="minCountArr[0].minPACount" class="form-control form-control-sm">
       </li>
     </ul>
   </div>

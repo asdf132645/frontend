@@ -90,10 +90,10 @@ const createRbcDegreeData = async () => {
   rbcClassListArr.value.forEach((category: any) => {
     category.classInfo.forEach((classItem: any) => {
       rbcDegreeList.push({
-        category_id: category.categoryId,
-        category_nm: category.categoryNm,
-        class_id: classItem.classId,
-        class_nm: classItem.classNm,
+        categoryId: category.categoryId,
+        categoryNm: category.categoryNm,
+        classId: classItem.classId,
+        classNm: classItem.classNm,
         degree1: classItem.degree1,
         degree2: classItem.degree2,
         degree3: classItem.degree3,
@@ -126,7 +126,7 @@ const getRbcDegreeData = async () => {
     console.log(!result.data)
     saveHttpType.value = 'put';
     const data = result.data;
-    processData(data?.categories);
+    processData(data);
   } catch (e) {
     saveHttpType.value = 'post';
     await combindDegree();
@@ -138,16 +138,16 @@ const processData = (data: any): void => {
   const categoryMap = new Map();
 
   data.forEach((item: any) => {
-    const categoryId = item.category_id;
-    const classId = item.class_id;
+    const categoryId = item.categoryId;
+    const classId = item.classId;
 
     if (!categoryMap.has(categoryId)) {
       const newCategory = {
         categoryId: categoryId,
-        categoryNm: item.category_nm,
+        categoryNm: item.categoryNm,
         classInfo: [{
           classId: classId,
-          classNm: item.class_nm,
+          classNm: item.classNm,
           degree1: item.degree1,
           degree2: item.degree2,
           degree3: item.degree3,
@@ -161,7 +161,7 @@ const processData = (data: any): void => {
       if (existingClassIndex === -1) {
         existingCategory.classInfo.push({
           classId: classId,
-          classNm: item.class_nm,
+          classNm: item.classNm,
           degree1: item.degree1,
           degree2: item.degree2,
           degree3: item.degree3,

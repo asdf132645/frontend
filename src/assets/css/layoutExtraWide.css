@@ -1,0 +1,197 @@
+@media screen and (min-width: 3839px) {
+
+    /* Alert */
+    .alert {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        padding: 45px 0;
+        width: 1200px;
+        border: 1px solid #414141;
+        background: #414141;
+        border-radius: 5px;
+        text-align: center;
+        height: 400px;
+    }
+
+    .alertMessage {
+        margin-top: 120px;
+        font-size: 3rem;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .alertButton {
+        border: none;
+        background-color: #29c7ca;
+        width: 220px;
+        height: 100px;
+        color: #fff;
+        padding: 10px;
+        margin: 16px;
+        border-radius: 12px;
+        font-size: 2.4rem;
+    }
+
+    /* Login Page */
+    .uimdLogin {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: #252629;
+    }
+
+    .loginContent {
+        margin: 0 auto;
+        margin-top: 15%;
+    }
+
+    p.loginTitle {
+        color: #fff;
+        font-size: 10rem;
+    }
+
+    .loginDiv {
+        background: #f7fafc;
+        max-width: 1600px;
+        margin: auto;
+        min-height: 800px;
+        border-radius: 5px;
+        margin-top: 100px;
+        padding: 30px 73px;
+    }
+
+    p.loginP {
+        color: #fff;
+        font-size: 3rem;
+    }
+
+    ul.loginUl {
+        width: 100%;
+        margin: 0 auto;
+        padding-top: 150px;
+    }
+
+    ul.loginUl > li {
+        width: 100%;
+        height: 100px;
+        margin: 0 auto;
+        padding-top: 50px;
+    }
+
+    input.loginInput {
+        width: 80%;
+        border: none;
+        height: 4rem;
+        font-size: 2.5rem;
+        margin: 5px;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 1px 1px 5px 2px #dedede;
+    }
+
+    .loginBtn {
+        margin-top: 20px;
+    }
+
+    .loginBtn > button {
+        background: #3498db;
+        border: none;
+        color: #fff;
+        padding: 30px;
+        margin: 5px;
+        border-radius: 15px;
+        font-size: 2.5rem;
+    }
+
+    .loginFooter {
+        display: flex;
+        align-items: center;
+        margin: 0 auto;
+        text-align: left;
+        padding: 20px 10px 10px 120px;
+        font-size: 2.3rem;
+        vertical-align: middle;
+        color: #818181;
+    }
+
+    .loginFooter > input[type=checkbox] {
+        zoom: 3.5;
+    }
+
+    /* Join Page */
+    .joinContent {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .joinWrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 1230px;
+    }
+
+    .joinContent p {
+        font-weight: bold;
+        font-size: 3rem;
+    }
+
+    .joinContent input {
+        box-shadow: none !important;
+        width: 90%;
+        display: inline-block;
+        max-width: 700px;
+
+    }
+
+    .joinContent li {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+    }
+
+    .joinContent li span {
+        font-size: 2.8rem;
+        display: inline-block;
+        text-align: left;
+    }
+
+    .joinContent select {
+        box-shadow: none;
+        width: 100%;
+        display: inline-block;
+        height: 60px;
+        margin-top: 3px;
+        font-size: 2rem;
+        /*max-width: 735px;*/
+    }
+
+    .joinBtn {
+        display: flex;
+        flex-direction: column;
+        margin: 30px auto;
+        width: 1230px;
+        gap: 20px;
+    }
+
+    .joinBtn > button {
+        height: 100px;
+        font-size: 2.4rem;
+    }
+}

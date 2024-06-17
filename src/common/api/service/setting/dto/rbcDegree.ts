@@ -4,10 +4,10 @@ export interface RbcDegreeDto {
 }
 
 export interface CategoryDto {
-    category_id: string;
-    category_nm: string;
-    class_id: string;
-    class_nm: string;
+    categoryId: string;
+    categoryNm: string;
+    classId: string;
+    classNm: string;
     degree: string;
 }
 
@@ -17,10 +17,10 @@ export interface UpdateRbcDegreeDto {
 
 export interface ClassItem {
     id: number;
-    category_id: string;
-    category_nm: string;
-    class_id: string;
-    class_nm: string;
+    categoryId: string;
+    categoryNm: string;
+    classId: string;
+    classNm: string;
     degree: string;
     degreeId: number;
 }
@@ -31,7 +31,7 @@ export interface RbcDegreeRes {
 }
 
 export interface Category {
-    category_id: string;
-    category_nm: string;
+    categoryId: string;
+    categoryNm: string;
     classInfo: ClassItem[];
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="alignDiv">
     <label v-for="item in cbcCodeArr" :key="item.cd">
-      <p class="mb1">{{ item.testNm }}</p>
-      <input type="text" v-model="item.testCd" />
+      <p class="mb1">{{ item.classNm }}</p>
+      <input type="text" v-model="item.classCd" />
     </label>
   </div>
   <div class="mt1">

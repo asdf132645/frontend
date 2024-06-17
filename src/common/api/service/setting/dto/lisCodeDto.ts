@@ -40,8 +40,8 @@ export interface CreateCbcCodeRbcDto {
 
 export interface cbcCodeItem {
     cd: string;
-    testCd: string;
-    testNm: string;
+    classCd: string;
+    classNm: string;
     isSelected: boolean;
 }
 

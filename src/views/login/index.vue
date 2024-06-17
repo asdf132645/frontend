@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import {getCurrentInstance, ref, onMounted} from "vue";
-import {getUserApi, getUserIpApi, login, putUserDataApi} from "@/common/api/service/user/userApi";
+import {getUserIpApi, login, putUserDataApi} from "@/common/api/service/user/userApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
@@ -82,6 +82,11 @@ const loginUser = async () => {
   const user = {
     userId: idVal.value,
     password: password.value,
+  }
+
+  if (user.userId === '' || user.password === '') {
+    showSuccessAlert('Login failed.');
+    return;
   }
 
   try {
@@ -135,8 +140,7 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
     userType: '',
     subscriptionDate: '',
     state: '',
-    pcIp: pcIp,
-    viewerCheck: viewerCheck,
+    pcIp: pcIp
   }
 
   try {

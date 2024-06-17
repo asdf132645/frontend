@@ -5,12 +5,11 @@ export interface CreateNormalRange {
 }
 
 export interface NormalRangeItems {
-    title: string;
-    name: string;
-    count: number;
-    percent: number;
-    key: string;
-    order: number;
+    abbreviation: string;
+    fullNm: string;
+    min: number;
+    max: number;
+    uint: string;
 }
 
 export interface NormalRangeUpdateDto {

@@ -205,16 +205,16 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       rbcDegreeStandard.value.forEach((degreeStandard: any) => {
         rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
         if (
-            degreeStandard.category_id === rbcCategory.categoryId &&
-            degreeStandard.class_id === rbcClass.classId
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
         ) {
           const degreeCount = Number(rbcClass.degree);
           let percent = 0;
 
-          if (degreeStandard.category_id === '01') { // size total
+          if (degreeStandard.categoryId === '01') { // size total
             percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
 
-          } else if (degreeStandard.category_id === '02') { // chromia total
+          } else if (degreeStandard.categoryId === '02') { // chromia total
             percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
@@ -315,7 +315,6 @@ const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi();
     const data = result.data;
-    console.log(data);
     rbcDegreeStandard.value = data;
   } catch (e) {
     // console.log(e);

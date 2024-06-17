@@ -247,7 +247,6 @@ const getDbData = async (type: string, pageNum?: number) => {
   } catch (e) {
     console.error(e);
   }
-
 };
 
 const search = () => {

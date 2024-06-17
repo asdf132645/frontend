@@ -12,7 +12,7 @@
     >
 
       <ul class="nth1ChildOrder">
-        <li>{{ item?.name }}</li>
+        <li>{{ item?.fullNm }}</li>
       </ul>
     </div>
   </div>
@@ -62,7 +62,7 @@ const getOrderClass = async () => {
         saveHttpType.value = 'post';
       }else{
         saveHttpType.value = 'put';
-        wbcInfoChangeVal.value = result.data.sort((a: any, b: any) => Number(a.orderText) - Number(b.orderText));
+        wbcInfoChangeVal.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
       }
     }
   } catch (e) {
@@ -73,7 +73,7 @@ const getOrderClass = async () => {
 const saveOrderClassSave = async () => {
   let orderList: any = wbcInfoChangeVal.value;
   for (const index in orderList) {
-    orderList[index].orderText = index;
+    orderList[index].orderIdx = index;
   }
   try {
     let result = {};

@@ -63,7 +63,7 @@
           Cell Analyzing Count
         </th>
         <td>
-          <select v-model='pbAnalysisType2'>
+          <select v-model='pbsAnalysisType'>
             <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
@@ -90,7 +90,7 @@
       <tr>
         <th>IA Root Path</th>
         <td colspan="2">
-          <select v-model='pbiaRootPath'>
+          <select v-model='iaRootPath'>
             <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
           </select>
         </td>
@@ -186,10 +186,10 @@ const pbAnalysisType = ref('100');
 const wbcPositionMargin = ref('0');
 const rbcPositionMargin = ref('0');
 const pltPositionMargin = ref('0');
-const pbAnalysisType2 = ref('100');
+const pbsAnalysisType = ref('100');
 const stitchCount = ref('1');
 const bfAnalysisType = ref('100');
-const pbiaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
+const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const backupRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup');
 const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
@@ -212,7 +212,7 @@ const createBackup = async () => {
     startDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 시작일
     endDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 종료일
     backupPath: backupRootPath.value, // 백업 경로
-    sourceFolderPath: `${pbiaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
+    sourceFolderPath: `${iaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
   };
 
   const res = await backUpDate(backupDto);
@@ -279,10 +279,10 @@ const cellImgGet = async () => {
         wbcPositionMargin.value = data.wbcPositionMargin;
         rbcPositionMargin.value = data.rbcPositionMargin;
         pltPositionMargin.value = data.pltPositionMargin;
-        pbAnalysisType2.value = data.pbAnalysisType2;
+        pbsAnalysisType.value = data.pbsAnalysisType;
         stitchCount.value = data.stitchCount;
         bfAnalysisType.value = data.bfAnalysisType;
-        pbiaRootPath.value = data.pbiaRootPath;
+        iaRootPath.value = data.iaRootPath;
         backupRootPath.value = data.backupPath;
         isNsNbIntegration.value = data.isNsNbIntegration;
         isAlarm.value = data.isAlarm;
@@ -306,10 +306,10 @@ const cellImgSet = async () => {
     wbcPositionMargin: wbcPositionMargin.value,
     rbcPositionMargin: rbcPositionMargin.value,
     pltPositionMargin: pltPositionMargin.value,
-    pbAnalysisType2: pbAnalysisType2.value,
+    pbsAnalysisType: pbsAnalysisType.value,
     stitchCount: stitchCount.value,
     bfAnalysisType: bfAnalysisType.value,
-    pbiaRootPath: pbiaRootPath.value,
+    iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
@@ -339,7 +339,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
       sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
-      sessionStorage.setItem('pbiaRootPath', data?.pbiaRootPath);
+      sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
       console.log(result)
     }
