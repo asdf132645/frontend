@@ -95,7 +95,13 @@
 <script setup lang="ts">
 import {computed, ref, onMounted, watch, defineProps, getCurrentInstance, defineEmits} from "vue";
 import {useStore} from "vuex";
-import {WbcInfo, basicWbcArr, basicBmClassList} from "@/store/modules/analysis/wbcclassification";
+import {
+  WbcInfo,
+  basicWbcArr,
+  basicBmClassList,
+  basicWbcArrClint,
+  basicBmClassListClint
+} from "@/store/modules/analysis/wbcclassification";
 import EventBus from "@/eventBus/eventBus";
 
 const props = defineProps(['bmIsBoolen','parsedData']);
@@ -144,7 +150,7 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
     testType.value = slotArray?.wbcInfo?.testType;
     const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo.bmInfo] : [slotArray.wbcInfo.wbcInfo];
     const wbcInfoArray = wbcinfoType;
-    const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
+    const arrType = props.bmIsBoolen ? [basicBmClassListClint] : [basicWbcArrClint];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
     const areAllCountsZero = (classList: any[]) => {
       // 모든 요소의 count가 0인지 확인
@@ -172,7 +178,7 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
     nonWbcClassList.value = nonRbcWbcInfoArray;
 
   } else {
-    const arrType = props.bmIsBoolen ? [basicBmClassList] : [basicWbcArr];
+    const arrType = props.bmIsBoolen ? [basicBmClassListClint] : [basicWbcArrClint];
     dspWbcClassList.value = arrType;
     dspBfClassList.value = dspWbcClassList.value.flat();
   }

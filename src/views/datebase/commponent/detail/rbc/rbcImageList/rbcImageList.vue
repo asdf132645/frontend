@@ -373,6 +373,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
           ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
           let rectPath = new Path2D();
           rectPath.rect(classItem.posX - 20, classItem.posY - 20, 40, 40);
+          // rectPath.rect(classItem.x1, classItem.y1, x2-x1, y2-y1);
           drawPath.value.push({
             categoryId: info.categoryId,
             classNm: info.classNm,
