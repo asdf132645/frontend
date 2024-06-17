@@ -876,8 +876,8 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => item.abbreviation === a.abbreviation);
-    const nameB = basicWbcArr.findIndex((item: any) => item.abbreviation === b.abbreviation);
+    const nameA = basicWbcArr.findIndex((item: any) => item.abbreviation === a.title);
+    const nameB = basicWbcArr.findIndex((item: any) => item.abbreviation === b.title);
 
     // 이름이 없는 경우는 배열 맨 뒤로 배치
     if (nameA === -1) return 1;
@@ -1025,7 +1025,6 @@ async function updateOriginalDb() {
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoChangeVal.value);
-  console.log("SORTARR", sortArr);
   sortArr.forEach((item: any, index: any) => {
     item.orderIdx = index;
   });
