@@ -555,6 +555,7 @@ const getWbcHotKeyClasses = async () => {
       if (result?.data) {
         const data = result.data;
         wbcHotKeysItems.value = data;
+        console.log(data)
       }
     }
   } catch (e) {
@@ -908,7 +909,7 @@ async function handleKeyDown(event: KeyboardEvent) {
 }
 
 async function moveSelectedImagesToTargetItem(targetItem: any) {
-  const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.title);
+  const targetIndex = wbcInfo.value.findIndex((item: any) => item.title === targetItem.abbreviation);
   const selectedImages = selectedClickImages.value;
   addToRollbackHistory();
   for (const selectedImage of selectedImages) {
@@ -1116,7 +1117,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     fileNames.push(fileName)
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
       const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.abbreviation === selectedImage.abbreviation);
+      const matchingItem = classInfoBagic.find(item => item.abbreviation ===  (selectedImage.title || selectedImage.abbreviation));
       const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
           `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
       const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1131,7 +1132,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       const res = await moveClassImagePost(data);
       if (res) {
         // 이미지를 타겟 아이템으로 이동
-        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === selectedImage.title);
+        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title ===  (selectedImage.title || selectedImage.abbreviation));
         const sourceItem = wbcInfo.value[sourceItemIndex];
         const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
         if (imageIndex !== -1) {
@@ -1217,10 +1218,10 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
       const targetItem = wbcInfo.value[targetItemIndex];
       for (const seItem of removeDuplicatesByProperty(selectItemIamgeArr.value, 'title')) {
-        const findImage = selectedImagesToMove.filter(item => item.title === seItem.title);
+        const findImage = selectedImagesToMove.filter(item => item.title === (seItem.title || seItem.abbreviation));
         targetItem.images.push(...findImage);
         targetItem.count = targetItem.images.length;
-        const draggedItemIdx = wbcInfo.value.findIndex((item: any) => item.title === seItem.title);
+        const draggedItemIdx = wbcInfo.value.findIndex((item: any) => item.title === (seItem.title || seItem.abbreviation));
         if (draggedItemIdx !== -1) {
           const draggedItemObj = wbcInfo.value[draggedItemIdx];
           const selectedImagesFileNames = selectedImagesToMove.map(image => image.fileName);
