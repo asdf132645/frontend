@@ -288,7 +288,7 @@ const memoChange = async () => {
     rbcMemo: memo.value,
   };
   const updatedRuningInfo ={...result.data,...updatedItem }
-  await resRunningItem([updatedRuningInfo], true);
+  await resRunningItem(updatedRuningInfo, true);
   memoModal.value = false;
 }
 

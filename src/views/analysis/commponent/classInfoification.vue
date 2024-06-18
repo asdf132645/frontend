@@ -202,7 +202,7 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
     const data = {
       classInfo:{
         wbcInfo: dspWbcClassList.value,
-        nonRbcClassList: nonWbcClassList,
+        // nonRbcClassList: nonWbcClassList,
         totalCount: totalCount.value,
         maxWbcCount: maxWbcCount.value,
         slotId: parsedData.slotInfo.slotId

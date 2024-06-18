@@ -93,13 +93,14 @@
                 <th style="text-align: left; padding: 5px 0;">{{ selectItems?.rbcInfo?.malariaCount }} / {{ selectItems.maxRbcCount }} RBC</th>
               </tr>
               <tr style="padding-bottom: 5px;">
-                <th></th>
+                <!-- <th></th> -->
                 <th style="text-align: left; padding: 5px 0;">Comment</th>
-                <th style="text-align: left; padding: 5px 0;">{{ selectItems.rbcMemo }}</th>
+                <th style="text-align: left; padding: 5px 0;">{{ sessionStorageSelectItems.rbcMemo }}</th>
               </tr>
               </tbody>
             </table>
           </div>
+
           <!-- WBC Classification -->
           <div style="margin-top: 20px;">
             <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">WBC classification result</h3>
@@ -109,27 +110,33 @@
                 <col style="width: 45%;"/>
                 <col style="width: 25%;"/>
               </colgroup>
+              <thead>
+                <tr>
+                  <th style="text-align: left;">Class</th>
+                  <th style="text-align: left;">Count</th>
+                  <th style="text-align: left;">Percent</th>
+                </tr>
+              </thead>
               <tbody>
               <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
                 <th style="text-align: left; padding: 5px 0;">{{ item?.name }}</th>
                 <td style="text-align: left; padding: 5px 0;">{{ item?.count }}</td>
-                <td style="text-align: left; padding: 5px 0;">{{ item?.percent }}</td>
+                <td style="text-align: left; padding: 5px 0;">{{ item?.percent }} %</td>
               </tr>
               <tr style="padding-bottom: 5px;">
                 <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total count</th>
                 <td style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcInfo?.totalCount }}</td>
                 <td style="text-align: left; padding: 5px 0;">100.00%</td>
               </tr>
-              <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
+              <!-- <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
                 <th style="text-align: left; padding: 5px 0;">{{ item?.name }}</th>
-                <td colspan="1" style="text-align: left; padding: 5px 0;">
-                  {{ item?.count }}
+                <td colspan="1" style="text-align: left; padding: 5px 0;">{{ item?.count }}
                   <span v-if="item.id === '12' || item.id === '13'"> / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
                 </td>
-              </tr>
+              </tr> -->
               <tr style="padding-bottom: 5px;">
                 <th style="text-align: left; padding: 5px 0;">Comment</th>
-                <td colspan="2" style="text-align: left; padding: 5px 0;">{{ selectItems?.memo }}</td>
+                <td colspan="2" style="text-align: left; padding: 5px 0;">{{ sessionStorageSelectItems?.wbcMemo }}</td>
               </tr>
               </tbody>
             </table>
@@ -162,6 +169,7 @@ import {getImagePrintApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
+import { watch } from "fs";
 
 const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -171,25 +179,25 @@ const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
 const commonDataGet = computed(() => store.state.commonModule);
+
+const selectItemsData = ref(sessionStorage.getItem("selectItems"));
+const sessionStorageSelectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
+
 const iaRootPath = commonDataGet.value.iaRootPath;
 const userModuleDataGet = computed(() => store.state.userModule);
 const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
+const nonWbcIdList = ['12', '13', '14', '15', '16'];
 
 onMounted(async () => {
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
+  console.log("wpqkf",sessionStorageSelectItems);
   await getImagePrintData();
   await printPage();
-
 });
 
 const filteredWbcInfo = computed(() => {
-  return wbcInfo.value.filter(item => {
-    return (
-        (item.id !== '12' && item.id !== '13' && item.id !== '14' && item.id !== '15' && item.id !== '16') &&
-        item.count > 0
-    );
-  });
+  return wbcInfo.value.filter((item: any) => !nonWbcIdList.includes(item.id) && item.count > 0);
 });
 
 function getImageUrl(imageName: any, id: string, title: string): string {
@@ -252,14 +260,10 @@ const getImagePrintData = async () => {
       if (!data || (data instanceof Array && data.length === 0)) {
         console.log(null);
       } else {
-        imagePrintAndWbcArr.value = data
-            .filter((item) => item.checked)
-            .map((item) => item.value);
+        imagePrintAndWbcArr.value = data.filter((item) => item.checked).map(item => item.classId);
 
         // 이미지 프린트 및 wbc 배열에 없는 아이디 제거
-        wbcInfo.value = wbcInfo.value.filter((item) =>
-            imagePrintAndWbcArr.value.includes(item.id)
-        );
+        wbcInfo.value = wbcInfo.value.filter((item: any) => imagePrintAndWbcArr.value.includes(item.id));
       }
     }
   } catch (e) {

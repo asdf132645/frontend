@@ -1374,6 +1374,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     }
     originalDbVal = [res.data];
   }
+  console.log(clonedWbcInfo);
 
 
   //updateRunningApi 호출
