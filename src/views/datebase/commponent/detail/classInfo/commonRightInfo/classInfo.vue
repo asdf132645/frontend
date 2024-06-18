@@ -254,7 +254,6 @@ const drop = (index: any, event: any) => {
   if (!toggleLock.value) {
     return;
   }
-  store.dispatch('commonModule/setCommonInfo', {classInfoSort: wbcInfoChangeVal.value});
   event.preventDefault();
   if (dragIndex.value !== -1) {
     const movedItem = wbcInfoChangeVal.value.splice(dragIndex.value, 1)[0];
@@ -980,7 +979,7 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
 
 async function updateOriginalDb() {
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
-  let clonedWbcInfo = JSON.parse(JSON.stringify(wbcInfoChangeVal.value));
+  let clonedWbcInfo = JSON.parse(JSON.stringify([...wbcInfoChangeVal.value, ...nonRbcClassList.value]));
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
@@ -1021,6 +1020,7 @@ async function updateOriginalDb() {
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
   selectItemsSessionStorageData.value.wbcInfoAfter = clonedWbcInfo;
   sessionStorage.setItem("selectItems", JSON.stringify(selectItemsSessionStorageData.value));
+  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoChangeVal.value, ...nonRbcClassList.value]});
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoChangeVal.value);
