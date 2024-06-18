@@ -286,8 +286,7 @@ const getCbcCodeList = async () => {
     const result = await getCbcCodeRbcApi();
 
     if (result && result.data) {
-      const data = result.data;
-      cbcCodeList.value = data;
+      cbcCodeList.value = result.data;
     }
   } catch (e) {
     console.error(e);

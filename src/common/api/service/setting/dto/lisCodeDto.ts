@@ -41,7 +41,7 @@ export interface CreateCbcCodeRbcDto {
 export interface cbcCodeItem {
     cd: string;
     classCd: string;
-    classNm: string;
+    fullNm: string;
     isSelected: boolean;
 }
 
