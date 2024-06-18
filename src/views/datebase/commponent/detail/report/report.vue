@@ -229,13 +229,8 @@ const refreshClass = async (data: any) => {
 const printClose = () => {
   printOnOff.value = false;
 }
-const wbcClassTileChange = (): string => {
-  if (!projectBm.value) {
-    return 'WBC Classification';
-  } else {
-    return 'BM Classification';
-  }
-}
+const wbcClassTileChange = (): string => !projectBm.value ? 'WBC Classification' : 'BM Classification';
+
 const printStart = () => {
   printOnOff.value = true;
 }

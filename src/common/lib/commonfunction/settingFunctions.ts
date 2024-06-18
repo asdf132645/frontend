@@ -25,13 +25,13 @@ const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 const projectType = window.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
-    pbAnalysisType: projectType ? '500':'100',
+    diffCellAnalyzingCount: projectType ? '500':'100',
     wbcPositionMargin: '0',
     rbcPositionMargin: '0',
     pltPositionMargin: '0',
-    pbsAnalysisType: '100',
+    pbsCellAnalyzingCount: '100',
     stitchCount: '1',
-    bfAnalysisType: '100',
+    bfCellAnalyzingCount: '100',
     iaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
     isAlarm: false,
@@ -59,13 +59,13 @@ export const firstCellImgSet = async () => {
 
     const cellImgSet = {
         analysisType: defaultCellImgData.testTypeCd,
-        cellAnalyzingCount: defaultCellImgData.pbAnalysisType,
+        diffCellAnalyzingCount: defaultCellImgData.diffCellAnalyzingCount,
         wbcPositionMargin: defaultCellImgData.wbcPositionMargin,
         rbcPositionMargin: defaultCellImgData.rbcPositionMargin,
         pltPositionMargin: defaultCellImgData.pltPositionMargin,
-        pbsAnalysisType: defaultCellImgData.pbsAnalysisType,
+        pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
         stitchCount: defaultCellImgData.stitchCount,
-        bfAnalysisType: defaultCellImgData.bfAnalysisType,
+        bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
         iaRootPath: defaultCellImgData.iaRootPath,
         isNsNbIntegration: defaultCellImgData.isNsNbIntegration,
         isAlarm: defaultCellImgData.isAlarm,
