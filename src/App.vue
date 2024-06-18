@@ -43,8 +43,7 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
-import {createDeviceInfoApi, getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
+import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
@@ -80,13 +79,13 @@ const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
-  await getUserIp(ip)
+  await getIpAddress(ip)
 })
 const siteCdDvBarCode = ref(false);
 
-const getUserIp = async (ip: string) => {
+const getIpAddress = async (ip: string) => {
   try {
-    const result = await getUserIpApi();
+    const result = await getDeviceIpApi();
     if (result.data === ip) {
       viewerCheckApp.value = result.data;
     } else {

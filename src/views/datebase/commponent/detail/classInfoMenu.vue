@@ -66,8 +66,8 @@ import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
 import Alert from "@/components/commonUi/Alert.vue";
+import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -100,7 +100,7 @@ onMounted(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getRunningInfoDetail(selectItems.value.id);
   pageMoveDeleteStop.value = true;
-  const ip = await getUserIpApi();
+  const ip = await getDeviceIpApi();
   ipAddress.value = ip.data;
 });
 
@@ -113,6 +113,7 @@ onUnmounted(async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
 const deleteConnectionStatus = async () => {
   sessionStorage.setItem('dbBaseTrClickId', String(selectItems.value.id));
 

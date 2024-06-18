@@ -160,7 +160,6 @@ import {basicBmClassList, basicWbcArr, WbcInfo} from "@/store/modules/analysis/w
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
 import {useStore} from "vuex";
 import process from "process";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
