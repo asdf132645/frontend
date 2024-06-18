@@ -66,7 +66,7 @@ const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
-const iaRootDir = computed(() => store.state.commonModule.iaRootPath);
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -148,7 +148,6 @@ const leave = (event: any) => {
 onMounted(async () => {
   await nextTick();
   await cellImgGet();
-  console.log(iaRootDir.value)
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
@@ -565,7 +564,7 @@ const sendSettingInfo = () => {
     jobCmd: 'SETTINGS',
     reqUserId: '',
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
-    iaRootDir: iaRootDir.value || '',
+    pbiaRootDir: pbiaRootDir.value || '',
     oilCount: '1000',
     isOilReset: 'N',
     deviceType: '01',
