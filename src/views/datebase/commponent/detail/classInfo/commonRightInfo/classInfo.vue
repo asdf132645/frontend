@@ -770,9 +770,8 @@ const getLisPathData = async () => {
   try {
     const result = await getFilePathSetApi();
 
-    if (result && result.data) {
-      const data = result.data;
-      lisFilePathSetArr.value = data[0].lisFilePath;
+    if (result && result.data && result.data.length !== 0) {
+      lisFilePathSetArr.value = result.data[0].lisFilePath;
     }
   } catch (e) {
     console.error(e);
