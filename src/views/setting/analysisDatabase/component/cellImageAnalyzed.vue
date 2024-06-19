@@ -210,9 +210,7 @@ const createBackup = async () => {
   };
 
   const res = await backUpDate(backupDto);
-  if(res){
-    console.log(res)
-  }
+
 }
 
 onMounted(async () => {
@@ -260,7 +258,6 @@ const cellImgGet = async () => {
     const result = await getCellImgApi();
     if (result) {
       if (!result?.data) {
-        console.log(null)
         saveHttpType.value = 'post';
       } else {
         saveHttpType.value = 'put';
@@ -336,7 +333,6 @@ const cellImgSet = async () => {
       sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
-      console.log(result)
     }
 
   } catch (e) {

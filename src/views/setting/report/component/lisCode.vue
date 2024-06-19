@@ -116,7 +116,6 @@ const getImagePrintData = async () => {
       const minCountData = minCountResult.data;
 
       if (!wbcData || (wbcData instanceof Array && wbcData.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         lisCodeWbcArr.value = lisCodeWbcOption;
       } else {
@@ -125,7 +124,6 @@ const getImagePrintData = async () => {
       }
 
       if (!rbcData || (rbcData instanceof Array && rbcData.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         lisCodeRbcArr.value = lisCodeRbcOption;
       } else {

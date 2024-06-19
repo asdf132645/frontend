@@ -355,7 +355,7 @@ const getIpAddress = async (item) => {
         payload: 'refreshDb'
       });
     }).catch(error => {
-      console.log('3 err')
+      console.log(error)
     });
   } catch (e) {
     console.log(e)

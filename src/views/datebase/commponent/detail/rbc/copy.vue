@@ -170,7 +170,6 @@ const except = ref(false);
 onMounted(() => {
   if(router.currentRoute.value.path === '/report'){
     rbcInfoChangeVal.value = props.selectItems.rbcInfoAfter;
-    console.log(props.selectItems.rbcInfoAfter)
   }
 
   pltCount.value = props.selectItems?.rbcInfo.pltCount;
@@ -197,7 +196,6 @@ watch(() => props.selectItems, (newItem) => {
 const beforeChange = () => {
   isBefore.value = true;
   emits('isBeforeUpdate', true);
-  console.log(props.rbcInfo.rbcInfo.rbcClass)
   rbcInfoChangeVal.value = props.rbcInfo.rbcInfo.rbcClass;
 }
 

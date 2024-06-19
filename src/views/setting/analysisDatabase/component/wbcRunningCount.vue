@@ -63,7 +63,6 @@ const getWbcRunningCountData = async () => {
 
     if (runCountResult && runCountResult.data) {
       const runInfoData = runCountResult.data;
-      console.log("제발", runInfoData);
 
       if (!runInfoData || (runInfoData instanceof Array && runInfoData.length === 0)) {
         console.log(null);

@@ -113,7 +113,6 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
 // 장비가 슬라이드 검사를 완료 할때 감시
 watch([commonDataGet.value], async (newVals: any) => {
   const newValsObj = JSON.parse(JSON.stringify(newVals));
-  // console.log(timeDataGet.value);
 
   if (!newValsObj[0].startEmbedded) {
     stopCounting();

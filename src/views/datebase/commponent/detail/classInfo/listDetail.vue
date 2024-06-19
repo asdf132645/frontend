@@ -334,7 +334,6 @@ watch(imageSize, (newVal) => {
 })
 
 watch(isBeforeChild, (newVal) => {
-  // console.log('ssss')
   getWbcCustomClasses(false, null);
 }, {deep: true});
 
@@ -499,7 +498,6 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     }
     sessionStorage.setItem('customClass', JSON.stringify(data));
     wbcCustomItems.value = data;
-    console.log("NEWDATA", newData);
     for (const item of newData) { // 커스텀클래스 폴더 생성
       const {fullNm, abbreviation, customNum} = item;
       const filePath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
@@ -556,7 +554,6 @@ const getWbcHotKeyClasses = async () => {
       if (result?.data) {
         const data = result.data;
         wbcHotKeysItems.value = data;
-        console.log(data)
       }
     }
   } catch (e) {
@@ -1038,8 +1035,6 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
           title: wbcInfo.value[itemIndex].title,
           ...wbcInfo.value[itemIndex].images[i],
         });
-        // console.log(wbcInfo.value[itemIndex])
-        // console.log(classInfoitem)
         selectItemIamgeArr.value.push(classInfoitem);
       }
     }
@@ -1380,7 +1375,6 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     }
     originalDbVal = [res.data];
   }
-  console.log(clonedWbcInfo);
 
 
   //updateRunningApi 호출

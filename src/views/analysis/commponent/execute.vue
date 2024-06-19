@@ -154,7 +154,6 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     isRecoveryRun: newIsRecoveryRun,
     isInit: newIsInit
   } = newEmbeddedStatusJobCmd || {};
-  // console.log(newIsRecoveryRun)
 
   isPause.value = newIsPause;
   userStop.value = newUserStop;

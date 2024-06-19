@@ -77,8 +77,6 @@ const onSearch = async () => {
       const users = result.data.users || [];
       const filteredUsers = filterUsers(users, inputText.value, userSearchOption.value);
       allUsers.value = filteredUsers;
-    } else {
-      console.log('No data received from the API');
     }
 
   } catch (error) {
@@ -90,14 +88,9 @@ const getAllUsers = async() => {
   try {
     // api 받아옴
     const result = await getAllUsersApi(String(currentUserId.value))
-    console.log('result - get all users')
 
-    if (result) {
-      if (!result?.data) {
-        console.log(null)
-      } else {
-        allUsers.value = result.data.users || []
-      }
+    if (result && result?.data) {
+      allUsers.value = result.data.users || []
     }
 
   } catch (e) {

@@ -34,7 +34,6 @@ export function useHttpClient() {
         const slush = parameters ? (type ? '?' : '/') : '';
         parameters = parameters || '';
 
-        // console.log(type !== undefined)
         try {
             const response: HttpResponse<T> = await axios.get(`${apiBaseUrl}/${url}${slush}${parameters}`, options);
             return Promise.resolve(response.data || { code: 500, data: undefined, success: false });
