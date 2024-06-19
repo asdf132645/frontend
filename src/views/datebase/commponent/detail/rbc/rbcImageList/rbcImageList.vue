@@ -111,7 +111,7 @@
     </div>
   </div>
   <div v-if="showSelect" class="rbc-select-box" :style="{ left: `${selectBoxX}px`, top: `${selectBoxY}px` }">
-    <template v-for="(classList, outerIndex) in [selectItems.rbcInfo]" :key="outerIndex">
+    <template v-for="(classList, outerIndex) in [rightClickItem]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories" v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
           <ul class="categoryNm">
@@ -193,11 +193,12 @@ const moveRbcClass = ref<any>([]);
 const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
+const rightClickItem = ref([]);
 
 onMounted(() => {
   initElement();
   document.addEventListener('click', closeSelectBox);
-
+  rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
 watch(() => props.isBefore, (newItem) => {
   removeRbcMarker();
