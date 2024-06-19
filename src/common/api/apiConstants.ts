@@ -37,10 +37,10 @@ export const apiConstants = {
             endpoint: 'user',
             requiresToken: false,
         },
-        userIp:{
-            endpoint: 'ip',
-            requiresToken: false,
-        },
+        // userIp:{
+        //     endpoint: 'ip',
+        //     requiresToken: false,
+        // },
         getUsers:{
             endpoint:'user/getUsers',
             requiresToken: false,
@@ -370,6 +370,10 @@ export const apiConstants = {
             },
             get: {
                 endpoint: 'device/get',
+                requiresToken: false,
+            },
+            ip: {
+                endpoint: 'ip',
                 requiresToken: false,
             }
         }

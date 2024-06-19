@@ -302,17 +302,17 @@ const cellImgGet = async () => {
         const data = result.data;
         analysisType.value = data.analysisType;
         if (window.PROJECT_TYPE === 'bm') {
-          wbcCount.value = data.cellAnalyzingCount;
+          wbcCount.value = data.diffCellAnalyzingCount;
         } else {
           switch (analysisType.value) {
             case '01':
-              wbcCount.value = data.cellAnalyzingCount;
+              wbcCount.value = data.diffCellAnalyzingCount;
               break;
             case '04':
-              wbcCount.value = data.pbsAnalysisType;
+              wbcCount.value = data.pbsCellAnalyzingCount;
               break;
             default:
-              wbcCount.value = data.bfAnalysisType;
+              wbcCount.value = data.bfCellAnalyzingCount;
           }
         }
 

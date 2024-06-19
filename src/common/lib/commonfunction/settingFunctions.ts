@@ -25,13 +25,13 @@ const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 const projectType = window.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
-    pbAnalysisType: projectType ? '500':'100',
+    diffCellAnalyzingCount: projectType ? '500':'100',
     wbcPositionMargin: '0',
     rbcPositionMargin: '0',
     pltPositionMargin: '0',
-    pbsAnalysisType: '100',
+    pbsCellAnalyzingCount: '100',
     stitchCount: '1',
-    bfAnalysisType: '100',
+    bfCellAnalyzingCount: '100',
     iaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
     isAlarm: false,
@@ -59,13 +59,13 @@ export const firstCellImgSet = async () => {
 
     const cellImgSet = {
         analysisType: defaultCellImgData.testTypeCd,
-        cellAnalyzingCount: defaultCellImgData.pbAnalysisType,
+        diffCellAnalyzingCount: defaultCellImgData.diffCellAnalyzingCount,
         wbcPositionMargin: defaultCellImgData.wbcPositionMargin,
         rbcPositionMargin: defaultCellImgData.rbcPositionMargin,
         pltPositionMargin: defaultCellImgData.pltPositionMargin,
-        pbsAnalysisType: defaultCellImgData.pbsAnalysisType,
+        pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
         stitchCount: defaultCellImgData.stitchCount,
-        bfAnalysisType: defaultCellImgData.bfAnalysisType,
+        bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
         iaRootPath: defaultCellImgData.iaRootPath,
         isNsNbIntegration: defaultCellImgData.isNsNbIntegration,
         isAlarm: defaultCellImgData.isAlarm,
@@ -95,10 +95,9 @@ export const firstCellImgSet = async () => {
 
 
 
-export const firstSaveOrderClass = async (userId: any) => {
+export const firstSaveOrderClass = async () => {
     const orderList: any = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
     for (const index in orderList) {
-        orderList[index].userName = userId;
         orderList[index].orderIdx = index;
     }
     const result = await getOrderClassApi();
@@ -118,7 +117,7 @@ export const firstSaveOrderClass = async (userId: any) => {
     }
 }
 
-export const firstSaveNormalRange = async (userId: any) => {
+export const firstSaveNormalRange = async () => {
     try {
         const result = await getNormalRangeApi();
         if (result) {
@@ -132,7 +131,7 @@ export const firstSaveNormalRange = async (userId: any) => {
     }
 };
 
-export const firstCreateRbcDegreeData = async (userId: any) => {
+export const firstCreateRbcDegreeData = async () => {
     await combindDegree();
     const rbcDegreeList: any = [];
 
@@ -151,8 +150,8 @@ export const firstCreateRbcDegreeData = async (userId: any) => {
     });
 
     try {
-        const result = await getRbcDegreeApi();
-        if(!result.data){
+        const result: any = await getRbcDegreeApi();
+        if((result.data && result.data.length === 0) || !result.data){
             await createRbcDegreeApi(rbcDegreeList);
         }
     } catch (e) {

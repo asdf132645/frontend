@@ -499,14 +499,15 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     }
     sessionStorage.setItem('customClass', JSON.stringify(data));
     wbcCustomItems.value = data;
+    console.log("NEWDATA", newData);
     for (const item of newData) { // 커스텀클래스 폴더 생성
-      const {className, abbreviation, customNum} = item;
+      const {fullNm, abbreviation, customNum} = item;
       const filePath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
       await fileSysPost({path: filePath});
 
       const wbcPush = {
         id: customNum,
-        name: className,
+        name: fullNm,
         count: '0',
         images: [],
         title: abbreviation,
@@ -891,6 +892,11 @@ async function handleKeyDown(event: KeyboardEvent) {
   // 컨트롤 키가 눌렸는지 확인
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
+  }
+
+  // before 상태에서는 이미지 파일 이동 불가
+  if (isBeforeChild.value) {
+    return;
   }
 
 

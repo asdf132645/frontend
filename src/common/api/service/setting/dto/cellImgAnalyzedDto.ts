@@ -1,13 +1,13 @@
 // Request Interface
 export interface CellImgAnalyzedRequest {
     analysisType: string;
-    cellAnalyzingCount: string;
+    diffCellAnalyzingCount: string;
     wbcPositionMargin: string;
     rbcPositionMargin: string;
     pltPositionMargin: string;
-    pbsAnalysisType: string;
+    pbsCellAnalyzingCount: string;
     stitchCount: string;
-    bfAnalysisType: string;
+    bfCellAnalyzingCount: string;
     iaRootPath: string;
     isNsNbIntegration: boolean;
     isAlarm: boolean;
@@ -22,13 +22,13 @@ export interface CellImgAnalyzedRequest {
 export interface CellImgAnalyzedResponse {
     id: number;
     analysisType: string;
-    cellAnalyzingCount: string;
+    diffCellAnalyzingCount: string;
     wbcPositionMargin: string;
     rbcPositionMargin: string;
     pltPositionMargin: string;
-    pbsAnalysisType: string;
+    pbsCellAnalyzingCount: string;
     stitchCount: string;
-    bfAnalysisType: string;
+    bfCellAnalyzingCount: string;
     iaRootPath: string;
     isNsNbIntegration: boolean;
     isAlarm: boolean;

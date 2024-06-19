@@ -13,8 +13,8 @@
         <td><input type="number" v-model="wbcRunning.min" class="form-control form-control-sm"></td>
         <td><input type="number" v-model="wbcRunning.max" class="form-control form-control-sm"></td>
         <td>
-          <select v-model="wbcRunning.wbcCount" class="form-select form-select-sm">
-            <option v-for="option in AnalysisList2" :key="option.value" :value="option.value">{{ option.text }}</option>
+          <select v-model="wbcRunning.wbcConditionCount" class="form-select form-select-sm">
+            <option v-for="option in AnalysisList2" :key="option.value" :value="+option.value">{{ option.text }}</option>
           </select>
         </td>
       </tr>
@@ -63,6 +63,7 @@ const getWbcRunningCountData = async () => {
 
     if (runCountResult && runCountResult.data) {
       const runInfoData = runCountResult.data;
+      console.log("제발", runInfoData);
 
       if (!runInfoData || (runInfoData instanceof Array && runInfoData.length === 0)) {
         console.log(null);

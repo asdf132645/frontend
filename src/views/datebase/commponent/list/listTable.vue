@@ -171,9 +171,9 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
 import moment from "moment";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
+import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 
 
 const props = defineProps(['dbData']);
@@ -344,10 +344,11 @@ const selectItem = (item) => {
     selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
 };
-const getUserIp = async (item) => {
+const getIpAddress = async (item) => {
   try {
-    const result = await getUserIpApi();
-    const req = `oldPcIp=${result.data}&newEntityId=${item.id}&newPcIp=${result.data}`
+    const result = await getDeviceIpApi();
+    const ipAddress = result.data;
+    const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}`
     await updatePcIpStateApi(req).then(response => {
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',
@@ -380,7 +381,7 @@ const rowDbClick = async (item) => {
 
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
-  await getUserIp(item);
+  await getIpAddress(item);
   await router.push('/databaseDetail');
 
 }

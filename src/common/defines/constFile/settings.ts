@@ -140,6 +140,48 @@ export const cbcList = [
     {cd: '39', classCd: '', classNm: 'ESR', isSelected: true}
 ];
 
+export const defaultCbcList = [
+    {cd: '01', classCd: '', fullNm: 'WBC Diff. Count', isSelected: true},
+    {cd: '02', classCd: '', fullNm: 'Seg.-neutrophils', isSelected: true},
+    {cd: '03', classCd: '', fullNm: 'Band-neutrophils', isSelected: true},
+    {cd: '04', classCd: '', fullNm: 'Lymphocytes', isSelected: true},
+    {cd: '05', classCd: '', fullNm: 'Monocytes', isSelected: true},
+    {cd: '06', classCd: '', fullNm: 'Eosinophils', isSelected: true},
+    {cd: '07', classCd: '', fullNm: 'Basophils', isSelected: true},
+    {cd: '08', classCd: '', fullNm: 'Metamyelocytes', isSelected: true},
+    {cd: '09', classCd: '', fullNm: 'Myelocytes', isSelected: true},
+    {cd: '10', classCd: '', fullNm: 'Promyelocytes', isSelected: true},
+    {cd: '11', classCd: '', fullNm: 'Blasts', isSelected: true},
+    {cd: '12', classCd: '', fullNm: 'Immature cells', isSelected: true},
+    {cd: '13', classCd: '', fullNm: 'Atypical cells', isSelected: true},
+    {cd: '14', classCd: '', fullNm: 'Atypical lymphocyte', isSelected: true},
+    {cd: '15', classCd: '', fullNm: 'Activated lymphocyte', isSelected: true},
+    {cd: '16', classCd: '', fullNm: 'Prolymphocytes', isSelected: true},
+    {cd: '17', classCd: '', fullNm: 'Promonocytes', isSelected: true},
+    {cd: '18', classCd: '', fullNm: 'Plasma cells', isSelected: true},
+    {cd: '19', classCd: '', fullNm: 'Nucleated RBC', isSelected: true},
+    {cd: '20', classCd: '', fullNm: 'Others', isSelected: true},
+    {cd: '21', classCd: '', fullNm: 'Atypical Lymphoid cells', isSelected: true},
+    {cd: '22', classCd: '', fullNm: 'Leukemic cells', isSelected: true},
+    {cd: '23', classCd: '', fullNm: 'Abnormal lymphocyte', isSelected: true},
+    {cd: '24', classCd: '', fullNm: 'Reactive lymphocyte', isSelected: true},
+    {cd: '25', classCd: '', fullNm: 'Plasmacytoid lymphocyte', isSelected: true},
+    {cd: '26', classCd: '', fullNm: 'ANC calc', isSelected: true},
+    {cd: '27', classCd: '', fullNm: 'WBC', isSelected: true},
+    {cd: '28', classCd: '', fullNm: 'RBC', isSelected: true},
+    {cd: '29', classCd: '', fullNm: 'HGB', isSelected: true},
+    {cd: '30', classCd: '', fullNm: 'HCT', isSelected: true},
+    {cd: '31', classCd: '', fullNm: 'MCV', isSelected: true},
+    {cd: '32', classCd: '', fullNm: 'MCH', isSelected: true},
+    {cd: '33', classCd: '', fullNm: 'MCHC', isSelected: true},
+    {cd: '34', classCd: '', fullNm: 'RDW', isSelected: true},
+    {cd: '35', classCd: '', fullNm: 'Platelet', isSelected: true},
+    {cd: '36', classCd: '', fullNm: 'PCT', isSelected: true},
+    {cd: '37', classCd: '', fullNm: 'MPV', isSelected: true},
+    {cd: '38', classCd: '', fullNm: 'PDW', isSelected: true},
+    {cd: '39', classCd: '', fullNm: 'ESR', isSelected: true}
+];
+
 export const rbcClassList = {
     rbcClassList: [{
         categoryId: '01',
@@ -649,50 +691,50 @@ export const imagePrintAndBm = [
 
 
 export const lisCodeWbcOption = [
-    { classNm: 'Neutrophil', value: '01', code: '' },
-    { classNm: 'Neutrophil-Segmented', value: '71', code: '' },
-    { classNm: 'Neutrophil-Band', value: '72', code: '' },
-    { classNm: 'Metamyelocyte', value: '02', code: '' },
-    { classNm: 'Myelocyte', value: '03', code: '' },
-    { classNm: 'Promyelocyte', value: '04', code: '' },
-    { classNm: 'Lymphocyte', value: '05', code: '' },
-    { classNm: 'Reactive lymphocyte', value: '61', code: '' },
-    { classNm: 'Abnormal lymphocyte', value: '62', code: '' },
-    { classNm: 'Monocyte', value: '07', code: '' },
-    { classNm: 'Eosinophil', value: '08', code: '' },
-    { classNm: 'Basophil', value: '09', code: '' },
-    { classNm: 'Blast', value: '10', code: '' },
-    { classNm: 'Plasma cell', value: '11', code: '' },
-    { classNm: 'nRBC', value: '12', code: '' },
-    { classNm: 'Giant platelet', value: '13', code: '' },
-    { classNm: 'Platelet aggregation', value: '14', code: '' },
-    { classNm: 'Malaria', value: '16', code: '' },
-    { classNm: 'Artifact(Smudge)', value: '15', code: '' },
-    { classNm: 'rbcPrintModel', value: '99999', code: '' },
+    { fullNm: 'Neutrophil', classId: '01', key: '' },
+    { fullNm: 'Neutrophil-Segmented', classId: '71', key: '' },
+    { fullNm: 'Neutrophil-Band', classId: '72', key: '' },
+    { fullNm: 'Metamyelocyte', classId: '02', key: '' },
+    { fullNm: 'Myelocyte', classId: '03', key: '' },
+    { fullNm: 'Promyelocyte', classId: '04', key: '' },
+    { fullNm: 'Lymphocyte', classId: '05', key: '' },
+    { fullNm: 'Reactive lymphocyte', classId: '61', key: '' },
+    { fullNm: 'Abnormal lymphocyte', classId: '62', key: '' },
+    { fullNm: 'Monocyte', classId: '07', key: '' },
+    { fullNm: 'Eosinophil', classId: '08', key: '' },
+    { fullNm: 'Basophil', classId: '09', key: '' },
+    { fullNm: 'Blast', classId: '10', key: '' },
+    { fullNm: 'Plasma cell', classId: '11', key: '' },
+    { fullNm: 'nRBC', classId: '12', key: '' },
+    { fullNm: 'Giant platelet', classId: '13', key: '' },
+    { fullNm: 'Platelet aggregation', classId: '14', key: '' },
+    { fullNm: 'Malaria', classId: '16', key: '' },
+    { fullNm: 'Artifact(Smudge)', classId: '15', key: '' },
+    { fullNm: 'rbcPrintModel', classId: '99999', key: '' },
 ];
 
 export const lisCodeRbcOption = [
-    { categoryId: '01', categoryNm: 'Size', classId: '01', classNm: 'Normal', code: '0' },
-    { categoryId: '01', categoryNm: 'Size', classId: '02', classNm: 'Macrocyte', code: '0' },
-    { categoryId: '01', categoryNm: 'Size', classId: '03', classNm: 'Microcyte', code: '0' },
-    { categoryId: '01', categoryNm: 'Size', classId: '04', classNm: 'Anisocytosis', code: '0' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '01', classNm: 'Normal', code: '0' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '02', classNm: 'Hyperchromic', code: '0' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '03', classNm: 'Hypochromic', code: '0' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '04', classNm: 'Polychromia', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '01', classNm: 'Normal', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '02', classNm: 'Poikilocytosis', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '03', classNm: 'Target Cell', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '04', classNm: 'Burr Cell', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '05', classNm: 'Acanthocyte', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '06', classNm: 'Ovalocyte', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '07', classNm: 'Schistocyte', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '08', classNm: 'Sickle Cell', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '09', classNm: 'Stomatocyte', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '10', classNm: 'Tear Drop Cell', code: '0' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '11', classNm: 'Spherocyte', code: '0' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '01', classNm: 'Howell-Jolly Body', code: '0' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '02', classNm: 'Basophilic Stippling', code: '0' }
+    { categoryId: '01', categoryNm: 'Size', classId: '01', fullNm: 'Normal', key: '0' },
+    { categoryId: '01', categoryNm: 'Size', classId: '02', fullNm: 'Macrocyte', key: '0' },
+    { categoryId: '01', categoryNm: 'Size', classId: '03', fullNm: 'Microcyte', key: '0' },
+    { categoryId: '01', categoryNm: 'Size', classId: '04', fullNm: 'Anisocytosis', key: '0' },
+    { categoryId: '02', categoryNm: 'Chromia', classId: '01', fullNm: 'Normal', key: '0' },
+    { categoryId: '02', categoryNm: 'Chromia', classId: '02', fullNm: 'Hyperchromic', key: '0' },
+    { categoryId: '02', categoryNm: 'Chromia', classId: '03', fullNm: 'Hypochromic', key: '0' },
+    { categoryId: '02', categoryNm: 'Chromia', classId: '04', fullNm: 'Polychromia', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '01', fullNm: 'Normal', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '02', fullNm: 'Poikilocytosis', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '03', fullNm: 'Target Cell', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '04', fullNm: 'Burr Cell', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '05', fullNm: 'Acanthocyte', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '06', fullNm: 'Ovalocyte', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '07', fullNm: 'Schistocyte', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '08', fullNm: 'Sickle Cell', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '09', fullNm: 'Stomatocyte', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '10', fullNm: 'Tear Drop Cell', key: '0' },
+    { categoryId: '03', categoryNm: 'Shape', classId: '11', fullNm: 'Spherocyte', key: '0' },
+    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '01', fullNm: 'Howell-Jolly Body', key: '0' },
+    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '02', fullNm: 'Basophilic Stippling', key: '0' }
 ];
 
 export const minRunCount = [
@@ -703,19 +745,19 @@ export const wbcRunningCount = [
 {
     min: 0,
     max: 700,
-    wbcCount: 50
+    wbcConditionCount: 50
 }, {
     min: 701,
     max: 1000,
-    wbcCount: 100
+    wbcConditionCount: 100
 }, {
     min: 1001,
     max: 2000,
-    wbcCount: 150
+    wbcConditionCount: 150
 }, {
     min: 2001,
     max: 3000,
-    wbcCount: 250
+    wbcConditionCount: 250
 }];
 
 export const lisHotKeyAndLisFilePathAndUrl =[

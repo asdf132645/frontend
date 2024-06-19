@@ -5,6 +5,11 @@ const httpClient = useHttpClient();
 export const createDeviceInfoApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.device.getDeviceInfo.create, request);
 }
+
 export const getDeviceInfoApi = async (): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.device.getDeviceInfo.get)
+    return httpClient.httpGet(apiConstants.device.getDeviceInfo.get);
+}
+
+export const getDeviceIpApi = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.device.getDeviceInfo.ip);
 }

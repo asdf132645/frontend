@@ -11,13 +11,17 @@
         </td>
       </tr>
       <!--Common analysis values-->
+
       <tr>
+        <!-- WBC diff analysis values -->
         <th rowspan="4" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
-        <th v-if="projectType === 'classInfo'">BM Diff Analysis Values</th>
+
+        <!-- BM diff analysis values -->
+        <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
         <th>Cell Analyzing Count</th>
         <td>
 
-          <select v-model='pbAnalysisType'>
+          <select v-model='diffCellAnalyzingCount'>
             <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
@@ -46,16 +50,6 @@
           </select>
         </td>
       </tr>
-      <!--WBC diff analysis values-->
-      <tr v-if="projectType === 'pb'">
-        <th>WBC Diff</th>
-        <th>Cell Analyzing Count</th>
-        <td>
-          <select v-model='pbAnalysisType'>
-            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
       <!--      PBS analysis values-->
       <tr v-if="projectType === 'pb'">
         <th rowspan="2">PBS Analysis Values</th>
@@ -63,13 +57,13 @@
           Cell Analyzing Count
         </th>
         <td>
-          <select v-model='pbsAnalysisType'>
+          <select v-model='pbsCellAnalyzingCount'>
             <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
       <tr>
-        <th v-if="projectType === 'classInfo'"></th>
+        <th v-if="projectType === 'bm'"></th>
         <th>Stitch Count</th>
         <td>
           <select v-model='stitchCount'>
@@ -82,7 +76,7 @@
         <th>BF Analysis Values</th>
         <th>Cell Analyzing Count</th>
         <td>
-          <select v-model='bfAnalysisType'>
+          <select v-model='bfCellAnalyzingCount'>
             <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
@@ -182,13 +176,13 @@ const alertMessage = ref('');
 
 const analysisVal = ref<any>([]);
 const testTypeCd = ref('01');
-const pbAnalysisType = ref('100');
+const diffCellAnalyzingCount = ref('100');
 const wbcPositionMargin = ref('0');
 const rbcPositionMargin = ref('0');
 const pltPositionMargin = ref('0');
-const pbsAnalysisType = ref('100');
+const pbsCellAnalyzingCount = ref('100');
 const stitchCount = ref('1');
-const bfAnalysisType = ref('100');
+const bfCellAnalyzingCount = ref('100');
 const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const backupRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup');
 const isNsNbIntegration = ref(false);
@@ -275,13 +269,13 @@ const cellImgGet = async () => {
 
         cellimgId.value = String(data.id);
         testTypeCd.value = data.analysisType;
-        pbAnalysisType.value = data.cellAnalyzingCount;
+        diffCellAnalyzingCount.value = data.diffCellAnalyzingCount;
         wbcPositionMargin.value = data.wbcPositionMargin;
         rbcPositionMargin.value = data.rbcPositionMargin;
         pltPositionMargin.value = data.pltPositionMargin;
-        pbsAnalysisType.value = data.pbsAnalysisType;
+        pbsCellAnalyzingCount.value = data.pbsCellAnalyzingCount;
         stitchCount.value = data.stitchCount;
-        bfAnalysisType.value = data.bfAnalysisType;
+        bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
         iaRootPath.value = data.iaRootPath;
         backupRootPath.value = data.backupPath;
         isNsNbIntegration.value = data.isNsNbIntegration;
@@ -302,13 +296,13 @@ const cellImgSet = async () => {
 
   const cellImgSet = {
     analysisType: testTypeCd.value,
-    cellAnalyzingCount: pbAnalysisType.value,
+    diffCellAnalyzingCount: diffCellAnalyzingCount.value,
     wbcPositionMargin: wbcPositionMargin.value,
     rbcPositionMargin: rbcPositionMargin.value,
     pltPositionMargin: pltPositionMargin.value,
-    pbsAnalysisType: pbsAnalysisType.value,
+    pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
-    bfAnalysisType: bfAnalysisType.value,
+    bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
     isAlarm: isAlarm.value,
@@ -320,7 +314,8 @@ const cellImgSet = async () => {
   }
 
   try {
-    let result = {};
+
+    let result: any = {};
     if (saveHttpType.value === 'post') {
       result = await createCellImgApi(cellImgSet);
     } else {

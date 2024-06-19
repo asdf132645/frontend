@@ -43,8 +43,7 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
-import {getUserIpApi} from "@/common/api/service/user/userApi";
-import {createDeviceInfoApi, getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
+import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
@@ -66,7 +65,7 @@ const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
-const iaRootDir = computed(() => store.state.commonModule.iaRootPath);
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -80,13 +79,13 @@ const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
-  await getUserIp(ip)
+  await getIpAddress(ip)
 })
 const siteCdDvBarCode = ref(false);
 
-const getUserIp = async (ip: string) => {
+const getIpAddress = async (ip: string) => {
   try {
-    const result = await getUserIpApi();
+    const result = await getDeviceIpApi();
     if (result.data === ip) {
       viewerCheckApp.value = result.data;
     } else {
@@ -148,7 +147,6 @@ const leave = (event: any) => {
 onMounted(async () => {
   await nextTick();
   await cellImgGet();
-  console.log(iaRootDir.value)
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
@@ -565,7 +563,7 @@ const sendSettingInfo = () => {
     jobCmd: 'SETTINGS',
     reqUserId: '',
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
-    iaRootDir: iaRootDir.value || '',
+    pbiaRootDir: pbiaRootDir.value || '',
     oilCount: '1000',
     isOilReset: 'N',
     deviceType: '01',

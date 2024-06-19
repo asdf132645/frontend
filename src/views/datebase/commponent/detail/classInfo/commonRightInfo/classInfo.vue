@@ -93,7 +93,7 @@
             <li>{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul class="classNm">
-            <li class="mb1 liTitle" v-if="outerIndex === 0">.</li>
+            <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li>
               {{ nWbcItem?.count }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">

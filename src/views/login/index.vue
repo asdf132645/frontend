@@ -36,7 +36,8 @@
 
 <script setup lang="ts">
 import {getCurrentInstance, ref, onMounted} from "vue";
-import {getUserIpApi, login, putUserDataApi} from "@/common/api/service/user/userApi";
+import { login } from "@/common/api/service/user/userApi";
+import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
@@ -93,16 +94,16 @@ const loginUser = async () => {
     const result: ApiResponse<UserResponse | undefined> = await login(user);
     if (result?.data?.user) {
       await firstCellImgSet();
-      await firstSaveOrderClass(String(result.data?.user.id));
-      await firstSaveNormalRange(String(result.data?.user.id));
-      await firstCreateRbcDegreeData(String(result.data?.user.id));
+      await firstSaveOrderClass();
+      await firstSaveNormalRange();
+      await firstCreateRbcDegreeData();
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
 
       if (isAutoLoginEnabled.value) {
         localStorage.setItem('user', JSON.stringify((result.data.user)))
       }
-      await getUserIp(result?.data?.user.userId);
+      await getIpAddress(result?.data?.user.userId);
 
     }else{
       showSuccessAlert('Login failed.');
@@ -113,17 +114,19 @@ const loginUser = async () => {
   }
 }
 
-const getUserIp = async (userId: string) => {
+const getIpAddress = async (userId: string) => {
   try {
-    const result = await getUserIpApi();
+    const result = await getDeviceIpApi();
     if (result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data))) {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
-      await updateAccount(userId, String(result.data), 'main');
+      // await updateAccount(userId, String(result.data), 'main');
+      await updateAccount('main');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
 
     }else{
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
-      await updateAccount(userId, result.data, 'viewer');
+      // await updateAccount(userId, result.data, 'viewer');
+      await updateAccount('viewer');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
     }
   } catch (e) {
@@ -131,21 +134,7 @@ const getUserIp = async (userId: string) => {
   }
 }
 
-const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) => {
-  const user = {
-    userId: userId,
-    password: '',
-    name: '',
-    employeeNo: '',
-    userType: '',
-    subscriptionDate: '',
-    state: '',
-    pcIp: pcIp
-  }
-
-  try {
-    const result = await putUserDataApi(user);
-    if (result) {
+const updateAccount = async (viewerCheck: string) => {
       showSuccessAlert('login successful.');
 
       if(viewerCheck === 'main'){
@@ -157,13 +146,41 @@ const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) 
       }
       await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
-    }
-
-  } catch (e) {
-
-    console.log(e);
-  }
 }
+
+// const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) => {
+//   const user = {
+//     userId: userId,
+//     password: '',
+//     name: '',
+//     employeeNo: '',
+//     userType: '',
+//     subscriptionDate: '',
+//     state: '',
+//     pcIp: pcIp
+//   }
+
+//   try {
+//     const result = await putUserDataApi(user);
+//     if (result) {
+//       showSuccessAlert('login successful.');
+
+//       if(viewerCheck === 'main'){
+//         await router.push('/');
+//         await document.documentElement.requestFullscreen();
+//       }else{
+//         await router.push('/dataBase');
+//         await document.documentElement.requestFullscreen();
+//       }
+//       await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
+//       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+//     }
+
+//   } catch (e) {
+
+//     console.log(e);
+//   }
+// }
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;

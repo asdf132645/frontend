@@ -3,11 +3,10 @@ export interface CreateRunCountDto {
 }
 
 export interface runCountItem {
-    num?: number
     id?: string;
     min: number;
     max: number;
-    wbcCount: number;
+    wbcConditionCount: number;
 }
 
 export interface UpdateRunCountDto {

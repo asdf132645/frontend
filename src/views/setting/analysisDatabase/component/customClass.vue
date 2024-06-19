@@ -4,7 +4,7 @@
       <li v-for="item in wbcCustomItems" :key="item.id">
         <span>ID: {{ item!.customNum }}</span>
         <span><input v-model="item.abbreviation" type="text" maxlength="3" placeholder="abbreviation"/></span>
-        <span><input v-model="item.className" type="text" maxlength="25" placeholder="class name"/></span>
+        <span><input v-model="item.fullNm" type="text" maxlength="25" placeholder="class name"/></span>
       </li>
     </ul>
     <button class="saveBtn" type="button" @click="saveWbcCustomClass">Save</button>
@@ -32,11 +32,11 @@ import {messages} from '@/common/defines/constFile/constantMessageText';
 
 const saveHttpType = ref('');
 const wbcCustomParm = [
-  { customNum: 90, abbreviation: '', className: '' },
-  { customNum: 91, abbreviation: '', className: '' },
-  { customNum: 92, abbreviation: '', className: '' },
-  { customNum: 93, abbreviation: '', className: '' },
-  { customNum: 94, abbreviation: '', className: '' }
+  { customNum: 90, abbreviation: '', fullNm: '' },
+  { customNum: 91, abbreviation: '', fullNm: '' },
+  { customNum: 92, abbreviation: '', fullNm: '' },
+  { customNum: 93, abbreviation: '', fullNm: '' },
+  { customNum: 94, abbreviation: '', fullNm: '' }
 ];
 
 const wbcCustomItems = ref<any>([]);

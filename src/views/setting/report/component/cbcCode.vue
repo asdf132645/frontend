@@ -1,7 +1,7 @@
 <template>
   <div class="alignDiv">
     <label v-for="item in cbcCodeArr" :key="item.cd">
-      <p class="mb1">{{ item.classNm }}</p>
+      <p class="mb1">{{ item.fullNm }}</p>
       <input type="text" v-model="item.classCd" />
     </label>
   </div>
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { cbcList } from "@/common/defines/constFile/settings";
+import { defaultCbcList } from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -76,7 +76,7 @@ const getImagePrintData = async () => {
       if (!data || (data instanceof Array && data.length === 0)) {
         console.log(null);
         saveHttpType.value = 'post';
-        cbcCodeArr.value = cbcList;
+        cbcCodeArr.value = defaultCbcList;
       } else {
         saveHttpType.value = 'put';
         cbcCodeArr.value = data;

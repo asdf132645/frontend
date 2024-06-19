@@ -1,16 +1,16 @@
 <template>
   <div class="alignDiv">
     <p class="mb4"> [ WBC ] </p>
-    <label v-for="item in lisCodeWbcArr" :key="item.value">
-      <p class="mb1">{{ item.classNm }}</p>
-      <input type="text" v-model="item.code" />
+    <label v-for="item in lisCodeWbcArr" :key="item.classId">
+      <p class="mb1">{{ item.fullNm }}</p>
+      <input type="text" v-model="item.key" />
     </label>
   </div>
   <div class="alignDiv">
     <p class="mt2 mb4"> [ RBC ] </p>
-    <label v-for="item in lisCodeRbcArr" :key="item.classNm">
-      <p class="mb1">{{ item.categoryNm }} - {{ item.classNm }}</p>
-      <input type="text" v-model="item.code" />
+    <label v-for="item in lisCodeRbcArr" :key="item.fullNm">
+      <p class="mb1">{{ item.categoryNm }} - {{ item.fullNm }}</p>
+      <input type="text" v-model="item.key" />
     </label>
   </div>
   <div class="alignDiv">

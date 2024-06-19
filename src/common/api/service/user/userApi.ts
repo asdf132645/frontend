@@ -26,6 +26,6 @@ export const putUserDataApi = async (request: any): Promise<ApiResponse<any>> =>
     return httpClient.httpPut(apiConstants.user.userDataPut, request, '', true);
 };
 
-export const getUserIpApi = async (): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.user.userIp, '');
-}
+// export const getUserIpApi = async (): Promise<ApiResponse<any>> => {
+//     return httpClient.httpGet(apiConstants.user.userIp, '');
+// }

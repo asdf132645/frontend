@@ -4,9 +4,9 @@ export interface CreateLisCodeDto {
 }
 
 export interface LisCodeWbcItem {
-    text: string;
-    value: string;
-    code: string;
+    fullNm: string;
+    classId: string;
+    key: string;
 }
 
 export interface UpdateLisCodeDto {
@@ -23,8 +23,8 @@ export interface LisCodeRbcItem {
     categoryId: string;
     categoryNm: string;
     classId: string;
-    classNm: string;
-    code: string;
+    fullNm: string;
+    key: string;
 }
 
 export interface UpdateLisCodeRbcDto {
@@ -41,7 +41,7 @@ export interface CreateCbcCodeRbcDto {
 export interface cbcCodeItem {
     cd: string;
     classCd: string;
-    classNm: string;
+    fullNm: string;
     isSelected: boolean;
 }
 
