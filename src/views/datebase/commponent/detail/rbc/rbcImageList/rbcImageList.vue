@@ -410,6 +410,7 @@ const initElement = async () => {
         tileSources: tilesInfo,
         showReferenceStrip: false,
         gestureSettingsMouse: {clickToZoom: false},
+        maxZoomLevel: 15
       });
 
       // 마그니파이어 설정
