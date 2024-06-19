@@ -698,6 +698,7 @@ ul.slideContent li {
     background: #dedede;
     margin: 8px 0px;
     border-radius: 2px;
+    border: 1px solid #3498db;
 }
 
 ul.slideContent {

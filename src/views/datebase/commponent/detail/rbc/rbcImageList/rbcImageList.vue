@@ -267,7 +267,9 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const filePath = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
   try {
-    const response = await fetch(`http://localhost:3002/jsonReader/upload?filePath=${filePath}`, {
+    const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
+    const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
       method: 'POST',
       body: formData,
     });
@@ -313,7 +315,7 @@ const rbcMarker = async (newItem: any) => {
 
   const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response = await readJsonFile({fullPath: url});
-  if (response.data === 'not file' || props.isBefore) {
+  if (response.data === 'not file' || props.isBefore) { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
     const response = await readJsonFile({fullPath: url});
     rbcInfoPathAfter.value = response?.data[0].rbcClassList;
@@ -358,6 +360,7 @@ const removeRbcMarker = () => {
 }
 
 const drawRbcMarker = async (classInfoArr: any) => {
+  // json rbcInfoPathAfter.value 로 그림 그리는곳
   const colors: any = {
     '01': 'red',
     '02': 'green',
@@ -366,6 +369,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
   };
 
   const ctx = removeRbcMarker();
+  // 여기서 새로 추가 된 index 로 있나 없나 따지고 after 에서 있으면 비포에서는 보여주지않는다.
   classInfoArr.forEach((info: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
