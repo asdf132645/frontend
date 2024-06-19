@@ -45,7 +45,6 @@ const onImageLoad = async (bool: boolean) => {
     if (imageHeight !== 0) {
       newImgHeight.value = imageHeight;
       newImgWidth.value = imageWidth;
-      console.log(imageHeight)
       await initElement(imageHeight, bool);
     }
 
@@ -122,7 +121,6 @@ const fetchTilesInfo = async (folderPath: string) => {
 
   const fileNames = await response.json();
   const tilesInfo = [];
-  // console.log()
   for (const fileName of fileNames) {
     if (fileName.endsWith('_files')) {
       tilesInfo.push({

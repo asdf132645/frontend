@@ -274,7 +274,6 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
       body: formData,
     });
     const responseData = await response.json();
-    console.log(responseData);
   } catch (error) {
     console.error('Error:', error);
   }

@@ -41,7 +41,6 @@ const saveCbcCode = async () => {
   try {
     let result: ApiResponse<void>;
 
-    console.log(cbcCodeArr.value);
     if (saveHttpType.value === 'post') {
       result = await createCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
     } else {
@@ -74,7 +73,6 @@ const getImagePrintData = async () => {
       const data = result.data;
 
       if (!data || (data instanceof Array && data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         cbcCodeArr.value = defaultCbcList;
       } else {

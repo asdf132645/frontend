@@ -92,7 +92,6 @@ const getImagePrintData = async () => {
         selectedItems.value = data.filter((item) => item.checked).map((item) => item.classId);
       }
     }
-    console.log(imagePrintAndWbcArr.value);
   } catch (e) {
     console.error(e);
   }
