@@ -22,7 +22,8 @@
           {{ item.classNm }}
         </option>
       </select>
-      <select></select>
+      <SliderBar v-model="sliderValue" :min="0" :max="100" />
+      <button class="degreeBtn" type="button">Ok</button>
     </div>
     <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
@@ -36,7 +37,7 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li>
-                <span>{{ classInfo?.classNm }}</span>
+                <span @click="clickUpDegree(classInfo.classNm, category.categoryNm)">{{ classInfo?.classNm }}</span>
                 <div v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
@@ -117,7 +118,7 @@
         </ul>
         <ul class="classNmRbc">
           <li>
-            <span>Platelets</span>
+            <span @click="clickUpDegree('Giant Platelet', 'Others')">Giant Platelet</span>
             <div>
               <input type="checkbox"
                      value="9-9-1"
@@ -127,7 +128,7 @@
             </div>
           </li>
           <li>
-            <span>Malaria</span>
+            <span @click="clickUpDegree('Malaria', 'Others')">Malaria</span>
             <div>
               <input type="checkbox"
                      v-show="!except"
@@ -142,6 +143,10 @@
           <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
         </ul>
       </div>
+    </div>
+    <div v-if="type !== 'report'" class="beforeAfterBtn">
+      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>
+      <button @click="afterChange" :class={isBeforeClicked:!isBefore}>After</button>
     </div>
   </div>
   <Alert
@@ -174,6 +179,8 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import {useRouter} from "vue-router";
 import moment from "moment/moment";
+import SliderBar from "@/components/commonUi/SliderBar.vue";
+
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
@@ -183,6 +190,7 @@ const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref('');
 const malariaCount = ref('');
 const memo = ref('');
+const sliderValue = ref(50);
 const memoModal = ref(false);
 const store = useStore();
 const showAlert = ref(false);
@@ -223,9 +231,6 @@ onMounted(() => {
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
-
   afterChange();
 });
 
@@ -240,16 +245,34 @@ watch(() => props.selectItems, (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
 });
 
-const clickUpDegree = () => {
-//
+const clickUpDegree = (classNm: string, categoryNm: string) => {
+  if (categoryNm === 'Size'){
+    selectedClass.value = 'Size';
+    return
+  }else if(categoryNm === 'Chromia'){
+    selectedClass.value = 'Chromia';
+    return
+  }else{
+    selectedClass.value = classNm;
+    return
+  }
+
 }
 
 const afterChange = () => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+  if(typeof props.selectItems.rbcInfoAfter === 'object'){
+    rbcInfoAfterVal.value =  Object.entries(props.selectItems.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+  }else{
+    rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+  }
+}
 
+const beforeChange = () => {
+  isBefore.value = true;
+  emits('isBeforeUpdate', true);
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
@@ -266,7 +289,7 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
 
 
 const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
-  if (props.type === 'report') {
+  if (props.type === 'report' || isBefore.value) {
     return;
   }
   // rbcInfoAfterVal을 깊은 복사하여 수정

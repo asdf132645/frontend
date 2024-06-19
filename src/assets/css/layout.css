@@ -589,9 +589,25 @@ span.rbcSapnDown {
 .databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
     width: 58%;
 }
+.sensitivityDiv .slider-container {
+    width: 45%;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.slider-container input {
+    width: 74%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.slider-container div {
+    width: 10%;
+    display: inline-block;
+}
 .sensitivityDiv select {
     display: inline-block;
-    width: 50%;
+    width: 35%;
     margin-top: 5px;
 }
 ul.leftWbcInfo.rbcClass {
@@ -609,9 +625,37 @@ span.rbcSapnDown .degreeActive {
 }
 
 .categories.rbcClass > ul > li > span {
-    min-width: 65%;
+    min-width: 77%;
+    font-size: 0.8rem;
+    vertical-align: top;
+    cursor: pointer;
+}
+.sensitivityDiv {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+    background: #393939;
+    padding: 5px 8px 10px 8px;
+    margin-top: 5px;
 }
 
+button.degreeBtn {
+    vertical-align: middle;
+    background: #344c5d;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    padding: 6px 17px;
+    cursor: pointer;
+}
+
+.categories.rbcClass > ul > li {
+    height: 20px;
+}
+.categories.rbcClass .categoryNm {
+    width: 20%;
+}
 .overlay-element {
     background: none transparent;
     border: none;
