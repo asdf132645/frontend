@@ -894,6 +894,11 @@ async function handleKeyDown(event: KeyboardEvent) {
     isCtrlKeyPressed.value = true;
   }
 
+  // before 상태에서는 이미지 파일 이동 불가
+  if (isBeforeChild.value) {
+    return;
+  }
+
 
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
