@@ -519,7 +519,16 @@ ul.degree.analysis {
 .analysisWbc .categories > ul > li {
     height: 14px;
 }
-
+.categories.rbcClass > .degree > li > span {
+    font-size: 0.9rem;
+}
+.categories.rbcClass > .degree > li > .rbcSapn {
+    position: absolute;
+    top: 0;
+    height: 8px;
+    z-index: 9999;
+    overflow: hidden;
+}
 .classNmRbc {
     display: inline-block;
     text-align: left;
@@ -560,7 +569,7 @@ ul.nth1Child > :nth-child(3) {
 }
 
 .degreeActive {
-    color: #3498db;
+    color: #696969;
 }
 
 .categories > ul > li {
@@ -568,6 +577,28 @@ ul.nth1Child > :nth-child(3) {
     font-size: 0.8rem;
     height: 17px;
     /*margin-bottom: 2px;*/
+    position: relative;
+}
+
+span.rbcSapnDown {
+    position: absolute;
+    left: 0;
+    top: 2px;
+
+}
+.databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
+    width: 58%;
+}
+.sensitivityDiv select {
+    display: inline-block;
+    width: 50%;
+    margin-top: 5px;
+}
+ul.leftWbcInfo.rbcClass {
+    width: 65%;
+}
+span.rbcSapnDown .degreeActive {
+    color: #3498db;
 }
 
 .categories > ul > li > span {
@@ -575,6 +606,10 @@ ul.nth1Child > :nth-child(3) {
     vertical-align: middle;
     min-width: 56%;
     font-size: 0.7rem;
+}
+
+.categories.rbcClass > ul > li > span {
+    min-width: 65%;
 }
 
 .overlay-element {
@@ -2219,6 +2254,10 @@ table.cbcTable {
 table.cbcTable td {
     padding: 9px;
     font-size: 0.8rem;
+}
+
+.half-circle {
+    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
 }
 
 @media screen and (max-width: 1900px) {

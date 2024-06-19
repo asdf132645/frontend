@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="mt2">
+    <div class="mt2 mb2">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
-      <ul class="leftWbcInfo rbcClass">
+      <ul class="leftWbcInfo">
         <li style="position: relative">
           <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
           <div v-if="memoModal" class="memoModal">
@@ -11,22 +11,14 @@
             <button @click="memoCancel">cancel</button>
           </div>
         </li>
-        <li @click="commitConfirmed" :class="{'submitted': selectItems.submitState === 'Submit'}">
+        <li @click="commitConfirmed">
           <font-awesome-icon :icon="['fas', 'square-check']"/>
         </li>
       </ul>
     </div>
-    <div class="sensitivityDiv" v-if="type !== 'report'">
-      <select v-model="selectedClass">
-        <option v-for="(item) in rightClickItem" :key="item.classNm">
-          {{ item.classNm }}
-        </option>
-      </select>
-      <select></select>
-    </div>
-    <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
+    <template v-for="(classList, outerIndex) in [isBefore ? clonedRbcInfoStore : rbcInfoChangeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-        <div class="categories rbcClass">
+        <div class="categories">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
             <li>{{ getCategoryName(category) }}</li>
@@ -47,63 +39,36 @@
             </template>
           </ul>
           <ul class="degree analysis">
-
             <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')">
-                <span v-if="classInfo.classId !== '01' || category.categoryId === '05'" class="rbcSapn">
-                  <font-awesome-icon
-                      :icon="['fac', 'half-circle-up']"
-                      v-for="degreeIndex in 4" :key="degreeIndex"
-                      :class="{
+              <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
+                <font-awesome-icon
+                    :icon="['fas', 'circle']"
+                    v-for="degreeIndex in 4" :key="degreeIndex"
+                    @click="onClickDegree(category, classInfo, degreeIndex-1, false)"
+                    :class="{
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
                       }"
-                  />
-                </span>
-                <span
-                    v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05'"
-                    class="rbcSapnDown">
-                  <font-awesome-icon
-                      :icon="['fac', 'half-circle-down']"
-                      v-for="degreeIndex in 4" :key="degreeIndex + '-down'"
-                      :class="{
-                      'degreeActive': degreeIndex < Number(rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree) + 2 || 0,
-                      'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree) + 1 || 0
-                    }"
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], degreeIndex - 1, false)"
-                  />
-                </span>
+                />
               </li>
               <li v-else>
-                <span v-if="classInfo.degree === '0'" class="rbcSapn">
+                <div v-if="classInfo.degree === '0'">
                   <font-awesome-icon
-                      :icon="['fac', 'half-circle-up']"
+                      @click="onClickDegree(category, classInfo, '0', true)"
+                      :icon="['fas', 'circle']"
                   />
-                </span>
-                <span v-else class="rbcSapn">
+                </div>
+                <div v-else>
                   <font-awesome-icon
-                      :icon="['fac', 'half-circle-up']"
+                      @click="onClickDegree(category, classInfo, '1', true) "
+                      :icon="['fas', 'circle']"
                       class="degreeActive"
                   />
-                </span>
-                <span v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree === '0'" class="rbcSapnDown">
-                  <font-awesome-icon
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex],'0', true)"
-                      :icon="['fac', 'half-circle-down']"
-                  />
-                </span>
-                <span v-else class="rbcSapnDown">
-                  <font-awesome-icon
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], '1', true) "
-                      :icon="['fac', 'half-circle-down']"
-                      class="degreeActive"
-                  />
-                </span>
+                </div>
               </li>
             </template>
-
           </ul>
         </div>
       </template>
@@ -111,7 +76,7 @@
     </template>
     <!--orders-->
     <div>
-      <div class="categories rbcClass">
+      <div class="categories">
         <ul class="categoryNm">
           <li>Others</li>
         </ul>
@@ -143,6 +108,10 @@
         </ul>
       </div>
     </div>
+    <div v-if="type !== 'report'" class="beforeAfterBtn">
+      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>
+      <button @click="afterChange" :class={isBeforeClicked:!isBefore}>After</button>
+    </div>
   </div>
   <Alert
       v-if="showAlert"
@@ -166,20 +135,18 @@
 <script setup lang="ts">
 import {ref, defineProps, watch, onMounted, computed, defineEmits} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import {useRouter} from "vue-router";
-import moment from "moment/moment";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear']);
-const rbcInfoAfterVal = ref<any>([]);
-const rbcInfoBeforeVal = ref<any>([]);
+const props = defineProps(['rbcInfo', 'selectItems', 'originalDb', 'type', 'allCheckClear']);
+const rbcInfoChangeVal = ref<any>([]);
 const pltCount = ref('');
 const malariaCount = ref('');
 const memo = ref('');
@@ -192,47 +159,34 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const clonedRbcInfoStore = computed(() => store.state.commonModule.clonedRbcInfo);
 const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
 const maxRbcCount = ref('');
 const router = useRouter();
 const except = ref(false);
-const rightClickItem: any = ref([]);
-const selectedClass = ref('Normal');
+
 onMounted(() => {
+  if(router.currentRoute.value.path === '/report'){
+    rbcInfoChangeVal.value = props.selectItems.rbcInfoAfter;
+    console.log(props.selectItems.rbcInfoAfter)
+  }
+
   pltCount.value = props.selectItems?.rbcInfo.pltCount;
   malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
   memo.value = props.selectItems.rbcMemo;
   maxRbcCount.value = props.selectItems?.rbcInfo?.maxRbcCount;
   except.value = router.currentRoute.value.path === '/report';
-  rightClickItem.value = [];
-  const newRightClickItem = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
-  for (const argument of newRightClickItem) {
-    if (argument.categoryNm === 'Shape' || argument.categoryNm === 'Inclusion Body') {
-      for (const classInfo of argument.classInfo) {
-        rightClickItem.value.push({...classInfo, categoryId: argument.categoryId});
-      }
-    }
-  }
-  rightClickItem.value.unshift({categoryId: '01', categoryNm: 'Size', classNm: 'Size'})
-  rightClickItem.value.unshift({categoryId: '02', categoryNm: 'Chromia', classNm: 'Chromia'})
-  rightClickItem.value.push({categoryId: '04', classId: '01', classNm: 'Giant Platelet'});
-  rightClickItem.value.push({categoryId: '05', classId: '03', classNm: 'Malaria'});
-
 });
 
 watch(() => props.rbcInfo, (newItem) => {
-  rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
-
-  afterChange();
+  rbcInfoChangeVal.value = props.selectItems.rbcInfoAfter;
 });
 
 watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
-
 }, {deep: true})
 
 watch(() => props.selectItems, (newItem) => {
@@ -240,16 +194,17 @@ watch(() => props.selectItems, (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
 });
 
-const clickUpDegree = () => {
-//
+const beforeChange = () => {
+  isBefore.value = true;
+  emits('isBeforeUpdate', true);
+  console.log(props.rbcInfo.rbcInfo.rbcClass)
+  rbcInfoChangeVal.value = props.rbcInfo.rbcInfo.rbcClass;
 }
 
 const afterChange = () => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
-  rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
-
+  rbcInfoChangeVal.value = props.rbcInfo.rbcInfoAfter;
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
@@ -266,44 +221,50 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
 
 
 const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
-  if (props.type === 'report') {
+  if (isBefore.value) {
     return;
   }
-  // rbcInfoAfterVal을 깊은 복사하여 수정
-  const rbcInfoAfter = JSON.parse(JSON.stringify(rbcInfoAfterVal.value)).map((rbc: any) => {
-    if (rbc.categoryNm === category.categoryNm) {
-      rbc.classInfo = rbc.classInfo.map((item: any) => {
-        if (item.classNm === classInfo.classNm) {
-          if (isNormal) {
-            item.degree = String(Number(item.degree) === 0 ? 1 : 0);
-          } else {
-            item.degree = String(degreeIndex);
-          }
+
+  const rbcInfoAfter = rbcInfoChangeVal.value.map((rbc: any) => {
+    return rbc?.classInfo.map((item: any) => {
+      if (item.classNm === classInfo.classNm && category.categoryNm === rbc?.categoryNm) {
+        if (isNormal) {
+          item.degree = String(Number(item.degree) === 0 ? 1 : 0);
+        } else {
+          item.degree = String(degreeIndex);
         }
-        return item;
-      });
-    }
-    return rbc;
+      }
+      return item;
+    });
   });
 
-  // rbcInfoAfterVal 업데이트
-  rbcInfoAfterVal.value = rbcInfoAfter;
-
-  // updatedSelectItems와 rbcAfter 업데이트
-  const updatedSelectItems = {
+  const updatedSelectItems: any = {
     ...props.selectItems,
-    rbcInfoAfter: rbcInfoAfter
+    rbcInfoAfter: props.selectItems.rbcInfo.rbcInfo.map((rbcItem: any, index: any) => {
+      return {
+        ...rbcItem,
+        classInfo: rbcInfoAfter[index]
+      };
+    })
   };
 
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoAfter));
+  const rbcAfter = props.selectItems.rbcInfo.map((rbcItem: any, index: any) => {
+    return {
+      ...rbcItem,
+      classInfo: rbcInfoAfter[index]
+    };
+  })
+  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcAfter));
   sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
+  const updatedRuningInfo = props.originalDb
+      .filter((item: any) => item.id === props.selectItems.id)
+      .map((item: any) => {
+        const updatedItem = {...item, rbcInfoAfter: rbcAfter};
+        return updatedItem;
+      });
 
-  const result: any = await detailRunningApi(String(props.selectItems.id));
-  const updatedItem = {
-    rbcInfoAfter: rbcInfoAfter,
-  };
-  const updatedRuningInfo = {...result.data, ...updatedItem};
   await resRunningItem(updatedRuningInfo, false);
+
 };
 
 
@@ -317,29 +278,31 @@ const memoCancel = () => {
 }
 
 const memoChange = async () => {
-  const result: any = await detailRunningApi(String(props.selectItems.id));
-  const updatedItem = {
-    rbcMemo: memo.value,
-  };
-  const updatedRuningInfo = {...result.data, ...updatedItem}
+  const updatedRuningInfo = props.originalDb.map((item: any) => {
+    if (item.id === props.selectItems.id) {
+      return {...item, rbcMemo: memo.value};
+    }
+    return item;
+  });
   await resRunningItem(updatedRuningInfo, true);
   memoModal.value = false;
 }
 
-const resRunningItem = async (updatedRuningInfo: any, alertShow?: any) => {
+const resRunningItem = async (updatedRuningInfo: any, alertShow: any) => {
   try {
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [updatedRuningInfo]
+      runingInfoDtoItems: updatedRuningInfo
     })
     if (response) {
       if (alertShow) {
         showSuccessAlert('success');
       }
 
-      const filteredItems = updatedRuningInfo;
-      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems));
-      memo.value = filteredItems.rbcMemo;
+      const filteredItems = updatedRuningInfo.filter((item: any) => item.id === props.selectItems.id);
+      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems[0]));
+      sessionStorage.setItem('originalDbData', JSON.stringify(updatedRuningInfo));
+      memo.value = filteredItems[0].rbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -382,16 +345,14 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
+  const updatedRuningInfo = props.originalDb
+      .filter((item: any) => item.id === props.selectItems.id)
+      .map((item: any) => {
+        const updatedItem = {...item, signedState: 'Submit', signedOfDate: new Date(), signedUserId: item.id};
+        updatedItem.submit = 'Submit';
+        return updatedItem;
+      });
 
-  const localTime = moment().local();
-
-  const result: any = await detailRunningApi(String(props.selectItems.id));
-  const updatedItem = {
-    submitState: 'Submit',
-    submitOfDate: localTime.format(),
-    submitUserId: userModuleDataGet.value.name,
-  };
-  const updatedRuningInfo = {...result.data, ...updatedItem}
   await resRunningItem(updatedRuningInfo);
 }
 
