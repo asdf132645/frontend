@@ -150,8 +150,8 @@ export const firstCreateRbcDegreeData = async () => {
     });
 
     try {
-        const result = await getRbcDegreeApi();
-        if(!result.data){
+        const result: any = await getRbcDegreeApi();
+        if((result.data && result.data.length === 0) || !result.data){
             await createRbcDegreeApi(rbcDegreeList);
         }
     } catch (e) {
