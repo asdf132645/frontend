@@ -221,8 +221,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
-import {moveClassImagePost, moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
+import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
+import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
@@ -550,11 +550,8 @@ const getBfHotKeyClasses = async () => {
 const getWbcHotKeyClasses = async () => {
   try {
     const result = await getWbcHotKeysApi();
-    if (result) {
-      if (result?.data) {
-        const data = result.data;
-        wbcHotKeysItems.value = data;
-      }
+    if (result && result?.data) {
+      wbcHotKeysItems.value = result.data;
     }
   } catch (e) {
     console.log(e);
@@ -846,7 +843,14 @@ async function onDropCircle(item: any) {
   if (isBeforeChild.value) {
     return;
   }
+
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
+
+  // 선택한 이미지(들)가 같은 Class로 욺직이려고 할 때
+  if (item.id === draggedItem.id) {
+    return;
+  }
+
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     // 이미지를 한 개만 드래그한 경우
@@ -968,12 +972,10 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   } else if (isBeforeChild.value) {
     wbcInfo.value = selectItemsVal.wbcInfo.wbcInfo[0];
     selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
-      if (item.images) {
-        if (item.images.length > 0) {
-          item.images.forEach((itemImg: any) => {
-            itemImg.title = item.title;
-          })
-        }
+      if (item.images && item.images.length > 0) {
+        item.images.forEach((itemImg: any) => {
+          itemImg.title = item.title;
+        })
       }
     });
   }
@@ -982,6 +984,14 @@ async function initData(newData: any, upDown: any, upDownData: any) {
       return !newData.find((dataItem: any) => dataItem.customNum === item.id && dataItem.abbreviation === "");
     });
   }
+
+  // customClass wbcInfo After 상태에서 추가하는 코드
+  if (!isBeforeChild.value) {
+    const wbcInfoIdArr = wbcInfo.value.map((item: any) => item.id)
+    const customClassArr = selectItemsVal.wbcInfo.wbcInfo[0].filter((item: any) => !wbcInfoIdArr.includes(item.id))
+    wbcInfo.value = [...wbcInfo.value, ...customClassArr];
+  }
+
   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
