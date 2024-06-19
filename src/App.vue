@@ -479,7 +479,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       try {
         const deviceData = await getDeviceInfoApi();
         if (deviceData.data.length === 0 || !deviceData.data) {
-          console.log('?D')
           await createDeviceInfoApi({deviceItem: deviceInfo});
           siteCdDvBarCode.value = true;
         } else {

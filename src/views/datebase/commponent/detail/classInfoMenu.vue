@@ -125,7 +125,7 @@ const deleteConnectionStatus = async () => {
           payload: 'refreshDb'
         });
       }).catch(error => {
-        console.log('2 err')
+        console.log('2 err', error)
       });
 }
 
@@ -139,7 +139,7 @@ const upDownBlockAccess = async (selectItems: any) => {
         payload: 'refreshDb'
       });
     }).catch(error => {
-      console.log('3 err')
+      console.log('3 err', error)
     });
   } catch (e) {
     console.log(e)
@@ -190,7 +190,6 @@ async function getRunningInfoDetail(id: any) {
 
     if (result) {
       resData.value = result.data;
-      console.log(resData.value);
     }
   } catch (e) {
     console.error(e);
@@ -203,7 +202,6 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
     const req = `id=${id}&step=${step}&type=${type}`
     const res = await pageUpDownRunnIngApi(req);
     if (res) {
-      console.log(res.data);
       resData.value = res.data;
     }
   } catch (e) {

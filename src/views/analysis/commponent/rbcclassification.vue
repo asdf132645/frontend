@@ -277,7 +277,6 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
       }
     });
   });
-  // console.log(rbcInfo)
   dspRbcClassList.value[0] = rbcInfo;
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
@@ -317,7 +316,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data;
   } catch (e) {
-    // console.log(e);
+    console.log(e);
   }
 };
 

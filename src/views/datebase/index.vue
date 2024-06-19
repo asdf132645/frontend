@@ -164,7 +164,6 @@ const saveLastSearchParams = () => {
     startDate: formatDate(startDate.value),
     endDate: formatDate(endDate.value),
   };
-  // console.log(startDate.value);
   sessionStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
 };
 

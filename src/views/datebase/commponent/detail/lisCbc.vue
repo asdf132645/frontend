@@ -126,9 +126,7 @@ const initCbcData = async (newVal: any) => {
           }
         }
       });
-    } else {
-      console.log(readFileTxtRes.data.message)
-    }
+    } 
   } else if (siteCd.value === '0007') { // 삼광의료재단
     // 작업 필요
   } else if (siteCd.value === '0011') { // 인하대학교
@@ -172,9 +170,7 @@ const initCbcData = async (newVal: any) => {
 
           })
 
-        } else {
-          console.log('return code : ' + res.returnCode)
-        }
+        } 
       }).catch(function (err) {
         console.log(err.message + ' : no CBC result');
       })
@@ -225,7 +221,6 @@ const initCbcData = async (newVal: any) => {
       // const readFileTxtRes: any = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
       if (readFileTxtRes.data.success) {
         const msg: any = await readH7File(readFileTxtRes.data.data);
-        console.log(msg)
         cbcWorkList.value = [];
         msg?.data?.segments.forEach(function (cbcSegment: any) {
           if (cbcSegment.name.trim() === 'OBX') {

@@ -191,7 +191,6 @@ const nonWbcIdList = ['12', '13', '14', '15', '16'];
 
 onMounted(async () => {
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
-  console.log("wpqkf",sessionStorageSelectItems);
   await getImagePrintData();
   await printPage();
 });

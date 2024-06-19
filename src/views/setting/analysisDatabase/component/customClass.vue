@@ -79,7 +79,6 @@ const getWbcCustomClasses = async () => {
     const result = await getWbcCustomClassApi();
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         wbcCustomItems.value = wbcCustomParm;
       } else {

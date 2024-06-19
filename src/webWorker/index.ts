@@ -62,7 +62,6 @@ async function runningInfoCheckStore(data: any, slotIndex: any) {
                 result.updatedState = 'changeSlideSave';
                 result.changeSavedData = data;
                 result.iCasStatArrTwoLastIndexOf = iCasStatArr.lastIndexOf("2");
-                console.log(iCasStatArr);
                 result.iCasStatArrThreeLastIndexOf = iCasStatArr.lastIndexOf("3");
                 result.slotId = currentSlot?.slotId;
                 result.lastCompleteIndex = lastCompleteIndex;

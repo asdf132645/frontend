@@ -86,7 +86,6 @@ const getFilePathSetData = async () => {
       const data = result.data;
 
       if (!data || (data instanceof Array && data.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         filePathSetArr.value = lisHotKeyAndLisFilePathAndUrl;
       } else {

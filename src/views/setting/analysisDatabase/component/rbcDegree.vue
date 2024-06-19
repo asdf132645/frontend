@@ -123,7 +123,6 @@ const createRbcDegreeData = async () => {
 const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi();
-    console.log(!result.data)
     saveHttpType.value = 'put';
     const data = result.data;
     processData(data);
