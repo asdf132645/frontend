@@ -217,13 +217,21 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
     };
     rbcInfoPathAfter.value.push(category);
   }
-
+  let newAsrr = [];
   for (const moveRbcClassItem of moveRbcClass.value) {
     for (const argument of rbcInfoPathAfter.value) {
       // 기존 부분 삭제
       if (moveRbcClassItem.categoryId === argument.categoryId) {
         const foundElementIndex = argument.classInfo.findIndex((el: any) => Number(el.posX) === moveRbcClassItem.posX + 20 && Number(el.posY) === moveRbcClassItem.posY + 20);
         if (foundElementIndex !== -1) {
+          newAsrr.push({
+            categoryId: categoryId,
+            classNm: classNm,
+            classId: classId,
+            posX: moveRbcClassItem.posX + 20,
+            posY: moveRbcClassItem.posY + 20,
+            index: '1'
+          });
           argument.classInfo.splice(foundElementIndex, 1);
         }
       }
@@ -239,7 +247,7 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
     }
   }
   await removeDiv();
-  await rbcInfoPathAfterJsonCreate(rbcInfoPathAfter.value);
+  await rbcInfoPathAfterJsonCreate(newAsrr);
   await drawRbcMarker(classInfoArr.value);
 
 }
@@ -258,13 +266,24 @@ const removeDiv = async () => {
 
 
 const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
-  const jsonString = JSON.stringify(jsonData);
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
+  const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const response = await readJsonFile({fullPath: url});
+  let compareData = [];
+  if (response.data !== 'not file') {
+    const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+    const response = await readJsonFile({fullPath: url});
+    compareData = [...response.data, ...jsonData];
+  } else {
+    compareData = jsonData;
+  }
+
+  const jsonString = JSON.stringify(compareData);
   const utf8Data = new TextEncoder().encode(jsonString);
   const compressedData = pako.deflate(utf8Data);
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
   formData.append('file', blob, `${props.selectItems.slotId}_new.json`);
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const filePath = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
   try {
     const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -312,20 +331,44 @@ const rbcClassRightClick = (event: MouseEvent) => {
 const rbcMarker = async (newItem: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
-  const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
-  const response = await readJsonFile({fullPath: url});
-  if (response.data === 'not file' || props.isBefore) { // 비포 , 애프터에 따른 json 파일 불러오는 부분
-    const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
-    const response = await readJsonFile({fullPath: url});
-    rbcInfoPathAfter.value = response?.data[0].rbcClassList;
-  } else {
-    rbcInfoPathAfter.value = response?.data;
-  }
+  const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const response_new = await readJsonFile({fullPath: url_new});
+  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
 
+  if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
+    const newJsonData = response_new?.data;
+    for (const rbcItem of response_old.data[0].rbcClassList) {
+      for (const newRbcData of newJsonData) {
+        // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
+        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
+            Number(el.posX) === Number(newRbcData.posX) &&
+            Number(el.posY) === Number(newRbcData.posY)
+        );
+        if (foundElementIndex !== -1) {
+          rbcItem.classInfo.splice(foundElementIndex, 1);
+        }
+        if (rbcItem.categoryId === newRbcData.categoryId) {
+          let sss = {
+            classNm: newRbcData.classNm,
+            classId: newRbcData.classId,
+            posX: String(newRbcData.posX),
+            posY: String(newRbcData.posY)
+          }
+          rbcItem.classInfo.push(sss);
+        }
+      }
+    }
+    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
+  } else {
+    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+  }
+  // console.log(newItem.length)
   classInfoArr.value = newItem;
   if (newItem.length === 0) {
     removeRbcMarker();
   } else {
+    console.log(newItem)
     await drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
   }
 }
@@ -349,6 +392,8 @@ watch(() => props.selectItems, (newItem) => {
 
 });
 
+// const rbc
+
 const removeRbcMarker = () => {
   let ctx = canvasOverlay.value.getContext('2d'); // canvasOverlay를 직접 사용
   let canvas = canvasOverlay.value;
@@ -368,6 +413,8 @@ const drawRbcMarker = async (classInfoArr: any) => {
   };
 
   const ctx = removeRbcMarker();
+  // classInfoArr -> input 에서 체크된 값
+  // rbcInfoPathAfter -> json 데이터
   // 여기서 새로 추가 된 index 로 있나 없나 따지고 after 에서 있으면 비포에서는 보여주지않는다.
   classInfoArr.forEach((info: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
@@ -525,7 +572,7 @@ const initElement = async () => {
                   element: element,
                   location: overlayRect
                 });
-              }else{
+              } else {
                 if (
                     canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
                     canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
@@ -577,7 +624,7 @@ const initElement = async () => {
         } else { // 쉬프트 키를 눌렀을 때
 
           for (const item of drawPath.value) {
-            if(item.classNm === "Normal"){
+            if (item.classNm === "Normal") {
               return;
             }
             const itemPos = item;
@@ -605,7 +652,6 @@ const initElement = async () => {
           }
         }
       });
-
 
 
     }
