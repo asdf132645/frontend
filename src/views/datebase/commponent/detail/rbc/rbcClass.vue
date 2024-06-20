@@ -16,34 +16,34 @@
         </li>
       </ul>
     </div>
-    <div class="sensitivityDiv" v-if="type !== 'report'">
-      <select v-model="selectedClass">
-        <option v-for="(item) in rightClickItem" :key="item.classNm">
-          {{ item.classNm }}
-        </option>
-      </select>
-      <SliderBar v-model="sliderValue" :min="0" :max="100" />
-      <button class="degreeBtn" type="button">Ok</button>
-    </div>
     <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-            <li>{{ getCategoryName(category) }}</li>
+            <li>
+              <span>{{ getCategoryName(category) }}</span>
+              <button class="degreeAllCheckBtn" v-show="getCategoryName(category) === 'Shape'"
+                      @click="toggleAll(allCheckType, category)">
+                {{ allCheckType ? 'All Check' : 'All Uncheck' }}
+              </button>
+            </li>
           </ul>
           <ul class="classNmRbc">
             <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li>
-                <span @click="clickUpDegree(classInfo.classNm, category.categoryNm)">{{ classInfo?.classNm }}</span>
                 <div v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
                          v-model="checkedClassIndices"
                          @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
                 </div>
+                <span
+                    @click="clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId)">{{
+                    classInfo?.classNm
+                  }}</span>
               </li>
             </template>
           </ul>
@@ -118,7 +118,6 @@
         </ul>
         <ul class="classNmRbc">
           <li>
-            <span @click="clickUpDegree('Giant Platelet', 'Others')">Giant Platelet</span>
             <div>
               <input type="checkbox"
                      value="9-9-1"
@@ -126,9 +125,9 @@
                      v-model="checkedClassIndices"
                      @change="updateClassInfoArr('Giant Platelet', $event.target.checked, '04', '01')">
             </div>
+            <span @click="clickChangeSens('Giant Platelet', 'Others', '04' ,'01')">Giant Platelet</span>
           </li>
           <li>
-            <span @click="clickUpDegree('Malaria', 'Others')">Malaria</span>
             <div>
               <input type="checkbox"
                      v-show="!except"
@@ -136,18 +135,28 @@
                      v-model="checkedClassIndices"
                      @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
             </div>
+            <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>
           </li>
         </ul>
         <ul class="degree analysis">
-          <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
-          <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
+          <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
         </ul>
       </div>
     </div>
-    <div v-if="type !== 'report'" class="beforeAfterBtn">
-      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>
-      <button @click="afterChange" :class={isBeforeClicked:!isBefore}>After</button>
+    <div class="sensitivityDiv" v-if="type !== 'report'">
+      <select v-model="selectedClass">
+        <option v-for="(item) in rightClickItem" :key="item.classNm">
+          {{ item.classNm }}
+        </option>
+      </select>
+      <SliderBar v-model="sliderValue" :min="0" :max="100"/>
+      <button class="degreeBtn" type="button" @click="sensSend">Ok</button>
     </div>
+    <!--    <div v-if="type !== 'report'" class="beforeAfterBtn">-->
+    <!--      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>-->
+    <!--      <button @click="afterChange" :class={isBeforeClicked:!isBefore}>After</button>-->
+    <!--    </div>-->
   </div>
   <Alert
       v-if="showAlert"
@@ -208,27 +217,41 @@ const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Normal');
+const allCheckType = ref(true);
 onMounted(() => {
-  pltCount.value = props.selectItems?.rbcInfo.pltCount;
-  malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
-  memo.value = props.selectItems.rbcMemo;
-  maxRbcCount.value = props.selectItems?.rbcInfo?.maxRbcCount;
-  except.value = router.currentRoute.value.path === '/report';
+  const {rbcInfo, rbcMemo} = props.selectItems;
+  const {path} = router.currentRoute.value;
+
+  pltCount.value = rbcInfo?.pltCount;
+  malariaCount.value = rbcInfo?.malariaCount;
+  memo.value = rbcMemo;
+  maxRbcCount.value = rbcInfo?.maxRbcCount;
+  except.value = path === '/report';
   rightClickItem.value = [];
-  const newRightClickItem = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
-  for (const argument of newRightClickItem) {
-    if (argument.categoryNm === 'Shape' || argument.categoryNm === 'Inclusion Body') {
-      for (const classInfo of argument.classInfo) {
-        rightClickItem.value.push({...classInfo, categoryId: argument.categoryId});
+
+  const processItems = rbcInfo?.rbcClass || rbcInfo;
+
+  if (processItems) {
+    for (const argument of processItems) {
+      if (['Shape', 'Inclusion Body'].includes(argument.categoryNm)) {
+        argument.classInfo.forEach((classInfo: any) => {
+          rightClickItem.value.push({...classInfo, categoryId: argument.categoryId});
+        });
       }
     }
   }
-  rightClickItem.value.unshift({categoryId: '01', categoryNm: 'Size', classNm: 'Size'})
-  rightClickItem.value.unshift({categoryId: '02', categoryNm: 'Chromia', classNm: 'Chromia'})
-  rightClickItem.value.push({categoryId: '04', classId: '01', classNm: 'Giant Platelet'});
-  rightClickItem.value.push({categoryId: '05', classId: '03', classNm: 'Malaria'});
 
+  rightClickItem.value.unshift(
+      {categoryId: '01', categoryNm: 'Size', classNm: 'Size'},
+      {categoryId: '02', categoryNm: 'Chromia', classNm: 'Chromia'}
+  );
+
+  rightClickItem.value.push(
+      {categoryId: '04', classId: '01', classNm: 'Giant Platelet'},
+      {categoryId: '05', classId: '03', classNm: 'Malaria'}
+  );
 });
+
 
 watch(() => props.rbcInfo, (newItem) => {
   afterChange();
@@ -245,16 +268,34 @@ watch(() => props.selectItems, (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
 });
 
-const clickUpDegree = (classNm: string, categoryNm: string) => {
-  if (categoryNm === 'Size'){
+const sensSend = () => {
+  rbcInfoAfterSensitivity(selectedClass.value);
+}
+
+const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
+  const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
+  for (const el of rbcData) {
+    if (categoryNm === 'Size' || categoryNm === 'Chromia') {
+      if (el.categoryNm === categoryNm) {
+        sliderValue.value = el?.sensitivity || 50;
+      }
+    } else {
+      for (const item of el?.classInfo) {
+        if(item.classNm === classNm && item.classId === classId){
+          sliderValue.value = item.sensitivity || 50;
+        }
+      }
+    }
+  }
+  if (categoryNm === 'Size') {
     selectedClass.value = 'Size';
-    return
-  }else if(categoryNm === 'Chromia'){
+    return;
+  } else if (categoryNm === 'Chromia') {
     selectedClass.value = 'Chromia';
-    return
-  }else{
+    return;
+  } else {
     selectedClass.value = classNm;
-    return
+    return;
   }
 
 }
@@ -263,17 +304,74 @@ const afterChange = () => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  if(typeof props.selectItems.rbcInfoAfter === 'object'){
-    rbcInfoAfterVal.value =  Object.entries(props.selectItems.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
-  }else{
+  if (typeof props.selectItems.rbcInfoAfter === 'object') {
+    rbcInfoAfterVal.value = Object.entries(props.selectItems.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+  } else {
     rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
   }
 }
 
-const beforeChange = () => {
-  isBefore.value = true;
-  emits('isBeforeUpdate', true);
+const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
+  let rbcInfoAfterData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
+  for (const item of rbcInfoAfterData) {
+    if (item.categoryNm === selectedClassVal) {
+      item.sensitivity = sliderValue.value;
+      console.log(item);
+    } else {
+      const findClass = item?.classInfo?.findIndex((option: any) => option.classNm === selectedClassVal);
+      if (findClass !== -1 && findClass !== undefined) {
+        if (item?.classInfo) {
+          item.classInfo[findClass].sensitivity = sliderValue.value;
+          console.log(item.classInfo[findClass])
+        }
+      }
+    }
+  }
+  rbcInfoAfterVal.value = rbcInfoAfterData;
+  // rbcInfoAfterVal 업데이트
+  const rbcInfoAfter = rbcInfoAfterData
+
+  const updatedSelectItems = {
+    ...props.selectItems,
+    rbcInfoAfter: rbcInfoAfter
+  };
+
+  sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
+
+  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const updatedItem = {
+    rbcInfoAfter: rbcInfoAfter,
+  };
+  const updatedRuningInfo = {...result.data, ...updatedItem};
+  await resRunningItem(updatedRuningInfo, false);
+  return;
 }
+
+const toggleAll = (check: boolean, category?: any) => {
+  let allCheckboxes: any = [];
+  for (const item of rbcInfoBeforeVal.value) {
+    if (item.categoryId === '03' || item.categoryId === '04' || item.categoryId === '05') {
+      item.classInfo.forEach((classInfo: any, innerIndex: number) => {
+        allCheckboxes.push({
+          classNm: classInfo.classNm,
+          categoryId: item.categoryId,
+          classId: classInfo.classId
+        });
+      });
+    }
+  }
+  if (check) {
+    checkedClassIndices.value = ["0-2-0", "0-2-1", "0-2-2", "0-2-3", "0-2-4", "0-2-5", "0-2-6", "0-2-7", "0-2-8", "0-2-9", "0-2-10", "0-3-0", "0-3-1", "9-9-1", "9-9-2"];
+  } else {
+    checkedClassIndices.value = [];
+  }
+
+  allCheckboxes.forEach(checkbox => {
+    updateClassInfoArr(checkbox.classNm, check, checkbox.categoryId, checkbox.classId);
+  });
+  allCheckType.value = !allCheckType.value;
+}
+
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
   if (isChecked) {

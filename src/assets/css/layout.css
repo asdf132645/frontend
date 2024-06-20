@@ -513,9 +513,23 @@ ul.classInfo {
 }
 
 ul.degree.analysis {
-    width: 20%;
+    width: 30%;
 }
-
+.categories.rbcClass > .degree > li > span > svg {
+    margin-right: 5px;
+}
+button.degreeAllCheckBtn {
+    background: none;
+    color: #121212;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    background: #fff;
+    display: inline-block;
+    margin-top: 5px;
+    padding: 4px;
+    border: 1px solid #3498db;
+    cursor: pointer;
+}
 .analysisWbc .categories > ul > li {
     height: 14px;
 }
@@ -524,7 +538,7 @@ ul.degree.analysis {
 }
 .categories.rbcClass > .degree > li > .rbcSapn {
     position: absolute;
-    top: 0;
+    top: 4px;
     height: 8px;
     z-index: 9999;
     overflow: hidden;
@@ -583,7 +597,7 @@ ul.nth1Child > :nth-child(3) {
 span.rbcSapnDown {
     position: absolute;
     left: 0;
-    top: 2px;
+    top: 6px;
 
 }
 .databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
@@ -627,17 +641,22 @@ span.rbcSapnDown .degreeActive {
 .categories.rbcClass > ul > li > span {
     min-width: 77%;
     font-size: 0.8rem;
-    vertical-align: top;
+    vertical-align: sub;
     cursor: pointer;
+}
+
+.categories > ul > li > div > input {
+    margin: 0;
+    vertical-align: -webkit-baseline-middle;
 }
 .sensitivityDiv {
     display: flex;
     align-content: center;
     align-items: center;
     justify-content: space-between;
-    background: #393939;
     padding: 5px 8px 10px 8px;
     margin-top: 5px;
+    border: 1px solid #dedede;
 }
 
 button.degreeBtn {
@@ -1940,7 +1959,7 @@ ul.normalItems li div span:last-child {
 }
 
 .dbRightImages {
-    width: 96px;
+    width: 24%;
     margin: 0 5px 1px 0;
 }
 
