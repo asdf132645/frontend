@@ -134,7 +134,12 @@
 import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {
+  basicBmClassList,
+  basicWbcArr,
+  defaultBmClassList,
+  defaultWbcClassList
+} from "@/store/modules/analysis/wbcclassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
@@ -909,7 +914,7 @@ const beforeChang = async () => {
   await getOrderClass();
   const filteredItems: any = await detailRunningApi(String(selectItemsSessionStorageData.value.id));
   const wbcInfo = filteredItems.data.wbcInfo.wbcInfo[0];
-  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassList.value = sortedWbcInfo.filter((item: any) => titleArr.includes(item.title));

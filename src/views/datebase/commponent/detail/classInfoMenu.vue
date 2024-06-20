@@ -65,7 +65,12 @@ import {
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {
+  basicBmClassList,
+  basicWbcArr,
+  defaultBmClassList,
+  defaultWbcClassList
+} from "@/store/modules/analysis/wbcclassification";
 import Alert from "@/components/commonUi/Alert.vue";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 
@@ -240,7 +245,7 @@ const handleDataResponse = async (dbId: any, res: any) => {
   sessionStorage.setItem('selectItems', JSON.stringify(resData.value));
 
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
   sessionStorage.setItem('dbBaseTrClickId', String(dbId));

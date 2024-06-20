@@ -243,7 +243,12 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {
+  basicBmClassList,
+  basicWbcArr,
+  defaultBmClassList,
+  defaultWbcClassList
+} from "@/store/modules/analysis/wbcclassification";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
@@ -628,7 +633,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 
 watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 순서 변경시 감지하여 재정렬
   await getOrderClass();
-  const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   await sortWbcInfo(wbcInfo.value, sortArr);
 });
 

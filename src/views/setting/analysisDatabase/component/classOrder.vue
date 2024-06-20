@@ -30,7 +30,7 @@
 <script setup lang="ts">
 
 import {onMounted, ref} from "vue";
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import {
   createOrderClassApi,
   getOrderClassApi, putOrderClassApi,
@@ -50,7 +50,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   await getOrderClass();
 })
 

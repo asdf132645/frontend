@@ -3,17 +3,13 @@ import {
     getCellImgApi,
     createCellImgApi,
     createOrderClassApi,
-    putOrderClassApi,
     getOrderClassApi,
     createNormalRangeApi,
-    updateNormalRangeApi,
     getNormalRangeApi,
-    createRbcDegreeApi, putRbcDegreeApi, getRbcDegreeApi
+    createRbcDegreeApi, getRbcDegreeApi
 } from '@/common/api/service/setting/settingApi';
-import {messages} from "@/common/defines/constFile/constantMessageText";
 import process from "process";
-import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-import {ApiResponse} from "@/common/api/httpClient";
+import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import {defaultRbcDegree, normalRange, rbcClassList} from "@/common/defines/constFile/settings";
 
 const saveHttpType = ref('');
@@ -96,7 +92,7 @@ export const firstCellImgSet = async () => {
 
 
 export const firstSaveOrderClass = async () => {
-    const orderList: any = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+    const orderList: any = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     for (const index in orderList) {
         orderList[index].orderIdx = index;
     }
