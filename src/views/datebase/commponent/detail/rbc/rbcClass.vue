@@ -178,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -218,6 +218,8 @@ const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Normal');
 const allCheckType = ref(true);
+const instance = getCurrentInstance();
+
 onMounted(() => {
   const {rbcInfo, rbcMemo} = props.selectItems;
   const {path} = router.currentRoute.value;
@@ -270,6 +272,14 @@ watch(() => props.selectItems, (newItem) => {
 
 const sensSend = () => {
   rbcInfoAfterSensitivity(selectedClass.value);
+  instance?.appContext.config.globalProperties.$socket.emit('message', {
+    type: 'SEND_DATA',
+    payload: {
+      jobCmd: 'rbcReClassification',
+      sensitivity: sliderValue.value,
+      className: selectedClass.value,
+    }
+  });
 }
 
 const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
@@ -281,7 +291,7 @@ const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string
       }
     } else {
       for (const item of el?.classInfo) {
-        if(item.classNm === classNm && item.classId === classId){
+        if (item.classNm === classNm && item.classId === classId) {
           sliderValue.value = item.sensitivity || 50;
         }
       }

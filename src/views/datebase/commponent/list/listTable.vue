@@ -129,7 +129,8 @@
             <input type="text" v-model="itemObj.submitState" readonly/>
           </li>
           <li>
-            <span>Barcode Image</span>
+            <p>Barcode Image</p>
+            <img class="mt1" :src="barcodeImg"/>
           </li>
         </ul>
       </div>
@@ -151,7 +152,7 @@
 </template>
 
 <script setup>
-import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBarcodeDetailImageUrl, getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {
   ref,
   onMounted,
@@ -174,6 +175,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
+import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 
 const props = defineProps(['dbData']);
@@ -211,7 +213,8 @@ const selectItemWbc = ref([]);
 const selectAllCheckbox = ref(false);
 const instance = getCurrentInstance();
 const siteCd = computed(() => store.state.commonModule.siteCd);
-
+const barcodeImg = ref('');
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
@@ -444,7 +447,10 @@ const editData = async (item) => {
   openLayer();
   itemObj.value = JSON.parse(JSON.stringify(item));
   itemObj.value.submitState = ['','Ready','checkFirst'].includes(itemObj.value.submitState) ? '' : itemObj.value.submitState;
-  itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType)
+  itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType);
+  const path = item?.img_drive_root_path !== '' && item?.img_drive_root_path ? item?.img_drive_root_path : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, item.slotId, barcodeImgDir.barcodeDirName);
+
 }
 
 const openLayer = () => {

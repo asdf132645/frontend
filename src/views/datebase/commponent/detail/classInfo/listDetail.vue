@@ -311,6 +311,8 @@ const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 const isNext = ref(false);
 const classCompareShow = ref(false);
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
+
 onMounted(async () => {
   wbcInfo.value = [];
   selectItems.value = selectItemsData ? JSON.parse(selectItemsData) : null;
