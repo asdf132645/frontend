@@ -193,7 +193,7 @@ const moveRbcClass = ref<any>([]);
 const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
-const rightClickItem = ref([]);
+const rightClickItem = ref<any>([]);
 
 onMounted(async () => {
   await nextTick();
@@ -589,7 +589,7 @@ const initElement = async () => {
                 // 클릭된 아이템 처리
                 const categoryId = item.categoryId;
                 const color = 'lightgreen'; // 연한 연두색
-                const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find(classItem => classItem.classNm === item.classNm);
+                const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find((classItem: any) => classItem.classNm === item.classNm);
                 if (classInfo) {
                   moveRbcClass.value = [item];
                   const existingOverlay = document.getElementById('overlayElement');

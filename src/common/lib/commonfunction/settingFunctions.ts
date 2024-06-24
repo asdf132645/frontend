@@ -22,9 +22,9 @@ const projectType = window.PROJECT_TYPE === 'bm';
 const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
     diffCellAnalyzingCount: projectType ? '500':'100',
-    wbcPositionMargin: '0',
-    rbcPositionMargin: '0',
-    pltPositionMargin: '0',
+    diffWbcPositionMargin: '0',
+    diffRbcPositionMargin: '0',
+    diffPltPositionMargin: '0',
     pbsCellAnalyzingCount: '100',
     stitchCount: '1',
     bfCellAnalyzingCount: '100',
@@ -56,9 +56,9 @@ export const firstCellImgSet = async () => {
     const cellImgSet = {
         analysisType: defaultCellImgData.testTypeCd,
         diffCellAnalyzingCount: defaultCellImgData.diffCellAnalyzingCount,
-        wbcPositionMargin: defaultCellImgData.wbcPositionMargin,
-        rbcPositionMargin: defaultCellImgData.rbcPositionMargin,
-        pltPositionMargin: defaultCellImgData.pltPositionMargin,
+        diffWbcPositionMargin: defaultCellImgData.diffWbcPositionMargin,
+        diffRbcPositionMargin: defaultCellImgData.diffRbcPositionMargin,
+        diffPltPositionMargin: defaultCellImgData.diffPltPositionMargin,
         pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
         stitchCount: defaultCellImgData.stitchCount,
         bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
@@ -76,9 +76,9 @@ export const firstCellImgSet = async () => {
             const result = await createCellImgApi(cellImgSet);
             if (result) {
                 sessionStorage.setItem('isNsNbIntegration', defaultCellImgData?.isNsNbIntegration ? 'Y' : 'N');
-                sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.wbcPositionMargin));
-                sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.rbcPositionMargin));
-                sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.pltPositionMargin));
+                sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.diffWbcPositionMargin));
+                sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.diffRbcPositionMargin));
+                sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.diffPltPositionMargin));
                 sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
                 sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
             }
