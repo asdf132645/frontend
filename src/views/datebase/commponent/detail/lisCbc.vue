@@ -258,7 +258,6 @@ const initCbcData = async (newVal: any) => {
 
   const result: any = await detailRunningApi(String(props.selectItems.id));
   const updatedRuningInfo ={...result.data,...req }
-  sessionStorage.setItem('selectItems', JSON.stringify(updatedRuningInfo));
   await updateRunningApiPost([updatedRuningInfo]);
 
 }

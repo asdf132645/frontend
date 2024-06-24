@@ -11,7 +11,7 @@
             <button @click="memoCancel">cancel</button>
           </div>
         </li>
-        <li @click="commitConfirmed" :class="{'submitted': selectItems.submitState === 'Submit'}">
+        <li @click="commitConfirmed" :class="{'submitted': selectItems?.submitState === 'Submit'}">
           <font-awesome-icon :icon="['fas', 'square-check']"/>
         </li>
       </ul>
@@ -146,7 +146,7 @@
     </div>
     <div class="sensitivityDiv" v-if="type !== 'report'">
       <select v-model="selectedClass">
-        <option v-for="(item) in rightClickItem" :key="item.classNm">
+        <option v-for="(item) in rightClickItem" :key="item.classNm" :value="item.classNm">
           {{ item.classNm }}
         </option>
       </select>
@@ -193,7 +193,7 @@ import SliderBar from "@/components/commonUi/SliderBar.vue";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear']);
+const props = defineProps(['selectItems', 'type', 'allCheckClear']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref('');
@@ -218,19 +218,36 @@ const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Normal');
 const allCheckType = ref(true);
-onMounted(() => {
-  const {rbcInfo, rbcMemo} = props.selectItems;
-  const {path} = router.currentRoute.value;
 
-  pltCount.value = rbcInfo?.pltCount;
-  malariaCount.value = rbcInfo?.malariaCount;
-  memo.value = rbcMemo;
-  maxRbcCount.value = rbcInfo?.maxRbcCount;
+onMounted(() => {
+  const {path} = router.currentRoute.value;
+  pltCount.value = props.selectItems?.rbcInfo.pltCount;
+  malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
+  memo.value = props.selectItems?.rbcMemo;
+  maxRbcCount.value = props.selectItems?.rbcInfo.maxRbcCount;
   except.value = path === '/report';
   rightClickItem.value = [];
+  rightClickItemSet();
+});
 
-  const processItems = rbcInfo?.rbcClass || rbcInfo;
+watch(() => props.allCheckClear, (newItem) => {
+  checkedClassIndices.value = [];
+  classInfoArr.value = [];
+}, {deep: true})
 
+watch(() => props.selectItems, (newItem) => {
+  pltCount.value = props.selectItems?.pltCount;
+  malariaCount.value = props.selectItems?.malariaCount;
+  memo.value = props.selectItems?.rbcMemo;
+  afterChange();
+  rightClickItemSet();
+});
+
+const rightClickItemSet = () => {
+  rightClickItem.value = [];
+  const processItems = props.selectItems?.rbcInfo.rbcClass || props.selectItems?.rbcInfo;
+
+  console.log(processItems);
   if (processItems) {
     for (const argument of processItems) {
       if (['Shape', 'Inclusion Body'].includes(argument.categoryNm)) {
@@ -250,23 +267,7 @@ onMounted(() => {
       {categoryId: '04', classId: '01', classNm: 'Giant Platelet'},
       {categoryId: '05', classId: '03', classNm: 'Malaria'}
   );
-});
-
-
-watch(() => props.rbcInfo, (newItem) => {
-  afterChange();
-});
-
-watch(() => props.allCheckClear, (newItem) => {
-  checkedClassIndices.value = [];
-  classInfoArr.value = [];
-
-}, {deep: true})
-
-watch(() => props.selectItems, (newItem) => {
-  pltCount.value = props.selectItems?.pltCount;
-  malariaCount.value = props.selectItems?.malariaCount;
-});
+}
 
 const sensSend = () => {
   rbcInfoAfterSensitivity(selectedClass.value);
@@ -303,11 +304,11 @@ const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string
 const afterChange = () => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
-  rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  if (typeof props.selectItems.rbcInfoAfter === 'object') {
-    rbcInfoAfterVal.value = Object.entries(props.selectItems.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+  rbcInfoBeforeVal.value = props.selectItems?.rbcInfo && props.selectItems?.rbcInfo?.rbcClass ? props.selectItems?.rbcInfo.rbcClass : props.selectItems?.rbcInfo;
+  if (typeof props.selectItems?.rbcInfoAfter === 'object') {
+    rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter && Object.entries(props.selectItems?.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : props.selectItems?.rbcInfoAfter;
   } else {
-    rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+    rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter && props.selectItems?.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems?.rbcInfoAfter;
   }
 }
 
@@ -331,14 +332,7 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   // rbcInfoAfterVal 업데이트
   const rbcInfoAfter = rbcInfoAfterData
 
-  const updatedSelectItems = {
-    ...props.selectItems,
-    rbcInfoAfter: rbcInfoAfter
-  };
-
-  sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
-
-  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfter,
   };
@@ -372,7 +366,6 @@ const toggleAll = (check: boolean, category?: any) => {
   allCheckType.value = !allCheckType.value;
 }
 
-
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
   if (isChecked) {
     if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId && item.categoryId === categoryId)) {
@@ -384,7 +377,6 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
 
   emits('classInfoArrUpdate', classInfoArr.value);
 };
-
 
 const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
   if (props.type === 'report' || isBefore.value) {
@@ -410,16 +402,9 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   // rbcInfoAfterVal 업데이트
   rbcInfoAfterVal.value = rbcInfoAfter;
 
-  // updatedSelectItems와 rbcAfter 업데이트
-  const updatedSelectItems = {
-    ...props.selectItems,
-    rbcInfoAfter: rbcInfoAfter
-  };
-
   sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoAfter));
-  sessionStorage.setItem('selectItems', JSON.stringify(updatedSelectItems));
 
-  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfter,
   };
@@ -427,9 +412,8 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   await resRunningItem(updatedRuningInfo, false);
 };
 
-
 const memoOpen = () => {
-  memo.value = memo.value !== '' ? memo.value : props.selectItems.rbcMemo;
+  memo.value = memo.value !== '' ? memo.value : props.selectItems?.rbcMemo;
   memoModal.value = !memoModal.value;
 }
 
@@ -438,7 +422,7 @@ const memoCancel = () => {
 }
 
 const memoChange = async () => {
-  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     rbcMemo: memo.value,
   };
@@ -459,7 +443,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any) => {
       }
 
       const filteredItems = updatedRuningInfo;
-      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems));
       memo.value = filteredItems.rbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
@@ -506,7 +489,7 @@ const onCommit = async () => {
 
   const localTime = moment().local();
 
-  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),

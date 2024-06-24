@@ -16,38 +16,46 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" :rbcInfo="rbcInfo" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear"/>
+      <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear"/>
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcImageList @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :rbcInfo="rbcInfo" :selectItems="selectItems" type='listTable'/>
+      <RbcImageList  @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable'/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import {computed, onBeforeMount, ref} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+const selectItems = ref<any>(null);
 const store = useStore();
-const rbcInfo = ref(null);
 const classInfoArr = ref<any>([]);
 const allCheckClear = ref<boolean>(false);
 const isBefore = ref(false);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const isLoading = ref(true);
 
-onMounted(() => {
-  initData();
-});
+onBeforeMount(async () => {
+  await getDetailRunningInfo();
+})
 
-const initData = async () => {
-  rbcInfo.value = selectItems.value;
+const getDetailRunningInfo = async () => {
+  try {
+    const result = await detailRunningApi(String(selectedSampleId.value));
+    selectItems.value = result.data;
+  } catch (e) {
+    console.log(e);
+    selectItems.value = null;
+  }
+  isLoading.value = false;
 }
 
 const isBeforeUpdate = (val: boolean) => {
@@ -55,7 +63,6 @@ const isBeforeUpdate = (val: boolean) => {
 }
 
 const refreshClass = async (data: any) => {
-  rbcInfo.value = data;
   selectItems.value = data;
   allCheckClear.value = !allCheckClear.value;
 }

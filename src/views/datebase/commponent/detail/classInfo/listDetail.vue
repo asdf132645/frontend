@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"/>
+  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse" />
 
   <div class="wbcContent">
     <div class="topClintInfo">
@@ -18,7 +18,7 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo :wbcInfo="wbcInfo" :selectItems="selectItems" type='listTable'
+      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='listTable'
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
     </div>
@@ -221,20 +221,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import * as XLSX from 'xlsx';
-import router from "@/router";
-import {
-  calculateF1Score,
-  calculatePrecision,
-  calculateRecall, CellType,
-  confusionMatrixVal,
-  MetricsVal
-} from "@/common/defines/constFile/classification";
 import {
   getBfHotKeysApi,
   getOrderClassApi,
@@ -253,12 +244,10 @@ import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue"
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
-const cellRefs: any = ref({});
 const selectedTitle = ref('');
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const selectItems = ref<any>(null);
 const store = useStore();
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
@@ -267,6 +256,7 @@ const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
@@ -311,9 +301,15 @@ const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 const isNext = ref(false);
 const classCompareShow = ref(false);
+const isLoading = ref(true);
+
+onBeforeMount(async () => {
+  await getDetailRunningInfo();
+  isLoading.value = false;
+})
+
 onMounted(async () => {
   wbcInfo.value = [];
-  selectItems.value = selectItemsData ? JSON.parse(selectItemsData) : null;
   projectType.value = window.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -348,6 +344,16 @@ watch(imageRgb, (newVal) => {
   const blue = newVal[2];
   localStorage.setItem('imageRgb', JSON.stringify([red, green, blue]));
 }, {deep: true});
+
+
+const getDetailRunningInfo = async () => {
+  try {
+    const result = await detailRunningApi(String(selectedSampleId.value));
+    selectItems.value = result.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 const classCompare = () => {
   classCompareShow.value = !classCompareShow.value;
@@ -402,11 +408,11 @@ function hideImage(id: string, fileName: string, title?: string) {
 }
 
 const getNewImageUrl = (fileName: any, title: any): any => {
-  if(selectItems.value.wbcInfoAfter.length === 0){
+  if(selectItems.value?.wbcInfoAfter.length === 0){
     return null;
   }
   if (isBeforeChild.value) {
-    const matchingImage = selectItems.value.wbcInfoAfter.find((el: any) => {
+    const matchingImage = selectItems.value?.wbcInfoAfter.find((el: any) => {
       return el.images && el.images.find((image: any) => image.fileName === fileName);
     });
     if (matchingImage && matchingImage.title !== title) {
@@ -496,7 +502,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           if (item?.abbreviation === '') {
             return;
           }
-          const filePath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
+          const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
           deleteRunningApi({path: filePath})
         }
       });
@@ -505,7 +511,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     wbcCustomItems.value = data;
     for (const item of newData) { // 커스텀클래스 폴더 생성
       const {fullNm, abbreviation, customNum} = item;
-      const filePath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
+      const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
       await fileSysPost({path: filePath});
 
       const wbcPush = {
@@ -517,15 +523,14 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
       };
       let wbcinfo = [];
       if (isBeforeChild.value) {
-        wbcinfo = selectItems.value.wbcInfo.wbcInfo[0];
+        wbcinfo = selectItems.value?.wbcInfo.wbcInfo[0];
       } else {
-        wbcinfo = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : selectItems.value.wbcInfo.wbcInfo[0];
+        wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
       }
       const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
       if (!foundObject) {
         wbcinfo.push(wbcPush);
         wbcInfo.value = wbcinfo;
-        sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
         await updateOriginalDb('notWbcAfterSave');
       }
     }
@@ -656,13 +661,13 @@ const drawCellMarker = async (imgResize?: boolean) => {
   if (cellMarkerIcon.value) {
     let url = '';
     if (projectType.value === 'pb') {
-      url = `${iaRootPath.value}/${selectItems.value.slotId}/${
-          selectItems.value.testType === '01' || selectItems.value.testType === '04'
+      url = `${iaRootPath.value}/${selectItems.value?.slotId}/${
+          selectItems.value.testType === '01' || selectItems.value?.testType === '04'
               ? '01_WBC_Classification'
               : '05_BF_Classification'
-      }/${selectItems.value.slotId}.json`;
+      }/${selectItems.value?.slotId}.json`;
     } else if (projectType.value === 'bm') {
-      url = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${selectItems.value.slotId}.json`
+      url = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${selectItems.value?.slotId}.json`
     }
     const response = await readJsonFile({fullPath: url});
 
@@ -908,8 +913,8 @@ async function handleKeyDown(event: KeyboardEvent) {
 
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
-    if (event.key && (selectItems.value.testType === '01' || selectItems.value.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
-      await moveSelectedImagesToTargetItem((selectItems.value.testType === '01' || selectItems.value.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
+    if (event.key && (selectItems.value?.testType === '01' || selectItems.value?.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
+      await moveSelectedImagesToTargetItem((selectItems.value?.testType === '01' || selectItems.value?.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).find((item: any) => item.key.toUpperCase() === event.key.toUpperCase()));
     }
   } else if (projectType.value === 'bm') {
     if (event.key && wbcHotKeysItems.value.some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
@@ -1377,14 +1382,14 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   });
   clonedWbcInfo = uniqueData;
   if (notWbcAfterSave !== 'notWbcAfterSave') {
-    // wbcInfoAfter 업데이트 및 sessionStorage에 저장
+    // wbcInfoAfter 업데이트
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
-    sessionStorage.setItem("selectItems", JSON.stringify(selectItems.value));
     sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
+    await store.dispatch('commonModule/setCommonInfo', {selectedSampleid: clonedWbcInfo.id})
     await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
 
     // originalDb 업데이트
-    const res: any = await detailRunningApi(String(selectItems.value.id));
+    const res: any = await detailRunningApi(String(selectItems.value?.id));
     if (res) {
       res.data.wbcInfoAfter = clonedWbcInfo;
     }
@@ -1418,7 +1423,7 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
     return "";
   }
 
-  const slotId = selectItems.value.slotId || "";
+  const slotId = selectItems.value?.slotId || "";
   let folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
   if (isBeforeChild.value) {
@@ -1494,8 +1499,8 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
 
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
-    const sourceFolder = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
-    const destinationFolder = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
+    const sourceFolder = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
+    const destinationFolder = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     sourceFolders.push(sourceFolder)
     destinationFolders.push(destinationFolder)
     fileNames.push(sourceFolderInfo[index].fileName)

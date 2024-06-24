@@ -471,6 +471,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           wbcMemo: '',
           rbcMemo: '',
         }
+
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
       }
     }

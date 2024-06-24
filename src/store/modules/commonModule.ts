@@ -37,6 +37,7 @@ export interface CommonState {
     chatRunningData: any[];
     cbcLayer: boolean;
     inhaTestCode: string;
+    selectedSampleId: string;
 }
 
 interface CommonModule {
@@ -80,6 +81,7 @@ interface CommonModule {
         setChatRunningData: (state: CommonState, value: any[]) => void;
         setCbcLayer: (state: CommonState, value: boolean) => void;
         setInhaTestCode: (state: CommonState, value: string) => void;
+        setSelectedSampleId: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -124,6 +126,7 @@ export const commonModule: CommonModule = {
         chatRunningData: [],
         cbcLayer: false,
         inhaTestCode: '',
+        selectedSampleId: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -233,6 +236,9 @@ export const commonModule: CommonModule = {
         },
         setChatRunningData(state: CommonState, value: any[]): void {
             state.chatRunningData = value;
+        },
+        setSelectedSampleId(state: CommonState, value: string): void {
+            state.selectedSampleId = value;
         },
         setCbcLayer(state: CommonState, value: boolean): void {
             state.cbcLayer = value;
@@ -350,6 +356,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('chatRunningData')) {
                 commit('setChatRunningData', payload.chatRunningData)
+            }
+            if (payload.hasOwnProperty('selectedSampleId')) {
+                commit('setSelectedSampleId', payload.selectedSampleId)
             }
             if (payload.hasOwnProperty('cbcLayer')) {
                 commit('setCbcLayer', payload.cbcLayer)

@@ -703,6 +703,10 @@ li.mb1.liTitle {
     margin-top: 20px;
 }
 
+.liNormalWidth {
+    width: 200px;
+}
+
 .startBtn.isInit {
     color: #dedede;
 }

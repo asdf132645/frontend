@@ -175,7 +175,6 @@ import moment from "moment";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 
-
 const props = defineProps(['dbData']);
 const loadMoreRef = ref(null);
 const emits = defineEmits();
@@ -377,8 +376,8 @@ const rowDbClick = async (item) => {
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
   sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
-  sessionStorage.setItem('selectItems', JSON.stringify(item));
 
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
   await getIpAddress(item);

@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
@@ -155,7 +155,7 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
+const props = defineProps(['selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
@@ -195,16 +195,19 @@ const selectBoxY = ref(0);
 const emits = defineEmits();
 const rightClickItem = ref([]);
 
-onMounted(() => {
-  initElement();
+onMounted(async () => {
+  await nextTick();
+  await initElement();
   document.addEventListener('click', closeSelectBox);
-  rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
+  rightClickItem.value = !props.selectItems?.rbcInfo.rbcClass ? props.selectItems?.rbcInfo : props.selectItems?.rbcInfo.rbcClass;
 });
+
 watch(() => props.isBefore, (newItem) => {
   removeRbcMarker();
   removeDiv();
   emits('unChecked')
 }, {deep: true})
+
 const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
   // categoryId에 해당하는 객체를 찾음
   let category = rbcInfoPathAfter.value.find((item: any) => item.categoryId === categoryId);
@@ -267,11 +270,12 @@ const removeDiv = async () => {
 
 const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const url = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
   const response = await readJsonFile({fullPath: url});
   let compareData = [];
+
   if (response.data !== 'not file') {
-    const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+    const url = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
     const response = await readJsonFile({fullPath: url});
     compareData = [...response.data, ...jsonData];
   } else {
@@ -283,8 +287,8 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const compressedData = pako.deflate(utf8Data);
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
-  formData.append('file', blob, `${props.selectItems.slotId}_new.json`);
-  const filePath = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
+  formData.append('file', blob, `${props.selectItems?.slotId}_new.json`);
+  const filePath = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`
   try {
     const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
@@ -327,13 +331,12 @@ const rbcClassRightClick = (event: MouseEvent) => {
   }
 };
 
-
 const rbcMarker = async (newItem: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
-  const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const url_new = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
   const response_new = await readJsonFile({fullPath: url_new});
-  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const url_Old = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
 
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
@@ -363,7 +366,7 @@ const rbcMarker = async (newItem: any) => {
   } else {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
-  // console.log(newItem.length)
+
   classInfoArr.value = newItem;
   if (newItem.length === 0) {
     removeRbcMarker();
@@ -373,23 +376,21 @@ const rbcMarker = async (newItem: any) => {
   }
 }
 
-
 watch(() => props.selectItems, (newItem) => {
+  rightClickItem.value = !props.selectItems?.rbcInfo.rbcClass ? props.selectItems?.rbcInfo : props.selectItems?.rbcInfo.rbcClass;
+
   const tilingViewerLayer = document.getElementById('tiling-viewer');
   if (tilingViewerLayer) {
     tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
 
     // 다시 그리는 HTML 코드 생성
-    const newHtml = `
-        <div id="tiling-viewer" ref="tilingViewerLayer"></div>
-      `;
+    const newHtml = `<div id="tiling-viewer" ref="tilingViewerLayer"></div>`;
 
     // 생성한 HTML 코드를 tilingViewerLayer에 추가
     tilingViewerLayer.insertAdjacentHTML('beforeend', newHtml);
     activeTab.value = 'lowMag';
-    initElement();
   }
-
+  initElement();
 });
 
 // const rbc
@@ -440,229 +441,234 @@ const drawRbcMarker = async (classInfoArr: any) => {
   });
 };
 
-
-const initElement = async () => {
+const fetchTilesInfoFunc = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-
-  const folderPath = `${path}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+  const folderPath = `${path}/${props.selectItems?.slotId || props.selectItems?.slotId}/${dirName.rbcImageDirName}`;
+  console.log("FOLDER_PATH", folderPath);
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
+    return tilesInfo;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
 
-    if (tilesInfo.length !== 0) {
-      viewer.value = OpenSeadragon({
-        id: "tiling-viewer",
-        animationTime: 0.4,
-        navigatorSizeRatio: 0.25,
-        showNavigator: true,
-        sequenceMode: true,
-        defaultZoomLevel: 1,
-        prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
-        tileSources: tilesInfo,
-        showReferenceStrip: false,
-        gestureSettingsMouse: {clickToZoom: false},
-        maxZoomLevel: 15
-      });
 
-      // 마그니파이어 설정
-      new OpenSeadragon.MouseTracker({
-        element: viewer.value.element,
-        moveHandler: function (event: any) {
-          if (!isMagnifyingGlass.value) {
-            const magCanvas = document.getElementById('magCanvas');
-            if (magCanvas) {
-              viewer.value.element.removeChild(magCanvas);
-            }
-            return;
+const initElement = async () => {
+  const tilesInfo = await fetchTilesInfoFunc();
+
+  if (tilesInfo.length !== 0) {
+    viewer.value = OpenSeadragon({
+      id: "tiling-viewer",
+      animationTime: 0.4,
+      navigatorSizeRatio: 0.25,
+      showNavigator: true,
+      sequenceMode: true,
+      defaultZoomLevel: 1,
+      prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+      tileSources: tilesInfo,
+      showReferenceStrip: false,
+      gestureSettingsMouse: {clickToZoom: false},
+      maxZoomLevel: 15
+    });
+
+    // 마그니파이어 설정
+    new OpenSeadragon.MouseTracker({
+      element: viewer.value.element,
+      moveHandler: function (event: any) {
+        if (!isMagnifyingGlass.value) {
+          const magCanvas = document.getElementById('magCanvas');
+          if (magCanvas) {
+            viewer.value.element.removeChild(magCanvas);
           }
+          return;
+        }
 
-          const {canvas} = viewer.value.drawer;
-          const magCanvas = document.createElement('canvas');
-          const magCtx = magCanvas.getContext('2d');
-          canvasOverlay.value = magCanvas
-          if (magCtx) {
-            const magWidth = 200;
-            const magHeight = 200;
-            const zoomLevel = 5;
+        const {canvas} = viewer.value.drawer;
+        const magCanvas = document.createElement('canvas');
+        const magCtx = magCanvas.getContext('2d');
+        canvasOverlay.value = magCanvas
+        if (magCtx) {
+          const magWidth = 200;
+          const magHeight = 200;
+          const zoomLevel = 5;
 
-            magCanvas.id = 'magCanvas';
-            magCanvas.style.position = 'absolute';
-            magCanvas.style.left = `${event.position.x - (magWidth / 2)}px`;
-            magCanvas.style.top = `${event.position.y - (magHeight / 2)}px`;
-            magCanvas.style.border = '1px solid';
-            magCanvas.style.borderRadius = '50%';
-            magCanvas.style.width = `${magWidth}px`;
-            magCanvas.style.height = `${magHeight}px`;
-            magCanvas.style.zIndex = '0';
+          magCanvas.id = 'magCanvas';
+          magCanvas.style.position = 'absolute';
+          magCanvas.style.left = `${event.position.x - (magWidth / 2)}px`;
+          magCanvas.style.top = `${event.position.y - (magHeight / 2)}px`;
+          magCanvas.style.border = '1px solid';
+          magCanvas.style.borderRadius = '50%';
+          magCanvas.style.width = `${magWidth}px`;
+          magCanvas.style.height = `${magHeight}px`;
+          magCanvas.style.zIndex = '0';
 
-            viewer.value.element.appendChild(magCanvas);
+          viewer.value.element.appendChild(magCanvas);
 
-            magCtx.drawImage(
-                canvas,
-                event.position.x - (magWidth / 8),
-                event.position.y - (magHeight / 8),
-                magWidth,
-                magHeight,
-                0,
-                0,
-                magWidth * zoomLevel,
-                magHeight * zoomLevel
-            );
+          magCtx.drawImage(
+              canvas,
+              event.position.x - (magWidth / 8),
+              event.position.y - (magHeight / 8),
+              magWidth,
+              magHeight,
+              0,
+              0,
+              magWidth * zoomLevel,
+              magHeight * zoomLevel
+          );
 
-            magCanvas.style.visibility = event.position.y <= 0 || event.position.x <= 0 ? 'hidden' : 'visible';
+          magCanvas.style.visibility = event.position.y <= 0 || event.position.x <= 0 ? 'hidden' : 'visible';
 
-          }
-        },
-      });
+        }
+      },
+    });
 
-      const canvas = document.createElement('canvas');
-      const overlay = viewer.value.addOverlay({
-        element: canvas,
-        location: new OpenSeadragon.Rect(0, 0, 1, 1), // 캔버스가 뷰어 전체를 덮도록 설정
-      });
-
-
-      viewer.value.addHandler('open', function (event: any) {
-        canvas.width = 3317;
-        canvas.height = 3311;
-        canvas.id = 'myCanvas';
-        overlay.canvas = canvas;
-        canvasOverlay.value = canvas;
-      });
+    const canvas = document.createElement('canvas');
+    const overlay = viewer.value.addOverlay({
+      element: canvas,
+      location: new OpenSeadragon.Rect(0, 0, 1, 1), // 캔버스가 뷰어 전체를 덮도록 설정
+    });
 
 
-      viewer.value.addHandler('canvas-click', async (event: any) => {
-        if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
-          const clickPos = viewer.value.viewport.pointFromPixel(event.position);
-          const canvasPos = {
-            x: clickPos.x * viewer.value.source.width,
-            y: clickPos.y * viewer.value.source.height
-          };
+    viewer.value.addHandler('open', function (event: any) {
+      canvas.width = 3317;
+      canvas.height = 3311;
+      canvas.id = 'myCanvas';
+      overlay.canvas = canvas;
+      canvasOverlay.value = canvas;
+    });
 
+    viewer.value.addHandler('canvas-click', async (event: any) => {
+      if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
+        const clickPos = viewer.value.viewport.pointFromPixel(event.position);
+        const canvasPos = {
+          x: clickPos.x * viewer.value.source.width,
+          y: clickPos.y * viewer.value.source.height
+        };
+
+
+        // 클릭된 아이템 확인
+        for (const item of drawPath.value) {
+          const itemPos = item;
+          const width = 40; // 아이템의 너비
+          const height = 40; // 아이템의 높이
 
           // 클릭된 아이템 확인
-          for (const item of drawPath.value) {
-            const itemPos = item;
-            const width = 40; // 아이템의 너비
-            const height = 40; // 아이템의 높이
+          if (
+              canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
+              canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
+          ) {
+            const categoryId = item.categoryId;
+            const color = 'lightgreen'; // 연한 연두색
+            if (event.originalEvent.ctrlKey) { // 컨트롤 키를 눌렀을 때
+              moveRbcClass.value.push(item)
+              const element = document.createElement('ol');
+              element.className = 'overlayElement';
+              element.id = 'overlayElement';
+              element.setAttribute('data-category-id', categoryId);
+              element.setAttribute('data-class-nm', item.classNm);
+              element.style.width = '40px';
+              element.style.backgroundColor = color;
+              element.style.height = '40px';
+              element.style.position = 'absolute';
+              element.style.opacity = '0.5';
 
-            // 클릭된 아이템 확인
-            if (
-                canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
-                canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
-            ) {
-              const categoryId = item.categoryId;
-              const color = 'lightgreen'; // 연한 연두색
-              if (event.originalEvent.ctrlKey) { // 컨트롤 키를 눌렀을 때
-                moveRbcClass.value.push(item)
-                const element = document.createElement('ol');
-                element.className = 'overlayElement';
-                element.id = 'overlayElement';
-                element.setAttribute('data-category-id', categoryId);
-                element.setAttribute('data-class-nm', item.classNm);
-                element.style.width = '40px';
-                element.style.backgroundColor = color;
-                element.style.height = '40px';
-                element.style.position = 'absolute';
-                element.style.opacity = '0.5';
+              const posX = parseFloat(itemPos.posX);
+              const posY = parseFloat(itemPos.posY);
+              const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+              viewer.value.addOverlay({
+                element: element,
+                location: overlayRect
+              });
+            } else {
+              if (
+                  canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
+                  canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
+              ) {
+                // 클릭된 아이템 처리
+                const categoryId = item.categoryId;
+                const color = 'lightgreen'; // 연한 연두색
+                const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find(classItem => classItem.classNm === item.classNm);
+                if (classInfo) {
+                  moveRbcClass.value = [item];
+                  const existingOverlay = document.getElementById('overlayElement');
+                  if (existingOverlay) {
+                    viewer.value.removeOverlay(existingOverlay);
+                  }
 
-                const posX = parseFloat(itemPos.posX);
-                const posY = parseFloat(itemPos.posY);
-                const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
-                viewer.value.addOverlay({
-                  element: element,
-                  location: overlayRect
-                });
-              } else {
-                if (
-                    canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
-                    canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
-                ) {
-                  // 클릭된 아이템 처리
-                  const categoryId = item.categoryId;
-                  const color = 'lightgreen'; // 연한 연두색
-                  const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find(classItem => classItem.classNm === item.classNm);
-                  if (classInfo) {
-                    moveRbcClass.value = [item];
-                    const existingOverlay = document.getElementById('overlayElement');
-                    if (existingOverlay) {
-                      viewer.value.removeOverlay(existingOverlay);
-                    }
+                  const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.classNm}"]`);
+                  if (previousOverlay) {
+                    const posX = parseFloat(itemPos.posX);
+                    const posY = parseFloat(itemPos.posY);
+                    const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                    viewer.value.updateOverlay(previousOverlay, overlayRect);
+                  } else {
 
-                    const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.classNm}"]`);
-                    if (previousOverlay) {
-                      const posX = parseFloat(itemPos.posX);
-                      const posY = parseFloat(itemPos.posY);
-                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
-                      viewer.value.updateOverlay(previousOverlay, overlayRect);
-                    } else {
+                    const element = document.createElement('ol');
+                    element.className = 'overlayElement';
+                    element.id = 'overlayElement';
+                    element.setAttribute('data-category-id', categoryId);
+                    element.setAttribute('data-class-nm', item.classNm);
+                    element.style.width = '40px';
+                    element.style.backgroundColor = color;
+                    element.style.height = '40px';
+                    element.style.position = 'absolute';
+                    element.style.opacity = '0.5';
 
-                      const element = document.createElement('ol');
-                      element.className = 'overlayElement';
-                      element.id = 'overlayElement';
-                      element.setAttribute('data-category-id', categoryId);
-                      element.setAttribute('data-class-nm', item.classNm);
-                      element.style.width = '40px';
-                      element.style.backgroundColor = color;
-                      element.style.height = '40px';
-                      element.style.position = 'absolute';
-                      element.style.opacity = '0.5';
-
-                      const posX = parseFloat(itemPos.posX);
-                      const posY = parseFloat(itemPos.posY);
-                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
-                      viewer.value.addOverlay({
-                        element: element,
-                        location: overlayRect
-                      });
-                    }
+                    const posX = parseFloat(itemPos.posX);
+                    const posY = parseFloat(itemPos.posY);
+                    const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                    viewer.value.addOverlay({
+                      element: element,
+                      location: overlayRect
+                    });
                   }
                 }
               }
-              break;
             }
-          }
-        } else { // 쉬프트 키를 눌렀을 때
-
-          for (const item of drawPath.value) {
-            if (item.classNm === "Normal") {
-              return;
-            }
-            const itemPos = item;
-            const categoryId = item.categoryId;
-            const color = 'lightgreen'; // 연한 연두색
-            moveRbcClass.value.push(item)
-            const element = document.createElement('ol');
-            element.className = 'overlayElement';
-            element.id = 'overlayElement';
-            element.setAttribute('data-category-id', categoryId);
-            element.setAttribute('data-class-nm', item.classNm);
-            element.style.width = '40px';
-            element.style.backgroundColor = color;
-            element.style.height = '40px';
-            element.style.position = 'absolute';
-            element.style.opacity = '0.5';
-
-            const posX = parseFloat(itemPos.posX);
-            const posY = parseFloat(itemPos.posY);
-            const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
-            viewer.value.addOverlay({
-              element: element,
-              location: overlayRect
-            });
+            break;
           }
         }
-      });
+      } else { // 쉬프트 키를 눌렀을 때
 
+        for (const item of drawPath.value) {
+          if (item.classNm === "Normal") {
+            return;
+          }
+          const itemPos = item;
+          const categoryId = item.categoryId;
+          const color = 'lightgreen'; // 연한 연두색
+          moveRbcClass.value.push(item)
+          const element = document.createElement('ol');
+          element.className = 'overlayElement';
+          element.id = 'overlayElement';
+          element.setAttribute('data-category-id', categoryId);
+          element.setAttribute('data-class-nm', item.classNm);
+          element.style.width = '40px';
+          element.style.backgroundColor = color;
+          element.style.height = '40px';
+          element.style.position = 'absolute';
+          element.style.opacity = '0.5';
 
-    }
-  } catch (err) {
-    console.error('Error:', err);
+          const posX = parseFloat(itemPos.posX);
+          const posY = parseFloat(itemPos.posY);
+          const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+          viewer.value.addOverlay({
+            element: element,
+            location: overlayRect
+          });
+        }
+      }
+    });
+
   }
 };
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);
+  console.log("RESPONSE", response);
 
   if (!response.ok) {
     tileExist.value = false;

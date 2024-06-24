@@ -95,7 +95,7 @@
               <tr style="padding-bottom: 5px;">
                 <!-- <th></th> -->
                 <th style="text-align: left; padding: 5px 0;">Comment</th>
-                <th style="text-align: left; padding: 5px 0;">{{ sessionStorageSelectItems.rbcMemo }}</th>
+                <th style="text-align: left; padding: 5px 0;">{{ selectItems.rbcMemo }}</th>
               </tr>
               </tbody>
             </table>
@@ -136,7 +136,7 @@
               </tr> -->
               <tr style="padding-bottom: 5px;">
                 <th style="text-align: left; padding: 5px 0;">Comment</th>
-                <td colspan="2" style="text-align: left; padding: 5px 0;">{{ sessionStorageSelectItems?.wbcMemo }}</td>
+                <td colspan="2" style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcMemo }}</td>
               </tr>
               </tbody>
             </table>
@@ -170,30 +170,39 @@ import {useStore} from "vuex";
 import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 import { watch } from "fs";
+import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 
-const props = defineProps(['selectItems', 'printOnOff', 'selectItemWbc']);
+const props = defineProps(['printOnOff', 'selectItemWbc']);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const store = useStore();
 
 const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
-const commonDataGet = computed(() => store.state.commonModule);
 
-const selectItemsData = ref(sessionStorage.getItem("selectItems"));
-const sessionStorageSelectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
+const iaRootPath = computed(() => store.state.commonModule.value.iaRootPath);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const selectItems = ref<any>(null);
 
-const iaRootPath = commonDataGet.value.iaRootPath;
-const userModuleDataGet = computed(() => store.state.userModule);
 const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
 const nonWbcIdList = ['12', '13', '14', '15', '16'];
 
 onMounted(async () => {
+  await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
   await getImagePrintData();
   await printPage();
 });
+
+const getDetailRunningInfo = async () => {
+  try {
+    const result: any = await detailRunningApi(String(selectedSampleId.value));
+    selectItems.value = result.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 const filteredWbcInfo = computed(() => {
   return wbcInfo.value.filter((item: any) => !nonWbcIdList.includes(item.id) && item.count > 0);
@@ -204,8 +213,8 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath;
-  const slotId = props.selectItems.slotId || "";
+  const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath;
+  const slotId = selectItems.value.slotId || "";
   const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 
