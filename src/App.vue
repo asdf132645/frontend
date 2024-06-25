@@ -223,6 +223,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     const parseDataWarp = parsedData;
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
+      case 'RBC_RE_CLASSIFICATION':
+        await store.dispatch('commonModule/setCommonInfo', {rbcReData: true});
+        break;
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
         const deviceInfoObj = {

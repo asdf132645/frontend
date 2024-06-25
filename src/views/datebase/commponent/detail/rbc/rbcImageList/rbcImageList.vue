@@ -194,6 +194,16 @@ const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
 const rightClickItem = ref([]);
+const rbcTotalVal = ref(0);
+const rbcReData = computed(() => store.state.commonModule.rbcReData);
+watch(() => rbcReData, (newItem) => {
+  if(newItem){
+    removeRbcMarker();
+    removeDiv();
+    emits('unChecked');
+  }
+
+}, {deep: true})
 
 onMounted(() => {
   initElement();
@@ -222,15 +232,17 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
     for (const argument of rbcInfoPathAfter.value) {
       // 기존 부분 삭제
       if (moveRbcClassItem.categoryId === argument.categoryId) {
-        const foundElementIndex = argument.classInfo.findIndex((el: any) => Number(el.posX) === moveRbcClassItem.posX + 20 && Number(el.posY) === moveRbcClassItem.posY + 20);
+        const foundElementIndex = argument.classInfo.findIndex((el: any) => Number(el.index) === moveRbcClassItem.index);
         if (foundElementIndex !== -1) {
           newAsrr.push({
             categoryId: categoryId,
             classNm: classNm,
             classId: classId,
-            posX: moveRbcClassItem.posX + 20,
-            posY: moveRbcClassItem.posY + 20,
-            index: '1'
+            posX: moveRbcClassItem.posX,
+            posY: moveRbcClassItem.posY,
+            width: moveRbcClassItem.width,
+            height: moveRbcClassItem.height,
+            index: moveRbcClassItem.index
           });
           argument.classInfo.splice(foundElementIndex, 1);
         }
@@ -240,8 +252,11 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
         argument.classInfo.push({
           classNm: classNm,
           classId: classId,
-          posX: moveRbcClassItem.posX + 20,
-          posY: moveRbcClassItem.posY + 20
+          posX: moveRbcClassItem.posX,
+          posY: moveRbcClassItem.posY,
+          width: moveRbcClassItem.width,
+          height: moveRbcClassItem.height,
+          index: moveRbcClassItem.index
         })
       }
     }
@@ -342,8 +357,7 @@ const rbcMarker = async (newItem: any) => {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
         const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
-            Number(el.posX) === Number(newRbcData.posX) &&
-            Number(el.posY) === Number(newRbcData.posY)
+            Number(el.index) === Number(newRbcData.index)
         );
         if (foundElementIndex !== -1) {
           rbcItem.classInfo.splice(foundElementIndex, 1);
@@ -353,7 +367,10 @@ const rbcMarker = async (newItem: any) => {
             classNm: newRbcData.classNm,
             classId: newRbcData.classId,
             posX: String(newRbcData.posX),
-            posY: String(newRbcData.posY)
+            posY: String(newRbcData.posY),
+            width: newRbcData.width,
+            height: newRbcData.height,
+            index: newRbcData.index,
           }
           rbcItem.classInfo.push(sss);
         }
@@ -363,7 +380,7 @@ const rbcMarker = async (newItem: any) => {
   } else {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
-  // console.log(newItem.length)
+  console.log(rbcInfoPathAfter.value)
   classInfoArr.value = newItem;
   if (newItem.length === 0) {
     removeRbcMarker();
@@ -372,6 +389,8 @@ const rbcMarker = async (newItem: any) => {
     await drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
   }
 }
+
+
 
 
 watch(() => props.selectItems, (newItem) => {
@@ -423,15 +442,38 @@ const drawRbcMarker = async (classInfoArr: any) => {
           ctx.lineWidth = '2';
           ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
           let rectPath = new Path2D();
-          rectPath.rect(classItem.posX - 20, classItem.posY - 20, 40, 40);
-          // rectPath.rect(classItem.x1, classItem.y1, x2-x1, y2-y1);
-          drawPath.value.push({
+          let width: any = '';
+          let height: any = '';
+          let classItemPosX: any = '';
+          let classItemPosY: any = '';
+
+          if(classItem.width){
+            width = classItem.width;
+            height = classItem.height;
+            classItemPosX = classItem.posX;
+            classItemPosY = classItem.posY;
+          }else{
+            width = classItem.x2-classItem.x1;
+            height = classItem.y2-classItem.y1;
+            classItemPosX = classItem.x1;
+            classItemPosY = classItem.y1;
+          }
+          // console.log(width)
+          // console.log(height)
+          let ddrr ={
             categoryId: info.categoryId,
             classNm: info.classNm,
             classId: info.classId,
-            posX: classItem.posX - 20,
-            posY: classItem.posY - 20,
-          })
+            posX: classItemPosX,
+            posY: classItemPosY,
+            width: width,
+            height: height,
+            index: classItem.index,
+          }
+          rectPath.rect(classItemPosX, classItemPosY, width, height);
+          // rectPath.rect(classItem.x1, classItem.y1, x2-x1, y2-y1);
+          drawPath.value.push(ddrr)
+          console.log(ddrr)
           ctx.stroke(rectPath)
 
         }
@@ -542,8 +584,8 @@ const initElement = async () => {
           // 클릭된 아이템 확인
           for (const item of drawPath.value) {
             const itemPos = item;
-            const width = 40; // 아이템의 너비
-            const height = 40; // 아이템의 높이
+            const width = itemPos.width; // 아이템의 너비
+            const height = itemPos.height; // 아이템의 높이
 
             // 클릭된 아이템 확인
             if (
@@ -559,15 +601,15 @@ const initElement = async () => {
                 element.id = 'overlayElement';
                 element.setAttribute('data-category-id', categoryId);
                 element.setAttribute('data-class-nm', item.classNm);
-                element.style.width = '40px';
+                element.style.width = `${item.width}px`;
                 element.style.backgroundColor = color;
-                element.style.height = '40px';
+                element.style.height = `${item.height}px`;
                 element.style.position = 'absolute';
                 element.style.opacity = '0.5';
 
                 const posX = parseFloat(itemPos.posX);
                 const posY = parseFloat(itemPos.posY);
-                const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, itemPos.width, itemPos.height); // 이미지 좌표를 뷰포트 좌표로 변환
                 viewer.value.addOverlay({
                   element: element,
                   location: overlayRect
@@ -580,7 +622,7 @@ const initElement = async () => {
                   // 클릭된 아이템 처리
                   const categoryId = item.categoryId;
                   const color = 'lightgreen'; // 연한 연두색
-                  const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find(classItem => classItem.classNm === item.classNm);
+                  const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find((classItem: any) => classItem.classNm === item.classNm);
                   if (classInfo) {
                     moveRbcClass.value = [item];
                     const existingOverlay = document.getElementById('overlayElement');
@@ -592,7 +634,7 @@ const initElement = async () => {
                     if (previousOverlay) {
                       const posX = parseFloat(itemPos.posX);
                       const posY = parseFloat(itemPos.posY);
-                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, itemPos.width, itemPos.height); // 이미지 좌표를 뷰포트 좌표로 변환
                       viewer.value.updateOverlay(previousOverlay, overlayRect);
                     } else {
 
@@ -601,15 +643,15 @@ const initElement = async () => {
                       element.id = 'overlayElement';
                       element.setAttribute('data-category-id', categoryId);
                       element.setAttribute('data-class-nm', item.classNm);
-                      element.style.width = '40px';
+                      element.style.width = `${item.width}px`;
                       element.style.backgroundColor = color;
-                      element.style.height = '40px';
+                      element.style.height = `${item.height}px`;
                       element.style.position = 'absolute';
                       element.style.opacity = '0.5';
 
                       const posX = parseFloat(itemPos.posX);
                       const posY = parseFloat(itemPos.posY);
-                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, item.width, item.height); // 이미지 좌표를 뷰포트 좌표로 변환
                       viewer.value.addOverlay({
                         element: element,
                         location: overlayRect
@@ -636,15 +678,15 @@ const initElement = async () => {
             element.id = 'overlayElement';
             element.setAttribute('data-category-id', categoryId);
             element.setAttribute('data-class-nm', item.classNm);
-            element.style.width = '40px';
+            element.style.width = item.width;
             element.style.backgroundColor = color;
-            element.style.height = '40px';
+            element.style.height = item.height;
             element.style.position = 'absolute';
             element.style.opacity = '0.5';
 
             const posX = parseFloat(itemPos.posX);
             const posY = parseFloat(itemPos.posY);
-            const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, 40, 40); // 이미지 좌표를 뷰포트 좌표로 변환
+            const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, item.width, item.height); // 이미지 좌표를 뷰포트 좌표로 변환
             viewer.value.addOverlay({
               element: element,
               location: overlayRect

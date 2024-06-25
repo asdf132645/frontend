@@ -37,6 +37,7 @@ export interface CommonState {
     chatRunningData: any[];
     cbcLayer: boolean;
     inhaTestCode: string;
+    rbcReData: boolean;
 }
 
 interface CommonModule {
@@ -80,6 +81,7 @@ interface CommonModule {
         setChatRunningData: (state: CommonState, value: any[]) => void;
         setCbcLayer: (state: CommonState, value: boolean) => void;
         setInhaTestCode: (state: CommonState, value: string) => void;
+        setRbcReData: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -124,6 +126,7 @@ export const commonModule: CommonModule = {
         chatRunningData: [],
         cbcLayer: false,
         inhaTestCode: '',
+        rbcReData: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -239,6 +242,9 @@ export const commonModule: CommonModule = {
         },
         setInhaTestCode(state: CommonState, value: string): void {
             state.inhaTestCode = value;
+        },
+        setRbcReData(state: CommonState, value: boolean): void {
+            state.rbcReData = value;
         },
     },
     actions: {
@@ -357,6 +363,9 @@ export const commonModule: CommonModule = {
             // setInhaTestCode
             if (payload.hasOwnProperty('inhaTestCode')) {
                 commit('setInhaTestCode', payload.inhaTestCode)
+            }
+            if (payload.hasOwnProperty('rbcReData')) {
+                commit('setRbcReData', payload.rbcReData)
             }
         },
     },

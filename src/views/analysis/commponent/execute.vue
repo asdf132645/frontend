@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, watch, onMounted, nextTick} from "vue";
+import {ref, computed, watch, onMounted, nextTick, defineEmits} from "vue";
 
 import {useStore} from "vuex";
 import {
@@ -86,6 +86,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const testTypeArr = ref<any>([]);
+const emits = defineEmits();
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -280,6 +281,7 @@ const sendInit = () => { // 장비 초기화 진행
   }
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
+  emits('initDataChangeText', true);
 }
 
 const initData = () => {

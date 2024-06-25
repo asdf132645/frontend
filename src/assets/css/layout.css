@@ -911,7 +911,7 @@ p.loginP {
 ul.loginUl {
     width: 100%;
     margin: 0 auto;
-    padding-top: 50px;
+    padding-top: 80px;
 }
 
 .loginBtn > button {
@@ -2323,7 +2323,57 @@ table.cbcTable td {
 .half-circle {
     clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
 }
+.layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
 
+.layer-content {
+    text-align: left;
+    background: #414141;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.rbcPercent {
+    width: 10%;
+}
+.createdRbc{
+    position: absolute;
+    z-index: 99999;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-top: 28%;
+    background: #00000073;
+    font-size: 2rem;
+    margin: auto;
+    text-align: center;
+}
+.layer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-bottom: 1px solid #dedede;
+    padding-bottom: 15px;
+    color: #fff;
+}
+
+.layer-body {
+    color: #fff;
+}
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;

@@ -62,7 +62,7 @@ const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData']);
+const props = defineProps([ 'parsedData', 'initValData']);
 
 
 // 스토어
@@ -175,6 +175,12 @@ watch(()=>eqStatCd.value, (newVal) => {
   } else {
     isBlinking.value = false;
     clearInterval(interval.value);
+  }
+})
+
+watch(() => props.initValData, (newVal) => {
+  if(newVal){
+    eqStatCd.value = '05';
   }
 })
 

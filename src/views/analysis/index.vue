@@ -1,12 +1,12 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <Execute />
+    <Execute @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <workingView :parsedData="props.parsedData" class="contentRightChild" v-if="pbVersion !== '100a'"/>
-    <WorkingView100A :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild" v-else/>
+    <workingView :initValData="initValData" :parsedData="props.parsedData" class="contentRightChild" v-if="pbVersion !== '100a'"/>
+    <WorkingView100A :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild" v-else/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <div class="contentBottom">
@@ -23,13 +23,14 @@ import orderList from './commponent/orderList.vue';
 import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
-import {defineEmits, defineProps, onMounted, ref, watch} from "vue";
+import {defineEmits, defineProps, onMounted, ref} from "vue";
 import WorkingView100A from "@/views/analysis/commponent/workingView100A.vue";
 const emits = defineEmits();
 
 const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
+const initValData = ref(false);
 onMounted(async () => {
   if (window.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
@@ -44,6 +45,10 @@ const rbcUpdate = (data: any) => {
 
 const classInfoUpdate = (data: any) => {
   emits('classAppUpdateLast', data);
+}
+
+const initDataChangeText = (val: any) => {
+  initValData.value = val;
 }
 
 </script>

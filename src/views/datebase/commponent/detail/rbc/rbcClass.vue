@@ -1,4 +1,5 @@
 <template>
+  <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt2">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
@@ -41,9 +42,8 @@
                          @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
                 </div>
                 <span
-                    @click="clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId)">{{
-                    classInfo?.classNm
-                  }}</span>
+                    @click="clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId)">
+                  {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
               </li>
             </template>
           </ul>
@@ -106,6 +106,15 @@
             </template>
 
           </ul>
+          <ul class="rbcPercent">
+            <li v-if="innerIndex === 0" class="mb1 liTitle">percent</li>
+            <template v-for="(classInfo, classIndex) in category?.classInfo"
+                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
+              <li>
+                {{ percentageChange(classInfo?.originalDegree) }}
+              </li>
+            </template>
+          </ul>
         </div>
       </template>
 
@@ -123,9 +132,9 @@
                      value="9-9-1"
                      v-show="!except"
                      v-model="checkedClassIndices"
-                     @change="updateClassInfoArr('Giant Platelet', $event.target.checked, '04', '01')">
+                     @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')">
             </div>
-            <span @click="clickChangeSens('Giant Platelet', 'Others', '04' ,'01')">Giant Platelet</span>
+            <span @click="clickChangeSens('Platelet', 'Others', '04' ,'01')">Platelet</span>
           </li>
           <li>
             <div>
@@ -142,16 +151,17 @@
           <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
           <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
         </ul>
+        <ul class="rbcPercent"></ul>
       </div>
     </div>
     <div class="sensitivityDiv" v-if="type !== 'report'">
-      <select v-model="selectedClass">
+      <select v-model="selectedClass"  @change="classChange">
         <option v-for="(item) in rightClickItem" :key="item.classNm">
           {{ item.classNm }}
         </option>
       </select>
       <SliderBar v-model="sliderValue" :min="0" :max="100"/>
-      <button class="degreeBtn" type="button" @click="sensSend">Ok</button>
+      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
     </div>
     <!--    <div v-if="type !== 'report'" class="beforeAfterBtn">-->
     <!--      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>-->
@@ -189,6 +199,8 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import {useRouter} from "vue-router";
 import moment from "moment/moment";
 import SliderBar from "@/components/commonUi/SliderBar.vue";
+import {tcpReq} from "@/common/tcpRequest/tcpReq";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -216,14 +228,19 @@ const maxRbcCount = ref('');
 const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
-const selectedClass = ref('Normal');
+const selectedClass = ref('Macrocyte');
 const allCheckType = ref(true);
 const instance = getCurrentInstance();
+const rbcInfoPathAfter = ref<any>([]);
+const rbcTotalVal = ref(0);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
+const jsonIsBool = ref(false);
+const rbcReData = computed(() => store.state.commonModule.rbcReData);
 
 onMounted(() => {
   const {rbcInfo, rbcMemo} = props.selectItems;
   const {path} = router.currentRoute.value;
-
+  rbcTotalAndReCount();
   pltCount.value = rbcInfo?.pltCount;
   malariaCount.value = rbcInfo?.malariaCount;
   memo.value = rbcMemo;
@@ -235,21 +252,16 @@ onMounted(() => {
 
   if (processItems) {
     for (const argument of processItems) {
-      if (['Shape', 'Inclusion Body'].includes(argument.categoryNm)) {
-        argument.classInfo.forEach((classInfo: any) => {
+      argument.classInfo.forEach((classInfo: any) => {
+        if(classInfo.classNm !== 'Normal'){
           rightClickItem.value.push({...classInfo, categoryId: argument.categoryId});
-        });
-      }
+        }
+      });
     }
   }
 
-  rightClickItem.value.unshift(
-      {categoryId: '01', categoryNm: 'Size', classNm: 'Size'},
-      {categoryId: '02', categoryNm: 'Chromia', classNm: 'Chromia'}
-  );
-
   rightClickItem.value.push(
-      {categoryId: '04', classId: '01', classNm: 'Giant Platelet'},
+      {categoryId: '04', classId: '01', classNm: 'Platelet'},
       {categoryId: '05', classId: '03', classNm: 'Malaria'}
   );
 });
@@ -265,48 +277,119 @@ watch(() => props.allCheckClear, (newItem) => {
 
 }, {deep: true})
 
+watch(() => rbcReData, (newItem) => {
+  if(newItem){
+    jsonIsBool.value = false;
+  }
+
+}, {deep: true})
+
 watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
 });
-
-const sensSend = () => {
-  rbcInfoAfterSensitivity(selectedClass.value);
-  instance?.appContext.config.globalProperties.$socket.emit('message', {
-    type: 'SEND_DATA',
-    payload: {
-      jobCmd: 'rbcReClassification',
-      sensitivity: sliderValue.value,
-      className: selectedClass.value,
-    }
-  });
-}
-
-const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
-  const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
-  for (const el of rbcData) {
-    if (categoryNm === 'Size' || categoryNm === 'Chromia') {
-      if (el.categoryNm === categoryNm) {
-        sliderValue.value = el?.sensitivity || 50;
-      }
-    } else {
-      for (const item of el?.classInfo) {
-        if (item.classNm === classNm && item.classId === classId) {
-          sliderValue.value = item.sensitivity || 50;
+const rbcTotalAndReCount = async () => {
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
+  const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const response_new = await readJsonFile({fullPath: url_new});
+  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
+    const newJsonData = response_new?.data;
+    for (const rbcItem of response_old.data[0].rbcClassList) {
+      for (const newRbcData of newJsonData) {
+        // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
+        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
+            Number(el.index) === Number(newRbcData.index)
+        );
+        if (foundElementIndex !== -1) {
+          rbcItem.classInfo.splice(foundElementIndex, 1);
+        }
+        if (rbcItem.categoryId === newRbcData.categoryId) {
+          let sss = {
+            classNm: newRbcData.classNm,
+            classId: newRbcData.classId,
+            posX: String(newRbcData.posX),
+            posY: String(newRbcData.posY),
+            width: newRbcData.width,
+            height: newRbcData.height,
+            index: newRbcData.index,
+          }
+          rbcItem.classInfo.push(sss);
         }
       }
     }
-  }
-  if (categoryNm === 'Size') {
-    selectedClass.value = 'Size';
-    return;
-  } else if (categoryNm === 'Chromia') {
-    selectedClass.value = 'Chromia';
-    return;
+    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
   } else {
-    selectedClass.value = classNm;
+    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+  }
+  let total = 0;
+  for (const el of rbcInfoPathAfter.value) {
+    for (const idx in el.classInfo) {
+      total += 1
+    }
+  }
+  rbcTotalVal.value = total;
+  console.log('rbcInfoPathAfter.value', rbcInfoPathAfter.value)
+  console.log('rbcInfoBeforeVal', rbcInfoBeforeVal.value)
+}
+const percentageChange = (count: any): any => {
+  const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+  return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
+}
+
+const classChange = () => {
+  const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
+
+  const category = rbcData.find((el: any) => el.categoryNm === selectedClass.value);
+  if (category) {
+    sliderValue.value = category.sensitivity || 50;
     return;
   }
+
+  for (const el of rbcData) {
+    const classInfoItem = el.classInfo.find((classInfo: any) => classInfo.classNm === selectedClass.value);
+    if (classInfoItem) {
+      sliderValue.value = classInfoItem.sensitivity || 50;
+      return;
+    }
+  }
+
+  sliderValue.value = 50;
+};
+
+
+const sensRbcReJsonSend = () => {
+  rbcInfoAfterSensitivity(selectedClass.value);
+  store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
+  instance?.appContext.config.globalProperties.$socket.emit('message', {
+    type: 'SEND_DATA',
+    payload: {
+      jobCmd: 'RBC_RE_CLASSIFICATION',
+      sensitivity: Number(sliderValue.value),
+      reqDttm: tcpReq().embedStatus.settings.reqDttm,
+      reqUserId: userModuleDataGet.value.userId || '',
+      className: selectedClass.value,
+      slotId: props.selectItems?.slotId,
+    }
+  });
+  jsonIsBool.value = true;
+}
+
+const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
+  if(classNm === 'Normal'){
+    return;
+  }
+  const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
+  for (const el of rbcData) {
+    for (const item of el?.classInfo) {
+      if (item.classNm === classNm && item.classId === classId) {
+        sliderValue.value = item.sensitivity || 50;
+      }
+    }
+  }
+  selectedClass.value = classNm;
+  return;
 
 }
 
@@ -319,6 +402,7 @@ const afterChange = () => {
   } else {
     rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
   }
+  classChange();
 }
 
 const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
@@ -326,7 +410,6 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   for (const item of rbcInfoAfterData) {
     if (item.categoryNm === selectedClassVal) {
       item.sensitivity = sliderValue.value;
-      console.log(item);
     } else {
       const findClass = item?.classInfo?.findIndex((option: any) => option.classNm === selectedClassVal);
       if (findClass !== -1 && findClass !== undefined) {
