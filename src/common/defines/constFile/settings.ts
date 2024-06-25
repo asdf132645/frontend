@@ -745,19 +745,19 @@ export const wbcRunningCount = [
 {
     min: 0,
     max: 700,
-    wbcConditionCount: 50
+    wbcTargetCount: 50
 }, {
     min: 701,
     max: 1000,
-    wbcConditionCount: 100
+    wbcTargetCount: 100
 }, {
     min: 1001,
     max: 2000,
-    wbcConditionCount: 150
+    wbcTargetCount: 150
 }, {
     min: 2001,
     max: 3000,
-    wbcConditionCount: 250
+    wbcTargetCount: 250
 }];
 
 export const lisHotKeyAndLisFilePathAndUrl =[

@@ -19,7 +19,7 @@
           </p>
           <p>{{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}</p>
         </li>
-        <li :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
+        <li v-if="!isLoading" :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'clipboard']"/>
           </p>
@@ -52,7 +52,17 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
+import {
+  computed,
+  defineEmits,
+  defineProps,
+  getCurrentInstance,
+  onBeforeMount,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch
+} from "vue";
 import router from "@/router";
 
 import {ApiResponse} from "@/common/api/httpClient";
@@ -65,12 +75,7 @@ import {
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
-import {
-  basicBmClassList,
-  basicWbcArr,
-  defaultBmClassList,
-  defaultWbcClassList
-} from "@/store/modules/analysis/wbcclassification";
+import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import Alert from "@/components/commonUi/Alert.vue";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 
@@ -79,13 +84,12 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const projectType = ref<any>('bm');
-const selectItemsData = ref(sessionStorage.getItem("selectItems"));
-const selectItems = ref(selectItemsData.value ? JSON.parse(selectItemsData.value) : null);
+const selectItems = ref<any>(null);
 const resData = ref<any>([]);
 const wbcInfo = ref<any>([]);
 const instance = getCurrentInstance();
 const store = useStore();
-const userModuleDataGet = computed(() => store.state.userModule);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const route = useRoute();
 const orderClass = ref<any>([]);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
@@ -94,6 +98,7 @@ let timeoutId: number | undefined = undefined;
 const pageMoveDeleteStop = ref(false);
 const props = defineProps(['isNext']);
 const ipAddress = ref<any>('');
+const isLoading = ref(true);
 
 watch(props.isNext, (newVal) => {
   if (newVal) {
@@ -101,9 +106,13 @@ watch(props.isNext, (newVal) => {
   }
 });
 
+onBeforeMount(async () => {
+  await getDetailRunningInfo();
+  isLoading.value = false;
+})
+
 onMounted(async () => {
   projectType.value = window.PROJECT_TYPE;
-  await getRunningInfoDetail(selectItems.value.id);
   pageMoveDeleteStop.value = true;
   const ip = await getDeviceIpApi();
   ipAddress.value = ip.data;
@@ -115,12 +124,25 @@ onUnmounted(async () => {
   }
   await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
 })
+
+const getDetailRunningInfo = async () => {
+  try {
+    const result = await detailRunningApi(String(selectedSampleId.value));
+    selectItems.value = result.data;
+    resData.value = result.data;
+  } catch (e) {
+    console.log(e);
+    selectItems.value = null;
+    resData.value = null;
+  }
+}
+
 const hideAlert = () => {
   showAlert.value = false;
 };
 
 const deleteConnectionStatus = async () => {
-  sessionStorage.setItem('dbBaseTrClickId', String(selectItems.value.id));
+  sessionStorage.setItem('dbBaseTrClickId', String(selectItems.value?.id));
 
   const req = `oldPcIp=${ipAddress.value}`
   await clearPcIpState(req)
@@ -136,7 +158,7 @@ const deleteConnectionStatus = async () => {
 
 const upDownBlockAccess = async (selectItems: any) => {
   try {
-    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value.id}&newPcIp=${ipAddress.value}`
+    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}`
     await updatePcIpStateApi(req).then(response => {
       // emits('initData');
       instance?.appContext.config.globalProperties.$socket.emit('state', {
@@ -188,19 +210,19 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   return newSortArr;
 };
 
-async function getRunningInfoDetail(id: any) {
-  try {
-    let result: ApiResponse<void>;
-    result = await detailRunningApi(String(id));
-
-    if (result) {
-      resData.value = result.data;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-  return resData.value;
-}
+// async function getRunningInfoDetail(id: any) {
+//   try {
+//     let result: ApiResponse<void>;
+//     result = await detailRunningApi(String(id));
+//
+//     if (result) {
+//       resData.value = result.data;
+//     }
+//   } catch (e) {
+//     console.error(e);
+//   }
+//   return resData.value;
+// }
 
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
@@ -221,7 +243,7 @@ const moveWbc = async (direction: any) => {
   }
   isButtonDisabled.value = true; // 버튼 비활성화
   await getOrderClass(); // 클래스 정보를 업데이트
-  await processNextDbIndex(direction, selectItems.value.id);
+  await processNextDbIndex(direction, selectItems.value?.id);
 
   timeoutId = window.setTimeout(() => {
     isButtonDisabled.value = false;
@@ -231,7 +253,7 @@ const moveWbc = async (direction: any) => {
 
 const processNextDbIndex = async (direction: any, id: number) => {
   const res: any = await pageUpDownRunnIng(id, '1', direction);
-  if (resData.value.lock_status) {
+  if (resData.value?.lock_status) {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';
@@ -242,7 +264,7 @@ const processNextDbIndex = async (direction: any, id: number) => {
 
 const handleDataResponse = async (dbId: any, res: any) => {
   selectItems.value = resData.value;
-  sessionStorage.setItem('selectItems', JSON.stringify(resData.value));
+  if (!resData.value) return;
 
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;

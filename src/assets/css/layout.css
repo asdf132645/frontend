@@ -540,7 +540,7 @@ button.degreeAllCheckBtn {
     position: absolute;
     top: 4px;
     height: 8px;
-    z-index: 9999;
+    z-index: 9997;
     overflow: hidden;
 }
 .classNmRbc {
@@ -701,6 +701,10 @@ ul.slideContent.pb100a {
 li.mb1.liTitle {
     font-weight: 600;
     margin-top: 20px;
+}
+
+.liNormalWidth {
+    width: 200px;
 }
 
 .startBtn.isInit {
