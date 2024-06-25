@@ -15,7 +15,7 @@
         </div>
       </li>
       <li @click="commitConfirmed" :class="{
-    'submitted': selectItems.submitState === 'Submit',
+    'submitted': selectItems?.submitState === 'Submit',
   }">
         <font-awesome-icon :icon="['fas', 'square-check']"/>
       </li>
@@ -87,17 +87,17 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-        <div class="categories" v-show="selectItems.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-            <li>{{ getStringValue(nWbcItem.name) }}</li>
+            <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul class="classNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li>
               {{ nWbcItem?.count }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
-                / {{ selectItemsSessionStorageData?.wbcInfo?.maxWbcCount }} WBC</span>
+                / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
             </li>
           </ul>
           <ul class="degree">
@@ -165,13 +165,13 @@ import {createDirectory, createFile} from "@/common/api/service/fileSys/fileSysA
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const barcodeImg = ref('');
 const userId = ref('');
 const wbcMemo = ref('');
@@ -197,16 +197,18 @@ const okMessageType = ref('');
 const lisCodeWbcArr = ref<any>([]);
 const lisCodeRbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
+
+
 onMounted(async () => {
   await getOrderClass();
-  wbcMemo.value = props.selectItems.wbcMemo;
+  wbcMemo.value = props.selectItems?.wbcMemo;
   await afterChang(clonedWbcInfoStore.value);
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = window.PROJECT_TYPE === 'bm';
   // 첫 진입시
-  if (props.selectItems.submitState === "") {
-    const result: any = await detailRunningApi(String(props.selectItems.id));
+  if (props.selectItems?.submitState === "") {
+    const result: any = await detailRunningApi(String(props.selectItems?.id));
     const updatedItem = {
       submitState: 'checkFirst',
     };
@@ -222,14 +224,23 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  wbcMemo.value = props.selectItems.wbcMemo;
+  wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
   afterChang(newItem);
 }, {deep: true});
+
+// const getDetailRunningInfo = async () => {
+//   try {
+//     const result = detailRunningApi(String(selectedSampleId.value));
+//     return result.data
+//   } catch (e) {
+//     console.log(e);
+//   }
+// }
 
 
 const lisModalOpen = () => {
@@ -304,7 +315,7 @@ const uploadLis = () => {
         return item.classCd._cdata === 'LHR100'
       })
 
-      props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         wbcItem.classCd = ''
 
         codeList.forEach(function (code) {
@@ -317,7 +328,7 @@ const uploadLis = () => {
       let wbcTemp: any = [];
 
       // five diff push
-      props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         fiveDiffWorkList.forEach(function (fiveDiffItem) {
           if (wbcItem.classCd === fiveDiffItem) {
             wbcTemp.push(wbcItem)
@@ -348,7 +359,7 @@ const uploadLis = () => {
         if (isUserAuth === 'succ') {
           const params = {
             empNo: userModuleDataGet.value.userId,
-            barcodeNo: props.selectItems.barcodeNo,
+            barcodeNo: props.selectItems?.barcodeNo,
             wbcInfo: wbcTemp
           }
 
@@ -402,12 +413,12 @@ const uploadLis = () => {
 
 const lisLastStep = () => {
   if (siteCd.value === '0019') {
-    let data = 'H|\^&||||||||||P||' + props.selectItems.barcodeNo + '\n';
+    let data = 'H|\^&||||||||||P||' + props.selectItems?.barcodeNo + '\n';
     let seq = 0;
 
     lisCodeWbcArr.value.forEach(function (lisCode: any) {
       if (lisCode.code !== '') {
-        props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+        props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
           if (lisCode.IA_CD === wbcItem.id) {
             if (Number(wbcItem.percent) > 0 || Number(wbcItem.count)) {
               // count
@@ -448,11 +459,11 @@ const otherDataSend = async () => {
       dateTime: getDateTimeStr(),
       security: '',
       messageType: ['ADT', 'R02'],
-      messageControlId: props.selectItems.barcodeNo,
+      messageControlId: props.selectItems?.barcodeNo,
       processingId: 'P',
       hl7VersionId: '2.5',
       selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: props.selectItems.wbcInfoAfter,
+      wbcInfo: props.selectItems?.wbcInfoAfter,
       result: lisCodeWbcArr.value,
     };
 
@@ -532,7 +543,7 @@ const inhaDataSend = () => {
   let rbcTmp = '';
   //wbc
   lisCodeWbcArr.value.forEach(function (lisCode: any, index: any) {
-    props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+    props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
       if (lisCode.IA_CD === wbcItem.id) {
         if (lisCode.code === 'H9600' || lisCode.code === 'H9365' ||
             lisCode.code === 'H9366') {
@@ -566,7 +577,7 @@ const inhaDataSend = () => {
 
   lisCodeRbcArr.value.forEach(function (lisCode: any) {
     if (lisCode.code !== '') {
-      props.selectItems.rbcInfoAfter.forEach(function (rbcItem: any) {
+      props.selectItems?.rbcInfoAfter.forEach(function (rbcItem: any) {
         if (lisCode.categoryId === rbcItem.categoryId) {
           for (const rbcItemElement of rbcItem.classInfo) {
             if (lisCode.classId === rbcItemElement.classId) {
@@ -615,7 +626,7 @@ const inhaDataSend = () => {
   var params = {
     url: lisFilePathSetArr.value,
     machine: 'ADUIMD',
-    episode: props.selectItems.barcodeNo,
+    episode: props.selectItems?.barcodeNo,
     result: resultStr
   }
 
@@ -637,12 +648,12 @@ const inhaDataSend = () => {
 }
 
 const godae = (): string => {
-  let data = 'H|\^&||||||||||P||' + props.selectItems.barcodeNo + '\n';
+  let data = 'H|\^&||||||||||P||' + props.selectItems?.barcodeNo + '\n';
   let seq = 0;
   let kumcMergePercent = 0;
   let kumcBandPercent = 0;
 
-  props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+  props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
     if (wbcItem.id === '02' || wbcItem.id === '03' ||
         wbcItem.id === '04' || wbcItem.id === '10') {
       kumcMergePercent += Number(wbcItem.percent)
@@ -655,12 +666,12 @@ const godae = (): string => {
 
   if (kumcMergePercent > 0 && kumcBandPercent < 6) {
     // seg
-    const segItem = props.selectItems.wbcInfoAfter.filter(function (item: any) {
+    const segItem = props.selectItems?.wbcInfoAfter.filter(function (item: any) {
       return item.id === '71'
     })
 
     // band
-    const bandItem = props.selectItems.wbcInfoAfter.filter(function (item: any) {
+    const bandItem = props.selectItems?.wbcInfoAfter.filter(function (item: any) {
       return item.id === '72'
     })
 
@@ -669,7 +680,7 @@ const godae = (): string => {
   }
   lisCodeWbcArr.value.forEach(function (lisCode: any) {
     if (lisCode.code !== '') {
-      props.selectItems.wbcInfoAfter.forEach(function (wbcItem: any) {
+      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         if (lisCode.IA_CD === wbcItem.id) {
           // 5diff는 0이어도 데이터 올림
           if (wbcItem.id === '01' || wbcItem.id === '71' || wbcItem.id === '05' ||
@@ -704,12 +715,12 @@ const lisFileUrlCreate = async (data: any) => {
     if (fileCreateRes) {
       const parms = {
         path: lisFilePathSetArr.value,
-        filename: `${lisFilePathSetArr.value}/${props.selectItems.barcodeNo}.lst2msg`,
+        filename: `${lisFilePathSetArr.value}/${props.selectItems?.barcodeNo}.lst2msg`,
         content: data,
       };
       const res = await createFile(parms);
       if (res) {
-        const result: any = await detailRunningApi(String(props.selectItems.id));
+        const result: any = await detailRunningApi(String(props.selectItems?.id));
         const updatedItem = {
           submitState: 'lis',
         };
@@ -731,7 +742,7 @@ const lisFileUrlCreate = async (data: any) => {
 const sendLisMessage = (data: any) => {
   const params = {
     url: lisFilePathSetArr.value,
-    barcodeNo: props.selectItems.barcodeNo,
+    barcodeNo: props.selectItems?.barcodeNo,
     userId: userModuleDataGet.value.userId,
     deviceBarcode: deviceSerialNm.value,
     resultMsg: data
@@ -813,7 +824,7 @@ const hideConfirm = () => {
 const onCommit = async () => {
   const localTime = moment().local();
 
-  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
@@ -828,7 +839,7 @@ const memoChange = async () => {
   const updatedItem = {
     wbcMemo: wbcMemo.value
   };
-  const result: any = await detailRunningApi(String(props.selectItems.id));
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedRuningInfo = {...result.data,...updatedItem }
 
   await resRunningItem(updatedRuningInfo);
@@ -836,7 +847,7 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
-  wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems.wbcMemo;
+  wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
   memoModal.value = !memoModal.value;
 }
 
@@ -864,7 +875,6 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
         showSuccessAlert('success');
       }
       const filteredItems = updatedRuningInfo;
-      sessionStorage.setItem('selectItems', JSON.stringify(filteredItems));
       wbcMemo.value = filteredItems.wbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
@@ -909,10 +919,8 @@ const getOrderClass = async () => {
 const beforeChang = async () => {
   isBefore.value = true;
   emits('isBefore', true);
-  const selectItemsData = sessionStorage.getItem("selectItems");
-  selectItemsSessionStorageData.value = selectItemsData ? JSON.parse(selectItemsData) : null;
   await getOrderClass();
-  const filteredItems: any = await detailRunningApi(String(selectItemsSessionStorageData.value.id));
+  const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
   const wbcInfo = filteredItems.data.wbcInfo.wbcInfo[0];
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);
@@ -922,11 +930,12 @@ const beforeChang = async () => {
 }
 
 const afterChang = async (newItem: any) => {
+
   await getOrderClass();
   emits('isBefore', false);
   isBefore.value = false;
-  const filteredItems: any =  await detailRunningApi(String(selectItemsSessionStorageData.value.id));
-  const wbcInfo = selectItemsSessionStorageData.value.wbcInfoAfter.length !== 0 ? selectItemsSessionStorageData.value.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
+  const filteredItems: any =  await detailRunningApi(String(selectedSampleId.value));
+  const wbcInfo = selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
@@ -936,7 +945,7 @@ const afterChang = async (newItem: any) => {
 }
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
+  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
   return !targetArray.includes(title);
 };
 
@@ -970,7 +979,7 @@ const totalCountSet = (wbcInfoChangeVal: any) => {
         totalCount.value += Number(item.count);
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
 
 
       const titleInArray = targetArray.includes(item.title);
@@ -992,7 +1001,7 @@ async function updateOriginalDb() {
           totalCount += 1
         }
       } else {
-        const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
+        const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
         if (!targetArray.includes(image.title)) {
           totalCount += 1;
         }
@@ -1012,7 +1021,7 @@ async function updateOriginalDb() {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
       if (!targetArray.includes(item.title)) {
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
@@ -1022,8 +1031,7 @@ async function updateOriginalDb() {
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
-  selectItemsSessionStorageData.value.wbcInfoAfter = clonedWbcInfo;
-  sessionStorage.setItem("selectItems", JSON.stringify(selectItemsSessionStorageData.value));
+  selectItems.value.wbcInfoAfter = clonedWbcInfo;
   await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoChangeVal.value, ...nonRbcClassList.value]});
   sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
@@ -1033,7 +1041,7 @@ async function updateOriginalDb() {
   });
 
   // originalDb 업데이트
-  const res: any = await detailRunningApi(String(selectItemsSessionStorageData.value.id));
+  const res: any = await detailRunningApi(String(selectItems.value?.id));
   if (res) {
     res.data.wbcInfoAfter = clonedWbcInfo;
   }

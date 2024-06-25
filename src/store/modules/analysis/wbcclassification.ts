@@ -147,87 +147,87 @@ export const basicBmClassList = [
 
 export const defaultWbcClassList = [
     {
-        id: '01', abbreviation: 'NE', fullNm: 'Neutrophil', orderIdx: 1
+        classId: '01', abbreviation: 'NE', fullNm: 'Neutrophil', orderIdx: 1
     }, {
-        id: '71', abbreviation: 'NS', fullNm: 'Neutrophil-Segmented', orderIdx: 2
+        classId: '71', abbreviation: 'NS', fullNm: 'Neutrophil-Segmented', orderIdx: 2
     }, {
-        id: '72', abbreviation: 'NB', fullNm: 'Neutrophil-Band', orderIdx: 3
+        classId: '72', abbreviation: 'NB', fullNm: 'Neutrophil-Band', orderIdx: 3
     }, {
-        id: '02', abbreviation: 'ME', fullNm: 'Metamyelocyte', orderIdx: 4
+        classId: '02', abbreviation: 'ME', fullNm: 'Metamyelocyte', orderIdx: 4
     }, {
-        id: '03', abbreviation: 'MY', fullNm: 'Myelocyte', orderIdx: 5
+        classId: '03', abbreviation: 'MY', fullNm: 'Myelocyte', orderIdx: 5
     }, {
-        id: '04', abbreviation: 'PR', fullNm: 'Promyelocyte', orderIdx: 6
+        classId: '04', abbreviation: 'PR', fullNm: 'Promyelocyte', orderIdx: 6
     }, {
-        id: '05', abbreviation: 'LY', fullNm: 'Lymphocyte', orderIdx: 7
+        classId: '05', abbreviation: 'LY', fullNm: 'Lymphocyte', orderIdx: 7
     }, {
-        id: '61', abbreviation: 'LR', fullNm: 'Reactive lymphocyte', orderIdx: 8
+        classId: '61', abbreviation: 'LR', fullNm: 'Reactive lymphocyte', orderIdx: 8
     }, {
-        id: '62', abbreviation: 'LA', fullNm: 'Abnormal lymphocyte', orderIdx: 9
+        classId: '62', abbreviation: 'LA', fullNm: 'Abnormal lymphocyte', orderIdx: 9
     }, {
-        id: '07', abbreviation: 'MO', fullNm: 'Monocyte', orderIdx: 10
+        classId: '07', abbreviation: 'MO', fullNm: 'Monocyte', orderIdx: 10
     }, {
-        id: '08', abbreviation: 'EO', fullNm: 'Eosinophil', orderIdx: 11
+        classId: '08', abbreviation: 'EO', fullNm: 'Eosinophil', orderIdx: 11
     }, {
-        id: '09', abbreviation: 'BA', fullNm: 'Basophil', orderIdx: 12
+        classId: '09', abbreviation: 'BA', fullNm: 'Basophil', orderIdx: 12
     }, {
-        id: '10', abbreviation: 'BL', fullNm: 'Blast', orderIdx: 13
+        classId: '10', abbreviation: 'BL', fullNm: 'Blast', orderIdx: 13
     }, {
-        id: '11', abbreviation: 'PC', fullNm: 'Plasma cell', orderIdx: 14
+        classId: '11', abbreviation: 'PC', fullNm: 'Plasma cell', orderIdx: 14
     }, {
-        id: '12', abbreviation: 'NR', fullNm: 'nRBC', orderIdx: 15
+        classId: '12', abbreviation: 'NR', fullNm: 'nRBC', orderIdx: 15
     }, {
-        id: '13', abbreviation: 'GP', fullNm: 'Giant platelet', orderIdx: 16
+        classId: '13', abbreviation: 'GP', fullNm: 'Giant platelet', orderIdx: 16
     }, {
-        id: '14', abbreviation: 'PA', fullNm: 'Platelet aggregation', orderIdx: 17
+        classId: '14', abbreviation: 'PA', fullNm: 'Platelet aggregation', orderIdx: 17
     }, {
-        id: '16', abbreviation: 'MA', fullNm: 'Malaria', orderIdx: 18
+        classId: '16', abbreviation: 'MA', fullNm: 'Malaria', orderIdx: 18
     }, {
-        id: '15', abbreviation: 'AR', fullNm: 'Artifact', orderIdx: 19
+        classId: '15', abbreviation: 'AR', fullNm: 'Artifact', orderIdx: 19
     }, {
-        id: '17', abbreviation: 'SM', fullNm: 'Smudge', orderIdx: 20
+        classId: '17', abbreviation: 'SM', fullNm: 'Smudge', orderIdx: 20
     }
 ]
 
 export const defaultBmClassList = [
     {
-        id: '01', abbreviation: 'NE', fullNm: 'Neutrophil', orderIdx: 1
+        classId: '01', abbreviation: 'NE', fullNm: 'Neutrophil', orderIdx: 1
     }, {
-        id: '71', abbreviation: 'NS', fullNm: 'Neutrophil-Segmented', orderIdx: 2
+        classId: '71', abbreviation: 'NS', fullNm: 'Neutrophil-Segmented', orderIdx: 2
     }, {
-        id: '72', abbreviation: 'NB', fullNm: 'Neutrophil-Band', orderIdx: 3
+        classId: '72', abbreviation: 'NB', fullNm: 'Neutrophil-Band', orderIdx: 3
     }, {
-        id: '02', abbreviation: 'ME', fullNm: 'Metamyelocyte', orderIdx: 4
+        classId: '02', abbreviation: 'ME', fullNm: 'Metamyelocyte', orderIdx: 4
     }, {
-        id: '03', abbreviation: 'MY', fullNm: 'Myelocyte', orderIdx: 5
+        classId: '03', abbreviation: 'MY', fullNm: 'Myelocyte', orderIdx: 5
     }, {
-        id: '04', abbreviation: 'PR', fullNm: 'Promyelocyte', orderIdx: 6
+        classId: '04', abbreviation: 'PR', fullNm: 'Promyelocyte', orderIdx: 6
     }, {
-        id: '05', abbreviation: 'LY', fullNm: 'Lymphocyte', orderIdx: 7
+        classId: '05', abbreviation: 'LY', fullNm: 'Lymphocyte', orderIdx: 7
     }, {
-        id: '06', abbreviation: 'LA', fullNm: 'Abnormal lymphocyte', orderIdx: 8
+        classId: '06', abbreviation: 'LA', fullNm: 'Abnormal lymphocyte', orderIdx: 8
     }, {
-        id: '07', abbreviation: 'MO', fullNm: 'Monocyte', orderIdx: 9
+        classId: '07', abbreviation: 'MO', fullNm: 'Monocyte', orderIdx: 9
     }, {
-        id: '08', abbreviation: 'EO', fullNm: 'Eosinophil', orderIdx: 10
+        classId: '08', abbreviation: 'EO', fullNm: 'Eosinophil', orderIdx: 10
     }, {
-        id: '09', abbreviation: 'BA', fullNm: 'Basophil', orderIdx: 11
+        classId: '09', abbreviation: 'BA', fullNm: 'Basophil', orderIdx: 11
     }, {
-        id: '10', abbreviation: 'BL', fullNm: 'Blast', orderIdx: 12
+        classId: '10', abbreviation: 'BL', fullNm: 'Blast', orderIdx: 12
     }, {
-        id: '11', abbreviation: 'PC', fullNm: 'Plasma cell', orderIdx: 13
+        classId: '11', abbreviation: 'PC', fullNm: 'Plasma cell', orderIdx: 13
     }, {
-        id: '12', abbreviation: 'ON', fullNm: 'Orthochromic Normoblast', orderIdx: 14
+        classId: '12', abbreviation: 'ON', fullNm: 'Orthochromic Normoblast', orderIdx: 14
     }, {
-        id: '13', abbreviation: 'PN', fullNm: 'Polychromic Normoblast', orderIdx: 15
+        classId: '13', abbreviation: 'PN', fullNm: 'Polychromic Normoblast', orderIdx: 15
     }, {
-        id: '14', abbreviation: 'BN', fullNm: 'Basophilic Normoblast', orderIdx: 16
+        classId: '14', abbreviation: 'BN', fullNm: 'Basophilic Normoblast', orderIdx: 16
     }, {
-        id: '15', abbreviation: 'PE', fullNm: 'Proerythroblast', orderIdx: 17
+        classId: '15', abbreviation: 'PE', fullNm: 'Proerythroblast', orderIdx: 17
     }, {
-        id: '16', abbreviation: 'HC', fullNm: 'Histiocyte', orderIdx: 18
+        classId: '16', abbreviation: 'HC', fullNm: 'Histiocyte', orderIdx: 18
     }, {
-        id: '17', abbreviation: 'OT', fullNm: 'Others', orderIdx: 19
+        classId: '17', abbreviation: 'OT', fullNm: 'Others', orderIdx: 19
     }]
 
 export const basicWbcArrClint = [

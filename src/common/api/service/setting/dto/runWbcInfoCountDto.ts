@@ -6,7 +6,7 @@ export interface runCountItem {
     id?: string;
     min: number;
     max: number;
-    wbcConditionCount: number;
+    wbcTargetCount: number;
 }
 
 export interface UpdateRunCountDto {
