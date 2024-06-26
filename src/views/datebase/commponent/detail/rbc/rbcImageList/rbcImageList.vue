@@ -142,6 +142,14 @@
 
     </template>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -153,7 +161,10 @@ import Malaria from './Malaria.vue';
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import pako from 'pako';
-
+import Alert from "@/components/commonUi/Alert.vue";
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
@@ -224,6 +235,12 @@ const josnWidthHeight = async () => {
   imgHeightWidthArr.value = response_old?.data;
 }
 const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
+  const existingOverlays = document.getElementsByClassName('overlayElement');
+  if(existingOverlays.length === 0){
+    showErrorAlert('Nothing has been selected');
+    return;
+  }
+  console.log(existingOverlays.length === 0)
   // categoryId에 해당하는 객체를 찾음
   let category = rbcInfoPathAfter.value.find((item: any) => item.categoryId === categoryId);
 
@@ -348,6 +365,15 @@ const rbcClassRightClick = (event: MouseEvent) => {
     selectBoxX.value = event.clientX;
     selectBoxY.value = event.clientY - 300;
   }
+};
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
 };
 
 
