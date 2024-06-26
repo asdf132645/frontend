@@ -39,6 +39,7 @@ import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 
 const selectItemsData = sessionStorage.getItem("selectItems");
 const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+
 const store = useStore();
 const rbcInfo = ref(null);
 const classInfoArr = ref<any>([]);

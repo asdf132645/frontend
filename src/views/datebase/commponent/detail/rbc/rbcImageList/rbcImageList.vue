@@ -511,8 +511,6 @@ const drawRbcMarker = async (classInfoArr: any) => {
     });
   });
   await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: true});
-  console.log('??')
-
 };
 
 
@@ -607,7 +605,6 @@ const initElement = async () => {
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
         //
-        console.log(drawPath.value)
         if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
           const clickPos = viewer.value.viewport.pointFromPixel(event.position);
           const canvasPos = {
@@ -652,7 +649,6 @@ const initElement = async () => {
                     canvasPos.x >= Number(itemPos.posX) && canvasPos.x <= (Number(itemPos.posX) + width) &&
                     canvasPos.y >= Number(itemPos.posY) && canvasPos.y <= (Number(itemPos.posY) + height)
                 ) {
-                  console.log(canvasPos);
                   // 클릭된 아이템 처리
                   const categoryId = item.categoryId;
                   const color = 'lightgreen'; // 연한 연두색

@@ -466,7 +466,6 @@ const countReAdd = async () => {
         }
       }
 
-      console.log(count);
       classItem.originalDegree = count;
     }
   }
