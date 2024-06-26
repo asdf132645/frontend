@@ -107,12 +107,21 @@
             </template>
 
           </ul>
-          <ul class="rbcPercent">
+          <ul class="rbcPercent mr1">
             <li v-if="innerIndex === 0" class="mb1 liTitle">percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li>
                 {{ percentageChange(classInfo?.originalDegree) }}
+              </li>
+            </template>
+          </ul>
+          <ul class="rbcPercent">
+            <li v-if="innerIndex === 0" class="mb1 liTitle">count</li>
+            <template v-for="(classInfo, classIndex) in category?.classInfo"
+                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
+              <li>
+                {{ classInfo?.originalDegree }}
               </li>
             </template>
           </ul>
@@ -152,6 +161,7 @@
           <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
           <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
         </ul>
+        <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
       </div>
     </div>
@@ -270,7 +280,7 @@ onMounted(() => {
 watch(() => props.rbcInfo,async (newItem) => {
   await afterChange();
   await rbcTotalAndReCount();
-  await percentReAdd();
+  await countReAdd();
 });
 
 watch(() => props.allCheckClear, (newItem) => {
@@ -339,10 +349,11 @@ const rbcTotalAndReCount = async () => {
   }
   let total = 0;
   for (const el of rbcInfoPathAfter.value) {
-    for (const idx in el.classInfo) {
-      total += 1
+    if(el.categoryId === '01'){
+      total = el.classInfo[el.classInfo.length - 1].index.replace('S', '');// 마지막 요소 가져오기
     }
   }
+  console.log(total)
   rbcTotalVal.value = total;
 }
 const percentageChange = (count: any): any => {
@@ -418,7 +429,7 @@ const afterChange = async () => {
   }
   classChange();
 }
-const percentReAdd = async () => {
+const countReAdd = async () => {
   // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
   if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
     console.error('rbcInfoBeforeVal.value is not an array');
@@ -436,10 +447,10 @@ const percentReAdd = async () => {
     category.classInfo.forEach((classItem: any) => {
       // rbcInfoPathAfter의 각 카테고리와 클래스 정보를 순회하며 classNm이 동일한 항목의 개수를 셈
       const count = rbcInfoPathAfter.value.reduce((acc: any, afterCategory: any) => {
-        return acc + afterCategory.classInfo.filter((afterClassItem: any) => afterClassItem.classNm === classItem.classNm).length;
+        return acc + afterCategory.classInfo.filter((afterClassItem: any) => afterClassItem.classNm === classItem.classNm && afterCategory.categoryId === category.categoryId).length;
       }, 0);
       // newDegree 속성으로 개수를 추가
-      classItem.newDegree = count;
+      classItem.originalDegree = count;
     });
   });
 

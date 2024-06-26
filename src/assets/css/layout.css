@@ -113,7 +113,7 @@ main.bmComponent {
 
 .topClintInfo ul {
     text-align: left;
-    margin-left: 47px;
+    margin-left: 31px;
     margin-bottom: 10px;
     border-bottom: 1px solid #fff;
     padding-bottom: 10px;
@@ -132,7 +132,7 @@ main.bmComponent {
     padding-bottom: 25px;
     font-size: 1.5rem;
     font-weight: 500;
-    width: 7%;
+    width: 6%;
     margin-bottom: 0px;
     display: inline-block;
     color: #ffffff;
@@ -513,7 +513,7 @@ ul.classInfo {
 }
 
 ul.degree.analysis {
-    width: 30%;
+    width: 18%;
 }
 .categories.rbcClass > .degree > li > span > svg {
     margin-right: 5px;
@@ -536,6 +536,9 @@ button.degreeAllCheckBtn {
 .categories.rbcClass > .degree > li > span {
     font-size: 0.9rem;
 }
+.categories.rbcClass ul.degree.analysis {
+    width: 25%;
+}
 .categories.rbcClass > .degree > li > .rbcSapn {
     position: absolute;
     top: 4px;
@@ -546,7 +549,7 @@ button.degreeAllCheckBtn {
 .classNmRbc {
     display: inline-block;
     text-align: left;
-    min-width: 150px;
+    min-width: 128px;
 }
 
 .degree {
@@ -1324,7 +1327,7 @@ ul.wbcImgWrap > li {
 
 .databaseWbcRight {
     display: inline-block;
-    width: 24%;
+    width: 26%;
     vertical-align: top;
     text-align: left;
     margin-right: 10px;
@@ -1610,7 +1613,7 @@ h3.orderTitle {
 .wbcMenuBottom {
     position: absolute;
     bottom: 20px;
-    left: 8px;
+    left: 4px;
 }
 
 .wbcContent {
@@ -1704,13 +1707,13 @@ select.selectSizeTitle {
     position: fixed;
     top: 80px;
     left: 0;
-    width: 135px;
+    width: 117px;
 }
 
 .wbcMenu ul {
     position: absolute;
     margin-top: 20px;
-    width: 7%;
+    width: 6%;
 }
 
 .reportSection {
@@ -1720,7 +1723,7 @@ select.selectSizeTitle {
 }
 
 .reportDiv {
-    padding-left: 3%;
+    padding-left: 1.7%;
     display: flex;
     padding-top: 10px;
 }
@@ -2249,7 +2252,7 @@ button.rollbackButton {
 .cbcDiv {
     display: inline-block;
     width: 20%;
-    margin-left: 41px;
+    margin-left: 8px;
     background: #252629;
     border: 1px solid #fff;
     height: 94%;
