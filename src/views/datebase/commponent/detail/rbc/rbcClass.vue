@@ -25,7 +25,7 @@
             <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
             <li>
               <span>{{ getCategoryName(category) }}</span>
-              <button class="degreeAllCheckBtn" v-show="getCategoryName(category) === 'Shape'"
+              <button class="degreeAllCheckBtn" v-if="getCategoryName(category) === 'Shape' && type !== 'report'"
                       @click="toggleAll(allCheckType, category)">
                 {{ allCheckType ? 'All Check' : 'All Uncheck' }}
               </button>
@@ -36,7 +36,7 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li>
-                <div v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
+                <div v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
                          v-model="checkedClassIndices"
@@ -128,7 +128,7 @@
         </ul>
         <ul class="classNmRbc">
           <li>
-            <div>
+            <div v-if="type !== 'report'">
               <input type="checkbox"
                      value="9-9-1"
                      v-show="!except"
@@ -138,7 +138,7 @@
             <span @click="clickChangeSens('Platelet', 'Others', '04' ,'01')">Platelet</span>
           </li>
           <li>
-            <div>
+            <div v-if="type !== 'report'">
               <input type="checkbox"
                      v-show="!except"
                      value="9-9-2"
