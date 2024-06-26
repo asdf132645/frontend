@@ -639,7 +639,7 @@ span.rbcSapnDown .degreeActive {
 }
 
 .categories.rbcClass > ul > li > span {
-    min-width: 77%;
+    min-width: 74%;
     font-size: 0.8rem;
     vertical-align: sub;
     cursor: pointer;
@@ -2154,7 +2154,7 @@ button.rollbackButton {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 9999;
+    z-index: 99999;
     padding: 45px 0;
     width: 400px;
     border: 1px solid #414141;

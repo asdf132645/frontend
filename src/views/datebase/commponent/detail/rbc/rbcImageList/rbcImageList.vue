@@ -1,24 +1,23 @@
 <template>
-  <div></div>
-  <div class="rbc-container">
-    <div class="btn-container">
+  <div class="rbc-container imgList">
+    <div class="btn-container_img_list">
       <div>
         <button
             @click="toggleViewer('lowMag')"
-            class="tab-btn"
+            class="tab-btn_img_list"
             :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"
         >Low magnification
         </button>
         <button
             @click="toggleViewer('malaria')"
-            class="tab-btn"
+            class="tab-btn_img_list"
             :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"
         >Malaria
         </button>
       </div>
-      <div class='btn-imgsetbox'>
-        <button class="img-btn" @click="imgSetOpen">Img Setting</button>
-        <div class="imgSet" v-if="imgSet">
+      <div class='btn-imgsetbox_img_list'>
+        <button class="img-btn_img_list" @click="imgSetOpen">Img Setting</button>
+        <div class="imgSet_img_list" v-if="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness</span>
@@ -75,9 +74,9 @@
           <div>
             <font-awesome-icon :icon="['fas', 'ruler']"/>
             <span>Ruler</span>
-            <div class="ruler-box">
+            <div class="ruler_box_img_list">
               <button
-                  class="tab-ruler-btn"
+                  class="tab-ruler-btn_img_list"
                   @click="onClickRuler(ruler)"
                   v-for="ruler in rulers"
                   :key="ruler.id"
@@ -98,11 +97,11 @@
         </div>
       </div>
     </div>
-    <div class="tiling-viewer-box">
+    <div class="tiling-viewer_img_list-box_img_list">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
       <div v-else-if="activeTab !== 'malaria' && tileExist"
            ref="tilingViewerLayer"
-           id="tiling-viewer" style="width: 100%;"
+           id="tiling-viewer_img_list" style="width: 100%;"
            @contextmenu.prevent="rbcClassRightClick"></div>
       <div v-else>
         <span>Tile does not exist.</span>
@@ -160,7 +159,7 @@ const activeTab = ref('lowMag');
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 
 let viewer: any = ref<any>(null);
-const imgSet = ref(false);
+const imgSet_img_list = ref(false);
 const imgBrightness = ref(100);
 const imageRgb = ref([0, 0, 0]);
 const isGrid = ref(false);
@@ -401,13 +400,13 @@ const rbcMarker = async (newItem: any) => {
 
 
 watch(() => props.selectItems, (newItem) => {
-  const tilingViewerLayer = document.getElementById('tiling-viewer');
+  const tilingViewerLayer = document.getElementById('tiling-viewer_img_list');
   if (tilingViewerLayer) {
     tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
 
     // 다시 그리는 HTML 코드 생성
     const newHtml = `
-        <div id="tiling-viewer" ref="tilingViewerLayer"></div>
+        <div id="tiling-viewer_img_list" ref="tilingViewerLayer"></div>
       `;
 
     // 생성한 HTML 코드를 tilingViewerLayer에 추가
@@ -497,7 +496,7 @@ const initElement = async () => {
 
     if (tilesInfo.length !== 0) {
       viewer.value = OpenSeadragon({
-        id: "tiling-viewer",
+        id: "tiling-viewer_img_list",
         animationTime: 0.4,
         navigatorSizeRatio: 0.25,
         showNavigator: true,
@@ -750,7 +749,7 @@ const toggleViewer = (viewerType: string) => {
       break;
     case 'malaria':
       activeTab.value = 'malaria';
-      imgSet.value = false;
+      imgSet_img_list.value = false;
       break;
   }
 
@@ -762,7 +761,7 @@ const toggleViewer = (viewerType: string) => {
 
 // Img setting
 const imgSetOpen = () => {
-  imgSet.value = !imgSet.value;
+  imgSet_img_list.value = !imgSet_img_list.value;
 }
 
 
@@ -774,7 +773,7 @@ const changeImgBrightness = (event: any) => {
   const green = imageRgb.value[1];
   const blue = imageRgb.value[2];
 
-  const imageContainer = document.getElementById('tiling-viewer');
+  const imageContainer = document.getElementById('tiling-viewer_img_list');
   if (imageContainer) {
     imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
   }
@@ -788,7 +787,7 @@ const changeImageRgb = () => {
   const blue = imageRgb.value[2];
   const brightness = imgBrightness.value;
 
-  const imageContainer = document.getElementById('tiling-viewer');
+  const imageContainer = document.getElementById('tiling-viewer_img_list');
 
   if (imageContainer) {
     imageContainer.style.filter = `opacity(0.88) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
@@ -800,7 +799,7 @@ const rgbReset = () => {
   imgBrightness.value = 100;
   imageRgb.value = [0, 0, 0];
 
-  const imageContainer = document.getElementById('tiling-viewer');
+  const imageContainer = document.getElementById('tiling-viewer_img_list');
   if (imageContainer) {
     imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(100%)`;
   }
@@ -879,7 +878,7 @@ const onClickRuler = (ruler: any) => {
 }
 
 const drawRuler = (ruler: any) => {
-  const divtilingViewer = document.getElementById('tiling-viewer')
+  const divtilingViewer = document.getElementById('tiling-viewer_img_list')
 
   if (divtilingViewer !== null) {
     const rulerOverlay = document.getElementById('rulerOverlay')
@@ -1078,7 +1077,16 @@ const onClickZoom = () => {
 
 <style scoped>
 
-.tab-btn {
+.rbc-container.imgList span {
+  margin: 0 10px 0 10px;
+}
+
+.tiling-viewer_img_list-box_img_list {
+  max-width: 100%;
+  overflow: hidden;
+  position: relative; /* 수정 */
+}
+.tab-btn_img_list {
   padding: 10px 20px;
   cursor: pointer;
   border: none;
@@ -1087,12 +1095,12 @@ const onClickZoom = () => {
   background-color: #2c2d2c;
 }
 
-.ruler-box {
+.ruler_box_img_list {
   display: flex;
   justify-content: space-between;
 }
 
-.tab-ruler-btn {
+.tab-ruler-btn_img_list {
   padding: 5px 10px;
   margin-right: 5px;
   cursor: pointer;
@@ -1102,22 +1110,22 @@ const onClickZoom = () => {
   background-color: #2c2d2c;
 }
 
-.tab-btn.active, .tab-ruler-btn.active {
+.tab-btn_img_list.active, .tab-ruler-btn_img_list.active {
   color: white;
   background-color: #2c2d2c;
 }
 
-.tab-btn.inactive, .tab-ruler-btn.inactive {
+.tab-btn_img_list.inactive, .tab-ruler-btn_img_list.inactive {
   color: darkgray;
   background-color: #393939;
 }
 
 
-.btn-imgsetbox {
+.btn-imgsetbox_img_list {
   position: relative;
 }
 
-.imgSet {
+.imgSet_img_list {
   position: absolute;
   top: 40px;
   left: -150px;
@@ -1128,11 +1136,11 @@ const onClickZoom = () => {
   justify-content: space-between;
 }
 
-.imgSet div {
+.imgSet_img_list div {
   padding: 10px;
 }
 
-.img-btn {
+.img-btn_img_list {
   padding: 10px 20px;
   cursor: pointer;
   border: none;
@@ -1140,18 +1148,7 @@ const onClickZoom = () => {
   color: white;
   background-color: #2c2d2c;
 }
-
-span {
-  margin: 0 10px 0 10px;
-}
-
-.tiling-viewer-box {
-  max-width: 100%;
-  overflow: hidden;
-  position: relative; /* 수정 */
-}
-
-#tiling-viewer {
+#tiling-viewer_img_list {
   position: relative;
   width: 100%;
   height: 80vh;
@@ -1161,7 +1158,7 @@ span {
   height: 85vh;
 }
 
-.btn-container {
+.btn-container_img_list {
   display: flex;
   justify-content: space-between;
   padding-bottom: 10px;

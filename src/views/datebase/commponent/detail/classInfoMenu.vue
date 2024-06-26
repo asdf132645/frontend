@@ -172,6 +172,7 @@ const pageGo = (path: string) => {
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
+  
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
@@ -231,7 +232,7 @@ const moveWbc = async (direction: any) => {
 
 const processNextDbIndex = async (direction: any, id: number) => {
   const res: any = await pageUpDownRunnIng(id, '1', direction);
-  if (resData.value.lock_status) {
+  if (resData.value?.lock_status) {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';

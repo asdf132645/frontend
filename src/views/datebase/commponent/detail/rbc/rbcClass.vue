@@ -241,7 +241,6 @@ const rbcReData = computed(() => store.state.commonModule.rbcReData);
 onMounted(() => {
   const {rbcInfo, rbcMemo} = props.selectItems;
   const {path} = router.currentRoute.value;
-  rbcTotalAndReCount();
   pltCount.value = rbcInfo?.pltCount;
   malariaCount.value = rbcInfo?.malariaCount;
   memo.value = rbcMemo;
@@ -268,8 +267,10 @@ onMounted(() => {
 });
 
 
-watch(() => props.rbcInfo, (newItem) => {
-  afterChange();
+watch(() => props.rbcInfo,async (newItem) => {
+  await afterChange();
+  await rbcTotalAndReCount();
+  await percentReAdd();
 });
 
 watch(() => props.allCheckClear, (newItem) => {
@@ -324,6 +325,10 @@ const rbcTotalAndReCount = async () => {
     rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
   } else {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+  }
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    console.error('rbcInfoPathAfter.value is not iterable');
+    return;
   }
   let total = 0;
   for (const el of rbcInfoPathAfter.value) {
@@ -395,7 +400,7 @@ const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string
 
 }
 
-const afterChange = () => {
+const afterChange = async () => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
@@ -406,6 +411,34 @@ const afterChange = () => {
   }
   classChange();
 }
+const percentReAdd = async () => {
+  // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
+  if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
+    console.error('rbcInfoBeforeVal.value is not an array');
+    return;
+  }
+
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    console.error('rbcInfoPathAfter.value is not an array');
+    return;
+  }
+
+  // console.log(rbcInfoBeforeVal.value);
+  // console.log(rbcInfoPathAfter.value);
+  rbcInfoBeforeVal.value.forEach((category: any) => {
+    category.classInfo.forEach((classItem: any) => {
+      // rbcInfoPathAfter의 각 카테고리와 클래스 정보를 순회하며 classNm이 동일한 항목의 개수를 셈
+      const count = rbcInfoPathAfter.value.reduce((acc: any, afterCategory: any) => {
+        return acc + afterCategory.classInfo.filter((afterClassItem: any) => afterClassItem.classNm === classItem.classNm).length;
+      }, 0);
+      // newDegree 속성으로 개수를 추가
+      classItem.newDegree = count;
+    });
+  });
+
+  // console.log(rbcInfoBeforeVal.value);
+};
+
 
 const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   let rbcInfoAfterData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
