@@ -132,7 +132,7 @@
           <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li @click="moveRbcClassEvent('04', '01', 'Giant Platelet')">
+          <li @click="moveRbcClassEvent('04', '01', 'Platelet')">
             <span>Platelets</span>
           </li>
           <li @click="moveRbcClassEvent('05', '03', 'Malaria')">
@@ -585,13 +585,12 @@ const initElement = async () => {
             y: clickPos.y * viewer.value.source.height
           };
 
-          console.log(canvasPos)
           // 클릭된 아이템 확인
           for (const item of drawPath.value) {
             const itemPos = item;
             const width = itemPos.width; // 아이템의 너비
             const height = itemPos.height; // 아이템의 높이
-            
+
             // 클릭된 아이템 확인
             if (
                 canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
