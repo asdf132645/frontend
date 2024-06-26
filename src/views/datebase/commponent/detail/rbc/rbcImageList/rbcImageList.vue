@@ -196,11 +196,12 @@ const emits = defineEmits();
 const rightClickItem = ref([]);
 const rbcTotalVal = ref(0);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
+const imgHeightWidthArr = ref([]);
 watch(() => rbcReData, (newItem) => {
   if(newItem){
     removeRbcMarker();
     removeDiv();
-    emits('unChecked');
+    rbcMarker(classInfoArr.value);
   }
 
 }, {deep: true})
@@ -209,12 +210,20 @@ onMounted(() => {
   initElement();
   document.addEventListener('click', closeSelectBox);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
+  josnWidthHeight();
 });
 watch(() => props.isBefore, (newItem) => {
   removeRbcMarker();
   removeDiv();
   emits('unChecked')
-}, {deep: true})
+}, {deep: true});
+
+const josnWidthHeight = async () => {
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
+  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const response_old =  await readJsonFile({fullPath: url_Old});
+  imgHeightWidthArr.value = response_old?.data;
+}
 const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
   // categoryId에 해당하는 객체를 찾음
   let category = rbcInfoPathAfter.value.find((item: any) => item.categoryId === categoryId);
@@ -380,12 +389,10 @@ const rbcMarker = async (newItem: any) => {
   } else {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
-  console.log(rbcInfoPathAfter.value)
   classInfoArr.value = newItem;
   if (newItem.length === 0) {
     removeRbcMarker();
   } else {
-    console.log(newItem)
     await drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
   }
 }
@@ -438,7 +445,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
   classInfoArr.forEach((info: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
-        if (classItem.classNm === info.classNm && category.categoryId === info.categoryId) {
+        if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
           ctx.lineWidth = '2';
           ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
           let rectPath = new Path2D();
@@ -458,8 +465,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
             classItemPosX = classItem.x1;
             classItemPosY = classItem.y1;
           }
-          // console.log(width)
-          // console.log(height)
+
           let ddrr ={
             categoryId: info.categoryId,
             classNm: info.classNm,
@@ -473,7 +479,6 @@ const drawRbcMarker = async (classInfoArr: any) => {
           rectPath.rect(classItemPosX, classItemPosY, width, height);
           // rectPath.rect(classItem.x1, classItem.y1, x2-x1, y2-y1);
           drawPath.value.push(ddrr)
-          console.log(ddrr)
           ctx.stroke(rectPath)
 
         }
@@ -710,12 +715,12 @@ const fetchTilesInfo = async (folderPath: string) => {
     tileExist.value = false;
     throw new Error('Network response was not ok');
   } else {
-
     const fileNames = await response.json();
     const tilesInfo = [];
 
     for (const fileName of fileNames) {
       if (fileName.endsWith('_files')) {
+        const foundItem: any = imgHeightWidthArr.value.find((item: any) => fileNames.includes(item.filename));
         tilesInfo.push({
           Image: {
             xmlns: "http://schemas.microsoft.com/deepzoom/2009",
@@ -724,8 +729,8 @@ const fetchTilesInfo = async (folderPath: string) => {
             Overlap: "1",
             TileSize: "1024",
             Size: {
-              Height: "3311",
-              Width: "3317"
+              Height: foundItem?.orgHeight,
+              Width: foundItem?.orgWidth
             }
           }
         });

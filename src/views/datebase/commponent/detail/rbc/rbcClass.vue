@@ -1,4 +1,5 @@
 <template>
+<!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt2">
@@ -278,6 +279,7 @@ watch(() => props.allCheckClear, (newItem) => {
 }, {deep: true})
 
 watch(() => rbcReData, (newItem) => {
+  console.log(jsonIsBool.value)
   if(newItem){
     jsonIsBool.value = false;
   }
@@ -330,8 +332,6 @@ const rbcTotalAndReCount = async () => {
     }
   }
   rbcTotalVal.value = total;
-  console.log('rbcInfoPathAfter.value', rbcInfoPathAfter.value)
-  console.log('rbcInfoBeforeVal', rbcInfoBeforeVal.value)
 }
 const percentageChange = (count: any): any => {
   const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
@@ -359,9 +359,11 @@ const classChange = () => {
 };
 
 
-const sensRbcReJsonSend = () => {
-  rbcInfoAfterSensitivity(selectedClass.value);
-  store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
+const sensRbcReJsonSend = async () => {
+  jsonIsBool.value = true;
+  await rbcInfoAfterSensitivity(selectedClass.value);
+
+  await  store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: {
@@ -369,11 +371,11 @@ const sensRbcReJsonSend = () => {
       sensitivity: Number(sliderValue.value),
       reqDttm: tcpReq().embedStatus.settings.reqDttm,
       reqUserId: userModuleDataGet.value.userId || '',
-      className: selectedClass.value,
+      className: selectedClass.value.replace(/\s/g, ''),
       slotId: props.selectItems?.slotId,
     }
   });
-  jsonIsBool.value = true;
+
 }
 
 const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
@@ -415,7 +417,6 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
       if (findClass !== -1 && findClass !== undefined) {
         if (item?.classInfo) {
           item.classInfo[findClass].sensitivity = sliderValue.value;
-          console.log(item.classInfo[findClass])
         }
       }
     }
