@@ -196,7 +196,7 @@ const emits = defineEmits();
 const rightClickItem = ref([]);
 const rbcTotalVal = ref(0);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
-const imgHeightWidthArr = ref([]);
+const imgHeightWidthArr: any = ref([]);
 watch(() => rbcReData, (newItem) => {
   if(newItem){
     removeRbcMarker();
@@ -569,8 +569,8 @@ const initElement = async () => {
 
 
       viewer.value.addHandler('open', function (event: any) {
-        canvas.width = 3317;
-        canvas.height = 3311;
+        canvas.width = imgHeightWidthArr.value[0]?.orgWidth;
+        canvas.height = imgHeightWidthArr.value[0]?.orgHeight;
         canvas.id = 'myCanvas';
         overlay.canvas = canvas;
         canvasOverlay.value = canvas;
@@ -585,13 +585,13 @@ const initElement = async () => {
             y: clickPos.y * viewer.value.source.height
           };
 
-
+          console.log(canvasPos)
           // 클릭된 아이템 확인
           for (const item of drawPath.value) {
             const itemPos = item;
             const width = itemPos.width; // 아이템의 너비
             const height = itemPos.height; // 아이템의 높이
-
+            
             // 클릭된 아이템 확인
             if (
                 canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
@@ -605,7 +605,7 @@ const initElement = async () => {
                 element.className = 'overlayElement';
                 element.id = 'overlayElement';
                 element.setAttribute('data-category-id', categoryId);
-                element.setAttribute('data-class-nm', item.classNm);
+                element.setAttribute('data-class-nm', item.index);
                 element.style.width = `${item.width}px`;
                 element.style.backgroundColor = color;
                 element.style.height = `${item.height}px`;
@@ -624,10 +624,11 @@ const initElement = async () => {
                     canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
                     canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
                 ) {
+
                   // 클릭된 아이템 처리
                   const categoryId = item.categoryId;
                   const color = 'lightgreen'; // 연한 연두색
-                  const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find((classItem: any) => classItem.classNm === item.classNm);
+                  const classInfo = rbcInfoPathAfter.value.find((category: any) => category.categoryId === categoryId)?.classInfo.find((classItem: any) => classItem.index === item.index);
                   if (classInfo) {
                     moveRbcClass.value = [item];
                     const existingOverlay = document.getElementById('overlayElement');
@@ -635,7 +636,7 @@ const initElement = async () => {
                       viewer.value.removeOverlay(existingOverlay);
                     }
 
-                    const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.classNm}"]`);
+                    const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.index}"]`);
                     if (previousOverlay) {
                       const posX = parseFloat(itemPos.posX);
                       const posY = parseFloat(itemPos.posY);
@@ -647,7 +648,7 @@ const initElement = async () => {
                       element.className = 'overlayElement';
                       element.id = 'overlayElement';
                       element.setAttribute('data-category-id', categoryId);
-                      element.setAttribute('data-class-nm', item.classNm);
+                      element.setAttribute('data-class-nm', item.index);
                       element.style.width = `${item.width}px`;
                       element.style.backgroundColor = color;
                       element.style.height = `${item.height}px`;
@@ -682,7 +683,7 @@ const initElement = async () => {
             element.className = 'overlayElement';
             element.id = 'overlayElement';
             element.setAttribute('data-category-id', categoryId);
-            element.setAttribute('data-class-nm', item.classNm);
+            element.setAttribute('data-class-nm', item.index);
             element.style.width = item.width;
             element.style.backgroundColor = color;
             element.style.height = item.height;
