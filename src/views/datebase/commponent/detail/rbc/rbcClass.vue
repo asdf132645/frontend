@@ -278,14 +278,21 @@ watch(() => props.allCheckClear, (newItem) => {
   classInfoArr.value = [];
 
 }, {deep: true})
+let timeoutId: any;
 
 watch(() => rbcReData, (newItem) => {
-  console.log(jsonIsBool.value)
-  if(newItem){
-    jsonIsBool.value = false;
+  console.log(jsonIsBool.value);
+
+  if (newItem) {
+    clearTimeout(timeoutId); // 이전 타임아웃을 취소
+    timeoutId = setTimeout(() => {
+      jsonIsBool.value = false;
+      // 타임아웃 이후에 jsonIsBool.value를 false로 설정
+    }, 900); // 1000ms(1초) 딜레이
   }
 
-}, {deep: true})
+}, { deep: true });
+
 
 watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;

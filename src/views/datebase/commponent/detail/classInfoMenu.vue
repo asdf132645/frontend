@@ -172,7 +172,7 @@ const pageGo = (path: string) => {
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
-  
+
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
   newSortArr.sort((a: any, b: any) => {
