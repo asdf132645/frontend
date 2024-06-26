@@ -240,7 +240,6 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
     showErrorAlert('Nothing has been selected');
     return;
   }
-  console.log(existingOverlays.length === 0)
   // categoryId에 해당하는 객체를 찾음
   let category = rbcInfoPathAfter.value.find((item: any) => item.categoryId === categoryId);
 
@@ -511,6 +510,9 @@ const drawRbcMarker = async (classInfoArr: any) => {
       });
     });
   });
+  await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: true});
+  console.log('??')
+
 };
 
 
@@ -604,7 +606,8 @@ const initElement = async () => {
 
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
-        await removeDiv();
+        //
+        console.log(drawPath.value)
         if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
           const clickPos = viewer.value.viewport.pointFromPixel(event.position);
           const canvasPos = {
@@ -612,16 +615,14 @@ const initElement = async () => {
             y: clickPos.y * viewer.value.source.height
           };
 
-          // 클릭된 아이템 확인
           for (const item of drawPath.value) {
             const itemPos = item;
             const width = itemPos.width; // 아이템의 너비
             const height = itemPos.height; // 아이템의 높이
 
-            // 클릭된 아이템 확인
             if (
-                canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
-                canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
+                canvasPos.x >= Number(itemPos.posX) && canvasPos.x <= (Number(itemPos.posX) + width) &&
+                canvasPos.y >= Number(itemPos.posY) && canvasPos.y <= (Number(itemPos.posY) + height)
             ) {
               const categoryId = item.categoryId;
               const color = 'lightgreen'; // 연한 연두색
@@ -631,7 +632,7 @@ const initElement = async () => {
                 element.className = 'overlayElement';
                 element.id = 'overlayElement';
                 element.setAttribute('data-category-id', categoryId);
-                element.setAttribute('data-class-nm', item.index);
+                element.setAttribute('data-class-nm', item.classNm);
                 element.style.width = `${item.width}px`;
                 element.style.backgroundColor = color;
                 element.style.height = `${item.height}px`;
@@ -646,11 +647,12 @@ const initElement = async () => {
                   location: overlayRect
                 });
               } else {
+                await removeDiv();
                 if (
-                    canvasPos.x >= itemPos.posX && canvasPos.x <= (itemPos.posX + width) &&
-                    canvasPos.y >= itemPos.posY && canvasPos.y <= (itemPos.posY + height)
+                    canvasPos.x >= Number(itemPos.posX) && canvasPos.x <= (Number(itemPos.posX) + width) &&
+                    canvasPos.y >= Number(itemPos.posY) && canvasPos.y <= (Number(itemPos.posY) + height)
                 ) {
-
+                  console.log(canvasPos);
                   // 클릭된 아이템 처리
                   const categoryId = item.categoryId;
                   const color = 'lightgreen'; // 연한 연두색
@@ -662,7 +664,7 @@ const initElement = async () => {
                       viewer.value.removeOverlay(existingOverlay);
                     }
 
-                    const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.index}"]`);
+                    const previousOverlay = document.querySelector(`.overlayElement[data-category-id="${categoryId}"][data-class-nm="${item.classNm}"]`);
                     if (previousOverlay) {
                       const posX = parseFloat(itemPos.posX);
                       const posY = parseFloat(itemPos.posY);
@@ -674,7 +676,7 @@ const initElement = async () => {
                       element.className = 'overlayElement';
                       element.id = 'overlayElement';
                       element.setAttribute('data-category-id', categoryId);
-                      element.setAttribute('data-class-nm', item.index);
+                      element.setAttribute('data-class-nm', item.classNm);
                       element.style.width = `${item.width}px`;
                       element.style.backgroundColor = color;
                       element.style.height = `${item.height}px`;
@@ -683,7 +685,7 @@ const initElement = async () => {
 
                       const posX = parseFloat(itemPos.posX);
                       const posY = parseFloat(itemPos.posY);
-                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, item.width, item.height); // 이미지 좌표를 뷰포트 좌표로 변환
+                      const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(posX), Number(posY), Number(item.width), Number(item.height)); // 이미지 좌표를 뷰포트 좌표로 변환
                       viewer.value.addOverlay({
                         element: element,
                         location: overlayRect
@@ -709,7 +711,7 @@ const initElement = async () => {
             element.className = 'overlayElement';
             element.id = 'overlayElement';
             element.setAttribute('data-category-id', categoryId);
-            element.setAttribute('data-class-nm', item.index);
+            element.setAttribute('data-class-nm', item.classNm);
             element.style.width = item.width;
             element.style.backgroundColor = color;
             element.style.height = item.height;

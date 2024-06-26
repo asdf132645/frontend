@@ -219,8 +219,8 @@ const checkedClassIndices = ref<any>([]);
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
-const pltCount = ref('');
-const malariaCount = ref('');
+const pltCount = ref(0);
+const malariaCount = ref(0);
 const memo = ref('');
 const sliderValue = ref(50);
 const memoModal = ref(false);
@@ -235,7 +235,7 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
-const maxRbcCount = ref('');
+const maxRbcCount: any = ref('');
 const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
@@ -247,14 +247,11 @@ const rbcTotalVal = ref(0);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
-
+const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
 onMounted(() => {
   const {rbcInfo, rbcMemo} = props.selectItems;
   const {path} = router.currentRoute.value;
-  pltCount.value = rbcInfo?.pltCount;
-  malariaCount.value = rbcInfo?.malariaCount;
   memo.value = rbcMemo;
-  maxRbcCount.value = rbcInfo?.maxRbcCount;
   except.value = path === '/report';
   rightClickItem.value = [];
 
@@ -278,10 +275,16 @@ onMounted(() => {
 
 
 watch(() => props.rbcInfo,async (newItem) => {
-  await afterChange();
+  await afterChange(newItem);
   await rbcTotalAndReCount();
   await countReAdd();
 });
+
+watch(() => resetRbcArr, async  (newItem) => {
+  if(newItem){
+    await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
+  }
+}, {deep: true})
 
 watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
@@ -290,15 +293,16 @@ watch(() => props.allCheckClear, (newItem) => {
 }, {deep: true})
 let timeoutId: any;
 
-watch(() => rbcReData, (newItem) => {
-  console.log(jsonIsBool.value);
+watch(() => rbcReData, async (newItem) => {
 
   if (newItem) {
-    clearTimeout(timeoutId); // 이전 타임아웃을 취소
-    timeoutId = setTimeout(() => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(async () => {
       jsonIsBool.value = false;
-      // 타임아웃 이후에 jsonIsBool.value를 false로 설정
-    }, 900); // 1000ms(1초) 딜레이
+      // await afterChange();
+      await rbcTotalAndReCount();
+      await countReAdd();
+    }, 1000);
   }
 
 }, { deep: true });
@@ -353,7 +357,6 @@ const rbcTotalAndReCount = async () => {
       total = el.classInfo[el.classInfo.length - 1].index.replace('S', '');// 마지막 요소 가져오기
     }
   }
-  console.log(total)
   rbcTotalVal.value = total;
 }
 const percentageChange = (count: any): any => {
@@ -418,15 +421,24 @@ const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string
 
 }
 
-const afterChange = async () => {
+const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
-  rbcInfoBeforeVal.value = props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo.rbcClass : props.selectItems.rbcInfo;
-  if (typeof props.selectItems.rbcInfoAfter === 'object') {
-    rbcInfoAfterVal.value = Object.entries(props.selectItems.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
-  } else {
-    rbcInfoAfterVal.value = props.selectItems.rbcInfoAfter && props.selectItems.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems.rbcInfoAfter;
+  let rbcData: any = {};
+  console.log(newItem)
+  if(newItem){
+    rbcData = newItem;
+  }else{
+    rbcData = props.selectItems;
   }
+  rbcInfoBeforeVal.value = rbcData.rbcInfo.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
+  if (typeof props.selectItems.rbcInfoAfter === 'object') {
+    rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
+  } else {
+    rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
+
+  }
+
   classChange();
 }
 const countReAdd = async () => {
@@ -441,18 +453,50 @@ const countReAdd = async () => {
     return;
   }
 
-  // console.log(rbcInfoBeforeVal.value);
-  // console.log(rbcInfoPathAfter.value);
-  rbcInfoBeforeVal.value.forEach((category: any) => {
-    category.classInfo.forEach((classItem: any) => {
-      // rbcInfoPathAfter의 각 카테고리와 클래스 정보를 순회하며 classNm이 동일한 항목의 개수를 셈
-      const count = rbcInfoPathAfter.value.reduce((acc: any, afterCategory: any) => {
-        return acc + afterCategory.classInfo.filter((afterClassItem: any) => afterClassItem.classNm === classItem.classNm && afterCategory.categoryId === category.categoryId).length;
-      }, 0);
-      // newDegree 속성으로 개수를 추가
+
+  for (const category of rbcInfoBeforeVal.value) {
+    for (const classItem of category.classInfo) {
+      let count = 0;
+
+      for (const afterCategory of rbcInfoPathAfter.value) {
+        for (const afterClassItem of afterCategory.classInfo) {
+          if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
+            count++;
+          }
+        }
+      }
+
+      console.log(count);
       classItem.originalDegree = count;
-    });
-  });
+    }
+  }
+
+  let totalPLT = 0;
+  let malariaTotal = 0;
+  for (const el of rbcInfoPathAfter.value) {
+    if (el.categoryId === '01') {
+      const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
+      maxRbcCount.value = lastElement.replace('S', '');
+    }
+    if(el.categoryId === '04'){
+      for (const xel of el.classInfo) {
+        if(xel.classNm === 'Platelet'){
+          totalPLT += 1;
+        }
+      }
+    }else if (el.categoryId === '05'){
+      for (const xel of el.classInfo) {
+        if(xel.classNm === 'Malaria'){
+          malariaTotal += 1;
+        }
+      }
+    }
+  }
+  //
+
+  pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
+  malariaCount.value = malariaTotal / Number(maxRbcCount.value);
+
 
   // console.log(rbcInfoBeforeVal.value);
 };
@@ -517,7 +561,6 @@ const toggleAll = (check: boolean, category?: any) => {
     categoryId: '04',
     classId: '01'
   });
-  console.log(allCheckboxes)
   if (check) {
     checkedClassIndices.value = ["0-2-0", "0-2-1", "0-2-2", "0-2-3", "0-2-4", "0-2-5", "0-2-6", "0-2-7", "0-2-8", "0-2-9", "0-2-10", "0-3-0", "0-3-1", "9-9-1", "9-9-2"];
   } else {
