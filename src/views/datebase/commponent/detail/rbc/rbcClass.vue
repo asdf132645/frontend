@@ -504,7 +504,20 @@ const toggleAll = (check: boolean, category?: any) => {
         });
       });
     }
+     if(item.categoryId === '05'){
+      allCheckboxes.push({
+        classNm: 'Malaria',
+        categoryId: '05',
+        classId: '03'
+      });
+    }
   }
+  allCheckboxes.push({
+    classNm: 'Platelet',
+    categoryId: '04',
+    classId: '01'
+  });
+  console.log(allCheckboxes)
   if (check) {
     checkedClassIndices.value = ["0-2-0", "0-2-1", "0-2-2", "0-2-3", "0-2-4", "0-2-5", "0-2-6", "0-2-7", "0-2-8", "0-2-9", "0-2-10", "0-3-0", "0-3-1", "9-9-1", "9-9-2"];
   } else {

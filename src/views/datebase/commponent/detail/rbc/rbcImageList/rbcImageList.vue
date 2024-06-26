@@ -257,7 +257,7 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
     for (const argument of rbcInfoPathAfter.value) {
       // 기존 부분 삭제
       if (moveRbcClassItem.categoryId === argument.categoryId) {
-        const foundElementIndex = argument.classInfo.findIndex((el: any) => Number(el.index) === moveRbcClassItem.index);
+        const foundElementIndex = argument.classInfo.findIndex((el: any) => String(el.index) === moveRbcClassItem.index);
         if (foundElementIndex !== -1) {
           newAsrr.push({
             categoryId: categoryId,
@@ -267,7 +267,7 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
             posY: moveRbcClassItem.posY,
             width: moveRbcClassItem.width,
             height: moveRbcClassItem.height,
-            index: moveRbcClassItem.index
+            index: String(moveRbcClassItem.index)
           });
           argument.classInfo.splice(foundElementIndex, 1);
         }
@@ -281,7 +281,7 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
           posY: moveRbcClassItem.posY,
           width: moveRbcClassItem.width,
           height: moveRbcClassItem.height,
-          index: moveRbcClassItem.index
+          index: String(moveRbcClassItem.index)
         })
       }
     }
@@ -391,7 +391,7 @@ const rbcMarker = async (newItem: any) => {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
         const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
-            Number(el.index) === Number(newRbcData.index)
+            String(el.index) === String(newRbcData.index)
         );
         if (foundElementIndex !== -1) {
           rbcItem.classInfo.splice(foundElementIndex, 1);
@@ -404,7 +404,7 @@ const rbcMarker = async (newItem: any) => {
             posY: String(newRbcData.posY),
             width: newRbcData.width,
             height: newRbcData.height,
-            index: newRbcData.index,
+            index: String(newRbcData.index),
           }
           rbcItem.classInfo.push(sss);
         }
@@ -455,6 +455,7 @@ const removeRbcMarker = () => {
 }
 
 const drawRbcMarker = async (classInfoArr: any) => {
+
   // json rbcInfoPathAfter.value 로 그림 그리는곳
   const colors: any = {
     '01': 'red',
@@ -499,7 +500,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
             posY: classItemPosY,
             width: width,
             height: height,
-            index: classItem.index,
+            index: String(classItem.index),
           }
           rectPath.rect(classItemPosX, classItemPosY, width, height);
           // rectPath.rect(classItem.x1, classItem.y1, x2-x1, y2-y1);
@@ -603,6 +604,7 @@ const initElement = async () => {
 
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
+        await removeDiv();
         if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
           const clickPos = viewer.value.viewport.pointFromPixel(event.position);
           const canvasPos = {
