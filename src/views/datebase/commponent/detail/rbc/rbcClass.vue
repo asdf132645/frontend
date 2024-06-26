@@ -476,7 +476,7 @@ const countReAdd = async () => {
   for (const el of rbcInfoPathAfter.value) {
     if (el.categoryId === '01') {
       const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
-      maxRbcCount.value = lastElement.replace('S', '');
+      maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
     }
     if(el.categoryId === '04'){
       for (const xel of el.classInfo) {
