@@ -160,6 +160,7 @@
               </div>
               <div class="underline" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 {{ shapeBodyTotal }}
+
               </div>
             </template>
           </ul>
@@ -444,7 +445,7 @@ const rbcTotalAndReCount = async () => {
   let shapeBodyTotalVal = 0;
   let shapeBodyTotalVal2 = 0;
   rbcInfoPathAfter.value.forEach(el => {
-    const lastIndex = el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, ''); // 마지막 요소 가져오기
+    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
 
     switch (el.categoryId) {
       case '01':
@@ -468,7 +469,7 @@ const rbcTotalAndReCount = async () => {
   rbcTotalVal.value = Number(total) + 1;
   sizeTotalTwo.value = Number(total) + 1;
   chromiaTotalTwo.value = chromiaTotalval;
-  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2);
+  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
   console.log('shapeBodyTotalVal', shapeBodyTotalVal)
   console.log('shapeBodyTotalVal2', shapeBodyTotalVal2)
 }
