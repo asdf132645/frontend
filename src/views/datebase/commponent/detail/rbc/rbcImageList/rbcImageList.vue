@@ -213,11 +213,12 @@ const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoA
 
 
 
-onMounted(() => {
-  initElement();
+onMounted(async () => {
+  await nextTick();
+  await josnWidthHeight();
+  await initElement();
   document.addEventListener('click', closeSelectBox);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
-  josnWidthHeight();
 });
 // watch(() => props.isBefore, (newItem) => {
 //   removeRbcMarker();
@@ -437,6 +438,7 @@ const rbcMarker = async (newItem: any) => {
 
 
 watch(() => props.selectItems, (newItem) => {
+  console.log('?')
   const tilingViewerLayer = document.getElementById('tiling-viewer_img_list');
   if (tilingViewerLayer) {
     tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
@@ -1126,95 +1128,3 @@ const onClickZoom = () => {
 
 </script>
 
-<style scoped>
-
-.rbc-container.imgList span {
-  margin: 0 10px 0 10px;
-}
-
-.tiling-viewer_img_list-box_img_list {
-  max-width: 100%;
-  overflow: hidden;
-  position: relative; /* 수정 */
-}
-
-.tab-btn_img_list {
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  border-radius: 3px;
-  color: white;
-  background-color: #2c2d2c;
-}
-
-.ruler_box_img_list {
-  display: flex;
-  justify-content: space-between;
-}
-
-.tab-ruler-btn_img_list {
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-  border: none;
-  border-radius: 3px;
-  color: white;
-  background-color: #2c2d2c;
-}
-
-.tab-btn_img_list.active, .tab-ruler-btn_img_list.active {
-  color: white;
-  background-color: #2c2d2c;
-}
-
-.tab-btn_img_list.inactive, .tab-ruler-btn_img_list.inactive {
-  color: darkgray;
-  background-color: #393939;
-}
-
-
-.btn-imgsetbox_img_list {
-  position: relative;
-}
-
-.imgSet_img_list {
-  position: absolute;
-  top: 40px;
-  left: -150px;
-  width: 250px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.imgSet_img_list div {
-  padding: 10px;
-}
-
-.img-btn_img_list {
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  border-radius: 3px;
-  color: white;
-  background-color: #2c2d2c;
-}
-
-#tiling-viewer_img_list {
-  position: relative;
-  width: 100%;
-  height: 80vh;
-}
-
-.rbc-container {
-  height: 85vh;
-}
-
-.btn-container_img_list {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 10px;
-}
-
-</style>
