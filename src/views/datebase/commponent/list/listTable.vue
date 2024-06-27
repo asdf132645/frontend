@@ -351,6 +351,7 @@ const getIpAddress = async (item) => {
     const result = await getDeviceIpApi();
     const ipAddress = result.data;
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}`
+
     await updatePcIpStateApi(req).then(response => {
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',

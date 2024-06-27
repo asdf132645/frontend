@@ -546,7 +546,8 @@ button.degreeAllCheckBtn {
     font-size: 0.8rem;
     color: #29c7ca;
     margin-top: 5px;
-    border-bottom: 1px solid #29c7ca;
+    border-top: 0.01px solid #747474;
+    padding: 5px 0 10px 0;
 }
 .categories.rbcClass > .degree > li > .rbcSapn {
     position: absolute;

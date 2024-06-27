@@ -1041,7 +1041,7 @@ async function updateOriginalDb() {
   });
 
   // originalDb 업데이트
-  const res: any = await detailRunningApi(String(selectItems.value?.id));
+  const res: any = await detailRunningApi(String(selectedSampleId.value));
   if (res) {
     res.data.wbcInfoAfter = clonedWbcInfo;
   }

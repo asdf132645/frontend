@@ -159,6 +159,8 @@ const deleteConnectionStatus = async () => {
 const upDownBlockAccess = async (selectItems: any) => {
   try {
     const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}`
+    await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: resData.value?.id});
+
     await updatePcIpStateApi(req).then(response => {
       // emits('initData');
       instance?.appContext.config.globalProperties.$socket.emit('state', {
