@@ -210,7 +210,7 @@
           {{ item.classNm }}
         </option>
       </select>
-      <SliderBar v-model="sliderValue" :min="0" :max="100"/>
+      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more" />
       <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
     </div>
     <!--    <div v-if="type !== 'report'" class="beforeAfterBtn">-->

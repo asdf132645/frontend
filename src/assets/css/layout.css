@@ -617,13 +617,16 @@ span.rbcSapnDown {
     width: 58%;
 }
 .sensitivityDiv .slider-container {
-    width: 45%;
-    display: inline-block;
-    margin-left: 10px;
+    /*width: 45%;*/
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .slider-container input {
-    width: 74%;
+    margin-top: 8px;
+    width: 90%;
     display: inline-block;
     vertical-align: middle;
 }

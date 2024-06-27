@@ -1,8 +1,10 @@
 <template>
+  <p>{{ leftText }}</p>
   <div class="slider-container">
     <input type="range" v-model="value" :min="min" :max="max" @input="updateValue"/>
     <div class="value">{{ value }}</div>
   </div>
+  <p>{{ rightText }}</p>
 </template>
 
 <script setup lang="ts">
@@ -12,6 +14,8 @@ const props = defineProps<{
   min: number;
   max: number;
   modelValue: number;
+  leftText: string;
+  rightText: string;
 }>();
 
 const emits = defineEmits(['update:modelValue']);
@@ -35,7 +39,6 @@ const updateValue = () => {
 }
 
 input[type="range"] {
-  margin-right: 10px;
   outline: none;
   opacity: 0.7;
   -webkit-transition: .2s;
