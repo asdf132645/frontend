@@ -1,5 +1,5 @@
 <template>
-  <!--  {{ jsonIsBool }}-->
+<!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt2">
@@ -313,7 +313,7 @@ watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
-  afterChange();
+  afterChange(newItem);
   rightClickItemSet();
   allCheckType.value = true;
 });
@@ -543,16 +543,15 @@ const afterChange = async (newItem?: any) => {
   } else {
     rbcData = props.selectItems;
   }
-  rbcInfoBeforeVal.value = rbcData.rbcInfo.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
-  if (typeof props.selectItems.rbcInfoAfter === 'object') {
+
+  rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
+  if (rbcData?.rbcInfoAfter && typeof props.selectItems.rbcInfoAfter === 'object') {
     rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
   } else {
     rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
-
-    rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter && props.selectItems?.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems?.rbcInfoAfter;
   }
 
-  classChange();
+  await classChange();
 }
 const countReAdd = async () => {
   // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
@@ -608,9 +607,6 @@ const countReAdd = async () => {
 
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal / Number(maxRbcCount.value);
-
-
-  // console.log(rbcInfoBeforeVal.value);
 };
 
 
