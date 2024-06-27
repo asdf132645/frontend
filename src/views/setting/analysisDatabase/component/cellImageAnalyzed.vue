@@ -267,9 +267,9 @@ const cellImgGet = async () => {
         cellimgId.value = String(data.id);
         testTypeCd.value = data.analysisType;
         diffCellAnalyzingCount.value = data.diffCellAnalyzingCount;
-        wbcPositionMargin.value = data.wbcPositionMargin;
-        rbcPositionMargin.value = data.rbcPositionMargin;
-        pltPositionMargin.value = data.pltPositionMargin;
+        wbcPositionMargin.value = data.diffWbcPositionMargin;
+        rbcPositionMargin.value = data.diffRbcPositionMargin;
+        pltPositionMargin.value = data.diffPltPositionMargin;
         pbsCellAnalyzingCount.value = data.pbsCellAnalyzingCount;
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
@@ -294,9 +294,9 @@ const cellImgSet = async () => {
   const cellImgSet = {
     analysisType: testTypeCd.value,
     diffCellAnalyzingCount: diffCellAnalyzingCount.value,
-    wbcPositionMargin: wbcPositionMargin.value,
-    rbcPositionMargin: rbcPositionMargin.value,
-    pltPositionMargin: pltPositionMargin.value,
+    diffWbcPositionMargin: wbcPositionMargin.value,
+    diffRbcPositionMargin: rbcPositionMargin.value,
+    diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
@@ -328,9 +328,9 @@ const cellImgSet = async () => {
       });
       // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
       sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
-      sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
-      sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
-      sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
+      sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
+      sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
+      sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
     }

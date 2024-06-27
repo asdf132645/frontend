@@ -2,9 +2,9 @@
 export interface CellImgAnalyzedRequest {
     analysisType: string;
     diffCellAnalyzingCount: string;
-    wbcPositionMargin: string;
-    rbcPositionMargin: string;
-    pltPositionMargin: string;
+    diffWbcPositionMargin: string;
+    diffRbcPositionMargin: string;
+    diffPltPositionMargin: string;
     pbsCellAnalyzingCount: string;
     stitchCount: string;
     bfCellAnalyzingCount: string;
@@ -23,9 +23,9 @@ export interface CellImgAnalyzedResponse {
     id: number;
     analysisType: string;
     diffCellAnalyzingCount: string;
-    wbcPositionMargin: string;
-    rbcPositionMargin: string;
-    pltPositionMargin: string;
+    diffWbcPositionMargin: string;
+    diffRbcPositionMargin: string;
+    diffPltPositionMargin: string;
     pbsCellAnalyzingCount: string;
     stitchCount: string;
     bfCellAnalyzingCount: string;

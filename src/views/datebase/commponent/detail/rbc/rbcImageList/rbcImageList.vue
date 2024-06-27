@@ -153,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
@@ -203,7 +203,7 @@ const moveRbcClass = ref<any>([]);
 const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
-const rightClickItem = ref([]);
+const rightClickItem = ref<any>([]);
 const rbcTotalVal = ref(0);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const imgHeightWidthArr: any = ref([]);
@@ -306,11 +306,12 @@ const removeDiv = async () => {
 
 const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const url = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
   const response = await readJsonFile({fullPath: url});
   let compareData = [];
+
   if (response.data !== 'not file') {
-    const url = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+    const url = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
     const response = await readJsonFile({fullPath: url});
     compareData = [...response.data, ...jsonData];
   } else {
@@ -322,8 +323,8 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const compressedData = pako.deflate(utf8Data);
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
-  formData.append('file', blob, `${props.selectItems.slotId}_new.json`);
-  const filePath = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`
+  formData.append('file', blob, `${props.selectItems?.slotId}_new.json`);
+  const filePath = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`
   try {
     const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 

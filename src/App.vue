@@ -474,6 +474,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           wbcMemo: '',
           rbcMemo: '',
         }
+
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
       }
     }
@@ -617,9 +618,9 @@ const cellImgGet = async (newUserId?: string) => {
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
-        sessionStorage.setItem('wbcPositionMargin', data?.wbcPositionMargin);
-        sessionStorage.setItem('rbcPositionMargin', data?.rbcPositionMargin);
-        sessionStorage.setItem('pltPositionMargin', data?.pltPositionMargin);
+        sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
+        sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
+        sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }

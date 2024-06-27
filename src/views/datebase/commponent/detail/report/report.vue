@@ -1,14 +1,14 @@
 <template>
 
-  <ClassInfoMenu @refreshClass="refreshClass"/>
+  <ClassInfoMenu @refreshClass="refreshClass" />
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
-    <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
+    <LisCbc v-if="cbcLayer" :selectItems="selectItems" />
     <div class="reportDiv">
       <div class="wbcDiv">
-        <WbcClass :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'/>
+        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' />
       </div>
       <div class="rbcDiv" v-if="!projectBm">
-        <RbcClass :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'/>
+        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' />
       </div>
       <div class="reportDetail">
         <div class="reportTitle">
@@ -146,15 +146,15 @@
       </div>
     </div>
   </div>
-  <Print v-if="printOnOff" :selectItems="selectItems" ref="printContent" :printOnOff="printOnOff"
-         :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+
+  <Print v-if="printOnOff" ref="printContent" :printOnOff="printOnOff" :selectItemWbc="selectItemWbc" @printClose="printClose"/>
 </template>
 
 <script setup lang="ts">
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, onMounted, ref} from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onMounted, ref} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
@@ -166,13 +166,12 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
+import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
 
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItemsSessionStorageData = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+const selectItems = ref<any>(null);
 const wbcInfo = ref<any>(null);
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const printOnOff = ref(false);
@@ -183,20 +182,37 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const instance = getCurrentInstance();
 const projectBm = ref(false);
 const wbcArr = ref<any>([]);
 const orderClass = ref<any>([]);
+const isLoading = ref(true);
+
+onBeforeMount(async () => {
+  await getDetailRunningInfo();
+  isLoading.value = false;
+})
 
 onMounted(async () => {
+  await getDetailRunningInfo();
   await getOrderClass();
   await initData();
   projectBm.value = window.PROJECT_TYPE === 'bm';
 });
 
+const getDetailRunningInfo = async () => {
+  try {
+    const result = await detailRunningApi(String(selectedSampleId.value));
+    selectItems.value = result.data;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItemsSessionStorageData.value?.testType);
+  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
   return !targetArray.includes(title);
 };
 
@@ -255,18 +271,18 @@ const getOrderClass = async () => {
 }
 
 async function initData(data?: any) {
-  if (selectItems.value.wbcInfoAfter && selectItems.value.wbcInfoAfter.length !== 0) {
+  if (selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0) {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     const sortedWbcInfo = sortWbcInfo(clonedWbcInfo.value, wbcArrs);
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   } else {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-    const sortedWbcInfo = sortWbcInfo(selectItems.value.wbcInfo.wbcInfo[0], wbcArrs);
+    const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   }
-  rbcInfo.value = selectItems.value.rbcInfoAfter.length !== 0 && selectItems.value.rbcInfoAfter ? selectItems.value.rbcInfoAfter : selectItems.value.rbcInfo.rbcInfo;
+  rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcInfo;
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {

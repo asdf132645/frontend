@@ -13,19 +13,38 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, getCurrentInstance} from "vue";
+import {computed, ref, onMounted, onBeforeMount} from "vue";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
 import TilingViewer from './tilingViewer.vue';
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-const selectItemsData = sessionStorage.getItem("selectItems");
-const selectItems = ref(selectItemsData ? JSON.parse(selectItemsData) : null);
+import {useStore} from "vuex";
+import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+
+const store = useStore()
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const selectItems = ref(null);
 
 
 const imgRef = ref<HTMLElement | null>(null);
 const imageContainer = ref<HTMLElement | null>(null);
+
+onBeforeMount(async () => {
+  await getDetailRunningInfo()
+})
+
 onMounted(() => {
   imgRef.value = document.querySelector('.img'); // Assign imgRef ref
 });
+
+const getDetailRunningInfo = async () => {
+  try {
+    const result = await detailRunningApi(String(selectedSampleId.value));
+    selectItems.value = result.data;
+  } catch (e) {
+    console.log(e);
+    selectItems.value = null;
+  }
+}
 
 const refreshClass = async (data: any) => {
   selectItems.value = data;
