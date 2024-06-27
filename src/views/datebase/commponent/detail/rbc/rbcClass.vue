@@ -270,7 +270,7 @@ watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
-  afterChange();
+  afterChange(newItem);
   rightClickItemSet();
 });
 
@@ -296,7 +296,7 @@ const rightClickItemSet = () => {
 
 
 watch(() => props.rbcInfo,async (newItem) => {
-  await afterChange(newItem);
+  await afterChange();
   await rbcTotalAndReCount();
   await countReAdd();
 });
@@ -446,21 +446,20 @@ const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   let rbcData: any = {};
-  if(newItem){
+  if(newItem) {
     rbcData = newItem;
-  }else{
+  } else {
     rbcData = props.selectItems;
   }
-  rbcInfoBeforeVal.value = rbcData.rbcInfo.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
-  if (typeof props.selectItems.rbcInfoAfter === 'object') {
+
+  rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
+  if (rbcData?.rbcInfoAfter && typeof props.selectItems.rbcInfoAfter === 'object') {
     rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
   } else {
     rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
-
-    rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter && props.selectItems?.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : props.selectItems?.rbcInfoAfter;
   }
 
-  classChange();
+  await classChange();
 }
 const countReAdd = async () => {
   // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
@@ -516,9 +515,6 @@ const countReAdd = async () => {
 
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal / Number(maxRbcCount.value);
-
-
-  // console.log(rbcInfoBeforeVal.value);
 };
 
 
@@ -594,7 +590,6 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
   } else {
     classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId && item.categoryId === categoryId));
   }
-  // console.log('classInfoArrUpdate', classInfoArr.value)
   emits('classInfoArrUpdate', classInfoArr.value);
 };
 
