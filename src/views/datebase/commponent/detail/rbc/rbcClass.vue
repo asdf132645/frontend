@@ -40,7 +40,7 @@
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
                          v-model="checkedClassIndices"
-                         @change="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
+                         @click="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
                 </div>
                 <span
                     @click="clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId)">
@@ -278,7 +278,6 @@ const rightClickItemSet = () => {
   rightClickItem.value = [];
   const processItems = props.selectItems?.rbcInfo.rbcClass || props.selectItems?.rbcInfo;
 
-  console.log(processItems);
   if (processItems) {
     for (const argument of processItems) {
       argument.classInfo.forEach((classInfo: any) => {
@@ -447,7 +446,6 @@ const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   let rbcData: any = {};
-  console.log(newItem)
   if(newItem){
     rbcData = newItem;
   }else{
@@ -596,12 +594,12 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
   } else {
     classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId && item.categoryId === categoryId));
   }
-
+  // console.log('classInfoArrUpdate', classInfoArr.value)
   emits('classInfoArrUpdate', classInfoArr.value);
 };
 
 const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
-  if (props.type === 'report' || isBefore.value) {
+  if (props.type === 'report') {
     return;
   }
   // rbcInfoAfterVal을 깊은 복사하여 수정

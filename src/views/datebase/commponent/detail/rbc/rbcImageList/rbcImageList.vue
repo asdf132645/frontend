@@ -204,14 +204,12 @@ const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
 const rightClickItem = ref<any>([]);
-const rbcTotalVal = ref(0);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const imgHeightWidthArr: any = ref([]);
 watch(() => rbcReData, (newItem) => {
   if(newItem){
-    removeRbcMarker();
-    removeDiv();
     rbcMarker(classInfoArr.value);
+    store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
   }
 
 }, {deep: true})
@@ -222,11 +220,11 @@ onMounted(() => {
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
   josnWidthHeight();
 });
-watch(() => props.isBefore, (newItem) => {
-  removeRbcMarker();
-  removeDiv();
-  emits('unChecked')
-}, {deep: true});
+// watch(() => props.isBefore, (newItem) => {
+//   removeRbcMarker();
+//   removeDiv();
+//   emits('unChecked')
+// }, {deep: true});
 
 const josnWidthHeight = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -294,7 +292,6 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
 const removeDiv = async () => {
   const existingOverlays = document.getElementsByClassName('overlayElement');
   const overlaysArray = Array.from(existingOverlays); // HTMLCollection을 배열로 변환
-
   // 모든 오버레이 제거
   overlaysArray.forEach(overlay => {
     viewer.value.removeOverlay(overlay);
@@ -347,6 +344,7 @@ const closeSelectBox = (event: MouseEvent) => {
 
 watch(() => props.classInfoArr, (newItem) => {
   if (newItem.length === 0) {
+    console.log('classInfoArr')
     removeDiv();
     removeRbcMarker();
   }
@@ -378,13 +376,16 @@ const hideAlert = () => {
 
 
 const rbcMarker = async (newItem: any) => {
+  console.log(newItem)
+  if(newItem.length === 0){
+    return;
+  }
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
   const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response_new = await readJsonFile({fullPath: url_new});
   const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
-
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
     for (const rbcItem of response_old.data[0].rbcClassList) {
@@ -415,7 +416,9 @@ const rbcMarker = async (newItem: any) => {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
   classInfoArr.value = newItem;
+  // console.log(newItem)
   if (newItem.length === 0) {
+    console.log('rbcMarker')
     removeRbcMarker();
   } else {
     await drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
@@ -446,16 +449,27 @@ watch(() => props.selectItems, (newItem) => {
 // const rbc
 
 const removeRbcMarker = () => {
-  let ctx = canvasOverlay.value.getContext('2d'); // canvasOverlay를 직접 사용
-  let canvas = canvasOverlay.value;
+  console.log('?')
+  const canvas = canvasOverlay.value;
+  if (!canvas) {
+    console.error('Canvas element를 찾을 수 없습니다.');
+    return null;
+  }
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    console.error('2D context를 가져올 수 없습니다.');
+    return null;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.beginPath();
   drawPath.value = [];
   return ctx;
-}
+};
+
 
 const drawRbcMarker = async (classInfoArr: any) => {
-
   // json rbcInfoPathAfter.value 로 그림 그리는곳
   const colors: any = {
     '01': 'red',
@@ -464,7 +478,12 @@ const drawRbcMarker = async (classInfoArr: any) => {
     '05': 'brown',
   };
 
-  const ctx = removeRbcMarker();
+  const ctx = removeRbcMarker(); // canvas 초기화
+  if (!ctx) {
+    console.error('Canvas context 초기화 실패');
+    return;
+  }
+
   // classInfoArr -> input 에서 체크된 값
   // rbcInfoPathAfter -> json 데이터
   // 여기서 새로 추가 된 index 로 있나 없나 따지고 after 에서 있으면 비포에서는 보여주지않는다.
@@ -472,27 +491,28 @@ const drawRbcMarker = async (classInfoArr: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
         if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
-          ctx.lineWidth = '2';
+
+          ctx.lineWidth = 2;
           ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
           let rectPath = new Path2D();
-          let width: any = '';
-          let height: any = '';
-          let classItemPosX: any = '';
-          let classItemPosY: any = '';
+          let width: number;
+          let height: number;
+          let classItemPosX: number;
+          let classItemPosY: number;
 
-          if(classItem.width){
+          if (classItem?.width) {
             width = classItem.width;
             height = classItem.height;
             classItemPosX = classItem.posX;
             classItemPosY = classItem.posY;
-          }else{
-            width = classItem.x2-classItem.x1;
-            height = classItem.y2-classItem.y1;
-            classItemPosX = classItem.x1;
-            classItemPosY = classItem.y1;
+          } else {
+            width = Number(classItem.x2) - Number(classItem.x1);
+            height = Number(classItem.y2) - Number(classItem.y1);
+            classItemPosX = Number(classItem.x1);
+            classItemPosY = Number(classItem.y1);
           }
 
-          let ddrr ={
+          let ddrr = {
             categoryId: info.categoryId,
             classNm: info.classNm,
             classId: info.classId,
@@ -501,17 +521,15 @@ const drawRbcMarker = async (classInfoArr: any) => {
             width: width,
             height: height,
             index: String(classItem.index),
-          }
+          };
           rectPath.rect(classItemPosX, classItemPosY, width, height);
-          // rectPath.rect(classItem.x1, classItem.y1, x2-x1, y2-y1);
-          drawPath.value.push(ddrr)
-          ctx.stroke(rectPath)
-
+          drawPath.value.push(ddrr);
+          ctx.stroke(rectPath);
         }
       });
     });
   });
-  await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: true});
+  await store.dispatch('commonModule/setCommonInfo', { resetRbcArr: true });
 };
 
 

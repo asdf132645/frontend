@@ -1,7 +1,7 @@
 <template>
   <ClassInfoMenu @refreshClass="refreshClass"/>
 
-  <div class="wbcContent">
+  <div class="wbcContent" v-if="isLoading">
 
     <div class="topClintInfo">
       <ul>
@@ -35,7 +35,7 @@ import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue"
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
 
-const selectItems = ref<any>(null);
+const selectItems = ref<any>({});
 const store = useStore();
 const rbcInfo = ref(null);
 const classInfoArr = ref<any>([]);
@@ -43,18 +43,19 @@ const allCheckClear = ref<boolean>(false);
 const isBefore = ref(false);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-const isLoading = ref(true);
+const isLoading = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 
-onBeforeMount(async () => {
+onMounted(async () => {
+  isLoading.value = false;
   await getDetailRunningInfo();
+  await initData();
 });
 
 watch(() => rbcReData, async (newItem: any) => {
   if (newItem) {
     const result: any = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
-    // sessionStorage.setItem('selectItems', JSON.stringify(result.data));
     rbcInfo.value = result.data;
   }
 }, {deep: true})
@@ -71,7 +72,7 @@ const getDetailRunningInfo = async () => {
     console.log(e);
     selectItems.value = null;
   }
-  isLoading.value = false;
+  isLoading.value = true;
 }
 
 const isBeforeUpdate = (val: boolean) => {
