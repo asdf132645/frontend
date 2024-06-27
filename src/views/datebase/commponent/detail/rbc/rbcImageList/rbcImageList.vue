@@ -162,6 +162,7 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 import Alert from "@/components/commonUi/Alert.vue";
+
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -193,6 +194,8 @@ const rulerWidth = ref(0);
 const viewBoxWH = ref(150);
 const tilingViewerLayer = ref(null);
 const tileExist = ref(true);
+const newItemClassInfoArr = ref<any>([]);
+
 const store = useStore();
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
@@ -204,15 +207,11 @@ const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
 const rightClickItem = ref<any>([]);
-const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const imgHeightWidthArr: any = ref([]);
-watch(() => rbcReData, (newItem) => {
-  if(newItem){
-    rbcMarker(classInfoArr.value);
-    store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
-  }
+const rbcReData = computed(() => store.state.commonModule.rbcReData);
+const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoArr);
 
-}, {deep: true})
+
 
 onMounted(() => {
   initElement();
@@ -229,12 +228,12 @@ onMounted(() => {
 const josnWidthHeight = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
-  const response_old =  await readJsonFile({fullPath: url_Old});
+  const response_old = await readJsonFile({fullPath: url_Old});
   imgHeightWidthArr.value = response_old?.data;
 }
 const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
   const existingOverlays = document.getElementsByClassName('overlayElement');
-  if(existingOverlays.length === 0){
+  if (existingOverlays.length === 0) {
     showErrorAlert('Nothing has been selected');
     return;
   }
@@ -292,6 +291,7 @@ const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: s
 const removeDiv = async () => {
   const existingOverlays = document.getElementsByClassName('overlayElement');
   const overlaysArray = Array.from(existingOverlays); // HTMLCollection을 배열로 변환
+
   // 모든 오버레이 제거
   overlaysArray.forEach(overlay => {
     viewer.value.removeOverlay(overlay);
@@ -342,15 +342,30 @@ const closeSelectBox = (event: MouseEvent) => {
   }
 };
 
-watch(() => props.classInfoArr, (newItem) => {
-  if (newItem.length === 0) {
-    console.log('classInfoArr')
+
+watch(() => props.classInfoArr, (newData) => {
+  newItemClassInfoArr.value = newData;
+  if (newData.length === 0) {
     removeDiv();
     removeRbcMarker();
   }
-
-  rbcMarker(newItem);
+  rbcMarker(newData);
 }, {deep: true});
+
+watch(classInfoArrNewReData, async (nenenen, oldItem) => {
+  if(rbcReData.value){
+    if (nenenen.length === 0) {
+      removeDiv();
+      removeRbcMarker();
+    }
+    await rbcMarker(nenenen);
+    await  store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
+    await store.dispatch('commonModule/setCommonInfo', {classInfoArr: []});
+    return;
+  }
+
+  // Optionally removeDiv() can be called here if needed
+}, {deep: true})
 
 const rbcClassRightClick = (event: MouseEvent) => {
   if (props.isBefore || classInfoArr.value.length === 0) {
@@ -376,10 +391,6 @@ const hideAlert = () => {
 
 
 const rbcMarker = async (newItem: any) => {
-  console.log(newItem)
-  if(newItem.length === 0){
-    return;
-  }
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
   const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
@@ -416,16 +427,13 @@ const rbcMarker = async (newItem: any) => {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
   classInfoArr.value = newItem;
-  // console.log(newItem)
+
   if (newItem.length === 0) {
-    console.log('rbcMarker')
     removeRbcMarker();
   } else {
     await drawRbcMarker(newItem); // 변경된 항목으로 마커 다시 그리기
   }
 }
-
-
 
 
 watch(() => props.selectItems, (newItem) => {
@@ -448,8 +456,7 @@ watch(() => props.selectItems, (newItem) => {
 
 // const rbc
 
-const removeRbcMarker = () => {
-  console.log('?')
+const removeRbcMarker  = () => {
   const canvas = canvasOverlay.value;
   if (!canvas) {
     console.error('Canvas element를 찾을 수 없습니다.');
@@ -477,7 +484,6 @@ const drawRbcMarker = async (classInfoArr: any) => {
     '03': 'blue',
     '05': 'brown',
   };
-
   const ctx = removeRbcMarker(); // canvas 초기화
   if (!ctx) {
     console.error('Canvas context 초기화 실패');
@@ -529,7 +535,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
       });
     });
   });
-  await store.dispatch('commonModule/setCommonInfo', { resetRbcArr: true });
+  await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: true});
 };
 
 
@@ -1131,6 +1137,7 @@ const onClickZoom = () => {
   overflow: hidden;
   position: relative; /* 수정 */
 }
+
 .tab-btn_img_list {
   padding: 10px 20px;
   cursor: pointer;
@@ -1193,6 +1200,7 @@ const onClickZoom = () => {
   color: white;
   background-color: #2c2d2c;
 }
+
 #tiling-viewer_img_list {
   position: relative;
   width: 100%;

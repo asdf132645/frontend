@@ -38,8 +38,10 @@ export interface CommonState {
     cbcLayer: boolean;
     inhaTestCode: string;
     rbcReData: boolean;
+    rbcReDataClass: boolean;
     resetRbcArr: boolean;
     selectedSampleId: string;
+    classInfoArr: any[];
 }
 
 interface CommonModule {
@@ -84,8 +86,10 @@ interface CommonModule {
         setCbcLayer: (state: CommonState, value: boolean) => void;
         setInhaTestCode: (state: CommonState, value: string) => void;
         setRbcReData: (state: CommonState, value: boolean) => void;
+        setRbcReDataClass: (state: CommonState, value: boolean) => void;
         setResetRbcArr: (state: CommonState, value: boolean) => void;
         setSelectedSampleId: (state: CommonState, value: string) => void;
+        setClassInfoArr: (state: CommonState, value: any[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -131,8 +135,10 @@ export const commonModule: CommonModule = {
         cbcLayer: false,
         inhaTestCode: '',
         rbcReData: false,
+        rbcReDataClass: false,
         resetRbcArr: false,
         selectedSampleId: '',
+        classInfoArr:[],
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -255,8 +261,15 @@ export const commonModule: CommonModule = {
         setRbcReData(state: CommonState, value: boolean): void {
             state.rbcReData = value;
         },
+        setRbcReDataClass(state: CommonState, value: boolean): void {
+            state.rbcReDataClass = value;
+        },
         setResetRbcArr(state: CommonState, value: boolean): void {
             state.resetRbcArr = value;
+        },
+        // classInfoArr
+        setClassInfoArr(state: CommonState, value: any[]): void {
+            state.classInfoArr = value;
         },
     },
     actions: {
@@ -382,9 +395,16 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('rbcReData')) {
                 commit('setRbcReData', payload.rbcReData)
             }
+            if(payload.hasOwnProperty('rbcReDataClass')){
+                commit('setRbcReDataClass', payload.rbcReDataClass)
+            }
             // resetRbcArr
             if(payload.hasOwnProperty('resetRbcArr')) {
                 commit('setResetRbcArr', payload.resetRbcArr)
+            }
+        //     classInfoArr
+            if(payload.hasOwnProperty('classInfoArr')) {
+                commit('setClassInfoArr', payload.classInfoArr)
             }
         },
     },

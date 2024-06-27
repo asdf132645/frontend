@@ -539,6 +539,15 @@ button.degreeAllCheckBtn {
 .categories.rbcClass ul.degree.analysis {
     width: 25%;
 }
+.defaultText {
+    font-size: 0.8rem;
+}
+.underline {
+    font-size: 0.8rem;
+    color: #29c7ca;
+    margin-top: 5px;
+    border-bottom: 1px solid #29c7ca;
+}
 .categories.rbcClass > .degree > li > .rbcSapn {
     position: absolute;
     top: 4px;

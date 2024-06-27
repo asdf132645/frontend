@@ -16,11 +16,11 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear" :rbcInfo="rbcInfo" />
+      <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear" :rbcInfo="rbcInfo" />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcImageList  @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo" />
+      <RbcImageList  @unChecked="unChecked" :isBefore="isBefore"  :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo" />
     </div>
   </div>
 </template>
@@ -52,13 +52,13 @@ onMounted(async () => {
   await initData();
 });
 
-watch(() => rbcReData, async (newItem: any) => {
-  if (newItem) {
-    const result: any = await detailRunningApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
-    rbcInfo.value = result.data;
-  }
-}, {deep: true})
+// watch(() => rbcReData, async (newItem: any) => {
+//   if (newItem) {
+//     const result: any = await detailRunningApi(String(selectedSampleId.value));
+//     selectItems.value = result.data;
+//     rbcInfo.value = result.data;
+//   }
+// }, {deep: true})
 
 const initData = async () => {
   rbcInfo.value = selectItems.value;
@@ -86,7 +86,17 @@ const refreshClass = async (data: any) => {
 }
 
 const classInfoArrUpdate = (data: any) => {
+  console.log(data);
   classInfoArr.value = data;
+}
+
+const classInfoArrUpdateRe = async (data: any) => {
+  const result: any = await detailRunningApi(String(selectedSampleId.value));
+  selectItems.value = result.data;
+  rbcInfo.value = result.data;
+  let newData: any = [];
+  newData = data;
+  await store.dispatch('commonModule/setCommonInfo', {classInfoArr: newData});
 }
 
 const unChecked = () => {

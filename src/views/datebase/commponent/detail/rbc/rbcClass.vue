@@ -1,5 +1,5 @@
 <template>
-<!--  {{ jsonIsBool }}-->
+  <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt2">
@@ -35,16 +35,26 @@
             <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li>
-                <div v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report'">
+              <li @click="handleLiClick(outerIndex, innerIndex, classIndex, classInfo, category)">
+                <div
+                    v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
-                         v-model="checkedClassIndices"
-                         @click="updateClassInfoArr(classInfo.classNm, $event.target.checked, category.categoryId, classInfo.classId)">
+                         v-model="checkedClassIndices">
                 </div>
-                <span
-                    @click="clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId)">
-                  {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
+                <span>
+                  {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}
+                </span>
+              </li>
+              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+                <div v-if="type !== 'report'">
+                  <input type="checkbox"
+                         v-show="!except"
+                         value="9-9-2"
+                         v-model="checkedClassIndices"
+                         @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
+                </div>
+                <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>
               </li>
             </template>
           </ul>
@@ -77,6 +87,7 @@
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], degreeIndex - 1, false)"
                   />
                 </span>
+
               </li>
               <li v-else>
                 <span v-if="classInfo.degree === '0'" class="rbcSapn">
@@ -104,6 +115,14 @@
                   />
                 </span>
               </li>
+              <li  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                  -
+              </li>
+              <div v-if="classIndex === category.classInfo.length - 1">
+                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                  Total
+                </div>
+              </div>
             </template>
 
           </ul>
@@ -114,6 +133,14 @@
               <li>
                 {{ percentageChange(classInfo?.originalDegree) }}
               </li>
+              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+                {{ malariaCount || 0 }}
+              </li>
+              <div v-if="classIndex === category.classInfo.length - 1">
+                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                  100%
+                </div>
+              </div>
             </template>
           </ul>
           <ul class="rbcPercent">
@@ -123,6 +150,17 @@
               <li>
                 {{ classInfo?.originalDegree }}
               </li>
+              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                {{ percentageChange(malariaCount) }}
+              </li>
+              <div v-if="classIndex === category.classInfo.length - 1">
+                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                  {{ sizeTotalTwo }}
+                </div>
+              </div>
+              <div class="underline" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                {{ shapeBodyTotal }}
+              </div>
             </template>
           </ul>
         </div>
@@ -146,27 +184,27 @@
             </div>
             <span @click="clickChangeSens('Platelet', 'Others', '04' ,'01')">Platelet</span>
           </li>
-          <li>
-            <div v-if="type !== 'report'">
-              <input type="checkbox"
-                     v-show="!except"
-                     value="9-9-2"
-                     v-model="checkedClassIndices"
-                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
-            </div>
-            <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>
-          </li>
+<!--          <li>-->
+<!--            <div v-if="type !== 'report'">-->
+<!--              <input type="checkbox"-->
+<!--                     v-show="!except"-->
+<!--                     value="9-9-2"-->
+<!--                     v-model="checkedClassIndices"-->
+<!--                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">-->
+<!--            </div>-->
+<!--            <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>-->
+<!--          </li>-->
         </ul>
         <ul class="degree analysis">
           <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
-          <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
+<!--          <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>-->
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
       </div>
     </div>
     <div class="sensitivityDiv" v-if="type !== 'report'">
-      <select v-model="selectedClass"  @change="classChange">
+      <select v-model="selectedClass" @change="classChange">
         <option v-for="(item) in rightClickItem" :key="item.classNm">
           {{ item.classNm }}
         </option>
@@ -212,6 +250,7 @@ import moment from "moment/moment";
 import SliderBar from "@/components/commonUi/SliderBar.vue";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -248,6 +287,10 @@ const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
+const rbcDegreeStandard = ref<any>([]);
+const sizeTotalTwo = ref(0);
+const chromiaTotalTwo = ref(0);
+const shapeBodyTotal = ref(0);
 onMounted(() => {
   const {rbcInfo, rbcMemo} = props.selectItems;
   const {path} = router.currentRoute.value;
@@ -272,6 +315,7 @@ watch(() => props.selectItems, (newItem) => {
   memo.value = props.selectItems?.rbcMemo;
   afterChange();
   rightClickItemSet();
+  allCheckType.value = true;
 });
 
 const rightClickItemSet = () => {
@@ -281,7 +325,7 @@ const rightClickItemSet = () => {
   if (processItems) {
     for (const argument of processItems) {
       argument.classInfo.forEach((classInfo: any) => {
-        if(classInfo.classNm !== 'Normal'){
+        if (classInfo.classNm !== 'Normal') {
           rightClickItem.value.push({...classInfo, categoryId: argument.categoryId});
         }
       });
@@ -295,14 +339,16 @@ const rightClickItemSet = () => {
 }
 
 
-watch(() => props.rbcInfo,async (newItem) => {
+watch(() => props.rbcInfo, async (newItem) => {
   await afterChange(newItem);
   await rbcTotalAndReCount();
   await countReAdd();
+  await getRbcDegreeData();
+  await reDegree();
 });
 
-watch(() => resetRbcArr, async  (newItem) => {
-  if(newItem){
+watch(() => resetRbcArr, async (newItem) => {
+  if (newItem) {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
   }
 }, {deep: true})
@@ -323,16 +369,37 @@ watch(() => rbcReData, async (newItem) => {
       // await afterChange();
       await rbcTotalAndReCount();
       await countReAdd();
+      await getRbcDegreeData();
+      await reDegree();
     }, 1000);
   }
 
-}, { deep: true });
+}, {deep: true});
 
 
 watch(() => props.selectItems, (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
 });
+
+function handleLiClick(outerIndex: number, innerIndex: any, classIndex: any, classInfo: any, category: any) {
+  toggleCheckbox(outerIndex, innerIndex, classIndex, classInfo, category);
+  clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId);
+}
+
+function toggleCheckbox(outerIndex: number, innerIndex: number, classIndex: number, classInfo: any, category: any) {
+  const value = `${outerIndex}-${innerIndex}-${classIndex}`;
+  const isChecked = checkedClassIndices.value.includes(value);
+
+  if (isChecked) {
+    checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== value);
+  } else {
+    checkedClassIndices.value.push(value);
+  }
+
+  updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
+}
+
 const rbcTotalAndReCount = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
@@ -373,12 +440,37 @@ const rbcTotalAndReCount = async () => {
     return;
   }
   let total = 0;
-  for (const el of rbcInfoPathAfter.value) {
-    if(el.categoryId === '01'){
-      total = el.classInfo[el.classInfo.length - 1].index.replace('S', '');// 마지막 요소 가져오기
+  let chromiaTotalval = 0;
+  let shapeBodyTotalVal = 0;
+  let shapeBodyTotalVal2 = 0;
+  rbcInfoPathAfter.value.forEach(el => {
+    const lastIndex = el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, ''); // 마지막 요소 가져오기
+
+    switch (el.categoryId) {
+      case '01':
+        total = lastIndex;
+        break;
+      case '02':
+        chromiaTotalval = lastIndex;
+        break;
+      case '03':
+        shapeBodyTotalVal = lastIndex;
+        break;
+      case '05':
+        shapeBodyTotalVal2 = lastIndex;
+        break;
+      default:
+        // Handle unexpected categoryId if needed
+        break;
     }
-  }
-  rbcTotalVal.value = total;
+  });
+
+  rbcTotalVal.value = Number(total) + 1;
+  sizeTotalTwo.value = Number(total) + 1;
+  chromiaTotalTwo.value = chromiaTotalval;
+  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2);
+  console.log('shapeBodyTotalVal', shapeBodyTotalVal)
+  console.log('shapeBodyTotalVal2', shapeBodyTotalVal2)
 }
 const percentageChange = (count: any): any => {
   const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
@@ -410,7 +502,7 @@ const sensRbcReJsonSend = async () => {
   jsonIsBool.value = true;
   await rbcInfoAfterSensitivity(selectedClass.value);
 
-  await  store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
+  await store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: {
@@ -426,7 +518,7 @@ const sensRbcReJsonSend = async () => {
 }
 
 const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
-  if(classNm === 'Normal'){
+  if (classNm === 'Normal') {
     return;
   }
   const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
@@ -446,9 +538,9 @@ const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   let rbcData: any = {};
-  if(newItem){
+  if (newItem) {
     rbcData = newItem;
-  }else{
+  } else {
     rbcData = props.selectItems;
   }
   rbcInfoBeforeVal.value = rbcData.rbcInfo.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
@@ -498,15 +590,15 @@ const countReAdd = async () => {
       const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
       maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
     }
-    if(el.categoryId === '04'){
+    if (el.categoryId === '04') {
       for (const xel of el.classInfo) {
-        if(xel.classNm === 'Platelet'){
+        if (xel.classNm === 'Platelet') {
           totalPLT += 1;
         }
       }
-    }else if (el.categoryId === '05'){
+    } else if (el.categoryId === '05') {
       for (const xel of el.classInfo) {
-        if(xel.classNm === 'Malaria'){
+        if (xel.classNm === 'Malaria') {
           malariaTotal += 1;
         }
       }
@@ -561,7 +653,7 @@ const toggleAll = (check: boolean, category?: any) => {
         });
       });
     }
-     if(item.categoryId === '05'){
+    if (item.categoryId === '05') {
       allCheckboxes.push({
         classNm: 'Malaria',
         categoryId: '05',
@@ -594,9 +686,20 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
   } else {
     classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId && item.categoryId === categoryId));
   }
-  // console.log('classInfoArrUpdate', classInfoArr.value)
+
   emits('classInfoArrUpdate', classInfoArr.value);
 };
+watch(rbcReData, async (newItem, oldItem) => {
+  if (newItem) {
+    updataClassInfoaArr();
+    return;
+  }
+
+  // Optionally removeDiv() can be called here if needed
+}, {deep: true})
+const updataClassInfoaArr = () => {
+  emits('classInfoArrUpdateRe', classInfoArr.value);
+}
 
 const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, isNormal = false) => {
   if (props.type === 'report') {
@@ -719,21 +822,146 @@ const onCommit = async () => {
   await resRunningItem(updatedRuningInfo);
 }
 
+const getRbcDegreeData = async () => {
+  try {
+    const result = await getRbcDegreeApi();
+    const data = result.data;
+    rbcDegreeStandard.value = data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+
+const reDegree = async () => {
+  let totalCount = rbcTotalVal.value;
+  let sizeTotal = sizeTotalTwo.value;
+  let chromiaTotal = chromiaTotalTwo.value;
+
+  rbcInfoBeforeVal.value.forEach((rbcCategory: any, idx1: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        // rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.degree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          // 0
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          // 3
+          else setDegree('3');
+
+        }
+      });
+    });
+  });
+  rbcInfoBeforeVal.value.forEach((rbcCategory: any, idx1: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        // rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.originalDegree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+            console.log(percent)
+          }
+
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          // 0
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          // 3
+          else setDegree('3');
+
+        }
+      });
+    });
+  });
+
+
+  rbcInfoBeforeVal.value.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      // size
+      if (rbcCategory.categoryId === '01') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // chromia
+      if (rbcCategory.categoryId === '02') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // Poikilocytosis
+      if (rbcCategory.categoryId === '03') {
+        if (rbcClass.classId === '01') {
+          // normal
+          rbcCategory.classInfo[0].degree = '1'
+          // poikilo
+          rbcCategory.classInfo[1].degree = '0'
+        }
+
+        if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
+          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+
+          if (Number(rbcClass.degree) > poikiloDegree) {
+            rbcCategory.classInfo[0].degree = '0'
+            rbcCategory.classInfo[1].degree = rbcClass.degree
+          }
+        }
+      }
+    });
+  });
+  console.log(rbcInfoBeforeVal.value)
+}
+
 </script>
-
-
-<style scoped>
-
-.table-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.rbc-head,
-.rbc-container {
-  flex: 1;
-  padding-right: 20px;
-  text-align: left;
-}
-
-</style>
