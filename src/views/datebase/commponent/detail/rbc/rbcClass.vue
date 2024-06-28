@@ -252,6 +252,7 @@ import SliderBar from "@/components/commonUi/SliderBar.vue";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import EventBus from "@/eventBus/eventBus";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -504,17 +505,15 @@ const sensRbcReJsonSend = async () => {
   await rbcInfoAfterSensitivity(selectedClass.value);
 
   await store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
-  instance?.appContext.config.globalProperties.$socket.emit('message', {
-    type: 'SEND_DATA',
-    payload: {
-      jobCmd: 'RBC_RE_CLASSIFICATION',
-      sensitivity: Number(sliderValue.value),
-      reqDttm: tcpReq().embedStatus.settings.reqDttm,
-      reqUserId: userModuleDataGet.value.userId || '',
-      className: selectedClass.value.replace(/\s/g, ''),
-      slotId: props.selectItems?.slotId,
-    }
-  });
+  const payload = {
+    jobCmd: 'RBC_RE_CLASSIFICATION',
+    sensitivity: Number(sliderValue.value),
+    reqDttm: tcpReq().embedStatus.settings.reqDttm,
+    reqUserId: userModuleDataGet.value.userId || '',
+    className: selectedClass.value.replace(/\s/g, ''),
+    slotId: props.selectItems?.slotId,
+  };
+  EventBus.publish('childEmitSocketData', payload);
 
 }
 
