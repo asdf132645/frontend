@@ -542,11 +542,12 @@ const afterChange = async (newItem?: any) => {
     rbcData = props.selectItems;
   }
 
-  rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData.rbcInfo;
+  rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
   if (rbcData?.rbcInfoAfter && typeof props.selectItems.rbcInfoAfter === 'object') {
     rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
   } else {
-    rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
+    // rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
+    rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData;
   }
 
   await classChange();

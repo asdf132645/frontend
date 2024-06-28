@@ -171,12 +171,12 @@ import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
 
-const selectItems = ref<any>(null);
+const selectItems = ref<any>([]);
 const wbcInfo = ref<any>(null);
 const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const printOnOff = ref(false);
 const printContent = ref(null);
-const rbcInfo = ref([]);
+const rbcInfo = ref<any>([]);
 const selectItemRbc = sessionStorage.getItem("selectItemRbc");
 const userModuleDataGet = computed(() => store.state.userModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
@@ -205,6 +205,7 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    rbcInfo.value = result.data;
   } catch (e) {
     console.log(e);
   }
@@ -282,7 +283,7 @@ async function initData(data?: any) {
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   }
-  rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcInfo;
+  rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcClass;
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
