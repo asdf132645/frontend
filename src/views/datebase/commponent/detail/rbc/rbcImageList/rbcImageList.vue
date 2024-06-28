@@ -437,21 +437,21 @@ const rbcMarker = async (newItem: any) => {
 }
 
 
-watch(() => props.selectItems, (newItem) => {
-  console.log('?')
+watch(() => props.selectItems, async (newItem) => {
+  await nextTick();
   const tilingViewerLayer = document.getElementById('tiling-viewer_img_list');
   if (tilingViewerLayer) {
     tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
 
-    // 다시 그리는 HTML 코드 생성
-    const newHtml = `
-        <div id="tiling-viewer_img_list" ref="tilingViewerLayer"></div>
-      `;
+    // OpenSeadragon 인스턴스가 존재하면 초기화하지 않고 캔버스만 업데이트
+    if (viewer.value) {
+      viewer.value.destroy(); // 기존 뷰어 인스턴스 파괴
+    }
 
-    // 생성한 HTML 코드를 tilingViewerLayer에 추가
-    tilingViewerLayer.insertAdjacentHTML('beforeend', newHtml);
+
     activeTab.value = 'lowMag';
-    initElement();
+    // await josnWidthHeight();
+    await initElement();
   }
 
 });
