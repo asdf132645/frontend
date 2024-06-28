@@ -242,7 +242,6 @@ import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentIns
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import Button from "@/components/commonUi/Button.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
@@ -282,7 +281,6 @@ const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Macrocyte');
 const allCheckType = ref(true);
-const instance = getCurrentInstance();
 const rbcInfoPathAfter = ref<any>([]);
 const rbcTotalVal = ref(0);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);

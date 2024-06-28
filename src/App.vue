@@ -109,7 +109,6 @@ watch(reqArr.value, async (newVal, oldVal) => {
 
   // `notSysRunInfo` 생성 최적화
   const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
-  console.log(notSysRunInfo[0])
   // `notSysRunInfo`와 `uniqueReqArr` 처리
   if (notSysRunInfo.length > 0) {
     await sendMessage(notSysRunInfo[0]);
