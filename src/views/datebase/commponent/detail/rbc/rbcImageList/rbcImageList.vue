@@ -450,7 +450,7 @@ watch(() => props.selectItems, async (newItem) => {
 
 
     activeTab.value = 'lowMag';
-    await josnWidthHeight();
+    // await josnWidthHeight();
     await initElement();
   }
 
