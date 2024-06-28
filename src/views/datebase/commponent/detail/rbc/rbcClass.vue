@@ -469,8 +469,6 @@ const rbcTotalAndReCount = async () => {
   sizeTotalTwo.value = Number(total) + 1;
   chromiaTotalTwo.value = chromiaTotalval;
   shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
-  console.log('shapeBodyTotalVal', shapeBodyTotalVal)
-  console.log('shapeBodyTotalVal2', shapeBodyTotalVal2)
 }
 const percentageChange = (count: any): any => {
   const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
@@ -895,7 +893,6 @@ const reDegree = async () => {
             percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
-            console.log(percent)
           }
 
           if (isNaN(percent)) {
@@ -955,7 +952,6 @@ const reDegree = async () => {
       }
     });
   });
-  console.log(rbcInfoBeforeVal.value)
 }
 
 </script>
