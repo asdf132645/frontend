@@ -1,5 +1,5 @@
 <template>
-<!--  {{ jsonIsBool }}-->
+  <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt2">
@@ -115,11 +115,12 @@
                   />
                 </span>
               </li>
-              <li  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
-                  -
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                -
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
-                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
                   Total
                 </div>
               </div>
@@ -133,11 +134,13 @@
               <li>
                 {{ percentageChange(classInfo?.originalDegree) }}
               </li>
-              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
                 {{ malariaCount || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
-                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
                   100%
                 </div>
               </div>
@@ -150,15 +153,18 @@
               <li>
                 {{ classInfo?.originalDegree }}
               </li>
-              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 {{ percentageChange(malariaCount) }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
-                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
                   {{ sizeTotalTwo }}
                 </div>
               </div>
-              <div class="underline" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+              <div class="underline"
+                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 {{ shapeBodyTotal }}
 
               </div>
@@ -185,20 +191,20 @@
             </div>
             <span @click="clickChangeSens('Platelet', 'Others', '04' ,'01')">Platelet</span>
           </li>
-<!--          <li>-->
-<!--            <div v-if="type !== 'report'">-->
-<!--              <input type="checkbox"-->
-<!--                     v-show="!except"-->
-<!--                     value="9-9-2"-->
-<!--                     v-model="checkedClassIndices"-->
-<!--                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">-->
-<!--            </div>-->
-<!--            <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>-->
-<!--          </li>-->
+          <!--          <li>-->
+          <!--            <div v-if="type !== 'report'">-->
+          <!--              <input type="checkbox"-->
+          <!--                     v-show="!except"-->
+          <!--                     value="9-9-2"-->
+          <!--                     v-model="checkedClassIndices"-->
+          <!--                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">-->
+          <!--            </div>-->
+          <!--            <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>-->
+          <!--          </li>-->
         </ul>
         <ul class="degree analysis">
           <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
-<!--          <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>-->
+          <!--          <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>-->
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
@@ -210,7 +216,7 @@
           {{ item.classNm }}
         </option>
       </select>
-      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more" />
+      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>
       <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
     </div>
     <!--    <div v-if="type !== 'report'" class="beforeAfterBtn">-->
@@ -291,6 +297,9 @@ const rbcDegreeStandard = ref<any>([]);
 const sizeTotalTwo = ref(0);
 const chromiaTotalTwo = ref(0);
 const shapeBodyTotal = ref(0);
+const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
+const rbcSendtimerId = ref<number | null>(null);
+
 onMounted(() => {
   const {rbcInfo, rbcMemo} = props.selectItems;
   const {path} = router.currentRoute.value;
@@ -494,6 +503,28 @@ const classChange = () => {
 
   sliderValue.value = 50;
 };
+const resetTimer = () => {
+  if (rbcSendtimerId.value !== null) {
+    clearTimeout(rbcSendtimerId.value);
+  }
+};
+
+
+
+watch(rbcReDataCheck, (newVal) => {
+  resetTimer();
+
+  if (rbcSendtimerId.value !== null) {
+    clearInterval(rbcSendtimerId.value);
+  }
+
+  rbcSendtimerId.value = window.setInterval(() => {
+    if (newVal) {
+      sensRbcReJsonSend();
+    }
+  }, 800);
+}, { deep: true });
+
 
 
 const sensRbcReJsonSend = async () => {
@@ -510,7 +541,6 @@ const sensRbcReJsonSend = async () => {
     slotId: props.selectItems?.slotId,
   };
   EventBus.publish('childEmitSocketData', payload);
-
 }
 
 const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {

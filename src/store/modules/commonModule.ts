@@ -42,6 +42,7 @@ export interface CommonState {
     resetRbcArr: boolean;
     selectedSampleId: string;
     classInfoArr: any[];
+    rbcReDataCheck: boolean;
 }
 
 interface CommonModule {
@@ -90,6 +91,7 @@ interface CommonModule {
         setResetRbcArr: (state: CommonState, value: boolean) => void;
         setSelectedSampleId: (state: CommonState, value: string) => void;
         setClassInfoArr: (state: CommonState, value: any[]) => void;
+        setRbcReDataCheck: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -139,6 +141,7 @@ export const commonModule: CommonModule = {
         resetRbcArr: false,
         selectedSampleId: '',
         classInfoArr:[],
+        rbcReDataCheck: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -270,6 +273,9 @@ export const commonModule: CommonModule = {
         // classInfoArr
         setClassInfoArr(state: CommonState, value: any[]): void {
             state.classInfoArr = value;
+        },
+        setRbcReDataCheck(state: CommonState, value: boolean): void {
+            state.rbcReDataCheck = value;
         },
     },
     actions: {
@@ -405,6 +411,9 @@ export const commonModule: CommonModule = {
         //     classInfoArr
             if(payload.hasOwnProperty('classInfoArr')) {
                 commit('setClassInfoArr', payload.classInfoArr)
+            }
+            if (payload.hasOwnProperty('rbcReDataCheck')){
+                commit('setRbcReDataCheck', payload.rbcReDataCheck)
             }
         },
     },

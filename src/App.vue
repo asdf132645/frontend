@@ -67,6 +67,7 @@ let countingInterRunval: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
+
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
@@ -77,6 +78,8 @@ const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
+const rbcSendtimerId = ref<number | undefined>(undefined);
+
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -96,19 +99,20 @@ const getIpAddress = async (ip: string) => {
   }
 }
 
+
 watch(reqArr.value, async (newVal, oldVal) => {
   if (!newVal.reqArr) return;
+  const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
+  const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
+
   if (deleteData.value) {
     deleteData.value = false;
     await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     return
   }
-  const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
 
   if (uniqueReqArr.length === 0) return;
 
-  // `notSysRunInfo` 생성 최적화
-  const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
   // `notSysRunInfo`와 `uniqueReqArr` 처리
   if (notSysRunInfo.length > 0) {
     await sendMessage(notSysRunInfo[0]);
@@ -119,6 +123,8 @@ watch(reqArr.value, async (newVal, oldVal) => {
   // `reqArrPaste` 상태 초기화
   await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
 });
+
+
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -223,9 +229,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'RBC_RE_CLASSIFICATION':
-        console.log('RBC_RE_CLASSIFICATION');
+        console.log('RBC_RE_CLASSIFICATION RES');
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataClass: true});
         await store.dispatch('commonModule/setCommonInfo', {rbcReData: true});
+        await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
         break;
       case 'SYSINFO':
         await sysInfoStore(parseDataWarp);
@@ -558,6 +565,7 @@ const runInfoPostWebSocket = async () => {
 const emitSocketData = async (payload: object) => {
   // console.log('sss')
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
+  await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
 };
 
 const sendSettingInfo = () => {
