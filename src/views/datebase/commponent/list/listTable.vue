@@ -380,7 +380,6 @@ const rowDbClick = async (item) => {
   }
 
   const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
 
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});

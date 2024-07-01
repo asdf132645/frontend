@@ -748,8 +748,6 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   // rbcInfoAfterVal 업데이트
   rbcInfoAfterVal.value = rbcInfoAfter;
 
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(rbcInfoAfter));
-
   const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfter,

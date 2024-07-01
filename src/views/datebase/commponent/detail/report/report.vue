@@ -177,8 +177,6 @@ const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const printOnOff = ref(false);
 const printContent = ref(null);
 const rbcInfo = ref<any>([]);
-const selectItemRbc = sessionStorage.getItem("selectItemRbc");
-const userModuleDataGet = computed(() => store.state.userModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
