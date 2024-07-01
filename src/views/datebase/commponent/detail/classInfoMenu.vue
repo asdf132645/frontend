@@ -142,7 +142,7 @@ const hideAlert = () => {
 };
 
 const deleteConnectionStatus = async () => {
-  sessionStorage.setItem('dbBaseTrClickId', String(selectItems.value?.id));
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id) });
 
   const req = `oldPcIp=${ipAddress.value}`
   await clearPcIpState(req)
@@ -273,7 +273,7 @@ const handleDataResponse = async (dbId: any, res: any) => {
   const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
   sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedWbcInfo));
-  sessionStorage.setItem('dbBaseTrClickId', String(dbId));
+  await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(dbId) });
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: sortedWbcInfo});
   await updateUpDown(resClassInfo, resData.value);
 };
