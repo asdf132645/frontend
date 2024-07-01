@@ -1,7 +1,7 @@
 <template>
   <div class="mt1">
     <transition name="fade" mode="out-in">
-      <div class="slider" v-if="images.length > 0">
+      <div class="slider-found" v-if="images.length > 0">
         <template v-for="type in images" :key="type.id">
           <img
               :src="getImageUrl(type)"
@@ -94,31 +94,4 @@ function getImageUrl(types: RunningPathItem[] | undefined): string[] {
 
   return imageUrls;
 }
-
-
-
-
-
-
 </script>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
-.slider {
-  position: relative;
-  overflow: hidden;
-  max-height: 135px;
-}
-.slider img {
-  width: 12%;
-}
-button {
-  margin-top: 10px;
-  cursor: pointer;
-}
-</style>

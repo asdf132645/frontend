@@ -90,18 +90,3 @@ function hideImage(id: string, fileName: string) {
   hiddenImages.value[`${id}-${fileName}`] = true;
 }
 </script>
-
-<style scoped>
-.image-container {
-  display: flex;
-  flex-wrap: wrap;
-  max-height: 348px;
-  overflow: auto;
-}
-
-.image-container img {
-  max-width: 100px;
-  max-height: 100px;
-  margin: 5px;
-}
-</style>

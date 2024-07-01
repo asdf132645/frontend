@@ -2,29 +2,29 @@
   <div class="closeViewer" @click="closeViewer" v-if="buttonOfen">x</div>
   <div id="viewerSmall"></div>
   <div class="leftImgList">
-    <ul class="">
+    <ul class="leftImgUl">
       <p>Partical Image</p>
-      <li v-for="(image, index) in paImages" :key="index">
+      <li v-for="(image, index) in paImages" :key="index" class="leftImgLi">
         <img :src="getImageUrlsSmallImg(image, 'particle')" alt="Partical Image"
              @dblclick="openInViewer(getImageUrls(image, 'particle'))">
       </li>
     </ul>
-    <ul class="">
+    <ul class="leftImgUl">
       <p>Ideal Zone</p>
-      <li v-for="(image, index) in idealZoneImages" :key="index" style="width:100px">
+      <li v-for="(image, index) in idealZoneImages" :key="index" class="leftImgLi" style="width:100px">
         <img :src="getImageUrlsSmallImg(image, 'idealZone')" @dblclick="openInViewer(getImageUrls(image, 'idealZone'))">
       </li>
     </ul>
-    <ul class="">
+    <ul class="leftImgUl">
       <div>
         <p>Ideal stitch</p>
-        <li v-for="(image, index) in idealStitchImages" :key="index">
+        <li v-for="(image, index) in idealStitchImages" :key="index" class="leftImgLi">
           <img :src="getImageUrlsSmallImg(image, 'idealStitch')" @dblclick="openInViewer(getImageUrls(image, 'idealStitch'))">
         </li>
       </div>
       <div>
         <p>Megakaryocyte</p>
-        <li v-for="(image, index) in megaImages" :key="index">
+        <li v-for="(image, index) in megaImages" :key="index" class="leftImgLi">
           <img :src="getImageUrlsSmallImg(image, 'mega')" @dblclick="openInViewer(getImageUrls(image, 'mega'))">
         </li>
       </div>
@@ -206,28 +206,3 @@ const closeViewer = () => {
 
 
 </script>
-
-<style scoped>
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 10px;
-}
-
-div#viewerSmall {
-  position: fixed;
-  top: 0;
-  height: 100%!important;
-}
-.closeViewer {
-  position: absolute;
-  font-size: 3.9rem;
-  z-index: 999;
-  right: 25px;
-  top: 12px;
-  cursor: pointer;
-}
-</style>
