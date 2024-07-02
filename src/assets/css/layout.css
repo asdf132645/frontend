@@ -396,7 +396,7 @@ table.settingTable select {
 
 button.saveBtn, .defaultBtn {
     margin-top: 10px;
-    background: none;
+    background-color: transparent; /* 기본 배경색 */
     border: 1px solid #fff;
     border-radius: 5px;
     color: #fff;
@@ -736,6 +736,19 @@ div#viewerSmall {
     top: 12px;
     cursor: pointer;
 }
+.blinkGripper {
+    animation: blinkGripper-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blinkGripper-animation {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #6a99c2; /* 깜빡임 색상 */
+    }
+}
+
 ul.nth1Child li {
     display: inline-block;
     font-size: 0.8rem;

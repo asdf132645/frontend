@@ -1,3 +1,4 @@
+import {remainingCount} from "@/common/api/service/setting/settingApi";
 
 export const apiConstants = {
     auth: {
@@ -289,6 +290,12 @@ export const apiConstants = {
                 requiresToken: false,
             }
         },
+        remainingCount: {
+            get: {
+                endpoint: 'remaining-count/execute',
+                requiresToken: false,
+            }
+        }
     },
     images:{
         move: {
