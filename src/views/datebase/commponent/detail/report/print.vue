@@ -164,13 +164,12 @@
 
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref} from "vue";
+import {computed, defineEmits, defineProps, onMounted, ref } from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
-import { watch } from "fs";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
@@ -235,9 +234,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
 
   // 해당 iaRootPath가 문제!
-  const testIaRootPath = `D:\\PBIA_proc`
-  const path = testIaRootPath;
-  // const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
+  const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
   const slotId = selectItems.value.slotId || "";
   const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images/print?folder=${folderPath}&imageName=${imageName}`;
@@ -301,7 +298,6 @@ const getImagePrintData = async () => {
 
         // wbcClassification Order 적용
         const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
-        console.log("ORDERCLASS", oArr);
         const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
         await sortWbcInfo(wbcInfo.value, sortArr);
 

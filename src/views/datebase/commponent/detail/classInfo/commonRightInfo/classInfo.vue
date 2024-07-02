@@ -1036,9 +1036,11 @@ async function updateOriginalDb() {
   }
 
   await putOrderClassApi(sortArr);
+
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, [res.data]);
 
+  emits('classOrderChanged')
   await store.dispatch('commonModule/setCommonInfo', {classInfoSort: []});
 }
 
