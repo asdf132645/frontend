@@ -631,6 +631,9 @@ const initElement = async () => {
       viewer.value.addHandler('canvas-click', async (event: any) => {
         //
         if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
+          if (!event.originalEvent.ctrlKey) {
+            await removeDiv();
+          }
           const clickPos = viewer.value.viewport.pointFromPixel(event.position);
           const canvasPos = {
             x: clickPos.x * viewer.value.source.width,
@@ -669,7 +672,7 @@ const initElement = async () => {
                   location: overlayRect
                 });
               } else {
-                await removeDiv();
+
                 if (
                     canvasPos.x >= Number(itemPos.posX) && canvasPos.x <= (Number(itemPos.posX) + width) &&
                     canvasPos.y >= Number(itemPos.posY) && canvasPos.y <= (Number(itemPos.posY) + height)
@@ -945,6 +948,7 @@ const drawRuler = (ruler: any) => {
     element.style.position = 'absolute'
     element.style.width = rulerPos.value.width + 'px'
     element.style.height = rulerPos.value.height + 'px'
+    element.style.zIndex = '9999999;'
 
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.value.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
