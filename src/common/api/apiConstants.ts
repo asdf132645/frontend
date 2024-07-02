@@ -295,6 +295,12 @@ export const apiConstants = {
                 endpoint: 'remaining-count/execute',
                 requiresToken: false,
             }
+        },
+        qualityCheck: {
+            get: {
+                endpoint: 'qualityCheck/execute',
+                requiresToken: false,
+            }
         }
     },
     images:{
