@@ -181,7 +181,7 @@ const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
 
-const iaRootPath = computed(() => store.state.commonModule.value.iaRootPath);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const selectItems = ref<any>(null);
 const orderClass = ref<any>({});
@@ -233,7 +233,6 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
 
-  // 해당 iaRootPath가 문제!
   const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
   const slotId = selectItems.value.slotId || "";
   const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
