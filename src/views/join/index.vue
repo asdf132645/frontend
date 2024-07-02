@@ -68,6 +68,32 @@ const goLoginPage = () => {
 }
 const createAccount = async () => {
   const currentDate = new Date();
+
+  if (idVal.value === "") {
+    await showErrorAlert('Please enter id');
+    return;
+  }
+  else if (password.value === "") {
+    await showErrorAlert('Please enter password');
+    return;
+  }
+  else if (nameVal.value === "") {
+    await showErrorAlert('Please enter name');
+    return;
+  }
+  else if (employeeNo.value === "") {
+    await showErrorAlert('Please enter Employee No');
+    return;
+  }
+  else if (passwordRepeat.value === "") {
+    await showErrorAlert('Please enter repeat password');
+    return;
+  }
+  else if (password.value !== passwordRepeat.value) {
+    await showErrorAlert('Please check if the password and password are the same');
+    return;
+  }
+
   const user = {
     userId: idVal.value,
     password: password.value,
@@ -85,10 +111,12 @@ const createAccount = async () => {
     }
 
   } catch (e) {
-
+    await showErrorAlert('Signin Fail');
     console.log(e);
   }
 }
+
+
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';

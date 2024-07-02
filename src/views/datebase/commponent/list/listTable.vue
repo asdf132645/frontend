@@ -214,6 +214,7 @@ const instance = getCurrentInstance();
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
@@ -235,8 +236,7 @@ watchEffect(async () => {
   if (props.dbData.length > 0) {
     await nextTick();
     // 첫 번째 행을 클릭
-    const dbBaseTrClickId = sessionStorage.getItem('dbBaseTrClickId') || 0;
-    const filteredItems = props.dbData.filter(item => item.id === Number(dbBaseTrClickId));
+    const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
     selectItem(filteredItems[0]);
     const observer = new IntersectionObserver(handleIntersection, {
       root: null,
@@ -287,11 +287,13 @@ const handleOutsideClick = (event) => {
 };
 
 
-const rowRightClick = (item, event) => {
-  if (props.dbData.filter(item => item.checked).length === 0) {
+const rowRightClick = async (item, event) => {
+  if (props.dbData.filter(data => data.id === item.id).lock_status === false) {
     showSuccessAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
+
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   rightClickItem.value = item;
   if (Object.keys(item?.wbcInfo).length !== 0) {
     const wbcInfoData = item?.wbcInfo?.wbcInfo[0];
@@ -331,14 +333,14 @@ const hideAlert = () => {
 };
 
 
-const selectItem = (item) => {
+const selectItem = async (item) => {
   // 부모로 전달
   if (!item) {
     return;
   }
   emits('selectItem', item);
   selectedItemId.value = item.id;
-  sessionStorage.setItem('dbBaseTrClickId', item.id);
+  await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(item.id) });
 
   // 선택된 행이 화면에 보이도록 스크롤 조정
   const selectedRow = document.querySelector(`[data-row-id="${item.id}"]`);
@@ -368,18 +370,6 @@ const rowDbClick = async (item) => {
   if (item.lock_status) {
     return;
   }
-
-  let wbcInfoData = [];
-  if (Object.keys(item?.wbcInfo).length === 0) {
-    wbcInfoData = projectType.value !== 'bm' ? basicWbcArr : basicBmClassList;
-    item.wbcInfo = projectType.value !== 'bm' ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
-  } else {
-    wbcInfoData = item?.wbcInfo?.wbcInfo[0];
-  }
-
-  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
-  sessionStorage.setItem('selectItemRbc', JSON.stringify(item?.rbcInfo));
-  sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
 
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
