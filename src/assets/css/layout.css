@@ -515,9 +515,11 @@ ul.classInfo {
 ul.degree.analysis {
     width: 18%;
 }
+
 .categories.rbcClass > .degree > li > span > svg {
     margin-right: 5px;
 }
+
 button.degreeAllCheckBtn {
     background: none;
     color: #121212;
@@ -530,18 +532,23 @@ button.degreeAllCheckBtn {
     border: 1px solid #3498db;
     cursor: pointer;
 }
+
 .analysisWbc .categories > ul > li {
     height: 14px;
 }
+
 .categories.rbcClass > .degree > li > span {
     font-size: 0.9rem;
 }
+
 .categories.rbcClass ul.degree.analysis {
     width: 25%;
 }
+
 .defaultText {
     font-size: 0.8rem;
 }
+
 .underline {
     font-size: 0.8rem;
     color: #29c7ca;
@@ -549,6 +556,7 @@ button.degreeAllCheckBtn {
     border-top: 0.01px solid #747474;
     padding: 5px 0 10px 0;
 }
+
 .rbc-container.imgList span {
     margin: 0 10px 0 10px;
 }
@@ -615,6 +623,17 @@ button.degreeAllCheckBtn {
     padding: 10px 20px 10px 10px;
 }
 
+.excelDivList {
+    position: relative;
+    display: block;
+    width: 6%;
+    left: 5%;
+    font-size: 1.8rem;
+    padding-top: 3px;
+    cursor: pointer;
+    color: #37a8aa;
+}
+
 .img-btn_img_list {
     padding: 10px 20px;
     cursor: pointer;
@@ -639,6 +658,7 @@ button.degreeAllCheckBtn {
     justify-content: space-between;
     padding-bottom: 10px;
 }
+
 .categories.rbcClass > .degree > li > .rbcSapn {
     position: absolute;
     top: 4px;
@@ -646,6 +666,7 @@ button.degreeAllCheckBtn {
     z-index: 9997;
     overflow: hidden;
 }
+
 .classNmRbc {
     display: inline-block;
     text-align: left;
@@ -656,6 +677,7 @@ button.degreeAllCheckBtn {
     display: inline-block;
     width: 9%;
 }
+
 .slider-container {
     display: flex;
     align-items: center;
@@ -703,11 +725,13 @@ input[type="range"]::-ms-thumb.slider-range {
     cursor: pointer;
     border-radius: 50%;
 }
+
 .slider-found {
     position: relative;
     overflow: hidden;
     max-height: 135px;
 }
+
 .slider-found img {
     width: 12%;
 }
@@ -728,8 +752,9 @@ input[type="range"]::-ms-thumb.slider-range {
 div#viewerSmall {
     position: fixed;
     top: 0;
-    height: 100%!important;
+    height: 100% !important;
 }
+
 .closeViewer {
     position: absolute;
     font-size: 3.9rem;
@@ -738,6 +763,7 @@ div#viewerSmall {
     top: 12px;
     cursor: pointer;
 }
+
 .blinkGripper {
     animation: blinkGripper-animation 1s steps(5, start) infinite;
 }
@@ -797,9 +823,11 @@ span.rbcSapnDown {
     top: 6px;
 
 }
+
 .databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
     width: 58%;
 }
+
 .sensitivityDiv .slider-container {
     /*width: 45%;*/
     margin-top: 16px;
@@ -819,14 +847,17 @@ span.rbcSapnDown {
     width: 10%;
     display: inline-block;
 }
+
 .sensitivityDiv select {
     display: inline-block;
     width: 35%;
     margin-top: 5px;
 }
+
 ul.leftWbcInfo.rbcClass {
     width: 65%;
 }
+
 span.rbcSapnDown .degreeActive {
     color: #3498db;
 }
@@ -849,6 +880,7 @@ span.rbcSapnDown .degreeActive {
     margin: 0;
     vertical-align: -webkit-baseline-middle;
 }
+
 .sensitivityDiv {
     display: flex;
     align-content: center;
@@ -872,9 +904,11 @@ button.degreeBtn {
 .categories.rbcClass > ul > li {
     height: 20px;
 }
+
 .categories.rbcClass .categoryNm {
     width: 20%;
 }
+
 .overlay-element {
     background: none transparent;
     border: none;
@@ -1240,11 +1274,13 @@ input.alarmInput {
     width: 100%;
     height: 20px;
 }
+
 .image-container img {
     max-width: 100px;
     max-height: 100px;
     margin: 5px;
 }
+
 .slider-track {
     position: absolute;
     top: 50%;
@@ -1420,9 +1456,11 @@ tr.checkFirst {
 li.submitted {
     color: #00477e;
 }
+
 img.cellImg {
     filter: opacity(0.9) drop-shadow(0px 0px 0px #fff) brightness(100%);
 }
+
 h3.titleH3 {
     text-align: left;
     padding: 10px;
@@ -1431,6 +1469,7 @@ h3.titleH3 {
 .settingDatePickers > select {
     max-width: 130px;
 }
+
 button.backupBtn {
     margin-left: 14px;
     background: #a9fff6;
@@ -1438,6 +1477,7 @@ button.backupBtn {
     border-radius: 5px;
     cursor: pointer;
 }
+
 h3.titleH3 button {
     color: #fff;
     border: 1px solid #fff;
@@ -2531,6 +2571,7 @@ table.cbcTable td {
 .half-circle {
     clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
 }
+
 .layer {
     position: fixed;
     top: 0;
@@ -2551,10 +2592,12 @@ table.cbcTable td {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
+
 .rbcPercent {
     width: 10%;
 }
-.createdRbc{
+
+.createdRbc {
     position: absolute;
     z-index: 99999;
     width: 100%;
@@ -2567,6 +2610,7 @@ table.cbcTable td {
     margin: auto;
     text-align: center;
 }
+
 .layer-header {
     display: flex;
     justify-content: space-between;
@@ -2582,6 +2626,7 @@ table.cbcTable td {
 .layer-body {
     color: #fff;
 }
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;
