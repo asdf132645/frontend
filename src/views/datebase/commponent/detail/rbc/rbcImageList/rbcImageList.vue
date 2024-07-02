@@ -934,102 +934,99 @@ const onClickRuler = (ruler: any) => {
 }
 
 const drawRuler = (ruler: any) => {
-  const divtilingViewer = document.getElementById('tiling-viewer_img_list')
+  const divtilingViewer = document.getElementById('tiling-viewer_img_list');
 
   if (divtilingViewer !== null) {
-    const rulerOverlay = document.getElementById('rulerOverlay')
+    const rulerOverlay = document.getElementById('rulerOverlay');
     if (rulerOverlay !== null) {
-      divtilingViewer.removeChild(rulerOverlay)
+      divtilingViewer.removeChild(rulerOverlay);
     }
 
+    const element = document.createElement('div');
+    element.id = 'rulerOverlay';
+    element.style.position = 'absolute';
+    element.style.width = rulerPos.value.width + 'px';
+    element.style.height = rulerPos.value.height + 'px';
+    element.style.zIndex = '9999999';
 
-    const element = document.createElement('div')
-    element.id = 'rulerOverlay'
-    element.style.position = 'absolute'
-    element.style.width = rulerPos.value.width + 'px'
-    element.style.height = rulerPos.value.height + 'px'
-    element.style.zIndex = '9999999;'
+    // 줌 레벨 반영
+    const zoom = viewer.value.viewport.getZoom(true);
 
     if (rulerPos.value.left === 0) {
-      element.style.left = (viewer.value.canvas.clientWidth / 2) - (rulerPos.value.width / 2) + 'px'
+      element.style.left = (viewer.value.container.clientWidth / 2) - (rulerPos.value.width / 2) + 'px';
     } else {
-      element.style.left = rulerPos.value.left + 'px'
+      element.style.left = (rulerPos.value.left / zoom) + 'px';
     }
-
     if (rulerPos.value.top === 0) {
-      element.style.top = (viewer.value.canvas.clientHeight / 3.5) - (rulerPos.value.height / 3.5) + 'px'
+      element.style.top = (viewer.value.container.clientHeight / 2) - (rulerPos.value.height / 2) + 'px';
     } else {
-      element.style.top = rulerPos.value.top + 'px'
+      element.style.top = (rulerPos.value.top / zoom) + 'px';
     }
 
     refreshRuler(element, rulerSize, ruler);
-    divtilingViewer.appendChild(element)
+    divtilingViewer.appendChild(element);
 
-    let isPress = false
+    let isPress = false;
 
     element.onmousedown = function (e) {
-      rulerPos.value.prevPosX = e.clientX
-      rulerPos.value.prevPosY = e.clientY
+      rulerPos.value.prevPosX = e.clientX;
+      rulerPos.value.prevPosY = e.clientY;
 
       if (rulerPos.value.left <= 30) {
-        rulerPos.value.left = 31
+        rulerPos.value.left = 31;
       }
 
       if (rulerPos.value.top <= 80) {
-        rulerPos.value.top = 81
+        rulerPos.value.top = 81;
       }
 
-      isPress = true
-    }
+      isPress = true;
+    };
 
     element.onmouseup = function () {
-      isPress = false
-    }
+      isPress = false;
+    };
 
     element.onwheel = function (e) {
       if (e.deltaY < 0) {
         if (rulerSize.value < 20) {
-          refreshRuler(element, ++rulerSize.value, ruler)
+          refreshRuler(element, ++rulerSize.value, ruler);
         }
-
       } else {
         if (rulerSize.value > 5) {
-          refreshRuler(element, --rulerSize.value, ruler)
+          refreshRuler(element, --rulerSize.value, ruler);
         }
       }
-    }
+    };
 
-    const parent = document.getElementById('tilingViewer')
+    const parent = document.getElementById('tilingViewer');
 
     if (parent) {
       parent.onmousemove = function (e) {
         if (!isPress) {
-          return
+          return;
         }
 
-        if (rulerPos.value.left <= 30) {
-          return
+        if (rulerPos.value.left <= 30 || rulerPos.value.top <= 80) {
+          return;
         }
 
-        if (rulerPos.value.top <= 80) {
-          return
-        }
+        rulerPos.value.posX = rulerPos.value.prevPosX - e.clientX;
+        rulerPos.value.posY = rulerPos.value.prevPosY - e.clientY;
 
-        rulerPos.value.posX = rulerPos.value.prevPosX - e.clientX
-        rulerPos.value.posY = rulerPos.value.prevPosY - e.clientY
+        rulerPos.value.prevPosX = e.clientX;
+        rulerPos.value.prevPosY = e.clientY;
 
-        rulerPos.value.prevPosX = e.clientX
-        rulerPos.value.prevPosY = e.clientY
+        element.style.left = (element.offsetLeft - rulerPos.value.posX) + 'px';
+        element.style.top = (element.offsetTop - rulerPos.value.posY) + 'px';
 
-        element.style.left = (element.offsetLeft - rulerPos.value.posX) + 'px'
-        element.style.top = (element.offsetTop - rulerPos.value.posY) + 'px'
-
-        rulerPos.value.left = element.offsetLeft - rulerPos.value.posX
-        rulerPos.value.top = element.offsetTop - rulerPos.value.posY
-      }
+        rulerPos.value.left = element.offsetLeft;
+        rulerPos.value.top = element.offsetTop;
+      };
     }
   }
 };
+
 
 const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   if (typeof rulerSize === 'object') {
