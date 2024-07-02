@@ -235,7 +235,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
         break;
       case 'SYSINFO':
-        await sysInfoStore(parseDataWarp);
+        const res = await sysInfoStore(parseDataWarp);
+        if(res !== null){
+          showErrorAlert(res);
+        }
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
           deviceSerialNm: parseDataWarp.deviceSerialNm

@@ -62,7 +62,6 @@ onMounted(async () => {
 
 const initData = async () => {
   rbcInfo.value = selectItems.value;
-  console.log(rbcInfo.value);
 }
 
 const getDetailRunningInfo = async () => {

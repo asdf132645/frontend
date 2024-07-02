@@ -210,7 +210,8 @@ const rightClickItem = ref<any>([]);
 const imgHeightWidthArr: any = ref([]);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoArr);
-
+const canvasCurrentHeight = ref('0');
+const canvasCurrentWitdh = ref('0');
 
 
 onMounted(async () => {
@@ -365,7 +366,6 @@ watch(classInfoArrNewReData, async (nenenen, oldItem) => {
     return;
   }
 
-  // Optionally removeDiv() can be called here if needed
 }, {deep: true})
 
 const rbcClassRightClick = (event: MouseEvent) => {
@@ -448,9 +448,7 @@ watch(() => props.selectItems, async (newItem) => {
       viewer.value.destroy(); // 기존 뷰어 인스턴스 파괴
     }
 
-
     activeTab.value = 'lowMag';
-    // await josnWidthHeight();
     await initElement();
   }
 
@@ -786,6 +784,8 @@ const fetchTilesInfo = async (folderPath: string) => {
             }
           }
         });
+        canvasCurrentHeight.value = foundItem?.orgHeight;
+        canvasCurrentWitdh.value = foundItem?.orgWidth;
       }
     }
     tileExist.value = true;
@@ -936,7 +936,6 @@ const drawRuler = (ruler: any) => {
   if (divtilingViewer !== null) {
     const rulerOverlay = document.getElementById('rulerOverlay')
     if (rulerOverlay !== null) {
-      // self.viewer.canvas.removeChild(rulerOverlay)
       divtilingViewer.removeChild(rulerOverlay)
     }
 
@@ -944,7 +943,6 @@ const drawRuler = (ruler: any) => {
     const element = document.createElement('div')
     element.id = 'rulerOverlay'
     element.style.position = 'absolute'
-    // element.style.background = 'rgba(0, 0, 0, 0.3)'
     element.style.width = rulerPos.value.width + 'px'
     element.style.height = rulerPos.value.height + 'px'
 
@@ -955,7 +953,7 @@ const drawRuler = (ruler: any) => {
     }
 
     if (rulerPos.value.top === 0) {
-      element.style.top = (viewer.value.canvas.clientHeight / 2) - (rulerPos.value.height / 2) + 'px'
+      element.style.top = (viewer.value.canvas.clientHeight / 3.5) - (rulerPos.value.height / 3.5) + 'px'
     } else {
       element.style.top = rulerPos.value.top + 'px'
     }

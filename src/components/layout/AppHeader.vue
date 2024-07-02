@@ -97,7 +97,7 @@
         <div>
           <div class="statusBarWrapper">
           </div>
-          <button @click='onPrime' class="alertButton">PRIME</button>
+          <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">PRIME</button>
         </div>
       </div>
 
@@ -136,6 +136,7 @@ import * as process from "process";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import EventBus from "@/eventBus/eventBus";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -144,6 +145,8 @@ const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
 const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
+const isBlinkingPrime = ref(false);
+let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const instance = getCurrentInstance();
 const showConfirm = ref(false);
@@ -380,13 +383,18 @@ const getPercent = () => {
 }
 
 const onPrime = () => {
-  tcpReq().embedStatus.oilPrime.reqUserId = userId;
-  instance?.appContext.config.globalProperties.$socket.emit('message', {
-    type: 'SEND_DATA',
-    payload: tcpReq().embedStatus.oilPrime
-  });
+  if (blinkTimeout !== null) {
+    clearTimeout(blinkTimeout);
+  }
 
-  showSuccessAlert(messages.IDS_MSG_SUCCESS);
+  isBlinkingPrime.value = true;
+  tcpReq().embedStatus.oilPrime.reqUserId = userId;
+  EventBus.publish('childEmitSocketData', tcpReq().embedStatus.oilPrime);
+
+  blinkTimeout = setTimeout(() => {
+    isBlinkingPrime.value = false;
+    blinkTimeout = null;
+  }, 1500);
 }
 
 const onModalOpen = () => {

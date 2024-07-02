@@ -43,6 +43,7 @@ export interface CommonState {
     selectedSampleId: string;
     classInfoArr: any[];
     rbcReDataCheck: boolean;
+    appAlertOpen: boolean;
 }
 
 interface CommonModule {
@@ -92,6 +93,7 @@ interface CommonModule {
         setSelectedSampleId: (state: CommonState, value: string) => void;
         setClassInfoArr: (state: CommonState, value: any[]) => void;
         setRbcReDataCheck: (state: CommonState, value: boolean) => void;
+        setAppAlertOpen: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -142,6 +144,7 @@ export const commonModule: CommonModule = {
         selectedSampleId: '',
         classInfoArr:[],
         rbcReDataCheck: false,
+        appAlertOpen: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -277,6 +280,9 @@ export const commonModule: CommonModule = {
         setRbcReDataCheck(state: CommonState, value: boolean): void {
             state.rbcReDataCheck = value;
         },
+        setAppAlertOpen(state: CommonState, value: boolean): void {
+            state.appAlertOpen = value;
+        },
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -404,16 +410,17 @@ export const commonModule: CommonModule = {
             if(payload.hasOwnProperty('rbcReDataClass')){
                 commit('setRbcReDataClass', payload.rbcReDataClass)
             }
-            // resetRbcArr
             if(payload.hasOwnProperty('resetRbcArr')) {
                 commit('setResetRbcArr', payload.resetRbcArr)
             }
-        //     classInfoArr
             if(payload.hasOwnProperty('classInfoArr')) {
                 commit('setClassInfoArr', payload.classInfoArr)
             }
             if (payload.hasOwnProperty('rbcReDataCheck')){
                 commit('setRbcReDataCheck', payload.rbcReDataCheck)
+            }
+            if(payload.hasOwnProperty('appAlertOpen')){
+                commit('setAppAlertOpen', payload.appAlertOpen);
             }
         },
     },

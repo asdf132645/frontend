@@ -4,15 +4,14 @@
       <select v-model="analysisType" :disabled="isRunningState">
         <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <p class="startStopP" v-if="showStopBtn">
+      <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
         <font-awesome-icon
             :icon="['fas', 'circle-play']"
             :class="{ 'startBtn': true, [btnStatus]: true }"
-            @click="isInit === 'Y' && toggleStartStop('start')"
         />
       </p>
-      <p class="startStopP" v-else>
-        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' @click="toggleStartStop('stop')"/>
+      <p class="startStopP" v-else @click="toggleStartStop('stop')">
+        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
       </p>
     </div>
 
@@ -41,6 +40,14 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :type="confirmType"
+      :message="confirmMessage"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
 </template>
 
 <script setup lang="ts">
@@ -59,6 +66,8 @@ import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
 import {testBmTypeList} from "@/common/defines/constFile/settings";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import router from "@/router";
 
 
 const store = useStore();
@@ -87,6 +96,9 @@ const alertType = ref('');
 const alertMessage = ref('');
 const testTypeArr = ref<any>([]);
 const emits = defineEmits();
+const showConfirm = ref(false);
+const confirmType = ref('');
+const confirmMessage = ref('');
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -191,10 +203,8 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      if (confirm(messages.IDS_RECOVER_GRIPPER_CONDITION) === true) {
-        tcpReq().embedStatus.recovery.reqUserId = userId.value;
-        emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
-      }
+      confirmMessage.value = messages.IDS_RECOVER_GRIPPER_CONDITION;
+      showConfirm.value = true;
       return;
     }
     const rbcPositionMargin = sessionStorage.getItem('rbcPositionMargin');
@@ -273,6 +283,15 @@ const hideAlert = () => {
   showAlert.value = false;
 };
 
+const hideConfirm = () => {
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = () => {
+  showConfirm.value = false;
+  tcpReq().embedStatus.recovery.reqUserId = userId.value;
+  emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
+}
 
 const sendInit = () => { // 장비 초기화 진행
   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
