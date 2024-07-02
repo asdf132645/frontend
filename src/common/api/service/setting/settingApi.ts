@@ -209,3 +209,8 @@ export const getOrderClassApi = async (): Promise<ApiResponse<any>> => {
 export const putOrderClassApi = async (request: any): Promise<ApiResponse<any>> => {
     return httpClient.httpPut(apiConstants.settings.classOrder.update, request);
 };
+
+// remaining Count
+export const remainingCount = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.remainingCount.get);
+};
