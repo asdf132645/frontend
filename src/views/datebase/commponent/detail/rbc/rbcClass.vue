@@ -135,8 +135,8 @@
                 {{ percentageChange(classInfo?.originalDegree) }}
               </li>
               <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
-                {{ malariaCount || 0 }}
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                {{ percentageChange(malariaCount) }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
@@ -153,14 +153,15 @@
               <li>
                 {{ classInfo?.originalDegree }}
               </li>
+
               <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
-                {{ percentageChange(malariaCount) }}
+                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+                {{ malariaCount || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
                      v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
-                  {{ sizeTotalTwo }}
+                  {{ sizeChromiaTotal }}
                 </div>
               </div>
               <div class="underline"
@@ -181,7 +182,7 @@
           <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li>
+          <li style="padding-top: 0;">
             <div v-if="type !== 'report'">
               <input type="checkbox"
                      value="9-9-1"
@@ -191,16 +192,6 @@
             </div>
             <span @click="clickChangeSens('Platelet', 'Others', '04' ,'01')">Platelet</span>
           </li>
-          <!--          <li>-->
-          <!--            <div v-if="type !== 'report'">-->
-          <!--              <input type="checkbox"-->
-          <!--                     v-show="!except"-->
-          <!--                     value="9-9-2"-->
-          <!--                     v-model="checkedClassIndices"-->
-          <!--                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">-->
-          <!--            </div>-->
-          <!--            <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>-->
-          <!--          </li>-->
         </ul>
         <ul class="degree analysis">
           <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
@@ -219,10 +210,6 @@
       <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>
       <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
     </div>
-    <!--    <div v-if="type !== 'report'" class="beforeAfterBtn">-->
-    <!--      <button @click="beforeChange" :class={isBeforeClicked:isBefore}>Before</button>-->
-    <!--      <button @click="afterChange" :class={isBeforeClicked:!isBefore}>After</button>-->
-    <!--    </div>-->
   </div>
   <Alert
       v-if="showAlert"
@@ -294,7 +281,7 @@ const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
 const rbcDegreeStandard = ref<any>([]);
-const sizeTotalTwo = ref(0);
+const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
 const shapeBodyTotal = ref(0);
 const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
@@ -475,7 +462,7 @@ const rbcTotalAndReCount = async () => {
   });
 
   rbcTotalVal.value = Number(total) + 1;
-  sizeTotalTwo.value = Number(total) + 1;
+  sizeChromiaTotal.value = Number(total) + 1;
   chromiaTotalTwo.value = chromiaTotalval;
   shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
 }
@@ -510,7 +497,6 @@ const resetTimer = () => {
 };
 
 
-
 watch(rbcReDataCheck, (newVal) => {
   resetTimer();
 
@@ -523,8 +509,7 @@ watch(rbcReDataCheck, (newVal) => {
       sensRbcReJsonSend();
     }
   }, 800);
-}, { deep: true });
-
+}, {deep: true});
 
 
 const sensRbcReJsonSend = async () => {
@@ -626,6 +611,7 @@ const countReAdd = async () => {
       for (const xel of el.classInfo) {
         if (xel.classNm === 'Malaria') {
           malariaTotal += 1;
+          console.log(malariaTotal)
         }
       }
     }
@@ -633,7 +619,7 @@ const countReAdd = async () => {
   //
 
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
-  malariaCount.value = malariaTotal / Number(maxRbcCount.value);
+  malariaCount.value = malariaTotal
 };
 
 
@@ -856,7 +842,7 @@ const getRbcDegreeData = async () => {
 
 const reDegree = async () => {
   let totalCount = rbcTotalVal.value;
-  let sizeTotal = sizeTotalTwo.value;
+  let sizeTotal = sizeChromiaTotal.value;
   let chromiaTotal = chromiaTotalTwo.value;
 
   rbcInfoBeforeVal.value.forEach((rbcCategory: any, idx1: any) => {
