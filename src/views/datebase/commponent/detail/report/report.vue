@@ -147,7 +147,7 @@
     </div>
   </div>
 
-  <Print v-if="printOnOff" ref="printContent" :printOnOff="printOnOff" :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+  <Print v-if="printOnOff" ref="printContent" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]" @printClose="printClose"/>
 </template>
 
 <script setup lang="ts">
@@ -173,7 +173,6 @@ const store = useStore();
 
 const selectItems = ref<any>([]);
 const wbcInfo = ref<any>(null);
-const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const printOnOff = ref(false);
 const printContent = ref(null);
 const rbcInfo = ref<any>([]);

@@ -233,16 +233,6 @@ watch(() => clonedWbcInfoStore.value, (newItem) => {
   afterChang(newItem);
 }, {deep: true});
 
-// const getDetailRunningInfo = async () => {
-//   try {
-//     const result = detailRunningApi(String(selectedSampleId.value));
-//     return result.data
-//   } catch (e) {
-//     console.log(e);
-//   }
-// }
-
-
 const lisModalOpen = () => {
   showConfirm.value = true;
   confirmMessage.value = messages.IDS_MSG_UPLOAD_LIS;
@@ -1033,7 +1023,6 @@ async function updateOriginalDb() {
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
   selectItems.value.wbcInfoAfter = clonedWbcInfo;
   await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoChangeVal.value, ...nonRbcClassList.value]});
-  sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoChangeVal.value);
   sortArr.forEach((item: any, index: any) => {

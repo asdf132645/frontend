@@ -245,7 +245,6 @@ import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightI
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 
 const selectedTitle = ref('');
-const selectItemWbc = sessionStorage.getItem("selectItemWbc");
 const wbcInfo = ref<any>(null);
 const selectItems = ref<any>(null);
 const store = useStore();
@@ -290,7 +289,7 @@ const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
 const opacity = ref('0.9');
 
-const selectItemIamgeArr = ref<any>([]);
+const selectItemImageArr = ref<any>([]);
 const moveRightClickArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const showSize = ref(false);
@@ -486,6 +485,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   wbcInfo.value = [];
+
   try {
     const result = await getWbcCustomClassApi();
 
@@ -727,7 +727,7 @@ const allCheckChange = (event: any, title: string) => {
 const allCheckInsert = () => {
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
-  selectItemIamgeArr.value = [];
+  selectItemImageArr.value = [];
   moveRightClickArr.value = [];
   for (const idx in wbcInfo.value) {
     if (allCheck.value === wbcInfo.value[idx].title) {
@@ -738,7 +738,7 @@ const allCheckInsert = () => {
           ...wbcInfo.value[idx].images[idxKey],
         };
         selectedClickImages.value.push(item);
-        selectItemIamgeArr.value.push(item);
+        selectItemImageArr.value.push(item);
 
       }
     }
@@ -890,7 +890,7 @@ function handleBodyClick(event: Event) {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];
-    selectItemIamgeArr.value = [];
+    selectItemImageArr.value = [];
   }
 }
 
@@ -960,9 +960,13 @@ function handleKeyUp(event: KeyboardEvent) {
 
 async function initData(newData: any, upDown: any, upDownData: any) {
   wbcInfo.value = [];
+
+
+  await getDetailRunningInfo();
+
   let selectItemsVal: any = [];
   if (!upDown) {
-    wbcInfo.value = selectItemWbc ? JSON.parse(selectItemWbc) : null;
+    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0] || null;
     selectItemsVal = selectItems.value;
   } else {
     wbcInfo.value = upDownData.wbcInfoAfter.length !== 0 ? upDownData.wbcInfoAfter : upDownData.wbcInfo.wbcInfo[0];
@@ -1047,7 +1051,7 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
 
       // 선택된 이미지 초기화
       selectedClickImages.value = [];
-      selectItemIamgeArr.value = [];
+      selectItemImageArr.value = [];
       // 범위 내의 이미지 선택
       for (let i = start; i <= end; i++) {
         selectedClickImages.value.push({
@@ -1055,7 +1059,7 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
           title: wbcInfo.value[itemIndex].title,
           ...wbcInfo.value[itemIndex].images[i],
         });
-        selectItemIamgeArr.value.push(classInfoitem);
+        selectItemImageArr.value.push(classInfoitem);
       }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
@@ -1065,9 +1069,9 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     const selectedImage = wbcInfo.value[itemIndex].images[imageIndex];
     if (!isCtrlKeyPressed.value) {
       selectedClickImages.value = [];
-      selectItemIamgeArr.value = [];
+      selectItemImageArr.value = [];
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
-      selectItemIamgeArr.value.push(classInfoitem);
+      selectItemImageArr.value.push(classInfoitem);
       return;
     }
 
@@ -1076,11 +1080,11 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
 
     if (imageIndexInSelected === -1) {
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
-      selectItemIamgeArr.value.push(classInfoitem);
+      selectItemImageArr.value.push(classInfoitem);
     } else {
       // 이미 선택된 이미지를 다시 클릭하면 선택 해제
       selectedClickImages.value.splice(imageIndexInSelected, 1);
-      selectItemIamgeArr.value.splice(imageIndexInSelected, 1);
+      selectItemImageArr.value.splice(imageIndexInSelected, 1);
     }
   }
 }
@@ -1111,7 +1115,7 @@ async function onDrop(targetItemIndex: any) {
   await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
-  selectItemIamgeArr.value = [];
+  selectItemImageArr.value = [];
   shiftClickImages.value = [];
 }
 
@@ -1169,7 +1173,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
 
         // 선택된 이미지 초기화
         selectedClickImages.value = [];
-        selectItemIamgeArr.value = [];
+        selectItemImageArr.value = [];
         shiftClickImages.value = [];
         await updateOriginalDb();
         await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
@@ -1221,7 +1225,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     // draggedItemIdx - > 기존 폴더 위치
     // moveImgIsBool = > 사용자가 이미지 이동 시 다른 동작 못하도록 막는 레이어임
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
-    for (const seItem of selectItemIamgeArr.value) {
+    for (const seItem of selectItemImageArr.value) {
       const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       const matchingItem = classInfoBagic.find(item => item.abbreviation === (seItem.title || seItem.abbreviation));
       const sourceFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
@@ -1238,7 +1242,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     if (res) {
       // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
       const targetItem = wbcInfo.value[targetItemIndex];
-      for (const seItem of removeDuplicatesByProperty(selectItemIamgeArr.value, 'title')) {
+      for (const seItem of removeDuplicatesByProperty(selectItemImageArr.value, 'title')) {
         const findImage = selectedImagesToMove.filter(item => item.title === (seItem.title || seItem.abbreviation));
         targetItem.images.push(...findImage);
         targetItem.count = targetItem.images.length;
@@ -1264,7 +1268,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   }
   // 선택된 이미지 초기화
   selectedClickImages.value = [];
-  selectItemIamgeArr.value = [];
+  selectItemImageArr.value = [];
   shiftClickImages.value = [];
   allCheck.value = '';
   selectedTitle.value = '';
@@ -1384,8 +1388,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
-    sessionStorage.setItem("selectItemWbc", JSON.stringify(clonedWbcInfo));
-    await store.dispatch('commonModule/setCommonInfo', {selectedSampleid: clonedWbcInfo.id})
+    await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: selectItems.value?.id})
     await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
 
     // originalDb 업데이트
@@ -1445,26 +1448,26 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
 
 
 async function rollbackChanges() {
-  if (rollbackHistory.length > 0) {
-    // 롤백할 때마다 히스토리에서 마지막 상태를 꺼내어 복원
-    const prevWbcInfo = rollbackHistory.pop();
+  if (rollbackHistory.length <= 0 || isBeforeChild.value) return;
 
-    // 롤백 후 초기화
-    draggedItemIndex.value = null;
-    draggedImageIndex.value = null;
-    draggedCircleIndex.value = null;
-    draggedCircleIndexArr.value = [];
-    draggedCircleImgIndex.value = null;
-    selectedClickImages.value = [];
-    selectItemIamgeArr.value = [];
-    shiftClickImages.value = [];
+  // 롤백할 때마다 히스토리에서 마지막 상태를 꺼내어 복원
+  const prevWbcInfo = rollbackHistory.pop();
 
-    // 현재 상태에서 이전 상태로 이미지 롤백
-    await rollbackImages(wbcInfo.value, prevWbcInfo);
+  // 롤백 후 초기화
+  draggedItemIndex.value = null;
+  draggedImageIndex.value = null;
+  draggedCircleIndex.value = null;
+  draggedCircleIndexArr.value = [];
+  draggedCircleImgIndex.value = null;
+  selectedClickImages.value = [];
+  selectItemImageArr.value = [];
+  shiftClickImages.value = [];
 
-    // wbcInfo 업데이트
-    wbcInfo.value = prevWbcInfo;
-  }
+  // 현재 상태에서 이전 상태로 이미지 롤백
+  await rollbackImages(wbcInfo.value, prevWbcInfo);
+
+  // wbcInfo 업데이트
+  wbcInfo.value = prevWbcInfo;
 }
 
 const findUndefinedImages = (sourceWbcInfo: any, targetWbcInfo: any, infoArray: any) => {

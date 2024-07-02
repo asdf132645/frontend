@@ -371,17 +371,6 @@ const rowDbClick = async (item) => {
     return;
   }
 
-  let wbcInfoData = [];
-  if (Object.keys(item?.wbcInfo).length === 0) {
-    wbcInfoData = projectType.value !== 'bm' ? basicWbcArr : basicBmClassList;
-    item.wbcInfo = projectType.value !== 'bm' ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
-  } else {
-    wbcInfoData = item?.wbcInfo?.wbcInfo[0];
-  }
-
-  const sortedArray = wbcInfoData.sort((a, b) => a.id - b.id);
-  sessionStorage.setItem('selectItemWbc', JSON.stringify(sortedArray));
-
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: item.wbcInfoAfter});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
