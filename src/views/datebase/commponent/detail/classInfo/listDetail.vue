@@ -1519,6 +1519,12 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   if (response) {
     wbcInfo.value = prevWbcInfo;
   }
+
+  // Rollback 후 현재 Class List로 정렬
+  const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+  const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+  await sortWbcInfo(wbcInfo.value, sortArr);
+
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
 }

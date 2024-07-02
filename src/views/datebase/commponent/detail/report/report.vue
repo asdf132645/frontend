@@ -5,7 +5,7 @@
     <LisCbc v-if="cbcLayer" :selectItems="selectItems" />
     <div class="reportDiv">
       <div class="wbcDiv">
-        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' />
+        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' @classOrderChanged="classOrderChanged" />
       </div>
       <div class="rbcDiv" v-if="!projectBm">
         <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' />
@@ -147,7 +147,7 @@
     </div>
   </div>
 
-  <Print v-if="printOnOff" ref="printContent" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]" @printClose="printClose"/>
+  <Print v-if="printOnOff" ref="printContent" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]" @printClose="printClose" />
 </template>
 
 <script setup lang="ts">
@@ -186,6 +186,7 @@ const wbcArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const isLoading = ref(true);
 
+
 onBeforeMount(async () => {
   await getDetailRunningInfo();
   isLoading.value = false;
@@ -206,6 +207,12 @@ const getDetailRunningInfo = async () => {
   } catch (e) {
     console.log(e);
   }
+}
+
+// WbC Classification 쪽에서 Order Class 바꿀 시 Print 영역에도 바로 적용시키기 위한 코드
+const classOrderChanged = async () => {
+  await getOrderClass();
+  await initData();
 }
 
 const shouldRenderCategory = (title: string) => {

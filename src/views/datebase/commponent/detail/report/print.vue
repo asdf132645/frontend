@@ -102,7 +102,7 @@
           </div>
 
           <!-- WBC Classification -->
-          <div style="margin-top: 20px;">
+          <div style="margin-top: 20px; border-top: 2px dotted #696969">
             <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">WBC classification result</h3>
             <table style="width: 100%;">
               <colgroup>
@@ -140,12 +140,13 @@
               </tr>
               </tbody>
             </table>
+
             <!-- Print List -->
-            <ul class="print" style="list-style: none; padding-left: 0; margin-top: 20px;">
-              <li v-for="(item) in wbcInfo" :key="item.id">
-                <div style="font-weight: bold;">{{ item?.title }} ({{ item?.count }})</div>
+            <ul class="print" style="list-style: none; padding-left: 0; margin-top: 20px; text-align: center; display:flex; flex-direction: column; align-items: center; justify-content: center;">
+              <li v-for="(item) in wbcInfo" :key="item.id" style="">
+                <div style="font-weight: bold; font-size: 18px; margin: 40px auto 20px;">{{ item?.title }} ({{ item?.count }})</div>
                 <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;">
-                  <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block; margin-right: 10px;">
+                  <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block; margin-right: 4px; margin-top: 4px; outline: 1px solid #2c2d2c; cursor: auto;">
                     <div style="position: relative;">
                       <img :src="getImageUrl(image.fileName, item.id, item.title)" :width="image.width ? image.width : '150px'" :height="image.height ? image.height : '150px'" :style="{ filter: image.filter }" class="cellImg" ref="cellRef"/>
                       <div class="center-point" :style="image.coordinates"></div>
@@ -163,14 +164,14 @@
 
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref} from "vue";
+import {computed, defineEmits, defineProps, onMounted, ref } from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {getImagePrintApi} from "@/common/api/service/setting/settingApi";
+import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
-import { watch } from "fs";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const props = defineProps(['printOnOff', 'selectItemWbc']);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -183,6 +184,7 @@ const wbcInfoImg = ref([]);
 const iaRootPath = computed(() => store.state.commonModule.value.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const selectItems = ref<any>(null);
+const orderClass = ref<any>({});
 
 const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
@@ -191,9 +193,26 @@ const nonWbcIdList = ['12', '13', '14', '15', '16'];
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
+  await getOrderClass();
   await getImagePrintData();
   await printPage();
 });
+
+
+const getOrderClass = async () => {
+  try {
+    const result = await getOrderClassApi();
+    if (result) {
+      if (result?.data.length === 0) {
+        orderClass.value = [];
+      } else {
+        orderClass.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 const getDetailRunningInfo = async () => {
   try {
@@ -213,11 +232,12 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
-  const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath;
+
+  // 해당 iaRootPath가 문제!
+  const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
   const slotId = selectItems.value.slotId || "";
   const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
-
+  return `${apiBaseUrl}/images/print?folder=${folderPath}&imageName=${imageName}`;
 }
 
 
@@ -272,11 +292,38 @@ const getImagePrintData = async () => {
 
         // 이미지 프린트 및 wbc 배열에 없는 아이디 제거
         wbcInfo.value = wbcInfo.value.filter((item: any) => imagePrintAndWbcArr.value.includes(item.id));
+
+        // count가 없는 경우 print에서 보여줄 wbcInfo에서 제거
+        wbcInfo.value = wbcInfo.value.filter((item: any) => item.count !== '0');
+
+        // wbcClassification Order 적용
+        const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+        const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+        await sortWbcInfo(wbcInfo.value, sortArr);
+
       }
     }
   } catch (e) {
     console.error(e);
   }
+};
+
+const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
+  let newSortArr = wbcInfo.slice(); // 기존 배열 복사
+
+  newSortArr.sort((a: any, b: any) => {
+    const nameA = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (a.title || a.abbreviation));
+    const nameB = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (b.title || b.abbreviation));
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+
+  // 정렬된 배열을 wbcInfo에 할당
+  wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
 };
 
 const closePrint = () => {
