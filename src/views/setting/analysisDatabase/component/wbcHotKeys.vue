@@ -4,7 +4,15 @@
       <li v-for="item in wbcHotKeysItems" :key="item.id">
         <span>{{ item.abbreviation }}</span>
         <span>{{ item.fullNm }}</span>
-        <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
+        <span>
+          <input
+              v-model="item.key"
+              type="text"
+              maxlength="25"
+              placeholder="class name"
+              @input="filterEnglishAndNumbers($event, item, 'key')"
+          />
+        </span>
       </li>
     </ul>
     <button @click="saveWbcCustomClass" class="saveBtn" type="button">Save</button>
@@ -39,7 +47,11 @@ onMounted(async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   await getWbcHotKeyClasses();
 });
-
+const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm') => {
+  const input = event.target as HTMLInputElement;
+  const filteredValue = input.value.replace(/[^a-zA-Z0-9]/g, '');
+  item[field] = filteredValue.trim();
+};
 const saveWbcCustomClass = async () => {
   try {
     let result: ApiResponse<void>;
@@ -72,7 +84,7 @@ const getWbcHotKeyClasses = async () => {
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         saveHttpType.value = 'post';
-        wbcHotKeysItems.value = projectType.value ==='bm' ? bmHotKeys : wbcHotKeys;
+        wbcHotKeysItems.value = projectType.value === 'bm' ? bmHotKeys : wbcHotKeys;
         // bmHotKeys
       } else {
         saveHttpType.value = 'put';
