@@ -18,11 +18,11 @@
     <ul>
       <li v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Giant Platelet</p>
-        <input type="text" v-model="minCountArr[0].minGPCount" class="form-control form-control-sm">
+        <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)" class="form-control form-control-sm">
       </li>
       <li v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Platelet Aggregation</p>
-        <input type="text" v-model="minCountArr[0].minPACount" class="form-control form-control-sm">
+        <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)" class="form-control form-control-sm">
       </li>
     </ul>
   </div>
@@ -102,7 +102,15 @@ const saveLisCode = async () => {
     console.error(e);
   }
 };
-
+const filterNumbersOnly = (event: Event, is: boolean) => {
+  const input = event.target as HTMLInputElement;
+  const filteredValue = input.value.replace(/[^0-9]/g, '');
+  if (is){
+    minCountArr.value[0].minGPCount = Number(filteredValue.trim());
+  }else {
+    minCountArr.value[0].minPACount = Number(filteredValue.trim());
+  }
+};
 
 const getImagePrintData = async () => {
   try {

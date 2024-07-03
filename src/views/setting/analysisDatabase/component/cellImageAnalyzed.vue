@@ -109,7 +109,7 @@
           />
         </td>
         <td>
-          <input type="text" v-model='alarmCount' class="alarmInput">
+          <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
@@ -243,7 +243,11 @@ const projectType = ref('pb');
 
 const testTypeArr = ref<any>([]);
 const store = useStore();
-
+const filterNumbersOnly = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const filteredValue = input.value.replace(/[^0-9]/g, '');
+  alarmCount.value = filteredValue.trim();
+};
 const createBackup = async () => {
   if (backupRootPath.value === ''){
     showErrorAlert('Please select a backup save path');
