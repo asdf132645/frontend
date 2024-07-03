@@ -485,7 +485,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   wbcInfo.value = [];
-
+  await getDetailRunningInfo();
   try {
     const result = await getWbcCustomClassApi();
 
@@ -961,12 +961,9 @@ function handleKeyUp(event: KeyboardEvent) {
 async function initData(newData: any, upDown: any, upDownData: any) {
   wbcInfo.value = [];
 
-
-  await getDetailRunningInfo();
-
   let selectItemsVal: any = [];
   if (!upDown) {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0] || null;
+    wbcInfo.value = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : selectItems.value.wbcInfo.wbcInfo[0];
     selectItemsVal = selectItems.value;
   } else {
     wbcInfo.value = upDownData.wbcInfoAfter.length !== 0 ? upDownData.wbcInfoAfter : upDownData.wbcInfo.wbcInfo[0];

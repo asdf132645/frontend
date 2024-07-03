@@ -87,7 +87,7 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'" @click="goClass(nWbcItem.id)">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
             <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>

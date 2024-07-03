@@ -829,6 +829,7 @@ ul.nth1Child > :nth-child(3) {
     height: 17px;
     /*margin-bottom: 2px;*/
     position: relative;
+    cursor: pointer;
 }
 
 span.rbcSapnDown {
@@ -1583,9 +1584,10 @@ ul.wbcImgWrap > li {
 }
 
 .context-menu.detail {
-    height: 250px;
-    overflow-y: auto;
+    /*height: 250px;*/
+    /*overflow-y: auto;*/
     text-align: left;
+    z-index: 999;
 }
 
 .databaseWbcRight {
