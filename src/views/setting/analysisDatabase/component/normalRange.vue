@@ -6,8 +6,20 @@
           {{ item.abbreviation }} - {{ item.fullNm }}
         </div>
         <div class="mt1">
-          <span><input v-model="item.min" type="text" maxlength="25" placeholder="class name"/></span>
-          <span><input v-model="item.max" type="text" maxlength="25" placeholder="class name"/></span>
+          <span>
+            <input v-model="item.min"
+                   type="text"
+                   maxlength="25"
+                   placeholder="class name"
+                   @input="filterNumbersOnly($event, item, 'min')"
+            />
+          </span>
+          <span>
+            <input
+                @input="filterNumbersOnly($event, item, 'max')"
+                v-model="item.max" type="text" maxlength="25" placeholder="class name"
+            />
+          </span>
           <span>{{ item.unit }}</span>
         </div>
       </li>
@@ -51,9 +63,9 @@ const saveNormalRange = async () => {
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
-      result = await createNormalRangeApi({normalRangeItems: normalItems.value });
+      result = await createNormalRangeApi({normalRangeItems: normalItems.value});
     } else {
-      const updateResult = await updateNormalRangeApi({normalRangeItems: normalItems.value });
+      const updateResult = await updateNormalRangeApi({normalRangeItems: normalItems.value});
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -72,7 +84,11 @@ const saveNormalRange = async () => {
     console.log(e);
   }
 };
-
+const filterNumbersOnly = (event: Event, item: any, field: 'min' | 'max') => {
+  const input = event.target as HTMLInputElement;
+  const filteredValue = input.value.replace(/[^0-9]/g, '');
+  item[field] = filteredValue.trim();
+};
 const getNormalRange = async () => {
   try {
     const result = await getNormalRangeApi();

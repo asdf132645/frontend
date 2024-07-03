@@ -12,11 +12,7 @@
             <input class="loginInput" type="password" v-model="password" placeholder="password">
           </li>
         </ul>
-<!-- 자동 로그인시 Fullscreen이 안되는 문제가 발생하여 보류 -->
-<!--        <div class="mt1 loginFooter">-->
-<!--          <input type="checkbox" id="checked" v-model="isAutoLoginEnabled">-->
-<!--          <label class="loginLabel" for="checked">Save Login Profile</label>-->
-<!--        </div>-->
+
         <div class='loginBtn'>
           <button type="button" @click="loginUser">Login</button>
           <button type="button" @click="goJoinPage">Add User</button>
@@ -147,40 +143,6 @@ const updateAccount = async (viewerCheck: string) => {
       await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
 }
-
-// const updateAccount = async (userId: string, pcIp: string, viewerCheck: string) => {
-//   const user = {
-//     userId: userId,
-//     password: '',
-//     name: '',
-//     employeeNo: '',
-//     userType: '',
-//     subscriptionDate: '',
-//     state: '',
-//     pcIp: pcIp
-//   }
-
-//   try {
-//     const result = await putUserDataApi(user);
-//     if (result) {
-//       showSuccessAlert('login successful.');
-
-//       if(viewerCheck === 'main'){
-//         await router.push('/');
-//         await document.documentElement.requestFullscreen();
-//       }else{
-//         await router.push('/dataBase');
-//         await document.documentElement.requestFullscreen();
-//       }
-//       await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
-//       await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
-//     }
-
-//   } catch (e) {
-
-//     console.log(e);
-//   }
-// }
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;

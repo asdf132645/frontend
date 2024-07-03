@@ -2,9 +2,25 @@
   <div>
     <ul class="customClass customSettingContainer">
       <li v-for="item in wbcCustomItems" :key="item.id">
-        <span>ID: {{ item!.customNum }}</span>
-        <span><input v-model="item.abbreviation" type="text" maxlength="3" placeholder="abbreviation"/></span>
-        <span><input v-model="item.fullNm" type="text" maxlength="25" placeholder="class name"/></span>
+        <span>ID: {{ item.customNum }}</span>
+        <span>
+          <input
+              v-model="item.abbreviation"
+              type="text"
+              maxlength="3"
+              placeholder="abbreviation"
+              @input="filterEnglishAndNumbers($event, item, 'abbreviation')"
+          />
+        </span>
+        <span>
+          <input
+              v-model="item.fullNm"
+              type="text"
+              maxlength="25"
+              placeholder="class name"
+              @input="filterEnglishAndNumbers($event, item, 'fullNm')"
+          />
+        </span>
       </li>
     </ul>
     <button class="saveBtn" type="button" @click="saveWbcCustomClass">Save</button>
@@ -19,8 +35,9 @@
   />
 </template>
 
+
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, reactive} from 'vue';
 import {
   createWbcCustomClassApi,
   updateWbcCustomClassApi,
@@ -72,6 +89,11 @@ const saveWbcCustomClass = async () => {
   } catch (e) {
     console.log(e);
   }
+};
+const filterEnglishAndNumbers = (event: Event, item: any, field: 'abbreviation' | 'fullNm') => {
+  const input = event.target as HTMLInputElement;
+  const filteredValue = input.value.replace(/[^a-zA-Z0-9]/g, '');
+  item[field] = filteredValue.trim();
 };
 
 const getWbcCustomClasses = async () => {

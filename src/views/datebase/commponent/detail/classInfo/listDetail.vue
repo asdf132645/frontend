@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse" />
+  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"/>
 
   <div class="wbcContent">
     <div class="topClintInfo">
@@ -407,7 +407,7 @@ function hideImage(id: string, fileName: string, title?: string) {
 }
 
 const getNewImageUrl = (fileName: any, title: any): any => {
-  if(selectItems.value?.wbcInfoAfter.length === 0){
+  if (selectItems.value?.wbcInfoAfter.length === 0) {
     return null;
   }
   if (isBeforeChild.value) {
@@ -485,16 +485,14 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   wbcInfo.value = [];
-
+  await getDetailRunningInfo();
   try {
     const result = await getWbcCustomClassApi();
 
     const data: any = result.data;
     const newData = data.filter((item: any) => item.abbreviation);
-
     const customClassData: any = sessionStorage.getItem('customClass');
     const getCustomSessionData = JSON.parse(customClassData);
-
     if (getCustomSessionData) { // 커스텀 클래스 삭제하는 if 문
       getCustomSessionData.forEach((item: any) => {
         const findDelData = data.find((dataItems: any) => dataItems.customNum === item.customNum && dataItems.abbreviation !== item.abbreviation);
@@ -502,37 +500,63 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           if (item?.abbreviation === '') {
             return;
           }
-          const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item?.abbreviation}`;
+          const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item.customNum}_${item?.abbreviation}`;
           deleteRunningApi({path: filePath})
         }
       });
     }
     sessionStorage.setItem('customClass', JSON.stringify(data));
     wbcCustomItems.value = data;
-    for (const item of newData) { // 커스텀클래스 폴더 생성
-      const {fullNm, abbreviation, customNum} = item;
-      const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
-      await fileSysPost({path: filePath});
+    let wbcinfo: any = [];
+    if (isBeforeChild.value) {
+      wbcinfo = selectItems.value?.wbcInfo.wbcInfo[0];
+    } else {
+      wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
+    }
+    console.log(newData.length !== 0)
+    if (newData.length !== 0) {
+      for (const item of newData) { // 커스텀클래스 폴더 생성
+        const {fullNm, abbreviation, customNum} = item;
+        const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
+        await fileSysPost({path: filePath});
 
-      const wbcPush = {
-        id: customNum,
-        name: fullNm,
-        count: '0',
-        images: [],
-        title: abbreviation,
-      };
-      let wbcinfo = [];
-      if (isBeforeChild.value) {
-        wbcinfo = selectItems.value?.wbcInfo.wbcInfo[0];
-      } else {
-        wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
+        const wbcPush = {
+          id: customNum,
+          name: fullNm,
+          count: '0',
+          images: [],
+          title: abbreviation,
+        };
+
+        const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
+        if (!foundObject) {
+          wbcinfo.push(wbcPush);
+          wbcInfo.value = wbcinfo;
+          await updateOriginalDb('notWbcAfterSave');
+        }
       }
-      const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
-      if (!foundObject) {
-        wbcinfo.push(wbcPush);
-        wbcInfo.value = wbcinfo;
-        await updateOriginalDb('notWbcAfterSave');
-      }
+    } else {
+      const itemsToDelete: any = [];
+      const sortArr = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+      wbcinfo.forEach((item: any) => {
+        const findDelData = sortArr.find((dataItems: any) => dataItems.id === item.id);
+        if (!findDelData) {
+          const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item}_${item?.title}`;
+          deleteRunningApi({path: filePath});
+          itemsToDelete.push(item);
+        }
+      });
+      // 수집한 아이템을 wbcinfo 배열에서 삭제
+      itemsToDelete.forEach((item) => {
+        const index = wbcinfo.indexOf(item);
+        if (index > -1) {
+          wbcinfo.splice(index, 1);
+        }
+      });
+      selectItems.value.wbcInfoAfter = wbcinfo
+      wbcInfo.value = selectItems.value.wbcInfoAfter;
+      await updateOriginalDb();
+
     }
     await getWbcHotKeyClasses();
     await getBfHotKeyClasses();
@@ -926,7 +950,7 @@ async function handleKeyDown(event: KeyboardEvent) {
 }
 
 async function moveSelectedImagesToTargetItem(targetItem: any) {
-  const targetIndex = wbcInfo.value.findIndex((item: any) =>  (item.title || item.abbreviation) === (targetItem.title || targetItem.abbreviation));
+  const targetIndex = wbcInfo.value.findIndex((item: any) => (item.title || item.abbreviation) === (targetItem.title || targetItem.abbreviation));
   const selectedImages = selectedClickImages.value;
   addToRollbackHistory();
   for (const selectedImage of selectedImages) {
@@ -961,12 +985,9 @@ function handleKeyUp(event: KeyboardEvent) {
 async function initData(newData: any, upDown: any, upDownData: any) {
   wbcInfo.value = [];
 
-
-  await getDetailRunningInfo();
-
   let selectItemsVal: any = [];
   if (!upDown) {
-    wbcInfo.value = selectItems.value.wbcInfo.wbcInfo[0] || null;
+    wbcInfo.value = selectItems.value.wbcInfoAfter.length !== 0 ? selectItems.value.wbcInfoAfter : selectItems.value.wbcInfo.wbcInfo[0];
     selectItemsVal = selectItems.value;
   } else {
     wbcInfo.value = upDownData.wbcInfoAfter.length !== 0 ? upDownData.wbcInfoAfter : upDownData.wbcInfo.wbcInfo[0];
@@ -1142,7 +1163,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     fileNames.push(fileName)
     if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
       const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.abbreviation ===  (selectedImage.title || selectedImage.abbreviation));
+      const matchingItem = classInfoBagic.find(item => item.abbreviation === (selectedImage.title || selectedImage.abbreviation));
       const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
           `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
       const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1157,7 +1178,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       const res = await moveClassImagePost(data);
       if (res) {
         // 이미지를 타겟 아이템으로 이동
-        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title ===  (selectedImage.title || selectedImage.abbreviation));
+        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === (selectedImage.title || selectedImage.abbreviation));
         const sourceItem = wbcInfo.value[sourceItemIndex];
         const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
         if (imageIndex !== -1) {

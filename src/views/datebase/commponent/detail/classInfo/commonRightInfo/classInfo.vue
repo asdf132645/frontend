@@ -87,7 +87,7 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'" @click="goClass(nWbcItem.id)">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
             <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>
@@ -202,7 +202,7 @@ const lisFilePathSetArr = ref<any>([]);
 onMounted(async () => {
   await getOrderClass();
   wbcMemo.value = props.selectItems?.wbcMemo;
-  await afterChang(clonedWbcInfoStore.value);
+  // await afterChang(clonedWbcInfoStore.value);
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
   projectBm.value = window.PROJECT_TYPE === 'bm';
@@ -224,6 +224,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
+  afterChang(newItem)
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
@@ -920,7 +921,6 @@ const beforeChang = async () => {
 }
 
 const afterChang = async (newItem: any) => {
-
   await getOrderClass();
   emits('isBefore', false);
   isBefore.value = false;
@@ -930,6 +930,7 @@ const afterChang = async (newItem: any) => {
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoAfter = sortWbcInfo(wbcInfoAfter, wbcArr);
   wbcInfoChangeVal.value = sortedWbcInfoAfter.filter((item: any) => !titleArr.includes(item.title));
+
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
   totalCountSet(wbcInfoChangeVal.value);
 }

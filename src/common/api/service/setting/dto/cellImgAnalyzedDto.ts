@@ -16,6 +16,8 @@ export interface CellImgAnalyzedRequest {
     backupPath: string;
     backupStartDate: string;
     backupEndDate: string;
+    autoBackUpMonth: string;
+    autoBackUpStartDate: Date;
 }
 
 // Response Interface
@@ -37,4 +39,6 @@ export interface CellImgAnalyzedResponse {
     backupPath: string;
     backupStartDate: Date;
     backupEndDate: Date;
+    autoBackUpMonth: string;
+    autoBackUpStartDate: Date;
 }

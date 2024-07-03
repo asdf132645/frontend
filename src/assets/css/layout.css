@@ -383,7 +383,21 @@ ul.customClass li {
 .v3dp__input_wrapper > input {
     padding: 9px;
 }
+.line {
+    height: 1px;
+    width: 100%;
+    background: #fff;
+    margin-bottom: 17px;
+}
+.autoDateBox {
+    display: flex;
+}
 
+.autoDateBox select {
+    margin: 0 8px 0 12px;
+}
+
+.autoDateBox span {padding-top: 7px;font-size: 0.9rem;}
 table.settingTable {
     width: 80%;
     text-align: left;
@@ -663,7 +677,7 @@ button.degreeAllCheckBtn {
     position: absolute;
     top: 4px;
     height: 8px;
-    z-index: 9997;
+    z-index: 80;
     overflow: hidden;
 }
 
@@ -815,6 +829,7 @@ ul.nth1Child > :nth-child(3) {
     height: 17px;
     /*margin-bottom: 2px;*/
     position: relative;
+    cursor: pointer;
 }
 
 span.rbcSapnDown {
@@ -1472,12 +1487,16 @@ h3.titleH3 {
 
 button.backupBtn {
     margin-left: 14px;
-    background: #a9fff6;
+    background: #252629;
     border: 1px solid #fff;
+    color: #fff;
     border-radius: 5px;
     cursor: pointer;
 }
 
+select.autoBackUpPath {
+    margin: 0 12px;
+}
 h3.titleH3 button {
     color: #fff;
     border: 1px solid #fff;
@@ -1565,9 +1584,10 @@ ul.wbcImgWrap > li {
 }
 
 .context-menu.detail {
-    height: 250px;
-    overflow-y: auto;
+    /*height: 250px;*/
+    /*overflow-y: auto;*/
     text-align: left;
+    z-index: 999;
 }
 
 .databaseWbcRight {
@@ -1598,7 +1618,7 @@ ul.cellImgBox {
 }
 
 .wbcClassScroll {
-    max-height: 75vh;
+    max-height: 63vh;
     overflow-x: auto;
 }
 

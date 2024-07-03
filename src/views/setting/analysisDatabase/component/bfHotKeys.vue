@@ -3,9 +3,17 @@
 <!--        {{ bfHotKeysItems }}-->
     <ul class="wbcHotKeysItems">
       <li v-for="item in bfHotKeysItems" :key="item.id">
-        <span>{{ item.abbreviation }}</span>
-        <span>{{ item.fullNm }}</span>
-        <span><input v-model="item.key" type="text" maxlength="25" placeholder="class name"/></span>
+        <span>{{ item?.abbreviation }}</span>
+        <span>{{ item?.fullNm }}</span>
+        <span>
+          <input
+              v-model="item.key"
+              type="text"
+              maxlength="25"
+              placeholder="class name"
+              @input="filterEnglishAndNumbers($event, item, 'key')"
+          />
+        </span>
       </li>
     </ul>
     <button @click="saveBfCustomClass" class="saveBtn" type="button">Save</button>
@@ -39,6 +47,12 @@ const alertMessage = ref('');
 onMounted(async () => {
   await getBfHotKeyClasses();
 });
+
+const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm') => {
+  const input = event.target as HTMLInputElement;
+  const filteredValue = input.value.replace(/[^a-zA-Z0-9]/g, '');
+  item[field] = filteredValue.trim();
+};
 
 const saveBfCustomClass = async () => {
   try {

@@ -125,20 +125,48 @@
       </tbody>
     </table>
 
-    <div class="backupDiv">
-      <div class="backupDivChild">
-        <h5 class="mb1">Backup and Restore</h5>
-        <div class="settingDatePickers">
-          <select v-model='backupRootPath'>
+    <table class="settingTable auto">
+      <colgroup>
+        <col width="80">
+        <col width="20">
+      </colgroup>
+      <tbody>
+      <tr>
+        <th>BackUp Save Path</th>
+        <td>
+          <select v-model='backupRootPath' class="autoBackUpPath">
             <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
           </select>
-          <Datepicker v-model="backupStartDate"></Datepicker>
-          <Datepicker v-model="backupEndDate"></Datepicker>
-          <button class="backupBtn" @click="createBackup">backup</button>
-        </div>
-      </div>
-    </div>
-    <button class="saveBtn" type="button" @click='cellImgSet()'>Save Cell Image Analyzed</button>
+        </td>
+      </tr>
+      <tr>
+        <th>Backup and Restore</th>
+        <td>
+          <div class="settingDatePickers">
+            <Datepicker v-model="backupStartDate"></Datepicker>
+            <Datepicker v-model="backupEndDate"></Datepicker>
+            <button class="backupBtn" @click="createBackup">backup</button>
+          </div>
+        </td>
+      </tr>
+<!--      나중에 기능 추가 할 부분 자동 백업-->
+<!--      <tr>-->
+<!--        <th>Auto Backup</th>-->
+<!--        <td>-->
+<!--          <div class="autoDateBox">-->
+<!--            <select v-model='autoBackUpMonth'>-->
+<!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
+<!--                {{ month.value }}-->
+<!--              </option>-->
+<!--            </select>-->
+<!--            <span>Month</span>-->
+<!--          </div>-->
+<!--        </td>-->
+<!--      </tr>-->
+      </tbody>
+    </table>
+    <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save Cell Image Analyzed</button>
+
   </div>
   <Alert
       v-if="showAlert"
@@ -191,7 +219,22 @@ const alarmCount = ref('5');
 const keepPage = ref(false);
 const backupStartDate = ref(moment().local().toDate());
 const backupEndDate = ref(moment().local().toDate());
-
+const autoDate = ref([
+  {value: 'Not selected'},
+  {value: 1},
+  {value: 2},
+  {value: 3},
+  {value: 4},
+  {value: 5},
+  {value: 6},
+  {value: 7},
+  {value: 8},
+  {value: 9},
+  {value: 10},
+  {value: 11},
+  {value: 12}
+]);
+const autoBackUpMonth = ref('Not selected');
 const saveHttpType = ref('');
 const drive = ref<any>([]);
 const backupDrive = ref<any>([]);
@@ -202,6 +245,10 @@ const testTypeArr = ref<any>([]);
 const store = useStore();
 
 const createBackup = async () => {
+  if (backupRootPath.value === ''){
+    showErrorAlert('Please select a backup save path');
+    return
+  }
   const backupDto = {
     startDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 시작일
     endDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 종료일
@@ -281,6 +328,7 @@ const cellImgGet = async () => {
         keepPage.value = data.keepPage;
         backupStartDate.value = moment(data.backupStartDate).local().toDate();
         backupEndDate.value = moment(data.backupEndDate).local().toDate();
+        autoBackUpMonth.value = data?.autoBackUpMonth;
       }
 
     }
@@ -309,6 +357,9 @@ const cellImgSet = async () => {
     backupPath: backupRootPath.value,
     backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
     backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+    autoBackUpMonth: autoBackUpMonth.value,
+    autoBackUpStartDate: autoBackUpMonth.value !== 'Not selected' ? moment(new Date()).local().toDate().toISOString().split('T')[0]:null,
+
   }
 
   try {
