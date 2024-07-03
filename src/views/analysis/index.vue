@@ -23,7 +23,7 @@ import orderList from './commponent/orderList.vue';
 import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
-import {defineEmits, defineProps, onMounted, ref} from "vue";
+import {defineEmits, defineProps, onMounted, ref, onBeforeMount} from "vue";
 import WorkingView100A from "@/views/analysis/commponent/workingView100A.vue";
 const emits = defineEmits();
 
@@ -31,10 +31,11 @@ const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
-onMounted(async () => {
+onBeforeMount(async () => {
   if (window.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
   }else {
+    bmIsBoolen.value = false;
     pbVersion.value = window.PB_VERSION;
   }
 });
