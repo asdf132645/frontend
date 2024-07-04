@@ -108,89 +108,30 @@
           Rollback
         </button>
       </div>
-
       <div>
-        <ul class="wbcInfoDbUl">
-          <template v-for="(item) in wbcInfo" :key="item.id">
-            <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'">
-              <div class="circle" @dragover.prevent="onDragOverCircle()" @drop="onDropCircle(item)">
-                <p>{{ item?.title }}</p>
-                <p>{{ item?.count }}</p>
-              </div>
-            </li>
-          </template>
-        </ul>
-        <ul class="cellImgBox" v-if="!classCompareShow">
-          <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
-            <div v-show="item?.count !== '0' && item?.count !== 0">
-              <p class="mt1">
-                <input type="checkbox" @input="allCheckChange($event,item.title)"
-                       :checked="selectedTitle === item.title">
-                {{ item?.title }}
-                ({{ item?.count }})</p>
-            </div>
-            <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver()" @drop="onDrop(itemIndex)"
-                v-show="item?.count !== '0' && item?.count !== 0">
-              <template v-for="(image, imageIndex) in item.images" :key="image.fileName">
-                <li
-                    :class="{
-                    'border-changed': isBorderChanged(image),
-                    'selected-image': isSelected(image),
-                    'wbcImgWrapLi': true
-                  }"
-                    @click="selectImage(itemIndex, imageIndex, item)"
-                    @dblclick="openModal(image, item)"
-                    v-show="!hiddenImages[`${item.id}-${image.fileName}`]"
-                    @contextmenu="handleRightClick($event, image, item)"
-                >
-                  <div style="position: relative;">
-                    <div class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
-                      <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
-                        <font-awesome-icon
-                            :icon="['fas', 'arrow-right']"/>
-                        {{ image.title }}
-                      </div>
-                    </div>
-                    <img :src="getImageUrl(image.fileName, item.id, item.title, '')"
-                         :width="image.width ? image.width : '150px'"
-                         :height="image.height ? image.height : '150px'"
-                         :style="{ filter: image.filter }"
-                         @dragstart="onDragStart(itemIndex, imageIndex)"
-                         draggable="true"
-                         class="cellImg"
-                         ref="cellRef"
-                         @error="hideImage(item.id, image.fileName, item.title)"
-                         v-show="!hiddenImages[`${item.id}-${image.fileName}`]"
-                    />
-                    <div class="center-point" :style="image.coordinates"></div>
-                  </div>
-                </li>
-              </template>
-            </ul>
-          </li>
-        </ul>
-        <div v-else>
-          <div>
-            <select>
-              <option>1</option>
-            </select>
-            <div>
-              <div v-show="wbcInfo[0]?.count !== '0' && wbcInfo[0]?.count !== 0">
-                <p class="mt1">
-                  <input type="checkbox" @input="allCheckChange($event,wbcInfo[0].title)"
-                         :checked="selectedTitle === wbcInfo[0].title">
-                  {{ wbcInfo[0]?.title }}
-                  ({{ wbcInfo[0]?.count }})</p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <select>
-              <option>1</option>
-            </select>
-            <div></div>
-          </div>
-        </div>
+        <ImageGallery
+            :wbcInfo="wbcInfo"
+            :classCompareShow="classCompareShow"
+            :selectedTitle="selectedTitle"
+            :hiddenImages="hiddenImages"
+            :replaceFileNamePrefix="replaceFileNamePrefix"
+            :getImageUrl="getImageUrl"
+            :onDragOver="onDragOver"
+            :isBorderChanged="isBorderChanged"
+            :isSelected="isSelected"
+            @allCheckChange="allCheckChange"
+            @selectImage="selectImage"
+            @openModal="openModal"
+            @hideImage="hideImage"
+            @handleRightClick="handleRightClick"
+            @onDrop="onDrop"
+            @onDragStart="onDragStart"
+            @onDropCircle="onDropCircle"
+            @onDragOverCircle="onDragOverCircle"
+            @scrollToElement="scrollToElement"
+            :cellRef="cellRef"
+            @update:cellRef="handleUpdateCellRef"
+        />
       </div>
       <!--   우클릭 항목 메뉴   -->
       <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }"
@@ -243,6 +184,7 @@ import {
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
+import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGallery.vue';
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -354,6 +296,9 @@ const getDetailRunningInfo = async () => {
     console.log(e);
   }
 }
+const handleUpdateCellRef = (refValue: any) => {
+  cellRef.value = refValue.value;
+};
 
 const classCompare = () => {
   classCompareShow.value = !classCompareShow.value;
@@ -769,13 +714,6 @@ const allCheckInsert = () => {
   }
 }
 
-const setRef = (itemId: any) => {
-  return (el: any) => {
-    if (el) {
-      refsArray.value[itemId] = el;
-    }
-  };
-};
 
 
 const scrollToElement = (itemId: number) => {
