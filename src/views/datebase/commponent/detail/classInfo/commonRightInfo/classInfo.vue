@@ -930,6 +930,7 @@ const afterChang = async (newItem: any) => {
   emits('isBefore', false);
   isBefore.value = false;
   const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
+  selectItems.value = filteredItems.data;
   const wbcInfo = selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
