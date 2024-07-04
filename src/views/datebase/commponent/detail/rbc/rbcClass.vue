@@ -570,8 +570,6 @@ const afterChange = async (newItem?: any) => {
 
     await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: result.data.rbcInfoAfter });
   }
-
-  console.log("FIRST SELECTITEMS", rbcInfoAfterVal.value, rbcInfoBeforeVal.value);
   await classChange();
 }
 const countReAdd = async () => {
