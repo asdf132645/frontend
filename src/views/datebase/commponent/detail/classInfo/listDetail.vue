@@ -616,8 +616,8 @@ const refreshClass = async (data: any) => {
   selectItems.value = data;
   const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
-
   await getWbcCustomClasses(true, data);
+  await imgSetLocalStorage();
 }
 
 const excelDownload = () => {
