@@ -322,8 +322,7 @@ const rbcTotalAndReCount = async () => {
     }
   });
 
-  console.log("SELECTITEMS", selectItems.value.rbcInfoAfter);
-
+  await countReAdd();
 }
 
 const percentageChange = (count: any): any => {
@@ -332,34 +331,6 @@ const percentageChange = (count: any): any => {
 }
 
 const countReAdd = async () => {
-  // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
-  // if (!selectItems.value || !Array.isArray(rbcInfoBeforeVal.value)) {
-  //   console.error('rbcInfoBeforeVal.value is not an array');
-  //   return;
-  // }
-  //
-  // if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-  //   console.error('rbcInfoPathAfter.value is not an array');
-  //   return;
-  // }
-  //
-  //
-  // for (const category of rbcInfoBeforeVal.value) {
-  //   for (const classItem of category.classInfo) {
-  //     let count = 0;
-  //
-  //     for (const afterCategory of rbcInfoPathAfter.value) {
-  //       for (const afterClassItem of afterCategory.classInfo) {
-  //         if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
-  //           count++;
-  //         }
-  //       }
-  //     }
-  //
-  //     classItem.originalDegree = count;
-  //   }
-  // }
-
   let totalPLT = 0;
   let malariaTotal = 0;
   for (const el of rbcInfoPathAfter.value) {
@@ -382,8 +353,6 @@ const countReAdd = async () => {
       }
     }
   }
-  //
-
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal
 };
