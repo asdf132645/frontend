@@ -2647,6 +2647,30 @@ table.cbcTable td {
     color: #fff;
 }
 
+.printRbcCategory {
+    width: 21%;
+}
+
+.printRbcClass {
+    width: 27%;
+}
+
+.printRbcDegree {
+    width: 10%;
+}
+
+.printRbcCount {
+    width: 10%;
+}
+
+.printRbcPercent {
+    width: 10%;
+}
+
+.printTotalText {
+    font-weight: bold;
+}
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;

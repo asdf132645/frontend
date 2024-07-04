@@ -127,25 +127,6 @@
             </template>
 
           </ul>
-          <ul class="rbcPercent mr1">
-            <li v-if="innerIndex === 0" class="mb1 liTitle">percent</li>
-            <template v-for="(classInfo, classIndex) in category?.classInfo"
-                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li>
-                {{ percentageChange(classInfo?.originalDegree) }}
-              </li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
-                {{ percentageChange(malariaCount) }}
-              </li>
-              <div v-if="classIndex === category.classInfo.length - 1">
-                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
-                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
-                  100%
-                </div>
-              </div>
-            </template>
-          </ul>
           <ul class="rbcPercent">
             <li v-if="innerIndex === 0" class="mb1 liTitle">count</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
@@ -171,6 +152,26 @@
               </div>
             </template>
           </ul>
+          <ul class="rbcPercent mr1">
+            <li v-if="innerIndex === 0" class="mb1 liTitle">percent</li>
+            <template v-for="(classInfo, classIndex) in category?.classInfo"
+                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
+              <li>
+                {{ percentageChange(classInfo?.originalDegree) }}
+              </li>
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                {{ percentageChange(malariaCount) }}
+              </li>
+              <div v-if="classIndex === category.classInfo.length - 1">
+                <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                  100%
+                </div>
+              </div>
+            </template>
+          </ul>
+
         </div>
       </template>
 
@@ -280,17 +281,18 @@ const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
+const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const rbcDegreeStandard = ref<any>([]);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
 const shapeBodyTotal = ref(0);
 const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
+let timeoutId: any;
 
-onMounted(() => {
-  const {rbcInfo, rbcMemo} = props.selectItems;
+onMounted(async () => {
   const {path} = router.currentRoute.value;
-  memo.value = rbcMemo;
+  memo.value = props.selectItems?.rbcMemo;
   pltCount.value = props.selectItems?.rbcInfo.pltCount;
   malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
@@ -354,7 +356,7 @@ watch(() => props.allCheckClear, (newItem) => {
   classInfoArr.value = [];
 
 }, {deep: true})
-let timeoutId: any;
+
 
 watch(() => rbcReData, async (newItem) => {
 
@@ -372,11 +374,6 @@ watch(() => rbcReData, async (newItem) => {
 
 }, {deep: true});
 
-
-watch(() => props.selectItems, (newItem) => {
-  pltCount.value = props.selectItems?.pltCount;
-  malariaCount.value = props.selectItems?.malariaCount;
-});
 
 function handleLiClick(outerIndex: number, innerIndex: any, classIndex: any, classInfo: any, category: any) {
   toggleCheckbox(outerIndex, innerIndex, classIndex, classInfo, category);
@@ -414,7 +411,7 @@ const rbcTotalAndReCount = async () => {
           rbcItem.classInfo.splice(foundElementIndex, 1);
         }
         if (rbcItem.categoryId === newRbcData.categoryId) {
-          let sss = {
+          let newRbcDataObj = {
             classNm: newRbcData.classNm,
             classId: newRbcData.classId,
             posX: String(newRbcData.posX),
@@ -423,7 +420,7 @@ const rbcTotalAndReCount = async () => {
             height: newRbcData.height,
             index: newRbcData.index,
           }
-          rbcItem.classInfo.push(sss);
+          rbcItem.classInfo.push(newRbcDataObj);
         }
       }
     }
@@ -466,6 +463,7 @@ const rbcTotalAndReCount = async () => {
   chromiaTotalTwo.value = chromiaTotalval;
   shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
 }
+
 const percentageChange = (count: any): any => {
   const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
   return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
@@ -563,6 +561,17 @@ const afterChange = async (newItem?: any) => {
     rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData;
   }
 
+
+
+  // Report 화면에서 RBC Classification 동기화 문제로 추가
+  if (props.type === 'report') {
+    const result: any = await detailRunningApi(String(selectedSampleId.value));
+    rbcInfoAfterVal.value = result.data.rbcInfoAfter;
+
+    await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: result.data.rbcInfoAfter });
+  }
+
+  console.log("FIRST SELECTITEMS", rbcInfoAfterVal.value, rbcInfoBeforeVal.value);
   await classChange();
 }
 const countReAdd = async () => {
@@ -637,14 +646,15 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
       }
     }
   }
-  rbcInfoAfterVal.value = rbcInfoAfterData;
-  // rbcInfoAfterVal 업데이트
-  const rbcInfoAfter = rbcInfoAfterData
 
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
+  // rbcInfoAfterVal 업데이트
+  rbcInfoAfterVal.value = rbcInfoAfterData;
+
+  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
-    rbcInfoAfter: rbcInfoAfter,
+    rbcInfoAfter: rbcInfoAfterData,
   };
+
   const updatedRuningInfo = {...result.data, ...updatedItem};
   await resRunningItem(updatedRuningInfo, false);
   return;
@@ -734,16 +744,18 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   // rbcInfoAfterVal 업데이트
   rbcInfoAfterVal.value = rbcInfoAfter;
 
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
+  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfter,
   };
+
   const updatedRuningInfo = {...result.data, ...updatedItem};
+  await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: rbcInfoAfter});
   await resRunningItem(updatedRuningInfo, false);
 };
 
 const memoOpen = () => {
-  memo.value = memo.value !== '' ? memo.value : props.selectItems?.rbcMemo;
+  // memo.value = memo.value !== '' ? memo.value : props.selectItems?.rbcMemo;
   memoModal.value = !memoModal.value;
 }
 
@@ -752,9 +764,11 @@ const memoCancel = () => {
 }
 
 const memoChange = async () => {
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
+  const result: any = await detailRunningApi(String(selectedSampleId.value));
+
+  const enterAppliedRbcMemo = memo.value.replaceAll('\r\n', '<br>');
   const updatedItem = {
-    rbcMemo: memo.value,
+    rbcMemo: enterAppliedRbcMemo,
   };
   const updatedRuningInfo = {...result.data, ...updatedItem}
   await resRunningItem(updatedRuningInfo, true);
@@ -819,7 +833,7 @@ const onCommit = async () => {
 
   const localTime = moment().local();
 
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
+  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
