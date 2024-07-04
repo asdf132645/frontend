@@ -227,6 +227,8 @@ watch(userModuleDataGet.value, (newUserId) => {
 watch(() => props.wbcInfo, (newItem) => {
   if (!isBefore.value) {
     afterChang(newItem)
+  }else{
+    beforeChang();
   }
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
@@ -236,6 +238,8 @@ watch(() => props.wbcInfo, (newItem) => {
 watch(() => clonedWbcInfoStore.value, (newItem) => {
   if (!isBefore.value) {
     afterChang(newItem);
+  }else{
+    beforeChang();
   }
 }, {deep: true});
 
@@ -914,9 +918,10 @@ const getOrderClass = async () => {
 
 const beforeChang = async () => {
   isBefore.value = true;
-  emits('isBefore', true);
   await getOrderClass();
   const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id) });
+  emits('isBefore', true);
   const wbcInfo = filteredItems.data.wbcInfo.wbcInfo[0];
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const sortedWbcInfo = sortWbcInfo(wbcInfo, wbcArr);

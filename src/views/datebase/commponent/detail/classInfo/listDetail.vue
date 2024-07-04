@@ -110,6 +110,7 @@
       </div>
       <div>
         <ImageGallery
+            ref="$imageGalleryRef"
             :wbcInfo="wbcInfo"
             :classCompareShow="classCompareShow"
             :selectedTitle="selectedTitle"
@@ -243,7 +244,7 @@ const targetItem = ref<any>(null);
 const isNext = ref(false);
 const classCompareShow = ref(false);
 const isLoading = ref(true);
-
+const $imageGalleryRef = ref<any>(null);
 onBeforeMount(async () => {
   // await getDetailRunningInfo();
   isLoading.value = false;
@@ -276,7 +277,7 @@ watch(imageSize, (newVal) => {
 })
 
 watch(isBeforeChild, (newVal) => {
-  console.log(isBeforeChild.value)
+  // console.log(isBeforeChild.value)
   getWbcCustomClasses(false, null);
 }, {deep: true});
 
@@ -286,7 +287,6 @@ watch(imageRgb, (newVal) => {
   const blue = newVal[2];
   localStorage.setItem('imageRgb', JSON.stringify([red, green, blue]));
 }, {deep: true});
-
 
 const getDetailRunningInfo = async () => {
   try {
@@ -612,9 +612,11 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 });
 
 const refreshClass = async (data: any) => {
+  console.log(data)
   selectItems.value = data;
   const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
+
   await getWbcCustomClasses(true, data);
 }
 
@@ -717,9 +719,8 @@ const allCheckInsert = () => {
 
 
 const scrollToElement = (itemId: number) => {
-  const targetElement = refsArray.value[itemId];
-  if (targetElement) {
-    targetElement.scrollIntoView({behavior: 'smooth'});
+  if($imageGalleryRef.value){
+    $imageGalleryRef.value.scrollToElement(itemId);
   }
 };
 
