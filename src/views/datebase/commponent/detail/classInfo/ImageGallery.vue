@@ -29,7 +29,7 @@
               'wbcImgWrapLi': true
             }"
               @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
-              @dblclick="() => openModal(image, item)"
+              @dblclick="() => $emit('openModal', image, item)"
               v-show="image && !hiddenImages[`${item.id}-${image.fileName}`]"
               @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
           >
@@ -63,12 +63,23 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, ref, watch} from 'vue';
+
+import {computed, nextTick, onMounted, ref, watch, defineExpose} from 'vue';
 import {useStore} from "vuex";
 const refsArray = ref<any[]>([]);
 const store = useStore();
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cellRef = ref<HTMLElement | null>(null);
+const scrollToElement = (itemId: any) => {
+  console.log('?')
+  const targetElement = refsArray.value[itemId];
+  if (targetElement) {
+    targetElement.scrollIntoView({behavior: 'smooth'});
+  }
+};
+defineExpose({
+  scrollToElement,
+});
 interface Image {
   fileName: string;
   width?: string;
@@ -96,22 +107,11 @@ const props = defineProps<{
   onDragOver: () => void;
   isBorderChanged: (image: Image) => boolean;
   isSelected: (image: Image) => boolean;
-  allCheckChange: (event: Event, title: string) => void;
-  // selectImage: (itemIndex: number, imageIndex: number, item: Item) => void;
-  openModal: (image: Image, item: Item) => void;
-  // handleRightClick: (event: Event, image: Image, item: Item) => void;
-  // onDrop: (itemIndex: number) => void;
-  // onDragStart: (itemIndex: number, imageIndex: number) => void;
 }>();
 const emits = defineEmits();
 
 
 const hiddenImages = ref<{ [key: string]: boolean }>({ ...props.hiddenImages });
-onMounted(async () => {
-  await nextTick();
-  console.log(cellRef.value)
-
-});
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = { ...newVal };
@@ -124,12 +124,8 @@ const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
 }
 
-const scrollToElement = (itemId: any) => {
-  const targetElement = refsArray.value[itemId];
-  if (targetElement) {
-    targetElement.scrollIntoView({behavior: 'smooth'});
-  }
-};
+
+
 const setRef = (itemId: any) => {
   return (el: any) => {
     if (el) {

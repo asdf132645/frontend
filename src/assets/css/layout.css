@@ -842,7 +842,9 @@ span.rbcSapnDown {
 .databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
     width: 58%;
 }
-
+.databaseWbcRight.cbcLayer ul.leftWbcInfo {
+    width: 54%;
+}
 .sensitivityDiv .slider-container {
     /*width: 45%;*/
     margin-top: 16px;
@@ -1656,10 +1658,12 @@ h3.wbcClassInfoLeft {
     font-weight: 600;
     /*margin-left: 13px;*/
 }
-
+.reportDiv ul.leftWbcInfo {
+    width: 59%;
+}
 ul.leftWbcInfo {
     display: inline-block;
-    width: 54%;
+    width: 68%;
     text-align: right;
 }
 
