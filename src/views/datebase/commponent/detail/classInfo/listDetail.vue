@@ -334,6 +334,7 @@ watch(imageSize, (newVal) => {
 })
 
 watch(isBeforeChild, (newVal) => {
+  console.log(isBeforeChild.value)
   getWbcCustomClasses(false, null);
 }, {deep: true});
 
@@ -513,7 +514,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     } else {
       wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
     }
-    if (newData.length !== 0) {
+    if (newData.length !== 0 && !isBeforeChild.value) {
       for (const item of newData) { // 커스텀클래스 폴더 생성
         const {fullNm, abbreviation, customNum} = item;
         const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
@@ -534,7 +535,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           await updateOriginalDb('notWbcAfterSave');
         }
       }
-    } else {
+    } else if (!isBeforeChild.value) {
       const itemsToDelete: any = [];
       const sortArr = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       wbcinfo.forEach((item: any) => {
@@ -546,7 +547,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         }
       });
       // 수집한 아이템을 wbcinfo 배열에서 삭제
-      itemsToDelete.forEach((item) => {
+      itemsToDelete.forEach((item: any) => {
         const index = wbcinfo.indexOf(item);
         if (index > -1) {
           wbcinfo.splice(index, 1);
