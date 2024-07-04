@@ -102,7 +102,10 @@
 
           </div>
         </div>
-        <button @click="classCompare">Class Compare</button>
+        <button @click="classCompare">
+          <font-awesome-icon :icon="['fas', 'code-compare']" />
+          Class Compare
+        </button>
         <button @click="rollbackChanges" class="rollbackButton">
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback

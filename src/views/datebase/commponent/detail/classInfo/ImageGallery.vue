@@ -62,7 +62,7 @@
   </ul>
   <div v-else class="divCompare">
     <div class="divCompareChild">
-      <select v-model="firstClass" @change="classImgChange('first')">
+      <select v-model="firstClass" @change="classImgChange('first' , $event)">
         <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
       </select>
       <ul class="cellImgBox">
@@ -120,7 +120,7 @@
       </ul>
     </div>
     <div class="divCompareChild">
-      <select v-model="lastClass" @change="classImgChange('last')">
+      <select v-model="lastClass" @change="classImgChange('last', $event)">
         <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
       </select>
       <ul class="cellImgBox">
@@ -196,6 +196,9 @@ const firstItemIndex = ref(0);
 const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
+const previousFirstClass = ref('Neutrophil-Segmented');
+const previousLastClass = ref('Neutrophil-Band');
+
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
@@ -244,8 +247,8 @@ watch(props.hiddenImages, (newVal) => {
 });
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
-  classImgChange('first');
-  classImgChange('last');
+  classImgChange('first', null);
+  classImgChange('last', null);
   classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
 }
 
@@ -258,14 +261,24 @@ const setRef = (itemId: any) => {
   };
 };
 
-const classImgChange = (type: string) => {
+const classImgChange = (type: string, event: any) => {
+  const updateClassValue = (currentClass: any, previousClass: any, classObj: any, itemIndex: any) => {
+    if (firstClass.value === lastClass.value) {
+      currentClass.value = previousClass.value;
+      return;
+    } else {
+      previousClass.value = event ? event.target.value : currentClass.value;
+    }
+    classObj.value = props.wbcInfo.find(option => option?.name === currentClass.value);
+    itemIndex.value = props.wbcInfo.findIndex(option => option?.name === currentClass.value);
+  };
+
   if (type === 'first') {
-    firstClassObj.value = props.wbcInfo.find(option => option?.name === firstClass.value);
-    firstItemIndex.value = props.wbcInfo.findIndex(option => option?.name === firstClass.value);
+    updateClassValue(firstClass, previousFirstClass, firstClassObj, firstItemIndex);
   } else {
-    lastClassObj.value = props.wbcInfo.find(option => option?.name === lastClass.value);
-    lastItemIndex.value = props.wbcInfo.findIndex(option => option?.name === lastClass.value);
+    updateClassValue(lastClass, previousLastClass, lastClassObj, lastItemIndex);
   }
-}
+};
+
 
 </script>
