@@ -303,7 +303,7 @@ const classCompareShow = ref(false);
 const isLoading = ref(true);
 
 onBeforeMount(async () => {
-  await getDetailRunningInfo();
+  // await getDetailRunningInfo();
   isLoading.value = false;
 })
 
@@ -513,7 +513,6 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     } else {
       wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
     }
-    console.log(newData.length !== 0)
     if (newData.length !== 0) {
       for (const item of newData) { // 커스텀클래스 폴더 생성
         const {fullNm, abbreviation, customNum} = item;
