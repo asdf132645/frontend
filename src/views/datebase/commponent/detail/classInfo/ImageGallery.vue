@@ -242,8 +242,6 @@ const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
 });
-
-
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
   classImgChange('first');
