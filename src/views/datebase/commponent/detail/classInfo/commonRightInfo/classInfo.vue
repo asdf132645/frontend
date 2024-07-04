@@ -836,8 +836,9 @@ const onCommit = async () => {
 
 
 const memoChange = async () => {
+  const enterAppliedWbcMemo = wbcMemo.value.replaceAll('\r\n', '<br>');
   const updatedItem = {
-    wbcMemo: wbcMemo.value
+    wbcMemo: enterAppliedWbcMemo
   };
   const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedRuningInfo = {...result.data, ...updatedItem}
@@ -847,7 +848,7 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
-  wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
+  // wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
   memoModal.value = !memoModal.value;
 }
 

@@ -47,55 +47,69 @@
 
           </tbody>
         </table>
-        <div style="margin-top: 20px; border-top: 2px dotted #696969">
+
+        <div style="margin-top: 20px; border-top: 2px dotted #696969"></div>
           <!-- RBC Classification -->
           <div v-if="['01', '04'].includes(selectItems?.testType)" style="margin-top: 20px;">
             <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification result</h3>
             <table style="width: 100%;">
               <colgroup>
-                <col style="width: 30%;"/>
-                <col style="width: 45%;"/>
+                <col style="width: 20%;"/>
                 <col style="width: 25%;"/>
+                <col style="width: 25%;"/>
+                <col style="width: 15%;"/>
+                <col style="width: 15%;"/>
               </colgroup>
               <thead>
-              <tr>
+              <tr style="margin-bottom: 15px; font-size: 18px; font-weight: normal; padding-bottom: 100px;">
                 <th style="text-align: left;">Category</th>
                 <th style="text-align: left;">Class</th>
                 <th style="text-align: left;">Degree</th>
+                <th style="text-align: left;">Count</th>
+                <th style="text-align: left;">Percent</th>
               </tr>
               </thead>
               <tbody>
-              <template v-for="(classList, outerIndex) in [selectItems?.rbcInfo]" :key="outerIndex">
+              <template v-for="(classList, outerIndex) in [selectItems.rbcInfoAfter]" :key="outerIndex">
                 <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-                  <tr style="padding-bottom: 5px;">
-                    <td style="text-align: left; padding: 5px 0;">{{ category.categoryNm }}</td>
-                    <td style="text-align: left; padding: 5px 0;">
-                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                        <div>{{ classInfo?.classNm }}</div>
-                      </template>
-                    </td>
-                    <td style="text-align: left; padding: 5px 0;">
-                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                        <div v-if="classInfo.classId !== '01' || category.categoryId === '05'">{{ classInfo?.degree }}</div>
-                      </template>
-                    </td>
+                  <tr>
+                    <td :rowspan="category.classInfo.length + (category.categoryNm !== 'Shape' ? 1 : 0)" style="text-align: left; vertical-align: top;">{{ category.categoryNm }}</td>
+                    <td style="text-align: left;">{{ category.classInfo[0]?.classNm }}</td>
+                    <td style="text-align: left;">{{ category.classInfo[0]?.degree }}</td>
+                    <td style="text-align: left;">{{ category.classInfo[0]?.originalDegree }}</td>
+                    <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree) }}</td>
+                  </tr>
+                  <template v-for="(classInfo, classIndex) in category.classInfo.slice(1)" :key="classIndex">
+                    <tr>
+                      <td style="text-align: left;">{{ classInfo.classNm }}</td>
+                      <td style="text-align: left;">{{ classInfo.degree }}</td>
+                      <td style="text-align: left;">{{ classInfo.originalDegree }}</td>
+                      <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree) }}</td>
+                    </tr>
+                  </template>
+                  <tr v-if="category.categoryNm !== 'Shape'">
+                    <td style="text-align: left;"></td>
+                    <td style="text-align: left;">Total</td>
+                    <td style="text-align: left;">{{ sizeChromiaTotal }}</td>
+                    <td style="text-align: left;">{{ percentageChange(sizeChromiaTotal) }} %</td>
                   </tr>
                 </template>
               </template>
-              <tr style="padding-bottom: 5px;">
-                <th style="text-align: left; padding: 5px 0;">Others</th>
-                <th style="text-align: left; padding: 5px 0;">Platelets</th>
-                <th style="text-align: left; padding: 5px 0;">{{ selectItems?.rbcInfo.pltCount }} PLT / 1000 RBC</th>
+              <tr>
+                <th style="text-align: left; padding: 15px 0;">Others</th>
+                <th style="text-align: left; padding: 15px 0;">Platelets</th>
+                <th style="text-align: left; padding: 15px 0;" colspan="3">{{ pltCount }} PLT / 1000 RBC</th>
               </tr>
-              <tr style="padding-bottom: 5px;">
+              <tr>
                 <th></th>
                 <th style="text-align: left; padding: 5px 0;">Malaria</th>
-                <th style="text-align: left; padding: 5px 0;">{{ selectItems?.rbcInfo?.malariaCount }} / {{ selectItems.maxRbcCount }} RBC</th>
+                <th style="text-align: left; padding: 5px 0;" colspan="3">{{ malariaCount }} / {{ maxRbcCount }} RBC</th>
               </tr>
-              <tr style="padding-bottom: 5px;">
-                <!-- <th></th> -->
-                <th style="text-align: left; padding: 5px 0;">Comment</th>
-                <th style="text-align: left; padding: 5px 0;">{{ selectItems.rbcMemo }}</th>
+              <tr>
+                <th style="text-align: left; padding-top: 15px;">Comment</th>
+                <th v-show="selectItems?.rbcMemo" style="text-align: left; padding-top: 15px;" colspan="4">
+                  <pre style="text-align: left; outline: 1px solid #252629; padding: 4px;">{{ selectItems?.rbcMemo }}</pre>
+                </th>
               </tr>
               </tbody>
             </table>
@@ -128,15 +142,19 @@
                 <td style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcInfo?.totalCount }}</td>
                 <td style="text-align: left; padding: 5px 0;">100.00%</td>
               </tr>
-              <!-- <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
-                <th style="text-align: left; padding: 5px 0;">{{ item?.name }}</th>
-                <td colspan="1" style="text-align: left; padding: 5px 0;">{{ item?.count }}
-                  <span v-if="item.id === '12' || item.id === '13'"> / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
-                </td>
-              </tr> -->
+
+
+              <th style="text-align: left; padding-top: 30px; font-weight: bold;">non-Wbc</th>
+              <tr style="padding-top: 5px; padding-bottom: 15px;">
+                <template v-for="item in nonWbcClassList" :key="item.id" >
+                  <td style="text-align: left; padding: 5px 0;">{{item.name}}</td>
+                  <td style="text-align: left; padding: 5px 0;">{{item.count}}</td>
+
+                </template>
+              </tr>
               <tr style="padding-bottom: 5px;">
-                <th style="text-align: left; padding: 5px 0;">Comment</th>
-                <td colspan="2" style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcMemo }}</td>
+                <th style="text-align: left; padding: 15px 0;">Comment</th>
+                <td v-show="selectItems?.wbcMemo" colspan="2" style="text-align: left; padding: 5px 0;"><pre style="text-align: left; outline: 1px solid #252629; padding: 4px;">{{ selectItems?.wbcMemo }}</pre></td>
               </tr>
               </tbody>
             </table>
@@ -146,7 +164,7 @@
               <li v-for="(item) in wbcInfo" :key="item.id" style="">
                 <div style="font-weight: bold; font-size: 18px; margin: 40px auto 20px;">{{ item?.title }} ({{ item?.count }})</div>
                 <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;">
-                  <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block; margin-right: 4px; margin-top: 4px; outline: 1px solid #2c2d2c; cursor: auto;">
+                  <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block; margin-right: 5px; margin-top: 5px; outline: 1px solid #2c2d2c; cursor: auto;">
                     <div style="position: relative;">
                       <img :src="getImageUrl(image.fileName, item.id, item.title)" :width="image.width ? image.width : '150px'" :height="image.height ? image.height : '150px'" :style="{ filter: image.filter }" class="cellImg" ref="cellRef"/>
                       <div class="center-point" :style="image.coordinates"></div>
@@ -156,7 +174,6 @@
               </li>
             </ul>
           </div>
-        </div>
       </div>
     </div>
   </div>
@@ -164,7 +181,7 @@
 
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref } from "vue";
+import {computed, defineEmits, defineProps, onMounted, ref, watchEffect} from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
@@ -172,6 +189,7 @@ import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['printOnOff', 'selectItemWbc']);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -181,7 +199,7 @@ const printContent = ref(null);
 const wbcInfo = ref([]);
 const wbcInfoImg = ref([]);
 
-const iaRootPath = computed(() => store.state.commonModule.value.iaRootPath);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const selectItems = ref<any>(null);
 const orderClass = ref<any>({});
@@ -190,14 +208,154 @@ const imagePrintAndWbcArr = ref<string[]>([]);
 const emit = defineEmits(['printClose']);
 const nonWbcIdList = ['12', '13', '14', '15', '16'];
 
+const rbcInfoPathAfter = ref<any>([]);
+const rbcTotalVal = ref(0);
+const sizeChromiaTotal = ref(0);
+const chromiaTotalTwo = ref(0);
+const shapeBodyTotal = ref(0);
+
+const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+const nonWbcClassList = ref<any[]>([]);
+
+const maxRbcCount = ref(0);
+const pltCount = ref(0);
+const malariaCount = ref(0);
+
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
   await getOrderClass();
+  await rbcTotalAndReCount();
   await getImagePrintData();
   await printPage();
 });
 
+
+const rbcTotalAndReCount = async () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
+  const url_new = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}_new.json`;
+  const response_new = await readJsonFile({fullPath: url_new});
+  const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
+    const newJsonData = response_new?.data;
+    for (const rbcItem of response_old.data[0].rbcClassList) {
+      for (const newRbcData of newJsonData) {
+        // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
+        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
+            Number(el.index) === Number(newRbcData.index)
+        );
+        if (foundElementIndex !== -1) {
+          rbcItem.classInfo.splice(foundElementIndex, 1);
+        }
+        if (rbcItem.categoryId === newRbcData.categoryId) {
+          let newRbcDataObj = {
+            classNm: newRbcData.classNm,
+            classId: newRbcData.classId,
+            posX: String(newRbcData.posX),
+            posY: String(newRbcData.posY),
+            width: newRbcData.width,
+            height: newRbcData.height,
+            index: newRbcData.index,
+          }
+          rbcItem.classInfo.push(newRbcDataObj);
+        }
+      }
+    }
+    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
+  } else {
+    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+  }
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    console.error('rbcInfoPathAfter.value is not iterable');
+    return;
+  }
+  let total = 0;
+  let chromiaTotalval = 0;
+  let shapeBodyTotalVal = 0;
+  let shapeBodyTotalVal2 = 0;
+
+  rbcInfoPathAfter.value.forEach(el => {
+    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
+
+    switch (el.categoryId) {
+      case '01':
+        total = lastIndex;
+        break;
+      case '02':
+        chromiaTotalval = lastIndex;
+        break;
+      case '03':
+        shapeBodyTotalVal = lastIndex;
+        break;
+      case '05':
+        shapeBodyTotalVal2 = lastIndex;
+        break;
+      default:
+        // Handle unexpected categoryId if needed
+        break;
+    }
+  });
+
+  rbcTotalVal.value = Number(total) + 1;
+  sizeChromiaTotal.value = Number(total) + 1;
+  chromiaTotalTwo.value = chromiaTotalval;
+  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
+
+  // selectItems의 originalDegree 초기화
+  selectItems.value.rbcInfoAfter.forEach((category: any) => {
+    category.classInfo.forEach((item: any) => {
+      item.originalDegree = 0;
+    });
+  });
+
+  // rbcInfoPathAfter에서 아이템들 classId와 categoryId를 비교하여 originalDegree 증가시키기
+  rbcInfoPathAfter.value.forEach(pathCategory => {
+    const category = selectItems.value.rbcInfoAfter.find((cat: any) => cat.categoryId === pathCategory.categoryId);
+    if (category) {
+      pathCategory.classInfo.forEach((pathClass: any) => {
+        const classInfo = category.classInfo.find((item: any) => item.classId === pathClass.classId);
+        if (classInfo) {
+          classInfo.originalDegree++;
+        }
+      });
+    }
+  });
+
+  await countReAdd();
+}
+
+const percentageChange = (count: any): any => {
+  const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+  return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
+}
+
+const countReAdd = async () => {
+  let totalPLT = 0;
+  let malariaTotal = 0;
+  for (const el of rbcInfoPathAfter.value) {
+    if (el.categoryId === '01') {
+      const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
+      maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
+    }
+    if (el.categoryId === '04') {
+      for (const xel of el.classInfo) {
+        if (xel.classNm === 'Platelet') {
+          totalPLT += 1;
+        }
+      }
+    } else if (el.categoryId === '05') {
+      for (const xel of el.classInfo) {
+        if (xel.classNm === 'Malaria') {
+          malariaTotal += 1;
+          console.log(malariaTotal)
+        }
+      }
+    }
+  }
+  pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
+  malariaCount.value = malariaTotal
+};
 
 const getOrderClass = async () => {
   try {
@@ -233,7 +391,6 @@ function getImageUrl(imageName: any, id: string, title: string): string {
     return "";
   }
 
-  // 해당 iaRootPath가 문제!
   const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
   const slotId = selectItems.value.slotId || "";
   const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
@@ -299,8 +456,9 @@ const getImagePrintData = async () => {
         // wbcClassification Order 적용
         const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
         const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-        await sortWbcInfo(wbcInfo.value, sortArr);
-
+        const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
+        wbcInfo.value = sortedWbcInfoData;
+        nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
       }
     }
   } catch (e) {
@@ -323,7 +481,7 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   });
 
   // 정렬된 배열을 wbcInfo에 할당
-  wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
+  return wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
 };
 
 const closePrint = () => {

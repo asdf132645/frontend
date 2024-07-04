@@ -325,7 +325,7 @@ const cellImgGet = async () => {
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
         iaRootPath.value = data.iaRootPath;
-        backupRootPath.value = data.backupPath;
+        backupRootPath.value = data.backupPath || window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
         isNsNbIntegration.value = data.isNsNbIntegration;
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;
@@ -334,6 +334,7 @@ const cellImgGet = async () => {
         backupEndDate.value = moment(data.backupEndDate).local().toDate();
         autoBackUpMonth.value = data?.autoBackUpMonth;
       }
+
     }
   } catch (e) {
 

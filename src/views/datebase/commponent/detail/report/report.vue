@@ -84,7 +84,7 @@
                 </template>
               </tr>
               <tr>
-                <td>total</td>
+                <td>Total</td>
                 <td>{{ selectItems?.wbcInfo?.totalCount || 0 }}</td>
                 <td>100.00</td>
               </tr>
@@ -99,7 +99,7 @@
                 <col width="20%">
               </colgroup>
               <tbody>
-              <template v-for="(nWbcItem, outerIndex) in selectItems?.wbcInfo?.nonRbcClassList" :key="outerIndex">
+              <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
                 <tr v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'">
                   <td>{{ getCategoryName(nWbcItem) }}</td>
                   <td>
@@ -117,26 +117,49 @@
           </div>
           <div class="rbcRight" v-if="!projectBm">
             <h3 class="reportH3 mb1 pl0">RBC classification result</h3>
-            <template v-for="(classList, outerIndex) in [rbcInfo]" :key="outerIndex">
+            <template v-for="(classList, outerIndex) in [rbcInfoAfterData]" :key="outerIndex">
               <template v-for="(category, innerIndex) in classList" :key="innerIndex">
                 <div class="categories">
-                  <ul class="categoryNm">
+                  <ul class="printRbcCategory">
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
                     <li>{{ category?.categoryNm }}</li>
                   </ul>
-                  <ul class="classNm">
+                  <ul class="printRbcClass">
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>{{ classInfo?.classNm }}</li>
                     </template>
                   </ul>
-                  <ul class="degree">
+                  <ul class="printRbcDegree">
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
+                      <li>
                         {{ classInfo?.degree }}
                       </li>
                     </template>
+
+                    <li class="printTotalText" v-show="category.categoryNm !== 'Shape'">Total</li>
+                  </ul>
+                  <ul class="printRbcCount">
+                    <li v-if="innerIndex === 0" class="mb1 liTitle">Count</li>
+                    <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                      <li>
+                        {{ classInfo?.originalDegree }}
+                      </li>
+                    </template>
+
+                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'">{{ sizeChromiaTotal }}</li>
+                    <li v-show="category?.categoryNm === 'Inclusion Body'">{{ shapeBodyTotal }}</li>
+                  </ul>
+                  <ul class="printRbcPercent">
+                    <li v-if="innerIndex === 0" class="mb1 liTitle">Percent</li>
+                    <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                      <li>
+                        {{ percentageChange(classInfo?.originalDegree) }}
+                      </li>
+                    </template>
+
+                    <li v-show="category.categoryNm !== 'Shape'">100%</li>
                   </ul>
                 </div>
               </template>
@@ -154,19 +177,19 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, onBeforeMount, onMounted, ref} from "vue";
+import { computed, getCurrentInstance, onMounted, ref } from "vue";
 import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import {useStore} from "vuex";
-import process from "process";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
+import {getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -180,22 +203,32 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
+const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterData);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
 const wbcArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const isLoading = ref(true);
+const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+const nonWbcClassList = ref<any[]>([]);
 
+const rbcInfoPathAfter = ref<any>([]);
+const rbcTotalVal = ref(0);
+const sizeChromiaTotal = ref(0);
+const chromiaTotalTwo = ref(0);
+const shapeBodyTotal = ref(0);
 
-onBeforeMount(async () => {
-  await getDetailRunningInfo();
-  isLoading.value = false;
-})
+const rbcDegreeStandard = ref<any>([]);
 
 onMounted(async () => {
   await getDetailRunningInfo();
+  isLoading.value = false;
   await getOrderClass();
   await initData();
+  await rbcTotalAndReCount();
+  await getRbcDegreeData();
+  await reDegree();
   projectBm.value = window.PROJECT_TYPE === 'bm';
 });
 
@@ -204,9 +237,111 @@ const getDetailRunningInfo = async () => {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
     rbcInfo.value = result.data;
+
+
   } catch (e) {
     console.log(e);
   }
+}
+
+const rbcTotalAndReCount = async () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
+  const url_new = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}_new.json`;
+  const response_new = await readJsonFile({fullPath: url_new});
+  const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
+    const newJsonData = response_new?.data;
+    for (const rbcItem of response_old.data[0].rbcClassList) {
+      for (const newRbcData of newJsonData) {
+        // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
+        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
+            Number(el.index) === Number(newRbcData.index)
+        );
+        if (foundElementIndex !== -1) {
+          rbcItem.classInfo.splice(foundElementIndex, 1);
+        }
+        if (rbcItem.categoryId === newRbcData.categoryId) {
+          let newRbcDataObj = {
+            classNm: newRbcData.classNm,
+            classId: newRbcData.classId,
+            posX: String(newRbcData.posX),
+            posY: String(newRbcData.posY),
+            width: newRbcData.width,
+            height: newRbcData.height,
+            index: newRbcData.index,
+          }
+          rbcItem.classInfo.push(newRbcDataObj);
+        }
+      }
+    }
+    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
+  } else {
+    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+  }
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    console.error('rbcInfoPathAfter.value is not iterable');
+    return;
+  }
+  let total = 0;
+  let chromiaTotalval = 0;
+  let shapeBodyTotalVal = 0;
+  let shapeBodyTotalVal2 = 0;
+  rbcInfoPathAfter.value.forEach(el => {
+    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
+
+    switch (el.categoryId) {
+      case '01':
+        total = lastIndex;
+        break;
+      case '02':
+        chromiaTotalval = lastIndex;
+        break;
+      case '03':
+        shapeBodyTotalVal = lastIndex;
+        break;
+      case '05':
+        shapeBodyTotalVal2 = lastIndex;
+        break;
+      default:
+        // Handle unexpected categoryId if needed
+        break;
+    }
+  });
+
+  rbcTotalVal.value = Number(total) + 1;
+  sizeChromiaTotal.value = Number(total) + 1;
+  chromiaTotalTwo.value = chromiaTotalval;
+  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
+
+
+
+  // selectItems의 originalDegree 초기화
+  rbcInfoAfterData.value.forEach(category => {
+    category.classInfo.forEach(item => {
+      item.originalDegree = 0;
+    });
+  });
+
+  // rbcInfoPathAfter에서 아이템들 classId와 categoryId를 비교하여 originalDegree 증가시키기
+  rbcInfoPathAfter.value.forEach(pathCategory => {
+    const category = rbcInfoAfterData.value.find(cat => cat.categoryId === pathCategory.categoryId);
+    if (category) {
+      pathCategory.classInfo.forEach(pathClass => {
+        const classInfo = category.classInfo.find(item => item.classId === pathClass.classId);
+        if (classInfo) {
+          classInfo.originalDegree++;
+        }
+      });
+    }
+  });
+
+
+}
+
+const percentageChange = (count: any): any => {
+  const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+  return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
 }
 
 // WbC Classification 쪽에서 Order Class 바꿀 시 Print 영역에도 바로 적용시키기 위한 코드
@@ -244,12 +379,16 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 };
 
 const refreshClass = async (data: any) => {
-  selectItems.value = data;
-  await initData(data);
+  await getDetailRunningInfo();
+  await getOrderClass();
+  await initData();
+  await rbcTotalAndReCount();
 }
+
 const printClose = () => {
   printOnOff.value = false;
 }
+
 const wbcClassTileChange = (): string => !projectBm.value ? 'WBC Classification' : 'BM Classification';
 
 const printStart = () => {
@@ -279,11 +418,13 @@ async function initData(data?: any) {
   if (selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0) {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     const sortedWbcInfo = sortWbcInfo(clonedWbcInfo.value, wbcArrs);
+    nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   } else {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
+    nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   }
@@ -307,5 +448,143 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   return newSortArr;
 };
 
+const reDegree = async () => {
+  let totalCount = rbcTotalVal.value;
+  let sizeTotal = sizeChromiaTotal.value;
+  let chromiaTotal = chromiaTotalTwo.value;
+
+  selectItems.value?.rbcInfoAfter.forEach((rbcCategory: any, idx1: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        // rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.degree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          // 0
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          // 3
+          else setDegree('3');
+
+        }
+      });
+    });
+  });
+  selectItems.value.rbcInfoAfter.forEach((rbcCategory: any, idx1: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        // rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.originalDegree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          // 0
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          // 3
+          else setDegree('3');
+
+        }
+      });
+    });
+  });
+
+
+  selectItems.value.rbcInfoAfter.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      // size
+      if (rbcCategory.categoryId === '01') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // chromia
+      if (rbcCategory.categoryId === '02') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // Poikilocytosis
+      if (rbcCategory.categoryId === '03') {
+        if (rbcClass.classId === '01') {
+          // normal
+          rbcCategory.classInfo[0].degree = '1'
+          // poikilo
+          rbcCategory.classInfo[1].degree = '0'
+        }
+
+        if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
+          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+
+          if (Number(rbcClass.degree) > poikiloDegree) {
+            rbcCategory.classInfo[0].degree = '0'
+            rbcCategory.classInfo[1].degree = rbcClass.degree
+          }
+        }
+      }
+    });
+  });
+}
+
+const getRbcDegreeData = async () => {
+  try {
+    const result = await getRbcDegreeApi();
+    const data = result.data;
+    rbcDegreeStandard.value = data;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 </script>

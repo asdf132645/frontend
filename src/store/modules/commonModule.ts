@@ -39,6 +39,7 @@ export interface CommonState {
     inhaTestCode: string;
     rbcReData: boolean;
     rbcReDataClass: boolean;
+    rbcInfoAfterData: any[];
     resetRbcArr: boolean;
     selectedSampleId: string;
     classInfoArr: any[];
@@ -89,6 +90,7 @@ interface CommonModule {
         setInhaTestCode: (state: CommonState, value: string) => void;
         setRbcReData: (state: CommonState, value: boolean) => void;
         setRbcReDataClass: (state: CommonState, value: boolean) => void;
+        setRbcInfoAfterData: (state: CommonState, value: any[]) => void;
         setResetRbcArr: (state: CommonState, value: boolean) => void;
         setSelectedSampleId: (state: CommonState, value: string) => void;
         setClassInfoArr: (state: CommonState, value: any[]) => void;
@@ -140,6 +142,7 @@ export const commonModule: CommonModule = {
         inhaTestCode: '',
         rbcReData: false,
         rbcReDataClass: false,
+        rbcInfoAfterData: [],
         resetRbcArr: false,
         selectedSampleId: '',
         classInfoArr:[],
@@ -272,6 +275,9 @@ export const commonModule: CommonModule = {
         },
         setResetRbcArr(state: CommonState, value: boolean): void {
             state.resetRbcArr = value;
+        },
+        setRbcInfoAfterData(state: CommonState, value: any[]): void {
+            state.rbcInfoAfterData = value;
         },
         // classInfoArr
         setClassInfoArr(state: CommonState, value: any[]): void {
@@ -409,6 +415,9 @@ export const commonModule: CommonModule = {
             }
             if(payload.hasOwnProperty('rbcReDataClass')){
                 commit('setRbcReDataClass', payload.rbcReDataClass)
+            }
+            if (payload.hasOwnProperty('rbcInfoAfterData')) {
+                commit('setRbcInfoAfterData', payload.rbcInfoAfterData)
             }
             if(payload.hasOwnProperty('resetRbcArr')) {
                 commit('setResetRbcArr', payload.resetRbcArr)

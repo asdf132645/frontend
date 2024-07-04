@@ -159,8 +159,7 @@ const deleteConnectionStatus = async () => {
 const upDownBlockAccess = async (selectItems: any) => {
   try {
     const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}`
-    console.log(resData.value?.id)
-    await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: resData.value?.id});
+    await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
 
     await updatePcIpStateApi(req).then(response => {
       // emits('initData');
@@ -214,26 +213,13 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   return newSortArr;
 };
 
-// async function getRunningInfoDetail(id: any) {
-//   try {
-//     let result: ApiResponse<void>;
-//     result = await detailRunningApi(String(id));
-//
-//     if (result) {
-//       resData.value = result.data;
-//     }
-//   } catch (e) {
-//     console.error(e);
-//   }
-//   return resData.value;
-// }
-
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
     const req = `id=${id}&step=${step}&type=${type}`
     const res = await pageUpDownRunnIngApi(req);
     if (res) {
       resData.value = res.data;
+      await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(res.data.id) });
     }
   } catch (e) {
     console.log(e)
@@ -279,6 +265,8 @@ const handleDataResponse = async (dbId: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
+  await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(selectItemsNewVal.id) });
+
   if (projectType.value === 'pb' && selectItems.value?.testType === '01') {
     pageGo('/databaseDetail');
   }
