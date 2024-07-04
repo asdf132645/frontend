@@ -60,18 +60,143 @@
       </ul>
     </li>
   </ul>
+  <div v-else class="divCompare">
+    <div class="divCompareChild">
+      <select v-model="firstClass" @change="classImgChange('first')">
+        <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
+      </select>
+      <ul class="cellImgBox">
+        <li>
+          <div>
+            <p class="mt1">
+              <input type="checkbox" @input="$emit('allCheckChange', $event, firstClassObj?.title)"
+                     :checked="selectedTitle === firstClassObj?.title">
+              {{ firstClassObj?.title }}
+              ({{ firstClassObj?.count }})
+            </p>
+          </div>
+          <ul :class="'wbcImgWrap ' + firstClassObj?.title" @dragover.prevent="onDragOver"
+              @drop="() => $emit('onDrop', firstItemIndex)">
+            <template v-for="(image, imageIndex) in firstClassObj.images" :key="image?.fileName">
+              <li
+                  :class="{
+              'border-changed': isBorderChanged(image),
+              'selected-image': isSelected(image),
+              'wbcImgWrapLi': true
+            }"
+                  @click="() => $emit('selectImage', firstItemIndex, imageIndex, firstClassObj)"
+                  @dblclick="() => $emit('openModal', image, firstClassObj)"
+                  v-show="image && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
+                  @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, firstClassObj)"
+              >
+                <div style="position: relative;">
+                  <div v-if="image" class="titleImg"
+                       v-show="replaceFileNamePrefix(image.fileName) !== firstClassObj?.title">
+                    <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
+                      <font-awesome-icon
+                          :icon="['fas', 'arrow-right']"/>
+                      {{ image.title }}
+                    </div>
+                  </div>
+                  <img v-if="image && image.fileName"
+                       :src="getImageUrl(image.fileName, firstClassObj.id, firstClassObj.title, '')"
+                       :width="image.width ? image.width : '150px'"
+                       :height="image.height ? image.height : '150px'"
+                       :style="{ filter: image.filter }"
+                       @dragstart="() => $emit('onDragStart', firstItemIndex, imageIndex)"
+                       draggable="true"
+                       class="cellImg"
+                       ref="cellRef"
+                       @error="() => $emit('hideImage', firstClassObj.id, image.fileName, firstClassObj.title)"
+                       v-show="image && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
+                       @load="handleImageLoad(firstItemIndex)"
+                  />
+                  <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="divCompareChild">
+      <select v-model="lastClass" @change="classImgChange('last')">
+        <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
+      </select>
+      <ul class="cellImgBox">
+        <li>
+          <div>
+            <p class="mt1">
+              <input type="checkbox" @input="$emit('allCheckChange', $event, lastClassObj?.title)"
+                     :checked="selectedTitle === lastClassObj?.title">
+              {{ lastClassObj?.title }}
+              ({{ lastClassObj?.count }})
+            </p>
+          </div>
+          <ul :class="'wbcImgWrap ' + lastClassObj?.title" @dragover.prevent="onDragOver"
+              @drop="() => $emit('onDrop', lastItemIndex)">
+            <template v-for="(image, imageIndex) in lastClassObj.images" :key="image?.fileName">
+              <li
+                  :class="{
+              'border-changed': isBorderChanged(image),
+              'selected-image': isSelected(image),
+              'wbcImgWrapLi': true
+            }"
+                  @click="() => $emit('selectImage', lastItemIndex, imageIndex, lastClassObj)"
+                  @dblclick="() => $emit('openModal', image, lastClassObj)"
+                  v-show="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
+                  @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, lastClassObj)"
+              >
+                <div style="position: relative;">
+                  <div v-if="image" class="titleImg"
+                       v-show="replaceFileNamePrefix(image.fileName) !== lastClassObj?.title">
+                    <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
+                      <font-awesome-icon
+                          :icon="['fas', 'arrow-right']"/>
+                      {{ image.title }}
+                    </div>
+                  </div>
+                  <img v-if="image && image.fileName"
+                       :src="getImageUrl(image.fileName, lastClassObj.id, lastClassObj.title, '')"
+                       :width="image.width ? image.width : '150px'"
+                       :height="image.height ? image.height : '150px'"
+                       :style="{ filter: image.filter }"
+                       @dragstart="() => $emit('onDragStart', lastItemIndex, imageIndex)"
+                       draggable="true"
+                       class="cellImg"
+                       ref="cellRef"
+                       @error="() => $emit('hideImage', lastClassObj.id, image.fileName, lastClassObj.title)"
+                       v-show="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
+                       @load="handleImageLoad(lastItemIndex)"
+                  />
+                  <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 
-import {computed, nextTick, onMounted, ref, watch, defineExpose} from 'vue';
+import {computed, nextTick, onMounted, ref, watch, defineExpose, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
+
 const refsArray = ref<any[]>([]);
 const store = useStore();
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cellRef = ref<HTMLElement | null>(null);
+const firstClass = ref('Neutrophil-Segmented');
+const firstClassObj = ref<any>({});
+const lastClass = ref('Neutrophil-Band');
+const firstItemIndex = ref(0);
+const lastItemIndex = ref(0);
+const lastClassObj = ref<any>({});
+const classList = ref<any>([]);
 const scrollToElement = (itemId: any) => {
-  console.log('?')
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
     targetElement.scrollIntoView({behavior: 'smooth'});
@@ -80,6 +205,7 @@ const scrollToElement = (itemId: any) => {
 defineExpose({
   scrollToElement,
 });
+
 interface Image {
   fileName: string;
   width?: string;
@@ -111,19 +237,19 @@ const props = defineProps<{
 const emits = defineEmits();
 
 
-const hiddenImages = ref<{ [key: string]: boolean }>({ ...props.hiddenImages });
+const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 
 watch(props.hiddenImages, (newVal) => {
-  hiddenImages.value = { ...newVal };
+  hiddenImages.value = {...newVal};
 });
-function onDragOverCircle() {
-  // 드래그 동작을 위한 빈 함수, 이벤트 리스너가 있어야 드롭이 작동함 지우지 마세요.
-}
+
 
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
+  classImgChange('first');
+  classImgChange('last');
+  classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
 }
-
 
 
 const setRef = (itemId: any) => {
@@ -133,5 +259,15 @@ const setRef = (itemId: any) => {
     }
   };
 };
+
+const classImgChange = (type: string) => {
+  if (type === 'first') {
+    firstClassObj.value = props.wbcInfo.find(option => option?.name === firstClass.value);
+    firstItemIndex.value = props.wbcInfo.findIndex(option => option?.name === firstClass.value);
+  } else {
+    lastClassObj.value = props.wbcInfo.find(option => option?.name === lastClass.value);
+    lastItemIndex.value = props.wbcInfo.findIndex(option => option?.name === lastClass.value);
+  }
+}
 
 </script>

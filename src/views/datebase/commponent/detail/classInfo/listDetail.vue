@@ -102,7 +102,7 @@
 
           </div>
         </div>
-        <button v-if="false" @click="classCompare">Class Compare</button>
+        <button @click="classCompare">Class Compare</button>
         <button @click="rollbackChanges" class="rollbackButton">
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
@@ -276,9 +276,10 @@ watch(imageSize, (newVal) => {
   localStorage.setItem('imageSize', String(newVal));
 })
 
-watch(isBeforeChild, (newVal) => {
+watch(isBeforeChild, async (newVal) => {
   // console.log(isBeforeChild.value)
-  getWbcCustomClasses(false, null);
+  await getWbcCustomClasses(false, null);
+  await imgSetLocalStorage();
 }, {deep: true});
 
 watch(imageRgb, (newVal) => {

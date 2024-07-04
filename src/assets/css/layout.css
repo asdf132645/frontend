@@ -1652,7 +1652,15 @@ ul.leftWbcInfo li {
     margin-left: 13px;
     cursor: pointer;
 }
+.divCompareChild {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
 
+.divCompareChild ul.cellImgBox {
+    max-height: 71.9vh;
+}
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
