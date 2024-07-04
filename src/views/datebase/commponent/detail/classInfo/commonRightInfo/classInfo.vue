@@ -87,7 +87,8 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
-        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'" @click="goClass(nWbcItem.id)">
+        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
+             @click="goClass(nWbcItem.id)">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
             <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>
@@ -212,7 +213,7 @@ onMounted(async () => {
     const updatedItem = {
       submitState: 'checkFirst',
     };
-    const updatedRuningInfo ={...result.data,...updatedItem }
+    const updatedRuningInfo = {...result.data, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);
   }
   await getLisWbcRbcData();
@@ -224,14 +225,18 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  afterChang(newItem)
+  if (!isBefore.value) {
+    afterChang(newItem)
+  }
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
-  afterChang(newItem);
+  if (!isBefore.value) {
+    afterChang(newItem);
+  }
 }, {deep: true});
 
 const lisModalOpen = () => {
@@ -715,7 +720,7 @@ const lisFileUrlCreate = async (data: any) => {
         const updatedItem = {
           submitState: 'lis',
         };
-        const updatedRuningInfo ={...result.data,...updatedItem }
+        const updatedRuningInfo = {...result.data, ...updatedItem}
         await resRunningItem(updatedRuningInfo, true);
         showSuccessAlert(messages.IDS_MSG_SUCCESS);
         if (!showAlert.value) {
@@ -821,7 +826,7 @@ const onCommit = async () => {
     submitOfDate: localTime.format(),
     submitUserId: userModuleDataGet.value.name,
   };
-  const updatedRuningInfo ={...result.data,...updatedItem }
+  const updatedRuningInfo = {...result.data, ...updatedItem}
   await resRunningItem(updatedRuningInfo);
 }
 
@@ -831,7 +836,7 @@ const memoChange = async () => {
     wbcMemo: wbcMemo.value
   };
   const result: any = await detailRunningApi(String(props.selectItems?.id));
-  const updatedRuningInfo = {...result.data,...updatedItem }
+  const updatedRuningInfo = {...result.data, ...updatedItem}
 
   await resRunningItem(updatedRuningInfo);
   memoModal.value = false;
@@ -924,7 +929,7 @@ const afterChang = async (newItem: any) => {
   await getOrderClass();
   emits('isBefore', false);
   isBefore.value = false;
-  const filteredItems: any =  await detailRunningApi(String(selectedSampleId.value));
+  const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
   const wbcInfo = selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
   const wbcInfoAfter = newItem.length === 0 ? wbcInfo : newItem;
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
