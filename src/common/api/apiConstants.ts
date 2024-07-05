@@ -49,6 +49,10 @@ export const apiConstants = {
         userDataPut: {
             endpoint:'user/update',
             requiresToken: false,
+        },
+        deleteUser: {
+            endpoint: 'user/delete',
+            requiresToken: false,
         }
     },
     settings:{

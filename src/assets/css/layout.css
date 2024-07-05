@@ -35,6 +35,14 @@
     padding-left: 0 !important;
 }
 
+.cursorNotAllowed {
+    cursor: not-allowed;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
 /* header-menu */
 .header {
     width: 100%;
@@ -1208,7 +1216,33 @@ input.loginInput {
     border-radius: 5px;
     margin-top: 35px;
     padding: 30px 73px;
+}
 
+.userLabel {
+    line-height: 0;
+}
+
+.userInputWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 6px auto;
+}
+
+.inputMiddleWrapper {
+    width: 120px;
+}
+
+.disabledInput {
+    background-color: #cfcccc;
+}
+
+.disabledInput:hover {
+    background-color: #cfcccc;
+}
+
+.editModalContainer {
+    width: 260px;
 }
 
 .runRed {
@@ -1221,6 +1255,10 @@ input.loginInput {
 
 .blinking {
     animation: blink 0.5s infinite alternate;
+}
+
+.hoverSizeAction:hover {
+    transform: scale(1.1);
 }
 
 @keyframes blink {

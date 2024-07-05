@@ -13,7 +13,7 @@
             <button @click="memoCancel">cancel</button>
           </div>
         </li>
-        <li @click="commitConfirmed" :class="{'submitted': selectItems?.submitState === 'Submit'}">
+        <li @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
           <font-awesome-icon :icon="['fas', 'square-check']"/>
         </li>
       </ul>
@@ -232,7 +232,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance, watchEffect} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -250,7 +250,7 @@ import EventBus from "@/eventBus/eventBus";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
@@ -289,6 +289,7 @@ const shapeBodyTotal = ref(0);
 const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
+const submitState = ref('');
 
 onMounted(async () => {
   const {path} = router.currentRoute.value;
@@ -297,20 +298,27 @@ onMounted(async () => {
   malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
   maxRbcCount.value = props.selectItems?.rbcInfo.maxRbcCount;
+  submitState.value = props.selectItems?.submitState;
   except.value = path === '/report';
   rightClickItem.value = [];
   rightClickItemSet();
 });
+
+watch(() => props.isCommitChanged, () => {
+  console.log("RBC 바뀜!")
+  submitState.value = 'Submit';
+})
 
 watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
 }, {deep: true})
 
-watch(() => props.selectItems, (newItem) => {
+watch(() => props.selectItems, async (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
+  submitState.value = props.selectItems?.submitState;
   afterChange(newItem);
   rightClickItemSet();
   allCheckType.value = true;
@@ -834,6 +842,8 @@ const onCommit = async () => {
   };
   const updatedRuningInfo = {...result.data, ...updatedItem}
   await resRunningItem(updatedRuningInfo);
+
+  emits('submitStateChanged', 'Submit');
 }
 
 const getRbcDegreeData = async () => {

@@ -154,7 +154,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'type']);
+const props = defineProps(['wbcInfo', 'selectItems', 'type', 'isCommitChanged']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -218,6 +218,10 @@ onMounted(async () => {
   }
   await getLisWbcRbcData();
   await getLisPathData();
+})
+
+watch(() => props.isCommitChanged, () => {
+  selectItems.value.submitState = 'Submit';
 })
 
 watch(userModuleDataGet.value, (newUserId) => {
@@ -832,6 +836,9 @@ const onCommit = async () => {
   };
   const updatedRuningInfo = {...result.data, ...updatedItem}
   await resRunningItem(updatedRuningInfo);
+
+  selectItems.value.submitState = 'Submit';
+  emits('submitStateChanged', 'Submit');
 }
 
 

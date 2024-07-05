@@ -104,15 +104,21 @@ const createAccount = async () => {
   }
 
   try {
-    const result = await createUser(user);
-    if (result) {
+    const result: any = await createUser(user);
+    if (result.data?.userId) {
       await showSuccessAlert('registration successful');
       await router.push('/user/login');
-    }
+    } else {
 
+      // User Id 중복
+      if (result.data.includes('Duplicate')) {
+        await showErrorAlert('Duplicate User Id');
+      }
+
+    }
   } catch (e) {
-    await showErrorAlert('Signin Fail');
     console.log(e);
+    await showErrorAlert('Signin Fail');
   }
 }
 

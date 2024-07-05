@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import AnalysisDatabase from "@/views/setting/analysisDatabase/index.vue";
-import LognAccount from "@/views/setting/lognAccount/index.vue";
+import LoginAccount from "@/views/setting/lognAccount/index.vue";
 import Report from "@/views/setting/report/index.vue";
 import QualityCheck from "@/views/setting/qualityCheck/index.vue";
 import Version from "@/views/setting/version/index.vue";
@@ -23,7 +23,7 @@ const changeTab = (tab: typeof tabs[number]) => {
   sessionStorage.setItem('selectedTab', tab);
 };
 
-const components = { 'Login/Account': LognAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Quality Check': QualityCheck, 'Version': Version };
+const components = { 'Login/Account': LoginAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Quality Check': QualityCheck, 'Version': Version };
 
 const storedTab = sessionStorage.getItem('selectedTab');
 if (storedTab && tabs.includes(storedTab as typeof tabs[number])) {

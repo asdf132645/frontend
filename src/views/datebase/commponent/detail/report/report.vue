@@ -5,10 +5,10 @@
     <LisCbc v-if="cbcLayer" :selectItems="selectItems" />
     <div class="reportDiv">
       <div class="wbcDiv">
-        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' @classOrderChanged="classOrderChanged" />
+        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
       </div>
       <div class="rbcDiv" v-if="!projectBm">
-        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' />
+        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
       </div>
       <div class="reportDetail">
         <div class="reportTitle">
@@ -218,8 +218,8 @@ const rbcTotalVal = ref(0);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
 const shapeBodyTotal = ref(0);
-
 const rbcDegreeStandard = ref<any>([]);
+const isCommitChanged = ref(false);
 
 onMounted(async () => {
   await getDetailRunningInfo();
@@ -584,6 +584,12 @@ const getRbcDegreeData = async () => {
     rbcDegreeStandard.value = data;
   } catch (e) {
     console.log(e);
+  }
+};
+
+const submitStateChanged = (changedSubmitState: string) => {
+  if (changedSubmitState) {
+    isCommitChanged.value = !isCommitChanged.value;
   }
 };
 

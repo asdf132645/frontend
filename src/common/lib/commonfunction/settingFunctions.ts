@@ -6,16 +6,18 @@ import {
     getOrderClassApi,
     createNormalRangeApi,
     getNormalRangeApi,
-    createRbcDegreeApi, getRbcDegreeApi
+    createRbcDegreeApi,
+    getRbcDegreeApi,
+    getCbcCodeRbcApi,
+    createCbcCodeRbcApi,
+    createLisCodeWbcApi,
+    createLisCodeRbcApi,
+    getLisCodeWbcApi, getLisCodeRbcApi
 } from '@/common/api/service/setting/settingApi';
 import process from "process";
-import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
-import {defaultRbcDegree, normalRange, rbcClassList} from "@/common/defines/constFile/settings";
+import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
+import { defaultCbcList, defaultRbcDegree, lisCodeRbcOption, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constFile/settings";
 
-const saveHttpType = ref('');
-const cellimgId = ref('');
-const orderHttpType = ref('');
-const normalItems = ref<any>(normalRange);
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
 const projectType = window.PROJECT_TYPE === 'bm';
@@ -39,121 +41,159 @@ const defaultCellImgData = {
     userId: '', // 사용자 ID 기본값
 };
 
-export const firstCellImgSet = async () => {
-    let cellImgData;
 
-    const result = await getCellImgApi();
-    if (result && result.data) {
-        cellImgData = result.data;
-    }
+/**
+ * API 요청 시 분류할 Constant
+ * sendingForm: Create 요청 시 사용할 key 값
+ * defaultItem: Create 요청 시 보내는 body
+ * getRequest: get 요청 함수
+ * createRequest: create 요청 함수
+ * */
+const settingsConstant = ref<any>({
+    'lisCodeWbc': {
+        'sendingForm': 'lisCodeItems',
+        'defaultItem': lisCodeWbcOption,
+        'getRequest': getLisCodeWbcApi,
+        'createRequest': createLisCodeWbcApi,
+    },
+    'lisCodeRbc': {
+        'sendingForm': 'lisCodeItems',
+        'defaultItem': lisCodeRbcOption,
+        'getRequest': getLisCodeRbcApi,
+        'createRequest': createLisCodeRbcApi,
+    },
+    'cbcCode': {
+        'sendingForm': 'cbcCodeItems',
+        'defaultItem': defaultCbcList,
+        'getRequest': getCbcCodeRbcApi,
+        'createRequest': createCbcCodeRbcApi,
+    },
+    'cellImage': {
+        'getRequest': getCellImgApi,
+        'createRequest': createCellImgApi,
+    },
+    'normalRange': {
+        'sendingForm': 'normalRangeItems',
+        'defaultItem': normalRange,
+        'getRequest': getNormalRangeApi,
+        'createRequest': createNormalRangeApi,
+    },
+    'orderClass': {
+        'getRequest': getOrderClassApi,
+        'createRequest': createOrderClassApi,
+    },
+    'rbcDegree': {
+        'getRequest': getRbcDegreeApi,
+        'createRequest': createRbcDegreeApi,
+    },
+})
 
-    if (!cellImgData) {
-        saveHttpType.value = 'post';
-    } else {
-        saveHttpType.value = 'put';
-    }
+/** 로그인 시 Setting 값 설정 함수 */
+export const initializeAllSettings = async () => {
+    await firstGetSettings('cellImage');
+    await firstGetSettings('orderClass');
+    await firstGetSettings('rbcDegree');
+    await firstGetSettings('lisCodeWbc')
+    await firstGetSettings('lisCodeRbc')
+    await firstGetSettings('cbcCode')
+    await firstGetSettings('normalRange')
+}
 
-    const cellImgSet = {
-        analysisType: defaultCellImgData.testTypeCd,
-        diffCellAnalyzingCount: defaultCellImgData.diffCellAnalyzingCount,
-        diffWbcPositionMargin: defaultCellImgData.diffWbcPositionMargin,
-        diffRbcPositionMargin: defaultCellImgData.diffRbcPositionMargin,
-        diffPltPositionMargin: defaultCellImgData.diffPltPositionMargin,
-        pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
-        stitchCount: defaultCellImgData.stitchCount,
-        bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
-        iaRootPath: defaultCellImgData.iaRootPath,
-        isNsNbIntegration: defaultCellImgData.isNsNbIntegration,
-        isAlarm: defaultCellImgData.isAlarm,
-        alarmCount: defaultCellImgData.alarmCount,
-        keepPage: defaultCellImgData.keepPage,
-        backupPath: defaultCellImgData.backupPath,
-        backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
-        backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
-    };
-    if (saveHttpType.value === 'post') {
-        try {
-            const result = await createCellImgApi(cellImgSet);
-            if (result) {
-                sessionStorage.setItem('isNsNbIntegration', defaultCellImgData?.isNsNbIntegration ? 'Y' : 'N');
-                sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.diffWbcPositionMargin));
-                sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.diffRbcPositionMargin));
-                sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.diffPltPositionMargin));
-                sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
-                sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-};
-
-
-
-export const firstSaveOrderClass = async () => {
-    const orderList: any = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-    for (const index in orderList) {
-        orderList[index].orderIdx = index;
-    }
-    const result = await getOrderClassApi();
-    if (result) {
-        if (result?.data.length === 0) {
-            orderHttpType.value = 'post';
-        }else{
-            orderHttpType.value = 'put';
-        }
-    }
+const firstGetSettings = async (initializeType: string) => {
+    const getRequest = settingsConstant.value[initializeType].getRequest;
     try {
-        if (orderHttpType.value === 'post') {
-            await createOrderClassApi(orderList);
+        const { data } = await getRequest() || {};
+
+        if (!data || data.length === 0) {
+            const sendingFormStr = settingsConstant.value[initializeType]?.sendingForm;
+            const defaultItem = settingsConstant.value[initializeType].defaultItem;
+            const createRequest = settingsConstant.value[initializeType].createRequest;
+
+            const anotherDefaultValue = await defaultComputedValueForCreateRequest(initializeType)
+
+            if (sendingFormStr) {
+                await createRequest({ [sendingFormStr]: anotherDefaultValue || defaultItem });
+            } else {
+                await createRequest(anotherDefaultValue || defaultItem);
+            }
+
+            afterResponse(initializeType);
         }
     } catch (e) {
-        console.log(e);
+        console.log(`${initializeType} Error - ${e}`);
     }
 }
 
-export const firstSaveNormalRange = async () => {
-    try {
-        const result = await getNormalRangeApi();
-        if (result) {
-            if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
-                await createNormalRangeApi({normalRangeItems: normalItems.value });
+/** Create 요청시 보낼 defaultValue 중 계산되어야 하는 값들을 반환하는 함수 */
+const defaultComputedValueForCreateRequest = async (initializeType: string) => {
+    switch (initializeType) {
+        case 'cellImage':
+            const cellImgSet = {
+                analysisType: defaultCellImgData.testTypeCd,
+                diffCellAnalyzingCount: defaultCellImgData.diffCellAnalyzingCount,
+                diffWbcPositionMargin: defaultCellImgData.diffWbcPositionMargin,
+                diffRbcPositionMargin: defaultCellImgData.diffRbcPositionMargin,
+                diffPltPositionMargin: defaultCellImgData.diffPltPositionMargin,
+                pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
+                stitchCount: defaultCellImgData.stitchCount,
+                bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
+                iaRootPath: defaultCellImgData.iaRootPath,
+                isNsNbIntegration: defaultCellImgData.isNsNbIntegration,
+                isAlarm: defaultCellImgData.isAlarm,
+                alarmCount: defaultCellImgData.alarmCount,
+                keepPage: defaultCellImgData.keepPage,
+                backupPath: defaultCellImgData.backupPath,
+                backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
+                backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
+            };
+            return cellImgSet;
+
+        case 'orderClass':
+            const orderList: any = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
+            for (const index in orderList) {
+                orderList[index].orderIdx = index;
             }
-        }
+            return orderList;
 
-    } catch (e) {
-        console.log(e);
-    }
-};
+        case 'rbcDegree':
+            await combindDegree();
+            const rbcDegreeList: any = [];
 
-export const firstCreateRbcDegreeData = async () => {
-    await combindDegree();
-    const rbcDegreeList: any = [];
-
-    rbcClassListArr.value.forEach((category: any) => {
-        category.classInfo.forEach((classItem: any) => {
-            rbcDegreeList.push({
-                categoryId: category.categoryId,
-                categoryNm: category.categoryNm,
-                classId: classItem.classId,
-                classNm: classItem.classNm,
-                degree1: classItem.degree1,
-                degree2: classItem.degree2,
-                degree3: classItem.degree3,
+            rbcClassListArr.value.forEach((category: any) => {
+                category.classInfo.forEach((classItem: any) => {
+                    rbcDegreeList.push({
+                        categoryId: category.categoryId,
+                        categoryNm: category.categoryNm,
+                        classId: classItem.classId,
+                        classNm: classItem.classNm,
+                        degree1: classItem.degree1,
+                        degree2: classItem.degree2,
+                        degree3: classItem.degree3,
+                    });
+                });
             });
-        });
-    });
+            return rbcDegreeList;
 
-    try {
-        const result: any = await getRbcDegreeApi();
-        if((result.data && result.data.length === 0) || !result.data){
-            await createRbcDegreeApi(rbcDegreeList);
-        }
-    } catch (e) {
-        console.error(e);
+        default:
+            return null;
     }
-};
+}
+
+/** Response를 받은 후 할 작업 정리 함수 */
+const afterResponse = (initializeType: string) => {
+    switch (initializeType) {
+        case 'cellImage':
+            sessionStorage.setItem('isNsNbIntegration', defaultCellImgData?.isNsNbIntegration ? 'Y' : 'N');
+            sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.diffWbcPositionMargin));
+            sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.diffRbcPositionMargin));
+            sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.diffPltPositionMargin));
+            sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
+            sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
+            break;
+        default:
+            break;
+    }
+}
 
 const combindDegree = async () => {
     rbcClassListArr.value = rbcClassList.rbcClassList.map((category: any) => {
