@@ -182,7 +182,7 @@
 
 <script setup lang="ts">
 
-import {computed, nextTick, onMounted, ref, watch, defineExpose, onBeforeMount} from 'vue';
+import {computed, nextTick, onMounted, ref, watch, defineExpose, onBeforeMount, toRefs} from 'vue';
 import {useStore} from "vuex";
 
 const refsArray = ref<any[]>([]);
@@ -225,8 +225,15 @@ interface Item {
   images: Image[];
 }
 
+interface WbcInfo {
+  // wbcInfo 타입 정의
+  [key: string]: any;
+}
+
+
 const props = defineProps<{
-  wbcInfo: Item[];
+  wbcInfo: WbcInfo;
+  updateWbcInfo: (newInfo: WbcInfo) => void;
   classCompareShow: boolean;
   selectedTitle: string;
   hiddenImages: { [key: string]: boolean };
@@ -239,12 +246,22 @@ const props = defineProps<{
 }>();
 const emits = defineEmits();
 
+const {wbcInfo} = toRefs(props);
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
 });
+watch(
+    wbcInfo,
+    (newVal) => {
+      classImgChange('first', null);
+      classImgChange('last', null);
+    },
+    {deep: true}
+);
+
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
   classImgChange('first', null);
@@ -269,8 +286,8 @@ const classImgChange = (type: string, event: any) => {
     } else {
       previousClass.value = event ? event.target.value : currentClass.value;
     }
-    classObj.value = props.wbcInfo.find(option => option?.name === currentClass.value);
-    itemIndex.value = props.wbcInfo.findIndex(option => option?.name === currentClass.value);
+    classObj.value = props.wbcInfo.find((option: any) => option?.name === currentClass.value);
+    itemIndex.value = props.wbcInfo.findIndex((option: any) => option?.name === currentClass.value);
   };
 
   if (type === 'first') {
