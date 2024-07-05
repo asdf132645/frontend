@@ -18,8 +18,10 @@
           <th>Employee</th>
           <th>Subscription Date</th>
           <th>Latest Date</th>
-          <th>Edit</th>
-          <th>Delete</th>
+          <template v-if="getStoredUser.userType === 'admin'">
+            <th>Edit</th>
+            <th>Delete</th>
+          </template>
         </tr>
       </thead>
       <tbody>
