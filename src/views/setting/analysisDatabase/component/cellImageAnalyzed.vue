@@ -182,7 +182,7 @@
 import {createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
-import {nextTick, onMounted, ref} from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -194,7 +194,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
-import EventBus from "@/eventBus/eventBus";
 import moment from "moment";
 import {backUpDate} from "@/common/api/service/backup/wbcApi";
 
@@ -325,7 +324,7 @@ const cellImgGet = async () => {
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
         iaRootPath.value = data.iaRootPath;
-        backupRootPath.value = data.backupPath || window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
+        backupRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup');
         isNsNbIntegration.value = data.isNsNbIntegration;
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;

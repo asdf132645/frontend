@@ -18,7 +18,7 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='listTable'
+      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow" type='listTable'
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
     </div>
@@ -124,6 +124,7 @@
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
             :updateWbcInfo="updateWbcInfo"
+            :isBeforeChild="isBeforeChild"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
             @openModal="openModal"
@@ -164,6 +165,16 @@
 
     </div>
   </div>
+
+
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -190,6 +201,7 @@ import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue"
 import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGallery.vue';
+import Alert from "@/components/commonUi/Alert.vue";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -251,6 +263,11 @@ const isNext = ref(false);
 const classCompareShow = ref(false);
 const isLoading = ref(true);
 const $imageGalleryRef = ref<any>(null);
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+
+
 onBeforeMount(async () => {
   // await getDetailRunningInfo();
   isLoading.value = false;
@@ -283,7 +300,6 @@ watch(imageSize, (newVal) => {
 })
 
 watch(isBeforeChild, async (newVal) => {
-  // console.log(isBeforeChild.value)
   await getWbcCustomClasses(false, null);
   await imgSetLocalStorage();
 }, {deep: true});
@@ -308,7 +324,13 @@ const handleUpdateCellRef = (refValue: any) => {
 };
 
 const classCompare = () => {
-  classCompareShow.value = !classCompareShow.value;
+  if (isBeforeChild.value) {
+    showAlert.value = true;
+    alertType.value = 'error';
+    alertMessage.value = `Can't use Class Compare function when Before State`;
+  } else {
+    classCompareShow.value = !classCompareShow.value;
+  }
 }
 
 const imgSetLocalStorage = async () => {
@@ -1502,6 +1524,10 @@ const projectTypeReturn = (type: string): any => {
   } else if (type === 'pb') {
     return '01_WBC_Classification';
   }
+}
+
+const hideAlert = () => {
+  showAlert.value = false;
 }
 
 </script>

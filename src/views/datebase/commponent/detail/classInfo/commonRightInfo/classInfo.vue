@@ -154,7 +154,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'type', 'isCommitChanged']);
+const props = defineProps(['wbcInfo', 'selectItems', 'type', 'isCommitChanged', 'classCompareShow']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -925,6 +925,11 @@ const getOrderClass = async () => {
 }
 
 const beforeChang = async () => {
+  if (props.classCompareShow) {
+    showErrorAlert(`Can't use Class Compare function when Before State`)
+    return;
+  }
+
   isBefore.value = true;
   await getOrderClass();
   const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
