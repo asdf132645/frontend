@@ -19,7 +19,7 @@
             <Datepicker v-model="startDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>
-          <button class="searchClass" @click="search">Search</button>
+          <button type="button" class="searchClass" @click="search">Search</button>
           <div class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
