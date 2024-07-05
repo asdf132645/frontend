@@ -182,7 +182,6 @@ onMounted(async () => {
     }
     isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
-  console.log(window.APP_API_BASE_URL)
   EventBus.subscribe('childEmitSocketData', emitSocketData);
 
 });

@@ -453,7 +453,6 @@ const rbcTotalAndReCount = async () => {
         shapeBodyTotalVal2 = lastIndex;
         break;
       default:
-        // Handle unexpected categoryId if needed
         break;
     }
   });
@@ -557,7 +556,6 @@ const afterChange = async (newItem?: any) => {
   if (rbcData?.rbcInfoAfter && typeof props.selectItems.rbcInfoAfter === 'object') {
     rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
   } else {
-    // rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
     rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData;
   }
 
@@ -618,7 +616,6 @@ const countReAdd = async () => {
       for (const xel of el.classInfo) {
         if (xel.classNm === 'Malaria') {
           malariaTotal += 1;
-          console.log(malariaTotal)
         }
       }
     }
@@ -712,7 +709,6 @@ watch(rbcReData, async (newItem, oldItem) => {
     return;
   }
 
-  // Optionally removeDiv() can be called here if needed
 }, {deep: true})
 const updataClassInfoaArr = () => {
   emits('classInfoArrUpdateRe', classInfoArr.value);
@@ -753,7 +749,6 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
 };
 
 const memoOpen = () => {
-  // memo.value = memo.value !== '' ? memo.value : props.selectItems?.rbcMemo;
   memoModal.value = !memoModal.value;
 }
 
@@ -863,7 +858,6 @@ const reDegree = async () => {
         return;
       }
       rbcDegreeStandard.value.forEach((degreeStandard: any) => {
-        // rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
         if (
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
@@ -905,7 +899,6 @@ const reDegree = async () => {
         return;
       }
       rbcDegreeStandard.value.forEach((degreeStandard: any) => {
-        // rbcClass.originalDegree = originalData[idx1].classInfo[idx2].degree;
         if (
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
