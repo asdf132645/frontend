@@ -28,7 +28,7 @@
         </svg>
         <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
       </div>
-      <p class="slideTime1 mt2">Number of WBCs</p>
+      <p class="slideTime1 mt2">Number of {{ isBm ? 'BMs' : 'WBCs'}}</p>
       <p> {{ timeDataGet.totalSlideTime }} </p>
 
     </div>
@@ -58,7 +58,7 @@ const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const timeDataGet = computed(() => store.state.timeModule);
 const props = defineProps([ 'parsedData','pb100aCassette']);
-
+const isBm = ref(false);
 
 // 스토어
 
@@ -205,6 +205,8 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
+
+  isBm.value = window.PROJECT_TYPE === 'bm';
 });
 
 

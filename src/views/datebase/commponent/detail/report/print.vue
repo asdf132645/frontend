@@ -3,7 +3,7 @@
     <button style="position: absolute; right: 8px; background: none; border: 1px solid #000; border-radius: 5px; padding: 7px 25px; top: 5px; cursor: pointer" @click="closePrint">Close</button>
     <div ref="printContent" style="margin-top: 20px;">
       <div>
-        <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">Analysis Report from UIMD PB system</h3>
+        <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">Analysis Report from UIMD {{projectType === 'bm' ? 'BM' : 'PB'}} system</h3>
       </div>
       <div style="display: flex; flex-direction: column; justify-content: space-between;">
         <table style="width: 100%;">
@@ -30,7 +30,7 @@
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left;">Ordered Classification</th>
-            <td style="text-align: left; padding: 5px 0;">{{ getTestTypeText(selectItems?.testType) }}</td>
+            <td style="text-align: left; padding: 5px 0;">{{ projectType === 'pb' ? getTestTypeText(selectItems?.testType) : getBmTestTypeText(selectItems?.testType) }}</td>
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left; padding: 5px 0;">Name</th>
@@ -144,8 +144,8 @@
               </tr>
 
 
-              <th style="text-align: left; padding-top: 30px; font-weight: bold;">non-Wbc</th>
-              <tr style="padding-top: 5px; padding-bottom: 15px;">
+              <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
+              <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
                 <template v-for="item in nonWbcClassList" :key="item.id" >
                   <td style="text-align: left; padding: 5px 0;">{{item.name}}</td>
                   <td style="text-align: left; padding: 5px 0;">{{item.count}}</td>
@@ -182,7 +182,7 @@
 
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, onMounted, ref, watchEffect} from "vue";
-import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getTestTypeText, getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 import pako from 'pako';
@@ -193,6 +193,7 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['printOnOff', 'selectItemWbc']);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const projectType = window.PROJECT_TYPE;
 const store = useStore();
 
 const printContent = ref(null);
@@ -393,7 +394,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
   const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
   const slotId = selectItems.value.slotId || "";
-  const folderPath = window.PROJECT_TYPE === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = projectType === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images/print?folder=${folderPath}&imageName=${imageName}`;
 }
 
@@ -455,7 +456,7 @@ const getImagePrintData = async () => {
 
         // wbcClassification Order 적용
         const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
-        const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+        const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
         const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
         wbcInfo.value = sortedWbcInfoData;
         nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));

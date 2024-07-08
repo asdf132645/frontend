@@ -1836,6 +1836,11 @@ table.reportTable tr {
     display: inline-block;
 }
 
+.wbcLeftBm {
+    display: flex;
+    flex-direction: column;
+}
+
 .reportDivTop {
     padding: 0px 10px;
 }

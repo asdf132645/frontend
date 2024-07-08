@@ -28,7 +28,7 @@
         </svg>
         <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
       </div>
-      <p class="slideTime1 mt2">Number of WBCs</p>
+      <p class="slideTime1 mt2">Number of {{ isBm ? 'BMs' : 'WBCs' }}</p>
       <p> {{ timeDataGet.totalSlideTime }} </p>
 
     </div>
@@ -86,7 +86,7 @@ let totalElapsedTimeCount = ref(0);
 let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
 let interval: any = ref(null);
-
+const isBm = ref(false);
 
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
@@ -194,6 +194,8 @@ onMounted(() => {
   slideCardData.value.output.forEach(item => {
     item.slotState = '0';
   });
+
+  isBm.value = window.PROJECT_TYPE === 'bm';
 });
 
 

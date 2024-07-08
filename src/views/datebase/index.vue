@@ -38,8 +38,8 @@
               <option>ASC</option>
             </select>
           </div>
-          <div class="wbcInfoFilter" v-if="!bmClassIsBoolen">
-            <span>WBC Info Filter</span>
+          <div class="wbcInfoFilter">
+            <span>{{bmClassIsBoolen ? 'BM' : 'WBC'}} Info Filter</span>
             <ul class="wbcInfoFilter">
               <li v-for="(item, idx) in titleItem" :key="idx">
                 <input type="checkbox" :id="'checkbox_' + idx" v-model="item.checked" @change="updateFilter">
@@ -50,11 +50,21 @@
           <div class="lastTestType">
             <span>Test Type</span>
             <div>
-              <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/><span>ALL</span></label>
-              <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
-                <span>Diff</span></label>
-              <label><input type="checkbox" value="02" @change="changeTestType('04')" :checked="testType === '04'"/>
-                <span>PBS</span></label>
+              <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>
+                <span>ALL</span></label>
+              <template v-if="!bmClassIsBoolen">
+                <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
+                  <span>Diff</span></label>
+                <label><input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
+                  <span>PBS</span></label>
+              </template>
+
+              <template v-if="bmClassIsBoolen">
+                <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
+                  <span>Wedge</span></label>
+                <label><input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
+                  <span>Squash</span></label>
+              </template>
             </div>
 
           </div>
