@@ -109,12 +109,14 @@ const getIpAddress = async (userId: string) => {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       // await updateAccount(userId, String(result.data), 'main');
       await updateAccount('main');
+      sessionStorage.setItem('viewerCheck', 'main');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
 
     }else{
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
       // await updateAccount(userId, result.data, 'viewer');
       await updateAccount('viewer');
+      sessionStorage.setItem('viewerCheck', 'viewer');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
     }
   } catch (e) {

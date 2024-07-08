@@ -14,7 +14,6 @@ import {
     createLisCodeRbcApi,
     getLisCodeWbcApi, getLisCodeRbcApi
 } from '@/common/api/service/setting/settingApi';
-import process from "process";
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
 import { defaultCbcList, defaultRbcDegree, lisCodeRbcOption, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constFile/settings";
 
@@ -145,6 +144,8 @@ const defaultComputedValueForCreateRequest = async (initializeType: string) => {
                 backupPath: defaultCellImgData.backupPath,
                 backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
                 backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
+                autoBackUpMonth: 'Not selected',
+                autoBackUpStartDate: null,
             };
             return cellImgSet;
 
