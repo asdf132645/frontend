@@ -290,6 +290,7 @@ const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
 const submitState = ref('');
+const projectType = ref(window.PROJECT_TYPE)
 
 onMounted(async () => {
   const {path} = router.currentRoute.value;
@@ -305,7 +306,6 @@ onMounted(async () => {
 });
 
 watch(() => props.isCommitChanged, () => {
-  console.log("RBC 바뀜!")
   submitState.value = 'Submit';
 })
 
@@ -560,6 +560,7 @@ const afterChange = async (newItem?: any) => {
     rbcData = props.selectItems;
   }
 
+
   rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
   if (rbcData?.rbcInfoAfter && typeof props.selectItems.rbcInfoAfter === 'object') {
     rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
@@ -568,6 +569,7 @@ const afterChange = async (newItem?: any) => {
   }
 
 
+  console.log("afterChange", rbcInfoBeforeVal.value);
 
   // Report 화면에서 RBC Classification 동기화 문제로 추가
   if (props.type === 'report') {
@@ -858,6 +860,8 @@ const getRbcDegreeData = async () => {
 
 
 const reDegree = async () => {
+  if (projectType.value === 'bm') return;
+
   let totalCount = rbcTotalVal.value;
   let sizeTotal = sizeChromiaTotal.value;
   let chromiaTotal = chromiaTotalTwo.value;
