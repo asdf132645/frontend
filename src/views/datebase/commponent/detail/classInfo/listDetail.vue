@@ -641,6 +641,7 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 });
 
 const refreshClass = async (data: any) => {
+  cellMarkerIcon.value = false;
   classCompareShow.value = false;
   selectItems.value = data;
   const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
