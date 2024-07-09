@@ -135,7 +135,7 @@
         </ul>
       </div>
       <div class="modalBottom">
-        <button @click="dbDataEditSet">Ok</button>
+        <button class="alertButton" @click="dbDataEditSet">Ok</button>
       </div>
     </template>
   </Modal>
@@ -324,9 +324,15 @@ const handleIntersection = (entries, observer) => {
 
 const showSuccessAlert = (message) => {
   showAlert.value = true;
-  alertType.value = 'error';
+  alertType.value = 'success';
   alertMessage.value = message;
 };
+
+const showErrorAlert = (message) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+}
 
 const hideAlert = () => {
   showAlert.value = false;
@@ -451,7 +457,7 @@ const deleteRow = async () => {
   try {
     const selectedItems = props.dbData.filter(item => item.checked);
     if (selectedItems.length === 0) {
-      showSuccessAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+      showErrorAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
       return;
     }
 

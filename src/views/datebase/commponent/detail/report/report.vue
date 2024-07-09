@@ -42,7 +42,7 @@
             </tr>
             <tr>
               <th>Ordered Classification</th>
-              <td>{{ getTestTypeText(selectItems?.testType) }}</td>
+              <td>{{ projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}</td>
             </tr>
             <tr>
               <th>Name</th>
@@ -60,7 +60,7 @@
           </table>
         </div>
         <div class="reportDivBottom">
-          <div class="wbcLeft">
+          <div :class="['wbcLeft', projectBm && 'wbcLeftBm']">
             <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
             <table class="tableClass">
               <colgroup>
@@ -91,7 +91,7 @@
               </tbody>
             </table>
 
-            <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList" class="reportH3 mb1 pl0">non-WBC</h3>
+            <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList && !projectBm" class="reportH3 mb1 pl0">non-WBC</h3>
             <table class="tableClass" v-if="!projectBm">
               <colgroup>
                 <col width="40%">
@@ -178,7 +178,7 @@
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import { computed, getCurrentInstance, onMounted, ref } from "vue";
-import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";

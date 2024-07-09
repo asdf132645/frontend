@@ -26,6 +26,10 @@ export const AnalysisList = [
 ];
 
 export const bmAnalysisList = [
+    { value: '100', text: '100' },
+    { value: '200', text: '200' },
+    { value: '300', text: '300' },
+    { value: '400', text: '400' },
     { value: '500', text: '500' },
     { value: '600', text: '600' },
     { value: '700', text: '700' },
@@ -668,25 +672,25 @@ export const imagePrintAndWbc = [
     { fullNm: 'rbcPrintModel', classId: '99999', checked: false},
 ]
 export const imagePrintAndBm = [
-    { fullNm: 'Neutrophil', classId: '01', checked: false },
-    { fullNm: 'Neutrophil-Segmented', classId: '71', checked: false },
-    { fullNm: 'Neutrophil-Band', classId: '72', checked: false },
-    { fullNm: 'Metamyelocyte', classId: '02', checked: false },
-    { fullNm: 'Myelocyte', classId: '03', checked: false },
-    { fullNm: 'Promyelocyte', classId: '04', checked: false },
-    { fullNm: 'Lymphocyte', classId: '05', checked: false },
-    { fullNm: 'Abnormal lymphocyte', classId: '06', checked: false },
-    { fullNm: 'Monocyte', classId: '07', checked: false },
-    { fullNm: 'Eosinophil', classId: '08', checked: false },
-    { fullNm: 'Basophil', classId: '09', checked: false },
-    { fullNm: 'Blast', classId: '10', checked: false },
-    { fullNm: 'Plasma cell', classId: '11', checked: false },
-    { fullNm: 'Orthochromic Normoblast', classId: '12', checked: false },
-    { fullNm: 'Polychromic Normoblast', classId: '13', checked: false },
-    { fullNm: 'Basophilic Normoblast', classId: '14', checked: false },
-    { fullNm: 'Proerythroblast', classId: '15', checked: false },
-    { fullNm: 'Histiocyte', classId: '16', checked: false },
-    { fullNm: 'Others', classId: '17', checked: false }
+    { fullNm: 'Neutrophil', classId: '01', checked: true },
+    { fullNm: 'Neutrophil-Segmented', classId: '71', checked: true },
+    { fullNm: 'Neutrophil-Band', classId: '72', checked: true },
+    { fullNm: 'Metamyelocyte', classId: '02', checked: true },
+    { fullNm: 'Myelocyte', classId: '03', checked: true },
+    { fullNm: 'Promyelocyte', classId: '04', checked: true },
+    { fullNm: 'Lymphocyte', classId: '05', checked: true },
+    { fullNm: 'Abnormal lymphocyte', classId: '06', checked: true },
+    { fullNm: 'Monocyte', classId: '07', checked: true },
+    { fullNm: 'Eosinophil', classId: '08', checked: true },
+    { fullNm: 'Basophil', classId: '09', checked: true },
+    { fullNm: 'Blast', classId: '10', checked: true },
+    { fullNm: 'Plasma cell', classId: '11', checked: true },
+    { fullNm: 'Orthochromic Normoblast', classId: '12', checked: true },
+    { fullNm: 'Polychromic Normoblast', classId: '13', checked: true },
+    { fullNm: 'Basophilic Normoblast', classId: '14', checked: true },
+    { fullNm: 'Proerythroblast', classId: '15', checked: true },
+    { fullNm: 'Histiocyte', classId: '16', checked: true },
+    { fullNm: 'Others', classId: '17', checked: true }
 ];
 
 

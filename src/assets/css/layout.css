@@ -227,6 +227,24 @@ span.icoText {
 
 /* header-menu-end */
 
+/* ComboBox */
+.options-list {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+}
+
+.options-list li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.options-list li.highlighted {
+    background-color: #bde4ff;
+}
+
 /*main*/
 
 .contentLeft {
@@ -1649,7 +1667,8 @@ ul.wbcImgWrap > li {
 }
 
 ul.cellImgBox {
-    max-height: 76.9vh;
+    height: 76.9vh;
+    /*max-height: 76.9vh;*/
     overflow-y: scroll;
     overflow-x: hidden;
     text-align: left;
@@ -1834,6 +1853,11 @@ table.reportTable tr {
 .wbcLeft {
     width: 49%;
     display: inline-block;
+}
+
+.wbcLeftBm {
+    display: flex;
+    flex-direction: column;
 }
 
 .reportDivTop {
