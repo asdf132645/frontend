@@ -25,13 +25,20 @@ import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
 import {defineEmits, defineProps, onMounted, ref, onBeforeMount} from "vue";
 import WorkingView100A from "@/views/analysis/commponent/workingView100A.vue";
+import router from "@/router";
 const emits = defineEmits();
 
 const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
+const viewerCheckSessionStorageData = sessionStorage.getItem('viewerCheck');
+
 onBeforeMount(async () => {
+  if (viewerCheckSessionStorageData === 'viewer') {
+    router.push('/database')
+  }
+
   if (window.PROJECT_TYPE === 'bm') {
     bmIsBoolen.value = true;
   }else {
