@@ -132,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {
@@ -201,6 +201,7 @@ const lisFilePathSetArr = ref<any>([]);
 
 
 onMounted(async () => {
+  await nextTick();
   await getOrderClass();
   wbcMemo.value = props.selectItems?.wbcMemo;
   // await afterChang(clonedWbcInfoStore.value);
@@ -229,20 +230,22 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
-  if (!isBefore.value) {
-    afterChang(newItem)
-  }else{
-    beforeChang();
+  if (Object.keys(newItem).length !== 0) {
+    if (!isBefore.value) {
+      afterChang(newItem)
+    } else {
+      beforeChang();
+    }
+    wbcMemo.value = props.selectItems?.wbcMemo;
+    const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
+    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
   }
-  wbcMemo.value = props.selectItems?.wbcMemo;
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
   if (!isBefore.value) {
     afterChang(newItem);
-  }else{
+  } else {
     beforeChang();
   }
 }, {deep: true});
@@ -933,7 +936,7 @@ const beforeChang = async () => {
   isBefore.value = true;
   await getOrderClass();
   const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id) });
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id)});
   emits('isBefore', true);
   const wbcInfo = filteredItems.data.wbcInfo.wbcInfo[0];
   let wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
@@ -957,6 +960,14 @@ const afterChang = async (newItem: any) => {
 
   nonRbcClassList.value = sortedWbcInfoAfter.filter((item: any) => titleArr.includes(item.title));
   totalCountSet(wbcInfoChangeVal.value);
+  if (props.selectItems?.submitState === "") {
+    const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const updatedItem = {
+      submitState: 'checkFirst',
+    };
+    const updatedRuningInfo = {...result.data, ...updatedItem}
+    await resRunningItem(updatedRuningInfo, true);
+  }
 }
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의

@@ -51,12 +51,14 @@ const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Sti
 const buttonOfen = ref(false);
 let viewerSmall: any = null;
 
-onMounted(() => {
-  getImgUrl();
+onMounted(async () => {
+  await nextTick();
+  await getImgUrl();
 });
 watch( () => props.selectItems, async(newItem) => {
-  await nextTick()
-  getImgUrl();
+  // await nextTick();
+  // console.log(Object.keys(newItem).length)
+  await getImgUrl();
 });
 const getImageUrls = (imageName: string, type: string) => {
   let folderName;
@@ -108,7 +110,7 @@ const getImageUrlsSmallImg = (imageName: string, type: string) => {
   return `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}`;
 };
 
-const getImgUrl = () => {
+const getImgUrl = async () => {
   const slotId = props.selectItems?.slotId || "";
   const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('iaRootPath');
 
