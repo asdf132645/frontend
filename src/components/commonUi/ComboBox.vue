@@ -26,8 +26,6 @@
 
 <script setup>
 import {ref, computed, defineProps, defineEmits, nextTick} from 'vue';
-import {AnalysisList} from "@/common/defines/constFile/settings";
-
 
 const props = defineProps(['options'])
 const emits = defineEmits(['update:selectedOption']);

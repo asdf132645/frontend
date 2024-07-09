@@ -26,6 +26,10 @@ export const AnalysisList = [
 ];
 
 export const bmAnalysisList = [
+    { value: '100', text: '100' },
+    { value: '200', text: '200' },
+    { value: '300', text: '300' },
+    { value: '400', text: '400' },
     { value: '500', text: '500' },
     { value: '600', text: '600' },
     { value: '700', text: '700' },

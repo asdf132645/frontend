@@ -6,7 +6,10 @@
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index" class="leftImgLi">
         <img :src="getImageUrlsSmallImg(image, 'particle')" alt="Partical Image"
-             @dblclick="openInViewer(getImageUrls(image, 'particle'))">
+             @dblclick="openInViewer(getImageUrls(image, 'particle'))"
+             @load="onLoad"
+             @error="onError"
+        >
       </li>
     </ul>
     <ul class="leftImgUl">
@@ -30,6 +33,8 @@
       </div>
     </ul>
   </div>
+
+  <LoadingOverlay :isLoading="imageLoaded" />
 </template>
 
 <script setup lang="ts">
@@ -37,6 +42,7 @@ import {defineProps, nextTick, onMounted, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import axios from "axios";
 import {useStore} from "vuex";
+import LoadingOverlay from "@/components/commonUi/LoadingOverlay.vue";
 
 const props = defineProps(['selectItems']);
 
@@ -49,15 +55,19 @@ const idealStitchImages = ref([]);
 const megaImages = ref([]);
 const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Stitch_Image', '05_Mega_Image'];
 const buttonOfen = ref(false);
+const imageLoaded = ref(true);
+const loadedImagesCount = ref(0);
 let viewerSmall: any = null;
 
 onMounted(() => {
   getImgUrl();
 });
-watch( () => props.selectItems, async(newItem) => {
+
+watch(() => props.selectItems, async(newItem) => {
   await nextTick()
   getImgUrl();
 });
+
 const getImageUrls = (imageName: string, type: string) => {
   let folderName;
   switch (type) {
@@ -204,5 +214,19 @@ const closeViewer = () => {
   }
 };
 
+const onLoad = () => {
+  loadedImagesCount.value++;
+  if (loadedImagesCount.value === paImages.value.length) {
+    imageLoaded.value = false;
+  }
+};
+
+const onError = () => {
+  loadedImagesCount.value++;
+  if (loadedImagesCount.value === paImages.value.length) {
+    imageLoaded.value = false;
+  }
+  console.log('Failed to load Image');
+};
 
 </script>
