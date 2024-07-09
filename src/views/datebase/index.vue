@@ -63,6 +63,8 @@
                 <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
                   <span>Wedge</span></label>
                 <label><input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
+                  <span>Biopsy</span></label>
+                <label><input type="checkbox" value="06" @change="changeTestType('06')" :checked="testType === '06'"/>
                   <span>Squash</span></label>
               </template>
             </div>

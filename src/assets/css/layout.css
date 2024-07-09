@@ -227,6 +227,24 @@ span.icoText {
 
 /* header-menu-end */
 
+/* ComboBox */
+.options-list {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+}
+
+.options-list li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.options-list li.highlighted {
+    background-color: #bde4ff;
+}
+
 /*main*/
 
 .contentLeft {
