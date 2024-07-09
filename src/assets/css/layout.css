@@ -1555,6 +1555,7 @@ button.backupBtn {
 
 select.autoBackUpPath {
     margin: 0 12px;
+    width: 97%;
 }
 h3.titleH3 button {
     color: #fff;
