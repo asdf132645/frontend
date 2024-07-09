@@ -1320,6 +1320,7 @@ ul.settingTabBtn li {
     cursor: pointer;
     margin-right: 25px;
     min-width: 7%;
+    padding-bottom: 3px;
 }
 
 .settingWrap {
