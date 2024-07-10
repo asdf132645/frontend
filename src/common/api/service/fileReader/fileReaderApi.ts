@@ -23,5 +23,5 @@ export const readH7Message = async (request: any): Promise<ApiResponse<void>> =>
 };
 
 export const createH17 = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpPost(apiConstants.H7Message.post, request);
+    return httpClient.httpPost(apiConstants.Hl7Create.post, request);
 };

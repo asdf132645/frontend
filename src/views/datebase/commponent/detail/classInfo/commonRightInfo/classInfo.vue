@@ -424,14 +424,14 @@ const lisLastStep = () => {
     let seq = 0;
 
     lisCodeWbcArr.value.forEach(function (lisCode: any) {
-      if (lisCode.code !== '') {
+      if (lisCode.LIS_CD !== '') {
         props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
           if (lisCode.IA_CD === wbcItem.id) {
             if (Number(wbcItem.percent) > 0 || Number(wbcItem.count)) {
               // count
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
               // percent
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
             }
 
           }
@@ -473,19 +473,18 @@ const otherDataSend = async () => {
       wbcInfo: props.selectItems?.wbcInfoAfter,
       result: lisCodeWbcArr.value,
     };
-
     const res = await readH7Message(data);
     if (res) {
       if (!lisFilePathSetArr.value.includes("http")) { // file
         const data = {
-          filepath: lisFilePathSetArr.value,
+          filepath: `${lisFilePathSetArr.value}\\${props.selectItems.barcodeNo}.hl7`,
           msg: res,
         }
         try {
           const createH17Res: any = await createH17(data);
           showSuccessAlert(messages.IDS_MSG_SUCCESS);
         } catch (error: any) {
-          showErrorAlert(error.response.data);
+          showErrorAlert(error.response.data.message);
         }
       } else { // url
         sendLisMessage(res);
@@ -552,26 +551,26 @@ const inhaDataSend = () => {
   lisCodeWbcArr.value.forEach(function (lisCode: any, index: any) {
     props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
       if (lisCode.IA_CD === wbcItem.id) {
-        if (lisCode.code === 'H9600' || lisCode.code === 'H9365' ||
-            lisCode.code === 'H9366') {
+        if (lisCode.LIS_CD === 'H9600' || lisCode.LIS_CD === 'H9365' ||
+            lisCode.LIS_CD === 'H9366') {
           if (Number(wbcItem.count) > 0) {
-            resultStr += lisCode.code + '|' + '1' + '|' + ','
+            resultStr += lisCode.LIS_CD + '|' + '1' + '|' + ','
           } else {
-            resultStr += lisCode.code + '|' + ' ' + '|' + ','
+            resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
           }
         } else {
           // GP, PA
           if (lisCode.IA_CD === '13' || lisCode.IA_CD === '14') {
             if (Number(wbcItem.count) > Number(lisCode.MIN_COUNT)) {
-              resultStr += lisCode.code + '|' + wbcItem.percent + '|' + ','
+              resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
             } else {
-              resultStr += lisCode.code + '|' + ' ' + '|' + ','
+              resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
             }
           } else {
             if (Number(wbcItem.percent) > 0) {
-              resultStr += lisCode.code + '|' + wbcItem.percent + '|' + ','
+              resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
             } else {
-              resultStr += lisCode.code + '|' + ' ' + '|' + ','
+              resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
             }
           }
 
@@ -583,14 +582,14 @@ const inhaDataSend = () => {
   const specialCodes = ['H9531', 'H9535', 'H9594', 'H9571', 'H9574', 'H9595'];
 
   lisCodeRbcArr.value.forEach(function (lisCode: any) {
-    if (lisCode.code !== '') {
+    if (lisCode.LIS_CD !== '') {
       props.selectItems?.rbcInfoAfter.forEach(function (rbcItem: any) {
-        if (lisCode.categoryId === rbcItem.categoryId) {
+        if (lisCode.IA_CATEGORY_CD === rbcItem.IA_CATEGORY_CD) {
           for (const rbcItemElement of rbcItem.classInfo) {
-            if (lisCode.classId === rbcItemElement.classId) {
-              const degree = Number(rbcItemElement.degree) === 0 ? ' ' : specialCodes.includes(lisCode.code) ? '0' : rbcItemElement.degree;
-              rbcTmp += `${lisCode.code}|${degree}|,`;
-              resultStr += `${lisCode.code}|${degree}|,`;
+            if (lisCode.IA_CLASS_CD === rbcItemElement.IA_CLASS_CD) {
+              const degree = Number(rbcItemElement.degree) === 0 ? ' ' : specialCodes.includes(lisCode.LIS_CD) ? '0' : rbcItemElement.degree;
+              rbcTmp += `${lisCode.LIS_CD}|${degree}|,`;
+              resultStr += `${lisCode.LIS_CD}|${degree}|,`;
             }
           }
 
@@ -686,25 +685,25 @@ const godae = (): string => {
     bandItem[0].percent = '0'
   }
   lisCodeWbcArr.value.forEach(function (lisCode: any) {
-    if (lisCode.code !== '') {
+    if (lisCode.LIS_CD !== '') {
       props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         if (lisCode.IA_CD === wbcItem.id) {
           // 5diff는 0이어도 데이터 올림
           if (wbcItem.id === '01' || wbcItem.id === '71' || wbcItem.id === '05' ||
               wbcItem.id === '07' || wbcItem.id === '08' || wbcItem.id === '09') {
             // count
-            data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+            data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
 
             // percent
-            data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+            data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
 
           } else {
             if (Number(wbcItem.percent) > 0) {
               // count
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
 
               // percent
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.code + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
             }
           }
         }
@@ -779,10 +778,29 @@ const getLisWbcRbcData = async () => {
       const rbcData = rbcResult.data;
 
       if (wbcData) {
-        lisCodeWbcArr.value = wbcData;
+        let newWbcDataArr = [];
+        for (const wbcDataItem of wbcData) {
+          newWbcDataArr.push({
+            CD_NM: wbcDataItem.fullNm,
+            IA_CD: wbcDataItem?.id,
+            LIS_CD: wbcDataItem?.key,
+            MIN_COUNT: 0,
+          })
+        }
+        lisCodeWbcArr.value = newWbcDataArr;
       }
       if (rbcData) {
-        lisCodeRbcArr.value = rbcData;
+        let newRbcDataArr = [];
+        for (const rbcDataItem of rbcData) {
+          newRbcDataArr.push({
+            CATEGORY_NM: rbcDataItem.categoryNm,
+            CLASS_NM: rbcDataItem?.fullNm,
+            IA_CATEGORY_CD: rbcDataItem?.categoryId,
+            IA_CLASS_CD: rbcDataItem?.id,
+            LIS_CD: rbcDataItem?.key,
+          })
+        }
+        lisCodeRbcArr.value = newRbcDataArr;
       }
     }
   } catch (e) {

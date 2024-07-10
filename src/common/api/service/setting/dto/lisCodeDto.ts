@@ -4,6 +4,7 @@ export interface CreateLisCodeDto {
 }
 
 export interface LisCodeWbcItem {
+    id: number | string;
     fullNm: string;
     classId: string;
     key: string;

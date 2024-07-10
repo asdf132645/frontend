@@ -569,8 +569,6 @@ const afterChange = async (newItem?: any) => {
   }
 
 
-  console.log("afterChange", rbcInfoBeforeVal.value);
-
   // Report 화면에서 RBC Classification 동기화 문제로 추가
   if (props.type === 'report') {
     const result: any = await detailRunningApi(String(selectedSampleId.value));
