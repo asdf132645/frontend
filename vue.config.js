@@ -16,16 +16,21 @@ module.exports = {
         "process": require.resolve("process/browser")
       }
     },
-    // optimization: {
-    //   minimize: true, // 코드 최소화
-    // },
+    optimization: {
+      minimize: true, // 코드 최소화
+      splitChunks: {
+        chunks: 'all', // 코드 스플리팅
+      },
+    },
     plugins: [
       new PurgeCSSPlugin({
         paths: glob.sync([
           path.join(__dirname, './src/**/*.vue'),
           path.join(__dirname, './public/index.html'),
         ]),
-        // 기타 설정 옵션
+        safelist: {
+          standard: ['body', 'html'], // PurgeCSS에서 안전하게 유지할 클래스들
+        },
       }),
       new Dotenv(), // .env 파일 로드를 위한 설정 추가
     ],
