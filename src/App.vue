@@ -387,7 +387,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
         } else {
           if (lastCompleteIndex !== slotIndex.value) {
-            console.log('save')
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'afterChange'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotNo);

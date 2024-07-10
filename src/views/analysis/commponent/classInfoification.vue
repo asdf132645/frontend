@@ -187,9 +187,9 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
   if (slotArray && slotArray.wbcInfo) {
     const currentSlot = slotArray.wbcInfo;
     if (currentSlot && currentSlot?.stateCd === '03') {
-      if (currentSlot.wbcCount === '00') {
-        return;
-      }
+      // if (currentSlot.wbcCount === '00') {
+      //   return;
+      // }
       await updateCounts(currentSlot);
       maxWbcCount.value = currentSlot.maxWbcCount;
     }
