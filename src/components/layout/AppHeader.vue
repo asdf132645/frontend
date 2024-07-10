@@ -344,6 +344,8 @@ const eqStatCdChangeVal = (eqStatCdVal: string) => {
 }
 
 const openLayer = () => {
+  if (viewerCheckData.value === 'viewer') return;
+
   visible.value = true;
 };
 

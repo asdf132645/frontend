@@ -15,7 +15,7 @@
         <li>Patient ID <span>{{ selectedItem?.patientId }}</span>  </li>
         <li>Patient Name <span>{{ selectedItem?.patientNm }}</span>  </li>
         <li>
-          <img :src="pilePath" style="width: 235px"/>
+          <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath" style="width: 235px"/>
         </li>
       </ul>
     </div>
@@ -49,9 +49,10 @@ import moment from "moment/moment";
 const props = defineProps(['selectedItem']);
 const iaRootPath = ref('');
 const pilePath = ref('');
-
+const barCodeImageShowError = ref(false);
 
 onMounted(() => {
+  barCodeImageShowError.value = false;
   // iaRootPath가 존재하면 getImageUrl 함수 호출
   iaRootPath.value = sessionStorage.getItem('iaRootPath');
   if (iaRootPath.value) {
@@ -59,6 +60,7 @@ onMounted(() => {
   }
 });
 watch(() => props.selectedItem, (newSelectedItem) => {
+  barCodeImageShowError.value = false;
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
@@ -81,6 +83,10 @@ const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 function getImageUrl(imageName){
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;
   return `${apiBaseUrl}/images?folder=${path + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
+}
+
+const onImageError = () => {
+  barCodeImageShowError.value = true;
 }
 
 </script>
