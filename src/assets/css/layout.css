@@ -43,6 +43,11 @@
     cursor: pointer;
 }
 
+.alignItemsCenter {
+    display: flex;
+    align-items: center;
+}
+
 /* header-menu */
 .header {
     width: 100%;
@@ -721,7 +726,6 @@ button.degreeAllCheckBtn {
 .slider-container {
     display: flex;
     align-items: center;
-
 }
 
 input[type="range"].slider-range {

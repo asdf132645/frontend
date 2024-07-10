@@ -76,27 +76,37 @@
             <div>
               <font-awesome-icon :icon="['fas', 'palette']"/>
               RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}` }} ]
-              <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  v-model="imageRgb[0]"
-                  @input="changeImageRgb('')"
-              />
-              <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  v-model="imageRgb[1]"
-                  @input="changeImageRgb('')"
-              />
-              <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  v-model="imageRgb[2]"
-                  @input="changeImageRgb('')"
-              />
+
+              <div class="alignItemsCenter">
+                <label>R</label>
+                <input
+                    type="range"
+                    min="0"
+                    max="255"
+                    v-model="imageRgb[0]"
+                    @input="changeImageRgb('')"
+                />
+              </div>
+              <div class="alignItemsCenter">
+                <label>G</label>
+                <input
+                    type="range"
+                    min="0"
+                    max="255"
+                    v-model="imageRgb[1]"
+                    @input="changeImageRgb('')"
+                />
+              </div>
+              <div class="alignItemsCenter">
+                <label>B</label>
+                <input
+                    type="range"
+                    min="0"
+                    max="255"
+                    v-model="imageRgb[2]"
+                    @input="changeImageRgb('')"
+                />
+              </div>
               <button class="resetBtn" @click="rgbReset">RGB Reset</button>
             </div>
 
@@ -150,7 +160,7 @@
       </div>
       <!-- 모달 창 -->
       <div class="wbcModal" v-show="modalOpen">
-        <div class="wbc-modal-content">
+        <div class="wbc-modal-content" @click="outerClickCloseModal">
           <span class="wbcClose" @click="closeModal">&times;</span>
           <div class="wbcModalImageContent">
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
@@ -428,7 +438,15 @@ const openContextMenu = (event: MouseEvent, item: any) => {
 };
 
 const moveSelectedImages = async (item: any, itemIdx: any) => {
+  // 사진 선택 하지 않고 우클릭 후 이미지 변경 하였을 경우
+  if (!selectedClickImages.value || Object.entries(selectedClickImages.value).length === 0) {
+    showAlert.value = true;
+    alertType.value = 'error';
+    alertMessage.value = `Please select an image`;
+    return;
+  }
   addToRollbackHistory();
+
   const draggedItem = wbcInfo.value[itemIdx];
   if (targetItem.value) {
     const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
@@ -607,6 +625,12 @@ const openModal = (image: any, item: any) => {
 const closeModal = () => {
   modalOpen.value = false;
 };
+
+const outerClickCloseModal = (e: any) => {
+  if (e.target.classList.contains('wbc-modal-content')) {
+    modalOpen.value = false;
+  }
+}
 
 const imgSetOpen = () => {
   imgSet.value = !imgSet.value
@@ -787,9 +811,9 @@ function changeImageRgb(reset: string) {
   if (reset !== 'reset') {
     opacity.value = '0.9';
   }
-  const red = 255 - imageRgb.value[0];
-  const green = 255 - imageRgb.value[1];
-  const blue = 255 - imageRgb.value[2];
+  const red = imageRgb.value[0];
+  const green = imageRgb.value[1];
+  const blue = imageRgb.value[2];
   // 선택된 크기 타이틀과 일치하는 이미지들에 대해 크기 조절
   wbcInfo.value.forEach((item: any) => {
     // if (item.title === selectedSizeTitle) {
@@ -1093,12 +1117,14 @@ async function onDrop(targetItemIndex: any) {
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
   }
-  // 화면 딜레이
+
   await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
   for (const selectedImage of selectedClickImages.value) {
     const fileName = selectedImage.fileName;
     const draggedItemIndex = wbcInfo.value.findIndex((item: any) => item.images.some((img: any) => img.fileName === fileName));
     const draggedItem = wbcInfo.value[draggedItemIndex];
+    if (draggedItem.id === wbcInfo.value[targetItemIndex].id) continue;
+
     await moveImage(targetItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[targetItemIndex], false);
   }
   // 화면 딜레이 끄기

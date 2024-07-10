@@ -150,10 +150,8 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
     testType.value = slotArray?.wbcInfo?.testType;
     const wbcinfoType = props.bmIsBoolen ? [slotArray.wbcInfo.bmInfo] : [slotArray.wbcInfo.wbcInfo];
     const wbcInfoArray = wbcinfoType;
-    console.log(props.bmIsBoolen)
     const arrType = props.bmIsBoolen ? [basicBmClassListClint] : [basicWbcArrClint];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
-    console.log('ssss')
     const areAllCountsZero = (classList: any[]) => {
       // 모든 요소의 count가 0인지 확인
       return classList.every((classGroup) => {
