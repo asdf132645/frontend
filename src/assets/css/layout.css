@@ -1547,7 +1547,9 @@ h3.titleH3 {
 .settingDatePickers > select {
     max-width: 130px;
 }
-
+.listBoxTable tr {
+    cursor: pointer;
+}
 button.backupBtn {
     margin-left: 14px;
     background: #252629;

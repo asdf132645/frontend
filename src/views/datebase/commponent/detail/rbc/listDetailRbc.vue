@@ -52,14 +52,6 @@ onMounted(async () => {
   await initData();
 });
 
-// watch(() => rbcReData, async (newItem: any) => {
-//   if (newItem) {
-//     const result: any = await detailRunningApi(String(selectedSampleId.value));
-//     selectItems.value = result.data;
-//     rbcInfo.value = result.data;
-//   }
-// }, {deep: true})
-
 const initData = async () => {
   rbcInfo.value = selectItems.value;
 }

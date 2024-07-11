@@ -221,11 +221,6 @@ onMounted(async () => {
   document.addEventListener('click', closeSelectBox);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
-// watch(() => props.isBefore, (newItem) => {
-//   removeRbcMarker();
-//   removeDiv();
-//   emits('unChecked')
-// }, {deep: true});
 
 const josnWidthHeight = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -539,6 +534,8 @@ const drawRbcMarker = async (classInfoArr: any) => {
 };
 
 
+
+
 const initElement = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
@@ -565,11 +562,12 @@ const initElement = async () => {
       new OpenSeadragon.MouseTracker({
         element: viewer.value.element,
         moveHandler: function (event: any) {
+          const existingMagCanvas = document.getElementById('magCanvas');
+          if (existingMagCanvas) {
+            viewer.value.element.removeChild(existingMagCanvas);
+          }
+
           if (!isMagnifyingGlass.value) {
-            const magCanvas = document.getElementById('magCanvas');
-            if (magCanvas) {
-              viewer.value.element.removeChild(magCanvas);
-            }
             return;
           }
 
@@ -627,6 +625,12 @@ const initElement = async () => {
         canvasOverlay.value = canvas;
       });
 
+      viewer.value.addHandler('zoom', () => {
+        if(activeRuler.value === 'None'){
+          return;
+        }
+        drawRuler(activeRuler.value);
+      });
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
         //
@@ -936,9 +940,9 @@ const onClickRuler = (ruler: any) => {
 const drawRuler = (ruler: any) => {
   const divtilingViewer = document.getElementById('tiling-viewer_img_list');
 
-  if (divtilingViewer !== null) {
+  if (divtilingViewer instanceof HTMLElement) {
     const rulerOverlay = document.getElementById('rulerOverlay');
-    if (rulerOverlay !== null) {
+    if (rulerOverlay instanceof HTMLElement) {
       divtilingViewer.removeChild(rulerOverlay);
     }
 
@@ -949,7 +953,7 @@ const drawRuler = (ruler: any) => {
     element.style.height = rulerPos.value.height + 'px';
     element.style.zIndex = '9999999';
 
-    // 줌 레벨 반영
+    // Zoom level calculation
     const zoom = viewer.value.viewport.getZoom(true);
 
     if (rulerPos.value.left === 0) {
@@ -1001,7 +1005,7 @@ const drawRuler = (ruler: any) => {
 
     const parent = document.getElementById('tilingViewer');
 
-    if (parent) {
+    if (parent instanceof HTMLElement) {
       parent.onmousemove = function (e) {
         if (!isPress) {
           return;
@@ -1026,6 +1030,7 @@ const drawRuler = (ruler: any) => {
     }
   }
 };
+
 
 
 const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
@@ -1070,8 +1075,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   titleElement.style.fontSize = '16px'
   titleElement.style.minWidth = '50px'
   titleElement.style.width = rulerWidth.value + 'px'
-
-  if (ruler.id === 'line') {
+  if (ruler.id === 'line' || ruler === 'Line') {
     const startX = (viewBoxWH.value / 2) - (rulerWidth.value / 2)
     const endX = (viewBoxWH.value / 2) + (rulerWidth.value / 2)
     const startY = viewBoxWH.value / 2
@@ -1085,7 +1089,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
         '</svg>'
     element.appendChild(titleElement)
 
-  } else if (ruler.id === 'cross') {
+  } else if (ruler.id === 'cross' || ruler === 'Cross') {
     const centerX = viewBoxWH.value / 2;
     const centerY = viewBoxWH.value / 2;
     const halfWidth = rulerWidth.value / 2;
@@ -1098,7 +1102,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
 
     element.appendChild(titleElement);
 
-  } else if (ruler.id === 'circle') {
+  } else if (ruler.id === 'circle' || ruler === 'Circle') {
     const cx = viewBoxWH.value / 2
     const cy = viewBoxWH.value / 2
     const radius = rulerWidth.value * 0.5
