@@ -400,6 +400,12 @@ export const apiConstants = {
             endpoint: 'backup/post',
             requiresToken: false,
         }
+    },
+    excel: {
+        execute: {
+            endpoint: 'excel/execute',
+            requiresToken: false,
+        }
     }
 
 };

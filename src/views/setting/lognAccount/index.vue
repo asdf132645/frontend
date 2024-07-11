@@ -55,14 +55,14 @@
       <div class="editModalContainer">
         <div class="userInputWrapper">
           <label class="userLabel" for="userType" style="line-height: 0">User Type</label>
-          <select id="userType" v-model="selectedUserData.userType" class="searchSelect inputMiddleWrapper">
+          <select id="userType" v-model="selectedUserData.userType" class="searchSelect inputMiddleWrapper" style="width: 132px !important;">
             <option v-for="option in userTypeOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
 
         <div class="userInputWrapper">
           <label class="userLabel" for="userId">User ID</label>
-          <input id="userId" class="cursorNotAllowed inputMiddleWrapper disabledInput" type="text" v-model="selectedUserData.userId" disabled />
+          <input id="userId" class="inputMiddleWrapper disabledInput" type="text" v-model="selectedUserData.userId" disabled readonly />
         </div>
 
         <div class="userInputWrapper">
@@ -77,12 +77,12 @@
 
         <div class="userInputWrapper">
           <label class="userLabel" for="subscriptionDate">Subscription Date</label>
-          <input id="subscriptionDate" class="cursorNotAllowed inputMiddleWrapper disabledInput" type="text" v-model="formattedSubscriptionDate" disabled />
+          <input id="subscriptionDate" class="inputMiddleWrapper disabledInput" type="text" v-model="formattedSubscriptionDate" disabled />
         </div>
 
         <div class="userInputWrapper">
           <label class="userLabel" for="latestDate">Latest Date</label>
-          <input id="latestDate" class="cursorNotAllowed inputMiddleWrapper disabledInput" type="text" v-model="formattedLatestDate" disabled />
+          <input id="latestDate" class="inputMiddleWrapper disabledInput" type="text" v-model="formattedLatestDate" disabled />
         </div>
 
       </div>

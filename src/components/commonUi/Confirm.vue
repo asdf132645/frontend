@@ -4,7 +4,7 @@
       {{ message }}
     </p>
     <button class="alertButton" @click="okConfirm">OK</button>
-    <button class="alertButton" @click="hideConfirm">CLOSE</button>
+    <button class="alertCloseButton" @click="hideConfirm">CLOSE</button>
   </div>
 </template>
 

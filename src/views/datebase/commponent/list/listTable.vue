@@ -88,7 +88,7 @@
       <li @click="classificationRowDbClick">Classification</li>
       <li @click="editOrderData">Edit order data</li>
       <li @click="deleteRow">Delete</li>
-      <li>export XLSX</li>
+<!--      <li>export XLSX</li>-->
     </ul>
   </div>
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
@@ -101,33 +101,33 @@
     <template #content>
       <div>
         <ul class="editOrder">
-          <li>
-            <span>PB/BF</span>
-            <input type="text" v-model="itemObj.testType"/>
+          <li class="flexColumn">
+            <label for="testType">PB/BF</label>
+            <input id="testType" type="text" v-model="itemObj.testType"/>
           </li>
-          <li>
-            <span>Tray Slot</span>
-            <input type="text" readonly v-model="itemObj.traySlot"/>
+          <li class="flexColumn">
+            <label for="traySlot">Tray Slot</label>
+            <input id="traySlot" class="inputDisabled" type="text" v-model="itemObj.traySlot" readonly disabled />
           </li>
-          <li>
-            <span>BARCODE ID</span>
-            <input type="text" v-model="itemObj.barcodeNo" placeholder="BARCODE ID"/>
+          <li class="flexColumn">
+            <label for="barcode">BARCODE ID</label>
+            <input id="barcode" type="text" v-model="itemObj.barcodeNo" placeholder="BARCODE ID"/>
           </li>
-          <li>
-            <span>PATIENT ID</span>
-            <input type="text" v-model="itemObj.patientId" placeholder="PATIENT ID"/>
+          <li class="flexColumn">
+            <label for="patientId">PATIENT ID</label>
+            <input id="patientId" type="text" v-model="itemObj.patientId" placeholder="PATIENT ID"/>
           </li>
-          <li>
-            <span>PATIENT NAME</span>
-            <input type="text" v-model="itemObj.patientNm" placeholder="PATIENT NAME"/>
+          <li class="flexColumn">
+            <label for="patientName">PATIENT NAME</label>
+            <input id="patientName" type="text" v-model="itemObj.patientNm" placeholder="PATIENT NAME"/>
           </li>
-          <li>
-            <span>Analyzed date</span>
-            <input type="text" v-model="itemObj.analyzedDttm" readonly/>
+          <li class="flexColumn">
+            <label for="analyzedDate">Analyzed date</label>
+            <input id="analyzedDate" class="inputDisabled" type="text" v-model="itemObj.analyzedDttm" readonly disabled />
           </li>
-          <li>
-            <span>Signed state</span>
-            <input type="text" v-model="itemObj.submitState" readonly/>
+          <li class="flexColumn">
+            <label for="signedState">Signed state</label>
+            <input id="signedState" class="inputDisabled" type="text" v-model="itemObj.submitState" readonly disabled/>
           </li>
           <li>
             <p>Barcode Image</p>
@@ -136,7 +136,7 @@
         </ul>
       </div>
       <div class="modalBottom">
-        <button class="alertButton" @click="dbDataEditSet">Ok</button>
+        <button class="alertButton" @click="dbDataEditSet">Save</button>
       </div>
     </template>
   </Modal>
@@ -272,6 +272,7 @@ const selectAllItems = () => {
   props.dbData.forEach(item => {
     item.checked = selectAllCheckbox.value;
   });
+  emits('checkListItem', props.dbData.filter(dbDataItem => dbDataItem.checked));
 };
 
 const resetContextMenu = () => {
@@ -309,11 +310,9 @@ const rowRightClick = async (item, event) => {
 };
 
 const handleCheckboxChange = (item) => {
-  if (!item){
-    return;
-  }
+  if (!item) return;
   item.checked = !item.checked;
-
+  emits('checkListItem', props.dbData.filter(dbDataItem => dbDataItem.checked));
 };
 
 

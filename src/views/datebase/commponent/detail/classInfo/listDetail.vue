@@ -17,7 +17,7 @@
       </ul>
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
-    <div :class="'databaseWbcRight' + (cbcLayer ? ' cbcLayer' : '')">
+    <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow" type='listTable'
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
@@ -31,10 +31,10 @@
           />
           Cell Marking
         </button>
-        <button @click="excelDownload">
-          <font-awesome-icon :icon="['fas', 'file-csv']"/>
-          Excel
-        </button>
+<!--        <button @click="excelDownload">-->
+<!--          <font-awesome-icon :icon="['fas', 'file-csv']"/>-->
+<!--          Excel-->
+<!--        </button>-->
         <!--size-->
         <button @mouseover="showSizeControl">
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
@@ -67,7 +67,7 @@
               <input
                   type="range"
                   min="50"
-                  max="600"
+                  max="255"
                   v-model="imgBrightness"
                   @input="changeImgBrightness"
               />

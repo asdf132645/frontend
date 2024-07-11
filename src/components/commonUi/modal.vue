@@ -4,7 +4,7 @@
     <div class="layer-content">
       <div class="layer-header">
         <slot name="header"></slot>
-        <button @click="closeLayer" class="alertButton">Close</button>
+        <button @click="closeLayer" class="alertCloseButton">Close</button>
       </div>
       <div class="layer-body">
         <slot name="content"></slot>

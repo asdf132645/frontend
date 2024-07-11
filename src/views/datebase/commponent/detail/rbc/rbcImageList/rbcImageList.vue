@@ -15,44 +15,54 @@
         >Malaria
         </button>
       </div>
-      <div class='btn-imgsetbox_img_list'>
-        <button class="img-btn_img_list" @click="imgSetOpen">Img Setting</button>
-        <div class="imgSet_img_list" v-if="imgSet_img_list">
+      <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
+        <button class="darkButton" @click="imgSetOpen">Img Setting</button>
+        <div class="imgSet_img_list" v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
-            <span>Brightness</span>
-            <input
-                type="range"
-                min="80"
-                max="150"
-                v-model="imgBrightness"
-                @input="changeImgBrightness"
-            />
+            <span>Brightness {{ imgBrightness }}</span>
+              <input
+                  type="range"
+                  min="50"
+                  max="255"
+                  v-model="imgBrightness"
+                  @input="changeImgBrightness"
+              />
+            <button class="resetBtn" @click="brightnessReset">Brightness Reset</button>
           </div>
           <div>
             <font-awesome-icon :icon="['fas', 'palette']"/>
-            <span>RGB</span>
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[0]"
-                @input="changeImageRgb"
-            />
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[1]"
-                @input="changeImageRgb"
-            />
-            <input
-                type="range"
-                min="0"
-                max="255"
-                v-model="imageRgb[2]"
-                @input="changeImageRgb"
-            />
+            <span>RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}` }} ]</span>
+            <div class="alignItemsCenter">
+              <label>R</label>
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[0]"
+                  @input="changeImageRgb"
+              />
+            </div>
+            <div class="alignItemsCenter">
+              <label>G</label>
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[1]"
+                  @input="changeImageRgb"
+              />
+            </div>
+            <div class="alignItemsCenter">
+              <label>B</label>
+              <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  v-model="imageRgb[2]"
+                  @input="changeImageRgb"
+              />
+            </div>
             <button class="resetBtn" @click="rgbReset">RGB Reset</button>
           </div>
           <div>
@@ -856,14 +866,19 @@ const changeImageRgb = () => {
 }
 
 const rgbReset = () => {
-  imgBrightness.value = 100;
+  const brightness = imgBrightness.value;
   imageRgb.value = [0, 0, 0];
 
   const imageContainer = document.getElementById('tiling-viewer_img_list');
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(100%)`;
+    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(${brightness}%)`;
   }
 };
+
+const brightnessReset = () => {
+  imgBrightness.value = 100;
+  changeImageRgb();
+}
 
 
 // Grid
@@ -1121,7 +1136,6 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     }
   }
 };
-
 
 // Zoom
 const onClickZoom = () => {

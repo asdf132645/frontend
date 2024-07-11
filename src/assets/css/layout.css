@@ -48,16 +48,37 @@
     align-items: center;
 }
 
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexSpaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flexColumnAlignEnd {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.shadowBox {
+    box-shadow: 2px 2px 2px var(--black-color);
+    border: 1px solid var(--gray-bg-8-color);
+}
+
 /* header-menu */
 .header {
     width: 100%;
     display: block;
-    background: #353942;
+    background: var(--main-bg-1-color);
 }
 
 .printStart {
     margin-left: 10px;
-    border: 1px solid #fff;
+    border: 1px solid var(--white-color);
     padding: 5px;
     vertical-align: middle;
     cursor: pointer;
@@ -65,7 +86,7 @@
 
 .appHeaderLeft > a {
     font-size: 1rem;
-    color: #ffffff;
+    color: var(--white-color);
     margin-top: 0px;
     text-align: left;
     padding-left: 30px;
@@ -87,34 +108,34 @@
 }
 
 main.content {
-    background: #25313b;
+    background: var(--main-bg-6-color);
 }
 
 main.bmComponent {
-    background: #121212;
+    background: var(--main-bg-5-color);
 }
 
 .toggleHeadBtn {
-    background: #35b0b6;
-    color: #fff;
+    background: var(--coral-bg-5-color);
+    color: var(--white-color);
     padding: 10px;
     cursor: pointer;
 }
 
 .appHeaderLeft {
     height: 100%;
-    background: #252629;
+    background: var(--main-bg-2-color);
     text-align: left;
-    border-right: 1px solid #dedede;
-    border-bottom: 1px solid #494949;
+    border-right: 1px solid var(--gray-1-color);
+    border-bottom: 1px solid var(--main-bg-7-color);
 }
 
 .appHeaderLeft.bmComponent {
-    background: #121212;
+    background: var(--main-bg-5-color);
 }
 
 .rock {
-    color: #ff6363 !important;
+    color: var(--red-bg-4-color) !important;
 }
 
 .topClintInfo ul li {
@@ -128,7 +149,7 @@ main.bmComponent {
     text-align: left;
     margin-left: 31px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--white-color);
     padding-bottom: 10px;
     padding-top: 10px;
 }
@@ -148,14 +169,14 @@ main.bmComponent {
     width: 6%;
     margin-bottom: 0px;
     display: inline-block;
-    color: #ffffff;
-    background: #ffffff;
+    color: var(--white-color);
+    background: var(--white-color);
     margin-left: 0;
     text-align: center;
 }
 
 .loginColorSpan {
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
 }
 
 
@@ -167,19 +188,18 @@ main.bmComponent {
     display: inline-block;
     margin-right: 18px;
     padding-right: 18px;
-    color: #ffffff;
+    color: var(--white-color);
     font-size: 1.6rem;
     font-weight: 200;
     font-family: sans-serif;
-    border-right: 1px solid #dedede;
+    border-right: 1px solid var(--gray-1-color);
 }
 
 .startBtn.onRecover {
-    color: #37b9c8;
+    color: var(--coral-bg-3-color);
 }
 
 .lastLiM {
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -190,16 +210,21 @@ main.bmComponent {
 .display-flex > div {
     vertical-align: middle;
     padding-top: 31px;
-    color: #ffffff;
+    color: var(--white-color);
     text-align: left;
 }
 
 .logOutBox {
-    border: 1px solid #fff;
+    border: 1px solid var(--white-color);
     box-sizing: border-box;
     padding: 5px;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.logOutBox:hover {
+    background-color: var(--white-color);
+    color: var(--main-bg-0-color);
 }
 
 .lastMenu {
@@ -207,12 +232,12 @@ main.bmComponent {
     position: absolute;
     right: 0;
     top: 0;
-    background: #252629;
+    background: var(--main-bg-2-color);
     height: 4rem;
     padding: 0 20px;
     padding-top: 16px !important;
-    color: #fff;
-    border-left: 1px solid #515a67;
+    color: var(--white-color);
+    border-left: 1px solid var(--main-bg-7-color);
 }
 
 
@@ -222,7 +247,7 @@ span.icoText {
 }
 
 .greenColor {
-    color: #ffffff;
+    color: var(--white-color);
 }
 
 .dbDataTable > tbody {
@@ -234,7 +259,7 @@ span.icoText {
 
 /* ComboBox */
 .options-list {
-    border: 1px solid #ccc;
+    border: 1px solid var(--gray-bg-4-color);
     max-height: 150px;
     overflow-y: auto;
     padding: 0;
@@ -247,7 +272,7 @@ span.icoText {
 }
 
 .options-list li.highlighted {
-    background-color: #bde4ff;
+    background-color: var(--gray-bg-14-color);
 }
 
 /*main*/
@@ -274,14 +299,14 @@ span.icoText {
     display: inline-block;
     vertical-align: top;
     width: 36%;
-    background: #252629;
+    background: var(--main-bg-2-color);
     padding: 10px;
     margin: 0px 12px 0px 0px;
     border-radius: 5px;
 }
 
 .contentLeft > div {
-    background: #252629;
+    background: var(--main-bg-2-color);
     padding: 10px;
     border-radius: 5px;
     margin: 0px 10px 10px 0px;
@@ -299,7 +324,7 @@ h3.titleText {
 
 .execute {
     text-align: center;
-    background: #fff;
+    background: var(--white-color);
     padding: 19px;
     display: flex;
     justify-content: space-between;
@@ -307,8 +332,8 @@ h3.titleText {
 }
 
 .initBtn {
-    background: #212121;
-    color: #fff;
+    background: var(--main-bg-8-color);
+    color: var(--white-color);
     border-radius: 5px;
     padding: 16px;
     margin: 12px 0 0 2px;
@@ -318,12 +343,12 @@ h3.titleText {
 }
 
 .initBtn:hover {
-    background: #fff;
-    color: #212121;
+    background: var(--white-color);
+    color: var(--main-bg-8-color);
 }
 
 p.startStopP {
-    border: 1px solid #ffffff;
+    border: 1px solid var(--white-color);
     padding: 20px;
     margin-top: 5px;
     cursor: pointer;
@@ -341,9 +366,9 @@ p.startStopP {
 }
 
 .leftActive {
-    border-bottom: 1px solid #29c7ca;
+    border-bottom: 1px solid var(--coral-bg-0-color);
     height: 19px !important;
-    color: #29c7ca !important;
+    color: var(--coral-bg-0-color) !important;
 }
 
 .settingWrapDiv {
@@ -376,8 +401,8 @@ ul.customClass li {
 
 .degreeDiv button {
     background: none;
-    border: 1px solid #fff;
-    color: #fff;
+    border: 1px solid var(--white-color);
+    color: var(--white-color);
     padding: 3px 23px;
     border-radius: 5px;
     margin-right: 5px;
@@ -417,7 +442,7 @@ ul.customClass li {
 .line {
     height: 1px;
     width: 100%;
-    background: #fff;
+    background: var(--white-color);
     margin-bottom: 17px;
 }
 .autoDateBox {
@@ -442,45 +467,45 @@ table.settingTable select {
 button.saveBtn, .defaultBtn {
     margin-top: 10px;
     background-color: transparent; /* 기본 배경색 */
-    border: 1px solid #fff;
+    border: 1px solid var(--white-color);
     border-radius: 5px;
-    color: #fff;
+    color: var(--white-color);
     padding: 10px 80px;
     cursor: pointer;
 }
 
 .defaultBtn:hover, .saveBtn:hover {
-    background: #ffffff;
-    color: #000;
+    background: var(--white-color);
+    color: var(--black-color);
 }
 
 /*동그라미*/
 
-.progress-ring-circle {
-    fill: transparent;
-    stroke-width: 4px;
-    stroke: #506496;
-    stroke-dasharray: 200;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.5s ease;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    border-radius: 50%;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
+/*.progress-ring-circle {*/
+/*    fill: transparent;*/
+/*    stroke-width: 4px;*/
+/*    stroke: var(--gray-bg-14-color);*/
+/*    stroke-dasharray: 200;*/
+/*    stroke-dashoffset: 0;*/
+/*    transition: stroke-dashoffset 0.5s ease;*/
+/*    transform: rotate(-90deg);*/
+/*    transform-origin: 50% 50%;*/
+/*    border-radius: 50%;*/
+/*    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);*/
+/*}*/
 
-.rotate-animation {
-    animation: rotate 1s linear infinite;
-}
+/*.rotate-animation {*/
+/*    animation: rotate 1s linear infinite;*/
+/*}*/
 
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
+/*@keyframes rotate {*/
+/*    from {*/
+/*        transform: rotate(0deg);*/
+/*    }*/
+/*    to {*/
+/*        transform: rotate(360deg);*/
+/*    }*/
+/*}*/
 
 .classTitle {
     font-weight: bold;
@@ -497,11 +522,11 @@ button.saveBtn, .defaultBtn {
     margin: 0 auto;
     position: relative;
     width: 200px;
-    border-bottom: 1px solid #494949;
+    border-bottom: 1px solid var(--main-bg-7-color);
 }
 
 .nth1ChildOrder:hover {
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
 }
 
 /*동그라미 끝*/
@@ -513,16 +538,16 @@ button.saveBtn, .defaultBtn {
     padding: 2px;
     /*margin-left: 15px;*/
     position: relative;
-    border-bottom: 1px solid #494949;
+    border-bottom: 1px solid var(--main-bg-7-color);
 }
 
 .classAttribute {
-    background: #252629;
+    background: var(--main-bg-2-color);
 }
 
 .classTotal {
     display: flex;
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
     align-items: center;
 }
 
@@ -567,14 +592,14 @@ ul.degree.analysis {
 
 button.degreeAllCheckBtn {
     background: none;
-    color: #121212;
+    color: var(--main-bg-5-color);
     font-size: 0.8rem;
     border-radius: 5px;
-    background: #fff;
+    background: var(--white-color);
     display: inline-block;
     margin-top: 5px;
     padding: 4px;
-    border: 1px solid #3498db;
+    border: 1px solid var(--blue-bg-0-color);
     cursor: pointer;
 }
 
@@ -596,9 +621,9 @@ button.degreeAllCheckBtn {
 
 .underline {
     font-size: 0.8rem;
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
     margin-top: 5px;
-    border-top: 0.01px solid #747474;
+    border-top: 0.01px solid var(--gray-bg-2-color);
     padding: 5px 0 10px 0;
 }
 
@@ -617,8 +642,8 @@ button.degreeAllCheckBtn {
     cursor: pointer;
     border: none;
     border-radius: 3px;
-    color: white;
-    background-color: #2c2d2c;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
 }
 
 .ruler_box_img_list {
@@ -632,18 +657,18 @@ button.degreeAllCheckBtn {
     cursor: pointer;
     border: none;
     border-radius: 3px;
-    color: white;
-    background-color: #2c2d2c;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
 }
 
 .tab-btn_img_list.active, .tab-ruler-btn_img_list.active {
-    color: white;
-    background-color: #2c2d2c;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
 }
 
 .tab-btn_img_list.inactive, .tab-ruler-btn_img_list.inactive {
     color: darkgray;
-    background-color: #393939;
+    background-color: var(--main-bg-0-color);
 }
 
 
@@ -656,8 +681,8 @@ button.degreeAllCheckBtn {
     top: 40px;
     left: -150px;
     width: 250px;
-    background: #252629;
-    border: 1px solid #ffffff;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -676,16 +701,20 @@ button.degreeAllCheckBtn {
     font-size: 1.8rem;
     padding-top: 3px;
     cursor: pointer;
-    color: #37a8aa;
+    color: var(--coral-bg-1-color);
 }
 
-.img-btn_img_list {
+.darkButton {
     padding: 10px 20px;
     cursor: pointer;
     border: none;
     border-radius: 3px;
-    color: white;
-    background-color: #2c2d2c;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
+}
+
+.darkButton:hover {
+    background-color: var(--main-bg-8-color);
 }
 
 #tiling-viewer_img_list {
@@ -736,8 +765,8 @@ input[type="range"].slider-range {
     -webkit-appearance: none;
     appearance: none;
     height: 2px;
-    border: 1px solid #3498db;
-    background: #ffffff;
+    border: 1px solid var(--blue-bg-0-color);
+    background: var(--white-color);
 }
 
 input[type="range"]:hover.slider-range {
@@ -749,7 +778,7 @@ input[type="range"]::-webkit-slider-thumb.slider-range {
     appearance: none;
     width: 20px;
     height: 20px;
-    background: #3498db;
+    background: var(--blue-bg-0-color);
     cursor: pointer;
     border-radius: 100%;
 }
@@ -757,7 +786,7 @@ input[type="range"]::-webkit-slider-thumb.slider-range {
 input[type="range"]::-moz-range-thumb.slider-range {
     width: 15px;
     height: 15px;
-    background: #3498db;
+    background: var(--blue-bg-0-color);
     cursor: pointer;
     border-radius: 50%;
 }
@@ -765,7 +794,7 @@ input[type="range"]::-moz-range-thumb.slider-range {
 input[type="range"]::-ms-thumb.slider-range {
     width: 15px;
     height: 15px;
-    background: #3498db;
+    background: var(--blue-bg-0-color);
     cursor: pointer;
     border-radius: 50%;
 }
@@ -817,7 +846,7 @@ div#viewerSmall {
         background-color: transparent;
     }
     50% {
-        background-color: #6a99c2; /* 깜빡임 색상 */
+        background-color: var(--coral-bg-2-color); /* 깜빡임 색상 */
     }
 }
 
@@ -850,7 +879,7 @@ ul.nth1Child > :nth-child(3) {
 }
 
 .degreeActive {
-    color: #696969;
+    color: var(--gray-bg-3-color);
 }
 
 .categories > ul > li {
@@ -906,7 +935,7 @@ ul.leftWbcInfo.rbcClass {
 }
 
 span.rbcSapnDown .degreeActive {
-    color: #3498db;
+    color: var(--blue-bg-0-color);
 }
 
 .categories > ul > li > span {
@@ -934,15 +963,15 @@ span.rbcSapnDown .degreeActive {
     align-items: center;
     justify-content: space-between;
     padding: 5px 8px 10px 8px;
-    margin-top: 5px;
-    border: 1px solid #dedede;
+    margin-top: 40px;
+    border: 1px solid var(--gray-1-color);
 }
 
 button.degreeBtn {
     vertical-align: middle;
-    background: #344c5d;
-    color: #fff;
-    border: 1px solid #fff;
+    background: var(--main-bg-10-color);
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
     border-radius: 5px;
     padding: 6px 17px;
     cursor: pointer;
@@ -989,7 +1018,7 @@ li.mb1.liTitle {
 }
 
 .startBtn.isInit {
-    color: #dedede;
+    color: var(--gray-1-color);
 }
 
 .slideCardWrap {
@@ -999,10 +1028,10 @@ li.mb1.liTitle {
 ul.slideContent li {
     width: 100%;
     height: 20px;
-    background: #dedede;
+    background: var(--gray-1-color);
     margin: 8px 0px;
     border-radius: 2px;
-    border: 1px solid #3498db;
+    border: 1px solid var(--blue-bg-0-color);
 }
 
 ul.slideContent {
@@ -1012,22 +1041,22 @@ ul.slideContent {
 }
 
 ul.slideContent .class-for-state-1 {
-    background: #37B9C8;
+    background: var(--coral-bg-3-color);
 }
 
 ul.slideContent .class-for-state-0 {
-    background: #dedede;
+    background: var(--gray-1-color);
 }
 
 @keyframes blinkBackground {
     0% {
-        background-color: #dedede; /* 초기 배경 색상 */
+        background-color: var(--gray-1-color); /* 초기 배경 색상 */
     }
     50% {
-        background-color: #3498db; /* 깜빡거리는 중간 배경 색상 */
+        background-color: var(--blue-bg-0-color); /* 깜빡거리는 중간 배경 색상 */
     }
     100% {
-        background-color: #dedede; /* 다시 초기 배경 색상 */
+        background-color: var(--gray-1-color); /* 다시 초기 배경 색상 */
     }
 }
 
@@ -1036,23 +1065,23 @@ ul.slideContent .class-for-state-2 {
 }
 
 ul.slideContent .class-for-state-3 {
-    background: #2A5A98;
+    background: var(--blue-bg-1-color);
 }
 
 ul.slideContent .class-for-state-4 {
-    background: #A73A3A;
+    background: var(--red-bg-5-color);
 }
 
 ul.slideContent .out-for-state-0 {
-    background: #dedede;
+    background: var(--gray-1-color);
 }
 
 ul.slideContent .out-for-state-1 {
-    background: #37B9C8;
+    background: var(--coral-bg-3-color);
 }
 
 ul.slideContent .outClassDefault {
-    background: #4D4F5C;
+    background: var(--gray-bg-16-color);
 }
 
 .orderListTableContainer {
@@ -1072,12 +1101,12 @@ ul.slideContent .outClassDefault {
 
 .orderListTable td {
     height: 23px;
-    border-bottom: 1px solid #494949;
+    border-bottom: 1px solid var(--main-bg-7-color);
 }
 
 .orderListTable th {
-    background: #212121;
-    color: #ffffff;
+    background: var(--main-bg-8-color);
+    color: var(--white-color);
 }
 
 p.slideTime {
@@ -1096,8 +1125,8 @@ p.slideTime {
 }
 
 p.startStopP:hover {
-    border: 1px solid #353942;
-    background-color: #fff;
+    border: 1px solid var(--main-bg-1-color);
+    background-color: var(--white-color);
 }
 
 ul.slideContent > p {
@@ -1132,7 +1161,7 @@ span.proSpan {
     height: 100%;
     top: 0;
     left: 0;
-    background: #252629;
+    background: var(--main-bg-2-color);
 }
 
 .loginContent {
@@ -1185,12 +1214,12 @@ span.proSpan {
 }
 
 p.loginTitle {
-    color: #fff;
+    color: var(--white-color);
     font-size: 3rem;
 }
 
 p.loginP {
-    color: #fff;
+    color: var(--white-color);
 }
 
 ul.loginUl {
@@ -1200,9 +1229,9 @@ ul.loginUl {
 }
 
 .loginBtn > button {
-    background: #3498db;
+    background: var(--blue-bg-0-color);
     border: none;
-    color: #fff;
+    color: var(--white-color);
     padding: 10px;
     margin: 5px;
     border-radius: 5px;
@@ -1213,11 +1242,11 @@ ul.loginUl {
     padding: 0px 10px 10px 10px;
     font-size: 0.8rem;
     vertical-align: middle;
-    color: #818181;
+    color: var(--gray-bg-10-color);
 }
 
 ul.loginUl li {
-    color: #fff;
+    color: var(--white-color);
     text-align: center;
 }
 
@@ -1227,11 +1256,11 @@ input.loginInput {
     margin: 5px;
     padding: 10px;
     border-radius: 5px;
-    box-shadow: 1px 1px 5px 2px #dedede;
+    box-shadow: 1px 1px 5px 2px var(--gray-1-color);
 }
 
 .loginDiv {
-    background: #f7fafc;
+    background: var(--white-bg-0-color);
     max-width: 553px;
     margin: auto;
     min-height: 300px;
@@ -1256,23 +1285,28 @@ input.loginInput {
 }
 
 .disabledInput {
-    background-color: #cfcccc;
+    background-color: var(--gray-bg-17-color);
 }
 
 .disabledInput:hover {
-    background-color: #cfcccc;
+    background-color: var(--gray-bg-17-color);
 }
 
 .editModalContainer {
     width: 260px;
 }
 
+.modalBottom {
+    display: flex;
+    justify-content: end;
+}
+
 .runRed {
-    color: #ff003b;
+    color: var(--red-bg-0-color);
 }
 
 .runBlue {
-    color: #2A5A98;
+    color: var(--blue-bg-1-color);
 }
 
 .blinking {
@@ -1285,7 +1319,7 @@ input.loginInput {
 
 @keyframes blink {
     0% {
-        color: #ffffff;
+        color: var(--white-color);
     }
     100% {
         color: red;
@@ -1298,21 +1332,21 @@ input.loginInput {
 
 .immersionOilContainer {
     padding-bottom: 16px;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--white-color);
 }
 
 .statusBarWrapper {
     width: 100%;
     height: 20px;
     margin: 5px 0;
-    background-color: #063E5F;
+    background-color: var(--blue-bg-2-color);
 }
 
 .statusBar {
     width: 80%;
     height: 20px;
     margin-top: 5px;
-    background-color: #0080C1;
+    background-color: var(--blue-bg-3-color);
 }
 
 ul.settingTabBtn {
@@ -1334,7 +1368,7 @@ ul.settingTabBtn li {
 
 li.activeTab {
     font-weight: 600;
-    border-bottom: 1px solid #3498db;
+    border-bottom: 1px solid var(--blue-bg-0-color);
 }
 
 table.settingTable td, table.settingTable th {
@@ -1365,7 +1399,7 @@ input.alarmInput {
     left: 0;
     right: 0;
     height: 4px;
-    background-color: #ccc;
+    background-color: var(--gray-bg-4-color);
     transform: translateY(-50%);
 }
 
@@ -1374,7 +1408,7 @@ input.alarmInput {
     top: 50%;
     width: 10px;
     height: 10px;
-    background-color: #007bff;
+    background-color: var(--blue-bg-4-color);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     cursor: pointer;
@@ -1414,15 +1448,15 @@ input.alarmInput {
     margin: 0 10px;
     border: none;
     cursor: pointer;
-    background: #ffffff;
-    color: #333;
+    background: var(--white-color);
+    color: var(--gray-bg-5-color);
     font-size: 16px;
     border-radius: 5px;
 }
 
 .settingTabSubButtons button.active {
-    background-color: #29c7ca;
-    color: #fff;
+    background-color: var(--coral-bg-0-color);
+    color: var(--white-color);
 }
 
 .filterListDiv {
@@ -1437,8 +1471,8 @@ input.alarmInput {
 
 .filterListDiv > div > button {
     background: transparent;
-    color: #fff;
-    border: 1px solid #fff;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
     padding: 8px;
     position: relative;
     left: 43px;
@@ -1446,11 +1480,11 @@ input.alarmInput {
 }
 
 table.defaultTable thead tr {
-    background: #252629;
+    background: var(--main-bg-2-color);
 }
 
 table.defaultTable thead th .table {
-    background: #c7cad1;
+    background: var(--gray-bg-6-color);
 }
 
 
@@ -1463,7 +1497,7 @@ table.defaultTable thead th, table.defaultTable tbody td {
 }
 
 table.defaultTable tbody td {
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid var(--gray-1-color);
 }
 
 .listBox {
@@ -1471,7 +1505,7 @@ table.defaultTable tbody td {
     display: inline-block;
     vertical-align: top;
     text-align: left;
-    background: #252629;
+    background: var(--main-bg-2-color);
     border-radius: 9px;
     margin-left: 8px;
     margin-right: 8px;
@@ -1485,7 +1519,7 @@ table.defaultTable tbody td {
     width: 70%;
     display: inline-block;
     text-align: left;
-    background: #252629;
+    background: var(--main-bg-2-color);
     border-radius: 9px;
 }
 
@@ -1498,10 +1532,10 @@ table.defaultTable tbody td {
     flex-direction: column;
     position: absolute;
     top: 0;
-    background: #000;
+    background: var(--black-color);
     padding: 20px;
     box-sizing: border-box;
-    border: 1px solid #fff;
+    border: 1px solid var(--white-color);
     max-width: 280px;
 }
 
@@ -1510,7 +1544,7 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox > div > span {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--white-color);
     display: inline-block;
     margin-bottom: 5px;
 }
@@ -1524,19 +1558,19 @@ table.defaultTable tbody td {
 }
 
 .selectedTr {
-    background: #37a8aa;
+    background: var(--coral-bg-1-color);
 }
 
 tr.checkFirst {
-    color: #b2ffcd;
+    color: var(--coral-bg-4-color);
 }
 
 li.submitted {
-    color: #00477e;
+    color: var(--blue-bg-5-color);
 }
 
 img.cellImg {
-    filter: opacity(0.9) drop-shadow(0px 0px 0px #fff) brightness(100%);
+    filter: opacity(0.9) drop-shadow(0px 0px 0px var(--white-color)) brightness(100%);
 }
 
 h3.titleH3 {
@@ -1552,9 +1586,9 @@ h3.titleH3 {
 }
 button.backupBtn {
     margin-left: 14px;
-    background: #252629;
-    border: 1px solid #fff;
-    color: #fff;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    color: var(--white-color);
     border-radius: 5px;
     cursor: pointer;
 }
@@ -1564,8 +1598,8 @@ select.autoBackUpPath {
     width: 97%;
 }
 h3.titleH3 button {
-    color: #fff;
-    border: 1px solid #fff;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
     background: transparent;
     padding: 5px 10px;
     margin-left: 5px;
@@ -1575,7 +1609,7 @@ h3.titleH3 button {
 
 ul.wbcInfoDbUl > li {
     display: inline-block;
-    border: 1px solid #dedede;
+    border: 1px solid var(--gray-1-color);
     border-radius: 100%;
     height: 50px;
     width: 50px;
@@ -1597,7 +1631,7 @@ ul.wbcInfoDbUl > li {
 
 .titleImg {
     position: absolute;
-    color: #000;
+    color: var(--black-color);
     background: none;
     z-index: 5;
 }
@@ -1605,7 +1639,7 @@ ul.wbcInfoDbUl > li {
 .titleImg div {
     font-weight: bold;
     font-size: 1.1em;
-    background: #37B9C8;
+    background: var(--coral-bg-3-color);
 }
 
 .cellImg {
@@ -1614,7 +1648,7 @@ ul.wbcInfoDbUl > li {
 
 .hh3title {
     font-weight: 600;
-    border-bottom: 1px solid #939393;
+    border-bottom: 1px solid var(--gray-bg-7-color);
 }
 
 .infoImageTitle {
@@ -1646,7 +1680,7 @@ ul.wbcImgWrap > li {
 }
 
 .selected-image {
-    outline: solid #20eaa7 !important;
+    outline: solid var(--green-bg-1-color) !important;
 }
 
 .context-menu.detail {
@@ -1661,7 +1695,12 @@ ul.wbcImgWrap > li {
     width: 26%;
     vertical-align: top;
     text-align: left;
+    padding: 0 10px 10px 10px;
     margin-right: 10px;
+    margin-left: 14px;
+    border-radius: 4px;
+
+    height: 93%;
 }
 
 .databaseWbcRight img {
@@ -1681,7 +1720,7 @@ ul.cellImgBox {
     overflow-x: hidden;
     text-align: left;
     padding-left: 20px;
-    background: #252629;
+    background: var(--main-bg-2-color);
 }
 
 .wbcClassScroll {
@@ -1753,7 +1792,7 @@ ul.leftWbcInfo {
 
 
 .submittedTr {
-    color: #00477e;
+    color: var(--blue-bg-5-color);
 }
 
 .dbDataTable {
@@ -1767,21 +1806,21 @@ ul.orderListUi > li {
 }
 
 ul.orderListUi > li > img {
-    border: 1px solid #696969;
+    border: 1px solid var(--gray-bg-3-color);
     border-radius: 3px;
 }
 
 button.searchClass {
     padding: 5px 25px;
-    background: #fff;
+    background: var(--white-color);
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
 button.searchClass:hover {
-    color: #000;
-    background: #fff;
+    color: var(--black-color);
+    background: var(--white-color);
 }
 
 .reportDiv > div {
@@ -1792,27 +1831,23 @@ button.searchClass:hover {
 .wbcDiv {
     width: 25%;
     margin-right: 10px;
-    padding-right: 10px;
     border-radius: 4px;
-    box-shadow: 2px 2px 2px #000;
-    border: 1px solid #303744;
-    padding: 3px;
+    padding: 10px;
 }
 
 .reportDetail {
     width: 56%;
-    background: #ffffff;
-    color: #696969;
+    background: var(--white-color);
+    color: var(--gray-bg-3-color);
     font-size: 0.8rem;
     overflow-y: auto;
     max-height: 87vh;
-    box-shadow: 2px 2px 2px #000;
     border-radius: 4px;
     margin-left: 10px;
 }
 
 li.onRight {
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
 }
 
 .rbcRight {
@@ -1832,17 +1867,17 @@ table.reportTable {
 
 .reportTitle {
     text-align: left;
-    background: #6f7e95;
+    background: var(--gray-bg-9-color);
     padding: 10px;
     font-size: 1rem;
-    color: #ffffff;
+    color: var(--white-color);
 }
 
 h3.reportH3 {
     text-align: left;
     font-size: 0.9rem;
     padding: 10px;
-    border-bottom: 1px solid #979797;
+    border-bottom: 1px solid var(--gray-bg-10-color);
     font-weight: 600;
 }
 
@@ -1855,7 +1890,7 @@ h3.reportH3 {
 }
 
 table.reportTable tr {
-    border-bottom: 1px solid #babec5;
+    border-bottom: 1px solid var(--gray-bg-11-color);
 }
 
 .wbcLeft {
@@ -1897,7 +1932,7 @@ ul.wbcInfoFilter {
 }
 
 .disabledLink {
-    color: #939393 !important;
+    color: var(--gray-bg-7-color) !important;
 }
 
 .wbcModal {
@@ -1919,14 +1954,14 @@ ul.wbcInfoFilter {
 }
 
 .wbcModalImageContent > .buttons > button {
-    background: #2c2d2c;
-    color: white;
+    background: var(--main-bg-9-color);
+    color: var(--white-color);
 }
 
 span.wbcClose {
     position: absolute;
     top: 0;
-    color: #fff;
+    color: var(--white-color);
     font-size: 4rem;
     right: 20px;
     cursor: pointer;
@@ -1973,13 +2008,13 @@ h3.orderTitle {
 .imgSet {
     position: absolute;
     z-index: 9;
-    background: #252629;
+    background: var(--main-bg-2-color);
     width: 18%;
     padding: 20px 20px 20px 8px;
     text-align: left;
     left: 14%;
     top: 29px;
-    border: 1px solid #fff;
+    border: 1px solid var(--white-color);
 }
 
 select.selectSizeTitle {
@@ -1994,7 +2029,7 @@ select.selectSizeTitle {
 
 .imgMenuSetDiv > button {
     background: none;
-    color: #ffffff;
+    color: var(--white-color);
     font-size: 1rem;
     border-radius: 5px;
     margin-right: 19px;
@@ -2005,7 +2040,7 @@ select.selectSizeTitle {
 .sizeContainer {
     position: absolute;
     left: 9%;
-    background: #000;
+    background: var(--black-color);
     padding: 5px;
     max-width: 300px;
 }
@@ -2020,10 +2055,15 @@ select.selectSizeTitle {
 
 button.resetBtn {
     background: none;
-    color: #fff;
-    border: 1px solid #ffffff;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
     padding: 5px;
     width: 105%;
+    cursor: pointer;
+}
+
+button.resetBtn:hover {
+    background-color: var(--main-bg-0-color);
 }
 
 select.selectSizeTitle {
@@ -2040,7 +2080,7 @@ select.selectSizeTitle {
 
 .wbcMenuBottom > button {
     background: none;
-    color: #fff;
+    color: var(--white-color);
     border: none;
     padding: 5px 12px;
     font-size: 2rem;
@@ -2050,7 +2090,7 @@ select.selectSizeTitle {
 .wbcMenu::before {
     content: "";
     height: 95%;
-    background: #252629;
+    background: var(--main-bg-2-color);
     position: fixed;
     top: 80px;
     left: 0;
@@ -2105,7 +2145,7 @@ button.printCloseBtn {
     position: absolute;
     right: 8px;
     background: none;
-    border: 1px solid #000;
+    border: 1px solid var(--black-color);
     border-radius: 5px;
     padding: 7px 25px;
     top: 5px;
@@ -2113,16 +2153,16 @@ button.printCloseBtn {
 }
 
 ul.cellImgBox.print {
-    background: #fff;
+    background: var(--white-color);
 }
 
 .context-menu {
     position: absolute;
-    background: #fff;
-    color: #000;
+    background: var(--white-color);
+    color: var(--black-color);
     padding: 0px 10px;
     border-radius: 5px;
-    border: 1px solid #000;
+    border: 1px solid var(--black-color);
 }
 
 .context-menu li {
@@ -2131,13 +2171,13 @@ ul.cellImgBox.print {
 }
 
 .context-menu li:hover {
-    background: #dedede;
+    background: var(--gray-1-color);
 }
 
 .beforeAfterBtn button {
     background: none;
-    color: #fff;
-    border: 1px solid #fff;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
     border-radius: 3px;
     padding: 10px;
     width: 65px;
@@ -2164,7 +2204,7 @@ table.tableClass {
     position: absolute;
     left: 0;
     min-width: 300px;
-    background: #313131;
+    background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
     z-index: 9999999;
 }
@@ -2176,7 +2216,7 @@ table.tableClass {
 }
 
 .memoModal button {
-    background: #fff;
+    background: var(--white-color);
     border: none;
     border-radius: 5px;
     padding: 5px 5px;
@@ -2185,17 +2225,21 @@ table.tableClass {
     cursor: pointer;
 }
 
-.layer-body {
-    color: #000;
-    font-size: 0.8rem;
-}
-
 ul.editOrder li {
     margin-bottom: 10px;
 }
 
 ul.editOrder li input {
     margin-top: 5px;
+    width: 364px;
+}
+
+.inputDisabled {
+    background-color: var(--input-disabled-color);
+}
+
+.inputDisabled:hover {
+    background-color: var(--input-disabled-color);
 }
 
 ul.wbcHotKeysItems li {
@@ -2230,9 +2274,7 @@ ul.wbcHotKeysItems {
 
 .rbcDiv {
     width: 28%;
-    box-shadow: 2px 2px 2px #000;
-    border: 1px solid #303744;
-    padding: 3px;
+    padding: 10px;
     border-radius: 4px;
 }
 
@@ -2327,14 +2369,14 @@ ul.normalItems li div span:last-child {
 .leftWhole {
     display: inline-block;
     width: 50%;
-    background: #252629;
+    background: var(--main-bg-2-color);
     padding: 10px;
     height: 100%;
 }
 
 .leftWhole ul p {
     text-align: left;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--white-color);
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
@@ -2377,7 +2419,7 @@ ul.normalItems li div span:last-child {
 }
 
 .selected {
-    box-shadow: 0 0 0 3px #3498db;
+    box-shadow: 0 0 0 3px var(--blue-bg-0-color);
 }
 
 
@@ -2426,7 +2468,7 @@ ul.normalItems li div span:last-child {
     height: 100%;
     top: 0;
     padding-top: 28%;
-    background: #00000073;
+    background: var(--main-bg-3-color);
     font-size: 2rem;
 }
 
@@ -2438,7 +2480,7 @@ ul.normalItems li div span:last-child {
 
 .searchBtn {
     margin-left: 15px;
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
 }
 
 .searchBtn:hover {
@@ -2475,7 +2517,7 @@ button.rollbackButton {
     justify-content: space-between;
     align-items: center;
     padding: 20px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--gray-bg-0-color);
     font-size: 1rem;
 }
 
@@ -2484,7 +2526,7 @@ button.rollbackButton {
 }
 
 .versionContainer span {
-    color: white;
+    color: var(--white-color);
     flex: 1;
     text-align: left;
     font-weight: 500;
@@ -2507,14 +2549,14 @@ button.rollbackButton {
     z-index: 99999;
     padding: 45px 0;
     width: 400px;
-    border: 1px solid #414141;
-    background: #414141;
+    border: 1px solid var(--main-bg-4-color);
+    background: var(--main-bg-4-color);
     border-radius: 5px;
     text-align: center;
 }
 
 .initBtn.isInitDisabled {
-    background: #dedede;
+    background: var(--gray-1-color);
     cursor: no-drop;
 }
 
@@ -2526,7 +2568,7 @@ button.rollbackButton {
 
 .imgSetWrap > button {
     background: none;
-    color: #ffffff;
+    color: var(--white-color);
     font-size: 1rem;
     border-radius: 5px;
     margin-right: 19px;
@@ -2540,20 +2582,42 @@ button.rollbackButton {
 }
 
 .alert-error {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
+    background-color: var(--red-bg-1-color);
+    border-color: var(--red-bg-2-color);
+    color: var(--red-bg-3-color);
 }
 
 .alertButton {
     border: none;
-    background-color: #29c7ca;
+    background-color: var(--button-confirm);
     width: 65px;
-    color: #fff;
+    color: var(--white-color);
+    font-size: 0.8rem;
     padding: 10px;
     margin: 3px;
     border-radius: 2px;
+    cursor: pointer;
 }
+
+.alertButton:hover {
+    background-color: var(--button-confirm-hover);
+}
+
+.alertCloseButton {
+    border: none;
+    background-color: var(--button-close);
+    width: 65px;
+    color: var(--white-color);
+    padding: 10px;
+    margin: 3px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.alertCloseButton:hover {
+    background-color: var(--button-close-hover);
+}
+
 
 .isBeforeClicked {
     color: red !important;
@@ -2600,8 +2664,8 @@ button.rollbackButton {
     display: inline-block;
     width: 20%;
     margin-left: 8px;
-    background: #252629;
-    border: 1px solid #fff;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
     height: 94%;
     margin-right: 4px;
 }
@@ -2643,14 +2707,14 @@ p.menuIco {
 }
 
 .onRight.cbcLi {
-    color: #29c7ca;
+    color: var(--coral-bg-0-color);
 }
 
 .rbc-select-box {
     position: absolute;
     z-index: 99999;
-    background: #fff;
-    color: #000;
+    background: var(--white-color);
+    color: var(--black-color);
     min-width: 195px;
     height: 300px;
     overflow-y: scroll;
@@ -2689,7 +2753,7 @@ table.cbcTable td {
 
 .layer-content {
     text-align: left;
-    background: #414141;
+    background-color: var(--main-bg-0-color);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -2707,7 +2771,7 @@ table.cbcTable td {
     left: 0;
     top: 0;
     padding-top: 28%;
-    background: #00000073;
+    background: var(--main-bg-3-color);
     font-size: 2rem;
     margin: auto;
     text-align: center;
@@ -2720,13 +2784,14 @@ table.cbcTable td {
     margin-bottom: 10px;
     font-size: 1.2rem;
     font-weight: 600;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid var(--gray-1-color);
     padding-bottom: 15px;
-    color: #fff;
+    color: var(--white-color);
 }
 
 .layer-body {
-    color: #fff;
+    color: var(--white-color);
+    font-size: 0.8rem;
 }
 
 .printRbcCategory {

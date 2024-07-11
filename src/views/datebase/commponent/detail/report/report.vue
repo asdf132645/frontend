@@ -4,13 +4,13 @@
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
     <LisCbc v-if="cbcLayer" :selectItems="selectItems" />
     <div class="reportDiv">
-      <div class="wbcDiv">
+      <div class="wbcDiv shadowBox">
         <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
       </div>
-      <div class="rbcDiv" v-if="!projectBm">
+      <div class="rbcDiv shadowBox" v-if="!projectBm">
         <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
       </div>
-      <div class="reportDetail">
+      <div class="reportDetail shadowBox">
         <div class="reportTitle">
           <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
           <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>

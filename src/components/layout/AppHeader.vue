@@ -32,7 +32,7 @@
             <ul>
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
-                <div class="userBox" @click='logOutBoxOn'>
+                <div @click='logOutBoxOn'>
                   <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ userModuleDataGet.userId }}
                 </div>
                 <div class='logOutBox' @click='logout'>
@@ -81,12 +81,12 @@
           <div class="border ml-5" style="width: 80px;">{{ oilCount }}</div>
         </div>
 
-        <div>
+        <div class="flexColumnAlignEnd">
           <div ref="statusBarWrapper" class="statusBarWrapper">
             <div ref="statusBar" class="statusBar"></div>
           </div>
           <div>
-            <button @click='onReset' class="alertButton">RESET</button>
+            <button @click='onReset' class="alertButton">Reset</button>
           </div>
         </div>
       </div>
@@ -94,10 +94,10 @@
       <div class='mt2'>
         <h5 class="modalTitle">Prime Immersion Oil</h5>
         <span class="colorGray">Prime oil to remove air from the oil hose</span>
-        <div>
+        <div class="flexColumnAlignEnd">
           <div class="statusBarWrapper">
           </div>
-          <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">PRIME</button>
+          <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">Prime</button>
         </div>
       </div>
 

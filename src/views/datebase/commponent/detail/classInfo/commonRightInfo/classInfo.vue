@@ -1,7 +1,7 @@
 <template>
-  <img v-if="type !== 'report'"
+  <img class="mt1" v-if="type !== 'report'"
        :src="barcodeImg"/>
-  <div class="mt2 mb2">
+  <div class="mt1 mb2 flexSpaceBetween">
     <h3 class="wbcClassInfoLeft">
       {{ wbcClassTileChange() }}
     </h3>
