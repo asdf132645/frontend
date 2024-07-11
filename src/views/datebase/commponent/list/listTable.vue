@@ -44,10 +44,11 @@
           style="height: 49px"
           v-bind:data-row-id="item.id"
           @contextmenu.prevent="rowRightClick(item, $event)"
+          title="Double click the row"
       >
         <td> {{ idx + 1 }}</td>
         <td>
-          <input type="checkbox" v-model="item.checked" @change="handleCheckboxChange(item)" :checked="item.checked"/>
+          <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
@@ -308,9 +309,8 @@ const rowRightClick = async (item, event) => {
 };
 
 const handleCheckboxChange = (item) => {
-  if (!item.hasOwnProperty('checked')) { // 체크드 하는 부분이 없으면 넣어줘야 갱신 가능
-    item.checked = false;
-  }
+  item.checked = !item.checked;
+
 };
 
 
@@ -340,6 +340,7 @@ const hideAlert = () => {
 
 
 const selectItem = async (item) => {
+  handleCheckboxChange(item)
   // 부모로 전달
   if (!item) {
     return;
