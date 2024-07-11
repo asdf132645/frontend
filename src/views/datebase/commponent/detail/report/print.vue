@@ -1,4 +1,5 @@
 <template>
+  <div v-show="printReady" class="moveImgIsBool"> Loading Print...</div>
   <div style="width: 900px; height: 90%; overflow-y: auto; background: #fff; color: #000; position: absolute; top: 10%; left: 33%; box-sizing: border-box; padding: 3rem 7rem; border: 2px solid #ccc; border-radius: 10px; z-index:9999;">
     <button style="position: absolute; right: 8px; background: none; border: 1px solid #000; border-radius: 5px; padding: 7px 25px; top: 5px; cursor: pointer" @click="closePrint">Close</button>
     <div ref="printContent" style="margin-top: 20px;">
@@ -222,6 +223,8 @@ const maxRbcCount = ref(0);
 const pltCount = ref(0);
 const malariaCount = ref(0);
 
+const printReady = ref(false);
+
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
@@ -400,6 +403,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
 
 const printPage = async () => {
+  printReady.value = true;
   try {
     // 프린트할 컨텐츠를 가져옴
     const content = printContent.value;
@@ -429,8 +433,10 @@ const printPage = async () => {
     const url = window.URL.createObjectURL(blob);
     window.open(url, '_blank', 'width=800,height=500,noopener,noreferrer');
     window.URL.revokeObjectURL(url);
+    printReady.value = false;
   } catch (error) {
     console.error('Error:', error);
+    printReady.value = false;
   }
 };
 
