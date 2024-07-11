@@ -309,6 +309,9 @@ const rowRightClick = async (item, event) => {
 };
 
 const handleCheckboxChange = (item) => {
+  if (!item){
+    return;
+  }
   item.checked = !item.checked;
 
 };
