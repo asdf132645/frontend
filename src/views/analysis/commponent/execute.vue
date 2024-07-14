@@ -62,12 +62,13 @@ import {
 } from '@/common/defines/constFile/analysis';
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
-import {getCellImgApi} from "@/common/api/service/setting/settingApi";
+import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import {testBmTypeList} from "@/common/defines/constFile/settings";
+import {testBmTypeList, wbcRunningCount} from "@/common/defines/constFile/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import router from "@/router";
+import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 
 
 const store = useStore();
@@ -99,20 +100,22 @@ const emits = defineEmits();
 const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
+const siteCd = ref('');
+const filteredWbcCount = ref<any>();
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
     return;
   }
   userId.value = newUserId.id;
-  await initDataExecut();
+  await initDataExecute();
 });
 
 onMounted(async () => {
-  await initDataExecut();
+  await initDataExecute();
 });
 
-const initDataExecut = async () => {
+const initDataExecute = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
 
@@ -121,6 +124,8 @@ const initDataExecut = async () => {
 
   await nextTick();
   await cellImgGet();
+  await getDeviceInfo();
+  await setWbcRunningCount();
   initData();
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
@@ -133,7 +138,7 @@ const initDataExecut = async () => {
 
 watch(commonDataGet.value, (value) => {
   if (value.loginSetData === '') {
-    initDataExecut();
+    initDataExecute();
     store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
   }
 });
@@ -189,6 +194,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 const emitSocketData = async (type: string, payload: object) => {
   EventBus.publish('childEmitSocketData', payload);
 };
+
 const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
@@ -214,14 +220,13 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
       testType: analysisType.value,
-      wbcCount: wbcCount.value,
+      wbcCount: filteredWbcCount.value || wbcCount.value,
       stitchCount: stitchCount.value,
       reqUserId: userId.value,
       rbcPositionMargin: rbcPositionMargin || '0',
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
     });
-    console.log(startAction);
     if (window.PROJECT_TYPE === 'bm') {
       startAction = {
         "jobCmd": "START",
@@ -342,6 +347,37 @@ const cellImgGet = async () => {
 
   } catch (e) {
 
+    console.log(e);
+  }
+}
+
+const setWbcRunningCount = async () => {
+  // 0011 - 인하대인 경우 -> WbcRunningCount로 분류
+  if (window.PROJECT_TYPE !== 'pb' || siteCd.value !== '0011') return;
+
+  try {
+    const runCountResult = await getRunInfoApi();
+
+    if (runCountResult && runCountResult.data) {
+      const runCountData = runCountResult.data;
+
+      if (runCountData && runCountData?.length > 0) {
+        const filteredRunCountData: any = runCountData.filter(data => data.min <= wbcCount.value && wbcCount.value <= data.max)[0];
+        if (filteredRunCountData.wbcTargetCount) {
+          filteredWbcCount.value = filteredRunCountData.wbcTargetCount;
+        }
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const getDeviceInfo = async () => {
+  try {
+    const deviceData = await getDeviceInfoApi();
+    siteCd.value = deviceData.data.siteCd;
+  } catch (e) {
     console.log(e);
   }
 }

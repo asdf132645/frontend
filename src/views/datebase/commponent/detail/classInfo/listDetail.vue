@@ -188,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -212,6 +212,7 @@ import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightI
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGallery.vue';
 import Alert from "@/components/commonUi/Alert.vue";
+import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -320,6 +321,14 @@ watch(imageRgb, (newVal) => {
   const blue = newVal[2];
   localStorage.setItem('imageRgb', JSON.stringify([red, green, blue]));
 }, {deep: true});
+
+watch(() => moveImgIsBool.value, (currentMoveImgIsBool) => {
+  if (currentMoveImgIsBool) {
+    disableScroll();
+  } else {
+    enableScroll();
+  }
+})
 
 const getDetailRunningInfo = async () => {
   try {
@@ -737,8 +746,8 @@ const drawCellMarker = async (imgResize?: boolean) => {
 }
 
 const allCheckChange = (event: any, title: string) => {
-  allCheck.value = event.target.checked ? title : '';
-  if (event.target.checked) {
+  allCheck.value = event?.target?.checked ? title : '';
+  if (event?.target?.checked) {
     // 선택된 항목을 저장
     selectedTitle.value = title;
   } else {
@@ -1075,6 +1084,11 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
         });
         selectItemImageArr.value.push(classInfoitem);
       }
+
+      /** TODO 모두 선택할 경우 check 표시 활성화 - Shift 클릭 및 하나의 아이템도 클릭했을 때 check 표시 뜨게 구현해야 함 */
+      if (selectItemImageArr.value.length === end - start + 1) {
+        selectedTitle.value = wbcInfo.value[0].title;
+      }
     }
   } else { // 쉬프트 키를 누르지 않은 경우
     // 처음 클릭한 이미지의 인덱스를 저장
@@ -1123,7 +1137,10 @@ async function onDrop(targetItemIndex: any) {
     const fileName = selectedImage.fileName;
     const draggedItemIndex = wbcInfo.value.findIndex((item: any) => item.images.some((img: any) => img.fileName === fileName));
     const draggedItem = wbcInfo.value[draggedItemIndex];
-    if (draggedItem.id === wbcInfo.value[targetItemIndex].id) continue;
+    if (draggedItem.id === wbcInfo.value[targetItemIndex].id) {
+      selectedTitle.value = '';
+      continue;
+    }
 
     await moveImage(targetItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[targetItemIndex], false);
   }

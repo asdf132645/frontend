@@ -71,8 +71,11 @@
             <p class="mt1">
               <input type="checkbox" @input="$emit('allCheckChange', $event, firstClassObj?.title)"
                      :checked="selectedTitle === firstClassObj?.title">
-              {{ firstClassObj?.title }}
-              ({{ firstClassObj?.count }})
+              <label>
+                {{ firstClassObj?.title }}
+                ({{ firstClassObj?.count }})
+              </label>
+
             </p>
           </div>
           <ul :class="'wbcImgWrap ' + firstClassObj?.title" @dragover.prevent="onDragOver"
@@ -182,7 +185,7 @@
 
 <script setup lang="ts">
 
-import {computed, nextTick, onMounted, ref, watch, defineExpose, onBeforeMount, toRefs} from 'vue';
+import {computed, ref, watch, defineExpose, toRefs } from 'vue';
 import {useStore} from "vuex";
 
 const refsArray = ref<any[]>([]);

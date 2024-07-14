@@ -31,5 +31,9 @@ export const hospitalSiteCd = [
         siteCd: '0026',
         hospitalNm: '건국대학교병원',
     },
+    {
+        siteCd: '0000',
+        hospitalNm: '0000',
+    }
 
 ]

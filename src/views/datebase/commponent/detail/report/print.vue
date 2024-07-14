@@ -191,6 +191,7 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 
 const props = defineProps(['printOnOff', 'selectItemWbc']);
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -404,6 +405,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
 const printPage = async () => {
   printReady.value = true;
+  disableScroll();
   try {
     // 프린트할 컨텐츠를 가져옴
     const content = printContent.value;
@@ -437,6 +439,8 @@ const printPage = async () => {
   } catch (error) {
     console.error('Error:', error);
     printReady.value = false;
+  } finally {
+    enableScroll();
   }
 };
 

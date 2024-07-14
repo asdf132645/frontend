@@ -1,6 +1,6 @@
 import {apiConstants} from "@/common/api/apiConstants";
 import {useHttpClient, ApiResponse} from '@/common/api/httpClient';
-import {RuningInfo, RuningInfoApiRequest, RunningInfoRes} from "@/common/api/service/runningInfo/dto/runningInfoDto";
+import { RuningInfoApiRequest } from "@/common/api/service/runningInfo/dto/runningInfoDto";
 const httpClient = useHttpClient();
 
 export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: any }): Promise<ApiResponse<void>> => {
