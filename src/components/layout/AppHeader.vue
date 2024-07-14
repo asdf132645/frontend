@@ -4,6 +4,7 @@
       <div class='appHeaderLeft' :class="{ 'bmComponent': projectBm }" v-if="!appHeaderLeftHidden">
         <div class="borderLine">
           <img src="@/assets/celli.png" class="headerLogo"/>
+          <p class="logoProjectTitle">{{projectBm ? 'BM' : 'PB'}}</p>
         </div>
         <router-link :to="noRouterPush ? '#' : '/setting'"
                      :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>

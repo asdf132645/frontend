@@ -20,20 +20,24 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { defaultCbcList } from "@/common/defines/constFile/settings";
+import { defaultCbcList, defaultCbcList_0011 } from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
+import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
+import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 
 const cbcCodeArr = ref<cbcCodeItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const siteCd = ref('');
 
 onMounted(async () => {
+  await getDeviceInfo();
   await getImagePrintData();
 });
 
@@ -74,7 +78,14 @@ const getImagePrintData = async () => {
 
       if (!data || (data instanceof Array && data.length === 0)) {
         saveHttpType.value = 'post';
-        cbcCodeArr.value = defaultCbcList;
+
+        const hospitalName = hospitalSiteCd.filter(hospitalObj => hospitalObj.siteCd === siteCd.value)[0].hospitalNm;
+        if (hospitalName === '인하대병원') {
+          cbcCodeArr.value = defaultCbcList_0011;
+        } else {
+          cbcCodeArr.value = defaultCbcList;
+        }
+
       } else {
         saveHttpType.value = 'put';
         cbcCodeArr.value = data;
@@ -97,6 +108,15 @@ const showErrorAlert = (message: string) => {
   alertType.value = 'error';
   alertMessage.value = message;
 };
+
+const getDeviceInfo = async () => {
+  try {
+    const deviceData = await getDeviceInfoApi();
+    siteCd.value = deviceData.data.siteCd;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 const hideAlert = () => {
   showAlert.value = false;
