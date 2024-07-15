@@ -231,8 +231,9 @@ const selectedSampleId = computed(() => store.state.commonModule.selectedSampleI
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
-const firstClickedImageIndex = ref(null);
 const isCtrlKeyPressed = ref(false);
+const firstClickedImageIndex = ref(null);
+
 const draggedCircleIndex = ref<number | null>(null);
 const draggedCircleIndexArr = ref<any>([]);
 const draggedCircleImgIndex = ref<number | null>(null);

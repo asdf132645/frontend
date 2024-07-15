@@ -45,6 +45,7 @@ export interface CommonState {
     classInfoArr: any[];
     rbcReDataCheck: boolean;
     appAlertOpen: boolean;
+    dataBasePageReset: boolean;
 }
 
 interface CommonModule {
@@ -96,6 +97,7 @@ interface CommonModule {
         setClassInfoArr: (state: CommonState, value: any[]) => void;
         setRbcReDataCheck: (state: CommonState, value: boolean) => void;
         setAppAlertOpen: (state: CommonState, value: boolean) => void;
+        setDataBasePageReset: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -148,6 +150,7 @@ export const commonModule: CommonModule = {
         classInfoArr:[],
         rbcReDataCheck: false,
         appAlertOpen: false,
+        dataBasePageReset: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -288,6 +291,9 @@ export const commonModule: CommonModule = {
         },
         setAppAlertOpen(state: CommonState, value: boolean): void {
             state.appAlertOpen = value;
+        },
+        setDataBasePageReset(state: CommonState, value: boolean): void {
+            state.dataBasePageReset = value;
         },
     },
     actions: {
@@ -430,6 +436,9 @@ export const commonModule: CommonModule = {
             }
             if(payload.hasOwnProperty('appAlertOpen')){
                 commit('setAppAlertOpen', payload.appAlertOpen);
+            }
+            if (payload.hasOwnProperty('dataBasePageReset')){
+                commit('setDataBasePageReset', payload.dataBasePageReset);
             }
         },
     },

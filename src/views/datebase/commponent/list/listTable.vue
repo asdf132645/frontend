@@ -47,7 +47,7 @@
           title="Double click the row"
       >
         <td> {{ idx + 1 }}</td>
-        <td>
+        <td @click="handleCheckboxChange(item)">
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
@@ -88,7 +88,7 @@
       <li @click="classificationRowDbClick">Classification</li>
       <li @click="editOrderData">Edit order data</li>
       <li @click="deleteRow">Delete</li>
-<!--      <li>export XLSX</li>-->
+      <!--      <li>export XLSX</li>-->
     </ul>
   </div>
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
@@ -107,7 +107,7 @@
           </li>
           <li class="flexColumn">
             <label for="traySlot">Tray Slot</label>
-            <input id="traySlot" class="inputDisabled" type="text" v-model="itemObj.traySlot" readonly disabled />
+            <input id="traySlot" class="inputDisabled" type="text" v-model="itemObj.traySlot" readonly disabled/>
           </li>
           <li class="flexColumn">
             <label for="barcode">BARCODE ID</label>
@@ -123,7 +123,8 @@
           </li>
           <li class="flexColumn">
             <label for="analyzedDate">Analyzed date</label>
-            <input id="analyzedDate" class="inputDisabled" type="text" v-model="itemObj.analyzedDttm" readonly disabled />
+            <input id="analyzedDate" class="inputDisabled" type="text" v-model="itemObj.analyzedDttm" readonly
+                   disabled/>
           </li>
           <li class="flexColumn">
             <label for="signedState">Signed state</label>
@@ -163,7 +164,7 @@ import {
   computed,
   nextTick,
   onUnmounted,
-  getCurrentInstance
+  getCurrentInstance, watch
 } from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
@@ -175,7 +176,7 @@ import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
-import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
 const props = defineProps(['dbData']);
@@ -216,6 +217,8 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const dataBasePageReset = computed(() => store.state.commonModule);
+const isCtrlKeyPressed = ref(false);
 
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
@@ -228,17 +231,38 @@ onMounted(async () => {
     console.log(e);
   }
   document.addEventListener('click', handleOutsideClick);
+  window.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("keyup", handleKeyUp);
 })
+async function handleKeyDown(event) {
+  // 컨트롤 키가 눌렸는지 확인
+  if (event.ctrlKey) {
+    isCtrlKeyPressed.value = true;
+  }
+}
+
+function handleKeyUp(event) {
+  // Ctrl 키가 떼어졌는지 확인
+  if (!event.ctrlKey) {
+    isCtrlKeyPressed.value = false;
+  }
+}
+
 
 onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
 });
+
+
 watchEffect(async () => {
   if (props.dbData.length > 0) {
     await nextTick();
-    // 첫 번째 행을 클릭
     const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
-    selectItem(filteredItems[0]);
+    if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
+      await selectItem(filteredItems[0]);
+      await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
+    }
+    // 첫 번째 행을 클릭
     const observer = new IntersectionObserver(handleIntersection, {
       root: null,
       rootMargin: '0px',
@@ -342,14 +366,16 @@ const hideAlert = () => {
 
 
 const selectItem = async (item) => {
-  handleCheckboxChange(item)
+  if(isCtrlKeyPressed.value){
+    handleCheckboxChange(item)
+  }
   // 부모로 전달
   if (!item) {
     return;
   }
   emits('selectItem', item);
   selectedItemId.value = item.id;
-  await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(item.id) });
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
 
   // 선택된 행이 화면에 보이도록 스크롤 조정
   const selectedRow = document.querySelector(`[data-row-id="${item.id}"]`);
@@ -357,6 +383,7 @@ const selectItem = async (item) => {
     selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
 };
+
 const getIpAddress = async (item) => {
   try {
     const result = await getDeviceIpApi();
@@ -445,7 +472,7 @@ const dbDataEditSet = async () => {
 const editData = async (item) => {
   openLayer();
   itemObj.value = JSON.parse(JSON.stringify(item));
-  itemObj.value.submitState = ['','Ready','checkFirst'].includes(itemObj.value.submitState) ? '' : itemObj.value.submitState;
+  itemObj.value.submitState = ['', 'Ready', 'checkFirst'].includes(itemObj.value.submitState) ? '' : itemObj.value.submitState;
   itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType);
   const path = item?.img_drive_root_path !== '' && item?.img_drive_root_path ? item?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, item.slotId, barcodeImgDir.barcodeDirName);

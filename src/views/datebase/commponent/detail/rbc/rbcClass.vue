@@ -72,6 +72,7 @@
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
                       }"
+                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], degreeIndex - 1, false)"
                   />
                 </span>
                 <span
