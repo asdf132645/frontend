@@ -454,6 +454,15 @@ const moveSelectedImages = async (item: any, itemIdx: any) => {
     alertMessage.value = `Please select an image`;
     return;
   }
+  const matchingItemFind = wbcInfo.value.find((infoItem: any) => infoItem.id === item.id);
+
+  if (targetItem.value.title === matchingItemFind.title){
+    showAlert.value = true;
+    alertType.value = 'error';
+    alertMessage.value = `Transfer to different classes is the only option available.`;
+    return;
+  }
+
   addToRollbackHistory();
 
   const draggedItem = wbcInfo.value[itemIdx];
