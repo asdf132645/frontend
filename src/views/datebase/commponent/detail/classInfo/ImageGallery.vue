@@ -35,7 +35,7 @@
           >
             <div style="position: relative;">
               <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
-                <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 5) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
+                <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
                   <font-awesome-icon
                       :icon="['fas', 'arrow-right']"/>
                   {{ image.title }}
@@ -96,7 +96,7 @@
                 <div style="position: relative;">
                   <div v-if="image" class="titleImg"
                        v-show="replaceFileNamePrefix(image.fileName) !== firstClassObj?.title">
-                    <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
+                    <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
                       <font-awesome-icon
                           :icon="['fas', 'arrow-right']"/>
                       {{ image.title }}
@@ -154,7 +154,7 @@
                 <div style="position: relative;">
                   <div v-if="image" class="titleImg"
                        v-show="replaceFileNamePrefix(image.fileName) !== lastClassObj?.title">
-                    <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
+                    <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
                       <font-awesome-icon
                           :icon="['fas', 'arrow-right']"/>
                       {{ image.title }}

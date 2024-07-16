@@ -708,7 +708,7 @@ button.degreeAllCheckBtn {
     position: relative;
     display: block;
     width: 6%;
-    left: 5%;
+    left: 2%;
     font-size: 1.8rem;
     padding-top: 3px;
     cursor: pointer;
@@ -1486,7 +1486,7 @@ input.alarmInput {
     border: 1px solid var(--white-color);
     padding: 8px;
     position: relative;
-    left: 43px;
+    left: 17px;
     margin-right: 6px;
 }
 
@@ -1690,7 +1690,7 @@ ul.wbcImgWrap > li {
 
 .wbcImgWrap {
     text-align: left;
-    min-height: 150px;
+    /*min-height: 150px;*/
 }
 
 .selected-image {

@@ -219,6 +219,10 @@ const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const dataBasePageReset = computed(() => store.state.commonModule);
 const isCtrlKeyPressed = ref(false);
+const isShiftKeyPressed = ref(false);
+const firstShiftKeyStr = ref('');
+const lastShiftKeyStr = ref('');
+
 
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
@@ -234,10 +238,15 @@ onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 })
+
 async function handleKeyDown(event) {
   // 컨트롤 키가 눌렸는지 확인
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
+  }
+  // 쉬프트 키가 눌렸는지 확인
+  if (event.shiftKey) {
+    isShiftKeyPressed.value = true;
   }
 }
 
@@ -245,6 +254,10 @@ function handleKeyUp(event) {
   // Ctrl 키가 떼어졌는지 확인
   if (!event.ctrlKey) {
     isCtrlKeyPressed.value = false;
+  }
+  // 쉬프트 키가 눌렸는지 확인
+  if (!event.shiftKey) {
+    isShiftKeyPressed.value = false;
   }
 }
 
@@ -262,6 +275,11 @@ watchEffect(async () => {
       await selectItem(filteredItems[0]);
       await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
       await removeCheckBox();
+      // 선택된 행이 화면에 보이도록 스크롤 조정
+      const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
+      if (selectedRow) {
+        selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
+      }
     }
     // 첫 번째 행을 클릭
     const observer = new IntersectionObserver(handleIntersection, {
@@ -342,6 +360,22 @@ const rowRightClick = async (item, event) => {
   }
 };
 
+const handleShiftSelection = () => {
+  const startId = Math.min(Number(firstShiftKeyStr.value), Number(lastShiftKeyStr.value));
+  const endId = Math.max(Number(firstShiftKeyStr.value), Number(lastShiftKeyStr.value));
+
+  const items = props.dbData;
+
+  items.forEach((item) => {
+    const itemId = Number(item.id);
+    if (itemId >= startId && itemId <= endId) {
+      item.checked = true;
+    }
+  });
+
+  emits('checkListItem', props.dbData.filter(dbDataItem => dbDataItem.checked));
+};
+
 const handleCheckboxChange = (item) => {
   if (!item) return;
   item.checked = !item.checked;
@@ -375,8 +409,19 @@ const hideAlert = () => {
 
 
 const selectItem = async (item) => {
-  if(isCtrlKeyPressed.value){
-    handleCheckboxChange(item)
+  if (isShiftKeyPressed.value) {
+    if (!firstShiftKeyStr.value) {
+      firstShiftKeyStr.value = item.id;
+    } else {
+      lastShiftKeyStr.value = item.id;
+      handleShiftSelection();
+    }
+  } else {
+    firstShiftKeyStr.value = '';
+    lastShiftKeyStr.value = '';
+  }
+  if (isCtrlKeyPressed.value) {
+    handleCheckboxChange(item);
   }
   // 부모로 전달
   if (!item) {
@@ -385,12 +430,6 @@ const selectItem = async (item) => {
   emits('selectItem', item);
   selectedItemId.value = item.id;
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
-
-  // 선택된 행이 화면에 보이도록 스크롤 조정
-  const selectedRow = document.querySelector(`[data-row-id="${item.id}"]`);
-  if (selectedRow) {
-    selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
-  }
 };
 
 const getIpAddress = async (item) => {
@@ -494,28 +533,56 @@ const openLayer = () => {
 
 const deleteRow = async () => {
   try {
-    const selectedItems = props.dbData.filter(item => item.checked);
-    if (selectedItems.length === 0) {
+    let selectedItems = props.dbData.filter(item => item.checked);
+    if (selectedItems.length === 0 && selectedItemId.value === '') {
       showErrorAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
-      return;
-    }
+    } else if (selectedItems.length === 0 && selectedItemId.value !== '') {
+      selectedItems = props.dbData.find(item => item.id === selectedItemId.value);
+      if (selectedItems.lock_status) {
+        showErrorAlert(messages.lockRow);
+        return;
+      }
+      const idsToDelete = selectedItems
+      const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
+      const rootArr = `${path}/${selectedItems.slotId}`;
+      const req = {
+        ids: [idsToDelete.id],
+        img_drive_root_path: [rootArr]
+      }
+      const response = await deleteRunningApi(req);
 
-    const idsToDelete = selectedItems.map(item => item.id);
-    const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-    const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
-    const req = {
-      ids: idsToDelete,
-      img_drive_root_path: rootArr
-    }
-    const response = await deleteRunningApi(req);
-
-    if (response.success) {
-      showSuccessAlert('Items deleted successfully');
-      emits('refresh'); // 데이터 다시 불러오기
-      resetContextMenu();
+      if (response.success) {
+        showSuccessAlert('Items deleted successfully');
+        emits('refresh'); // 데이터 다시 불러오기
+        resetContextMenu();
+      } else {
+        console.error('Failed to delete items');
+      }
     } else {
-      console.error('Failed to delete items');
+      const idsToDelete = selectedItems.map(item => item.id);
+      const idsToDeleteLock = selectedItems.map(item => item.lock_status);
+      if (idsToDeleteLock.includes(true)) {
+        showErrorAlert(messages.lockRow);
+        return
+      }
+      const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
+      const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
+      const req = {
+        ids: idsToDelete,
+        img_drive_root_path: rootArr
+      }
+      const response = await deleteRunningApi(req);
+
+      if (response.success) {
+        showSuccessAlert('Items deleted successfully');
+        emits('refresh'); // 데이터 다시 불러오기
+        resetContextMenu();
+      } else {
+        console.error('Failed to delete items');
+      }
     }
+
+
   } catch (error) {
     console.error('Error:', error);
   }

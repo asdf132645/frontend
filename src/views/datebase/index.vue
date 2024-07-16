@@ -19,11 +19,11 @@
             <Datepicker v-model="startDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>
+          <button class="searchClass" @click="dateRefresh">dateRefresh</button>
           <button type="button" class="searchClass" @click="search">Search</button>
           <div class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
-          <!-- <button class="searchClass" @click="refresh">Refresh</button> -->
         </div>
         <div class="filterDivBox" v-if="classListToggle">
           <div class="nrCount" v-if="!bmClassIsBoolen">
@@ -233,6 +233,10 @@ const getDbData = async (type: string, pageNum?: number) => {
   // console.log('prevDataPage.value', prevDataPage.value)
   // console.log('requestData.page', requestData.page)
   // console.log('----------------------------------')
+  // if (deepEqual(requestData, reqDataPrev) || Number(prevDataPage.value) === Number(requestData.page)) {
+  //   console.log("중복된 요청입니다. 요청을 생략합니다.");
+  //   return;
+  // }
   if(prevDataPage.value === ''){
     prevDataPage.value = requestData.page;
   }
@@ -267,6 +271,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         if (type === 'search') {
           dbGetData.value = newData;
         } else {
+          // dbGetData.value = [...dbGetData.value, ...newData];
           newData.forEach((item: any) => {
             const index = dbGetData.value.findIndex(data => data.id === item.id);
             if (index !== -1) {
@@ -277,6 +282,7 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
         }
 
+        // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
           dbGetData.value = dbGetData.value.sort((a, b) => {
@@ -338,6 +344,82 @@ const exportToExcel = async () => {
     console.log(e);
   }
 }
+const dateRefresh = () => {
+  startDate.value = new Date();
+  endDate.value = new Date();
+}
+
+// const exportToExcel = () => {
+//   const filteredData = dbGetData.value.map((item: any) => {
+//     const getImageCount = (wbcInfo: any, name: any) => {
+//       const wbc = wbcInfo?.find((wbc: any) => wbc.name === name);
+//       return wbc ? wbc.images.length : 0;
+//     };
+//
+//     const getImageCountFromBoth = (wbcInfo: any, name: any) => {
+//       const wbc = wbcInfo?.wbcInfo[0].find((wbc: any) => wbc.name === name);
+//       return wbc ? wbc.images.length : 0;
+//     };
+//
+//     return {
+//       SERIAL_NO: item?.slotId,
+//       barcodeNo: item?.barcodeNo,
+//       patientId: item?.patientId,
+//       patientNm: item?.patientNm,
+//       ANALYZE_DTTM: item?.analyzedDttm,
+//       TACT_TIME: item?.tactTime,
+//       BIRTHDAY: item?.birthDay,
+//       GENDER: item?.gender,
+//       WBC_COMMENT: item?.wbcMemo,
+//       A_Neutrophil_Segmented: getImageCount(item?.wbcInfoAfter, 'Neutrophil-Segmented'),
+//       B_Neutrophil_Segmented: getImageCountFromBoth(item?.wbcInfo, 'Neutrophil-Segmented'),
+//       A_Neutrophil_Band: getImageCount(item?.wbcInfoAfter, 'Neutrophil-Band'),
+//       B_Neutrophil_Band: getImageCountFromBoth(item?.wbcInfo, 'Neutrophil-Band'),
+//       A_Metamyelocyte: getImageCount(item?.wbcInfoAfter, 'Metamyelocyte'),
+//       B_Metamyelocyte: getImageCountFromBoth(item?.wbcInfo, 'Metamyelocyte'),
+//       A_Myelocyte: getImageCount(item?.wbcInfoAfter, 'Myelocyte'),
+//       B_Myelocyte: getImageCountFromBoth(item?.wbcInfo, 'Myelocyte'),
+//       A_Promyelocyte: getImageCount(item?.wbcInfoAfter, 'Promyelocyte'),
+//       B_Promyelocyte: getImageCountFromBoth(item?.wbcInfo, 'Promyelocyte'),
+//       A_Lymphocyte: getImageCount(item?.wbcInfoAfter, 'Lymphocyte'),
+//       B_Lymphocyte: getImageCountFromBoth(item?.wbcInfo, 'Lymphocyte'),
+//       A_Reactive_lymphocyte: getImageCount(item?.wbcInfoAfter, 'Reactive lymphocyte'),
+//       B_Reactive_lymphocyte: getImageCountFromBoth(item?.wbcInfo, 'Reactive lymphocyte'),
+//       A_Abnormal_lymphocyte: getImageCount(item?.wbcInfoAfter, 'Abnormal lymphocyte'),
+//       B_Abnormal_lymphocyte: getImageCountFromBoth(item?.wbcInfo, 'Abnormal lymphocyte'),
+//       A_Eosinophil: getImageCount(item?.wbcInfoAfter, 'Eosinophil'),
+//       B_Eosinophil: getImageCountFromBoth(item?.wbcInfo, 'Eosinophil'),
+//       A_Basophil: getImageCount(item?.wbcInfoAfter, 'Basophil'),
+//       B_Basophil: getImageCountFromBoth(item?.wbcInfo, 'Basophil'),
+//       A_Blast: getImageCount(item?.wbcInfoAfter, 'Blast'),
+//       B_Blast: getImageCountFromBoth(item?.wbcInfo, 'Blast'),
+//       A_Plasma_cell: getImageCount(item?.wbcInfoAfter, 'Plasma cell'),
+//       B_Plasma_cell: getImageCountFromBoth(item?.wbcInfo, 'Plasma cell'),
+//       A_nRBC: getImageCount(item?.wbcInfoAfter, 'nRBC'),
+//       B_nRBC: getImageCountFromBoth(item?.wbcInfo, 'nRBC'),
+//       A_Giant_platelet: getImageCount(item?.wbcInfoAfter, 'Giant platelet'),
+//       B_Giant_platelet: getImageCountFromBoth(item?.wbcInfo, 'Giant platelet'),
+//       A_Platelet_aggregation: getImageCount(item?.wbcInfoAfter, 'Platelet aggregation'),
+//       B_Platelet_aggregation: getImageCountFromBoth(item?.wbcInfo, 'Platelet aggregation'),
+//       A_Smudge: getImageCount(item?.wbcInfoAfter, 'Smudge'),
+//       B_Smudge: getImageCountFromBoth(item?.wbcInfo, 'Smudge'),
+//       A_Malaria: getImageCount(item?.wbcInfoAfter, 'Malaria'),
+//       B_Malaria: getImageCountFromBoth(item?.wbcInfo, 'Malaria'),
+//       // 필요한 필드 추가
+//     };
+//   });
+//
+//
+//   const ws = XLSX.utils.json_to_sheet(filteredData);
+//   const wb = XLSX.utils.book_new();
+//   XLSX.utils.book_append_sheet(wb, ws, "Data");
+//
+//   // 현재 날짜와 시간을 기반으로 파일 이름 생성
+//   const now = moment().format("YYYYMMDDHHmmss");
+//   const fileName = `${now}_resultData.xlsx`;
+//
+//   XLSX.writeFile(wb, fileName);
+// };
 
 const checkListItem = (items: any) => {
   checkedSelectedItems.value = items;
