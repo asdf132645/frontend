@@ -47,7 +47,7 @@
             <input
                 type="range"
                 min="50"
-                max="300"
+                max="290"
                 v-model="imageSize"
                 @input="changeImageSize"
             />
