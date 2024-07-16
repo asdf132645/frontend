@@ -67,7 +67,7 @@
               <input
                   type="range"
                   min="50"
-                  max="255"
+                  max="120"
                   v-model="imgBrightness"
                   @input="changeImgBrightness"
               />
@@ -234,9 +234,9 @@ const isShiftKeyPressed = ref(false);
 const isCtrlKeyPressed = ref(false);
 const firstClickedImageIndex = ref(null);
 
-const draggedCircleIndex = ref<number | null>(null);
+const draggedCircleIndex = ref<any>(null);
 const draggedCircleIndexArr = ref<any>([]);
-const draggedCircleImgIndex = ref<number | null>(null);
+const draggedCircleImgIndex = ref<any>(null);
 const selectedClickImages = ref<any>([]);
 const shiftClickImages = ref<any>([]);
 const rollbackHistory: any = [];

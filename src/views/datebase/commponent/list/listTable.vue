@@ -275,6 +275,11 @@ watchEffect(async () => {
       await selectItem(filteredItems[0]);
       await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
       await removeCheckBox();
+      // 선택된 행이 화면에 보이도록 스크롤 조정
+      const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
+      if (selectedRow) {
+        selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
+      }
     }
     // 첫 번째 행을 클릭
     const observer = new IntersectionObserver(handleIntersection, {
@@ -425,12 +430,6 @@ const selectItem = async (item) => {
   emits('selectItem', item);
   selectedItemId.value = item.id;
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
-
-  // 선택된 행이 화면에 보이도록 스크롤 조정
-  const selectedRow = document.querySelector(`[data-row-id="${item.id}"]`);
-  if (selectedRow) {
-    selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
-  }
 };
 
 const getIpAddress = async (item) => {
