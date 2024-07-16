@@ -24,7 +24,7 @@
               <input
                   type="range"
                   min="50"
-                  max="255"
+                  max="120"
                   v-model="imgBrightness"
                   @input="changeImgBrightness"
               />
@@ -565,7 +565,12 @@ const initElement = async () => {
         tileSources: tilesInfo,
         showReferenceStrip: false,
         gestureSettingsMouse: {clickToZoom: false},
-        maxZoomLevel: 15
+        maxZoomLevel: 15,
+        minZoomLevel: 1, // 최소 확대 레벨 설정
+        zoomPerClick: 1.2, // 클릭 확대 비율 설정
+        zoomPerScroll: 1.2, // 스크롤 확대 비율 설정
+        viewportMargins: { top: 0, left: 0, bottom: 0, right: 0 }, // 뷰포트 여백 설정
+        visibilityRatio: 1.0 // 이미지를 뷰포트에 맞추기 위한 비율 설정
       });
 
       // 마그니파이어 설정
@@ -860,7 +865,7 @@ const changeImageRgb = () => {
   const imageContainer = document.getElementById('tiling-viewer_img_list');
 
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(0.88) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+    imageContainer.style.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
   }
 
 }

@@ -46,7 +46,7 @@
             <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>
             <input
                 type="range"
-                min="80"
+                min="50"
                 max="300"
                 v-model="imageSize"
                 @input="changeImageSize"

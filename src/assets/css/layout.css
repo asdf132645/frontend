@@ -1550,6 +1550,9 @@ table.defaultTable tbody td {
     max-width: 280px;
 }
 
+.divCompare ul.wbcImgWrap {
+    height: 69vh;
+}
 .filterDivBox > div {
     padding-bottom: 2rem;
 }
