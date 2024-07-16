@@ -445,7 +445,7 @@ const lisLastStep = () => {
     const data = godae();
     lisFileUrlCreate(data);
 
-  } else if (siteCd.value === '0011') {
+  } else if (siteCd.value === '0011') { // 인하대
     inhaDataSend();
   } else {
     otherDataSend();

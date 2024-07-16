@@ -46,7 +46,7 @@
             <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>
             <input
                 type="range"
-                min="80"
+                min="50"
                 max="300"
                 v-model="imageSize"
                 @input="changeImageSize"
@@ -231,8 +231,9 @@ const selectedSampleId = computed(() => store.state.commonModule.selectedSampleI
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
-const firstClickedImageIndex = ref(null);
 const isCtrlKeyPressed = ref(false);
+const firstClickedImageIndex = ref(null);
+
 const draggedCircleIndex = ref<number | null>(null);
 const draggedCircleIndexArr = ref<any>([]);
 const draggedCircleImgIndex = ref<number | null>(null);

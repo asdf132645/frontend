@@ -7,7 +7,7 @@ import setting from '@/views/setting/index.vue'
 import Database from '@/views/datebase/index.vue';
 import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listDetailRbc.vue';
 import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listDetailWbc.vue';
-import Report from  '@/views/datebase/commponent/detail/report/report.vue';
+import Report from '@/views/datebase/commponent/detail/report/report.vue';
 import databaseDetail from '@/views/datebase/commponent/detail/classInfo/listDetail.vue';
 import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
 
@@ -69,7 +69,7 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next)  => {
     // 페이지 이동 전에 setInterval 정리
     // clearIntervalIfExists();
     // 세션 스토리지에서 사용자 정보 확인
@@ -83,6 +83,10 @@ router.beforeEach((to, from, next) => {
     if ((to.name !== 'login' && to.name !== 'join') && (!getStoredUser.userId && !currentUser.userId)) {
         // 로그인이 필요한 페이지에 접근하려고 할 때 로그인 페이지로 리다이렉트
         next('/user/login');
+    }
+    else if (to.name === "database") {
+        store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: true});
+        next();
     } else {
         // 그 외의 경우에는 계속 진행
         next();

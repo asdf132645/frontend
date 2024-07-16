@@ -36,8 +36,11 @@
                 <div @click='logOutBoxOn'>
                   <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ userModuleDataGet.userId }}
                 </div>
+                <div class='logOutBox' @click='exit'>
+                  EXIT
+                </div>
                 <div class='logOutBox' @click='logout'>
-                  LOG OUT
+                  LOGOUT
                 </div>
               </li>
             </ul>
@@ -136,7 +139,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import * as process from "process";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import EventBus from "@/eventBus/eventBus";
 
 const route = useRoute();
@@ -272,7 +274,11 @@ const showSuccessAlert = (message: string) => {
   alertType.value = 'success';
   alertMessage.value = message;
 };
-
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
 const hideAlert = () => {
   showAlert.value = false;
 };
@@ -288,6 +294,11 @@ const logout = () => {
   confirmMessage.value = messages.Logout;
   showConfirm.value = true;
   localStorage.removeItem('user')
+}
+
+const exit = () => {
+  console.log(tcpReq().embedStatus.exit)
+  EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
 }
 
 const oilCountChangeVal = (): string => {
@@ -345,7 +356,10 @@ const eqStatCdChangeVal = (eqStatCdVal: string) => {
 }
 
 const openLayer = () => {
-  if (viewerCheckData.value === 'viewer') return;
+  if (viewerCheckData.value === 'viewer') {
+    showErrorAlert('Access is only available from the main PC.');
+    return;
+  }
 
   visible.value = true;
 };

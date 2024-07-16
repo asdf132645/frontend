@@ -35,7 +35,7 @@
           >
             <div style="position: relative;">
               <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
-                <div class="fileTitle">{{ replaceFileNamePrefix(image.fileName) }}
+                <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 5) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
                   <font-awesome-icon
                       :icon="['fas', 'arrow-right']"/>
                   {{ image.title }}
@@ -60,6 +60,7 @@
       </ul>
     </li>
   </ul>
+<!--  클래스 단일 비교 부분 -->
   <div v-else class="divCompare">
     <div class="divCompareChild">
       <select v-model="firstClass" @change="classImgChange('first' , $event)">
