@@ -99,6 +99,11 @@ export const tcpReq:any = () => {
                 jobCmd: 'CAMERA_RESET',
                 reqUserId: '',
                 reqDttm: reqDttm,
+            },
+            exit: {
+                jobCmd: 'clientExit',
+                reqUserId: '',
+                reqDttm: reqDttm,
             }
         },
     };

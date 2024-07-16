@@ -103,7 +103,7 @@
         <ul class="editOrder">
           <li class="flexColumn">
             <label for="testType">PB/BF</label>
-            <input id="testType" type="text" v-model="itemObj.testType"/>
+            <input id="testType" class="inputDisabled" type="text" v-model="itemObj.testType" readonly disabled/>
           </li>
           <li class="flexColumn">
             <label for="traySlot">Tray Slot</label>
@@ -261,6 +261,7 @@ watchEffect(async () => {
     if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
       await selectItem(filteredItems[0]);
       await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
+      await removeCheckBox();
     }
     // 첫 번째 행을 클릭
     const observer = new IntersectionObserver(handleIntersection, {
@@ -298,6 +299,14 @@ const selectAllItems = () => {
   });
   emits('checkListItem', props.dbData.filter(dbDataItem => dbDataItem.checked));
 };
+
+const removeCheckBox = () => {
+  props.dbData.forEach(item => {
+    item.checked = false;
+  });
+  emits('checkListItem', props.dbData.filter(dbDataItem => dbDataItem.checked));
+};
+
 
 const resetContextMenu = () => {
   contextMenu.value.x = 0;

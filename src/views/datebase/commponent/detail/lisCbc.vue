@@ -100,45 +100,14 @@ const initCbcData = async (newVal: any) => {
       break;
 
     case '고대안암병원':
-    case '인천길병원':
-    case '0000':
-      let readFileTxtRes: any;
-      if(siteCd.value === '0000'){
-        readFileTxtRes = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
-      }else{
-        readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
-      }
-      if (readFileTxtRes.data.success) {
-        const cbcData = readFileTxtRes.data.data.toString();
-        const cbcDataArray = cbcData.split('\n');
-        const excludedTitles = [
-          'SPC_NO', 'BLCL_DT', 'PT_NO', 'PT_NM', 'SEX', 'AGE',
-          'SCAT_WDF', 'SCAT_WNR', 'DIST_RBC', 'DIST_WDF(FSC)', 'DIST_PLT'
-        ];
-        cbcDataArray.forEach((cbcData: any) => {
-          const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
-
-          if (!excludedTitles.includes(title)) {
-            const unit = title.includes('%') ? '%' : '';
-            cbcWorkList.value.push({classNm: title, count: value, unit: unit});
-          } else {
-            switch (title) {
-              case 'PT_NO':
-                cbcPatientNo.value = value;
-                break;
-              case 'SEX':
-                cbcSex.value = value;
-                break;
-              case 'AGE':
-                cbcAge.value = value;
-                break;
-            }
-          }
-        });
-      }
-
+      await kuahGilHosCbc();
       break;
-
+    case '인천길병원':
+      await kuahGilHosCbc();
+      break;
+    case '0000':
+      await kuahGilHosCbc();
+      break;
     case '삼광의료재단':
       /** Todo 작업 필요 */
       break;
@@ -164,7 +133,6 @@ const initCbcData = async (newVal: any) => {
             cbcAge.value = res.age;
             inhaTestCode.value = res.testCode;
             store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res.testCode}); // lis 에서 사용함
-
 
             const testCodeList = res.testCode.split(',');
             testCodeList.forEach(function (codes: any) {
@@ -283,6 +251,43 @@ const initCbcData = async (newVal: any) => {
   const updatedRuningInfo ={...result.data,...req }
   await updateRunningApiPost([updatedRuningInfo]);
 
+}
+
+const kuahGilHosCbc = async () => {
+  let readFileTxtRes: any;
+  if(siteCd.value === '0000'){
+    readFileTxtRes = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
+  }else{
+    readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
+  }
+  if (readFileTxtRes.data.success) {
+    const cbcData = readFileTxtRes.data.data.toString();
+    const cbcDataArray = cbcData.split('\n');
+    const excludedTitles = [
+      'SPC_NO', 'BLCL_DT', 'PT_NO', 'PT_NM', 'SEX', 'AGE',
+      'SCAT_WDF', 'SCAT_WNR', 'DIST_RBC', 'DIST_WDF(FSC)', 'DIST_PLT'
+    ];
+    cbcDataArray.forEach((cbcData: any) => {
+      const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
+
+      if (!excludedTitles.includes(title)) {
+        const unit = title.includes('%') ? '%' : '';
+        cbcWorkList.value.push({classNm: title, count: value, unit: unit});
+      } else {
+        switch (title) {
+          case 'PT_NO':
+            cbcPatientNo.value = value;
+            break;
+          case 'SEX':
+            cbcSex.value = value;
+            break;
+          case 'AGE':
+            cbcAge.value = value;
+            break;
+        }
+      }
+    });
+  }
 }
 
 const getCbcPathData = async () => {
