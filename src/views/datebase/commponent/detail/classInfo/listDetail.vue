@@ -244,7 +244,6 @@ const imageSize = ref(150);
 const imgBrightness = ref(100);
 const imageRgb = ref([0, 0, 0]);
 const selectSizeTitle = ref('ME')
-const refsArray = ref<any[]>([]);
 const allCheck = ref('');
 const cellRef = ref(null);
 const cellMarkerIcon = ref(false);
@@ -254,7 +253,7 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
@@ -281,7 +280,6 @@ const alertMessage = ref('');
 
 
 onBeforeMount(async () => {
-  // await getDetailRunningInfo();
   isLoading.value = false;
 })
 

@@ -42,19 +42,19 @@
 
 <script setup >
 import {ref, defineProps, onMounted, watchEffect, watch, nextTick} from 'vue';
-import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
+import {useStore} from "vuex";
+const store = useStore();
 
 const props = defineProps(['selectedItem']);
-const iaRootPath = ref('');
+const iaRootPath = ref(store.state.commonModule.iaRootPath);
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
 
 onMounted(() => {
   barCodeImageShowError.value = false;
   // iaRootPath가 존재하면 getImageUrl 함수 호출
-  iaRootPath.value = sessionStorage.getItem('iaRootPath');
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg');
   }
@@ -78,7 +78,7 @@ const showClassificationResults = (classificationResult) => {
   );
 
 };
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 function getImageUrl(imageName){
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;
