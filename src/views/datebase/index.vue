@@ -133,8 +133,10 @@ const prevDataPage = ref('');
 const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
+const eventTriggered = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
+  eventTriggered.value = true;
   await initDbData();
 })
 
@@ -143,7 +145,9 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
-  await initDbData();
+  if (!eventTriggered.value) {
+    await initDbData();
+  }
 });
 
 const classListToggleEvent = () => {
@@ -233,10 +237,10 @@ const getDbData = async (type: string, pageNum?: number) => {
   // console.log('prevDataPage.value', prevDataPage.value)
   // console.log('requestData.page', requestData.page)
   // console.log('----------------------------------')
-  // if (deepEqual(requestData, reqDataPrev) || Number(prevDataPage.value) === Number(requestData.page)) {
-  //   console.log("중복된 요청입니다. 요청을 생략합니다.");
-  //   return;
-  // }
+  if (deepEqual(requestData, reqDataPrev) || Number(prevDataPage.value) === Number(requestData.page)) {
+    console.log("중복된 요청입니다. 요청을 생략합니다.");
+    return;
+  }
   if(prevDataPage.value === ''){
     prevDataPage.value = requestData.page;
   }

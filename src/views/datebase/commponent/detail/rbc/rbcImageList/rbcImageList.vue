@@ -779,7 +779,6 @@ const initElement = async () => {
 };
 
 const fetchTilesInfo = async (folderPath: string) => {
-  console.log(apiBaseUrl)
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);
 
