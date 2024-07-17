@@ -7,4 +7,4 @@ window.WEB_BACKEND_VERSION='0.0.44v'
 window.WEB_FRONTEND_VERSION='0.1.24v'
 window.PB_VERSION='12a'
 window.MAIN_API_IP = 'http://127.0.0.1:3002'; // 127.0.0.1 main API 고정
-window.VIEWER_CHECK = 'main';
+window.VIEWER_CHECK = 'viewer';

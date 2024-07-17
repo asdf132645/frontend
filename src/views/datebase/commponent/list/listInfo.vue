@@ -27,13 +27,13 @@
         <li>Signed of Date <span>{{ selectedItem?.submitOfDate }}</span></li>
         <li>Signed User ID <span>{{ selectedItem?.submitUserId }}</span></li>
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">
-          <div v-if="showClassificationResults(selectedItem?.classificationResult)">
-            <div v-for="result in selectedItem.classificationResult" :key="result.title">
+          <template v-for="result in selectedItem?.wbcInfoAfter" :key="result.title" >
+            <div v-if="showClassificationResults(result.title)" class="resInfoBox">
               <p>{{ result.title }}</p>
               <p>{{ result.count }}</p>
-              <p>{{ result.percent }}</p>
+              <p>{{ result.percent + '%' }}</p>
             </div>
-          </div>
+          </template>
         </li>
       </ul>
     </div>
@@ -74,7 +74,7 @@ const showClassificationResults = (classificationResult) => {
   return (
       classificationResult &&
       classificationResult.length > 0 &&
-      !['12_NR', '13_GP', '14_PA', '15_AR', '16_MA', '17_SM'].includes(result.dirName)
+      !['NR', 'GP', 'PA', 'AR', 'MA', 'SM'].includes(classificationResult)
   );
 
 };

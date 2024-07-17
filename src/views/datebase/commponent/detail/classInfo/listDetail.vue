@@ -31,10 +31,6 @@
           />
           Cell Marking
         </button>
-<!--        <button @click="excelDownload">-->
-<!--          <font-awesome-icon :icon="['fas', 'file-csv']"/>-->
-<!--          Excel-->
-<!--        </button>-->
         <!--size-->
         <button @mouseover="showSizeControl">
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>

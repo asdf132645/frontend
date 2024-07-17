@@ -1,4 +1,8 @@
 <template>
+  <div class="loaderBackground" v-if="loading">
+    <div class="loader"></div>
+    <p class="loadingText">Loading...</p>
+  </div>
   <ul class="wbcInfoDbUl">
     <template v-for="(item) in wbcInfo" :key="item.id">
       <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'">
@@ -186,7 +190,7 @@
 
 <script setup lang="ts">
 
-import {computed, ref, watch, defineExpose, toRefs } from 'vue';
+import {computed, ref, watch, defineExpose, toRefs, onMounted} from 'vue';
 import {useStore} from "vuex";
 
 const refsArray = ref<any[]>([]);
@@ -202,7 +206,9 @@ const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
 const previousFirstClass = ref('Neutrophil-Segmented');
 const previousLastClass = ref('Neutrophil-Band');
-
+const loading = ref(true);
+const totalImages = ref(0);
+const loadedImages = ref(0);
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
@@ -257,6 +263,8 @@ const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
+  // console.log(newVal)
+  loading.value = false;
 });
 
 watch(
@@ -273,9 +281,12 @@ const handleImageLoad = (itemIndex: any) => {
   classImgChange('first', null);
   classImgChange('last', null);
   classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
+  if (itemIndex >= props.wbcInfo.length - 1) {
+    loading.value = true;
+  }else{
+    loading.value = false;
+  }
 }
-
-
 const setRef = (itemId: any) => {
   return (el: any) => {
     if (el) {
@@ -301,6 +312,7 @@ const classImgChange = (type: string, event: any) => {
   } else {
     updateClassValue(lastClass, previousLastClass, lastClassObj, lastItemIndex);
   }
+
 };
 
 

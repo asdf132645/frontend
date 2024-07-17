@@ -1,4 +1,8 @@
 <template>
+  <div class="loaderBackground" v-if="dbData.length === 0">
+    <div class="loader"></div>
+    <p class="loadingText">Loading...</p>
+  </div>
   <table class='defaultTable mt2 dbDataTable'>
     <thead>
     <tr>
@@ -192,6 +196,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const myIp = ref('');
+
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
