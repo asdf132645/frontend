@@ -535,6 +535,7 @@ const sensRbcReJsonSend = async () => {
     reqUserId: userModuleDataGet.value.userId || '',
     className: selectedClass.value.replace(/\s/g, ''),
     slotId: props.selectItems?.slotId,
+    anyWay: 'true',
   };
   EventBus.publish('childEmitSocketData', payload);
 }
