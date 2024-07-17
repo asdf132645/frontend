@@ -286,6 +286,8 @@ const selectedSampleId = computed(() => store.state.commonModule.selectedSampleI
 const rbcDegreeStandard = ref<any>([]);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
+const bodyTotal = ref(0);
+const shapeTotal = ref(0);
 const shapeBodyTotal = ref(0);
 const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
@@ -443,8 +445,8 @@ const rbcTotalAndReCount = async () => {
   }
   let total = 0;
   let chromiaTotalval = 0;
-  let shapeBodyTotalVal = 0;
-  let shapeBodyTotalVal2 = 0;
+  let shapeTotalVal = 0;
+  let inclusionBody = 0;
   rbcInfoPathAfter.value.forEach(el => {
     const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
 
@@ -456,10 +458,10 @@ const rbcTotalAndReCount = async () => {
         chromiaTotalval = lastIndex;
         break;
       case '03':
-        shapeBodyTotalVal = lastIndex;
+        shapeTotalVal = lastIndex;
         break;
       case '05':
-        shapeBodyTotalVal2 = lastIndex;
+        inclusionBody = lastIndex;
         break;
       default:
         break;
@@ -469,7 +471,10 @@ const rbcTotalAndReCount = async () => {
   rbcTotalVal.value = Number(total) + 1;
   sizeChromiaTotal.value = Number(total) + 1;
   chromiaTotalTwo.value = chromiaTotalval;
-  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
+  bodyTotal.value = Number(inclusionBody) + 1;
+  shapeTotal.value=  Number(shapeTotalVal) + 1;
+  shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody) + 2;
+
 }
 
 const percentageChange = (count: any): any => {
