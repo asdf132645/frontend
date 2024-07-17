@@ -237,10 +237,10 @@ const getDbData = async (type: string, pageNum?: number) => {
   // console.log('prevDataPage.value', prevDataPage.value)
   // console.log('requestData.page', requestData.page)
   // console.log('----------------------------------')
-  if (deepEqual(requestData, reqDataPrev) || Number(prevDataPage.value) === Number(requestData.page)) {
-    console.log("중복된 요청입니다. 요청을 생략합니다.");
-    return;
-  }
+  // if (deepEqual(requestData, reqDataPrev) || Number(prevDataPage.value) === Number(requestData.page)) {
+  //   console.log("중복된 요청입니다. 요청을 생략합니다.");
+  //   return;
+  // }
   if(prevDataPage.value === ''){
     prevDataPage.value = requestData.page;
   }
