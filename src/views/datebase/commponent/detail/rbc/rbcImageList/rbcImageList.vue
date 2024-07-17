@@ -168,7 +168,7 @@ import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constFile/rbc';
 import {dirName} from "@/common/defines/constFile/settings";
 import Malaria from './Malaria.vue';
-import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import pako from 'pako';
 import Alert from "@/components/commonUi/Alert.vue";
@@ -217,27 +217,37 @@ const selectBoxX = ref(0);
 const selectBoxY = ref(0);
 const emits = defineEmits();
 const rightClickItem = ref<any>([]);
-const imgHeightWidthArr: any = ref([]);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoArr);
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
+const imageWidthHeight = ref<any>([]);
 
 
 onMounted(async () => {
   await nextTick();
-  await josnWidthHeight();
   await initElement();
   document.addEventListener('click', closeSelectBox);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
 
-const josnWidthHeight = async () => {
+const dziWidthHeight = async (imageFileName): any => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
-  const response_old = await readJsonFile({fullPath: url_Old});
-  imgHeightWidthArr.value = response_old?.data;
+  const urlImage = `${path}/${props.selectItems.slotId}/02_RBC_Image/${imageFileName}.dzi`;
+  const imageResponse = await readDziFile({ filePath: urlImage });
+  return await extractWidthHeightFromDzi(`${imageFileName}`, imageResponse);
 }
+
+const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+  const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
+  const width = sizeElement.getAttribute("Width");
+  const height = sizeElement.getAttribute("Height");
+  return { fileName, width: Number(width), height: Number(height) }
+}
+
+
 const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
   const existingOverlays = document.getElementsByClassName('overlayElement');
   if (existingOverlays.length === 0) {
@@ -548,8 +558,8 @@ const drawRbcMarker = async (classInfoArr: any) => {
 const initElement = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
-  const folderPath = `${path}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
   try {
+    const folderPath = `${path}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
     const tilesInfo = await fetchTilesInfo(folderPath);
 
     if (tilesInfo.length !== 0) {
@@ -632,8 +642,8 @@ const initElement = async () => {
 
 
       viewer.value.addHandler('open', function (event: any) {
-        canvas.width = imgHeightWidthArr.value[0]?.orgWidth;
-        canvas.height = imgHeightWidthArr.value[0]?.orgHeight;
+        canvas.width = event.source.Image.Size.Width;
+        canvas.height = event.source.Image.Size.Height;
         canvas.id = 'myCanvas';
         overlay.canvas = canvas;
         canvasOverlay.value = canvas;
@@ -791,7 +801,10 @@ const fetchTilesInfo = async (folderPath: string) => {
 
     for (const fileName of fileNames) {
       if (fileName.endsWith('_files')) {
-        const foundItem: any = imgHeightWidthArr.value.find((item: any) => fileNames.includes(item.filename));
+
+        const fileNameResult = extractSubStringBeforeFiles(fileName)
+        const { width, height } = await dziWidthHeight(fileNameResult)
+
         tilesInfo.push({
           Image: {
             xmlns: "http://schemas.microsoft.com/deepzoom/2009",
@@ -800,19 +813,31 @@ const fetchTilesInfo = async (folderPath: string) => {
             Overlap: "1",
             TileSize: "1024",
             Size: {
-              Height: foundItem?.orgHeight,
-              Width: foundItem?.orgWidth
+              Width: width,
+              Height: height
             }
           }
         });
-        canvasCurrentHeight.value = foundItem?.orgHeight;
-        canvasCurrentWitdh.value = foundItem?.orgWidth;
+
+        canvasCurrentWitdh.value = width;
+        canvasCurrentHeight.value = height;
       }
     }
     tileExist.value = true;
     return tilesInfo;
   }
 };
+
+const extractSubStringBeforeFiles = (str: string) => {
+  const searchString = '_files';
+  const endIndex = str.indexOf(searchString);
+
+  if (endIndex !== -1) {
+    return str.substring(0, endIndex);
+  }
+
+  return str;
+}
 
 
 // Low magnification and Malaria tab

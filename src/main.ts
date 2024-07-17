@@ -35,8 +35,3 @@ app.use(socketPlugin);
 app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.mount('#app');
-
-const metaTag = document.createElement('meta');
-metaTag.name = 'edge-visual-search';
-metaTag.content = 'disable';
-document.getElementsByTagName('head')[0].appendChild(metaTag);
