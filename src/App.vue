@@ -78,7 +78,6 @@ const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
-const rbcSendtimerId = ref<number | undefined>(undefined);
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)

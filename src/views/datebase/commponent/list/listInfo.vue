@@ -42,19 +42,19 @@
 
 <script setup >
 import {ref, defineProps, onMounted, watchEffect, watch, nextTick} from 'vue';
-import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
+import {useStore} from "vuex";
+const store = useStore();
 
 const props = defineProps(['selectedItem']);
-const iaRootPath = ref('');
+const iaRootPath = ref(store.state.commonModule.iaRootPath);
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
 
 onMounted(() => {
   barCodeImageShowError.value = false;
   // iaRootPath가 존재하면 getImageUrl 함수 호출
-  iaRootPath.value = sessionStorage.getItem('iaRootPath');
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg');
   }
