@@ -194,13 +194,12 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 
 const props = defineProps(['printOnOff', 'selectItemWbc']);
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
 
 const printContent = ref(null);
 const wbcInfo = ref([]);
-const wbcInfoImg = ref([]);
 
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);

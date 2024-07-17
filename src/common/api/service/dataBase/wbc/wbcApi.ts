@@ -7,5 +7,5 @@ export const moveImgPost = async (request: any): Promise<ApiResponse<void>> => {
 };
 
 export const moveClassImagePost = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpPost(apiConstants.images.moveClassImage, request);
+    return httpClient.httpPost(apiConstants.images.moveClassImage, request, '', false, window.VIEWER_CHECK);
 };

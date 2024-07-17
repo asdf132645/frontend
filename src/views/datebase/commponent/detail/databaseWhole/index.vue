@@ -19,7 +19,6 @@ import TilingViewer from './tilingViewer.vue';
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {useStore} from "vuex";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import LoadingOverlay from "@/components/commonUi/LoadingOverlay.vue";
 
 const store = useStore()
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);

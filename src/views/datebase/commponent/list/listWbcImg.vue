@@ -24,7 +24,7 @@ import { defineProps, onMounted, ref, watch } from 'vue';
 
 const props = defineProps(['dbData', 'selectedItem']);
 const iaRootPath = sessionStorage.getItem('iaRootPath');
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});

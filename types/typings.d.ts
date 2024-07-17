@@ -9,6 +9,8 @@ declare global {
         WEB_BACKEND_VERSION: string;
         WEB_FRONTEND_VERSION: string;
         PB_VERSION: string;
+        MAIN_API_IP: string;
+        VIEWER_CHECK: string;
     }
 }
 

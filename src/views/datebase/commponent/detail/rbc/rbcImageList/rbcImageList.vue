@@ -178,7 +178,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
+const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 let viewer: any = ref<any>(null);
 const imgSet_img_list = ref(false);
@@ -330,7 +330,6 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   formData.append('file', blob, `${props.selectItems?.slotId}_new.json`);
   const filePath = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`
   try {
-    const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
     const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
       method: 'POST',
@@ -780,6 +779,7 @@ const initElement = async () => {
 };
 
 const fetchTilesInfo = async (folderPath: string) => {
+  console.log(apiBaseUrl)
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);
 

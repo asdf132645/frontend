@@ -78,7 +78,7 @@ const showClassificationResults = (classificationResult) => {
   );
 
 };
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 function getImageUrl(imageName){
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;

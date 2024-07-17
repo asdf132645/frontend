@@ -41,6 +41,6 @@ export const getBmTestTypeText = (value: string) => {
 };
 
 export const getBarcodeDetailImageUrl = (imageName: string, iaRootPath: string, slotId: string, barcodeDirName: string): string => {
-    const baseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+    const baseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
     return `${baseUrl}/images/getImageRealTime?folder=${iaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}`;
 }
