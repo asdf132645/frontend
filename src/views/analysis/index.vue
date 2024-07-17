@@ -32,10 +32,9 @@ const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
-const viewerCheckSessionStorageData = sessionStorage.getItem('viewerCheck');
 
 onBeforeMount(async () => {
-  if (viewerCheckSessionStorageData === 'viewer') {
+  if (window.VIEWER_CHECK === 'viewer') {
     router.push('/database')
   }
 

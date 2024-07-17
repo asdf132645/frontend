@@ -327,6 +327,12 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
+    dziReader: {
+        get: {
+            endpoint: 'dzi/send',
+            requiresToken: false,
+        }
+    },
     pdf:{
         post:{
             endpoint: 'pdf/generate',

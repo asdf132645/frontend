@@ -12,7 +12,7 @@
           <span class='icoText'>Setting</span>
         </router-link>
 
-        <router-link to="/" v-if="viewerCheckData === 'main'"
+        <router-link to="/" v-if="viewerCheck === 'main'"
                      :class='{ "leftActive": isActive("/analysis") || route.path === "/" }'>
           <font-awesome-icon :icon="['fas', 'chart-pie']"
                              style="font-size: 1rem;"
@@ -128,7 +128,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
@@ -147,7 +147,7 @@ const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
-const viewerCheckData = computed(() => store.state.commonModule.viewerCheck);
+const viewerCheck = ref('viewer');
 const isBlinkingPrime = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -213,6 +213,10 @@ const handleOkConfirm = () => {
 const hideConfirm = () => {
   showConfirm.value = false;
 }
+
+onBeforeMount(() => {
+  viewerCheck.value = window.VIEWER_CHECK;
+})
 
 onMounted(async () => {
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
@@ -356,7 +360,7 @@ const eqStatCdChangeVal = (eqStatCdVal: string) => {
 }
 
 const openLayer = () => {
-  if (viewerCheckData.value === 'viewer') {
+  if (viewerCheck.value === 'viewer') {
     showErrorAlert('Access is only available from the main PC.');
     return;
   }

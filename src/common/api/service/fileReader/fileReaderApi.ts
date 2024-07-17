@@ -6,6 +6,10 @@ export const readJsonFile = async (request: any): Promise<ApiResponse<any | unde
     return httpClient.httpPost(apiConstants.jsonReader.get, request, '', false, window.VIEWER_CHECK);
 };
 
+export const readDziFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.dziReader.get, request);
+}
+
 export const pdfPost = async (request: any): Promise<ApiResponse<any | undefined>> => {
     return httpClient.httpPost(apiConstants.pdf.post, request, 'blob');
 };
