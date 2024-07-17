@@ -37,7 +37,7 @@
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li @click="handleLiClick(outerIndex, innerIndex, classIndex, classInfo, category)">
                 <div
-                    v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report'">
+                    v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report' && classInfo?.classNm !== 'Poikilocyte'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
                          v-model="checkedClassIndices">
@@ -45,6 +45,12 @@
                 <span>
                   {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}
                 </span>
+              </li>
+              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                <span>Artifact</span>
+              </li>
+              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                <span>DoubleNormal</span>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
                 <div v-if="type !== 'report'">
@@ -59,7 +65,6 @@
             </template>
           </ul>
           <ul class="degree analysis">
-
             <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
@@ -116,6 +121,12 @@
                   />
                 </span>
               </li>
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+                -
+              </li>
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+                -
+              </li>
               <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 -
               </li>
@@ -135,7 +146,14 @@
               <li>
                 {{ classInfo?.originalDegree }}
               </li>
-
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                {{ countArtifact || 0 }}
+              </li>
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                {{ countDoubleNormal || 0 }}
+              </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
                 {{ malariaCount || 0 }}
@@ -149,7 +167,6 @@
               <div class="underline"
                    v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 {{ shapeBodyTotal }}
-
               </div>
             </template>
           </ul>
@@ -159,6 +176,14 @@
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li>
                 {{ percentageChange(classInfo?.originalDegree) }}
+              </li>
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+                {{ percentageChange(countArtifact) }}
+              </li>
+              <li class="defaultText"
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+                {{ percentageChange(countDoubleNormal) }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
@@ -293,7 +318,9 @@ const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
 const submitState = ref('');
-const projectType = ref(window.PROJECT_TYPE)
+const projectType = ref(window.PROJECT_TYPE);
+const countArtifact = ref(0);
+const countDoubleNormal = ref(0);
 
 onMounted(async () => {
   const {path} = router.currentRoute.value;
@@ -447,9 +474,19 @@ const rbcTotalAndReCount = async () => {
   let chromiaTotalval = 0;
   let shapeTotalVal = 0;
   let inclusionBody = 0;
+  countArtifact.value = 0;
+  countDoubleNormal.value = 0;
   rbcInfoPathAfter.value.forEach(el => {
+    if(el.categoryId === '03'){
+      for (const classItem of el.classInfo) {
+          if(classItem.classNm === 'Artifact'){
+            countArtifact.value += 1
+          }else if(classItem.classNm === 'DoubleNormal'){
+            countDoubleNormal.value += 1
+          }
+      }
+    }
     const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
-
     switch (el.categoryId) {
       case '01':
         total = lastIndex;
