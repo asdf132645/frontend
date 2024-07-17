@@ -21,7 +21,7 @@
           </div>
           <button class="searchClass" @click="dateRefresh">dateRefresh</button>
           <button type="button" class="searchClass" @click="search">Search</button>
-          <div class="excelDivList">
+          <div v-if="viewerCheck !== 'viewer'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
         </div>
@@ -133,7 +133,9 @@ const prevDataPage = ref('');
 const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
+const viewerCheck = ref('viewer');
 const eventTriggered = ref(false);
+
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
   eventTriggered.value = true;
@@ -141,6 +143,7 @@ instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data)
 })
 
 onBeforeMount(async () => {
+  viewerCheck.value = window.VIEWER_CHECK;
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
 })
 

@@ -1,8 +1,8 @@
 <template>
   <ul class="wbcInfoDbUl">
     <template v-for="(item) in wbcInfo" :key="item.id">
-      <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'">
-        <div class="circle" @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
+      <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'" @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
+        <div class="circle" >
           <p>{{ item?.title }}</p>
           <p>{{ item?.count }}</p>
         </div>

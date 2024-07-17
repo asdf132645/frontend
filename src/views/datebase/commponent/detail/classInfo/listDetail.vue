@@ -24,7 +24,7 @@
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <div class="imgMenuSetDiv" @mouseleave="hideSizeControl">
+      <div class="imgMenuSetDiv">
         <button type="button" @click="drawCellMarker(false)">
           <font-awesome-icon
               :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -36,13 +36,13 @@
 <!--          Excel-->
 <!--        </button>-->
         <!--size-->
-        <button @mouseover="showSizeControl">
+        <button @click="showSizeControl" class="sizeButton">
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
           Size
         </button>
         <div v-show="showSize" class="sizeContainer">
           <div>
-            Size {{ imageSize }}
+            Size {{ imgPixelConvertToPercent(imageSize) }}
             <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>
             <input
                 type="range"
@@ -351,6 +351,10 @@ const classCompare = () => {
   }
 }
 
+const imgPixelConvertToPercent = (imageSize: number) => {
+  return Math.floor(imageSize * (2 / 3)) + '%'
+}
+
 const imgSetLocalStorage = async () => {
   const storedBrightness = localStorage.getItem('imgBrightness');
   const storedRgb = localStorage.getItem('imageRgb');
@@ -428,6 +432,10 @@ const handleClickOutside = (event: any) => {
   if (!event.target.closest('.imgSetWrap')) {
     imgSet.value = false;
     selectedTitle.value = '';
+  }
+
+  if (!event.target.closest('.sizeContainer, .sizeButton')) {
+    showSize.value = false;
   }
 };
 document.addEventListener('click', (event) => {
