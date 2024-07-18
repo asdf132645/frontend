@@ -190,7 +190,7 @@
 
 <script setup lang="ts">
 
-import {computed, ref, watch, defineExpose, toRefs, onMounted} from 'vue';
+import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'vue';
 import {useStore} from "vuex";
 
 const refsArray = ref<any[]>([]);
@@ -254,6 +254,7 @@ const props = defineProps<{
   onDragOver: () => void;
   isBorderChanged: (image: Image) => boolean;
   isSelected: (image: Image) => boolean;
+  totalCount: string;
 }>();
 const emits = defineEmits();
 
@@ -275,7 +276,6 @@ watch(
     },
     {deep: true}
 );
-
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
   classImgChange('first', null);
@@ -286,6 +286,7 @@ const handleImageLoad = (itemIndex: any) => {
   }else{
     loading.value = false;
   }
+
 }
 const setRef = (itemId: any) => {
   return (el: any) => {
@@ -312,7 +313,9 @@ const classImgChange = (type: string, event: any) => {
   } else {
     updateClassValue(lastClass, previousLastClass, lastClassObj, lastItemIndex);
   }
-
+  if (props.totalCount === '0'){
+    loading.value = false
+  }
 };
 
 

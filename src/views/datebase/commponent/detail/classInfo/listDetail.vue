@@ -121,6 +121,7 @@
         <ImageGallery
             ref="$imageGalleryRef"
             :wbcInfo="wbcInfo"
+            :totalCount="selectItems?.wbcInfo?.totalCount"
             :classCompareShow="classCompareShow"
             :selectedTitle="selectedTitle"
             :hiddenImages="hiddenImages"
