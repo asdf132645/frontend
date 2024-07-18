@@ -1,5 +1,5 @@
 <template>
-  <div class="loaderBackground" v-if="dbData.length === 0">
+  <div class="loaderBackground" v-if="loadingDelay">
     <div class="loader"></div>
     <p class="loadingText">Loading...</p>
   </div>
@@ -179,11 +179,10 @@ import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
-import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
-const props = defineProps(['dbData']);
+const props = defineProps(['dbData', 'loadingDelay']);
 const loadMoreRef = ref(null);
 const emits = defineEmits();
 const selectedItemId = ref('');

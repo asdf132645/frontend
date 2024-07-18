@@ -72,7 +72,7 @@
           </div>
         </div>
       </div>
-      <ListTable :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem" @refresh="refresh" @checkListItem="checkListItem" />
+      <ListTable :loadingDelay="loadingDelay" :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem" @refresh="refresh" @checkListItem="checkListItem" />
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
@@ -135,7 +135,7 @@ const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const viewerCheck = ref('viewer');
 const eventTriggered = ref(false);
-
+const loadingDelay = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
   eventTriggered.value = true;
@@ -227,6 +227,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   if (type === 'search') {
     page.value = 1;
   }
+  loadingDelay.value = true;
   const requestData: any = {
     page: type !== 'mounted' ? page.value : Number(pageNum),
     pageSize: 20,
@@ -304,8 +305,10 @@ const getDbData = async (type: string, pageNum?: number) => {
         saveLastSearchParams();
       }
     }
+    loadingDelay.value = false;
   } catch (e) {
     console.error(e);
+    loadingDelay.value = false;
   }
 };
 
