@@ -493,11 +493,23 @@ const removeRbcMarker  = () => {
 const drawRbcMarker = async (classInfoArr: any) => {
   // json rbcInfoPathAfter.value 로 그림 그리는곳
   const colors: any = {
-    '01': 'red',
-    '02': 'green',
-    '03': 'blue',
-    '05': 'brown',
+    'Normal': 'red',
+    'Poikilocyte': 'green',
+    'Target Cell': 'blue',
+    'Burr Cell': 'purple',
+    'Acanthocyte': 'orange',
+    'Ovalocyte': 'cyan',
+    'Schistocyte': 'magenta',
+    'Sickle Cell': 'lime',
+    'Stomatocyte': 'teal',
+    'TearDrop Cell': 'navy',
+    'Spherocyte': 'gold',
+    'Howell-Jolly Body': 'indigo',
+    'Basophilic Stippling': 'olive',
+    'Malaria': 'pink',
+    'Platelet': '#ffac35',
   };
+
   const ctx = removeRbcMarker(); // canvas 초기화
   if (!ctx) {
     console.error('Canvas context 초기화 실패');
@@ -513,7 +525,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
         if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
 
           ctx.lineWidth = 2;
-          ctx.strokeStyle = `${colors[info.categoryId] || 'black'}`;
+          ctx.strokeStyle = `${colors[info.classNm] || 'black'}`;
           let rectPath = new Path2D();
           let width: number;
           let height: number;
