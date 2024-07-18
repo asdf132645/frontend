@@ -52,7 +52,9 @@
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
                 <span>DoubleNormal</span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
+                  @click="handleClick(0, 0, 2, { classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '9-9-2')"
+              >
                 <div v-if="type !== 'report'">
                   <input type="checkbox"
                          v-show="!except"
@@ -60,7 +62,7 @@
                          v-model="checkedClassIndices"
                          @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
                 </div>
-                <span @click="clickChangeSens('Malaria', 'Others', '05', '03')">Malaria</span>
+                <span>Malaria</span>
               </li>
             </template>
           </ul>
@@ -143,9 +145,10 @@
             <li v-if="innerIndex === 0" class="mb1 liTitle">count</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li>
+              <li v-if="classInfo?.classNm !== 'Poikilocyte'">
                 {{ classInfo?.originalDegree }}
               </li>
+              <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
                 {{ countArtifact || 0 }}
@@ -174,9 +177,10 @@
             <li v-if="innerIndex === 0" class="mb1 liTitle">percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li>
+              <li v-if="classInfo?.classNm !== 'Poikilocyte'">
                 {{ percentageChange(classInfo?.originalDegree) }}
               </li>
+              <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
                 {{ percentageChange(countArtifact) }}
@@ -209,7 +213,8 @@
           <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li style="padding-top: 0;">
+          <li @click="handleClick(0, 0, 1, { classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '9-9-1')"
+              style="padding-top: 0;">
             <div v-if="type !== 'report'">
               <input type="checkbox"
                      value="9-9-1"
@@ -217,12 +222,11 @@
                      v-model="checkedClassIndices"
                      @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')">
             </div>
-            <span @click="clickChangeSens('Platelet', 'Others', '04' ,'01')">Platelet</span>
+            <span>Platelet</span>
           </li>
         </ul>
         <ul class="degree analysis">
           <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
-          <!--          <li style="font-size: 0.8rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>-->
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
@@ -412,6 +416,18 @@ watch(() => rbcReData, async (newItem) => {
 
 }, {deep: true});
 
+const handleClick = (outerIndex: number, innerIndex: number, classIndex: number, classInfo: any, category: any, value: string) => {
+  const isChecked = checkedClassIndices.value.includes(value);
+
+  if (isChecked) {
+    checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== value);
+  } else {
+    checkedClassIndices.value.push(value);
+  }
+
+  updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
+  clickChangeSens(classInfo.classNm, 'Others', category.categoryId, classInfo.classId);
+};
 
 function handleLiClick(outerIndex: number, innerIndex: any, classIndex: any, classInfo: any, category: any) {
   toggleCheckbox(outerIndex, innerIndex, classIndex, classInfo, category);

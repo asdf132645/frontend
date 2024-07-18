@@ -2396,11 +2396,13 @@ ul.normalItems li div span:last-child {
     width: 40%;
     height: 92.2vh;
 }
-
+.resInfoBox > p {
+    width: 150px;
+}
 
 .dbWbcImageContainer {
     overflow-y: auto;
-    max-height: 400px;
+    max-height: 189px;
 }
 
 .dbBmImageContainer {
