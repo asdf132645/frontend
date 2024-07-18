@@ -47,10 +47,7 @@
                 </span>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                <span>Artifact</span>
-              </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                <span>DoubleNormal</span>
+                <span>Others</span>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
                   @click="handleClick(0, 0, 2, { classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '9-9-2')"
@@ -126,9 +123,6 @@
               <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
                 -
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
-                -
-              </li>
               <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 -
               </li>
@@ -151,11 +145,7 @@
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                {{ countArtifact || 0 }}
-              </li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                {{ countDoubleNormal || 0 }}
+                {{ countArtifact + countDoubleNormal || 0 }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
@@ -183,11 +173,7 @@
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
-                {{ percentageChange(countArtifact) }}
-              </li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
-                {{ percentageChange(countDoubleNormal) }}
+                {{ percentageChange(countArtifact + countDoubleNormal) }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
@@ -232,15 +218,15 @@
         <ul class="rbcPercent"></ul>
       </div>
     </div>
-    <div class="sensitivityDiv" v-if="type !== 'report'">
-      <select v-model="selectedClass" @change="classChange">
-        <option v-for="(item) in rightClickItem" :key="item.classNm">
-          {{ item.classNm }}
-        </option>
-      </select>
-      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>
-      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
-    </div>
+<!--    <div class="sensitivityDiv" v-if="type !== 'report'">-->
+<!--      <select v-model="selectedClass" @change="classChange">-->
+<!--        <option v-for="(item) in rightClickItem" :key="item.classNm">-->
+<!--          {{ item.classNm }}-->
+<!--        </option>-->
+<!--      </select>-->
+<!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
+<!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
+<!--    </div>-->
   </div>
   <Alert
       v-if="showAlert"
@@ -459,7 +445,7 @@ const rbcTotalAndReCount = async () => {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
         const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
-            Number(el.index) === Number(newRbcData.index)
+            el.index === newRbcData.index
         );
         if (foundElementIndex !== -1) {
           rbcItem.classInfo.splice(foundElementIndex, 1);
@@ -502,31 +488,30 @@ const rbcTotalAndReCount = async () => {
           }
       }
     }
-    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
     switch (el.categoryId) {
       case '01':
-        total = lastIndex;
+        total = el.classInfo.length;
         break;
       case '02':
-        chromiaTotalval = lastIndex;
+        chromiaTotalval = el.classInfo.length;
         break;
       case '03':
-        shapeTotalVal = lastIndex;
+        shapeTotalVal = el.classInfo.length;
         break;
       case '05':
-        inclusionBody = lastIndex;
+        inclusionBody = el.classInfo.length;
         break;
       default:
         break;
     }
   });
 
-  rbcTotalVal.value = Number(total) + 1;
-  sizeChromiaTotal.value = Number(total) + 1;
+  rbcTotalVal.value = Number(total);
+  sizeChromiaTotal.value = Number(total);
   chromiaTotalTwo.value = chromiaTotalval;
-  bodyTotal.value = Number(inclusionBody) + 1;
-  shapeTotal.value=  Number(shapeTotalVal) + 1;
-  shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody) + 2;
+  bodyTotal.value = Number(inclusionBody);
+  shapeTotal.value=  Number(shapeTotalVal);
+  shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
 
 }
 
