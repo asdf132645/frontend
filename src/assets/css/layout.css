@@ -1864,6 +1864,7 @@ ul.leftWbcInfo {
     height: 82.5vh;
     overflow-y: auto;
     display: block;
+    padding-top: 30px;
 }
 
 ul.orderListUi > li {
