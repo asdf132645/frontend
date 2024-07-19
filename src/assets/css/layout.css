@@ -1864,9 +1864,18 @@ ul.leftWbcInfo {
     height: 82.5vh;
     overflow-y: auto;
     display: block;
-    padding-top: 30px;
-}
+    padding-top: 38px;
+    width: 100%;
+    border-collapse: collapse;
 
+}
+.dbDataTable > thead {
+    position: sticky;
+    top: -39px;
+    background: white;
+    z-index: 1;
+
+}
 ul.orderListUi > li {
     margin-bottom: 5px;
 }

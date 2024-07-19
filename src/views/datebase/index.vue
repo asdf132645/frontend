@@ -161,7 +161,6 @@ function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
   initDbData().then(() => {
-    console.log('?!@');
     // loadingDelayParents.value = false;
   });
 }

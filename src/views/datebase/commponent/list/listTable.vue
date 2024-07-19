@@ -4,6 +4,21 @@
     <p class="loadingText">Loading...</p>
   </div>
   <table class='defaultTable mt2 dbDataTable' ref="scrollableDiv">
+    <colgroup>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="15%"/>
+      <col width="3%"/>
+      <col width="3%"/>
+      <col width="15%"/>
+      <col width="3%"/>
+    </colgroup>
     <thead>
     <tr>
       <th>NO</th>
@@ -23,21 +38,7 @@
       <th>Edit</th>
     </tr>
     </thead>
-    <colgroup>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="15%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="15%"/>
-      <col width="3%"/>
-    </colgroup>
+
     <tbody v-if="dbData.length !== 0">
     <template v-for="(item, idx) in dbData"
               :key="item.id">
@@ -232,7 +233,7 @@ const scrollableDiv = ref(null);
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
   projectType.value = window.PROJECT_TYPE;
-
+  scrollableDiv.value.scrollTop = 50;
   if (scrollableDiv.value) {
     scrollableDiv.value.addEventListener('scroll', handleScroll);
   }
@@ -260,7 +261,6 @@ async function handleKeyDown(event) {
 }
 const handleScroll = () => {
   if (scrollableDiv.value.scrollTop === 0) {
-    console.log('Scrolled to the top!');
     emits('loadPrevData');
     scrollableDiv.value.scrollTop = 50;
 
