@@ -71,13 +71,13 @@
       </ul>
       <ul>
         <li>
-          {{ totalAfterCount || 0 }} |
+          {{ totalBeforeCount || 0 }} |
           100%
         </li>
       </ul>
       <ul class="degree">
         <li>
-          {{ totalBeforeCount || 0 }} |
+          {{ totalAfterCount || 0 }} |
           100%
         </li>
       </ul>
