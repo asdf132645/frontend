@@ -1402,6 +1402,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기
         await drawCellMarker(true);
+        await getWbcCustomClasses(false, null);
       }
     } else {
       console.error('백엔드가 디비에 저장 실패함');
