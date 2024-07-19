@@ -151,7 +151,6 @@ const prevDataPage = ref('');
 const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
-const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = sessionStorage.getItem('viewerCheck')
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
@@ -410,7 +409,7 @@ const exportToExcel = async () => {
   }
 }
 const dateRefresh = () => {
-  startDate.value = new Date();
+  startDate.value = thirtyDaysAgo
   endDate.value = new Date();
 }
 
