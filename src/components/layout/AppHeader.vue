@@ -128,15 +128,13 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
 import {messages} from "@/common/defines/constFile/constantMessageText";
-import {sendOilPrimeWebSocket, sendSettingInfoWebSocket} from "@/common/lib/sendWebSocket/common";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import * as process from "process";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
@@ -147,7 +145,7 @@ const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
-const viewerCheck = ref('viewer');
+const viewerCheck = sessionStorage.getItem('viewerCheck')
 const isBlinkingPrime = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -213,10 +211,6 @@ const handleOkConfirm = () => {
 const hideConfirm = () => {
   showConfirm.value = false;
 }
-
-onBeforeMount(() => {
-  viewerCheck.value = window.VIEWER_CHECK;
-})
 
 onMounted(async () => {
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여

@@ -24,7 +24,7 @@ import {useStore} from 'vuex';
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
 

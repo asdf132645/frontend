@@ -41,6 +41,6 @@ export const getBmTestTypeText = (value: string) => {
 };
 
 export const getBarcodeDetailImageUrl = (imageName: string, iaRootPath: string, slotId: string, barcodeDirName: string): string => {
-    const baseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+    const baseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
     return `${baseUrl}/images/getImageRealTime?folder=${iaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}`;
 }

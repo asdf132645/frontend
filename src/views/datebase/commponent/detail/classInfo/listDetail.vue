@@ -249,7 +249,7 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 const imgSet = ref(false);
-const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);

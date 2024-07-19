@@ -6,4 +6,3 @@ window.AI_VERSION='';
 window.WEB_BACKEND_VERSION='0.0.44v'
 window.WEB_FRONTEND_VERSION='0.1.24v'
 window.PB_VERSION='12a'
-window.VIEWER_CHECK = 'main';

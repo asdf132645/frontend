@@ -137,7 +137,7 @@ const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
-const viewerCheck = ref('viewer');
+const viewerCheck = sessionStorage.getItem('viewerCheck')
 const eventTriggered = ref(false);
 const loadingDelay = ref(false);
 
@@ -153,7 +153,6 @@ instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data)
 })
 
 onBeforeMount(async () => {
-  viewerCheck.value = window.VIEWER_CHECK;
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
 })
 

@@ -178,7 +178,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
-const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.APP_API_BASE_URL : window.MAIN_API_IP;
+const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 let viewer: any = ref<any>(null);
 const imgSet_img_list = ref(false);

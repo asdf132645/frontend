@@ -13,7 +13,7 @@ import { useStore } from "vuex";
 
 const props = defineProps(['selectItems']);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const apiBaseUrl = window.VIEWER_CHECK === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const store = useStore();
 const tilingViewerLayer = ref(null);
 const hideImageRef = ref(null);
