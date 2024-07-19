@@ -57,7 +57,7 @@ const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData','pb100aCassette']);
+const props = defineProps([ 'parsedData','pb100aCassette', 'initValData']);
 const isBm = ref(false);
 
 // 스토어
@@ -83,7 +83,11 @@ const isBlinking = ref(false);
 let interval: any = ref(null);
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
-
+watch(() => props.initValData, (newVal) => {
+  if(newVal){
+    eqStatCd.value = '05';
+  }
+})
 watch(
     () => props.pb100aCassette,
     (newVal) => {
