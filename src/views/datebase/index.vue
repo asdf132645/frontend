@@ -139,6 +139,7 @@ const eventTriggered = ref(false);
 const loadingDelay = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
+
   console.log(dataBaseOneCall.value)
   eventTriggered.value = true;
   if(!dataBaseOneCall.value){
@@ -157,6 +158,7 @@ onMounted(async () => {
   if (!eventTriggered.value) {
     await initDbData();
   }
+
 });
 
 const classListToggleEvent = () => {
@@ -172,6 +174,7 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
+  loadingDelay.value = true;
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();
@@ -217,7 +220,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   if (type === 'search') {
     page.value = 1;
   }
-  loadingDelay.value = true;
+
   const requestData: any = {
     page: type !== 'mounted' ? page.value : Number(pageNum),
     pageSize: 20,
