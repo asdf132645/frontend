@@ -217,7 +217,6 @@ const printContent = ref(null);
 const selectItemWbc = ref([]);
 const selectAllCheckbox = ref(false);
 const instance = getCurrentInstance();
-const siteCd = computed(() => store.state.commonModule.siteCd);
 const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
@@ -443,6 +442,7 @@ const getIpAddress = async (item) => {
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}`
 
     await updatePcIpStateApi(req).then(response => {
+      store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',
         payload: 'refreshDb'

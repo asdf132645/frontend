@@ -510,6 +510,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           if (slotId) {
             console.log('save successful');
           }
+          await store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
           instance?.appContext.config.globalProperties.$socket.emit('state', {
             type: 'SEND_DATA',
             payload: 'refreshDb'

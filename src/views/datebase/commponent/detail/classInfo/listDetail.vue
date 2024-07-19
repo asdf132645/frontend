@@ -18,7 +18,8 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow" type='listTable'
+      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow"
+                 type='listTable'
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
     </div>
@@ -109,7 +110,7 @@
           </div>
         </div>
         <button @click="classCompare">
-          <font-awesome-icon :icon="['fas', 'code-compare']" />
+          <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
         <button @click="rollbackChanges" class="rollbackButton">
@@ -460,7 +461,7 @@ const moveSelectedImages = async (item: any, itemIdx: any) => {
   }
   const matchingItemFind = wbcInfo.value.find((infoItem: any) => infoItem.id === item.id);
 
-  if (targetItem.value.title === matchingItemFind.title){
+  if (targetItem.value.title === matchingItemFind.title) {
     showAlert.value = true;
     alertType.value = 'error';
     alertMessage.value = `Transfer to different classes is the only option available.`;
@@ -793,9 +794,8 @@ const allCheckInsert = () => {
 }
 
 
-
 const scrollToElement = (itemId: number) => {
-  if($imageGalleryRef.value){
+  if ($imageGalleryRef.value) {
     $imageGalleryRef.value.scrollToElement(itemId);
   }
 };
@@ -1175,6 +1175,8 @@ async function originalOnDrop(targetItemIndex: number) {
   }
 }
 
+let cameraResetTimeOut: ReturnType<typeof setTimeout> | null = null;
+
 async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string, wbcInfosArr?: any) {
   const {slotId} = selectItems.value;
   const arrType = selectedImagesToMove;
@@ -1202,6 +1204,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
       const res = await moveClassImagePost(data);
       if (res) {
+
         // 이미지를 타겟 아이템으로 이동
         const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === (selectedImage.title || selectedImage.abbreviation));
         const sourceItem = wbcInfo.value[sourceItemIndex];
@@ -1223,6 +1226,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         shiftClickImages.value = [];
         await updateOriginalDb();
         await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
+        cameraResetTimeOut = null;
       }
       return;
     }
@@ -1241,24 +1245,24 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       let res = await moveClassImagePost(data);
       // 드래그된 이미지를 원래 위치에서 제거
       if (res) {
-        const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
-        draggedItem.images.splice(draggedImageIndex, 1);
-        const imgAttr = {
-          width: imageSize.value,
-          height: imageSize.value,
-        }
-        // 드롭된 위치에 이미지를 삽입
-        wbcInfo.value[targetItemIndex].images.push({...selectedImage, ...imgAttr});
-
-        wbcInfo.value = removeDuplicateImages(wbcInfo.value);
-        wbcInfo.value.forEach((item: any) => {
-          item.count = item.images.length;
-          if (item.images.length > 0) {
-            item.images.forEach((itemImg: any) => {
-              itemImg.title = item.title;
-            })
+          const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
+          draggedItem.images.splice(draggedImageIndex, 1);
+          const imgAttr = {
+            width: imageSize.value,
+            height: imageSize.value,
           }
-        });
+          // 드롭된 위치에 이미지를 삽입
+          wbcInfo.value[targetItemIndex].images.push({...selectedImage, ...imgAttr});
+
+          wbcInfo.value = removeDuplicateImages(wbcInfo.value);
+          wbcInfo.value.forEach((item: any) => {
+            item.count = item.images.length;
+            if (item.images.length > 0) {
+              item.images.forEach((itemImg: any) => {
+                itemImg.title = item.title;
+              })
+            }
+          });
       }
     }
 

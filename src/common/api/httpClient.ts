@@ -6,12 +6,12 @@ import {Endpoint, GenericObject} from '../type/generalTypes';
 export interface ApiResponse<T> {
     code: number;
     data?: T;
-    success: boolean;
+    success: any;
 }
 
 interface HttpResponse<T> {
     data?: ApiResponse<T>;
-    success: boolean;
+    success: any;
 }
 
 

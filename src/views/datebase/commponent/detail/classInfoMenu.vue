@@ -147,6 +147,8 @@ const deleteConnectionStatus = async () => {
   const req = `oldPcIp=${ipAddress.value}`
   await clearPcIpState(req)
       .then(response => {
+        console.log('지운다?')
+        store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
         instance?.appContext.config.globalProperties.$socket.emit('state', {
           type: 'SEND_DATA',
           payload: 'refreshDb'
@@ -163,6 +165,7 @@ const upDownBlockAccess = async (selectItems: any) => {
 
     await updatePcIpStateApi(req).then(response => {
       // emits('initData');
+      store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
       instance?.appContext.config.globalProperties.$socket.emit('state', {
         type: 'SEND_DATA',
         payload: 'refreshDb'
