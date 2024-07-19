@@ -51,14 +51,12 @@
       </ul>
       <ul class="nth1Child" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)">
         <li>{{ item?.name }}</li>
-        <li style="display: flex; justify-content: center;">
+        <li style="display: flex; justify-content: space-evenly;">
           <span class="grayText">{{ item.count.before }}</span>
-          <p>|</p>
           <span class="grayText">{{ item.percent.before + '%' || '-' }}</span>
         </li>
-        <li style="display: flex; justify-content: center;">
+        <li style="display: flex; justify-content: space-evenly;">
           <span>{{ item?.count.after }}</span>
-          <p>|</p>
           <span>{{ item?.percent.after + '%' || '-' }}</span>
         </li>
       </ul>
@@ -70,15 +68,15 @@
         </li>
       </ul>
       <ul>
-        <li>
-          {{ totalBeforeCount || 0 }} |
-          100%
+        <li style="display: flex; justify-content: center; gap: 22px;">
+          <p>{{ totalBeforeCount || 0 }}</p>
+          <p>100%</p>
         </li>
       </ul>
       <ul class="degree">
-        <li>
-          {{ totalAfterCount || 0 }} |
-          100%
+        <li style="display: flex; justify-content: center; gap: 22px;">
+          <p>{{ totalAfterCount || 0 }}</p>
+          <p>100%</p>
         </li>
       </ul>
     </div>
@@ -109,7 +107,7 @@
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
             <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
-          <ul>
+          <ul style="width: 21%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li>
               {{ nWbcItem?.count.before }}
@@ -117,9 +115,12 @@
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
             </li>
           </ul>
-          <ul class="degree">
+          <ul class="degree" style="width: 22%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li>{{ nWbcItem?.count.after }}</li>
+              <li>
+                {{ nWbcItem?.count.after }}
+                <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
+                / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span></li>
           </ul>
         </div>
       </template>
