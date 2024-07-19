@@ -76,17 +76,20 @@
           </div>
         </div>
       </div>
-      <ListTable
-          :loadingDelayParents="loadingDelayParents"
-          :dbData="dbGetData"
-          @loadMoreData="loadMoreData"
-          @initData="initDbData"
-          @selectItem="selectItem"
-          @refresh="refresh"
-          @checkListItem="checkListItem"
-          :selectedItemIdFalse="selectedItemIdFalse"
-          :notStartLoading='notStartLoading'
-      />
+      <keep-alive>
+        <ListTable
+            :loadingDelayParents="loadingDelayParents"
+            :dbData="dbGetData"
+            @loadMoreData="loadMoreData"
+            @loadPrevData="loadPrevData"
+            @initData="initDbData"
+            @selectItem="selectItem"
+            @refresh="refresh"
+            @checkListItem="checkListItem"
+            :selectedItemIdFalse="selectedItemIdFalse"
+            :notStartLoading='notStartLoading'
+        />
+      </keep-alive>
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
@@ -134,6 +137,7 @@ const endDate = ref(new Date());
 const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
+const prevPage = ref(1);
 const selectedItem = ref({});
 const titleItem = ref<any>([]);
 const titleItemArr = ref([]);
@@ -154,7 +158,6 @@ const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
 function handleStateVal(data: any) {
-  console.log(dataBaseOneCall.value);
   eventTriggered.value = true;
   notStartLoading.value = false;
   initDbData().then(() => {
@@ -205,11 +208,25 @@ const initDbData = async () => {
     startDate.value = new Date(lastSearchParams.startDate) || new Date();
     endDate.value = new Date(lastSearchParams.endDate) || new Date();
     page.value = lastSearchParams.page || 1;
-
-    const numberOfCalls = Number(lastSearchParams.page) || 1;
-    for (let i = 1; i <= numberOfCalls; i++) {
-      await getDbData('mounted', i);
+    if (Number(lastSearchParams.page) !== 1) {
+      const numberOfCalls = Number(lastSearchParams.page) || 1;
+      if (numberOfCalls >= 4) {
+        await getDbData('mounted', numberOfCalls - 3);
+        await getDbData('mounted', numberOfCalls - 2);
+        await getDbData('mounted', numberOfCalls - 1);
+        prevPage.value = numberOfCalls - 3
+      } else {
+        await getDbData('mounted', numberOfCalls - 1);
+        prevPage.value = numberOfCalls - 1
+      }
+      await getDbData('mounted', numberOfCalls);
+    } else {
+      await getDbData('mounted', 1);
     }
+    // const numberOfCalls = Number(lastSearchParams.page) || 1;
+    // for (let i = 1; i <= numberOfCalls; i++) {
+    //   await getDbData('mounted', i);
+    // }
   } else {
     await getDbData('mounted', 1);
   }
@@ -222,6 +239,7 @@ const selectItem = (item: any) => {
 const saveLastSearchParams = () => {
   const lastSearchParams = {
     page: page.value,
+    prevPage: prevPage.value,
     searchType: searchType.value,
     searchText: searchText.value,
     startDate: formatDate(startDate.value),
@@ -242,13 +260,20 @@ const getDbData = async (type: string, pageNum?: number) => {
     selectedItemIdFalse.value = true;
     notStartLoading.value = true;
     page.value = 1;
-  }else{
+  } else {
     selectedItemIdFalse.value = false;
     notStartLoading.value = false;
   }
-
+  let pageChange = 0;
+  if(type === 'loadMoreData'){
+    pageChange = page.value;
+  }else if(type === 'loadPrevData'){
+    pageChange = prevPage.value;
+  }else{
+    pageChange = page.value;
+  }
   const requestData: any = {
-    page: type !== 'mounted' ? page.value : Number(pageNum),
+    page: type !== 'mounted' ? pageChange : Number(pageNum),
     pageSize: 20,
     startDay: formatDate(startDate.value),
     endDay: formatDate(endDate.value),
@@ -288,6 +313,7 @@ const getDbData = async (type: string, pageNum?: number) => {
           dbGetData.value = newData;
         }
       } else {
+
         if (type === 'search') {
           dbGetData.value = newData;
         } else {
@@ -316,6 +342,8 @@ const getDbData = async (type: string, pageNum?: number) => {
         // 마지막 조회 결과 저장
         if (dbGetData.value.length !== 0) {
           saveLastSearchParams();
+        }else{
+          page.value -= 1;
         }
       }
     }
@@ -343,6 +371,16 @@ const refresh = () => {
 const loadMoreData = async () => {
   page.value += 1;
   await getDbData('loadMoreData');
+};
+
+const loadPrevData = async () => {
+
+  prevPage.value = loadLastSearchParams().prevPage;
+  prevPage.value -= 1;
+  if (prevPage.value <= 0) {
+    return;
+  }
+  await getDbData('loadPrevData');
 };
 
 const showSuccessAlert = async (message: string) => {
@@ -376,78 +414,6 @@ const dateRefresh = () => {
   startDate.value = new Date();
   endDate.value = new Date();
 }
-
-// const exportToExcel = () => {
-//   const filteredData = dbGetData.value.map((item: any) => {
-//     const getImageCount = (wbcInfo: any, name: any) => {
-//       const wbc = wbcInfo?.find((wbc: any) => wbc.name === name);
-//       return wbc ? wbc.images.length : 0;
-//     };
-//
-//     const getImageCountFromBoth = (wbcInfo: any, name: any) => {
-//       const wbc = wbcInfo?.wbcInfo[0].find((wbc: any) => wbc.name === name);
-//       return wbc ? wbc.images.length : 0;
-//     };
-//
-//     return {
-//       SERIAL_NO: item?.slotId,
-//       barcodeNo: item?.barcodeNo,
-//       patientId: item?.patientId,
-//       patientNm: item?.patientNm,
-//       ANALYZE_DTTM: item?.analyzedDttm,
-//       TACT_TIME: item?.tactTime,
-//       BIRTHDAY: item?.birthDay,
-//       GENDER: item?.gender,
-//       WBC_COMMENT: item?.wbcMemo,
-//       A_Neutrophil_Segmented: getImageCount(item?.wbcInfoAfter, 'Neutrophil-Segmented'),
-//       B_Neutrophil_Segmented: getImageCountFromBoth(item?.wbcInfo, 'Neutrophil-Segmented'),
-//       A_Neutrophil_Band: getImageCount(item?.wbcInfoAfter, 'Neutrophil-Band'),
-//       B_Neutrophil_Band: getImageCountFromBoth(item?.wbcInfo, 'Neutrophil-Band'),
-//       A_Metamyelocyte: getImageCount(item?.wbcInfoAfter, 'Metamyelocyte'),
-//       B_Metamyelocyte: getImageCountFromBoth(item?.wbcInfo, 'Metamyelocyte'),
-//       A_Myelocyte: getImageCount(item?.wbcInfoAfter, 'Myelocyte'),
-//       B_Myelocyte: getImageCountFromBoth(item?.wbcInfo, 'Myelocyte'),
-//       A_Promyelocyte: getImageCount(item?.wbcInfoAfter, 'Promyelocyte'),
-//       B_Promyelocyte: getImageCountFromBoth(item?.wbcInfo, 'Promyelocyte'),
-//       A_Lymphocyte: getImageCount(item?.wbcInfoAfter, 'Lymphocyte'),
-//       B_Lymphocyte: getImageCountFromBoth(item?.wbcInfo, 'Lymphocyte'),
-//       A_Reactive_lymphocyte: getImageCount(item?.wbcInfoAfter, 'Reactive lymphocyte'),
-//       B_Reactive_lymphocyte: getImageCountFromBoth(item?.wbcInfo, 'Reactive lymphocyte'),
-//       A_Abnormal_lymphocyte: getImageCount(item?.wbcInfoAfter, 'Abnormal lymphocyte'),
-//       B_Abnormal_lymphocyte: getImageCountFromBoth(item?.wbcInfo, 'Abnormal lymphocyte'),
-//       A_Eosinophil: getImageCount(item?.wbcInfoAfter, 'Eosinophil'),
-//       B_Eosinophil: getImageCountFromBoth(item?.wbcInfo, 'Eosinophil'),
-//       A_Basophil: getImageCount(item?.wbcInfoAfter, 'Basophil'),
-//       B_Basophil: getImageCountFromBoth(item?.wbcInfo, 'Basophil'),
-//       A_Blast: getImageCount(item?.wbcInfoAfter, 'Blast'),
-//       B_Blast: getImageCountFromBoth(item?.wbcInfo, 'Blast'),
-//       A_Plasma_cell: getImageCount(item?.wbcInfoAfter, 'Plasma cell'),
-//       B_Plasma_cell: getImageCountFromBoth(item?.wbcInfo, 'Plasma cell'),
-//       A_nRBC: getImageCount(item?.wbcInfoAfter, 'nRBC'),
-//       B_nRBC: getImageCountFromBoth(item?.wbcInfo, 'nRBC'),
-//       A_Giant_platelet: getImageCount(item?.wbcInfoAfter, 'Giant platelet'),
-//       B_Giant_platelet: getImageCountFromBoth(item?.wbcInfo, 'Giant platelet'),
-//       A_Platelet_aggregation: getImageCount(item?.wbcInfoAfter, 'Platelet aggregation'),
-//       B_Platelet_aggregation: getImageCountFromBoth(item?.wbcInfo, 'Platelet aggregation'),
-//       A_Smudge: getImageCount(item?.wbcInfoAfter, 'Smudge'),
-//       B_Smudge: getImageCountFromBoth(item?.wbcInfo, 'Smudge'),
-//       A_Malaria: getImageCount(item?.wbcInfoAfter, 'Malaria'),
-//       B_Malaria: getImageCountFromBoth(item?.wbcInfo, 'Malaria'),
-//       // 필요한 필드 추가
-//     };
-//   });
-//
-//
-//   const ws = XLSX.utils.json_to_sheet(filteredData);
-//   const wb = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(wb, ws, "Data");
-//
-//   // 현재 날짜와 시간을 기반으로 파일 이름 생성
-//   const now = moment().format("YYYYMMDDHHmmss");
-//   const fileName = `${now}_resultData.xlsx`;
-//
-//   XLSX.writeFile(wb, fileName);
-// };
 
 const checkListItem = (items: any) => {
   checkedSelectedItems.value = items;

@@ -3,7 +3,7 @@
     <div class="loader"></div>
     <p class="loadingText">Loading...</p>
   </div>
-  <table class='defaultTable mt2 dbDataTable'>
+  <table class='defaultTable mt2 dbDataTable' ref="scrollableDiv">
     <thead>
     <tr>
       <th>NO</th>
@@ -226,11 +226,16 @@ const isShiftKeyPressed = ref(false);
 const firstShiftKeyStr = ref('');
 const lastShiftKeyStr = ref('');
 let socketTimeoutId = undefined; // 타이머 ID 저장
+const scrollableDiv = ref(null);
 
 
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
   projectType.value = window.PROJECT_TYPE;
+
+  if (scrollableDiv.value) {
+    scrollableDiv.value.addEventListener('scroll', handleScroll);
+  }
   try {
 
     userId.value = getStoredUser.id;
@@ -253,6 +258,14 @@ async function handleKeyDown(event) {
     isShiftKeyPressed.value = true;
   }
 }
+const handleScroll = () => {
+  if (scrollableDiv.value.scrollTop === 0) {
+    console.log('Scrolled to the top!');
+    emits('loadPrevData');
+    scrollableDiv.value.scrollTop = 50;
+
+  }
+};
 
 function handleKeyUp(event) {
   // Ctrl 키가 떼어졌는지 확인
@@ -268,6 +281,9 @@ function handleKeyUp(event) {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
+  if (scrollableDiv.value) {
+    scrollableDiv.value.removeEventListener('scroll', handleScroll);
+  }
 });
 
 watch(
