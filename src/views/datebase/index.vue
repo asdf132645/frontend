@@ -97,7 +97,7 @@
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
-import {getCurrentInstance, onBeforeMount, onMounted, ref, watch, watchEffect} from "vue";
+import {getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, ref, watch, watchEffect} from "vue";
 import {getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
@@ -140,17 +140,13 @@ const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = sessionStorage.getItem('viewerCheck')
 const eventTriggered = ref(false);
 const loadingDelay = ref(false);
-
-instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
-
-  console.log(dataBaseOneCall.value)
+function handleStateVal(data: any) {
+  console.log(dataBaseOneCall.value);
   eventTriggered.value = true;
-  if(!dataBaseOneCall.value){
-    await initDbData();
-    console.log('?!@')
-  }
-  await store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: true});
-})
+  initDbData().then(() => {
+    console.log('?!@');
+  });
+}
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
@@ -160,7 +156,12 @@ onMounted(async () => {
   if (!eventTriggered.value) {
     await initDbData();
   }
+  instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
 
+});
+
+onBeforeUnmount(() => {
+  instance?.appContext.config.globalProperties.$socket.off('stateVal', handleStateVal);
 });
 
 const classListToggleEvent = () => {

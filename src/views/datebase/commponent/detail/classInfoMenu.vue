@@ -99,6 +99,7 @@ const pageMoveDeleteStop = ref(false);
 const props = defineProps(['isNext']);
 const ipAddress = ref<any>('');
 const isLoading = ref(true);
+let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 
 watch(props.isNext, (newVal) => {
   if (newVal) {
@@ -147,12 +148,7 @@ const deleteConnectionStatus = async () => {
   const req = `oldPcIp=${ipAddress.value}`
   await clearPcIpState(req)
       .then(response => {
-        console.log('지운다?')
-        store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
-        instance?.appContext.config.globalProperties.$socket.emit('state', {
-          type: 'SEND_DATA',
-          payload: 'refreshDb'
-        });
+        delayedEmit('SEND_DATA', 'refreshDb', 300);
       }).catch(error => {
         console.log('2 err', error)
       });
@@ -164,12 +160,7 @@ const upDownBlockAccess = async (selectItems: any) => {
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
 
     await updatePcIpStateApi(req).then(response => {
-      // emits('initData');
-      store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
-      instance?.appContext.config.globalProperties.$socket.emit('state', {
-        type: 'SEND_DATA',
-        payload: 'refreshDb'
-      });
+      delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
       console.log('3 err', error)
     });
@@ -192,6 +183,18 @@ const getOrderClass = async () => {
     console.log(e)
   }
 }
+const delayedEmit = (type: string, payload: string, delay: number) => {
+  if (socketTimeoutId !== undefined) {
+    clearTimeout(socketTimeoutId); // 이전 타이머 클리어
+  }
+
+  socketTimeoutId = window.setTimeout(() => {
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }, delay);
+};
 
 const pageGo = (path: string) => {
   router.push(path);

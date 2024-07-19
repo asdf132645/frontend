@@ -225,6 +225,7 @@ const isCtrlKeyPressed = ref(false);
 const isShiftKeyPressed = ref(false);
 const firstShiftKeyStr = ref('');
 const lastShiftKeyStr = ref('');
+let socketTimeoutId = undefined; // 타이머 ID 저장
 
 
 onMounted(async () => {
@@ -442,11 +443,7 @@ const getIpAddress = async (item) => {
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}`
 
     await updatePcIpStateApi(req).then(response => {
-      store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
-      instance?.appContext.config.globalProperties.$socket.emit('state', {
-        type: 'SEND_DATA',
-        payload: 'refreshDb'
-      });
+      delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
       console.log(error)
     });
@@ -454,6 +451,19 @@ const getIpAddress = async (item) => {
     console.log(e)
   }
 }
+
+const delayedEmit = (type, payload, delay) => {
+  if (socketTimeoutId !== undefined) {
+    clearTimeout(socketTimeoutId); // 이전 타이머 클리어
+  }
+
+  socketTimeoutId = window.setTimeout(() => {
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }, delay);
+};
 const rowDbClick = async (item) => {
   if (item.lock_status) {
     return;

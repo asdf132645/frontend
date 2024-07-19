@@ -78,6 +78,7 @@ const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
+let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -510,11 +511,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           if (slotId) {
             console.log('save successful');
           }
-          await store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: false});
-          instance?.appContext.config.globalProperties.$socket.emit('state', {
-            type: 'SEND_DATA',
-            payload: 'refreshDb'
-          });
+          delayedEmit('SEND_DATA', 'refreshDb', 300);
           // alert('성공~')
         }
       } catch (e) {
@@ -525,7 +522,18 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     console.error(error);
   }
 });
+const delayedEmit = (type: string, payload: string, delay: number) => {
+  if (socketTimeoutId !== undefined) {
+    clearTimeout(socketTimeoutId); // 이전 타이머 클리어
+  }
 
+  socketTimeoutId = window.setTimeout(() => {
+    instance?.appContext.config.globalProperties.$socket.emit('state', {
+      type: 'SEND_DATA',
+      payload: 'refreshDb'
+    });
+  }, delay);
+};
 const rbcAppUpdate = (data: any) => {
   rbcArr.value[data.iCasStatArr] = data.rbc;
 }
