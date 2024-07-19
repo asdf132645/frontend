@@ -111,7 +111,7 @@
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
-import {getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, ref, watch, watchEffect} from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, ref, watch, watchEffect} from "vue";
 import {getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
@@ -151,7 +151,8 @@ const prevDataPage = ref('');
 const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
-const viewerCheck = sessionStorage.getItem('viewerCheck')
+const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);

@@ -16,7 +16,7 @@
         </button>
       </div>
       <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
-        <button class="darkButton" @click="imgSetOpen">Img Setting</button>
+        <button class="darkButton" @click="imgSetOpen">IMG Setting</button>
         <div class="imgSet_img_list" v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
@@ -178,7 +178,6 @@ const alertType = ref('');
 const alertMessage = ref('');
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 let viewer: any = ref<any>(null);
 const imgSet_img_list = ref(false);
@@ -207,6 +206,8 @@ const tileExist = ref(true);
 const newItemClassInfoArr = ref<any>([]);
 
 const store = useStore();
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);

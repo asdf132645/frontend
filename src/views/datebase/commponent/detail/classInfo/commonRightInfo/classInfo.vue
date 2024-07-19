@@ -30,7 +30,7 @@
   </div>
   <div class="wbcClassScroll">
     <div
-        v-for="(item, idx) in wbcInfoAfterVal"
+        v-for="(item, idx) in wbcInfoVal"
         :key="item.id"
         class="wbcClassDbDiv"
         draggable="true"
@@ -40,13 +40,27 @@
     >
       <ul class="nth1Child classAttribute" v-if="idx === 0">
         <li>Class</li>
-        <li>Count</li>
-        <li>%</li>
+        <li>
+          <p>Before</p>
+          <p>(Count | Percent)</p>
+        </li>
+        <li>
+          <p>After</p>
+          <p>(Count | Percent)</p>
+        </li>
       </ul>
       <ul class="nth1Child" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)">
         <li>{{ item?.name }}</li>
-        <li><span class="grayText">{{ wbcInfoBeforeVal[idx].count }}</span> | <span :class="{ blueText: +wbcInfoBeforeVal[idx].count !== +item?.count }">{{ item?.count }}</span></li>
-        <li><span class="grayText">{{ wbcInfoBeforeVal[idx].percent || '-' }}</span> | <span :class="{ blueText: +wbcInfoBeforeVal[idx].percent !== +item?.percent }">{{ item?.percent || '-' }}</span></li>
+        <li style="display: flex; justify-content: center;">
+          <span class="grayText">{{ item.count.before }}</span>
+          <p>|</p>
+          <span class="grayText">{{ item.percent.before + '%' || '-' }}</span>
+        </li>
+        <li style="display: flex; justify-content: center;">
+          <span>{{ item?.count.after }}</span>
+          <p>|</p>
+          <span>{{ item?.percent.after + '%' || '-' }}</span>
+        </li>
       </ul>
     </div>
     <div class="categories classTotal">
@@ -55,22 +69,23 @@
           Total
         </li>
       </ul>
-      <ul class="classNm">
+      <ul>
         <li>
           {{ totalAfterCount || 0 }} |
-          {{ totalBeforeCount || 0 }}
+          100%
         </li>
       </ul>
       <ul class="degree">
         <li>
-          100.00
+          {{ totalBeforeCount || 0 }} |
+          100%
         </li>
       </ul>
     </div>
 
     <div v-if="projectBm">
       <div
-          v-for="(item, idx) in wbcInfoAfterVal"
+          v-for="(item, idx) in wbcInfoVal"
           :key="item.id"
           class="wbcClassDbDiv mb2"
           draggable="true"
@@ -80,31 +95,31 @@
       >
         <ul class="nth1Child" v-if="item?.title === 'OT'" @click="goClass(item.id)">
           <li>{{ item?.name }}</li>
-          <li>{{ item?.count }}</li>
+          <li>{{ item?.count.after }}</li>
           <li> -</li>
         </ul>
       </div>
     </div>
 
     <div v-if="!projectBm">
-      <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
+      <template v-for="(nWbcItem, outerIndex) in nonRbcClassListVal" :key="outerIndex">
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm">
             <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
             <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
-          <ul class="classNm">
+          <ul>
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li>
-              {{ nWbcItem?.count }}
+            <li style="display: flex;">
+              {{ nWbcItem?.count.before }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
             </li>
           </ul>
           <ul class="degree">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li>-</li>
+              <li>{{ nWbcItem?.count.after }}</li>
           </ul>
         </div>
       </template>
@@ -174,9 +189,13 @@ const barcodeImg = ref('');
 const userId = ref('');
 const wbcMemo = ref('');
 const memoModal = ref(false);
+const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
+const nonRbcClassListVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
+const nonRbcClassBeforeList = ref<any>([]);
+const nonRbcClassAfterList = ref<any>([]);
 const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
@@ -237,6 +256,7 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
+  console.log("바뀌나-clonedWBCcInfoStore", newItem)
   beforeAfterChange(newItem);
 }, {deep: true});
 
@@ -269,8 +289,8 @@ const drop = (index: any, event: any) => {
   }
   event.preventDefault();
   if (dragIndex.value !== -1) {
-    const movedItem = wbcInfoAfterVal.value.splice(dragIndex.value, 1)[0];
-    wbcInfoAfterVal.value.splice(index, 0, movedItem);
+    const movedItem = wbcInfoVal.value.splice(dragIndex.value, 1)[0];
+    wbcInfoVal.value.splice(index, 0, movedItem);
     dragIndex.value = -1;
     updateOriginalDb();
   }
@@ -949,8 +969,41 @@ const beforeAfterChange = async (newItem: any) => {
   const sortedWbcAfterInfo = sortWbcInfo(wbcAfterInfo, wbcAfterArr);
   wbcInfoAfterVal.value = sortedWbcAfterInfo.filter((item: any) => !titleArr.includes(item.title));
   wbcInfoBeforeVal.value = sortedWbcBeforeInfo.filter((item: any) => !titleArr.includes(item.title));
+  nonRbcClassAfterList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
+  nonRbcClassBeforeList.value = sortedWbcBeforeInfo.filter((item: any) => titleArr.includes(item.title));
+  // nonRbcClassList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
 
-  nonRbcClassList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
+  nonRbcClassListVal.value = [];
+  wbcInfoVal.value = [];
+
+  nonRbcClassBeforeList.value.forEach((beforeItem: any) => {
+    const afterItem = nonRbcClassAfterList.value.find((afterItem: any) => afterItem.id === beforeItem.id);
+    if (afterItem && !nonRbcClassListVal.value.find((item: any) => item.id === beforeItem.id)) {
+      nonRbcClassListVal.value.push({
+        id: beforeItem.id,
+        name: beforeItem.name,
+        title: beforeItem.title,
+        count: { before: beforeItem.count, after: afterItem.count },
+        images: { before: beforeItem.images, after: afterItem.images },
+        percent: { before: beforeItem.percent, after: afterItem.percent }
+      });
+    }
+  });
+
+  wbcInfoBeforeVal.value.forEach((beforeItem: any) => {
+    const afterItem = wbcInfoAfterVal.value.find((afterItem: any) => afterItem.id === beforeItem.id);
+    if (afterItem && !wbcInfoVal.value.find((item: any) => item.id === beforeItem.id)) {
+      wbcInfoVal.value.push({
+        id: beforeItem.id,
+        name: beforeItem.name,
+        title: beforeItem.title,
+        count: { before: beforeItem.count, after: afterItem.count },
+        images: { before: beforeItem.images, after: afterItem.images },
+        percent: { before: beforeItem.percent, after: afterItem.percent }
+      });
+    }
+  });
+
   totalCountSet('before', wbcInfoBeforeVal.value);
   totalCountSet('after', wbcInfoAfterVal.value);
   if (props.selectItems?.submitState === "") {
@@ -962,6 +1015,8 @@ const beforeAfterChange = async (newItem: any) => {
     await resRunningItem(updatedRuningInfo, true);
   }
 }
+
+
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
   const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
