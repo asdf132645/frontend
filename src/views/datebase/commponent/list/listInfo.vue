@@ -61,7 +61,7 @@
 </template>
 
 <script setup >
-import {ref, defineProps, onMounted, watchEffect, watch, nextTick} from 'vue';
+import {ref, defineProps, onMounted, watchEffect, watch, nextTick, computed} from 'vue';
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";
@@ -69,6 +69,8 @@ const store = useStore();
 
 const props = defineProps(['selectedItem']);
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
+const siteCd = computed(() => store.state.commonModule.siteCd);
+
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
 const wbcTotal = ref(0);
@@ -103,7 +105,7 @@ const setWbcTotalAndPercent = () => {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
       if (!targetArray.includes(item.title)) {
         const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
