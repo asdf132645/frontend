@@ -18,11 +18,19 @@
 <script setup lang="ts">
 import {ref, watch, defineProps} from 'vue';
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-const props = defineProps([ 'parsedData']);
+const props = defineProps([ 'parsedData', 'pb100aCassette']);
 
 const images = ref<RunningPathItem[]>([]);
 
-
+watch(
+    () => props.pb100aCassette,
+    (newVal) => {
+      if(newVal === 'reset'){
+        images.value = [];
+      }
+    },
+    { deep: true }
+);
 interface RunningPathItem {
   path: string;
   id: string;
