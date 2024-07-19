@@ -136,13 +136,20 @@ const prevDataPage = ref('');
 const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
+const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = ref('viewer');
 const eventTriggered = ref(false);
 const loadingDelay = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('stateVal', async (data) => { // 동시 접속자 제어 하는 곳
+
+  console.log(dataBaseOneCall.value)
   eventTriggered.value = true;
-  await initDbData();
+  if(!dataBaseOneCall.value){
+    await initDbData();
+    console.log('?!@')
+  }
+  await store.dispatch('commonModule/setCommonInfo', {dataBaseOneCall: true});
 })
 
 onBeforeMount(async () => {
@@ -154,6 +161,7 @@ onMounted(async () => {
   if (!eventTriggered.value) {
     await initDbData();
   }
+
 });
 
 const classListToggleEvent = () => {
@@ -169,6 +177,7 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
+  loadingDelay.value = true;
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();
@@ -210,27 +219,11 @@ const loadLastSearchParams = () => {
   return storedSearchParams ? JSON.parse(storedSearchParams) : {};
 };
 
-function deepEqual(obj1: any, obj2: any) {
-  if (obj1 === obj2) return true;
-
-  if (obj1 && typeof obj1 === 'object' && obj2 && typeof obj2 === 'object') {
-    if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
-
-    for (let key in obj1) {
-      if (!deepEqual(obj1[key], obj2[key])) return false;
-    }
-
-    return true;
-  }
-
-  return false;
-}
-
 const getDbData = async (type: string, pageNum?: number) => {
   if (type === 'search') {
     page.value = 1;
   }
-  loadingDelay.value = true;
+
   const requestData: any = {
     page: type !== 'mounted' ? page.value : Number(pageNum),
     pageSize: 20,
@@ -241,13 +234,6 @@ const getDbData = async (type: string, pageNum?: number) => {
     patientNm: searchType.value === 'patientNm' ? searchText.value : undefined,
     nrCount: nrCount.value,
   };
-  // console.log('prevDataPage.value', prevDataPage.value)
-  // console.log('requestData.page', requestData.page)
-  // console.log('----------------------------------')
-  // if (deepEqual(requestData, reqDataPrev) || Number(prevDataPage.value) === Number(requestData.page)) {
-  //   console.log("중복된 요청입니다. 요청을 생략합니다.");
-  //   return;
-  // }
   if(prevDataPage.value === ''){
     prevDataPage.value = requestData.page;
   }
@@ -305,7 +291,9 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
         }
         // 마지막 조회 결과 저장
-        saveLastSearchParams();
+        if(dbGetData.value.length !== 0){
+          saveLastSearchParams();
+        }
       }
     }
     loadingDelay.value = false;

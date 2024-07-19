@@ -46,6 +46,7 @@ export interface CommonState {
     rbcReDataCheck: boolean;
     appAlertOpen: boolean;
     dataBasePageReset: boolean;
+    dataBaseOneCall: boolean;
 }
 
 interface CommonModule {
@@ -98,6 +99,7 @@ interface CommonModule {
         setRbcReDataCheck: (state: CommonState, value: boolean) => void;
         setAppAlertOpen: (state: CommonState, value: boolean) => void;
         setDataBasePageReset: (state: CommonState, value: boolean) => void;
+        setDataBaseOneCall: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -151,6 +153,7 @@ export const commonModule: CommonModule = {
         rbcReDataCheck: false,
         appAlertOpen: false,
         dataBasePageReset: false,
+        dataBaseOneCall: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -294,6 +297,9 @@ export const commonModule: CommonModule = {
         },
         setDataBasePageReset(state: CommonState, value: boolean): void {
             state.dataBasePageReset = value;
+        },
+        setDataBaseOneCall(state: CommonState, value: boolean): void {
+            state.dataBaseOneCall = value;
         },
     },
     actions: {
@@ -439,6 +445,10 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('dataBasePageReset')){
                 commit('setDataBasePageReset', payload.dataBasePageReset);
+            }
+            // setDataBaseOneCall
+            if (payload.hasOwnProperty('dataBaseOneCall')){
+                commit('setDataBaseOneCall', payload.dataBaseOneCall);
             }
         },
     },
