@@ -80,17 +80,59 @@ onMounted(() => {
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg');
   }
+
 });
 watch(() => props.selectedItem, (newSelectedItem) => {
   barCodeImageShowError.value = false;
-  wbcTotal.value = props.selectedItem.wbcInfoAfter.reduce((acc,item) => {
-    if (!nonWbcTitles.includes(item.title)) return acc + Number(item.count)
-    return acc
-  }, 0)
+  setWbcTotalAndPercent();
+
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
 });
+
+const setWbcTotalAndPercent = () => {
+  wbcTotal.value = props.selectedItem.wbcInfoAfter.reduce((acc,item) => {
+    if (!nonWbcTitles.includes(item.title)) return acc + Number(item.count)
+    return acc
+  }, 0)
+  for (const item of props.selectedItem.wbcInfoAfter) {
+    if (projectBm.value) {
+      if (item.title !== 'OT') {
+        const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    } else {
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      if (!targetArray.includes(item.title)) {
+        const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    }
+  }
+}
+
+const getStringArrayBySiteCd = (siteCd, testType) => {
+  if (!siteCd && siteCd === '') {
+    siteCd = '0000';
+    testType = '01';
+  }
+  const arraysBySiteCd = { // 0006 -> 고대
+    '0006': {
+      includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+      includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
+    },
+  };
+
+  // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
+  const arraysForSiteCd = arraysBySiteCd[siteCd] || {
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'NE', 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
+  };
+
+  // testType에 따라 제외할 부분 정의
+  return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
+};
 
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');

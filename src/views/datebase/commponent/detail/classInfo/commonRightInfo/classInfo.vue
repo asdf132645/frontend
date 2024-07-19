@@ -111,7 +111,7 @@
           </ul>
           <ul>
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li style="display: flex;">
+            <li>
               {{ nWbcItem?.count.before }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
@@ -209,7 +209,6 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const orderClass = ref<any>([]);
 const projectBm = ref(false);
-const totalCount = ref(0);
 const totalBeforeCount = ref(0);
 const totalAfterCount = ref(0);
 const okMessageType = ref('');
@@ -256,7 +255,6 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 watch(() => clonedWbcInfoStore.value, (newItem) => {
-  console.log("바뀌나-clonedWBCcInfoStore", newItem)
   beforeAfterChange(newItem);
 }, {deep: true});
 
@@ -971,7 +969,40 @@ const beforeAfterChange = async (newItem: any) => {
   wbcInfoBeforeVal.value = sortedWbcBeforeInfo.filter((item: any) => !titleArr.includes(item.title));
   nonRbcClassAfterList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
   nonRbcClassBeforeList.value = sortedWbcBeforeInfo.filter((item: any) => titleArr.includes(item.title));
-  // nonRbcClassList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
+
+  totalCountSet('before', wbcInfoBeforeVal.value);
+  totalCountSet('after', wbcInfoAfterVal.value);
+
+  wbcInfoBeforeVal.value.forEach((item: any) => {
+    if (projectBm.value) {
+      if (item.title !== 'OT') {
+        const percentage = ((Number(item.count) / Number(totalBeforeCount.value)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    } else {
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      if (!targetArray.includes(item.title)) {
+        const percentage = ((Number(item.count) / Number(totalBeforeCount.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    }
+  })
+
+  wbcInfoAfterVal.value.forEach((item: any) => {
+    if (projectBm.value) {
+      if (item.title !== 'OT') {
+        const percentage = ((Number(item.count) / Number(totalAfterCount.value)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    } else {
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      if (!targetArray.includes(item.title)) {
+        const percentage = ((Number(item.count) / Number(totalAfterCount.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    }
+  })
+
 
   nonRbcClassListVal.value = [];
   wbcInfoVal.value = [];
@@ -1004,8 +1035,7 @@ const beforeAfterChange = async (newItem: any) => {
     }
   });
 
-  totalCountSet('before', wbcInfoBeforeVal.value);
-  totalCountSet('after', wbcInfoAfterVal.value);
+
   if (props.selectItems?.submitState === "") {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
     const updatedItem = {
@@ -1015,7 +1045,6 @@ const beforeAfterChange = async (newItem: any) => {
     await resRunningItem(updatedRuningInfo, true);
   }
 }
-
 
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
