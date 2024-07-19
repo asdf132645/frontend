@@ -182,7 +182,7 @@ import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 
-const props = defineProps(['dbData', 'loadingDelay']);
+const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
 const emits = defineEmits();
 const selectedItemId = ref('');
@@ -195,7 +195,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const myIp = ref('');
-
+const loadingDelay = ref(false);
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
@@ -270,20 +270,40 @@ onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
 });
 
+watch(
+    () => props.loadingDelayParents,
+    (newVal) => {
+      if(newVal){
+        loadingDelay.value = true;
+        console.log('?')
+      }
+    },
+    {deep: true}
+);
 
 watchEffect(async () => {
   if (props.dbData.length > 0) {
     await nextTick();
+
+    if (props.selectedItemIdFalse){
+      selectedItemId.value = '0';
+      const filteredItems = props.dbData[0].id
+      const selectedRow = document.querySelector(`[data-row-id="${filteredItems}"]`);
+      selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
     const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
     if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
+      // loadingDelay.value = true;
       await selectItem(filteredItems[0]);
       await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
       await removeCheckBox();
       // 선택된 행이 화면에 보이도록 스크롤 조정
       const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
-      if (selectedRow) {
-        selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
+      if (selectedRow && selectedItemId.value !== '0') {
+        selectedRow.scrollIntoView({ behavior: 'auto', block: 'center' });
+        loadingDelay.value = false;
       }
+      return;
     }
     // 첫 번째 행을 클릭
     const observer = new IntersectionObserver(handleIntersection, {
@@ -293,6 +313,10 @@ watchEffect(async () => {
     });
     if (loadMoreRef.value) {
       observer.observe(loadMoreRef.value);
+    }
+
+    if(selectedItemId.value === '0' || !selectedItemId.value){
+      loadingDelay.value = false;
     }
   }
 });
