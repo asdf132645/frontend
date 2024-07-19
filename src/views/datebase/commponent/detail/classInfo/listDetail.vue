@@ -20,7 +20,7 @@
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow" type='listTable'
                  @nextPage="nextPage"
-                 @scrollEvent="scrollToElement" @isBefore="isBeforeDataSet"/>
+                 @scrollEvent="scrollToElement"/>
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
@@ -131,7 +131,6 @@
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
             :updateWbcInfo="updateWbcInfo"
-            :isBeforeChild="isBeforeChild"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
             @openModal="openModal"
@@ -244,7 +243,6 @@ const selectSizeTitle = ref('ME')
 const allCheck = ref('');
 const cellRef = ref(null);
 const cellMarkerIcon = ref(false);
-const isBeforeChild = ref(false);
 const modalOpen = ref(false);
 const selectedImageSrc = ref('');
 const modalImageWidth = ref('150px');
@@ -306,11 +304,6 @@ watch(imageSize, (newVal) => {
   localStorage.setItem('imageSize', String(newVal));
 })
 
-watch(isBeforeChild, async (newVal) => {
-  await getWbcCustomClasses(false, null);
-  await imgSetLocalStorage();
-}, {deep: true});
-
 watch(imageRgb, (newVal) => {
   const red = newVal[0];
   const green = newVal[1];
@@ -339,13 +332,7 @@ const handleUpdateCellRef = (refValue: any) => {
 };
 
 const classCompare = () => {
-  if (isBeforeChild.value) {
-    showAlert.value = true;
-    alertType.value = 'error';
-    alertMessage.value = `Can't use Class Compare function when Before State`;
-  } else {
-    classCompareShow.value = !classCompareShow.value;
-  }
+  classCompareShow.value = !classCompareShow.value;
 }
 
 const imgPixelConvertToPercent = (imageSize: number) => {
@@ -379,10 +366,6 @@ const imgSetLocalStorage = async () => {
   });
 }
 
-const isBeforeDataSet = (data: any) => {
-  isBeforeChild.value = data;
-}
-
 const nextPage = () => {
   isNext.value = true;
 }
@@ -400,28 +383,8 @@ function hideImage(id: string, fileName: string, title?: string) {
   hiddenImages.value[`${id}-${fileName}`] = true;
 }
 
-const getNewImageUrl = (fileName: any, title: any): any => {
-  if (selectItems.value?.wbcInfoAfter.length === 0) {
-    return null;
-  }
-  if (isBeforeChild.value) {
-    const matchingImage = selectItems.value?.wbcInfoAfter.find((el: any) => {
-      return el.images && el.images.find((image: any) => image.fileName === fileName);
-    });
-    if (matchingImage && matchingImage.title !== title) {
-      return {fileNameMa: fileName, idMa: matchingImage.id, titleMa: matchingImage.title};
-    }
-  }
-  return null; // 새로운 이미지 URL이 없는 경우 null을 반환
-}
-
-
 const showSizeControl = () => {
-  showSize.value = true;
-};
-
-const hideSizeControl = () => {
-  showSize.value = false;
+  showSize.value = !showSize.value;
 };
 
 const handleClickOutside = (event: any) => {
@@ -441,9 +404,6 @@ document.addEventListener('click', (event) => {
   }
 });
 const openContextMenu = (event: MouseEvent, item: any) => {
-  if (isBeforeChild.value) {
-    return;
-  }
   contextMenuVisible.value = true;
   contextMenuX.value = event.clientX;
   contextMenuY.value = event.clientY - 250;
@@ -523,12 +483,8 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     sessionStorage.setItem('customClass', JSON.stringify(data));
     wbcCustomItems.value = data;
     let wbcinfo: any = [];
-    if (isBeforeChild.value) {
-      wbcinfo = selectItems.value?.wbcInfo.wbcInfo[0];
-    } else {
-      wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
-    }
-    if (newData.length !== 0 && !isBeforeChild.value) {
+    wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
+    if (newData.length !== 0) {
       for (const item of newData) { // 커스텀클래스 폴더 생성
         const {fullNm, abbreviation, customNum} = item;
         const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${customNum}_${abbreviation}`;
@@ -549,7 +505,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           await updateOriginalDb('notWbcAfterSave');
         }
       }
-    } else if (!isBeforeChild.value) {
+    } else {
       const itemsToDelete: any = [];
       const sortArr = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
       wbcinfo.forEach((item: any) => {
@@ -889,10 +845,6 @@ function addToRollbackHistory() {
 
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
-  if (isBeforeChild.value) {
-    return;
-  }
-
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
 
   // 선택한 이미지(들)가 같은 Class로 욺직이려고 할 때
@@ -943,12 +895,6 @@ async function handleKeyDown(event: KeyboardEvent) {
   if (event.ctrlKey) {
     isCtrlKeyPressed.value = true;
   }
-
-  // before 상태에서는 이미지 파일 이동 불가
-  if (isBeforeChild.value) {
-    return;
-  }
-
 
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
@@ -1008,7 +954,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
     wbcInfo.value = upDownData.wbcInfoAfter.length !== 0 ? upDownData.wbcInfoAfter : upDownData.wbcInfo.wbcInfo[0];
     selectItemsVal = upDownData;
   }
-  if (selectItemsVal.wbcInfoAfter && selectItemsVal.wbcInfoAfter.length !== 0 && !isBeforeChild.value) {
+  if (selectItemsVal.wbcInfoAfter && selectItemsVal.wbcInfoAfter.length !== 0) {
     wbcInfo.value = selectItemsVal.wbcInfoAfter;
     selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
       const title = item.title;
@@ -1019,7 +965,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
         })
       }
     });
-  } else if (isBeforeChild.value) {
+  } else {
     wbcInfo.value = selectItemsVal.wbcInfo.wbcInfo[0];
     selectItemsVal.wbcInfo.wbcInfo[0].forEach((item: any) => {
       if (item.images && item.images.length > 0) {
@@ -1036,11 +982,9 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   }
 
   // customClass wbcInfo After 상태에서 추가하는 코드
-  if (!isBeforeChild.value) {
-    const wbcInfoIdArr = wbcInfo.value.map((item: any) => item.id)
-    const customClassArr = selectItemsVal.wbcInfo.wbcInfo[0].filter((item: any) => !wbcInfoIdArr.includes(item.id))
-    wbcInfo.value = [...wbcInfo.value, ...customClassArr];
-  }
+  const wbcInfoIdArr = wbcInfo.value.map((item: any) => item.id)
+  const customClassArr = selectItemsVal.wbcInfo.wbcInfo[0].filter((item: any) => !wbcInfoIdArr.includes(item.id))
+  wbcInfo.value = [...wbcInfo.value, ...customClassArr];
 
   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
@@ -1137,9 +1081,6 @@ function isSelected(image: any) {
 }
 
 async function onDrop(targetItemIndex: any) {
-  if (isBeforeChild.value) {
-    return;
-  }
   addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
@@ -1475,14 +1416,6 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   const slotId = selectItems.value?.slotId || "";
   let folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
-  if (isBeforeChild.value) {
-
-    if (getNewImageUrl(imageName, title)) {
-      const {idMa, titleMa} = getNewImageUrl(imageName, title);
-      folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${idMa}_${titleMa}`;
-    }
-
-  }
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
     url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
@@ -1494,7 +1427,7 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
 
 
 async function rollbackChanges() {
-  if (rollbackHistory.length <= 0 || isBeforeChild.value) return;
+  if (rollbackHistory.length <= 0) return;
 
   // 롤백할 때마다 히스토리에서 마지막 상태를 꺼내어 복원
   const prevWbcInfo = rollbackHistory.pop();

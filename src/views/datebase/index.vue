@@ -15,11 +15,14 @@
             <option value="patientNm">Patient Name</option>
           </select>
           <input type="text" v-model='searchText' class="searchInputBox"/>
+          <button class="searchClass" @click="dateRefresh">
+            <font-awesome-icon :icon="['fas', 'calendar-days']" />
+            Refresh</button>
           <div class="settingDatePickers">
             <Datepicker v-model="startDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>
-          <button class="searchClass" @click="dateRefresh">dateRefresh</button>
+
           <button type="button" class="searchClass" @click="search">Search</button>
           <div v-if="viewerCheck !== 'viewer'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
@@ -334,6 +337,7 @@ const loadMoreData = async () => {
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertMessage.value = message;
+
 };
 
 const hideAlert = () => {
@@ -341,7 +345,10 @@ const hideAlert = () => {
 };
 
 const exportToExcel = async () => {
-  if (checkedSelectedItems.value.length === 0) return;
+  if (checkedSelectedItems.value.length === 0) {
+    showSuccessAlert('Select an Item')
+    return;
+  }
 
   const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
   const body = checkedSelectedItems.value.map((checkedItem: any) => {

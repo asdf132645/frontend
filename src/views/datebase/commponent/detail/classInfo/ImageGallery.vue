@@ -246,7 +246,6 @@ const props = defineProps<{
   updateWbcInfo: (newInfo: WbcInfo) => void;
   classCompareShow: boolean;
   selectedTitle: string;
-  isBeforeChild: boolean;
   hiddenImages: { [key: string]: boolean };
   setRef: (el: any, id: string) => void;
   replaceFileNamePrefix: (fileName: string) => string;

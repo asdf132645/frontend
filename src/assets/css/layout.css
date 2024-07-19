@@ -69,6 +69,14 @@
     border: 1px solid var(--gray-bg-8-color);
 }
 
+.grayText {
+    color: var(--gray-bg-7-color);
+}
+
+.blueText {
+    color: var(--blue-bg-0-color);
+}
+
 /* header-menu */
 .header {
     width: 100%;
@@ -563,18 +571,18 @@ button.saveBtn, .defaultBtn {
 }
 
 .classTotal > :nth-child(1) {
-    width: 40%;
+    width: 35%;
     text-align: left;
 }
 
 .classTotal > :nth-child(2) {
-    width: 40%;
+    width: 30%;
     text-align: center;
 }
 
 .classTotal > :nth-child(3) {
     text-align: center;
-    width: 20%;
+    width: 30%;
 }
 
 .categoriesBm {
@@ -590,7 +598,7 @@ ul.classInfo {
 
 .categoryNm {
     display: inline-block;
-    width: 29%;
+    width: 35%;
 }
 
 ul.degree.analysis {
@@ -918,18 +926,18 @@ ul.nth1Child {
 }
 
 ul.nth1Child > :nth-child(1) {
-    width: 40%;
+    width: 35%;
     text-align: left;
 }
 
 ul.nth1Child > :nth-child(2) {
-    width: 40%;
+    width: 35%;
     text-align: center;
 }
 
 ul.nth1Child > :nth-child(3) {
     text-align: center;
-    width: 20%;
+    width: 30%;
 }
 
 .degreeActive {
@@ -2396,6 +2404,37 @@ ul.normalItems li div span:last-child {
     width: 40%;
     height: 92.2vh;
 }
+
+.resInfoContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+}
+
+.resInfoWrapper {
+    display: flex;
+    width: 100%;
+}
+
+.resInfoWrapperLine {
+    margin-bottom: 4px;
+}
+
+.resInfoWrapper > p:nth-child(1) {
+    width: 20%;
+}
+
+.resInfoWrapper > p:nth-child(2) {
+    width: 30%;
+    text-align: center;
+}
+
+.resInfoWrapper > p:nth-child(3) {
+    width: 40%;
+    text-align: center;
+}
+
 .resInfoBox > p {
     width: 150px;
 }
