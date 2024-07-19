@@ -102,7 +102,7 @@
     </div>
 
     <div v-if="!projectBm">
-      <template v-for="(nWbcItem, outerIndex) in nonRbcClassList" :key="outerIndex">
+      <template v-for="(nWbcItem, outerIndex) in nonRbcClassListVal" :key="outerIndex">
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm">
@@ -111,15 +111,15 @@
           </ul>
           <ul>
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li>
-              {{ nWbcItem?.count }}
+            <li style="display: flex;">
+              {{ nWbcItem?.count.before }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
             </li>
           </ul>
           <ul class="degree">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li>-</li>
+              <li>{{ nWbcItem?.count.after }}</li>
           </ul>
         </div>
       </template>
@@ -192,8 +192,10 @@ const memoModal = ref(false);
 const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
-const nonRbcClassBeforeAfterList = ref<any>([]);
+const nonRbcClassListVal = ref<any>([]);
 const nonRbcClassList = ref<any>([]);
+const nonRbcClassBeforeList = ref<any>([]);
+const nonRbcClassAfterList = ref<any>([]);
 const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
@@ -967,9 +969,26 @@ const beforeAfterChange = async (newItem: any) => {
   const sortedWbcAfterInfo = sortWbcInfo(wbcAfterInfo, wbcAfterArr);
   wbcInfoAfterVal.value = sortedWbcAfterInfo.filter((item: any) => !titleArr.includes(item.title));
   wbcInfoBeforeVal.value = sortedWbcBeforeInfo.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
+  nonRbcClassAfterList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
+  nonRbcClassBeforeList.value = sortedWbcBeforeInfo.filter((item: any) => titleArr.includes(item.title));
+  // nonRbcClassList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
 
+  nonRbcClassListVal.value = [];
   wbcInfoVal.value = [];
+
+  nonRbcClassBeforeList.value.forEach((beforeItem: any) => {
+    const afterItem = nonRbcClassAfterList.value.find((afterItem: any) => afterItem.id === beforeItem.id);
+    if (afterItem && !nonRbcClassListVal.value.find((item: any) => item.id === beforeItem.id)) {
+      nonRbcClassListVal.value.push({
+        id: beforeItem.id,
+        name: beforeItem.name,
+        title: beforeItem.title,
+        count: { before: beforeItem.count, after: afterItem.count },
+        images: { before: beforeItem.images, after: afterItem.images },
+        percent: { before: beforeItem.percent, after: afterItem.percent }
+      });
+    }
+  });
 
   wbcInfoBeforeVal.value.forEach((beforeItem: any) => {
     const afterItem = wbcInfoAfterVal.value.find((afterItem: any) => afterItem.id === beforeItem.id);
