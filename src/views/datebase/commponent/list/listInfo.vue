@@ -97,7 +97,7 @@ const setWbcTotalAndPercent = () => {
     return acc
   }, 0)
   for (const item of props.selectedItem.wbcInfoAfter) {
-    if (projectBm.value) {
+    if (window.PROJECT_TYPE === 'bm') {
       if (item.title !== 'OT') {
         const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
