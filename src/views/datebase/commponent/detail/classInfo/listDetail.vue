@@ -337,7 +337,7 @@ const classCompare = () => {
 }
 
 const imgPixelConvertToPercent = (imageSize: number) => {
-  return Math.floor(imageSize * (2 / 3)) + '%'
+  return Math.floor(((imageSize - 50) / 240) * 170 + 30) + '%';
 }
 
 const imgSetLocalStorage = async () => {

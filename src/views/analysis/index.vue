@@ -23,19 +23,21 @@ import orderList from './commponent/orderList.vue';
 import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
-import {defineEmits, defineProps, onMounted, ref, onBeforeMount} from "vue";
+import {defineEmits, defineProps, onMounted, ref, onBeforeMount, computed} from "vue";
 import WorkingView100A from "@/views/analysis/commponent/workingView100A.vue";
 import router from "@/router";
+import {useStore} from "vuex";
 const emits = defineEmits();
 
+const store = useStore();
 const bmIsBoolen = ref(false);
 const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
-const viewerCheck = sessionStorage.getItem('viewerCheck')
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 
 onBeforeMount(async () => {
-  if (viewerCheck === 'viewer') {
+  if (viewerCheck.value === 'viewer') {
     router.push('/database')
   }
 

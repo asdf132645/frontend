@@ -145,7 +145,7 @@ const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
 const logOutBox = ref(false);
-const viewerCheck = sessionStorage.getItem('viewerCheck')
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const isBlinkingPrime = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
 

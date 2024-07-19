@@ -194,9 +194,10 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 
 const props = defineProps(['printOnOff', 'selectItemWbc']);
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 const printContent = ref(null);
 const wbcInfo = ref([]);

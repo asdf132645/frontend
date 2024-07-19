@@ -20,13 +20,14 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref, watch } from 'vue';
+import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {useStore} from "vuex";
 
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});

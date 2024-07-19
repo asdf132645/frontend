@@ -214,6 +214,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           reqDttm: '',
         }
       });
+      // sessionStorage.clear();
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     } else {
