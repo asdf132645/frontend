@@ -291,6 +291,9 @@ watch(
     (newVal) => {
       if(newVal){
         loadingDelay.value = true;
+        console.log('?');
+      }else{
+        loadingDelay.value = false;
         console.log('?')
       }
     },
