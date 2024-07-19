@@ -16,8 +16,9 @@
           </select>
           <input type="text" v-model='searchText' class="searchInputBox"/>
           <button class="searchClass" @click="dateRefresh">
-            <font-awesome-icon :icon="['fas', 'calendar-days']" />
-            Refresh</button>
+            <font-awesome-icon :icon="['fas', 'calendar-days']"/>
+            Refresh
+          </button>
           <div class="settingDatePickers">
             <Datepicker v-model="startDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
@@ -42,7 +43,7 @@
             </select>
           </div>
           <div class="wbcInfoFilter">
-            <span>{{bmClassIsBoolen ? 'BM' : 'WBC'}} Info Filter</span>
+            <span>{{ bmClassIsBoolen ? 'BM' : 'WBC' }} Info Filter</span>
             <ul class="wbcInfoFilter">
               <li v-for="(item, idx) in titleItem" :key="idx">
                 <input type="checkbox" :id="'checkbox_' + idx" v-model="item.checked" @change="updateFilter">
@@ -75,7 +76,17 @@
           </div>
         </div>
       </div>
-      <ListTable :loadingDelay="loadingDelay" :dbData="dbGetData" @loadMoreData="loadMoreData" @initData="initDbData" @selectItem="selectItem" @refresh="refresh" @checkListItem="checkListItem" />
+      <ListTable
+          :loadingDelayParents="loadingDelayParents"
+          :dbData="dbGetData"
+          @loadMoreData="loadMoreData"
+          @initData="initDbData"
+          @selectItem="selectItem"
+          @refresh="refresh"
+          @checkListItem="checkListItem"
+          :selectedItemIdFalse="selectedItemIdFalse"
+          :notStartLoading='notStartLoading'
+      />
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
@@ -139,12 +150,16 @@ const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = sessionStorage.getItem('viewerCheck')
 const eventTriggered = ref(false);
-const loadingDelay = ref(false);
+const loadingDelayParents = ref(false);
+const selectedItemIdFalse = ref(false);
+const notStartLoading = ref(false);
 function handleStateVal(data: any) {
   console.log(dataBaseOneCall.value);
   eventTriggered.value = true;
+  notStartLoading.value = false;
   initDbData().then(() => {
     console.log('?!@');
+    // loadingDelayParents.value = false;
   });
 }
 
@@ -155,7 +170,9 @@ onBeforeMount(async () => {
 onMounted(async () => {
   if (!eventTriggered.value) {
     await initDbData();
+    loadingDelayParents.value = true;
   }
+  notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
 
 });
@@ -177,7 +194,6 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
-  loadingDelay.value = true;
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   // const lastQuery = loadLastQuery();
@@ -220,8 +236,15 @@ const loadLastSearchParams = () => {
 };
 
 const getDbData = async (type: string, pageNum?: number) => {
+  loadingDelayParents.value = true;
   if (type === 'search') {
+    checkedSelectedItems.value = [];
+    selectedItemIdFalse.value = true;
+    notStartLoading.value = true;
     page.value = 1;
+  }else{
+    selectedItemIdFalse.value = false;
+    notStartLoading.value = false;
   }
 
   const requestData: any = {
@@ -234,7 +257,7 @@ const getDbData = async (type: string, pageNum?: number) => {
     patientNm: searchType.value === 'patientNm' ? searchText.value : undefined,
     nrCount: nrCount.value,
   };
-  if(prevDataPage.value === ''){
+  if (prevDataPage.value === '') {
     prevDataPage.value = requestData.page;
   }
   if (titleItemArr.value.length !== 0) {
@@ -291,19 +314,19 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
         }
         // 마지막 조회 결과 저장
-        if(dbGetData.value.length !== 0){
+        if (dbGetData.value.length !== 0) {
           saveLastSearchParams();
         }
       }
     }
-    loadingDelay.value = false;
   } catch (e) {
     console.error(e);
-    loadingDelay.value = false;
   }
 };
 
 const search = () => {
+  dbGetData.value = [];
+  sessionStorage.removeItem('lastSearchParams');
   const diffInMs = endDate.value.getTime() - startDate.value.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
   if (diffInDays > 30) {
