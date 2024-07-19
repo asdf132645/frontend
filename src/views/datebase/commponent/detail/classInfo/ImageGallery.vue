@@ -280,10 +280,12 @@ const handleImageLoad = (itemIndex: any) => {
   classImgChange('first', null);
   classImgChange('last', null);
   classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
-  if (itemIndex >= props.wbcInfo.length - 1) {
-    loading.value = true;
-  }else{
+  // console.log('Image loaded', itemIndex);
+  // console.log('props.wbcInfo.length', props.wbcInfo.length - 1);
+  if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
     loading.value = false;
+  }else{
+    loading.value = true;
   }
 
 }

@@ -161,7 +161,6 @@ function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
   initDbData().then(() => {
-    console.log('?!@');
     // loadingDelayParents.value = false;
   });
 }
@@ -173,7 +172,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   if (!eventTriggered.value) {
     await initDbData();
-    loadingDelayParents.value = true;
+    // loadingDelayParents.value = true;
   }
   notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
@@ -199,6 +198,7 @@ const updateFilter = () => {
 const initDbData = async () => {
   titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
+  loadingDelayParents.value = true;
   // const lastQuery = loadLastQuery();
   const lastSearchParams = loadLastSearchParams();
   // 이전 검색 조건 적용
@@ -254,7 +254,7 @@ const loadLastSearchParams = () => {
 };
 
 const getDbData = async (type: string, pageNum?: number) => {
-  loadingDelayParents.value = true;
+
   if (type === 'search') {
     checkedSelectedItems.value = [];
     selectedItemIdFalse.value = true;
@@ -299,6 +299,10 @@ const getDbData = async (type: string, pageNum?: number) => {
 
   try {
     const result = await getRunningApi(requestData);
+    if(page.value === 1 && result.data.data.length === 0){
+      loadingDelayParents.value = false;
+      return;
+    }
     if (result && result.data) {
       prevDataPage.value = requestData.page;
       reqDataPrev.value = requestData;
@@ -345,6 +349,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         }else{
           page.value -= 1;
         }
+
       }
     }
   } catch (e) {
@@ -411,7 +416,7 @@ const exportToExcel = async () => {
   }
 }
 const dateRefresh = () => {
-  startDate.value = new Date();
+  startDate.value = thirtyDaysAgo
   endDate.value = new Date();
 }
 
