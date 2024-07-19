@@ -297,6 +297,9 @@ const logout = () => {
 const exit = () => {
   console.log(tcpReq().embedStatus.exit)
   EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
+  if(viewerCheck.value !== 'viewer'){
+    window.close();
+  }
 }
 
 const oilCountChangeVal = (): string => {

@@ -10,7 +10,7 @@
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <div class="contentBottom">
-      <FoundingCells :parsedData="props.parsedData"/>
+      <FoundingCells :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     </div>
   </div>
 </template>
