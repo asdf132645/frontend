@@ -508,7 +508,7 @@ const delayedEmit = (type, payload, delay) => {
   }, delay);
 };
 const rowDbClick = async (item) => {
-  if (item.lock_status) {
+  if (item.lock_status && item?.pcIp !== myIp.value) {
     return;
   }
 

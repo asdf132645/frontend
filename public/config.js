@@ -1,7 +1,7 @@
-window.APP_API_BASE_URL='http://127.0.0.1:3002'; // 실제 사용되는 pc ip 사용 [ Main - 127.0.0.1, Viewer - 현재 PC IP ]
-window.MAIN_API_IP = 'http://127.0.0.1:3002'; // [ Main - 127.0.0.1, Viewer - MAIN PC IP(ex. 192.168.0.100)]
-window.MAIN_API = 'http://127.0.0.1:3002';
-window.PROJECT_TYPE='pb';
+window.APP_API_BASE_URL='http://192.168.0.100:3002'; // 실제 사용되는 pc ip 사용 [ Main - 127.0.0.1, Viewer - 현재 PC IP ]
+window.MAIN_API_IP = 'http://192.168.0.100:3002'; // [ Main - 127.0.0.1, Viewer - MAIN PC IP(ex. 192.168.0.100)]
+window.MAIN_API = 'http://192.168.0.100:3002';
+window.PROJECT_TYPE='bm';
 window.PROJECT_VERSION='0.1.24v';
 window.AI_VERSION='';
 window.WEB_BACKEND_VERSION='0.0.45v'

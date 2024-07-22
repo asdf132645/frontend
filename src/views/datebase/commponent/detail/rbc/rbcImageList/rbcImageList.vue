@@ -21,13 +21,13 @@
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness {{ imgBrightness }}</span>
-              <input
-                  type="range"
-                  min="50"
-                  max="120"
-                  v-model="imgBrightness"
-                  @input="changeImgBrightness"
-              />
+            <input
+                type="range"
+                min="50"
+                max="120"
+                v-model="imgBrightness"
+                @input="changeImgBrightness"
+            />
             <button class="resetBtn" @click="brightnessReset">Brightness Reset</button>
           </div>
           <div>
@@ -222,7 +222,6 @@ const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoArr);
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
-const imageWidthHeight = ref<any>([]);
 
 
 onMounted(async () => {
@@ -232,10 +231,10 @@ onMounted(async () => {
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
 
-const dziWidthHeight = async (imageFileName): any => {
+const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const urlImage = `${path}/${props.selectItems.slotId}/02_RBC_Image/${imageFileName}.dzi`;
-  const imageResponse = await readDziFile({ filePath: urlImage });
+  const imageResponse = await readDziFile({filePath: urlImage});
   return await extractWidthHeightFromDzi(`${imageFileName}`, imageResponse);
 }
 
@@ -245,7 +244,7 @@ const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
   const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
   const width = sizeElement.getAttribute("Width");
   const height = sizeElement.getAttribute("Height");
-  return { fileName, width: Number(width), height: Number(height) }
+  return {fileName, width: Number(width), height: Number(height)}
 }
 
 
@@ -370,13 +369,13 @@ watch(() => props.classInfoArr, (newData) => {
 }, {deep: true});
 
 watch(classInfoArrNewReData, async (nenenen, oldItem) => {
-  if(rbcReData.value){
+  if (rbcReData.value) {
     if (nenenen.length === 0) {
       removeDiv();
       removeRbcMarker();
     }
     await rbcMarker(nenenen);
-    await  store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
+    await store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
     await store.dispatch('commonModule/setCommonInfo', {classInfoArr: []});
     return;
   }
@@ -471,7 +470,7 @@ watch(() => props.selectItems, async (newItem) => {
 
 // const rbc
 
-const removeRbcMarker  = () => {
+const removeRbcMarker = () => {
   const canvas = canvasOverlay.value;
   if (!canvas) {
     console.error('Canvas element를 찾을 수 없습니다.');
@@ -566,8 +565,6 @@ const drawRbcMarker = async (classInfoArr: any) => {
 };
 
 
-
-
 const initElement = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
@@ -591,7 +588,7 @@ const initElement = async () => {
         minZoomLevel: 1, // 최소 확대 레벨 설정
         zoomPerClick: 1.2, // 클릭 확대 비율 설정
         zoomPerScroll: 1.2, // 스크롤 확대 비율 설정
-        viewportMargins: { top: 0, left: 0, bottom: 0, right: 0 }, // 뷰포트 여백 설정
+        viewportMargins: {top: 0, left: 0, bottom: 0, right: 0}, // 뷰포트 여백 설정
         visibilityRatio: 1.0 // 이미지를 뷰포트에 맞추기 위한 비율 설정
       });
 
@@ -611,7 +608,7 @@ const initElement = async () => {
           const {canvas} = viewer.value.drawer;
           const magCanvas = document.createElement('canvas');
           const magCtx = magCanvas.getContext('2d');
-          canvasOverlay.value = magCanvas
+          canvasOverlay.value = magCanvas;
           if (magCtx) {
             const magWidth = 200;
             const magHeight = 200;
@@ -647,23 +644,35 @@ const initElement = async () => {
         },
       });
 
+
+      // 캔버스 오버레이 생성 및 추가
       const canvas = document.createElement('canvas');
       const overlay = viewer.value.addOverlay({
         element: canvas,
         location: new OpenSeadragon.Rect(0, 0, 1, 1), // 캔버스가 뷰어 전체를 덮도록 설정
       });
-
+      canvas.id = 'myCanvas';
+      canvasOverlay.value = canvas;
 
       viewer.value.addHandler('open', function (event: any) {
+        // 캔버스 크기를 조정
         canvas.width = event.source.Image.Size.Width;
         canvas.height = event.source.Image.Size.Height;
-        canvas.id = 'myCanvas';
-        overlay.canvas = canvas;
-        canvasOverlay.value = canvas;
+      });
+
+      viewer.value.addHandler('page', function (event: any) {
+        // 페이지가 변경될 때 오버레이를 다시 추가
+        if (canvas.parentElement !== viewer.value.container) {
+          viewer.value.addOverlay({
+            element: canvas,
+            location: new OpenSeadragon.Rect(0, 0, 1, 1),
+          });
+        }
+        emits('unChecked');
       });
 
       viewer.value.addHandler('zoom', () => {
-        if(activeRuler.value === 'None'){
+        if (activeRuler.value === 'None') {
           return;
         }
         drawRuler(activeRuler.value);
@@ -800,6 +809,18 @@ const initElement = async () => {
     console.error('Error:', err);
   }
 };
+const drawOverlays = () => {
+  const overlays = drawPath.value; // drawPath에 있는 아이템들을 오버레이로 추가
+  overlays.forEach((item: any) => {
+    const element = document.createElement('div');
+    element.className = 'overlayElement';
+    element.style.background = 'rgba(255, 0, 0, 0.5)'; // 예시 스타일
+    viewer.value?.addOverlay({
+      element: element,
+      location: new OpenSeadragon.Rect(item.x, item.y, item.width, item.height)
+    });
+  });
+};
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
@@ -816,7 +837,7 @@ const fetchTilesInfo = async (folderPath: string) => {
       if (fileName.endsWith('_files')) {
 
         const fileNameResult = extractSubStringBeforeFiles(fileName)
-        const { width, height } = await dziWidthHeight(fileNameResult)
+        const {width, height} = await dziWidthHeight(fileNameResult)
 
         tilesInfo.push({
           Image: {
@@ -1087,7 +1108,6 @@ const drawRuler = (ruler: any) => {
     }
   }
 };
-
 
 
 const refreshRuler = (element: any, rulerSize: any, ruler: any) => {

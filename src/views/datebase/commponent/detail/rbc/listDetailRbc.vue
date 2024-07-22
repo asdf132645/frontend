@@ -16,7 +16,7 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '') ">
-      <RbcClass @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear" :rbcInfo="rbcInfo" />
+      <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear" :rbcInfo="rbcInfo" />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
@@ -45,7 +45,7 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const isLoading = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
-
+const allUnCheck = ref(false);
 onMounted(async () => {
   isLoading.value = false;
   await getDetailRunningInfo();
