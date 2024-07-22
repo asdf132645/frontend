@@ -228,7 +228,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'RBC_RE_CLASSIFICATION':
-        console.log('RBC_RE_CLASSIFICATION RES');
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataClass: true});
         await store.dispatch('commonModule/setCommonInfo', {rbcReData: true});
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
