@@ -506,7 +506,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
     'Spherocyte': 'gold',
     'Howell-Jolly Body': 'indigo',
     'Basophilic Stippling': 'olive',
-    'Malaria': '#0baf74',
+    'Malaria': 'black',
     'Platelet': '#ffac35',
   };
 
@@ -524,7 +524,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
       category.classInfo.forEach((classItem: any) => {
         if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
 
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 6;
           ctx.strokeStyle = `${colors[info.classNm] || 'black'}`;
           let rectPath = new Path2D();
           let width: number;
@@ -609,7 +609,6 @@ const initElement = async () => {
           const magCanvas = document.createElement('canvas');
           const magCtx = magCanvas.getContext('2d');
           canvasOverlay.value = magCanvas;
-          console.log(canvasOverlay.value)
           if (magCtx) {
             const magWidth = 200;
             const magHeight = 200;
