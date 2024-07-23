@@ -1,10 +1,10 @@
 <template>
   <header class='header'>
-    <nav> 
+    <nav>
       <div class='appHeaderLeft' :class="{ 'bmComponent': projectBm }" v-if="!appHeaderLeftHidden">
         <div class="borderLine">
           <img src="@/assets/celli.png" class="headerLogo"/>
-          <p class="logoProjectTitle">{{projectBm ? 'BM' : 'PB'}}</p>
+          <p class="logoProjectTitle">{{ projectBm ? 'BM' : 'PB' }}</p>
         </div>
         <router-link :to="noRouterPush ? '#' : '/setting'"
                      :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
@@ -20,7 +20,8 @@
           <span class='icoText'>Analysis</span>
         </router-link>
 
-        <router-link to="/dataBase" :class='{ "leftActive": isActive("/dataBase") || isActive("/databaseDetail") || isActive("/databaseRbc") || isActive("/report") }'>
+        <router-link to="/dataBase"
+                     :class='{ "leftActive": isActive("/dataBase") || isActive("/databaseDetail") || isActive("/databaseRbc") || isActive("/report") }'>
           <font-awesome-icon :icon="['fas', 'server']"
                              style="font-size: 1rem;"
           />
@@ -34,36 +35,37 @@
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
                 <div @click='logOutBoxOn'>
-                  <font-awesome-icon :icon="['fas', 'circle-user']"/> {{ userModuleDataGet.userId }}
-                </div>
-                <div class='logOutBox' @click='exit'>
-                  EXIT
+                  <font-awesome-icon :icon="['fas', 'circle-user']"/>
+                  {{ userModuleDataGet.userId }}
                 </div>
                 <div class='logOutBox' @click='logout'>
                   LOGOUT
+                </div>
+                <div class='logOutBox' @click='exit'>
+                  EXIT
                 </div>
               </li>
             </ul>
           </div>
           <div class="iconHeaderMenu">
-          <ul>
-            <li class="alarm">
-              <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
-            </li>
-            <li>
-              <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
-              <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
-            </li>
-            <li>
-              <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
-            </li>
-            <li class="oliCount" @click="openLayer" :title="'oilCount: ' + (oilCountData || 0)">
-              <font-awesome-icon :icon="['fas', 'droplet']"/>
-            </li>
-            <li class="storage" :title="'storage: ' + (storagePercentData || 0)">
-              <font-awesome-icon :icon="['fas', 'database']" />  
-            </li>
-          </ul>
+            <ul>
+              <li class="alarm">
+                <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
+              </li>
+              <li>
+                <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
+                <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
+              </li>
+              <li>
+                <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
+              </li>
+              <li class="oliCount" @click="openLayer" :title="'oilCount: ' + (oilCountData || 0)">
+                <font-awesome-icon :icon="['fas', 'droplet']"/>
+              </li>
+              <li class="storage" :title="'storage: ' + (storagePercentData || 0)">
+                <font-awesome-icon :icon="['fas', 'database']"/>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -101,7 +103,8 @@
         <div class="flexColumnAlignEnd">
           <div class="statusBarWrapper">
           </div>
-          <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">Prime</button>
+          <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">Prime
+          </button>
         </div>
       </div>
 
@@ -138,6 +141,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
+import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -184,6 +188,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const projectBm = ref(false);
+const clickType = ref('');
 
 const formattedDate = computed(() => {
   return currentDate.value;
@@ -198,13 +203,20 @@ const updateDateTime = () => {
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
   currentTime.value = now.toLocaleTimeString('en-US');
 };
-const handleOkConfirm = () => {
+const handleOkConfirm = async () => {
   showConfirm.value = false;
-  sessionStorage.clear();
-  router.push('user/login');
-  // store.commit('resetStore');
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
+  if (clickType.value === 'exit') {
+    if (viewerCheck.value === 'main') {
+      EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
+    } else {
+      await getBrowserExit();
+    }
+  } else {
+    sessionStorage.clear();
+    await router.push('user/login');
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
   }
 }
 
@@ -289,17 +301,16 @@ const logOutBoxOn = () => {
   logOutBox.value = !logOutBox.value;
 }
 const logout = () => {
+  clickType.value = 'logout';
   confirmMessage.value = messages.Logout;
   showConfirm.value = true;
   localStorage.removeItem('user')
 }
 
-const exit = () => {
-  console.log(tcpReq().embedStatus.exit)
-  EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
-  if(viewerCheck.value !== 'viewer'){
-    window.close();
-  }
+const exit = async () => {
+  clickType.value = 'exit';
+  confirmMessage.value = messages.exit;
+  showConfirm.value = true;
 }
 
 const oilCountChangeVal = (): string => {

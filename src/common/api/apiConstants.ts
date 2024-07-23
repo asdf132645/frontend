@@ -412,6 +412,11 @@ export const apiConstants = {
             endpoint: 'excel/execute',
             requiresToken: false,
         }
+    },
+    browser:{
+        exit:{
+            endpoint: 'browser/close-all',
+            requiresToken: false,
+        }
     }
-
 };

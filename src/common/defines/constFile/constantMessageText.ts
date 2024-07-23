@@ -412,4 +412,5 @@ export  const messages: Messages = {
     alreadyInitialized: 'It has already been initialized.',
 
     lockRow: 'Deletion is not allowed when locked.',
+    exit: 'Are you sure you want to quit the program?',
 };
