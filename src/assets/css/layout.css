@@ -2239,6 +2239,7 @@ ul.cellImgBox.print {
     padding: 0px 10px;
     border-radius: 5px;
     border: 1px solid var(--black-color);
+    z-index: 99;
 }
 
 .context-menu li {

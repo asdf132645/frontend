@@ -86,7 +86,7 @@
     </tr>
     </tbody>
   </table>
-  <div v-if="contextMenu.visible" :style="{ top: (contextMenu.y - 60) + 'px', left: contextMenu.x + 'px' }"
+  <div v-if="contextMenu.visible" :style="{ top: (contextMenu.y - 100) + 'px', left: contextMenu.x + 'px' }"
        class="context-menu">
     <ul>
       <li @click="printStart">Print</li>
