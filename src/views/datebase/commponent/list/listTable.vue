@@ -457,14 +457,11 @@ const hideAlert = () => {
 
 const selectItem = async (item) => {
   if (isShiftKeyPressed.value) {
-    if (!firstShiftKeyStr.value) {
-      firstShiftKeyStr.value = item.id;
-    } else {
+    if (firstShiftKeyStr.value) {
       lastShiftKeyStr.value = item.id;
       handleShiftSelection();
     }
   } else {
-    firstShiftKeyStr.value = '';
     lastShiftKeyStr.value = '';
   }
   if (isCtrlKeyPressed.value) {
@@ -474,6 +471,9 @@ const selectItem = async (item) => {
   if (!item) {
     return;
   }
+
+  firstShiftKeyStr.value = item.id;
+
   emits('selectItem', item);
   selectedItemId.value = item.id;
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
