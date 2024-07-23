@@ -405,11 +405,40 @@ document.addEventListener('click', (event) => {
   }
 });
 const openContextMenu = (event: MouseEvent, item: any) => {
+  const menuHeight = 506;
+
+  // 화면의 높이와 마우스 클릭 위치를 기준으로 기본 위치 설정
+  const screenHeight = window.innerHeight;
+  const mouseX = event.clientX;
+  const mouseY = event.clientY;
+
   contextMenuVisible.value = true;
-  contextMenuX.value = event.clientX;
-  contextMenuY.value = event.clientY - 250;
+
+  let menuX = mouseX;
+  let menuY = mouseY;
+
+  // 메뉴가 화면을 벗어나지 않도록 조정
+  if (mouseY + menuHeight > screenHeight) {
+    // 메뉴를 마우스 커서 위쪽에 띄움
+    menuY = mouseY - menuHeight;
+  } else {
+    // 메뉴를 마우스 커서 아래쪽에 띄움
+    menuY = mouseY;
+  }
+
+  // X 위치 조정 (화면을 벗어나지 않도록)
+  const menuWidth = 200;
+  if (menuX + menuWidth > window.innerWidth) {
+    menuX = window.innerWidth - menuWidth;
+  }
+
+  contextMenuX.value = menuX;
+  contextMenuY.value = menuY;
   targetItem.value = item;
 };
+
+
+
 
 const moveSelectedImages = async (item: any, itemIdx: any) => {
   // 사진 선택 하지 않고 우클릭 후 이미지 변경 하였을 경우
