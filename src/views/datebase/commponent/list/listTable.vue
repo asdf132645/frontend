@@ -260,11 +260,11 @@ async function handleKeyDown(event) {
   }
 }
 const handleScroll = () => {
-  if (scrollableDiv.value.scrollTop === 0) {
-    emits('loadPrevData');
-    scrollableDiv.value.scrollTop = 50;
-
-  }
+  // if (scrollableDiv.value.scrollTop === 0) {
+  //   emits('loadPrevData');
+  //   scrollableDiv.value.scrollTop = 50;
+  //
+  // }
 };
 
 function handleKeyUp(event) {
@@ -305,10 +305,10 @@ watchEffect(async () => {
     await nextTick();
 
     if (props.selectedItemIdFalse){
-      selectedItemId.value = '0';
-      const filteredItems = props.dbData[0].id
-      const selectedRow = document.querySelector(`[data-row-id="${filteredItems}"]`);
-      selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
+      // selectedItemId.value = '0';
+      // const filteredItems = props.dbData[0].id
+      // const selectedRow = document.querySelector(`[data-row-id="${filteredItems}"]`);
+      // selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
     }
     const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
     if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
@@ -319,7 +319,7 @@ watchEffect(async () => {
       // 선택된 행이 화면에 보이도록 스크롤 조정
       const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
       if (selectedRow && selectedItemId.value !== '0') {
-        selectedRow.scrollIntoView({ behavior: 'auto', block: 'center' });
+        // selectedRow.scrollIntoView({ behavior: 'auto', block: 'center' });
         loadingDelay.value = false;
       }
       return;
