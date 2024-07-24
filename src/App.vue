@@ -217,9 +217,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       // sessionStorage.clear();
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
-    } else {
-      hideAlert();
     }
+
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
