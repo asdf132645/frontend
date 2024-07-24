@@ -925,6 +925,10 @@ async function handleKeyDown(event: KeyboardEvent) {
     isCtrlKeyPressed.value = true;
   }
 
+  if (event.key === 'Escape' && modalOpen) {
+    modalOpen.value = false;
+  }
+
   // 이미지 이동 단축키 확인
   if (projectType.value === 'pb') {
     if (event.key && (selectItems.value?.testType === '01' || selectItems.value?.testType === '04' ? wbcHotKeysItems.value : bfHotKeysItems.value).some((item: any) => item.key.toUpperCase() === event.key.toUpperCase())) {
