@@ -207,8 +207,6 @@ const classList = ref<any>([]);
 const previousFirstClass = ref('Neutrophil-Segmented');
 const previousLastClass = ref('Neutrophil-Band');
 const loading = ref(true);
-const totalImages = ref(0);
-const loadedImages = ref(0);
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {

@@ -141,9 +141,22 @@ onBeforeMount(() => {
     payload: window.APP_API_BASE_URL
   });
 });
+
 window.addEventListener('beforeunload', function (event: any) {
   store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
+
+window.addEventListener('unload', () => {
+  instance?.appContext.config.globalProperties.$socket.emit('message', {
+    type: 'SEND_DATA',
+    payload: {
+      jobCmd: 'clientExit',
+      reqUserId: '',
+      reqDttm: '',
+    }
+  });
+})
+
 const leave = (event: any) => {
   event.preventDefault();
 };

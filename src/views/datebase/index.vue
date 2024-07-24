@@ -155,10 +155,12 @@ const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
+
 function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
@@ -408,43 +410,32 @@ const exportToExcel = async () => {
   }
 
 
-  convertRbcData(checkedSelectedItems.value);
-  // const jsonData = {};
-  // const jsonString = JSON.stringify(jsonData);
-  // const utf8Data = new TextEncoder().encode(jsonString);
-  // const compressedData = pako.deflate(utf8Data);
-  // const blob = new Blob([compressedData], {type: 'application/octet-stream'});
-  // const formData = new FormData();
-  // formData.append('file', blob, `RBC.json`);
-  // const filePath = `${iaRootPath.value}/RBC.json`
-  // try {
-  //
-  //   const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
-  //     method: 'POST',
-  //     body: formData,
-  //   });
-  //   const responseData = await response.json();
-  // } catch (e) {
-  //   console.log(e);
-  // }
-  // const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
-  // const body = checkedSelectedItems.value.map((checkedItem: any) => {
-  //   return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
-  // });
-  //
-  // try {
-  //   await executeExcelCreate(body);
-  // } catch (e) {
-  //   console.log(e);
-  // }
+  console.log(checkedSelectedItems.value);
+  // convertRbcData(checkedSelectedItems.value);
+
+  // WBC Print
+  // await excecuteExcel()
+}
+
+const excecuteExcel = async () => {
+  const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
+  const body = checkedSelectedItems.value.map((checkedItem: any) => {
+    return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
+  });
+
+  try {
+    await executeExcelCreate(body);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 const convertRbcData = async (dataList: any) => {
-  console.log(dataList);
-  let sendingData = { before: {}, after: {}, barcodeNo: dataList[0].barcodeNo, analyzedDttm: dataList[0].analyzedDttm };
   let beforeRbcData = {};
   let afterRbcData = {};
   for (const data of dataList) {
+    const sendingItem = { before: {}, after: {} };
+
     // Before
     for (const classItem of data.rbcInfo.rbcClass) {
       let beforeItem = {}
@@ -465,30 +456,32 @@ const convertRbcData = async (dataList: any) => {
       }
       afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
     }
+    sendingItem.before = beforeRbcData;
+    sendingItem.after = afterRbcData;
+
+    await createRbcJson(data.slotId, sendingItem);
   }
-  sendingData.before = beforeRbcData;
-  sendingData.after = afterRbcData;
 
 
-  /** TODO RBC excel 진행중 */
-  // const jsonString = JSON.stringify(sendingData);
-  // const utf8Data = new TextEncoder().encode(jsonString);
-  // const compressedData = pako.deflate(utf8Data);
-  // const blob = new Blob([compressedData], {type: 'application/octet-stream'});
-  // const formData = new FormData();
-  // formData.append('file', blob, `${props.selectItems?.slotId}_new.json`);
-  // const path = iaRootPath.value;
-  // const filePath = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`
-  // try {
-  //
-  //   const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
-  //     method: 'POST',
-  //     body: formData,
-  //   });
-  //   const responseData = await response.json();
-  // } catch (error) {
-  //   console.error('Error:', error);
-  // }
+}
+
+const createRbcJson = async (slotId: string, sendingData: any) => {
+  const jsonString = JSON.stringify(sendingData);
+  const utf8Data = new TextEncoder().encode(jsonString);
+  const compressedData = pako.deflate(utf8Data);
+  const blob = new Blob([compressedData], {type: 'application/octet-stream'});
+  const formData = new FormData();
+  formData.append('file', blob, `RBC.json`);
+  const path = iaRootPath.value;
+  const filePath = `${path}/${slotId}/RBC_Analysis.json`
+  try {
+    await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
+      method: 'POST',
+      body: formData,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
 const dateRefresh = () => {

@@ -260,11 +260,10 @@ async function handleKeyDown(event) {
   }
 }
 const handleScroll = () => {
-  // if (scrollableDiv.value.scrollTop === 0) {
-  //   emits('loadPrevData');
-  //   scrollableDiv.value.scrollTop = 50;
-  //
-  // }
+  if (scrollableDiv.value.scrollTop === 0) {
+    emits('loadPrevData');
+    scrollableDiv.value.scrollTop = 50;
+  }
 };
 
 function handleKeyUp(event) {

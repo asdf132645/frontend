@@ -21,11 +21,7 @@
     </div>
     <div>
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
-      <ul>
-<!--        <li>Analyzed Date <span>{{ formatDateString(selectedItem?.analyzedDttm) }}</span></li>-->
-<!--        <li>Signed State <span>{{ selectedItem?.submitState }}</span></li>-->
-<!--        <li>Signed of Date <span>{{ selectedItem?.submitOfDate }}</span></li>-->
-<!--        <li>Signed User ID <span>{{ selectedItem?.submitUserId }}</span></li>-->
+      <ul class="resInfoTopContainer">
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">
           <div class="resInfoContainer">
             <li class="resInfoWrapper mb1">
