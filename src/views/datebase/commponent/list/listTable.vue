@@ -77,7 +77,7 @@
       </tr>
     </template>
     <tr>
-      <div ref="loadMoreRef" style="height: 10px;"></div>
+      <div ref="loadMoreRef" style="height: 20px;"></div>
     </tr>
     </tbody>
     <tbody v-else>
@@ -262,7 +262,7 @@ async function handleKeyDown(event) {
 const handleScroll = () => {
   if (scrollableDiv.value.scrollTop === 0) {
     emits('loadPrevData');
-    scrollableDiv.value.scrollTop = 50;
+    // scrollableDiv.value.scrollTop = 50;
   }
 };
 
