@@ -415,7 +415,7 @@ export const apiConstants = {
     },
     browser:{
         exit:{
-            endpoint: 'browser/close-all',
+            endpoint: 'browser/close-edge',
             requiresToken: false,
         }
     }
