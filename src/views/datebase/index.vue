@@ -121,6 +121,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import * as XLSX from 'xlsx';
 import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
+import pako from "pako";
 
 
 const store = useStore();
@@ -153,6 +154,7 @@ const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
@@ -404,17 +406,90 @@ const exportToExcel = async () => {
     return;
   }
 
-  const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
-  const body = checkedSelectedItems.value.map((checkedItem: any) => {
-    return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
-  });
 
-  try {
-    await executeExcelCreate(body);
-  } catch (e) {
-    console.log(e);
-  }
+  convertRbcData(checkedSelectedItems.value);
+  // const jsonData = {};
+  // const jsonString = JSON.stringify(jsonData);
+  // const utf8Data = new TextEncoder().encode(jsonString);
+  // const compressedData = pako.deflate(utf8Data);
+  // const blob = new Blob([compressedData], {type: 'application/octet-stream'});
+  // const formData = new FormData();
+  // formData.append('file', blob, `RBC.json`);
+  // const filePath = `${iaRootPath.value}/RBC.json`
+  // try {
+  //
+  //   const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
+  //     method: 'POST',
+  //     body: formData,
+  //   });
+  //   const responseData = await response.json();
+  // } catch (e) {
+  //   console.log(e);
+  // }
+  // const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
+  // const body = checkedSelectedItems.value.map((checkedItem: any) => {
+  //   return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
+  // });
+  //
+  // try {
+  //   await executeExcelCreate(body);
+  // } catch (e) {
+  //   console.log(e);
+  // }
 }
+
+const convertRbcData = async (dataList: any) => {
+  console.log(dataList);
+  let sendingData = { before: {}, after: {}, barcodeNo: dataList[0].barcodeNo, analyzedDttm: dataList[0].analyzedDttm };
+  let beforeRbcData = {};
+  let afterRbcData = {};
+  for (const data of dataList) {
+    // Before
+    for (const classItem of data.rbcInfo.rbcClass) {
+      let beforeItem = {}
+      for (const classInfoItem of classItem.classInfo) {
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        beforeItem = { ...beforeItem, ...classInfoDetailItem }
+      }
+
+      beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
+    }
+
+    // After
+    for (const classItem of data.rbcInfoAfter) {
+      let afterItem = {}
+      for (const classInfoItem of classItem.classInfo) {
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        afterItem = {...afterItem, ...classInfoDetailItem}
+      }
+      afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
+    }
+  }
+  sendingData.before = beforeRbcData;
+  sendingData.after = afterRbcData;
+
+
+  /** TODO RBC excel 진행중 */
+  // const jsonString = JSON.stringify(sendingData);
+  // const utf8Data = new TextEncoder().encode(jsonString);
+  // const compressedData = pako.deflate(utf8Data);
+  // const blob = new Blob([compressedData], {type: 'application/octet-stream'});
+  // const formData = new FormData();
+  // formData.append('file', blob, `${props.selectItems?.slotId}_new.json`);
+  // const path = iaRootPath.value;
+  // const filePath = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`
+  // try {
+  //
+  //   const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
+  //     method: 'POST',
+  //     body: formData,
+  //   });
+  //   const responseData = await response.json();
+  // } catch (error) {
+  //   console.error('Error:', error);
+  // }
+}
+
 const dateRefresh = () => {
   startDate.value = thirtyDaysAgo
   endDate.value = new Date();
