@@ -208,25 +208,26 @@ const initDbData = async () => {
     startDate.value = new Date(lastSearchParams.startDate) || new Date();
     endDate.value = new Date(lastSearchParams.endDate) || new Date();
     page.value = lastSearchParams.page || 1;
-    if (Number(lastSearchParams.page) !== 1) {
-      const numberOfCalls = Number(lastSearchParams.page) || 1;
-      if (numberOfCalls >= 4) {
-        await getDbData('mounted', numberOfCalls - 3);
-        await getDbData('mounted', numberOfCalls - 2);
-        await getDbData('mounted', numberOfCalls - 1);
-        prevPage.value = numberOfCalls - 3
-      } else {
-        await getDbData('mounted', numberOfCalls - 1);
-        prevPage.value = numberOfCalls - 1
-      }
-      await getDbData('mounted', numberOfCalls);
-    } else {
-      await getDbData('mounted', 1);
-    }
+    // if (Number(lastSearchParams.page) !== 1) {
+    //   const numberOfCalls = Number(lastSearchParams.page) || 1;
+    //   if (numberOfCalls >= 4) {
+    //     await getDbData('mounted', numberOfCalls - 3);
+    //     await getDbData('mounted', numberOfCalls - 2);
+    //     await getDbData('mounted', numberOfCalls - 1);
+    //     prevPage.value = numberOfCalls - 3
+    //   } else {
+    //     await getDbData('mounted', numberOfCalls - 1);
+    //     prevPage.value = numberOfCalls - 1
+    //   }
+    //   await getDbData('mounted', numberOfCalls);
+    // } else {
+    //   await getDbData('mounted', 1);
+    // }
     // const numberOfCalls = Number(lastSearchParams.page) || 1;
     // for (let i = 1; i <= numberOfCalls; i++) {
     //   await getDbData('mounted', i);
     // }
+    await getDbData('search') ;
   } else {
     await getDbData('mounted', 1);
   }
