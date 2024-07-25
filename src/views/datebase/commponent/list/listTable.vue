@@ -77,7 +77,7 @@
       </tr>
     </template>
     <tr>
-      <div ref="loadMoreRef" style="height: 20px;"></div>
+      <div ref="loadMoreRef" style="height: 30px;"></div>
     </tr>
     </tbody>
     <tbody v-else>
@@ -260,10 +260,10 @@ async function handleKeyDown(event) {
   }
 }
 const handleScroll = () => {
-  if (scrollableDiv.value.scrollTop === 0) {
-    emits('loadPrevData');
-    // scrollableDiv.value.scrollTop = 50;
-  }
+  // if (scrollableDiv.value.scrollTop === 0) {
+  //   emits('loadPrevData');
+  //   scrollableDiv.value.scrollTop = 50;
+  // }
 };
 
 function handleKeyUp(event) {
@@ -327,7 +327,7 @@ watchEffect(async () => {
     const observer = new IntersectionObserver(handleIntersection, {
       root: null,
       rootMargin: '0px',
-      threshold: 0.5,
+      threshold: 0.4,
     });
     if (loadMoreRef.value) {
       observer.observe(loadMoreRef.value);
