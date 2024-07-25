@@ -228,7 +228,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
       });
       // sessionStorage.clear();
-      await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      // await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     }
 
@@ -508,6 +508,9 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         } else {
           siteCdDvBarCode.value = true;
         }
+
+        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
+        localStorage.setItem('siteCd', parseDataWarp.siteCd);
       } catch (err) {
         console.error("Error handling device information", err);
         siteCdDvBarCode.value = true;

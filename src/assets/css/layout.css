@@ -1601,6 +1601,7 @@ table.defaultTable tbody td {
     box-sizing: border-box;
     border: 1px solid var(--white-color);
     max-width: 280px;
+    z-index: 8888;
 }
 
 .divCompare ul.wbcImgWrap {

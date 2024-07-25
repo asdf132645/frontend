@@ -162,6 +162,7 @@ const openInViewer = (imageUrl: string) => {
     showFullPageControl: false,
   });
   buttonOfen.value = true;
+
   viewerSmall.addHandler("open", function () {
     // 타일링 뷰어에 height 동적 조정
     const imageWidth = viewerSmall.source.dimensions.x;
@@ -194,7 +195,17 @@ const openInViewer = (imageUrl: string) => {
       closeSmallImageViewer();
     }
   })
+
+  viewerSmall.addHandler('canvas-key', handleCanvasKey);
+  viewerSmall.innerTracker.setTracking(true);
 };
+
+const handleCanvasKey = (event: any) => {
+  console.log(event);
+  if (event.originalEvent.key === 'Escape') {
+    closeViewer();
+  }
+}
 
 const closeSmallImageViewer = () => {
   if (viewerSmall) {
@@ -230,6 +241,7 @@ const closeViewer = () => {
 
       // 클릭 이벤트 리스너 제거
       viewerElement.removeEventListener('click', closeViewer);
+      viewerElement.removeEventListener('canvas-key', handleCanvasKey);
     }
 
     // viewerSmall 변수를 null로 설정

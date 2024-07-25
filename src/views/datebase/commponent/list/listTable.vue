@@ -77,7 +77,7 @@
       </tr>
     </template>
     <tr>
-      <div ref="loadMoreRef" style="height: 20px;"></div>
+      <div ref="loadMoreRef" style="height: 30px;"></div>
     </tr>
     </tbody>
     <tbody v-else>
@@ -260,10 +260,10 @@ async function handleKeyDown(event) {
   }
 }
 const handleScroll = () => {
-  if (scrollableDiv.value.scrollTop === 0) {
-    emits('loadPrevData');
-    // scrollableDiv.value.scrollTop = 50;
-  }
+  // if (scrollableDiv.value.scrollTop === 0) {
+  //   emits('loadPrevData');
+  //   scrollableDiv.value.scrollTop = 50;
+  // }
 };
 
 function handleKeyUp(event) {
@@ -310,6 +310,22 @@ watchEffect(async () => {
       // selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
     }
     const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+
+    // 첫 번째 행을 클릭
+    const observer = new IntersectionObserver(handleIntersection, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.2,
+    });
+    if (loadMoreRef.value) {
+      observer.observe(loadMoreRef.value);
+    }
+
+    if(selectedItemId.value === '0' || !selectedItemId.value){
+      loadingDelay.value = false;
+    }
+
+    console.log(dataBasePageReset.value.dataBasePageReset, filteredItems);
     if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
       // loadingDelay.value = true;
       await selectItem(filteredItems[0]);
@@ -323,19 +339,7 @@ watchEffect(async () => {
       }
       return;
     }
-    // 첫 번째 행을 클릭
-    const observer = new IntersectionObserver(handleIntersection, {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    });
-    if (loadMoreRef.value) {
-      observer.observe(loadMoreRef.value);
-    }
 
-    if(selectedItemId.value === '0' || !selectedItemId.value){
-      loadingDelay.value = false;
-    }
   }
 });
 
