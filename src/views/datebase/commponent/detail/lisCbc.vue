@@ -78,7 +78,11 @@ onMounted(async () => {
 });
 
 const initCbcData = async (newVal: any) => {
-  const hospitalName = hospitalSiteCd.find(hospital => hospital.siteCd === siteCd.value)?.hospitalNm
+  let hospitalName = hospitalSiteCd.find(hospital => hospital.siteCd === siteCd.value)?.hospitalNm;
+  console.log(siteCd.value === '')
+  if(siteCd.value === ''){
+    hospitalName = '0000';
+  }
   switch (hospitalName) {
     case '서울성모병원':
       const realUrl = 'http://emr012.cmcnu.or.kr/cmcnu/.live';
@@ -226,7 +230,7 @@ const initCbcData = async (newVal: any) => {
 
           })
 
-          console.log('cbcWorkList', cbcWorkList.value);
+          // console.log('cbcWorkList', cbcWorkList.value);
         }else{
           console.error(readFileTxtRes.data.message);
         }
@@ -255,14 +259,15 @@ const initCbcData = async (newVal: any) => {
 
 const kuahGilHosCbc = async () => {
   let readFileTxtRes: any;
-  if(siteCd.value === '0000'){
-    readFileTxtRes = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
+  if(siteCd.value === '0000' || siteCd.value === ''){
+    readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
   }else{
     readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
   }
   if (readFileTxtRes.data.success) {
     const cbcData = readFileTxtRes.data.data.toString();
     const cbcDataArray = cbcData.split('\n');
+    // 검체번호, 검사일시, 환자번호, 환자명, 성별, 나이, 그래프 데이터 제외
     const excludedTitles = [
       'SPC_NO', 'BLCL_DT', 'PT_NO', 'PT_NM', 'SEX', 'AGE',
       'SCAT_WDF', 'SCAT_WNR', 'DIST_RBC', 'DIST_WDF(FSC)', 'DIST_PLT'
@@ -270,7 +275,7 @@ const kuahGilHosCbc = async () => {
     cbcDataArray.forEach((cbcData: any) => {
       const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
 
-      if (!excludedTitles.includes(title)) {
+      if (!excludedTitles.includes(title.trim())) {
         const unit = title.includes('%') ? '%' : '';
         cbcWorkList.value.push({classNm: title, count: value, unit: unit});
       } else {
@@ -318,7 +323,7 @@ async function updateRunningApiPost(originalDb: any) {
   try {
     const response = await updateRunningApi({userId: Number(userModuleDataGet.value.id), runingInfoDtoItems: originalDb})
     if (response) {
-      console.log('')
+      // console.log('')
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
