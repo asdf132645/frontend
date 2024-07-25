@@ -230,7 +230,7 @@ const initCbcData = async (newVal: any) => {
 
           })
 
-          console.log('cbcWorkList', cbcWorkList.value);
+          // console.log('cbcWorkList', cbcWorkList.value);
         }else{
           console.error(readFileTxtRes.data.message);
         }
@@ -267,6 +267,7 @@ const kuahGilHosCbc = async () => {
   if (readFileTxtRes.data.success) {
     const cbcData = readFileTxtRes.data.data.toString();
     const cbcDataArray = cbcData.split('\n');
+    // 검체번호, 검사일시, 환자번호, 환자명, 성별, 나이, 그래프 데이터 제외
     const excludedTitles = [
       'SPC_NO', 'BLCL_DT', 'PT_NO', 'PT_NM', 'SEX', 'AGE',
       'SCAT_WDF', 'SCAT_WNR', 'DIST_RBC', 'DIST_WDF(FSC)', 'DIST_PLT'
@@ -274,7 +275,7 @@ const kuahGilHosCbc = async () => {
     cbcDataArray.forEach((cbcData: any) => {
       const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
 
-      if (!excludedTitles.includes(title)) {
+      if (!excludedTitles.includes(title.trim())) {
         const unit = title.includes('%') ? '%' : '';
         cbcWorkList.value.push({classNm: title, count: value, unit: unit});
       } else {
