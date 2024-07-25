@@ -41,12 +41,8 @@ onBeforeMount(async () => {
     router.push('/database')
   }
 
-  if (window.PROJECT_TYPE === 'bm') {
-    bmIsBoolen.value = true;
-  }else {
-    bmIsBoolen.value = false;
-    pbVersion.value = window.PB_VERSION;
-  }
+  pbVersion.value = window.PB_VERSION;
+  bmIsBoolen.value = window.PROJECT_TYPE === 'bm' ? true : false;
 });
 
 const rbcUpdate = (data: any) => {

@@ -121,6 +121,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import * as XLSX from 'xlsx';
 import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
+import pako from "pako";
 
 
 const store = useStore();
@@ -153,10 +154,13 @@ const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
+
 function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
@@ -405,6 +409,15 @@ const exportToExcel = async () => {
     return;
   }
 
+
+  console.log(checkedSelectedItems.value);
+  // convertRbcData(checkedSelectedItems.value);
+
+  // WBC Print
+  // await excecuteExcel()
+}
+
+const excecuteExcel = async () => {
   const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
   const body = checkedSelectedItems.value.map((checkedItem: any) => {
     return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
@@ -416,6 +429,61 @@ const exportToExcel = async () => {
     console.log(e);
   }
 }
+
+const convertRbcData = async (dataList: any) => {
+  let beforeRbcData = {};
+  let afterRbcData = {};
+  for (const data of dataList) {
+    const sendingItem = { before: {}, after: {} };
+
+    // Before
+    for (const classItem of data.rbcInfo.rbcClass) {
+      let beforeItem = {}
+      for (const classInfoItem of classItem.classInfo) {
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        beforeItem = { ...beforeItem, ...classInfoDetailItem }
+      }
+
+      beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
+    }
+
+    // After
+    for (const classItem of data.rbcInfoAfter) {
+      let afterItem = {}
+      for (const classInfoItem of classItem.classInfo) {
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        afterItem = {...afterItem, ...classInfoDetailItem}
+      }
+      afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
+    }
+    sendingItem.before = beforeRbcData;
+    sendingItem.after = afterRbcData;
+
+    await createRbcJson(data.slotId, sendingItem);
+  }
+
+
+}
+
+const createRbcJson = async (slotId: string, sendingData: any) => {
+  const jsonString = JSON.stringify(sendingData);
+  const utf8Data = new TextEncoder().encode(jsonString);
+  const compressedData = pako.deflate(utf8Data);
+  const blob = new Blob([compressedData], {type: 'application/octet-stream'});
+  const formData = new FormData();
+  formData.append('file', blob, `RBC.json`);
+  const path = iaRootPath.value;
+  const filePath = `${path}/${slotId}/RBC_Analysis.json`
+  try {
+    await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
+      method: 'POST',
+      body: formData,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 const dateRefresh = () => {
   startDate.value = thirtyDaysAgo
   endDate.value = new Date();

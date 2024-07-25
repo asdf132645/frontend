@@ -960,6 +960,8 @@ span.rbcSapnDown {
 
 }
 
+
+
 .databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
     width: 58%;
 }
@@ -2414,6 +2416,12 @@ ul.normalItems li div span:last-child {
     position: relative;
     width: 40%;
     height: 92.2vh;
+}
+
+.resInfoTopContainer {
+    max-height: 230px;
+    overflow-y: auto;
+    overflow-x:hidden;
 }
 
 .resInfoContainer {

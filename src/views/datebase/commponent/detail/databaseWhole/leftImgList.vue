@@ -5,11 +5,7 @@
     <ul class="leftImgUl">
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index" class="leftImgLi">
-        <img :src="getImageUrlsSmallImg(image, 'particle')" alt="Partical Image"
-             @dblclick="openInViewer(getImageUrls(image, 'particle'))"
-             @load="onLoad"
-             @error="onError"
-        >
+        <img :src="getImageUrlsSmallImg(image, 'particle')" alt="Partical Image" @dblclick="openInViewer(getImageUrls(image, 'particle'))">
       </li>
     </ul>
     <ul class="leftImgUl">
@@ -34,7 +30,6 @@
     </ul>
   </div>
 
-  <LoadingOverlay :isLoading="imageLoaded" />
 </template>
 
 <script setup lang="ts">
@@ -42,7 +37,6 @@ import {defineProps, nextTick, onMounted, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import axios from "axios";
 import {useStore} from "vuex";
-import LoadingOverlay from "@/components/commonUi/LoadingOverlay.vue";
 
 const props = defineProps(['selectItems']);
 
@@ -55,8 +49,6 @@ const idealStitchImages = ref([]);
 const megaImages = ref([]);
 const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Stitch_Image', '05_Mega_Image'];
 const buttonOfen = ref(false);
-const imageLoaded = ref(true);
-const loadedImagesCount = ref(0);
 let viewerSmall: any = null;
 
 onMounted(async () => {
@@ -178,24 +170,34 @@ const openInViewer = (imageUrl: string) => {
     const tilingViewerElement: any = document.getElementById("viewerSmall");
 
     const containerWidth = tilingViewerElement.clientWidth;
-
     const aspectRatio = imageHeight / imageWidth;
-
     const dynamicHeight = containerWidth * aspectRatio;
+
     tilingViewerElement.style.position = `fixed`;
     tilingViewerElement.style.height = `${dynamicHeight}px`;
     tilingViewerElement.style.width = `100%`;
     tilingViewerElement.style.left = `0`;
     tilingViewerElement.style.background = `#00000061`;
-
   });
+
+  viewerSmall.addHandler('canvas-click', (event: any) => {
+    event.preventDefaultAction = true;
+
+    const viewportPoint = viewerSmall.viewport.pointFromPixel(event.position);
+    const imagePoint = viewerSmall.viewport.viewportToImageCoordinates(viewportPoint);
+
+    const imageWidth = viewerSmall.world.getItemAt(0).getContentSize().x;
+    const imageHeight = viewerSmall.world.getItemAt(0).getContentSize().y;
+
+    // 이미지 외부를 클릭했을 때 동작
+    if (imagePoint.x < 0 || imagePoint.x > imageWidth || imagePoint.y < 0 || imagePoint.y > imageHeight) {
+      closeSmallImageViewer();
+    }
+  })
 };
 
-
-const closeViewer = () => {
+const closeSmallImageViewer = () => {
   if (viewerSmall) {
-    viewerSmall.destroy();
-
     // viewerSmall 요소를 제거하여 닫기
     const viewerElement = document.getElementById('viewerSmall');
     if (viewerElement) {
@@ -212,21 +214,28 @@ const closeViewer = () => {
     viewerSmall = null;
     buttonOfen.value = false;
   }
-};
+}
 
-const onLoad = () => {
-  loadedImagesCount.value++;
-  if (loadedImagesCount.value === paImages.value.length) {
-    imageLoaded.value = false;
-  }
-};
+const closeViewer = () => {
+  if (viewerSmall) {
+    viewerSmall.destroy();
 
-const onError = () => {
-  loadedImagesCount.value++;
-  if (loadedImagesCount.value === paImages.value.length) {
-    imageLoaded.value = false;
+    // // viewerSmall 요소를 제거하여 닫기
+    const viewerElement = document.getElementById('viewerSmall');
+    if (viewerElement) {
+      viewerElement.innerHTML = '';  // 뷰어 요소의 내용을 비워서 닫기
+      viewerElement.style.background = 'none';
+      viewerElement.style.height = `0`;
+      viewerElement.style.width = `0`;
+
+      // 클릭 이벤트 리스너 제거
+      viewerElement.removeEventListener('click', closeViewer);
+    }
+
+    // viewerSmall 변수를 null로 설정
+    viewerSmall = null;
+    buttonOfen.value = false;
   }
-  console.log('Failed to load Image');
 };
 
 </script>

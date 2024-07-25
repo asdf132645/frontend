@@ -77,7 +77,7 @@
       </tr>
     </template>
     <tr>
-      <div ref="loadMoreRef" style="height: 10px;"></div>
+      <div ref="loadMoreRef" style="height: 20px;"></div>
     </tr>
     </tbody>
     <tbody v-else>
@@ -260,11 +260,10 @@ async function handleKeyDown(event) {
   }
 }
 const handleScroll = () => {
-  // if (scrollableDiv.value.scrollTop === 0) {
-  //   emits('loadPrevData');
-  //   scrollableDiv.value.scrollTop = 50;
-  //
-  // }
+  if (scrollableDiv.value.scrollTop === 0) {
+    emits('loadPrevData');
+    // scrollableDiv.value.scrollTop = 50;
+  }
 };
 
 function handleKeyUp(event) {
@@ -457,14 +456,11 @@ const hideAlert = () => {
 
 const selectItem = async (item) => {
   if (isShiftKeyPressed.value) {
-    if (!firstShiftKeyStr.value) {
-      firstShiftKeyStr.value = item.id;
-    } else {
+    if (firstShiftKeyStr.value) {
       lastShiftKeyStr.value = item.id;
       handleShiftSelection();
     }
   } else {
-    firstShiftKeyStr.value = '';
     lastShiftKeyStr.value = '';
   }
   if (isCtrlKeyPressed.value) {
@@ -474,6 +470,9 @@ const selectItem = async (item) => {
   if (!item) {
     return;
   }
+
+  firstShiftKeyStr.value = item.id;
+
   emits('selectItem', item);
   selectedItemId.value = item.id;
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
