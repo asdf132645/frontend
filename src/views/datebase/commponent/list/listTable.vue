@@ -419,7 +419,7 @@ const handleShiftSelection = () => {
   items.forEach((item) => {
     const itemId = Number(item.id);
     if (itemId >= startId && itemId <= endId) {
-      item.checked = true;
+      item.checked = !item.checked;
     }
   });
 

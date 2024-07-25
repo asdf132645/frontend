@@ -233,7 +233,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 }
 
 const moveWbc = async (direction: any) => {
-
+  store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
   if (timeoutId !== undefined) {
     clearTimeout(timeoutId);
   }
@@ -272,7 +272,6 @@ const handleDataResponse = async (dbId: any, res: any) => {
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(selectItemsNewVal.id) });
-
   if (projectType.value === 'pb' && selectItems.value?.testType === '01') {
     pageGo('/databaseDetail');
   }

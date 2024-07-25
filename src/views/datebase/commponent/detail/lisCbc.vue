@@ -79,7 +79,6 @@ onMounted(async () => {
 
 const initCbcData = async (newVal: any) => {
   let hospitalName = hospitalSiteCd.find(hospital => hospital.siteCd === siteCd.value)?.hospitalNm;
-  console.log(siteCd.value === '')
   if(siteCd.value === ''){
     hospitalName = '0000';
   }
@@ -230,7 +229,6 @@ const initCbcData = async (newVal: any) => {
 
           })
 
-          // console.log('cbcWorkList', cbcWorkList.value);
         }else{
           console.error(readFileTxtRes.data.message);
         }
