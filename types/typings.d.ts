@@ -11,6 +11,7 @@ declare global {
         PB_VERSION: string;
         MAIN_API_IP: string;
         VIEWER_CHECK: string;
+        FORCE_VIEWER: string;
     }
 }
 

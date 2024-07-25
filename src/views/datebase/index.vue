@@ -131,7 +131,7 @@ const alertMessage = ref('');
 
 const today = new Date();
 const thirtyDaysAgo = new Date(today);
-thirtyDaysAgo.setDate(today.getDate() - 30);
+thirtyDaysAgo.setDate(today.getDate() - 29);
 
 const startDate = ref(thirtyDaysAgo);
 const endDate = ref(new Date());
