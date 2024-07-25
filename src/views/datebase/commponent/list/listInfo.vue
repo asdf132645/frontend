@@ -22,7 +22,7 @@
     <div>
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
       <ul class="resInfoTopContainer">
-        <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">
+        <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || window.PROJECT_TYPE === 'bm'">
           <div class="resInfoContainer">
             <li class="resInfoWrapper mb1">
               <p>Class</p>
