@@ -155,7 +155,7 @@ const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
-const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
@@ -409,10 +409,9 @@ const exportToExcel = async () => {
     return;
   }
 
+  convertRbcData(checkedSelectedItems.value);
 
   console.log(checkedSelectedItems.value);
-  // convertRbcData(checkedSelectedItems.value);
-
   // WBC Print
   // await excecuteExcel()
 }
@@ -482,6 +481,10 @@ const createRbcJson = async (slotId: string, sendingData: any) => {
   } catch (error) {
     console.error('Error:', error);
   }
+}
+
+const showClassificationNonWbcResults = (classificationResult: any) => {
+  return (classificationResult && classificationResult.length > 0 && nonWbcTitles.includes(classificationResult))
 }
 
 const dateRefresh = () => {

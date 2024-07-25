@@ -310,6 +310,22 @@ watchEffect(async () => {
       // selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
     }
     const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+
+    // 첫 번째 행을 클릭
+    const observer = new IntersectionObserver(handleIntersection, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.2,
+    });
+    if (loadMoreRef.value) {
+      observer.observe(loadMoreRef.value);
+    }
+
+    if(selectedItemId.value === '0' || !selectedItemId.value){
+      loadingDelay.value = false;
+    }
+
+    console.log(dataBasePageReset.value.dataBasePageReset, filteredItems);
     if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
       // loadingDelay.value = true;
       await selectItem(filteredItems[0]);
@@ -323,19 +339,7 @@ watchEffect(async () => {
       }
       return;
     }
-    // 첫 번째 행을 클릭
-    const observer = new IntersectionObserver(handleIntersection, {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.4,
-    });
-    if (loadMoreRef.value) {
-      observer.observe(loadMoreRef.value);
-    }
 
-    if(selectedItemId.value === '0' || !selectedItemId.value){
-      loadingDelay.value = false;
-    }
   }
 });
 
