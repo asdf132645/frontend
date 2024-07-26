@@ -64,7 +64,7 @@ const getImageUrls = (imageName: string, type: string) => {
   let folderName;
   switch (type) {
     case 'particle':
-      folderName = '02_Particle_Image';
+      folderName = '02_Particle_Image/Thumb';
       break;
     case 'idealZone':
       folderName = '03_Cell_Ideal_Image';
@@ -89,7 +89,7 @@ const getImageUrlsSmallImg = (imageName: string, type: string) => {
   let folderName;
   switch (type) {
     case 'particle':
-      folderName = '02_Particle_Image';
+      folderName = '02_Particle_Image/Thumb';
       break;
     case 'idealZone':
       folderName = '03_Cell_Ideal_Image';
@@ -155,6 +155,8 @@ const openInViewer = (imageUrl: string) => {
     },
     defaultZoomLevel: 0.2,
     navigator: false,
+    minZoomLevel: 0.2,
+    maxZoomLevel: 2,
     showZoomControl: false, // 줌 컨트롤 숨기기
     showHomeControl: false, // 홈 컨트롤 숨기기
     showFullScreenControl: false, // 전체 화면 컨트롤 숨기기
@@ -184,28 +186,19 @@ const openInViewer = (imageUrl: string) => {
   viewerSmall.addHandler('canvas-click', (event: any) => {
     event.preventDefaultAction = true;
 
-    const viewportPoint = viewerSmall.viewport.pointFromPixel(event.position);
-    const imagePoint = viewerSmall.viewport.viewportToImageCoordinates(viewportPoint);
-
-    const imageWidth = viewerSmall.world.getItemAt(0).getContentSize().x;
-    const imageHeight = viewerSmall.world.getItemAt(0).getContentSize().y;
-
-    // 이미지 외부를 클릭했을 때 동작
-    if (imagePoint.x < 0 || imagePoint.x > imageWidth || imagePoint.y < 0 || imagePoint.y > imageHeight) {
-      closeSmallImageViewer();
-    }
+    // const viewportPoint = viewerSmall.viewport.pointFromPixel(event.position);
+    // const imagePoint = viewerSmall.viewport.viewportToImageCoordinates(viewportPoint);
+    //
+    // const imageWidth = viewerSmall.world.getItemAt(0).getContentSize().x;
+    // const imageHeight = viewerSmall.world.getItemAt(0).getContentSize().y;
+    //
+    // // 이미지 외부를 클릭했을 때 동작
+    // if (imagePoint.x < 0 || imagePoint.x > imageWidth || imagePoint.y < 0 || imagePoint.y > imageHeight) {
+    //   closeViewer();
+    // }
   })
 
-  viewerSmall.addHandler('canvas-key', handleCanvasKey);
-  viewerSmall.innerTracker.setTracking(true);
 };
-
-const handleCanvasKey = (event: any) => {
-  console.log(event);
-  if (event.originalEvent.key === 'Escape') {
-    closeViewer();
-  }
-}
 
 const closeSmallImageViewer = () => {
   if (viewerSmall) {
@@ -241,7 +234,6 @@ const closeViewer = () => {
 
       // 클릭 이벤트 리스너 제거
       viewerElement.removeEventListener('click', closeViewer);
-      viewerElement.removeEventListener('canvas-key', handleCanvasKey);
     }
 
     // viewerSmall 변수를 null로 설정

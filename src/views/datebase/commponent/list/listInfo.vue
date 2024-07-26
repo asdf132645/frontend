@@ -22,7 +22,7 @@
     <div>
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
       <ul class="resInfoTopContainer">
-        <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || window.PROJECT_TYPE === 'bm'">
+        <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || projectType === 'bm'">
           <div class="resInfoContainer">
             <li class="resInfoWrapper mb1">
               <p>Class</p>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup >
-import {ref, defineProps, onMounted, watchEffect, watch, nextTick, computed} from 'vue';
+import {ref, defineProps, onMounted, watchEffect, watch, nextTick, computed, onBeforeMount} from 'vue';
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";
@@ -71,6 +71,11 @@ const pilePath = ref('');
 const barCodeImageShowError = ref(false);
 const wbcTotal = ref(0);
 const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+const projectType = ref('');
+
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
+})
 
 onMounted(() => {
   barCodeImageShowError.value = false;

@@ -34,6 +34,10 @@ export const hospitalSiteCd = [
     {
         siteCd: '0000',
         hospitalNm: '0000',
+    },
+    {
+        siteCd: '',
+        hospitalNm: '0000'
     }
 
 ]

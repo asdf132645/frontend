@@ -325,7 +325,6 @@ watchEffect(async () => {
       loadingDelay.value = false;
     }
 
-    console.log(dataBasePageReset.value.dataBasePageReset, filteredItems);
     if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
       // loadingDelay.value = true;
       await selectItem(filteredItems[0]);
@@ -419,7 +418,7 @@ const handleShiftSelection = () => {
   items.forEach((item) => {
     const itemId = Number(item.id);
     if (itemId >= startId && itemId <= endId) {
-      item.checked = true;
+      item.checked = !item.checked;
     }
   });
 
