@@ -11,8 +11,8 @@
           <font-awesome-icon :icon="['fas', 'gear']" style="font-size: 1rem;"/>
           <span class='icoText'>Setting</span>
         </router-link>
-<!--v-if="viewerCheck === 'main'"-->
         <router-link to="/"
+                     v-if="viewerCheck === 'main'"
                      :class='{ "leftActive": isActive("/analysis") || route.path === "/" }'>
           <font-awesome-icon :icon="['fas', 'chart-pie']"
                              style="font-size: 1rem;"
