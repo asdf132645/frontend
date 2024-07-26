@@ -388,6 +388,8 @@ const cellImgSet = async () => {
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
+      await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
+
     }
 
   } catch (e) {

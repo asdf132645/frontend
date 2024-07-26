@@ -141,7 +141,11 @@ watch(commonDataGet.value, (value) => {
     initDataExecute();
     store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
   }
-});
+  if(value.resetAnalyzing){
+    cellImgGet();
+    store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: false});
+  }
+},{deep: true});
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
