@@ -4,7 +4,8 @@
     <p class="loadingText">Loading...</p>
   </div>
   <ul class="wbcInfoDbUl">
-    <template v-for="(item) in wbcInfo" :key="item.id">
+    {{ wbcInfoArrChild.value }}
+    <template v-for="(item) in wbcInfoArrChild" :key="item.id">
       <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'" @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
         <div class="circle" >
           <p>{{ item?.title }}</p>
@@ -13,8 +14,9 @@
       </li>
     </template>
   </ul>
+<!--  {{ console.log(wbcInfo) }}-->
   <ul class="cellImgBox" v-if="!classCompareShow">
-    <li v-for="(item, itemIndex) in wbcInfo" :key="item.id" :ref="setRef(item.id)">
+    <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
       <div v-show="item?.count !== '0' && item?.count !== 0">
         <p class="mt1">
           <input type="checkbox" @input="$emit('allCheckChange', $event, item.title)"
@@ -193,6 +195,7 @@
 
 import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'vue';
 import {useStore} from "vuex";
+import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -234,15 +237,12 @@ interface Item {
   images: Image[];
 }
 
-interface WbcInfo {
-  // wbcInfo 타입 정의
-  [key: string]: any;
-}
+type WbcInfo = Item[];
 
 
 const props = defineProps<{
   wbcInfo: WbcInfo;
-  updateWbcInfo: (newInfo: WbcInfo) => void;
+  updateWbcInfo: (newInfo: any) => void;
   classCompareShow: boolean;
   selectedTitle: string;
   hiddenImages: { [key: string]: boolean };
@@ -256,7 +256,7 @@ const props = defineProps<{
   wbcReset: boolean;
 }>();
 const emits = defineEmits();
-
+const wbcInfoArrChild = ref<any>([]);
 const {wbcInfo, wbcReset} = toRefs(props);
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
@@ -270,8 +270,9 @@ watch(props.hiddenImages, (newVal) => {
 watch(
     wbcInfo,
     async (newVal) => {
-      // console.log('ss')
       await nextTick();
+      wbcInfoArrChild.value = [];
+      wbcInfoArrChild.value = [...newVal]; // wbcInfo를 배열로 복사
       classImgChange('first', null);
       classImgChange('last', null);
     },
@@ -281,13 +282,14 @@ watch(
 watch(
     wbcReset,
     async (newVal) => {
-      // console.log('wbcReset')
       await nextTick();
-
+      // Ensure we access the actual value of wbcInfo
+      wbcInfoArrChild.value = [];
+      wbcInfoArrChild.value = [...props.wbcInfo]; // wbcInfo를 배열로 복사
       classImgChange('first', null);
       classImgChange('last', null);
     },
-    {deep: true}
+    { deep: true }
 );
 
 // watch(

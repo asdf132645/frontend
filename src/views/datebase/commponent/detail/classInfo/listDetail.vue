@@ -1220,7 +1220,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         try {
           // 드래그된 이미지를 원래 위치에서 제거
           if (res) {
-            console.log('Image move response received.');
+            console.log('wbc 옮기기');
             const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
             draggedItem.images.splice(draggedImageIndex, 1);
             const imgAttr = {
@@ -1456,14 +1456,14 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
         wbcReset.value = true;
         reloadTimeout = null; // 타이머 초기화
         // getWbcCustomClasses(false, null);
-      }, 2000);
+      }, 1200);
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기
         await drawCellMarker(true);
         wbcInfo.value = [];
         wbcInfo.value = response.data[0].wbcInfoAfter;
         const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-        sortWbcInfo(wbcInfo.value, sortArr);
+        await sortWbcInfo(wbcInfo.value, sortArr);
         wbcReset.value = true;
         reloadTimeout = null; // 타이머 초기화
         // await getWbcCustomClasses(false, null);
@@ -1479,7 +1479,6 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
 
 
 function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {
-  // console.log('getImageUrl')
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
@@ -1493,6 +1492,8 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   } else {
     url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
   }
+  // console.log('getImageUrl', url)
+
   return url;
 
 }
