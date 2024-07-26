@@ -45,7 +45,8 @@
                   {{ image.title }}
                 </div>
               </div>
-              <img v-if="image && image.fileName" :src="getImageUrl(image.fileName, item.id, item.title, '')"
+              <img v-if="image && image.fileName"
+                   :src="getImageUrl(image.fileName, item.id, item.title, '')"
                    :width="image.width ? image.width : '150px'"
                    :height="image.height ? image.height : '150px'"
                    :style="{ filter: image.filter }"
@@ -252,10 +253,11 @@ const props = defineProps<{
   isBorderChanged: (image: Image) => boolean;
   isSelected: (image: Image) => boolean;
   totalCount: string;
+  wbcReset: boolean;
 }>();
 const emits = defineEmits();
 
-const {wbcInfo} = toRefs(props);
+const {wbcInfo, wbcReset} = toRefs(props);
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 
@@ -267,12 +269,36 @@ watch(props.hiddenImages, (newVal) => {
 
 watch(
     wbcInfo,
-    (newVal) => {
+    async (newVal) => {
+      // console.log('ss')
+      await nextTick();
       classImgChange('first', null);
       classImgChange('last', null);
     },
     {deep: true}
 );
+
+watch(
+    wbcReset,
+    async (newVal) => {
+      // console.log('wbcReset')
+      await nextTick();
+
+      classImgChange('first', null);
+      classImgChange('last', null);
+    },
+    {deep: true}
+);
+
+// watch(
+//     props.wbcReset,
+//     (newVal) => {
+//       console.log('ss')
+//       classImgChange('first', null);
+//       classImgChange('last', null);
+//     },
+//     {deep: true}
+// );
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
   classImgChange('first', null);

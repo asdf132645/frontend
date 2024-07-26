@@ -122,6 +122,7 @@
         <ImageGallery
             ref="$imageGalleryRef"
             :wbcInfo="wbcInfo"
+            :wbcReset="wbcReset"
             :totalCount="selectItems?.wbcInfo?.totalCount"
             :classCompareShow="classCompareShow"
             :selectedTitle="selectedTitle"
@@ -273,7 +274,7 @@ const $imageGalleryRef = ref<any>(null);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-
+const wbcReset = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -1434,16 +1435,40 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDbVal);
 }
+let reloadTimeout: any = null; // 타이머 ID를 저장할 변수
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response) {
+      // console.log(response.data[0].wbcInfoAfter)
+      // 이전 타이머가 존재하면 초기화
+      if (reloadTimeout) {
+        clearTimeout(reloadTimeout);
+        reloadTimeout = null;
+      }
+      reloadTimeout = setTimeout(() => {
+
+        wbcInfo.value = [];
+        wbcInfo.value = response.data[0].wbcInfoAfter;
+        const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
+        sortWbcInfo(wbcInfo.value, sortArr);
+        wbcReset.value = true;
+        reloadTimeout = null; // 타이머 초기화
+        // getWbcCustomClasses(false, null);
+      }, 2000);
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기
         await drawCellMarker(true);
-        await getWbcCustomClasses(false, null);
+        wbcInfo.value = [];
+        wbcInfo.value = response.data[0].wbcInfoAfter;
+        const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
+        sortWbcInfo(wbcInfo.value, sortArr);
+        wbcReset.value = true;
+        reloadTimeout = null; // 타이머 초기화
+        // await getWbcCustomClasses(false, null);
       }
+      wbcReset.value = false;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
@@ -1452,7 +1477,9 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   }
 }
 
+
 function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {
+  // console.log('getImageUrl')
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
