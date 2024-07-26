@@ -1141,7 +1141,8 @@ async function updateOriginalDb() {
   selectItems.value.wbcInfoAfter = clonedWbcInfo;
   await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoAfterVal.value, ...nonRbcClassList.value]});
 
-  const sortArr = sortWbcInfo(orderClass.value, wbcInfoAfterVal.value);
+
+  const sortArr = sortWbcInfo(orderClass.value, wbcInfoVal.value);
   sortArr.forEach((item: any, index: any) => {
     item.orderIdx = index;
   });

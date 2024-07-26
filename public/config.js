@@ -6,5 +6,5 @@ window.PROJECT_VERSION='0.1.36v';
 window.AI_VERSION='';
 window.WEB_BACKEND_VERSION='0.0.47v'
 window.WEB_FRONTEND_VERSION='0.1.36v'
-window.PB_VERSION='12a'
-window.FORCE_VIEWER = 'viewer'
+window.PB_VERSION='12a'  // 12a or 100a
+window.FORCE_VIEWER = 'main' // main or viewer
