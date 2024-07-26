@@ -93,8 +93,8 @@
       >
         <ul class="nth1Child" v-if="item?.title === 'OT'" @click="goClass(item.id)">
           <li>{{ item?.name }}</li>
+          <li class="grayText">{{ item?.count.before }}</li>
           <li>{{ item?.count.after }}</li>
-          <li> -</li>
         </ul>
       </div>
     </div>
@@ -109,7 +109,7 @@
           </ul>
           <ul style="width: 21%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li>
+            <li class="grayText">
               {{ nWbcItem?.count.before }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>

@@ -26,7 +26,8 @@
 
           <button type="button" class="searchClass" @click="search">Search</button>
           <div v-if="viewerCheck !== 'viewer'" class="excelDivList">
-            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
+<!--            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>-->
+            <font-awesome-icon :icon="['fas', 'file-csv']" />
           </div>
         </div>
         <div class="filterDivBox" v-if="classListToggle">
@@ -122,6 +123,7 @@ import * as XLSX from 'xlsx';
 import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
 import pako from "pako";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 
 const store = useStore();
@@ -411,7 +413,6 @@ const exportToExcel = async () => {
 
   convertRbcData(checkedSelectedItems.value);
 
-  console.log(checkedSelectedItems.value);
   // WBC Print
   // await excecuteExcel()
 }
@@ -435,15 +436,30 @@ const convertRbcData = async (dataList: any) => {
   for (const data of dataList) {
     const sendingItem = { before: {}, after: {} };
 
+    await getShapeOthers(data);
+
+    console.log('data.rbcInfo', data);
     // Before
     for (const classItem of data.rbcInfo.rbcClass) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+
         beforeItem = { ...beforeItem, ...classInfoDetailItem }
+
+        // Add Malaria
+        if (classInfoItem.classNm === 'Basophilic Stippling') {
+          beforeItem = { ...beforeItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
+        }
       }
-      // rbcInfo Malaria
+
+
       beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
+
+      // Add Others
+      if (classItem.categoryNm === 'Inclusion Body') {
+        beforeRbcData = { ...beforeRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
+      }
     }
 
     // After
@@ -452,8 +468,19 @@ const convertRbcData = async (dataList: any) => {
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
         afterItem = {...afterItem, ...classInfoDetailItem}
+
+        // Add Malaria
+        if (classInfoItem.classNm === 'Basophilic Stippling') {
+          afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
+        }
+
       }
       afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
+
+      // Add Others
+      if (classItem.categoryNm === 'Inclusion Body') {
+        afterRbcData = { ...afterRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
+      }
     }
     sendingItem.before = beforeRbcData;
     sendingItem.after = afterRbcData;
@@ -483,8 +510,27 @@ const createRbcJson = async (slotId: string, sendingData: any) => {
   }
 }
 
-const showClassificationNonWbcResults = (classificationResult: any) => {
-  return (classificationResult && classificationResult.length > 0 && nonWbcTitles.includes(classificationResult))
+const getShapeOthers = async (selectItems: any) => {
+  const path = selectItems.img_drive_root_path !== '' && selectItems.img_drive_root_path ? selectItems?.img_drive_root_path : iaRootPath.value;
+  const url_Old = `${path}/${selectItems.slotId}/03_RBC_Classification/${selectItems.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+
+  const rbcInfoPathAfter = response_old.data[0].rbcClassList;
+
+  const otherCount = { artifact: 0, doubleNormal: 0 };
+  rbcInfoPathAfter.forEach((item: any) => {
+    if (item.categoryId === '03') {
+      for (const classItem of item.classInfo) {
+        if (classItem.classNm === 'Artifact') {
+          otherCount.artifact += 1
+        } else if (classItem.classNm === 'DoubleNormal') {
+          otherCount.doubleNormal += 1
+        }
+      }
+    }
+  })
+
+  return otherCount;
 }
 
 const dateRefresh = () => {
