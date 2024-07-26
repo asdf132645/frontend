@@ -1152,7 +1152,7 @@ async function originalOnDrop(targetItemIndex: number) {
 let cameraResetTimeOut: ReturnType<typeof setTimeout> | null = null;
 
 async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string, wbcInfosArr?: any) {
-  const {slotId} = selectItems.value;
+  const { slotId } = selectItems.value;
   const arrType = selectedImagesToMove;
   let sourceFolders = [];
   let destinationFolders = [];
@@ -1161,133 +1161,141 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   // 선택된 이미지 배열에 대해 반복
   for (const selectedImage of arrType) {
     const fileName = selectedImage.fileName;
-    fileNames.push(fileName)
-    if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
-      const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.abbreviation === (selectedImage.title || selectedImage.abbreviation));
-      const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
-          `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
-      const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
-      destinationFolders.push(destinationFolder);
-      sourceFolders.push(sourceFolder);
-      const data = {
-        sourceFolders,
-        destinationFolders,
-        fileNames
-      };
-      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
-      const res = await moveClassImagePost(data);
-      if (res) {
-
-        // 이미지를 타겟 아이템으로 이동
-        const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === (selectedImage.title || selectedImage.abbreviation));
-        const sourceItem = wbcInfo.value[sourceItemIndex];
-        const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
-        if (imageIndex !== -1) {
-          const image = sourceItem.images.splice(imageIndex, 1)[0];
-          image.title = wbcInfo.value[targetItemIndex].title;
-          image.width = imageSize.value;
-          image.height = imageSize.value;
-          wbcInfo.value[targetItemIndex].images.push(image);
-          // 카운트 업데이트
-          sourceItem.count--;
-          wbcInfo.value[targetItemIndex].count++;
+    fileNames.push(fileName);
+    try {
+      if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
+        const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+        const matchingItem = classInfoBagic.find(item => item.abbreviation === (selectedImage.title || selectedImage.abbreviation));
+        const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
+            `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem.title}`;
+        const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+        destinationFolders.push(destinationFolder);
+        sourceFolders.push(sourceFolder);
+        const data = {
+          sourceFolders,
+          destinationFolders,
+          fileNames
+        };
+        await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+        const res = await moveClassImagePost(data);
+        if (res) {
+          // 이미지를 타겟 아이템으로 이동
+          const sourceItemIndex = wbcInfo.value.findIndex((item: any) => item.title === (selectedImage.title || selectedImage.abbreviation));
+          const sourceItem = wbcInfo.value[sourceItemIndex];
+          const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
+          if (imageIndex !== -1) {
+            const image = sourceItem.images.splice(imageIndex, 1)[0];
+            image.title = wbcInfo.value[targetItemIndex].title;
+            image.width = imageSize.value;
+            image.height = imageSize.value;
+            wbcInfo.value[targetItemIndex].images.push(image);
+            // 카운트 업데이트
+            sourceItem.count--;
+            wbcInfo.value[targetItemIndex].count++;
+          }
+          // 선택된 이미지 초기화
+          selectedClickImages.value = [];
+          selectItemImageArr.value = [];
+          shiftClickImages.value = [];
+          await updateOriginalDb();
+          await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+          cameraResetTimeOut = null;
         }
-
-        // 선택된 이미지 초기화
-        selectedClickImages.value = [];
-        selectItemImageArr.value = [];
-        shiftClickImages.value = [];
-        await updateOriginalDb();
-        await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
-        cameraResetTimeOut = null;
+        return;
       }
-      return;
+      // wbcInfosArr => 원에다가 움직이거나 우클릭 해서 클래스 옮길 시 사용 하는 부분임
+      if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
+        const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
+            `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
+        const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+        destinationFolders.push(destinationFolder);
+        sourceFolders.push(sourceFolder);
+        const data = {
+          sourceFolders,
+          destinationFolders,
+          fileNames
+        }
+        let res = await moveClassImagePost(data);
+        try {
+          // 드래그된 이미지를 원래 위치에서 제거
+          if (res) {
+            console.log('Image move response received.');
+            const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
+            draggedItem.images.splice(draggedImageIndex, 1);
+            const imgAttr = {
+              width: imageSize.value,
+              height: imageSize.value,
+            }
+            // 드롭된 위치에 이미지를 삽입
+            wbcInfo.value[targetItemIndex].images.push({ ...selectedImage, ...imgAttr });
+
+            wbcInfo.value = removeDuplicateImages(wbcInfo.value);
+            wbcInfo.value.forEach((item: any) => {
+              item.count = item.images.length;
+              if (item.images.length > 0) {
+                item.images.forEach((itemImg: any) => {
+                  itemImg.title = item.title;
+                })
+              }
+            });
+          } else {
+            console.error('Image move failed.');
+          }
+        } catch (error) {
+          console.error('Error during image move:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error during image move:', error);
     }
-    // wbcInfosArr => 원에다가 움직이거나 우클릭 해서 클래스 옮길 시 사용 하는 부분임
-    if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
-      const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
-          `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem.id}_${draggedItem.title}`;
-      const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
-      destinationFolders.push(destinationFolder);
-      sourceFolders.push(sourceFolder);
+  }
+  if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우, 또는 우클릭 해서 클래스 이동시 사용
+    try {
+      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+      for (const seItem of selectItemImageArr.value) {
+        const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+        const matchingItem = classInfoBagic.find(item => item.abbreviation === (seItem.title || seItem.abbreviation));
+        const sourceFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
+        const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+        destinationFolders.push(destinationFolder);
+        sourceFolders.push(sourceFolder);
+      }
       const data = {
         sourceFolders,
         destinationFolders,
         fileNames
       }
       let res = await moveClassImagePost(data);
-      // 드래그된 이미지를 원래 위치에서 제거
       if (res) {
-          const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
-          draggedItem.images.splice(draggedImageIndex, 1);
-          const imgAttr = {
-            width: imageSize.value,
-            height: imageSize.value,
+        // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
+        const targetItem = wbcInfo.value[targetItemIndex];
+        for (const seItem of removeDuplicatesByProperty(selectItemImageArr.value, 'title')) {
+          const findImage = selectedImagesToMove.filter(item => item.title === (seItem.title || seItem.abbreviation));
+          targetItem.images.push(...findImage);
+          targetItem.count = targetItem.images.length;
+          const draggedItemIdx = wbcInfo.value.findIndex((item: any) => item.title === (seItem.title || seItem.abbreviation));
+          if (draggedItemIdx !== -1) {
+            const draggedItemObj = wbcInfo.value[draggedItemIdx];
+            const selectedImagesFileNames = selectedImagesToMove.map(image => image.fileName);
+            const filteredImages = draggedItemObj.images.filter((image: any) => !selectedImagesFileNames.includes(image.fileName));
+            // 새로 생성한 배열을 draggedItemObj의 images 배열에 할당
+            draggedItemObj.images = filteredImages;
+            draggedItemObj.count = draggedItemObj.images.length;
           }
-          // 드롭된 위치에 이미지를 삽입
-          wbcInfo.value[targetItemIndex].images.push({...selectedImage, ...imgAttr});
-
-          wbcInfo.value = removeDuplicateImages(wbcInfo.value);
-          wbcInfo.value.forEach((item: any) => {
-            item.count = item.images.length;
-            if (item.images.length > 0) {
-              item.images.forEach((itemImg: any) => {
-                itemImg.title = item.title;
-              })
-            }
-          });
-      }
-    }
-
-  }
-  if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우, 또는 우클릭 해서 클래스 이동시 사용
-    // destinationFolders -> 이동 되는 폴더
-    // sourceFolders -> 기존 폴더
-    // targetItemIndex -> 이동되어야하는 아이템 인덱스
-    // findImage - > 움직여야하는 이미지
-    // draggedItemIdx - > 기존 폴더 위치
-    // moveImgIsBool = > 사용자가 이미지 이동 시 다른 동작 못하도록 막는 레이어임
-    await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
-    for (const seItem of selectItemImageArr.value) {
-      const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-      const matchingItem = classInfoBagic.find(item => item.abbreviation === (seItem.title || seItem.abbreviation));
-      const sourceFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${seItem.title}`;
-      const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
-      destinationFolders.push(destinationFolder);
-      sourceFolders.push(sourceFolder);
-    }
-    const data = {
-      sourceFolders,
-      destinationFolders,
-      fileNames
-    }
-    let res = await moveClassImagePost(data);
-    if (res) {
-      // selectedImagesToMove 배열의 이미지를 targetItemIndex에서 wbcInfo.value의 객체에 추가
-      const targetItem = wbcInfo.value[targetItemIndex];
-      for (const seItem of removeDuplicatesByProperty(selectItemImageArr.value, 'title')) {
-        const findImage = selectedImagesToMove.filter(item => item.title === (seItem.title || seItem.abbreviation));
-        targetItem.images.push(...findImage);
-        targetItem.count = targetItem.images.length;
-        const draggedItemIdx = wbcInfo.value.findIndex((item: any) => item.title === (seItem.title || seItem.abbreviation));
-        if (draggedItemIdx !== -1) {
-          const draggedItemObj = wbcInfo.value[draggedItemIdx];
-          const selectedImagesFileNames = selectedImagesToMove.map(image => image.fileName);
-          const filteredImages = draggedItemObj.images.filter((image: any) => !selectedImagesFileNames.includes(image.fileName));
-          // 새로 생성한 배열을 draggedItemObj의 images 배열에 할당
-          draggedItemObj.images = filteredImages;
-          draggedItemObj.count = draggedItemObj.images.length;
         }
+        for (const images of selectedImagesToMove) {
+          images.title = wbcInfo.value[targetItemIndex].title;
+          images.width = imageSize.value;
+          images.height = imageSize.value;
+        }
+        await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+      } else {
+        console.error('Image move failed.');
+        await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
       }
-      for (const images of selectedImagesToMove) {
-        images.title = wbcInfo.value[targetItemIndex].title;
-        images.width = imageSize.value;
-        images.height = imageSize.value;
-      }
-      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
-    } else {
-      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
+    } catch (error) {
+      console.error('Error during image move:', error);
+      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
     }
   }
   // 선택된 이미지 초기화
@@ -1299,7 +1307,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
 }
-
 function removeDuplicatesByProperty(array: any, property: any) {
   const seen = new Set();
   return array.filter((item: any) => {
