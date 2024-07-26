@@ -442,7 +442,7 @@ const convertRbcData = async (dataList: any) => {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
         beforeItem = { ...beforeItem, ...classInfoDetailItem }
       }
-
+      // rbcInfo Malaria
       beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
     }
 
@@ -458,7 +458,7 @@ const convertRbcData = async (dataList: any) => {
     sendingItem.before = beforeRbcData;
     sendingItem.after = afterRbcData;
 
-    await createRbcJson(data.slotId, sendingItem);
+    // await createRbcJson(data.slotId, sendingItem);
   }
 
 
