@@ -288,6 +288,7 @@ watch(
       wbcInfoArrChild.value = [...props.wbcInfo]; // wbcInfo를 배열로 복사
       classImgChange('first', null);
       classImgChange('last', null);
+      console.log('!@!@!@')
     },
     { deep: true }
 );
