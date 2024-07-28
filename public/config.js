@@ -1,10 +1,10 @@
 window.APP_API_BASE_URL='http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
 window.MAIN_API_IP = 'http://192.168.0.131:80/api'; // MultiViewer - http://192.168.0.100:3002,   Main PC Only - http://127.0.0.1:3002
 window.MAIN_API = 'http://192.168.0.131:80/api';
-window.PROJECT_TYPE='pb';
-window.PROJECT_VERSION='0.1.36v';
+window.PROJECT_TYPE='pb';  // pb or bm
+window.PROJECT_VERSION='0.1.37v';
 window.AI_VERSION='';
 window.WEB_BACKEND_VERSION='0.0.47v'
-window.WEB_FRONTEND_VERSION='0.1.36v'
+window.WEB_FRONTEND_VERSION='0.1.37v'
 window.PB_VERSION='12a'  // 12a or 100a
-window.FORCE_VIEWER = 'main' // main or viewer
+window.FORCE_VIEWER = 'viewer' // main or viewer

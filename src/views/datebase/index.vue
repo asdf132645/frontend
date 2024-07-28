@@ -411,10 +411,10 @@ const exportToExcel = async () => {
     return;
   }
 
-  convertRbcData(checkedSelectedItems.value);
+  // convertRbcData(checkedSelectedItems.value);
 
   // WBC Print
-  // await excecuteExcel()
+  await excecuteExcel()
 }
 
 const excecuteExcel = async () => {
@@ -436,15 +436,13 @@ const convertRbcData = async (dataList: any) => {
   for (const data of dataList) {
     const sendingItem = { before: {}, after: {} };
 
-    await getShapeOthers(data);
+    const shapeOthersCount = await getShapeOthers(data);
 
-    console.log('data.rbcInfo', data);
     // Before
     for (const classItem of data.rbcInfo.rbcClass) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
-
         beforeItem = { ...beforeItem, ...classInfoDetailItem }
 
         // Add Malaria
@@ -453,6 +451,9 @@ const convertRbcData = async (dataList: any) => {
         }
       }
 
+      if (classItem.categoryNm === 'Shape') {
+        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: String(test.doubleNormal + test.artifact) } } }
+      }
 
       beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
 
@@ -460,6 +461,7 @@ const convertRbcData = async (dataList: any) => {
       if (classItem.categoryNm === 'Inclusion Body') {
         beforeRbcData = { ...beforeRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
       }
+
     }
 
     // After
@@ -473,8 +475,12 @@ const convertRbcData = async (dataList: any) => {
         if (classInfoItem.classNm === 'Basophilic Stippling') {
           afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
         }
-
       }
+
+      if (classItem.categoryNm === 'Shape') {
+        afterItem = { ...afterItem, ...{ Others: { degree: '-', count: String(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
+      }
+
       afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
 
       // Add Others
@@ -485,7 +491,7 @@ const convertRbcData = async (dataList: any) => {
     sendingItem.before = beforeRbcData;
     sendingItem.after = afterRbcData;
 
-    // await createRbcJson(data.slotId, sendingItem);
+    await createRbcJson(data.slotId, sendingItem);
   }
 
 

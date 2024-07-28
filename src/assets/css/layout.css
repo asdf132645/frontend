@@ -894,8 +894,8 @@ div#viewerSmall {
     position: absolute;
     font-size: 3.9rem;
     z-index: 999;
-    right: 25px;
-    top: 12px;
+    transform: translate(-50%, -50%);
+    top: 80px;
     cursor: pointer;
 }
 

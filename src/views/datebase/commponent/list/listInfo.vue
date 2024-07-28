@@ -57,7 +57,7 @@
 </template>
 
 <script setup >
-import {ref, defineProps, onMounted, watchEffect, watch, nextTick, computed, onBeforeMount} from 'vue';
+import {ref, defineProps, onMounted, watch, computed, onBeforeMount} from 'vue';
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";

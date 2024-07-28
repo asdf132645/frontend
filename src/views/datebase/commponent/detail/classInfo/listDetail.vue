@@ -1439,8 +1439,8 @@ let reloadTimeout: any = null; // 타이머 ID를 저장할 변수
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
-    const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
-    if (response) {
+    const response: any = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
+    if (response && response?.data.length !== 0) {
       // console.log(response.data[0].wbcInfoAfter)
       // 이전 타이머가 존재하면 초기화
       if (reloadTimeout) {
