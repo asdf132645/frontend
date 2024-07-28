@@ -1441,33 +1441,17 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const response: any = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
     if (response && response?.data.length !== 0) {
-      // console.log(response.data[0].wbcInfoAfter)
-      // 이전 타이머가 존재하면 초기화
-      if (reloadTimeout) {
-        clearTimeout(reloadTimeout);
-        reloadTimeout = null;
-      }
-      reloadTimeout = setTimeout(() => {
 
-        wbcInfo.value = [];
-        wbcInfo.value = response.data[0].wbcInfoAfter;
-        const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-        sortWbcInfo(wbcInfo.value, sortArr);
-        wbcReset.value = true;
-        reloadTimeout = null; // 타이머 초기화
-        // getWbcCustomClasses(false, null);
-      }, 1200);
+      // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기
         await drawCellMarker(true);
-        wbcInfo.value = [];
-        wbcInfo.value = response.data[0].wbcInfoAfter;
-        const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-        await sortWbcInfo(wbcInfo.value, sortArr);
-        wbcReset.value = true;
-        reloadTimeout = null; // 타이머 초기화
-        // await getWbcCustomClasses(false, null);
       }
+      wbcInfo.value = [];
+      wbcInfo.value = response.data[0].wbcInfoAfter;
+      const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
+      await sortWbcInfo(wbcInfo.value, sortArr);
+      wbcReset.value = true;
       wbcReset.value = false;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
@@ -1487,16 +1471,21 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   const slotId = selectItems.value?.slotId || "";
   let folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
+
+  // 타임스탬프 추가
+  const timestamp = Date.now(); // 현재 시간을 타임스탬프로 사용
+
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
-    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}&timestamp=${timestamp}`;
   } else {
-    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}&timestamp=${timestamp}`;
   }
+
   // console.log('getImageUrl', url)
 
   return url;
-
 }
+
 
 
 async function rollbackChanges() {
