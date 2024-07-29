@@ -164,6 +164,7 @@ const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
 
 function handleStateVal(data: any) {
+  console.log('stateVal')
   eventTriggered.value = true;
   notStartLoading.value = false;
   initDbData().then(() => {

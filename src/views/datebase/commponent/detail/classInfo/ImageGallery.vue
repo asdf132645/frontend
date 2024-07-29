@@ -280,17 +280,16 @@ watch(
 );
 
 watch(
-    wbcReset,
+    () => props.wbcReset,
     async (newVal) => {
-      await nextTick();
-      // Ensure we access the actual value of wbcInfo
-      wbcInfoArrChild.value = [];
-      wbcInfoArrChild.value = [...props.wbcInfo]; // wbcInfo를 배열로 복사
-      classImgChange('first', null);
-      classImgChange('last', null);
-      console.log('!@!@!@')
-    },
-    { deep: true }
+      if (newVal) {
+        await nextTick(); // DOM 업데이트 후 실행
+        wbcInfoArrChild.value = [...props.wbcInfo]; // wbcInfo를 배열로 복사
+        classImgChange('first', null);
+        classImgChange('last', null);
+        console.log('!@!@!@');
+      }
+    }
 );
 
 // watch(
