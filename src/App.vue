@@ -64,7 +64,6 @@ const reqArr = computed(() => store.state.commonModule);
 const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
-let checkingInterFullScreen: any = null;
 const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
@@ -173,12 +172,6 @@ onMounted(async () => {
     pbVersion.value = window.PB_VERSION;
   }
 
-  checkingInterFullScreen = setInterval(async () => {
-    if (!isFullScreen()) {
-      await showErrorAlert('Please change to FullScreen');
-    }
-  }, 1000 * 60)
-
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
     userId.value = userModuleDataGet.value.id
@@ -216,11 +209,6 @@ onBeforeUnmount(() => {
   if (countingInterStartval) {
     clearInterval(countingInterRunval);
     countingInterRunval = null;
-  }
-
-  if (checkingInterFullScreen) {
-    clearInterval(checkingInterFullScreen)
-    checkingInterFullScreen = null;
   }
 });
 
