@@ -299,6 +299,9 @@ onMounted(async () => {
   wbcInfoRefresh.value = true;
   // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
   await imgSetLocalStorage();
+
+  cellMarkerIcon.value = false;
+  await drawCellMarker(true);
   // end
 });
 onUnmounted(async () => {
@@ -681,6 +684,7 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 
 const refreshClass = async (data: any) => {
   cellMarkerIcon.value = false;
+  await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
   const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
