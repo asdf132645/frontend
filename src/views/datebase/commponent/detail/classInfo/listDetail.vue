@@ -693,10 +693,6 @@ const refreshClass = async (data: any) => {
   await imgSetLocalStorage();
 }
 
-const excelDownload = () => {
-  //
-}
-
 const drawCellMarker = async (imgResize?: boolean) => {
   if (!imgResize) {
     cellMarkerIcon.value = !cellMarkerIcon.value
@@ -1151,6 +1147,7 @@ async function onDrop(targetItemIndex: any) {
 }
 
 async function originalOnDrop(targetItemIndex: number) {
+  console.log('originalOnDrop')
   //targetItemIndex -> 옮겨져야하는 index
   if ((draggedItemIndex.value !== null && draggedImageIndex.value !== null) && (draggedItemIndex.value !== targetItemIndex)) {
     const draggedItem = wbcInfo.value[draggedItemIndex.value];

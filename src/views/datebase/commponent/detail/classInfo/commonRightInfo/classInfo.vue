@@ -1027,7 +1027,6 @@ const beforeAfterChange = async (newItem: any) => {
     }
   })
 
-  console.log(nonRbcClassBeforeList.value);
   nonRbcClassListVal.value = [];
   wbcInfoVal.value = [];
 
