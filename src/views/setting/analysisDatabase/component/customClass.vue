@@ -37,7 +37,7 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, onBeforeMount} from 'vue';
 import {
   createWbcCustomClassApi,
   updateWbcCustomClassApi,
@@ -46,6 +46,7 @@ import {
 import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
+import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclassification";
 
 const saveHttpType = ref('');
 const wbcCustomParm = [
@@ -60,12 +61,22 @@ const wbcCustomItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const projectBm = ref(false);
+
+onBeforeMount(() => {
+  projectBm.value = window.PROJECT_TYPE === 'bm'
+})
 
 onMounted(async () => {
   await getWbcCustomClasses();
 });
 
 const saveWbcCustomClass = async () => {
+  if (!validateCustomClass()) {
+    return;
+  }
+
+
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
@@ -112,6 +123,52 @@ const getWbcCustomClasses = async () => {
   } catch (e) {
     console.log(e);
   }
+}
+
+const validateCustomClass = () => {
+  let existingClassFullNmArr, existingClassAbbreivationArr;
+
+  const wbcCustomItemFullNms = wbcCustomItems.value.map((item: any) => item.fullNm);
+  const wbcCustomItemAbbreviation = wbcCustomItems.value.map((item: any) => item.abbreviation);
+  if (new Set(...wbcCustomItemFullNms).size !== wbcCustomItemFullNms.length) {
+    showErrorAlert("There is duplicated class name")
+    return false;
+  } else if (new Set(...wbcCustomItemAbbreviation).size !== wbcCustomItemAbbreviation.length) {
+    showErrorAlert("There is duplicated abbreviation")
+    return false;
+  }
+
+
+  if (projectBm.value ) {
+    existingClassFullNmArr = basicBmClassList.map(item => item.fullNm);
+    existingClassAbbreivationArr = basicBmClassList.map(item => item.abbreviation)
+  } else {
+    existingClassFullNmArr = basicWbcArr.map(item => item.fullNm)
+    existingClassAbbreivationArr = basicWbcArr.map(item => item.abbreviation);
+  }
+
+  for (const wbcCustomItem of wbcCustomItems.value) {
+    if (wbcCustomItem.fullNm === '' && wbcCustomItem.abbreviation !== '') {
+      showErrorAlert("You should enter abbreviation")
+      return false;
+    } else if (wbcCustomItem.fullNm !== '' && wbcCustomItem.abbreviation === '') {
+      showErrorAlert("You should enter class name")
+      return false;
+    }
+
+    if (existingClassAbbreivationArr.includes(wbcCustomItem.abbreviation)) {
+      showErrorAlert(`${wbcCustomItem.abbreviation} is existing abbreviation`)
+      return false;
+    } else if (existingClassFullNmArr.includes(wbcCustomItem.fullNm)) {
+      showErrorAlert(`${wbcCustomItem.fullNm} is existing class name`)
+      return false;
+    } else if (wbcCustomItem.abbreviation === 'OT') {
+      showErrorAlert("Can't use OT abbreviation!")
+      return false;
+    }
+  }
+
+  return true;
 }
 
 const showSuccessAlert = (message: string) => {

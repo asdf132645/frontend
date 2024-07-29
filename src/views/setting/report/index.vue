@@ -3,9 +3,9 @@
     <div class="settingTabSubButtons">
       <button @click="selectTab('ImagePrint')" :class="{ 'active': selectedTab === 'ImagePrint' }">Image Print</button>
       <div v-if="!projectBm">
-        <button @click="selectTab('LisCode')" :class="{ 'active': selectedTab === 'LisCode' }">Lis Code</button>
+        <button @click="selectTab('LisCode')" :class="{ 'active': selectedTab === 'LisCode' }">LIS Code</button>
         <button @click="selectTab('CbcCode')" :class="{ 'active': selectedTab === 'CbcCode' }">CBC Code</button>
-        <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">Lis(CBC) Hot Key & File Path</button>
+        <button @click="selectTab('filePathSet')" :class="{ 'active': selectedTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
       </div>
     </div>
 

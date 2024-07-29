@@ -147,6 +147,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
+import { getWbcCustomClassApi } from "@/common/api/service/setting/settingApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {
   basicBmClassList,
@@ -216,11 +217,13 @@ const okMessageType = ref('');
 const lisCodeWbcArr = ref<any>([]);
 const lisCodeRbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
+const customClassArr = ref<any>([]);
 
 
 onMounted(async () => {
   await nextTick();
   await getOrderClass();
+  await getCustomClass();
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
@@ -960,8 +963,24 @@ const beforeAfterChange = async (newItem: any) => {
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id)});
   selectItems.value = filteredItems.data;
   selectItems.value.wbcInfoAfter = newItem;
+
+  const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
+
+
   const wbcBeforeInfo = selectItems.value.wbcInfo.wbcInfo[0];
   const wbcAfterInfo = selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
+
+  for (const item of availableCustomClassArr) {
+    const customItem = {
+      id: String(item.customNum),
+      name: item.fullNm,
+      count: '0',
+      title: item.abbreviation,
+      images: [],
+    }
+    wbcBeforeInfo.push(customItem)
+  }
+
   const wbcBeforeArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const wbcAfterArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcBeforeInfo = sortWbcInfo(wbcBeforeInfo, wbcBeforeArr);
@@ -1009,8 +1028,8 @@ const beforeAfterChange = async (newItem: any) => {
   wbcInfoVal.value = [];
 
   nonRbcClassBeforeList.value.forEach((beforeItem: any) => {
-    const afterItem = nonRbcClassAfterList.value.find((afterItem: any) => afterItem.id === beforeItem.id);
-    if (afterItem && !nonRbcClassListVal.value.find((item: any) => item.id === beforeItem.id)) {
+    const afterItem = nonRbcClassAfterList.value.find((afterItem: any) => String(afterItem.id) === String(beforeItem.id));
+    if (afterItem && !nonRbcClassListVal.value.find((item: any) => String(item.id) === String(beforeItem.id))) {
       nonRbcClassListVal.value.push({
         id: beforeItem.id,
         name: beforeItem.name,
@@ -1023,8 +1042,8 @@ const beforeAfterChange = async (newItem: any) => {
   });
 
   wbcInfoBeforeVal.value.forEach((beforeItem: any) => {
-    const afterItem = wbcInfoAfterVal.value.find((afterItem: any) => afterItem.id === beforeItem.id);
-    if (afterItem && !wbcInfoVal.value.find((item: any) => item.id === beforeItem.id)) {
+    const afterItem = wbcInfoAfterVal.value.find((afterItem: any) => String(afterItem.id) === String(beforeItem.id));
+    if (afterItem && !wbcInfoVal.value.find((item: any) => String(item.id) === String(beforeItem.id))) {
       wbcInfoVal.value.push({
         id: beforeItem.id,
         name: beforeItem.name,
@@ -1173,6 +1192,15 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
     }
   } catch (error) {
     console.error('Error:', error);
+  }
+}
+
+const getCustomClass = async () => {
+  try {
+    const result = await getWbcCustomClassApi();
+    customClassArr.value = result.data;
+  } catch (e) {
+    console.log(e);
   }
 }
 
