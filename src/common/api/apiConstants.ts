@@ -418,5 +418,11 @@ export const apiConstants = {
             endpoint: 'browser/close-edge',
             requiresToken: false,
         }
+    },
+    img:{
+        checkImageExists: {
+            endpoint: 'images/checkImageExists',
+            requiresToken: false,
+        }
     }
 };
