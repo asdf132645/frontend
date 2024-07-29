@@ -2,7 +2,7 @@
   <div>
     <h3 class="titleH3">
       Classification List
-      <button @click="classListToggleEvent">
+      <button @click="classListToggleEvent" class="classificationListBtn">
         <font-awesome-icon :icon="['fas', 'list-check']"/>
       </button>
     </h3>
@@ -26,10 +26,12 @@
 
           <button type="button" class="searchClass" @click="search">Search</button>
           <div v-if="viewerCheck !== 'viewer'" class="excelDivList">
-<!--            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>-->
-            <font-awesome-icon :icon="['fas', 'file-csv']" />
+            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
         </div>
+
+
+        <!-- Classification List Modal -->
         <div class="filterDivBox" v-if="classListToggle">
           <div class="nrCount" v-if="!bmClassIsBoolen">
             <span>NR count</span>
@@ -76,6 +78,8 @@
 
           </div>
         </div>
+
+
       </div>
       <keep-alive>
         <ListTable
@@ -181,6 +185,9 @@ onMounted(async () => {
     await initDbData();
     // loadingDelayParents.value = true;
   }
+
+  document.addEventListener('click', closeClassListBox);
+
   notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
 
@@ -189,6 +196,15 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   instance?.appContext.config.globalProperties.$socket.off('stateVal', handleStateVal);
 });
+
+const closeClassListBox = (event: MouseEvent) => {
+  const selectBox = document.querySelector('.filterDivBox');
+  const selectButton = document.querySelector('.classificationListBtn');
+  if (selectButton && selectButton.contains(event.target as Node)) return;
+  if (selectBox && !selectBox.contains(event.target as Node)) {
+    classListToggle.value = false; // 셀렉트 박스 닫기
+  }
+};
 
 const classListToggleEvent = () => {
   classListToggle.value = !classListToggle.value;

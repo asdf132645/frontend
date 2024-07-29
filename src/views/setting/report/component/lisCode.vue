@@ -16,11 +16,11 @@
   <div class="alignDiv">
     <p class="mb2"> [ Min Count ] </p>
     <ul>
-      <li v-if="minCountArr.length > 0">
+      <li class="minCountWrapper" v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Giant Platelet</p>
         <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)" class="form-control form-control-sm">
       </li>
-      <li v-if="minCountArr.length > 0">
+      <li class="minCountWrapper" v-if="minCountArr.length > 0">
         <p class="mb1 mt1">Platelet Aggregation</p>
         <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)" class="form-control form-control-sm">
       </li>

@@ -7,12 +7,12 @@
                @input="updateHotKey($event, 0)">
       </li>
       <li>
-        <p class="mb2 mt2">Lis File Path</p>
+        <p class="mb2 mt2">LIS File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''"
                @input="updateFilePath($event, 0)">
       </li>
       <li>
-        <p class="mb2 mt2">Cbc File Path</p>
+        <p class="mb2 mt2">CBC File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].cbcFilePath : ''"
                @input="updateCbcFilePath($event, 0)">
       </li>

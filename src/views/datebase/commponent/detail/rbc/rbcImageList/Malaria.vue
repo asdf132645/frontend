@@ -2,7 +2,8 @@
   <div v-if="imageExist">
     <!-- malaria -->
     <div>
-      <div @drop="onDrop('malaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
+      <h1 class="malariaTitle">Malaria O</h1>
+      <div class="malariaWrapper" @drop="onDrop('malaria')" @dragover.prevent>
         <img
           v-for="(malaria, index) in malariaList"
           :key="'malaria-' + index" 
@@ -12,13 +13,14 @@
           alt="malaria-image"
           @click="handleClickImage('malaria', malaria, index, $event)"
           @dragstart="onDragStart('malaria', malaria, index)"
+          @dblclick="handleOpenModal('malaria', malaria, index)"
         >
       </div>
     </div>
     <!-- no malaria -->
     <div>
-      <div class="no-malaria" style="text-align:left">No Malaria</div>
-      <div @drop="onDrop('noMalaria')" @dragover.prevent style="text-align: left; overflow: auto; height: 400px;">
+      <h1 class="malariaTitle">Malaria X</h1>
+      <div class="malariaWrapper" @drop="onDrop('noMalaria')" @dragover.prevent>
         <img
           v-for="(noMalaria, index) in noMalariaList"
           :key="'noMalaria-' + index"
@@ -28,12 +30,29 @@
           alt="noMalaria-image"  
           @click="handleClickImage('noMalaria', noMalaria, index, $event)"
           @dragstart="onDragStart('noMalaria', noMalaria, index)"
+          @dblclick="handleOpenModal('malaria', noMalaria, index)"
         >
       </div>
     </div>
   </div>
   <div v-else>
     <span>Malaria Images do not exist.</span>
+  </div>
+
+
+  <!--  Modal -->
+  <div class="wbcModal" v-show="modalOpen">
+    <div class="wbc-modal-content" @click="outerClickCloseModal">
+      <span class="wbcClose" @click="closeModal">&times;</span>
+      <div class="wbcModalImageContent">
+        <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
+             class="modal-image"/>
+      </div>
+      <div class="buttons">
+        <button @click="zoomIn">+</button>
+        <button @click="zoomOut">-</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,9 +69,13 @@ const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const malariaList = ref([]);
 const noMalariaList = ref([]);
 const selectedClickImages = ref<{ section: string, imgName: string, index: number }[]>([]);
+const selectedImageSrc = ref('');
 let indexBeforePressingShift = ref<number | null>(null);
 let draggedImages = ref<{ section: string, imgName: string, index: number }[]>([]);
 const imageExist = ref(false);
+const modalOpen = ref(false);
+const modalImageWidth = ref('150px');
+const modalImageHeight = ref('150px');
 
 onMounted(async () => {
   await getImageList(dirName.malariaDirName, malariaList);
@@ -79,6 +102,40 @@ async function getImageList(folderName: string, list: []) {
     console.error(err);
   }
 }
+
+const outerClickCloseModal = (e: any) => {
+  if (e.target.classList.contains('wbc-modal-content')) {
+    modalOpen.value = false;
+  }
+}
+
+const closeModal = () => {
+  modalOpen.value = false;
+}
+
+const handleOpenModal = (type: string, malaria: any, index: number) => {
+  if (type === 'malaria') {
+    selectedImageSrc.value = malaria;
+    modalOpen.value = true;
+  }
+}
+
+const zoomIn = () => {
+  let newWidth = Math.min(parseFloat(modalImageWidth.value) + 50, 400);
+  let newHeight = Math.min(parseFloat(modalImageHeight.value) + 50, 400);
+
+  modalImageWidth.value = `${newWidth}px`;
+  modalImageHeight.value = `${newHeight}px`;
+};
+
+
+const zoomOut = () => {
+  let newWidth = Math.max(parseFloat(modalImageWidth.value) - 50, 150);
+  let newHeight = Math.max(parseFloat(modalImageHeight.value) - 50, 150);
+
+  modalImageWidth.value = `${newWidth}px`;
+  modalImageHeight.value = `${newHeight}px`;
+};
 
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;

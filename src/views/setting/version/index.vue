@@ -13,14 +13,14 @@ import { ref, onMounted } from "vue";
 import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
 
 const projectVersion = ref<{key: string, name: string}[]>()
-const tcpVersion = ref('');
+const coreVersion = ref('');
 const aiVersion = ref('');
 
 onMounted(async () => {
   await setAIVersions();
   projectVersion.value = [
     { key: 'AI Version', name: aiVersion.value },
-    { key: 'TCP Version', name: tcpVersion.value },
+    { key: 'Core Version', name: coreVersion.value },
     { key: 'Web Frontend Version', name: window.WEB_FRONTEND_VERSION as string},
     { key: 'Web Backend Version', name: window.WEB_BACKEND_VERSION as string},
     { key: 'PB Version', name: window.PB_VERSION as string}
@@ -36,11 +36,11 @@ const setAIVersions = async () => {
     const aiVersionPattern = /BACKEND\s*=\s*V([\d.]+)/;
     const tcpVersionPattern = /TCP_VERSION\s*=\s*V([\d.]+)/;
     aiVersion.value = iniFileData.match(aiVersionPattern)[1] || '';
-    tcpVersion.value = iniFileData.match(tcpVersionPattern)[1] || '';
+    coreVersion.value = iniFileData.match(tcpVersionPattern)[1] || '';
   } catch (e) {
     console.log(e);
     aiVersion.value = '';
-    tcpVersion.value = '';
+    coreVersion.value = '';
   }
 }
 

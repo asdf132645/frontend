@@ -14,7 +14,7 @@
 
       <tr>
         <!-- WBC diff analysis values -->
-        <th rowspan="4" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
+        <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
 
         <!-- BM diff analysis values -->
         <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
@@ -23,30 +23,6 @@
 
           <select v-model='diffCellAnalyzingCount'>
             <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr v-if="projectType === 'pb'">
-        <th>Wbc Position Margin</th>
-        <td>
-          <select v-model='wbcPositionMargin'>
-            <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr v-if="projectType === 'pb'">
-        <th>Rbc Position Margin</th>
-        <td>
-          <select v-model='rbcPositionMargin'>
-            <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr v-if="projectType === 'pb'">
-        <th>Plt Position Margin</th>
-        <td>
-          <select v-model='pltPositionMargin'>
-            <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
         </td>
       </tr>
@@ -81,6 +57,33 @@
           </select>
         </td>
       </tr>
+
+      <tr v-if="projectType === 'pb'">
+        <th rowspan="3">Common</th>
+        <th>Wbc Position Margin</th>
+        <td>
+          <select v-model='wbcPositionMargin'>
+            <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+        </td>
+      </tr>
+      <tr v-if="projectType === 'pb'">
+        <th>Rbc Position Margin</th>
+        <td>
+          <select v-model='rbcPositionMargin'>
+            <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+        </td>
+      </tr>
+      <tr v-if="projectType === 'pb'">
+        <th>Plt Position Margin</th>
+        <td>
+          <select v-model='pltPositionMargin'>
+            <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+        </td>
+      </tr>
+
       <tr>
         <th>IA Root Path</th>
         <td colspan="2">
@@ -165,7 +168,7 @@
 <!--      </tr>-->
       </tbody>
     </table>
-    <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save Cell Image Analyzed</button>
+    <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
 
   </div>
   <Alert

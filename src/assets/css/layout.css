@@ -35,6 +35,10 @@
     padding-left: 0 !important;
 }
 
+.f18 {
+    font-size: 18px;
+}
+
 .cursorNotAllowed {
     cursor: not-allowed;
 }
@@ -75,6 +79,10 @@
 
 .blueText {
     color: var(--blue-bg-0-color);
+}
+
+.modalTitle {
+    font-size: 1.0rem;
 }
 
 /* header-menu */
@@ -1409,7 +1417,6 @@ input.loginInput {
 .statusBar {
     width: 80%;
     height: 20px;
-    margin-top: 5px;
     background-color: var(--blue-bg-3-color);
 }
 
@@ -2538,7 +2545,7 @@ ul.normalItems li div span:last-child {
 }
 
 .selected {
-    box-shadow: 0 0 0 3px var(--blue-bg-0-color);
+    box-shadow: 0 0 0 3px var(--green-bg-1-color);
 }
 
 
@@ -2615,6 +2622,13 @@ ul.normalItems li div span:last-child {
 button.rollbackButton {
     position: absolute;
     right: -20px;
+}
+
+.minCountWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
 }
 
 /* setting/version */
@@ -2935,6 +2949,22 @@ table.cbcTable td {
 
 .printTotalText {
     font-weight: bold;
+}
+
+.malariaTitle {
+    font-weight: 600;
+    font-size: 17px;
+    margin: 20px 0px 8px 4px;
+    text-align: left;
+    width: fit-content;
+}
+
+.malariaWrapper {
+    text-align: left;
+    overflow: auto;
+    height: 400px;
+    /*box-shadow: 2px 2px 2px var(--black-color);*/
+    border: 1px solid var(--gray-bg-8-color);
 }
 
 @media screen and (max-width: 1900px) {
