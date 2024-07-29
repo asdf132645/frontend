@@ -316,30 +316,18 @@ watch(
         }));
 
         await nextTick(); // 상태 업데이트 후 강제 렌더링
-        console.log(JSON.stringify(wbcInfoArrChild.value))
         classImgChange('first', null);
         classImgChange('last', null);
-        console.log('!@!@!@');
       }
     }
 );
 
-// watch(
-//     props.wbcReset,
-//     (newVal) => {
-//       console.log('ss')
-//       classImgChange('first', null);
-//       classImgChange('last', null);
-//     },
-//     {deep: true}
-// );
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
   classImgChange('first', null);
   classImgChange('last', null);
   classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
-  // console.log('Image loaded', itemIndex);
-  // console.log('props.wbcInfo.length', props.wbcInfo.length - 1);
+
   if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
     loading.value = false;
   } else {

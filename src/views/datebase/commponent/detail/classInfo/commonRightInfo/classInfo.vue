@@ -98,7 +98,7 @@
         </ul>
       </div>
     </div>
-
+<!--    {{ nonRbcClassListVal }}-->
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonRbcClassListVal" :key="outerIndex">
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
@@ -145,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import { getWbcCustomClassApi } from "@/common/api/service/setting/settingApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
@@ -219,6 +219,10 @@ const lisCodeRbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
 
+onBeforeMount(async () => {
+  projectBm.value = window.PROJECT_TYPE === 'bm';
+})
+
 
 onMounted(async () => {
   await nextTick();
@@ -227,7 +231,7 @@ onMounted(async () => {
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
-  projectBm.value = window.PROJECT_TYPE === 'bm';
+
   // 첫 진입시
   if (props.selectItems?.submitState === "") {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
@@ -1023,7 +1027,7 @@ const beforeAfterChange = async (newItem: any) => {
     }
   })
 
-
+  console.log(nonRbcClassBeforeList.value);
   nonRbcClassListVal.value = [];
   wbcInfoVal.value = [];
 
