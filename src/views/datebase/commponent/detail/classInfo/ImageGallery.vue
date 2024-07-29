@@ -26,7 +26,7 @@
       </div>
       <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver" @drop="() => $emit('onDrop', itemIndex)"
           v-if="item?.count !== '0' && item?.count !== 0">
-        <template v-for="(image, imageIndex) in item.images" :key="image?.fileName">
+        <template v-for="(image, imageIndex) in item.images" :key="image.uniqueKey">
           <li
               :class="{
               'border-changed': isBorderChanged(image),
@@ -35,7 +35,7 @@
             }"
               @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
               @dblclick="() => $emit('openModal', image, item)"
-              v-if="image && !hiddenImages[`${item.id}-${image.fileName}`]"
+              v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
               @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
           >
             <div style="position: relative;">
@@ -47,11 +47,9 @@
                   {{ image.title }}
                 </div>
               </div>
-              <!--              {{ image.fileName }}-->
-
               <img
                   v-if="image && image.fileName && !hiddenImages[`${item.id}-${image.fileName}`]"
-                  :key="image.fileName"
+                  :key="image.uniqueKey"
                   :src="getImageUrl(image.fileName, item.id, item.title, '')"
                   :width="image.width ? image.width : '150px'"
                   :height="image.height ? image.height : '150px'"
@@ -284,9 +282,17 @@ watch(
     async (newVal) => {
       await nextTick();
       wbcInfoArrChild.value = [];
-      wbcInfoArrChild.value = [...newVal]; // wbcInfo를 배열로 복사
+      wbcInfoArrChild.value = newVal.map((item, index) => ({
+        ...item,
+        uniqueKey: `item_${index}_${Date.now()}`,
+        images: item.images.map((image, imgIndex) => ({
+          ...image,
+          uniqueKey: `image_${index}_${imgIndex}_${Date.now()}`
+        }))
+      }));
       classImgChange('first', null);
       classImgChange('last', null);
+
     },
     {deep: true}
 );
@@ -298,10 +304,19 @@ watch(
         if (props.wbcInfoRefresh) {
           return;
         }
+        wbcInfoArrChild.value = [];
         await nextTick(); // DOM 업데이트 후 실행
-        wbcInfoArrChild.value = [...props.wbcInfo]; // wbcInfo를 배열로 복사
-        await nextTick(); // 상태 업데이트 후 강제 렌더링
+        wbcInfoArrChild.value = props.wbcInfo.map((item, index) => ({
+          ...item,
+          uniqueKey: `item_${index}_${Date.now()}`,
+          images: item.images.map((image, imgIndex) => ({
+            ...image,
+            uniqueKey: `image_${index}_${imgIndex}_${Date.now()}`
+          }))
+        }));
 
+        await nextTick(); // 상태 업데이트 후 강제 렌더링
+        console.log(JSON.stringify(wbcInfoArrChild.value))
         classImgChange('first', null);
         classImgChange('last', null);
         console.log('!@!@!@');
