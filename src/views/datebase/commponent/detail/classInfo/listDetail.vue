@@ -121,14 +121,19 @@
       <div>
         <ImageGallery
             ref="$imageGalleryRef"
+            :wbcInfoRefresh="wbcInfoRefresh"
             :wbcInfo="wbcInfo"
             :wbcReset="wbcReset"
             :totalCount="selectItems?.wbcInfo?.totalCount"
+            :slotId="selectItems?.slotId"
+            :iaRootPath="iaRootPath"
+            :projectTypeReturn="projectTypeReturn(projectType)"
+            :projectType="projectType"
+            :apiBaseUrl="apiBaseUrl"
             :classCompareShow="classCompareShow"
             :selectedTitle="selectedTitle"
             :hiddenImages="hiddenImages"
             :replaceFileNamePrefix="replaceFileNamePrefix"
-            :getImageUrl="getImageUrl"
             :onDragOver="onDragOver"
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
@@ -231,6 +236,7 @@ const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
 const isCtrlKeyPressed = ref(false);
 const firstClickedImageIndex = ref(null);
+const wbcInfoRefresh = ref(false);
 
 const draggedCircleIndex = ref<any>(null);
 const draggedCircleIndexArr = ref<any>([]);
@@ -278,18 +284,19 @@ const wbcReset = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
+  projectType.value = window.PROJECT_TYPE;
+  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
+  iaRootPath.value = path;
 })
 
 onMounted(async () => {
   wbcInfo.value = [];
-  projectType.value = window.PROJECT_TYPE;
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
-  iaRootPath.value = path;
+  wbcInfoRefresh.value = true;
   // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
   await imgSetLocalStorage();
   // end
@@ -437,8 +444,6 @@ const openContextMenu = (event: MouseEvent, item: any) => {
   contextMenuY.value = menuY;
   targetItem.value = item;
 };
-
-
 
 
 const moveSelectedImages = async (item: any, itemIdx: any) => {
@@ -668,6 +673,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 });
 
 watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 순서 변경시 감지하여 재정렬
+  wbcInfoRefresh.value = true;
   await getOrderClass();
   const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   await sortWbcInfo(wbcInfo.value, sortArr);
@@ -876,7 +882,7 @@ async function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
-
+  console.log('durle')
   // 선택한 이미지(들)가 같은 Class로 욺직이려고 할 때
   if (item.id === draggedItem.id) {
     return;
@@ -888,14 +894,16 @@ async function onDropCircle(item: any) {
     const draggedImage = draggedItem.images[draggedCircleImgIndex.value];
     item.images.push(draggedImage);
     // 드롭된 위치에 이미지 추가
-    const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
+    const updatedWbcInfo = JSON.parse(JSON.stringify(wbcInfo.value));
+
+    const matchingItemIndex = updatedWbcInfo.findIndex((infoItem: any) => infoItem.id === item.id);
     if (matchingItemIndex !== -1) {
-      wbcInfo.value[matchingItemIndex].images.push(draggedImage);
+      updatedWbcInfo[matchingItemIndex].images.push(draggedImage);
     } else {
       console.error('일치하는 id를 가진 요소 없음');
     }
     // 이미지를 한 개만 드래그한 경우에만 이동 API 호출
-    await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, wbcInfo.value[matchingItemIndex], false);
+    await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, updatedWbcInfo[matchingItemIndex], false);
   } else {
     const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
     // 여러 이미지를 드래그한 경우에도 이동 API 호출
@@ -1119,7 +1127,6 @@ async function onDrop(targetItemIndex: any) {
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
   }
-
   await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
   for (const selectedImage of selectedClickImages.value) {
     const fileName = selectedImage.fileName;
@@ -1145,7 +1152,6 @@ async function originalOnDrop(targetItemIndex: number) {
     const draggedItem = wbcInfo.value[draggedItemIndex.value];
     const draggedImage = draggedItem.images[draggedImageIndex.value]; // 드래그 후 옮기는 이미지
     // 이미지 이동 함수 호출
-    console.log('durl?')
 
     await moveImage(targetItemIndex, [{fileName: draggedImage.fileName}], draggedItem, wbcInfo.value[targetItemIndex], false);
   }
@@ -1153,7 +1159,8 @@ async function originalOnDrop(targetItemIndex: number) {
 
 
 async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], draggedItem: any, targetItem: any, type: boolean, keyMove?: string, wbcInfosArr?: any) {
-  const { slotId } = selectItems.value;
+  wbcInfoRefresh.value = false;
+  const {slotId} = selectItems.value;
   const arrType = selectedImagesToMove;
   let sourceFolders = [];
   let destinationFolders = [];
@@ -1191,10 +1198,11 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     fileNames
   };
   try {
-    await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+
     const res = await moveClassImagePost(data);
+    await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     if (res) {
-      console.log('wbc 옮기기');
+      // console.log('wbc 옮기기');
 
       for (const selectedImage of arrType) {
         const fileName = selectedImage.fileName;
@@ -1215,6 +1223,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             wbcInfo.value[targetItemIndex].count++;
           }
         } else {
+          console.log('wbc 옮기기');
           // 드래그된 이미지를 원래 위치에서 제거
           const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
           if (draggedImageIndex !== -1) {
@@ -1225,7 +1234,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             height: imageSize.value,
           };
           // 드롭된 위치에 이미지를 삽입
-          wbcInfo.value[targetItemIndex].images.push({ ...selectedImage, ...imgAttr });
+          wbcInfo.value[targetItemIndex].images.push({...selectedImage, ...imgAttr});
 
           wbcInfo.value = removeDuplicateImages(wbcInfo.value);
           wbcInfo.value.forEach((item: any) => {
@@ -1250,13 +1259,13 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   } catch (error) {
     console.error('Error during image move:', error);
   } finally {
-    await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+    await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
   }
 
   if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우, 또는 우클릭 해서 클래스 이동시 사용
     console.log('동그라미 네비게이션');
     try {
-      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
       for (const seItem of selectItemImageArr.value) {
         const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
         const matchingItem = classInfoBagic.find(item => item.abbreviation === (seItem.title || seItem.abbreviation));
@@ -1299,7 +1308,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     } catch (error) {
       console.error('Error during image move:', error);
     } finally {
-      await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+      await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
     }
   }
 
@@ -1453,10 +1462,11 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
       }
       wbcInfo.value = [];
       wbcInfo.value = response.data[0].wbcInfoAfter;
+
       const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
       await sortWbcInfo(wbcInfo.value, sortArr);
       wbcReset.value = true;
-      await nextTick(); // DOM 업데이트를 기다립니다.
+      await nextTick();
       wbcReset.value = false;
 
     } else {
@@ -1473,27 +1483,21 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
-
   const slotId = selectItems.value?.slotId || "";
   let folderPath = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
   let url = '';
 
   // 타임스탬프 추가
-  const timestamp = Date.now(); // 현재 시간을 타임스탬프로 사용
 
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
-    // url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}&timestamp=${timestamp}`;
     url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
-    // url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}&timestamp=${timestamp}`;
     url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 
-  // console.log('getImageUrl', url)
 
   return url;
 }
-
 
 
 async function rollbackChanges() {
@@ -1519,7 +1523,7 @@ async function rollbackChanges() {
   wbcInfo.value = prevWbcInfo;
 }
 
-const findUndefinedImages =  (sourceWbcInfo: any, targetWbcInfo: any, infoArray: any)  => {
+const findUndefinedImages = (sourceWbcInfo: any, targetWbcInfo: any, infoArray: any) => {
   sourceWbcInfo.forEach((sourceItem: any, sourceIndex: any) => {
     const targetItem = targetWbcInfo[sourceIndex];
     if (sourceItem && targetItem) {

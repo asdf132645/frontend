@@ -184,7 +184,6 @@ const getOrderClass = async () => {
   }
 }
 const delayedEmit = (type: string, payload: string, delay: number) => {
-  console.log('refreshDb')
   if (socketTimeoutId !== undefined) {
     clearTimeout(socketTimeoutId); // 이전 타이머 클리어
   }

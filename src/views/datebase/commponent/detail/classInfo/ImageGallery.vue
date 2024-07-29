@@ -4,20 +4,19 @@
     <p class="loadingText">Loading...</p>
   </div>
   <ul class="wbcInfoDbUl">
-    {{ wbcInfoArrChild.value }}
     <template v-for="(item) in wbcInfoArrChild" :key="item.id">
-      <li @click="scrollToElement(item.id)" v-show="siteCd !== '0006' && item?.title !== 'SM'" @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
-        <div class="circle" >
+      <li @click="scrollToElement(item.id)" v-if="siteCd !== '0006' && item?.title !== 'SM'"
+          @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
+        <div class="circle">
           <p>{{ item?.title }}</p>
           <p>{{ item?.count }}</p>
         </div>
       </li>
     </template>
   </ul>
-<!--  {{ console.log(wbcInfo) }}-->
   <ul class="cellImgBox" v-if="!classCompareShow">
     <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
-      <div v-show="item?.count !== '0' && item?.count !== 0">
+      <div v-if="item?.count !== '0' && item?.count !== 0">
         <p class="mt1">
           <input type="checkbox" @input="$emit('allCheckChange', $event, item.title)"
                  :checked="selectedTitle === item.title">
@@ -26,7 +25,7 @@
         </p>
       </div>
       <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver" @drop="() => $emit('onDrop', itemIndex)"
-          v-show="item?.count !== '0' && item?.count !== 0">
+          v-if="item?.count !== '0' && item?.count !== 0">
         <template v-for="(image, imageIndex) in item.images" :key="image?.fileName">
           <li
               :class="{
@@ -36,29 +35,33 @@
             }"
               @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
               @dblclick="() => $emit('openModal', image, item)"
-              v-show="image && !hiddenImages[`${item.id}-${image.fileName}`]"
+              v-if="image && !hiddenImages[`${item.id}-${image.fileName}`]"
               @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
           >
             <div style="position: relative;">
               <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
-                <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
+                <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">
+                  {{ replaceFileNamePrefix(image.fileName) }}
                   <font-awesome-icon
                       :icon="['fas', 'arrow-right']"/>
                   {{ image.title }}
                 </div>
               </div>
-              <img v-if="image && image.fileName"
-                   :src="getImageUrl(image.fileName, item.id, item.title, '')"
-                   :width="image.width ? image.width : '150px'"
-                   :height="image.height ? image.height : '150px'"
-                   :style="{ filter: image.filter }"
-                   @dragstart="() => $emit('onDragStart', itemIndex, imageIndex)"
-                   draggable="true"
-                   class="cellImg"
-                   ref="cellRef"
-                   @error="() => $emit('hideImage', item.id, image.fileName, item.title)"
-                   v-show="image && !hiddenImages[`${item.id}-${image.fileName}`]"
-                   @load="handleImageLoad(itemIndex)"
+              <!--              {{ image.fileName }}-->
+
+              <img
+                  v-if="image && image.fileName && !hiddenImages[`${item.id}-${image.fileName}`]"
+                  :key="image.fileName"
+                  :src="getImageUrl(image.fileName, item.id, item.title, '')"
+                  :width="image.width ? image.width : '150px'"
+                  :height="image.height ? image.height : '150px'"
+                  :style="{ filter: image.filter }"
+                  @dragstart="() => $emit('onDragStart', itemIndex, imageIndex)"
+                  draggable="true"
+                  class="cellImg"
+                  ref="cellRef"
+                  @error="() => $emit('hideImage', item.id, image.fileName, item.title)"
+                  @load="handleImageLoad(itemIndex)"
               />
               <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
             </div>
@@ -67,7 +70,7 @@
       </ul>
     </li>
   </ul>
-<!--  클래스 단일 비교 부분 -->
+  <!--  클래스 단일 비교 부분 -->
   <div v-else class="divCompare">
     <div class="divCompareChild">
       <select v-model="firstClass" @change="classImgChange('first' , $event)">
@@ -97,30 +100,32 @@
             }"
                   @click="() => $emit('selectImage', firstItemIndex, imageIndex, firstClassObj)"
                   @dblclick="() => $emit('openModal', image, firstClassObj)"
-                  v-show="image && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
+                  v-if="image && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
                   @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, firstClassObj)"
               >
                 <div style="position: relative;">
                   <div v-if="image" class="titleImg"
                        v-show="replaceFileNamePrefix(image.fileName) !== firstClassObj?.title">
-                    <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
+                    <div class="fileTitle"
+                         :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">
+                      {{ replaceFileNamePrefix(image.fileName) }}
                       <font-awesome-icon
                           :icon="['fas', 'arrow-right']"/>
                       {{ image.title }}
                     </div>
                   </div>
-                  <img v-if="image && image.fileName"
-                       :src="getImageUrl(image.fileName, firstClassObj.id, firstClassObj.title, '')"
-                       :width="image.width ? image.width : '150px'"
-                       :height="image.height ? image.height : '150px'"
-                       :style="{ filter: image.filter }"
-                       @dragstart="() => $emit('onDragStart', firstItemIndex, imageIndex)"
-                       draggable="true"
-                       class="cellImg"
-                       ref="cellRef"
-                       @error="() => $emit('hideImage', firstClassObj.id, image.fileName, firstClassObj.title)"
-                       v-show="image && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
-                       @load="handleImageLoad(firstItemIndex)"
+                  <img
+                      v-if="image && image.fileName && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
+                      :src="getImageUrl(image.fileName, firstClassObj.id, firstClassObj.title, '')"
+                      :width="image.width ? image.width : '150px'"
+                      :height="image.height ? image.height : '150px'"
+                      :style="{ filter: image.filter }"
+                      @dragstart="() => $emit('onDragStart', firstItemIndex, imageIndex)"
+                      draggable="true"
+                      class="cellImg"
+                      ref="cellRef"
+                      @error="() => $emit('hideImage', firstClassObj.id, image.fileName, firstClassObj.title)"
+                      @load="handleImageLoad(firstItemIndex)"
                   />
                   <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
                 </div>
@@ -155,20 +160,23 @@
             }"
                   @click="() => $emit('selectImage', lastItemIndex, imageIndex, lastClassObj)"
                   @dblclick="() => $emit('openModal', image, lastClassObj)"
-                  v-show="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
+                  v-if="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
                   @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, lastClassObj)"
               >
                 <div style="position: relative;">
                   <div v-if="image" class="titleImg"
                        v-show="replaceFileNamePrefix(image.fileName) !== lastClassObj?.title">
-                    <div class="fileTitle" :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">{{ replaceFileNamePrefix(image.fileName) }}
+                    <div class="fileTitle"
+                         :style="{ fontSize: image.width ? (parseInt(image.width) / 6) + 'px' : '15px' }">
+                      {{ replaceFileNamePrefix(image.fileName) }}
                       <font-awesome-icon
                           :icon="['fas', 'arrow-right']"/>
                       {{ image.title }}
                     </div>
                   </div>
-                  <img v-if="image && image.fileName"
-                       :src="getImageUrl(image.fileName, lastClassObj.id, lastClassObj.title, '')"
+                  <img
+                      v-if="image && image.fileName && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
+                      :src="getImageUrl(image.fileName, lastClassObj.id, lastClassObj.title, '')"
                        :width="image.width ? image.width : '150px'"
                        :height="image.height ? image.height : '150px'"
                        :style="{ filter: image.filter }"
@@ -177,7 +185,6 @@
                        class="cellImg"
                        ref="cellRef"
                        @error="() => $emit('hideImage', lastClassObj.id, image.fileName, lastClassObj.title)"
-                       v-show="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
                        @load="handleImageLoad(lastItemIndex)"
                   />
                   <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
@@ -248,12 +255,17 @@ const props = defineProps<{
   hiddenImages: { [key: string]: boolean };
   setRef: (el: any, id: string) => void;
   replaceFileNamePrefix: (fileName: string) => string;
-  getImageUrl: (fileName: string, itemId: string, itemTitle: string, prefix: string) => string;
   onDragOver: () => void;
   isBorderChanged: (image: Image) => boolean;
   isSelected: (image: Image) => boolean;
   totalCount: string;
   wbcReset: boolean;
+  slotId: any;
+  iaRootPath: any;
+  projectTypeReturn: any;
+  projectType: any;
+  apiBaseUrl: any;
+  wbcInfoRefresh: any;
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
@@ -283,8 +295,13 @@ watch(
     () => props.wbcReset,
     async (newVal) => {
       if (newVal) {
+        if (props.wbcInfoRefresh) {
+          return;
+        }
         await nextTick(); // DOM 업데이트 후 실행
         wbcInfoArrChild.value = [...props.wbcInfo]; // wbcInfo를 배열로 복사
+        await nextTick(); // 상태 업데이트 후 강제 렌더링
+
         classImgChange('first', null);
         classImgChange('last', null);
         console.log('!@!@!@');
@@ -310,11 +327,33 @@ const handleImageLoad = (itemIndex: any) => {
   // console.log('props.wbcInfo.length', props.wbcInfo.length - 1);
   if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
     loading.value = false;
-  }else{
+  } else {
     loading.value = true;
   }
 
 }
+
+function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {
+  // 이미지 정보가 없다면 빈 문자열 반환
+  if (!wbcInfo.value || wbcInfo.value.length === 0) {
+    return "";
+  }
+  const slotId = props.slotId || '';
+  const folderPath = `${props.iaRootPath}/${slotId}/${props.projectTypeReturn}/${id}_${title}`;
+  let url = '';
+
+  // 타임스탬프 추가
+
+  if (highImg === 'getImageRealTime' || props.projectType === 'pb') {
+    url = `${props.apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  } else {
+    url = `${props.apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+  }
+
+
+  return url;
+}
+
 const setRef = (itemId: any) => {
   return (el: any) => {
     if (el) {
@@ -340,7 +379,7 @@ const classImgChange = (type: string, event: any) => {
   } else {
     updateClassValue(lastClass, previousLastClass, lastClassObj, lastItemIndex);
   }
-  if (props.totalCount === '0'){
+  if (props.totalCount === '0') {
     loading.value = false
   }
 };
