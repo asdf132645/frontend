@@ -126,7 +126,7 @@
                 <col style="width: 25%;"/>
               </colgroup>
               <thead>
-                <tr>
+                <tr style="margin-bottom: 15px; font-size: 18px; font-weight: normal; padding-bottom: 100px;">
                   <th style="text-align: left;">Class</th>
                   <th style="text-align: left;">Count</th>
                   <th style="text-align: left;">Percent</th>
@@ -150,6 +150,7 @@
                 <template v-for="item in nonWbcClassList" :key="item.id" >
                   <td style="text-align: left; padding: 5px 0;">{{item.name}}</td>
                   <td style="text-align: left; padding: 5px 0;">{{item.count}}</td>
+                  <td style="text-align: left; padding: 5px 0;">-</td>
 
                 </template>
               </tr>
@@ -162,7 +163,7 @@
 
             <!-- Print List -->
             <ul class="print" style="list-style: none; padding-left: 0; margin-top: 20px; text-align: center; display:flex; flex-direction: column; align-items: center; justify-content: center;">
-              <li v-for="(item) in wbcInfo" :key="item.id" style="">
+              <li v-for="(item) in noImageList(wbcInfo)" :key="item.id" style="">
                 <div style="font-weight: bold; font-size: 18px; margin: 40px auto 20px;">{{ item?.title }} ({{ item?.count }})</div>
                 <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;">
                   <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block; margin-right: 5px; margin-top: 5px; outline: 1px solid #2c2d2c; cursor: auto;">
@@ -392,6 +393,12 @@ const filteredWbcInfo = computed(() => {
 
 function getImageUrl(imageName: any, id: string, title: string): string {
   // 이미지 정보가 없다면 빈 문자열 반환
+  const showImage = [...imagePrintAndWbcArr.value].find(item => item === String(id));
+  if (!showImage) {
+    return '';
+  }
+  console.log("SHOW_IMAGES", showImage, id);
+
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
@@ -400,6 +407,10 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   const slotId = selectItems.value.slotId || "";
   const folderPath = projectType === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images/print?folder=${folderPath}&imageName=${imageName}`;
+}
+
+const noImageList = (wbcArr: any) => {
+  return wbcArr.filter((item: any) => [...imagePrintAndWbcArr.value].includes(String(item.id)));
 }
 
 
@@ -457,9 +468,6 @@ const getImagePrintData = async () => {
         console.log(null);
       } else {
         imagePrintAndWbcArr.value = data.filter((item) => item.checked).map(item => item.classId);
-
-        // 이미지 프린트 및 wbc 배열에 없는 아이디 제거
-        wbcInfo.value = wbcInfo.value.filter((item: any) => imagePrintAndWbcArr.value.includes(item.id));
 
         // count가 없는 경우 print에서 보여줄 wbcInfo에서 제거
         wbcInfo.value = wbcInfo.value.filter((item: any) => item.count !== '0');

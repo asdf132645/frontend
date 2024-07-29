@@ -177,7 +177,7 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import { computed, getCurrentInstance, onMounted, ref } from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onMounted, ref} from "vue";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
@@ -221,6 +221,10 @@ const shapeBodyTotal = ref(0);
 const rbcDegreeStandard = ref<any>([]);
 const isCommitChanged = ref(false);
 
+onBeforeMount(() => {
+  projectBm.value = window.PROJECT_TYPE === 'bm';
+})
+
 onMounted(async () => {
   await getDetailRunningInfo();
   isLoading.value = false;
@@ -229,7 +233,6 @@ onMounted(async () => {
   await rbcTotalAndReCount();
   await getRbcDegreeData();
   await reDegree();
-  projectBm.value = window.PROJECT_TYPE === 'bm';
 });
 
 const getDetailRunningInfo = async () => {

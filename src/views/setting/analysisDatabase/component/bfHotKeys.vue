@@ -10,7 +10,7 @@
               v-model="item.key"
               type="text"
               maxlength="25"
-              placeholder="class name"
+              placeholder="hot key"
               @input="filterEnglishAndNumbers($event, item, 'key')"
           />
         </span>

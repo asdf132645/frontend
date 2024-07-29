@@ -16,7 +16,7 @@
         </button>
       </div>
       <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
-        <button class="darkButton" @click="imgSetOpen">IMG Setting</button>
+        <button class="darkButton" @click="imgSetOpen" v-show="activeTab !== 'malaria'">IMG Setting</button>
         <div class="imgSet_img_list" v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
@@ -494,20 +494,20 @@ const drawRbcMarker = async (classInfoArr: any) => {
   // json rbcInfoPathAfter.value 로 그림 그리는곳
   const colors: any = {
     'Normal': 'red',
-    'Poikilocyte': 'green',
-    'Target Cell': 'blue',
+    'Poikilocyte': 'orange',
+    'Target Cell': 'navy',
     'Burr Cell': 'purple',
-    'Acanthocyte': 'orange',
-    'Ovalocyte': 'cyan',
+    'Acanthocyte': '#1E90FF',
+    'Ovalocyte': '#800080',
     'Schistocyte': 'magenta',
-    'Sickle Cell': 'lime',
-    'Stomatocyte': 'teal',
-    'TearDrop Cell': 'navy',
-    'Spherocyte': 'gold',
-    'Howell-Jolly Body': 'indigo',
-    'Basophilic Stippling': 'olive',
+    'Sickle Cell': '#3CB371',
+    'Stomatocyte': '#FFFF00',
+    'TearDrop Cell': '#4682B4',
+    'Spherocyte': '#FF6347',
+    'Howell-Jolly Body': '#FF4500',
+    'Basophilic Stippling': '#DDA0DD',
     'Malaria': 'black',
-    'Platelet': '#ffac35',
+    'Platelet': '#C71585',
   };
 
   const ctx = removeRbcMarker(); // canvas 초기화
@@ -524,7 +524,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
       category.classInfo.forEach((classItem: any) => {
         if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
 
-          ctx.lineWidth = 6;
+          ctx.lineWidth = 3;
           ctx.strokeStyle = `${colors[info.classNm] || 'black'}`;
           let rectPath = new Path2D();
           let width: number;

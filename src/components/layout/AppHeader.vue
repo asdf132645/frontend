@@ -32,6 +32,10 @@
         <div class="small-icon-menu">
           <div class="lastMenu">
             <ul>
+<!--              <div class="logOutBox" @click='changeScreenMode'>-->
+<!--                FULLSCREEN-->
+<!--                <font-awesome-icon :icon="['fas', 'up-right-and-down-left-from-center']" />-->
+<!--              </div>-->
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
                 <div @click='logOutBoxOn'>
@@ -71,7 +75,8 @@
       </div>
     </nav>
   </header>
-  <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
+
+  <Modal v-if="oilVisible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
     <!-- 헤더 슬롯에 들어갈 내용 -->
     <template #header>
       <h2>Immersion Oil</h2>
@@ -80,11 +85,11 @@
     <!-- 컨텐츠 슬롯에 들어갈 내용 -->
     <template #content>
       <div class="immersionOilContainer">
-        <h5 class="modalTitle">Immersion Oil count Reset</h5>
-        <span class="colorGray">Reset Immersion Oil count after changing Oil pack</span>
-        <div class="smallTitle">
+        <h5 class="modalTitle mb1">Immersion Oil count Reset</h5>
+        <span class="grayText">Reset Immersion Oil count after changing Oil pack</span>
+        <div class="flexSpaceBetween alignItemsCenter mt1">
           <span>Estimated number of slides left</span>
-          <div class="border ml-5" style="width: 80px;">{{ oilCount }}</div>
+          <span class="f18">{{ oilCount }}</span>
         </div>
 
         <div class="flexColumnAlignEnd">
@@ -98,8 +103,8 @@
       </div>
 
       <div class='mt2'>
-        <h5 class="modalTitle">Prime Immersion Oil</h5>
-        <span class="colorGray">Prime oil to remove air from the oil hose</span>
+        <h5 class="modalTitle mb1">Prime Immersion Oil</h5>
+        <span class="grayText mt1">Prime oil to remove air from the oil hose</span>
         <div class="flexColumnAlignEnd">
           <div class="statusBarWrapper">
           </div>
@@ -172,7 +177,7 @@ const eqStatCdData = ref({
 const oilCountData = ref('');
 const storagePercentData = ref('');
 const isAlarm = ref(false);
-const visible = ref(false);
+const oilVisible = ref(false);
 const maxOilCount = ref(1000);
 const statusBarWrapper = ref<HTMLDivElement | null>(null);
 const statusBar = ref<HTMLDivElement | null>(null);
@@ -197,6 +202,12 @@ const formattedDate = computed(() => {
 const formattedTime = computed(() => {
   return currentTime.value;
 });
+
+const changeScreenMode = async () => {
+  if (!document.fullscreenElement) {
+    await document.documentElement.requestFullscreen();
+  }
+}
 
 const updateDateTime = () => {
   const now = new Date();
@@ -373,11 +384,11 @@ const openLayer = () => {
     return;
   }
 
-  visible.value = true;
+  oilVisible.value = true;
 };
 
 const closeLayer = (val: boolean) => {
-  visible.value = val;
+  oilVisible.value = val;
 };
 
 const onReset = () => {
