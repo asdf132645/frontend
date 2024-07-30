@@ -882,7 +882,6 @@ async function addToRollbackHistory() {
 // 상단 타이틀 이동 시 실행되는 함수
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
-  console.log('durle')
   // 선택한 이미지(들)가 같은 Class로 욺직이려고 할 때
   if (item.id === draggedItem.id) {
     return;
@@ -1176,7 +1175,6 @@ async function onDrop(targetItemIndex: any) {
 
 
 async function originalOnDrop(targetItemIndex: number) {
-  console.log('originalOnDrop')
   //targetItemIndex -> 옮겨져야하는 index
   if ((draggedItemIndex.value !== null && draggedImageIndex.value !== null) && (draggedItemIndex.value !== targetItemIndex)) {
     const draggedItem = wbcInfo.value[draggedItemIndex.value];
@@ -1253,9 +1251,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             wbcInfo.value[targetItemIndex].count++;
           }
         } else {
-          console.log('wbc 옮기기');
           // 드래그된 이미지를 원래 위치에서 제거
-          console.log(JSON.stringify(draggedItem))
           const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
           if (draggedImageIndex !== -1) {
             draggedItem.images.splice(draggedImageIndex, 1);
@@ -1285,16 +1281,15 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
       shiftClickImages.value = [];
       await updateOriginalDb();
     } else {
-      console.error('Image move failed.');
+      console.error('이미지 옮기기 실패.');
     }
   } catch (error) {
-    console.error('Error during image move:', error);
+    console.error('이미지 옮기는 작업 서버 실패:', error);
   } finally {
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
   }
 
   if (wbcInfosArr) { // 동그라미 네비게이션 바로 옮길경우, 또는 우클릭 해서 클래스 이동시 사용
-    console.log('동그라미 네비게이션');
     try {
       await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
       for (const seItem of selectItemImageArr.value) {
@@ -1334,10 +1329,10 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
           images.height = imageSize.value;
         }
       } else {
-        console.error('Image move failed.');
+        console.error('이미지 움직임 실패.');
       }
     } catch (error) {
-      console.error('Error during image move:', error);
+      console.error('서버 이미지 옮기기 실패:', error);
     } finally {
       await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
     }
