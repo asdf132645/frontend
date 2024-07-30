@@ -280,7 +280,7 @@ watch(props.hiddenImages, (newVal) => {
 watch(
     wbcInfo,
     async (newVal) => {
-      await nextTick();
+      // await nextTick();
       wbcInfoArrChild.value = [];
       wbcInfoArrChild.value = newVal.map((item, index) => ({
         ...item,
