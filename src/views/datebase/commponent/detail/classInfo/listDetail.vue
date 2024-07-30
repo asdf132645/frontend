@@ -302,6 +302,7 @@ onMounted(async () => {
 
   cellMarkerIcon.value = false;
   await drawCellMarker(true);
+
   // end
 });
 onUnmounted(async () => {
@@ -335,6 +336,7 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+
   } catch (e) {
     console.log(e);
   }
@@ -1030,6 +1032,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
+  // await handleMoveImages();
 }
 
 const getOrderClass = async () => {
@@ -1607,7 +1610,28 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
 }
+const handleMoveImages = async () => {
+  console.log(wbcInfo.value)
+  try {
+    const folderPath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}`;
+    const response = await fetch('http://localhost:3002/folders/check-and-move-images', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ folderPath, wbcInfo: wbcInfo.value }),
+    });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Success:', data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
 const projectTypeReturn = (type: string): any => {
   if (type === 'bm') {
     return '04_BM_Classification';
