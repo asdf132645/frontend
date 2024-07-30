@@ -4,20 +4,28 @@
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
       <h3 class="orderTitle hh3title">Order Information</h3>
-      <ul class="orderListUi">
-        <li>Order ID: <span>{{ selectedItem?.slotId }}</span>  </li>
-        <li>LIS status: <span>No data sent or received from LIS</span>  </li>
-        <li>Type of order:
-          <span v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>
-          <span v-else>{{ selectedItem?.testType }}</span>
-        </li> 
-        <li>NS, NB Integration: <span>{{ selectedItem?.isNsNbIntegration }}</span>  </li>
-        <li>Patient ID: <span>{{ selectedItem?.patientId }}</span>  </li>
-        <li>Patient Name: <span>{{ selectedItem?.patientNm }}</span>  </li>
-        <li>
-          <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath" style="width: 355px"/>
-        </li>
-      </ul>
+      <div style="display: flex;">
+        <ul class="orderListUi">
+          <li class="flexColumn">
+            <span class=" mb1">Order ID</span>
+            <span class="grayText">{{ selectedItem?.slotId }}</span>
+          </li>
+          <li class="flexColumn">
+            <span class="grayText">LIS status</span>
+            <span>No data sent or received from LIS</span>
+          </li>
+          <li class="flexColumn">
+            <span>Type of order</span>
+            <span v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>
+            <span v-else>{{ selectedItem?.testType }}</span>
+          </li>
+          <li class="flexColumn">
+            <span>NS, NB Integration</span>
+            <span>{{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</span>
+          </li>
+        </ul>
+        <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath" style="width: 240px"/>
+      </div>
     </div>
     <div>
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
@@ -78,6 +86,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  console.log(props.selectedItem);
   barCodeImageShowError.value = false;
   // iaRootPath가 존재하면 getImageUrl 함수 호출
   if (iaRootPath.value) {
