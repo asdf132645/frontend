@@ -33,6 +33,10 @@ export const detailRunningApi = async (request: any): Promise<ApiResponse<void>>
     return httpClient.httpGet(apiConstants.settings.runningInfo.detail, `${request}`, false);
 };
 
+export const classDetailSelectQueryApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.settings.runningInfo.classDetailSelectQuery, `${request}`, false);
+};
+
 export const pageUpDownRunnIngApi = async (req: any): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.settings.runningInfo.pageUpDown, `${req}`, true)
 }
