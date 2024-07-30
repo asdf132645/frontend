@@ -1032,7 +1032,7 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
-  await handleMoveImages();
+  // await handleMoveImages();
 }
 
 const getOrderClass = async () => {
@@ -1611,7 +1611,6 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   await updateOriginalDb();
 }
 const handleMoveImages = async () => {
-  console.log(wbcInfo.value)
   try {
     const folderPath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}`;
     const response = await fetch(`${apiBaseUrl}/folders/check-and-move-images`, {
