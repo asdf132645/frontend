@@ -570,7 +570,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
 
     }
     await getWbcHotKeyClasses();
-    await getBfHotKeyClasses();
+    // await getBfHotKeyClasses();
     await getOrderClass();
     await initData(newData, upDown, upDownData);
   } catch (e) {
