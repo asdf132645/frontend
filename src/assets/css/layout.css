@@ -2473,7 +2473,7 @@ ul.normalItems li div span:last-child {
 
 .dbBmImageContainer {
     overflow-y: auto;
-    max-height: 340px;
+    max-height: 180px;
 }
 
 .dbRightImages {
