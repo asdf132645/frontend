@@ -255,8 +255,16 @@ export const apiConstants = {
                 endpoint: 'runningInfo/detail',
                 requiresToken: false,
             },
-            classDetailSelectQuery:{
-                endpoint: 'runningInfo/classDetailSelectQuery',
+            classInfoDetail:{
+                endpoint: 'runningInfo/classInfoDetail',
+                requiresToken: false,
+            },
+            classInfoDetailSelectQuery:{
+                endpoint: 'runningInfo/classInfoDetailSelectQuery',
+                requiresToken: false,
+            },
+            classInfoMenuDetailSelectQuery:{
+                endpoint: 'runningInfo/classInfoMenuDetailSelectQuery',
                 requiresToken: false,
             },
             pageUpDown:{

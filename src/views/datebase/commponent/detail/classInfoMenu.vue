@@ -67,6 +67,7 @@ import router from "@/router";
 
 import {ApiResponse} from "@/common/api/httpClient";
 import {
+  classInfoMenuDetailSelectQueryApi,
   clearPcIpState,
   detailRunningApi,
   pageUpDownRunnIngApi,
@@ -128,7 +129,7 @@ onUnmounted(async () => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result = await detailRunningApi(String(selectedSampleId.value));
+    const result = await classInfoMenuDetailSelectQueryApi(String(selectedSampleId.value));
     selectItems.value = result.data;
     resData.value = result.data;
   } catch (e) {
