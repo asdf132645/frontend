@@ -1614,7 +1614,7 @@ const handleMoveImages = async () => {
   console.log(wbcInfo.value)
   try {
     const folderPath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}`;
-    const response = await fetch('http://localhost:3002/folders/check-and-move-images', {
+    const response = await fetch(`${apiBaseUrl}/folders/check-and-move-images`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
