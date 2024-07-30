@@ -155,7 +155,11 @@ import {
   defaultBmClassList,
   defaultWbcClassList
 } from "@/store/modules/analysis/wbcclassification";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {
+  classInfoDetailSelectQueryApi,
+  detailRunningApi,
+  updateRunningApi
+} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -963,7 +967,7 @@ const getOrderClass = async () => {
 
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
-  const filteredItems: any = await detailRunningApi(String(selectedSampleId.value));
+  const filteredItems: any = await classInfoDetailSelectQueryApi(String(selectedSampleId.value));
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id)});
   selectItems.value = filteredItems.data;
   selectItems.value.wbcInfoAfter = newItem;

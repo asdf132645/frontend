@@ -193,7 +193,7 @@
 <script setup lang="ts">
 import {computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {classInfoDetailApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
@@ -334,7 +334,7 @@ watch(() => moveImgIsBool.value, (currentMoveImgIsBool) => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result = await detailRunningApi(String(selectedSampleId.value));
+    const result = await classInfoDetailApi(String(selectedSampleId.value));
     selectItems.value = result.data;
 
   } catch (e) {
@@ -1467,7 +1467,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
 
     // originalDb 업데이트
-    const res: any = await detailRunningApi(String(selectItems.value?.id));
+    const res: any = await classInfoDetailApi(String(selectItems.value?.id));
     if (res) {
       res.data.wbcInfoAfter = clonedWbcInfo;
     }
