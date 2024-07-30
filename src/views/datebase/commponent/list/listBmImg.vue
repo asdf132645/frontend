@@ -34,7 +34,6 @@ onMounted(() => {
 });
 
 watch(() => props.selectedItem, () => {
-  console.log(props.selectedItem)
   createAllImages();
 });
 

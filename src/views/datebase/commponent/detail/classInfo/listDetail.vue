@@ -1124,27 +1124,56 @@ function isSelected(image: any) {
 
 async function onDrop(targetItemIndex: any) {
   await addToRollbackHistory();
+
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
   }
-  await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
+
+  await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+
+  const selectedImagesToMove = [];
+  const draggedItems = [];
+  const targetItems = [];
+  let type = false;
+  let keyMove = '';
+
   for (const selectedImage of selectedClickImages.value) {
     const fileName = selectedImage.fileName;
-    const draggedItemIndex = wbcInfo.value.findIndex((item: any) => item.images.some((img: any) => img.fileName === fileName));
+
+    const draggedItemIndex = wbcInfo.value.findIndex((item: any) =>
+        item.images.some((img: any) => img.fileName === fileName)
+    );
+
+    if (draggedItemIndex === -1) {
+      console.error(`Dragged item with image ${fileName} not found`);
+      continue;
+    }
+
     const draggedItem = wbcInfo.value[draggedItemIndex];
+
     if (draggedItem.id === wbcInfo.value[targetItemIndex].id) {
       selectedTitle.value = '';
       continue;
     }
-    await moveImage(targetItemIndex, [{fileName: selectedImage.fileName}], draggedItem, wbcInfo.value[targetItemIndex], false);
+
+    selectedImagesToMove.push({ fileName: selectedImage.fileName });
+    draggedItems.push(draggedItem);
+    targetItems.push(wbcInfo.value[targetItemIndex]);
+
+    keyMove = keyMove || (selectedImage.keyMove || '');
   }
-  // 화면 딜레이 끄기
-  await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
-  // 선택된 이미지 초기화
+
+  if (selectedImagesToMove.length > 0) {
+    await moveImage(targetItemIndex, selectedImagesToMove, draggedItems[0], targetItems[0], type, keyMove);
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+
   selectedClickImages.value = [];
   selectItemImageArr.value = [];
   shiftClickImages.value = [];
 }
+
 
 async function originalOnDrop(targetItemIndex: number) {
   console.log('originalOnDrop')
@@ -1226,6 +1255,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         } else {
           console.log('wbc 옮기기');
           // 드래그된 이미지를 원래 위치에서 제거
+          console.log(JSON.stringify(draggedItem))
           const draggedImageIndex = draggedItem.images.findIndex((img: any) => img.fileName === fileName);
           if (draggedImageIndex !== -1) {
             draggedItem.images.splice(draggedImageIndex, 1);
