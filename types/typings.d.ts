@@ -12,6 +12,7 @@ declare global {
         MAIN_API_IP: string;
         VIEWER_CHECK: string;
         FORCE_VIEWER: string;
+        MAIN_WEBSOCKET_IP: string;
     }
 }
 
