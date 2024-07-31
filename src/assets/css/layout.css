@@ -1542,6 +1542,7 @@ input.alarmInput {
 
 .filterListDiv > div {
     display: flex;
+    align-items: center;
 }
 
 .filterListDiv > div > button {
