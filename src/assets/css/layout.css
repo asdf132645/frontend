@@ -2311,7 +2311,10 @@ table.tableClass {
 
 .memoModal textarea {
     width: 100%;
-    max-width: 300px;
+    min-width: 300px;
+    max-width: 600px;
+    min-height: 200px;
+    max-height: 400px;
     height: 150px;
 }
 

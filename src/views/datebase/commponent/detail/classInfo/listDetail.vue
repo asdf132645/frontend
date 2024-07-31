@@ -40,7 +40,7 @@
         <div v-show="showSize" class="sizeContainer">
           <div>
             Size {{ imgPixelConvertToPercent(imageSize) }}
-            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>
+<!--            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>-->
             <input
                 type="range"
                 min="50"
@@ -48,7 +48,7 @@
                 v-model="imageSize"
                 @input="changeImageSize"
             />
-            <!--            <button class="resetBtn mb2" @click="imgSizeReset">Size Reset</button>-->
+            <button class="resetBtn mb1" @click="imgSizeReset">Size Reset</button>
           </div>
 
         </div>
