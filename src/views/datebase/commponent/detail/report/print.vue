@@ -80,6 +80,7 @@
                     <td style="text-align: left;">{{ category.classInfo[0]?.originalDegree }}</td>
                     <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree) }}</td>
                   </tr>
+
                   <template v-for="(classInfo, classIndex) in category.classInfo.slice(1)" :key="classIndex">
                     <tr>
                       <td style="text-align: left;">{{ classInfo.classNm }}</td>
@@ -87,12 +88,37 @@
                       <td style="text-align: left;">{{ classInfo.originalDegree }}</td>
                       <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree) }}</td>
                     </tr>
+
+                    <!-- Shape Others -->
+                    <tr v-if="category.categoryNm === 'Shape' && classIndex === category.classInfo.slice(1).length - 1">
+                      <td></td>
+                      <td style="text-align: left;">Others</td>
+                      <td style="text-align: left;">-</td>
+                      <td style="text-align: left;">{{ shapeOthersCount }}</td>
+                      <td style="text-align: left;">{{ percentageChange(shapeOthersCount) }} %</td>
+                    </tr>
+
+                    <!-- Inclusion Body Malaria -->
+                    <tr v-if="category.categoryNm === 'Inclusion Body' && classIndex === category.classInfo.slice(1).length - 1">
+                      <td style="text-align: left;">Malaria</td>
+                      <td style="text-align: left;">-</td>
+                      <td style="text-align: left;">{{ malariaCount }}</td>
+                      <td style="text-align: left;">{{ percentageChange(malariaCount) }}</td>
+                    </tr>
                   </template>
-                  <tr v-if="category.categoryNm !== 'Shape'">
+                  <tr v-if="category.categoryNm !== 'Shape' && category.categoryNm !== 'Inclusion Body'">
                     <td style="text-align: left;"></td>
-                    <td style="text-align: left;">Total</td>
-                    <td style="text-align: left;">{{ sizeChromiaTotal }}</td>
-                    <td style="text-align: left;">{{ percentageChange(sizeChromiaTotal) }} %</td>
+                    <td style="text-align: left; font-weight: bold;">Total</td>
+                    <td style="text-align: left; font-weight: bold;">{{ sizeChromiaTotal }}</td>
+                    <td style="text-align: left; font-weight: bold;">{{ percentageChange(sizeChromiaTotal) }} %</td>
+                  </tr>
+
+                  <tr v-if="category.categoryNm == 'Inclusion Body'">
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: left; font-weight: bold;">Total</td>
+                    <td style="text-align: left; font-weight: bold;">{{ shapeBodyTotal }}</td>
+                    <td style="text-align: left; font-weight: bold;">{{ percentageChange(shapeBodyTotal) }} %</td>
                   </tr>
                 </template>
               </template>
@@ -100,11 +126,6 @@
                 <th style="text-align: left; padding: 15px 0;">Others</th>
                 <th style="text-align: left; padding: 15px 0;">Platelets</th>
                 <th style="text-align: left; padding: 15px 0;" colspan="3">{{ pltCount }} PLT / 1000 RBC</th>
-              </tr>
-              <tr>
-                <th></th>
-                <th style="text-align: left; padding: 5px 0;">Malaria</th>
-                <th style="text-align: left; padding: 5px 0;" colspan="3">{{ malariaCount }} / {{ maxRbcCount }} RBC</th>
               </tr>
               <tr>
                 <th style="text-align: left; padding-top: 15px;">Comment</th>
@@ -139,7 +160,7 @@
                 <td style="text-align: left; padding: 5px 0;">{{ item?.percent }} %</td>
               </tr>
               <tr style="padding-bottom: 5px;">
-                <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total count</th>
+                <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total</th>
                 <td style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcInfo?.totalCount }}</td>
                 <td style="text-align: left; padding: 5px 0;">100.00%</td>
               </tr>
@@ -240,7 +261,7 @@ onMounted(async () => {
 
 const calcShapeOthersCount = async () => {
   const shapeOthers = await getShapeOthers();
-  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal
+  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal;
 }
 
 const getShapeOthers = async () => {

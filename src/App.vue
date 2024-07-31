@@ -413,6 +413,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
+          tcpReq().embedStatus.runIngComp.workingDone = data?.workingDone;
+          tcpReq().embedStatus.runIngComp.pbVersion = pbVersion.value;
           if (pbVersion.value !== '100a') {
             await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
             await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});

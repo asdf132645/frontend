@@ -131,6 +131,9 @@
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
                         Others
                       </li>
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                        Malaria
+                      </li>
                     </template>
                   </ul>
                   <ul class="printRbcDegree">
@@ -138,6 +141,13 @@
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>
                         {{ classInfo?.degree }}
+                      </li>
+
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                        -
+                      </li>
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                        -
                       </li>
                     </template>
 
@@ -149,6 +159,14 @@
                       <li>
                         {{ classInfo?.originalDegree }}
                       </li>
+
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                        {{ shapeOthersCount }}
+                      </li>
+
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                        {{ malariaCount }}
+                      </li>
                     </template>
 
                     <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'">{{ sizeChromiaTotal }}</li>
@@ -159,6 +177,14 @@
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>
                         {{ percentageChange(classInfo?.originalDegree) }}
+                      </li>
+
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                        {{ percentageChange(shapeOthersCount) }}
+                      </li>
+
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                        {{ percentageChange(malariaCount) }}
                       </li>
                     </template>
 
@@ -221,6 +247,10 @@ const rbcTotalVal = ref(0);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
 const shapeBodyTotal = ref(0);
+const shapeOthersCount = ref(0);
+const malariaCount = ref(0);
+const maxRbcCount = ref(0);
+const pltCount = ref(0);
 const rbcDegreeStandard = ref<any>([]);
 const isCommitChanged = ref(false);
 
@@ -238,6 +268,7 @@ onMounted(async () => {
     await rbcTotalAndReCount();
     await getRbcDegreeData();
     await reDegree();
+    await calcShapeOthersCount();
   }
 });
 
@@ -251,6 +282,34 @@ const getDetailRunningInfo = async () => {
   } catch (e) {
     console.log(e);
   }
+}
+
+const calcShapeOthersCount = async () => {
+  const shapeOthers = await getShapeOthers();
+  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal;
+}
+
+const getShapeOthers = async () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
+  const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  //
+  const rbcInfoPathAfter = response_old.data[0].rbcClassList;
+  //
+  const otherCount = { artifact: 0, doubleNormal: 0 };
+  rbcInfoPathAfter.forEach((item: any) => {
+    if (item.categoryId === '03') {
+      for (const classItem of item.classInfo) {
+        if (classItem.classNm === 'Artifact') {
+          otherCount.artifact += 1
+        } else if (classItem.classNm === 'DoubleNormal') {
+          otherCount.doubleNormal += 1
+        }
+      }
+    }
+  })
+
+  return otherCount;
 }
 
 const rbcTotalAndReCount = async () => {
@@ -345,8 +404,35 @@ const rbcTotalAndReCount = async () => {
     }
   });
 
-
+  await countReAdd();
 }
+
+const countReAdd = async () => {
+  let totalPLT = 0;
+  let malariaTotal = 0;
+  for (const el of rbcInfoPathAfter.value) {
+    if (el.categoryId === '01') {
+      const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
+      maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
+    }
+    if (el.categoryId === '04') {
+      for (const xel of el.classInfo) {
+        if (xel.classNm === 'Platelet') {
+          totalPLT += 1;
+        }
+      }
+    } else if (el.categoryId === '05') {
+      for (const xel of el.classInfo) {
+        if (xel.classNm === 'Malaria') {
+          malariaTotal += 1;
+          console.log(malariaTotal)
+        }
+      }
+    }
+  }
+  pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
+  malariaCount.value = malariaTotal
+};
 
 const percentageChange = (count: any): any => {
   const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
