@@ -29,6 +29,17 @@
     </ul>
   </div>
   <div class="wbcClassScroll">
+    <ul class="nth1Child classAttribute">
+      <li>Class</li>
+      <li>
+        <p>Before</p>
+        <p>(Count | Percent)</p>
+      </li>
+      <li>
+        <p>After</p>
+        <p>(Count | Percent)</p>
+      </li>
+    </ul>
     <div
         v-for="(item, idx) in wbcInfoVal"
         :key="item.id"
@@ -38,18 +49,8 @@
         @dragover.prevent
         @drop="drop(idx, $event)"
     >
-      <ul class="nth1Child classAttribute" v-if="idx === 0">
-        <li>Class</li>
-        <li>
-          <p>Before</p>
-          <p>(Count | Percent)</p>
-        </li>
-        <li>
-          <p>After</p>
-          <p>(Count | Percent)</p>
-        </li>
-      </ul>
-      <ul class="nth1Child" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)">
+<!--toggleLock-->
+      <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
           <span class="grayText">{{ item.count.before }}</span>
@@ -63,7 +64,7 @@
     </div>
     <div class="categories classTotal">
       <ul class="categoryNm">
-        <li>
+        <li style="cursor: default;">
           Total
         </li>
       </ul>

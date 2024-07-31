@@ -47,6 +47,14 @@
     cursor: pointer;
 }
 
+.cursorDefault {
+    cursor: default;
+}
+
+.cursorMove {
+    cursor: move;
+}
+
 .alignItemsCenter {
     display: flex;
     align-items: center;
@@ -924,7 +932,6 @@ ul.nth1Child li {
     display: inline-block;
     font-size: 0.8rem;
     padding: 5px 0;
-    cursor: move;
     user-select: none;
 }
 
