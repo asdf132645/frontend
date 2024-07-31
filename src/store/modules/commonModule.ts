@@ -47,6 +47,7 @@ export interface CommonState {
     appAlertOpen: boolean;
     dataBasePageReset: boolean;
     resetAnalyzing: boolean;
+    testType: string;
 }
 
 interface CommonModule {
@@ -100,6 +101,7 @@ interface CommonModule {
         setAppAlertOpen: (state: CommonState, value: boolean) => void;
         setDataBasePageReset: (state: CommonState, value: boolean) => void;
         setResetAnalyzing: (state: CommonState, value: boolean) => void;
+        setTestType: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -154,6 +156,7 @@ export const commonModule: CommonModule = {
         appAlertOpen: false,
         dataBasePageReset: false,
         resetAnalyzing: false,
+        testType: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -300,6 +303,9 @@ export const commonModule: CommonModule = {
         },
         setResetAnalyzing(state: CommonState, value: boolean): void {
             state.resetAnalyzing = value;
+        },
+        setTestType(state: CommonState, value: string): void {
+            state.testType = value;
         },
 
     },
@@ -449,6 +455,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('resetAnalyzing')){
                 commit('setResetAnalyzing', payload.resetAnalyzing);
+            }
+            if (payload.hasOwnProperty('testType')){
+                commit('setTestType', payload.testType);
             }
         },
     },

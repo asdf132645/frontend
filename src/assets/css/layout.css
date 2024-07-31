@@ -239,8 +239,25 @@ main.bmComponent {
     justify-content: space-between;
     align-items: center;
     padding-top: 9px;
+    text-align: left;
 }
-
+ul.userSetOutUl > li {
+    color: rgb(49 49 49 / 88%);
+    padding-top: 9px;
+    /*border-bottom: 1px solid #000;*/
+    padding-bottom: 5px;
+    cursor: pointer;
+}
+ul.userSetOutUl > li:hover {
+    background: #000;
+    color: #fff;
+}
+ul.userSetOutUl {
+    background: #dedede;
+    border-radius: 5px;
+    padding: 5px 10px 10px 10px;
+    margin-top: 5px;
+}
 
 .display-flex > div {
     vertical-align: middle;
@@ -1556,10 +1573,10 @@ input.alarmInput {
     background: transparent;
     color: var(--white-color);
     border: 1px solid var(--white-color);
-    padding: 8px;
+    padding: 9px;
     position: relative;
     left: 17px;
-    margin-right: 6px;
+    margin-right: 8px;
 }
 
 table.defaultTable thead tr {

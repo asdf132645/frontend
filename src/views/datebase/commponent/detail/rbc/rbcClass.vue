@@ -346,6 +346,9 @@ watch(() => props.selectItems, async (newItem) => {
 
 const rightClickItemSet = () => {
   rightClickItem.value = [];
+  if(!props.selectItems?.rbcInfo){
+    return;
+  }
   const processItems = props.selectItems?.rbcInfo.rbcClass || props.selectItems?.rbcInfo;
 
   if (processItems) {
@@ -469,7 +472,7 @@ const rbcTotalAndReCount = async () => {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-    console.error('rbcInfoPathAfter.value is not iterable');
+    // console.error('rbcInfoPathAfter.value is not iterable');
     return;
   }
   let total = 0;
@@ -522,7 +525,9 @@ const percentageChange = (count: any): any => {
 
 const classChange = () => {
   const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
-
+  if(!Array.isArray(rbcData)){
+    return;
+  }
   const category = rbcData.find((el: any) => el.categoryNm === selectedClass.value);
   if (category) {
     sliderValue.value = category.sensitivity || 50;
@@ -626,12 +631,10 @@ const afterChange = async (newItem?: any) => {
 const countReAdd = async () => {
   // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
   if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
-    console.error('rbcInfoBeforeVal.value is not an array');
     return;
   }
 
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-    console.error('rbcInfoPathAfter.value is not an array');
     return;
   }
 
@@ -914,7 +917,9 @@ const reDegree = async () => {
   let totalCount = rbcTotalVal.value;
   let sizeTotal = sizeChromiaTotal.value;
   let chromiaTotal = chromiaTotalTwo.value;
-
+  if(!Array.isArray(rbcInfoBeforeVal.value)){
+    return;
+  }
   rbcInfoBeforeVal.value.forEach((rbcCategory: any, idx1: any) => {
     rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
       if (!rbcDegreeStandard.value) {
