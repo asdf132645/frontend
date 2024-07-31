@@ -86,7 +86,6 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  console.log(props.selectedItem);
   barCodeImageShowError.value = false;
   // iaRootPath가 존재하면 getImageUrl 함수 호출
   if (iaRootPath.value) {
