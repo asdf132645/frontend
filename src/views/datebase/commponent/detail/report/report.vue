@@ -230,9 +230,12 @@ onMounted(async () => {
   isLoading.value = false;
   await getOrderClass();
   await initData();
-  await rbcTotalAndReCount();
-  await getRbcDegreeData();
-  await reDegree();
+
+  if (!projectBm.value) {
+    await rbcTotalAndReCount();
+    await getRbcDegreeData();
+    await reDegree();
+  }
 });
 
 const getDetailRunningInfo = async () => {
@@ -385,7 +388,10 @@ const refreshClass = async (data: any) => {
   await getDetailRunningInfo();
   await getOrderClass();
   await initData();
-  await rbcTotalAndReCount();
+
+  if (!projectBm.value) {
+    await rbcTotalAndReCount();
+  }
 }
 
 const printClose = () => {

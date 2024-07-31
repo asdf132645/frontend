@@ -225,7 +225,6 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
     const req = `id=${id}&step=${step}&type=${type}`
     const res = await pageUpDownRunnIngApi(req);
     if (res.data !== null) {
-      console.log(res.data)
       resData.value = res.data;
       await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(res.data.id) });
     }
