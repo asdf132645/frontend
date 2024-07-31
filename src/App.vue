@@ -161,16 +161,19 @@ const leave = (event: any) => {
   event.preventDefault();
 };
 
-onMounted(async () => {
-  await nextTick();
-  await cellImgGet();
-  siteCdDvBarCode.value = false;
-  window.addEventListener('beforeunload', leave);
+onBeforeMount(() => {
   // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = window.PROJECT_TYPE === 'bm';
   if (!projectBm.value) {
     pbVersion.value = window.PB_VERSION;
   }
+})
+
+onMounted(async () => {
+  await nextTick();
+  await cellImgGet();
+  siteCdDvBarCode.value = false;
+  window.addEventListener('beforeunload', leave);
 
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
