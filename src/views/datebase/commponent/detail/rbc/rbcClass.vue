@@ -266,7 +266,7 @@ import EventBus from "@/eventBus/eventBus";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
@@ -382,7 +382,7 @@ watch(() => resetRbcArr, async (newItem) => {
 watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
-
+  allCheckType.value = true;
 }, {deep: true})
 
 
@@ -709,6 +709,9 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
 }
 
 const toggleAll = (check: boolean, category?: any) => {
+  if(props.notCanvasClickVal){
+    return;
+  }
   let allCheckboxes: any = [];
   for (const item of rbcInfoBeforeVal.value) {
     if (item.categoryId === '03' || item.categoryId === '04' || item.categoryId === '05') {
@@ -746,6 +749,9 @@ const toggleAll = (check: boolean, category?: any) => {
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
+  if(props.notCanvasClickVal){
+    return;
+  }
   if (isChecked) {
     if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId && item.categoryId === categoryId)) {
       classInfoArr.value.push({classNm: classNm, categoryId: categoryId, classId: classId});

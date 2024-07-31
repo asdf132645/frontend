@@ -16,11 +16,16 @@
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '') ">
-      <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate" @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable' :allCheckClear="allCheckClear" :rbcInfo="rbcInfo" />
+      <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
+                @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable'
+                :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
+                :notCanvasClickVal="notCanvasClickVal"
+      />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcImageList  @unChecked="unChecked" :isBefore="isBefore"  :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo" />
+      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore"
+                    :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
 </template>
@@ -44,8 +49,9 @@ const isBefore = ref(false);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const isLoading = ref(false);
-const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const allUnCheck = ref(false);
+const notCanvasClickVal = ref(false);
+
 onMounted(async () => {
   isLoading.value = false;
   await getDetailRunningInfo();
@@ -92,6 +98,12 @@ const classInfoArrUpdateRe = async (data: any) => {
 
 const unChecked = () => {
   allCheckClear.value = !allCheckClear.value;
+}
+
+const notCanvasClick = (val: any) => {
+//
+  console.log(val)
+  notCanvasClickVal.value = val;
 }
 
 </script>

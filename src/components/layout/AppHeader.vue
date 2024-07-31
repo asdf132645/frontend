@@ -260,7 +260,7 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   await nextTick();
   oilCount.value = Number(newVals[0].sysInfo.oilCount);
   isDoorOpen.value = newVals[0].sysInfo.isDoorOpen;
-  storagePercent.value = Number(newVals[0].sysInfo.storagePercent);
+  storagePercent.value = Number(newVals[0].sysInfo.storageSize);
   eqStatCd.value = newVals[0].sysInfo.eqStatCd;
 
   eqStatCdData.value = eqStatCdChangeVal(newVals[0].sysInfo.eqStatCd);
