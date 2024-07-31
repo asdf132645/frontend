@@ -1,5 +1,6 @@
 <template>
   <div class="settingImagePrint">
+    <button type="button" @click="toggleAllChecks">{{ allChecked ? 'Uncheck All' : 'Check All' }}</button>
     <label v-for="item in imagePrintAndWbcArr" :key="item.id">
       <div>{{ item.fullNm }}</div>
       <div><input type="checkbox" :value="item.classId" v-model="selectedItems" /></div>
@@ -31,7 +32,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import process from "process";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 
-
 const imagePrintAndWbcArr = ref<any[]>([]);
 const selectedItems = ref<string[]>([]);
 
@@ -39,6 +39,8 @@ const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+
+const allChecked = ref(false);
 
 onMounted(async () => {
   await getImagePrintData();
@@ -97,8 +99,6 @@ const getImagePrintData = async () => {
   }
 };
 
-
-
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
@@ -114,5 +114,13 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-</script>
 
+const toggleAllChecks = () => {
+  allChecked.value = !allChecked.value;
+  if (allChecked.value) {
+    selectedItems.value = imagePrintAndWbcArr.value.map(item => item.classId);
+  } else {
+    selectedItems.value = [];
+  }
+};
+</script>

@@ -54,7 +54,7 @@
             </tr>
             <tr>
               <th>Gender</th>
-              <td>{{ selectItems?.gender === '01' ? 'Male' : 'Female' }}</td>
+              <td>{{ selectItems?.gender === '' ? '' : selectItems?.gender === '01' ? 'Male' : 'Female' }}</td>
             </tr>
             </tbody>
           </table>
