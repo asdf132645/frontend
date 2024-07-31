@@ -162,11 +162,8 @@ const leave = (event: any) => {
 };
 
 onBeforeMount(() => {
-  // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = window.PROJECT_TYPE === 'bm';
-  if (!projectBm.value) {
-    pbVersion.value = window.PB_VERSION;
-  }
+  pbVersion.value = window.PB_VERSION;
 })
 
 onMounted(async () => {
