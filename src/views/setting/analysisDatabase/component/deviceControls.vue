@@ -82,7 +82,7 @@ const onGripperOpen = () => {
   blinkTimeout = setTimeout(() => {
     isBlinkingGripper.value = false;
     blinkTimeout = null;
-  }, 1500);
+  }, 500);
 
 }
 
@@ -98,7 +98,7 @@ const onCameraReset = () => {
   cameraResetTimeOut = setTimeout(() => {
     isBlinkCameraReset.value = false;
     cameraResetTimeOut = null;
-  }, 1500);
+  }, 500);
 }
 
 const showSuccessAlert = (message: string) => {

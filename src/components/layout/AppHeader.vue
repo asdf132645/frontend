@@ -38,15 +38,16 @@
 <!--              </div>-->
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
-                <div @click='logOutBoxOn'>
-                  <font-awesome-icon :icon="['fas', 'circle-user']"/>
-                  {{ userModuleDataGet.userId }}
-                </div>
-                <div class='logOutBox' @click='logout'>
-                  LOGOUT
-                </div>
-                <div class='logOutBox' @click='exit'>
-                  EXIT
+                <div @click="userSetOut">
+                  <div @click='logOutBoxOn'>
+                    <font-awesome-icon :icon="['fas', 'circle-user']"/>
+                    {{ userModuleDataGet.userId }}
+                  </div>
+                  <ul v-if="userSetOutUl" class="userSetOutUl">
+                    <li @click='logout'>LOGOUT</li>
+                    <li @click='exit'>EXIT</li>
+                    <li  @click='fullScreen'>FULL SCREEN</li>
+                  </ul>
                 </div>
               </li>
             </ul>
@@ -147,6 +148,7 @@ import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
 import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
+import Button from "@/components/commonUi/Button.vue";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -194,6 +196,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const projectBm = ref(false);
 const clickType = ref('');
+const userSetOutUl = ref(false);
 
 const formattedDate = computed(() => {
   return currentDate.value;
@@ -203,12 +206,9 @@ const formattedTime = computed(() => {
   return currentTime.value;
 });
 
-const changeScreenMode = async () => {
-  if (!document.fullscreenElement) {
-    await document.documentElement.requestFullscreen();
-  }
+const userSetOut = () => {
+  userSetOutUl.value = !userSetOutUl.value;
 }
-
 const updateDateTime = () => {
   const now = new Date();
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
@@ -233,6 +233,13 @@ const handleOkConfirm = async () => {
 
 const hideConfirm = () => {
   showConfirm.value = false;
+}
+
+const fullScreen = () => {
+  console.log('fiill')
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  }
 }
 
 onMounted(async () => {

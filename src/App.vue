@@ -29,7 +29,18 @@
 import AppHeader from "@/components/layout/AppHeader.vue";
 
 const router = useRouter();
-import {getCurrentInstance, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, onBeforeMount, provide } from 'vue';
+import {
+  getCurrentInstance,
+  ref,
+  computed,
+  watch,
+  onMounted,
+  nextTick,
+  onBeforeUnmount,
+  onBeforeMount,
+  provide,
+  onUnmounted
+} from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
 import {tcpReq} from '@/common/tcpRequest/tcpReq';
@@ -79,6 +90,9 @@ const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
+const isFullscreen = ref<boolean>(false);
+let intervalId: any;
+
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -96,6 +110,26 @@ const getIpAddress = async (ip: string) => {
   } catch (e) {
     console.log(e)
   }
+}
+
+function checkFullscreenStatus() {
+  const {path} = router.currentRoute.value;
+  if(path === '/user/login'){
+    return;
+  }
+  isFullscreen.value = !!document.fullscreenElement;
+  if(!isFullscreen.value){
+    showErrorAlert('Please click the full screen button.');
+  }else{
+    hideAlert();
+  }
+}
+function startChecking() {
+  // 화면 상태를 즉시 업데이트
+  checkFullscreenStatus();
+
+  // 1분(60000ms)마다 체크를 수행
+  intervalId = setInterval(checkFullscreenStatus, 60000);
 }
 
 
@@ -172,6 +206,8 @@ onBeforeMount(() => {
 onMounted(async () => {
   await nextTick();
   await cellImgGet();
+  startChecking();
+
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
 

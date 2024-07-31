@@ -1619,7 +1619,6 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   await updateOriginalDb();
 }
 const handleMoveImages = async () => {
-  console.log(wbcInfo.value)
   try {
     const folderPath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}`;
     const response = await fetch(`${apiBaseUrl}/folders/check-and-move-images`, {

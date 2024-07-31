@@ -116,7 +116,7 @@
         </td>
       </tr>
       <tr v-if="projectType === 'pb'">
-        <th>Keep WBC Page</th>
+        <th>Keep Page</th>
         <td>
           <font-awesome-icon
               :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"

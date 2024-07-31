@@ -263,6 +263,9 @@ watch(() => props.wbcInfo, (newItem) => {
     wbcMemo.value = props.selectItems?.wbcMemo;
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
+    console.log(props.selectItems.testType)
+    store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
+
   }
 });
 

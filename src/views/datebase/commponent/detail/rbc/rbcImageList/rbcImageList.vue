@@ -567,6 +567,10 @@ const drawRbcMarker = async (classInfoArr: any) => {
 
 
 const initElement = async () => {
+  console.log(props.selectItems.slotId)
+  if(props.selectItems.slotId === undefined){
+    return;
+  }
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
   try {

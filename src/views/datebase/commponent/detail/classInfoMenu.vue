@@ -6,7 +6,7 @@
         <li
             :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"
             @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')"
-            v-if="projectType !== 'pb' || (selectItems?.testType !== '01' && projectType === 'pb')"
+            v-if="projectType !== 'pb' || (testType === '04' && projectType === 'pb')"
         >
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'virus']"/>
@@ -100,7 +100,9 @@ const pageMoveDeleteStop = ref(false);
 const props = defineProps(['isNext']);
 const ipAddress = ref<any>('');
 const isLoading = ref(true);
+const keepPage = ref('');
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
+const testType = computed(() => store.state.commonModule.testType);
 
 watch(props.isNext, (newVal) => {
   if (newVal) {
@@ -109,12 +111,13 @@ watch(props.isNext, (newVal) => {
 });
 
 onBeforeMount(async () => {
+  projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
   isLoading.value = false;
+  keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem('keepPage')));
 })
 
 onMounted(async () => {
-  projectType.value = window.PROJECT_TYPE;
   pageMoveDeleteStop.value = true;
   const ip = await getDeviceIpApi();
   ipAddress.value = ip.data;
@@ -131,6 +134,8 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await classInfoMenuDetailSelectQueryApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+
     resData.value = result.data;
   } catch (e) {
     console.log(e);
@@ -234,6 +239,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 }
 
 const moveWbc = async (direction: any) => {
+
   store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
   if (timeoutId !== undefined) {
     clearTimeout(timeoutId);
@@ -272,8 +278,9 @@ const handleDataResponse = async (dbId: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
+
   await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(selectItemsNewVal.id) });
-  if (projectType.value === 'pb' && selectItems.value?.testType === '01') {
+  if ((projectType.value === 'pb' && selectItems.value?.testType === '01') || (!keepPage.value || keepPage.value === "false")) {
     pageGo('/databaseDetail');
   }
   emits('refreshClass', selectItemsNewVal);
