@@ -54,11 +54,11 @@
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
           <span class="grayText">{{ item.count.before }}</span>
-          <span class="grayText">{{ item.percent.before + '%' || '-' }}</span>
+          <span class="grayText">{{ item?.percent.before ? item?.percent.before + '%' : '-' }}</span>
         </li>
         <li style="display: flex; justify-content: space-evenly;">
           <span>{{ item?.count.after }}</span>
-          <span>{{ item?.percent.after + '%' || '-' }}</span>
+          <span>{{ item?.percent.after ? item?.percent.after + '%' : '-' }}</span>
         </li>
       </ul>
     </div>
@@ -99,18 +99,18 @@
         </ul>
       </div>
     </div>
-<!--    {{ nonRbcClassListVal }}-->
+<!--    {{ nonWbcClassListVal }}-->
     <div v-if="!projectBm">
-      <template v-for="(nWbcItem, outerIndex) in nonRbcClassListVal" :key="outerIndex">
+      <template v-for="(nWbcItem, outerIndex) in nonWbcClassListVal" :key="outerIndex">
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
-          <ul class="categoryNm">
-            <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-            <li class="liNormalWidth">{{ getStringValue(nWbcItem.name) }}</li>
+          <ul class="categoryNm" style="cursor: default;">
+            <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
+            <li class="liNormalWidth" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
-          <ul style="width: 21%">
+          <ul style="width: 21%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li class="grayText">
+            <li class="grayText" style="cursor: default;">
               {{ nWbcItem?.count.before }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
@@ -118,7 +118,7 @@
           </ul>
           <ul class="degree" style="width: 22%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li>
+              <li style="cursor: default;">
                 {{ nWbcItem?.count.after }}
                 <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span></li>
@@ -187,7 +187,6 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
-const clonedWbcInfoStore = computed(() => store.state.commonModule.clonedWbcInfo);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
@@ -199,11 +198,11 @@ const memoModal = ref(false);
 const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
-const nonRbcClassListVal = ref<any>([]);
-const nonRbcClassList = ref<any>([]);
-const nonRbcClassBeforeList = ref<any>([]);
-const nonRbcClassAfterList = ref<any>([]);
-const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+const nonWbcClassListVal = ref<any>([]);
+const nonWbcClassList = ref<any>([]);
+const nonWbcClassBeforeList = ref<any>([]);
+const nonWbcClassAfterList = ref<any>([]);
+
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
@@ -266,10 +265,6 @@ watch(() => props.wbcInfo, (newItem) => {
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
   }
 });
-
-watch(() => clonedWbcInfoStore.value, (newItem) => {
-  beforeAfterChange(newItem);
-}, {deep: true});
 
 const lisModalOpen = () => {
   showConfirm.value = true;
@@ -975,7 +970,6 @@ const beforeAfterChange = async (newItem: any) => {
 
   const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
 
-
   const wbcBeforeInfo = selectItems.value.wbcInfo.wbcInfo[0];
   const wbcAfterInfo = selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
 
@@ -992,77 +986,51 @@ const beforeAfterChange = async (newItem: any) => {
 
   const wbcBeforeArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const wbcAfterArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
-  const sortedWbcBeforeInfo = sortWbcInfo(wbcBeforeInfo, wbcBeforeArr);
-  const sortedWbcAfterInfo = sortWbcInfo(wbcAfterInfo, wbcAfterArr);
-  wbcInfoAfterVal.value = sortedWbcAfterInfo.filter((item: any) => !titleArr.includes(item.title));
-  wbcInfoBeforeVal.value = sortedWbcBeforeInfo.filter((item: any) => !titleArr.includes(item.title));
-  nonRbcClassAfterList.value = sortedWbcAfterInfo.filter((item: any) => titleArr.includes(item.title));
-  nonRbcClassBeforeList.value = sortedWbcBeforeInfo.filter((item: any) => titleArr.includes(item.title));
+
+  wbcInfoAfterVal.value = filterByTitle(wbcAfterInfo, 'wbc');
+  wbcInfoBeforeVal.value = filterByTitle(wbcBeforeInfo, 'wbc')
+  nonWbcClassAfterList.value = filterByTitle(wbcAfterInfo, 'nonWbc');
+  nonWbcClassBeforeList.value = filterByTitle(wbcBeforeInfo, 'nonWbc');
 
   totalCountSet('before', wbcInfoBeforeVal.value);
   totalCountSet('after', wbcInfoAfterVal.value);
 
-  wbcInfoBeforeVal.value.forEach((item: any) => {
-    if (projectBm.value) {
-      if (item.title !== 'OT') {
-        const percentage = ((Number(item.count) / Number(totalBeforeCount.value)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
-    } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(totalBeforeCount.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
-    }
-  })
+  createPercent(wbcInfoBeforeVal.value, totalBeforeCount.value);
+  createPercent(wbcInfoAfterVal.value, totalAfterCount.value);
 
-  wbcInfoAfterVal.value.forEach((item: any) => {
-    if (projectBm.value) {
-      if (item.title !== 'OT') {
-        const percentage = ((Number(item.count) / Number(totalAfterCount.value)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
-    } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(totalAfterCount.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
-    }
-  })
-
-  nonRbcClassListVal.value = [];
+  nonWbcClassListVal.value = [];
   wbcInfoVal.value = [];
 
-  nonRbcClassBeforeList.value.forEach((beforeItem: any) => {
-    const afterItem = nonRbcClassAfterList.value.find((afterItem: any) => String(afterItem.id) === String(beforeItem.id));
-    if (afterItem && !nonRbcClassListVal.value.find((item: any) => String(item.id) === String(beforeItem.id))) {
-      nonRbcClassListVal.value.push({
-        id: beforeItem.id,
-        name: beforeItem.name,
-        title: beforeItem.title,
-        count: { before: beforeItem.count, after: afterItem.count },
-        images: { before: beforeItem.images, after: afterItem.images },
-        percent: { before: beforeItem.percent, after: afterItem.percent }
-      });
-    }
-  });
+  wbcInfoAfterVal.value = sortWbcInfo(wbcInfoAfterVal.value, wbcAfterArr);
+  wbcInfoBeforeVal.value = sortWbcInfo(wbcInfoBeforeVal.value, wbcBeforeArr);
+  nonWbcClassAfterList.value = sortWbcInfo(nonWbcClassAfterList.value, wbcAfterArr);
+  nonWbcClassBeforeList.value = sortWbcInfo(nonWbcClassBeforeList.value, wbcBeforeArr);
 
-  wbcInfoBeforeVal.value.forEach((beforeItem: any) => {
-    const afterItem = wbcInfoAfterVal.value.find((afterItem: any) => String(afterItem.id) === String(beforeItem.id));
-    if (afterItem && !wbcInfoVal.value.find((item: any) => String(item.id) === String(beforeItem.id))) {
-      wbcInfoVal.value.push({
-        id: beforeItem.id,
-        name: beforeItem.name,
-        title: beforeItem.title,
-        count: { before: beforeItem.count, after: afterItem.count },
-        images: { before: beforeItem.images, after: afterItem.images },
-        percent: { before: beforeItem.percent, after: afterItem.percent }
-      });
-    }
-  });
+  for (const [index, beforeItem] of wbcInfoBeforeVal.value.entries()) {
+    const afterItem = wbcInfoAfterVal.value[index]
+    if (!afterItem) continue;
+    wbcInfoVal.value.push({
+      id: beforeItem.id,
+      name: beforeItem.name,
+      title: beforeItem.title,
+      count: { before: beforeItem.count, after: afterItem.count },
+      images: { before: beforeItem.images, after: afterItem.images },
+      percent: { before: beforeItem.percent, after: afterItem.percent }
+    });
+  }
 
+  for (const [index, beforeItem] of nonWbcClassBeforeList.value.entries()) {
+    const afterItem = nonWbcClassAfterList.value[index];
+    if (!afterItem) continue;
+    nonWbcClassListVal.value.push({
+      id: beforeItem.id,
+      name: beforeItem.name,
+      title: beforeItem.title,
+      count: { before: beforeItem.count, after: afterItem.count },
+      images: { before: beforeItem.images, after: afterItem.images },
+      percent: { before: beforeItem.percent, after: afterItem.percent }
+    });
+  }
 
   if (props.selectItems?.submitState === "") {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
@@ -1071,6 +1039,30 @@ const beforeAfterChange = async (newItem: any) => {
     };
     const updatedRuningInfo = {...result.data, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);
+  }
+}
+
+const filterByTitle = (wbcInfoArr: any, isNonWbc: 'wbc' | 'nonWbc') => {
+  const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+  if (isNonWbc === 'nonWbc') {
+    return wbcInfoArr.filter((item: any) => titleArr.includes(item.title));
+  }
+
+  return wbcInfoArr.filter((item: any) => !titleArr.includes(item.title));
+}
+
+const createPercent = (wbcInfo: any, totalCount: any) => {
+  for (const item of wbcInfo) {
+    if (projectBm.value && item.title !== 'OT') {
+      const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+      item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+    } else {
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      if (!targetArray.includes(item.title)) {
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
+    }
   }
 }
 
@@ -1126,7 +1118,7 @@ const totalCountSet = (showType: string, wbcInfoChangeVal: any) => {
 
 async function updateOriginalDb() {
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
-  let clonedWbcInfo = JSON.parse(JSON.stringify([...wbcInfoAfterVal.value, ...nonRbcClassList.value]));
+  let clonedWbcInfo = JSON.parse(JSON.stringify([...wbcInfoAfterVal.value, ...nonWbcClassList.value]));
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
@@ -1166,7 +1158,7 @@ async function updateOriginalDb() {
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
   selectItems.value.wbcInfoAfter = clonedWbcInfo;
-  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoAfterVal.value, ...nonRbcClassList.value]});
+  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoAfterVal.value, ...nonWbcClassList.value]});
 
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoVal.value);

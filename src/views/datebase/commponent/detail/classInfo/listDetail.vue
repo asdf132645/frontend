@@ -137,6 +137,7 @@
             :onDragOver="onDragOver"
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
+            :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
@@ -1128,7 +1129,6 @@ function isSelected(image: any) {
 
 async function onDrop(targetItemIndex: any) {
   await addToRollbackHistory();
-  console.log('onDrop')
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
   }
@@ -1198,7 +1198,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   let sourceFolders = [];
   let destinationFolders = [];
   let fileNames = [];
-  console.log(draggedItem)
   let idx = 0;
   // 선택된 이미지 배열에 대해 반복
   for (const selectedImage of arrType) {
@@ -1258,7 +1257,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             wbcInfo.value[targetItemIndex].count++;
           }
         } else {
-          // console.log(draggedItem[idx])
           // 드래그된 이미지를 원래 위치에서 제거
           const draggedImageIndex = draggedItem[idx].images.findIndex((img: any) => img.fileName === fileName);
           if (draggedImageIndex !== -1) {
@@ -1472,7 +1470,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     // wbcInfoAfter 업데이트
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: selectItems.value?.id})
-    await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
+    wbcInfo.value = clonedWbcInfo;
 
     // originalDb 업데이트
     const res: any = await classInfoDetailApi(String(selectItems.value?.id));
@@ -1619,7 +1617,6 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   await updateOriginalDb();
 }
 const handleMoveImages = async () => {
-  console.log(wbcInfo.value)
   try {
     const folderPath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}`;
     const response = await fetch(`${apiBaseUrl}/folders/check-and-move-images`, {

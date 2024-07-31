@@ -224,6 +224,7 @@ const nonWbcClassList = ref<any[]>([]);
 const maxRbcCount = ref(0);
 const pltCount = ref(0);
 const malariaCount = ref(0);
+const shapeOthersCount = ref(0);
 
 const printReady = ref(false);
 
@@ -233,9 +234,37 @@ onMounted(async () => {
   await getOrderClass();
   await rbcTotalAndReCount();
   await getImagePrintData();
+  await calcShapeOthersCount();
   await printPage();
 });
 
+const calcShapeOthersCount = async () => {
+  const shapeOthers = await getShapeOthers();
+  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal
+}
+
+const getShapeOthers = async () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
+  const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  //
+  const rbcInfoPathAfter = response_old.data[0].rbcClassList;
+  //
+  const otherCount = { artifact: 0, doubleNormal: 0 };
+  rbcInfoPathAfter.forEach((item: any) => {
+    if (item.categoryId === '03') {
+      for (const classItem of item.classInfo) {
+        if (classItem.classNm === 'Artifact') {
+          otherCount.artifact += 1
+        } else if (classItem.classNm === 'DoubleNormal') {
+          otherCount.doubleNormal += 1
+        }
+      }
+    }
+  })
+
+  return otherCount;
+}
 
 const rbcTotalAndReCount = async () => {
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;

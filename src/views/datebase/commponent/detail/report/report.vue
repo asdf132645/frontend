@@ -128,6 +128,9 @@
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>{{ classInfo?.classNm }}</li>
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                        Others
+                      </li>
                     </template>
                   </ul>
                   <ul class="printRbcDegree">
@@ -200,11 +203,11 @@ const printOnOff = ref(false);
 const printContent = ref(null);
 const rbcInfo = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const clonedWbcInfo = computed(() => store.state.commonModule.clonedWbcInfo);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterData);
+const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
 const wbcArr = ref<any>([]);
@@ -426,7 +429,8 @@ const getOrderClass = async () => {
 async function initData(data?: any) {
   if (selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0) {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-    const sortedWbcInfo = sortWbcInfo(clonedWbcInfo.value, wbcArrs);
+    console.log("11", classInfoSort.value, selectItems.value?.wbcInfoAfter)
+    const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfoAfter, wbcArrs);
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
@@ -437,6 +441,7 @@ async function initData(data?: any) {
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
   }
+
   rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcClass;
 }
 
