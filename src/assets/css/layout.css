@@ -2475,12 +2475,7 @@ ul.normalItems li div span:last-child {
     width: 150px;
 }
 
-.dbWbcImageContainer {
-    overflow-y: auto;
-    max-height: 160px;
-}
-
-.dbBmImageContainer {
+.dbImageContainer {
     overflow-y: auto;
     max-height: 160px;
 }
