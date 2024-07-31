@@ -1032,8 +1032,9 @@ async function initData(newData: any, upDown: any, upDownData: any) {
   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
   await sortWbcInfo(wbcInfo.value, sortArr);
+
   // UIMD web 팀에서만 사용하는 코드
-  // await handleMoveImages();
+  await handleMoveImages();
 }
 
 const getOrderClass = async () => {
