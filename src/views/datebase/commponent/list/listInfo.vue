@@ -4,30 +4,30 @@
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
       <h3 class="orderTitle hh3title">Order Information</h3>
-      <div style="display: flex;">
+      <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
           <li class="flexColumn">
-            <span class=" mb1">Order ID</span>
-            <span class="grayText">{{ selectedItem?.slotId }}</span>
+            <span class="mb1">Order ID:</span>
+            <span class="mb2">{{ selectedItem?.slotId }}</span>
           </li>
-          <li class="flexColumn">
-            <span class="grayText">LIS status</span>
-            <span>No data sent or received from LIS</span>
-          </li>
-          <li class="flexColumn">
-            <span>Type of order</span>
-            <span v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>
-            <span v-else>{{ selectedItem?.testType }}</span>
-          </li>
-          <li class="flexColumn">
-            <span>NS, NB Integration</span>
-            <span>{{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</span>
-          </li>
+<!--          <li class="flexColumn">-->
+<!--            <span>LIS status</span>-->
+<!--            <span class="mb1">No data sent or received from LIS</span>-->
+<!--          </li>-->
+<!--          <li class="flexColumn">-->
+<!--            <span>Type of order</span>-->
+<!--            <span class="mb1" v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>-->
+<!--            <span class="mb1" v-else>{{ selectedItem?.testType }}</span>-->
+<!--          </li>-->
+<!--          <li class="flexColumn">-->
+            <li>NS, NB Integration: {{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</li>
         </ul>
-        <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath" style="width: 240px"/>
+        <div>
+          <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath" style="width: 200px; float:right;"/>
+        </div>
       </div>
     </div>
-    <div>
+    <div class="resultInformationContainer" style="padding-top: 0;">
       <h3 class="mt2 mb1 hh3title">Result Information</h3>
       <ul class="resInfoTopContainer">
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || projectType === 'bm'">
