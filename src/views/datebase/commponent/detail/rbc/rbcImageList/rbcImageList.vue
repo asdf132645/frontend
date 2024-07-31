@@ -222,7 +222,8 @@ const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoArr);
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
-
+const fileNameResultArr = ref<any>([]);
+const notCanvasClick = ref(false);
 
 onMounted(async () => {
   await nextTick();
@@ -661,6 +662,8 @@ const initElement = async () => {
       });
 
       viewer.value.addHandler('page', function (event: any) {
+        const notCanvasClick = fileNameResultArr.value[event.page] !== 'RBC_Image_0';
+        emits('notCanvasClick', notCanvasClick);
         // 페이지가 변경될 때 오버레이를 다시 추가
         if (canvas.parentElement !== viewer.value.container) {
           viewer.value.addOverlay({
@@ -832,11 +835,12 @@ const fetchTilesInfo = async (folderPath: string) => {
   } else {
     const fileNames = await response.json();
     const tilesInfo = [];
-
+    fileNameResultArr.value = [];
     for (const fileName of fileNames) {
       if (fileName.endsWith('_files')) {
 
-        const fileNameResult = extractSubStringBeforeFiles(fileName)
+        const fileNameResult = extractSubStringBeforeFiles(fileName);
+        fileNameResultArr.value.push(fileNameResult)
         const {width, height} = await dziWidthHeight(fileNameResult)
 
         tilesInfo.push({
