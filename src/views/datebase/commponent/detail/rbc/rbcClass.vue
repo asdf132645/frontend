@@ -871,6 +871,9 @@ const hideAlert = () => {
 };
 
 const commitConfirmed = () => {
+  if(submitState.value === 'Submit'){
+    return;
+  }
   showConfirm.value = true;
   confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
 }

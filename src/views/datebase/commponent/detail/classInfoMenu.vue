@@ -277,7 +277,7 @@ const handleDataResponse = async (dbId: any, res: any) => {
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
 
   await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(selectItemsNewVal.id) });
-  if ((projectType.value === 'pb' && selectItems.value?.testType === '01') || (!keepPage.value || keepPage.value === "false")) {
+  if ((projectType.value === 'pb' && selectItems.value?.testType === '01' && isActive("/databaseRbc")) || (!keepPage.value || keepPage.value === "false")) {
     pageGo('/databaseDetail');
   }
   emits('refreshClass', selectItemsNewVal);

@@ -263,7 +263,6 @@ watch(() => props.wbcInfo, (newItem) => {
     wbcMemo.value = props.selectItems?.wbcMemo;
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
-    console.log(props.selectItems.testType)
     store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
 
   }
@@ -311,6 +310,9 @@ const toggleLockEvent = () => {
 }
 
 const commitConfirmed = () => {
+  if(props.selectItems?.submitState === 'Submit'){
+    return;
+  }
   showConfirm.value = true;
   confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
   okMessageType.value = 'commit';
@@ -867,7 +869,7 @@ const hideConfirm = () => {
 
 const onCommit = async () => {
   const localTime = moment().local();
-
+  console.log(props.selectItems);
   const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     submitState: 'Submit',

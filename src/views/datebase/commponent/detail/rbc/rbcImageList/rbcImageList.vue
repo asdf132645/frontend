@@ -597,10 +597,10 @@ const initElement = async () => {
         visibilityRatio: 1.0 // 이미지를 뷰포트에 맞추기 위한 비율 설정
       });
 
-      // 마그니파이어 설정
+      // 마그니파이어 설정 - 동그라미 줌기능
       new OpenSeadragon.MouseTracker({
         element: viewer.value.element,
-        moveHandler: function (event: any) {
+        moveHandler: function (event) {
           const existingMagCanvas = document.getElementById('magCanvas');
           if (existingMagCanvas) {
             viewer.value.element.removeChild(existingMagCanvas);
@@ -610,7 +610,7 @@ const initElement = async () => {
             return;
           }
 
-          const {canvas} = viewer.value.drawer;
+          const { canvas } = viewer.value.drawer;
           const magCanvas = document.createElement('canvas');
           const magCtx = magCanvas.getContext('2d');
           canvasOverlay.value = magCanvas;
@@ -620,9 +620,11 @@ const initElement = async () => {
             const zoomLevel = 5;
 
             magCanvas.id = 'magCanvas';
+            magCanvas.width = magWidth;
+            magCanvas.height = magHeight;
             magCanvas.style.position = 'absolute';
-            magCanvas.style.left = `${event.position.x - (magWidth / 2)}px`;
-            magCanvas.style.top = `${event.position.y - (magHeight / 2)}px`;
+            magCanvas.style.left = `${event.position.x - magWidth / 2}px`;
+            magCanvas.style.top = `${event.position.y - magHeight / 2}px`;
             magCanvas.style.border = '1px solid';
             magCanvas.style.borderRadius = '50%';
             magCanvas.style.width = `${magWidth}px`;
@@ -631,23 +633,24 @@ const initElement = async () => {
 
             viewer.value.element.appendChild(magCanvas);
 
+            // 줌을 위한 확대된 부분을 정확히 잘라내기 위해 drawImage 메서드 수정
             magCtx.drawImage(
                 canvas,
-                event.position.x - (magWidth / 8),
-                event.position.y - (magHeight / 8),
+                event.position.x - (magWidth / 2 / zoomLevel),
+                event.position.y - (magHeight / 2 / zoomLevel),
+                magWidth / zoomLevel,
+                magHeight / zoomLevel,
+                0,
+                0,
                 magWidth,
-                magHeight,
-                0,
-                0,
-                magWidth * zoomLevel,
-                magHeight * zoomLevel
+                magHeight
             );
 
             magCanvas.style.visibility = event.position.y <= 0 || event.position.x <= 0 ? 'hidden' : 'visible';
-
           }
         },
       });
+
 
 
       // 캔버스 오버레이 생성 및 추가

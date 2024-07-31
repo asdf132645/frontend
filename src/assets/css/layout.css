@@ -248,6 +248,9 @@ ul.userSetOutUl > li {
     padding-bottom: 5px;
     cursor: pointer;
 }
+table.reportTable tr th {
+    width: 145px;
+}
 ul.userSetOutUl > li:hover {
     background: #000;
     color: #fff;
