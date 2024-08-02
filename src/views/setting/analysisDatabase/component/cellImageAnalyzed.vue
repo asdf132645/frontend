@@ -135,7 +135,7 @@
       </colgroup>
       <tbody>
       <tr>
-        <th>BackUp Save Path</th>
+        <th>Backup Save Path</th>
         <td>
           <select v-model='backupRootPath' class="autoBackUpPath">
             <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
@@ -148,7 +148,9 @@
           <div class="settingDatePickers">
             <Datepicker v-model="backupStartDate"></Datepicker>
             <Datepicker v-model="backupEndDate"></Datepicker>
-            <button class="backupBtn" @click="createBackup">backup</button>
+            <button class="backupBtn" @click="createBackup">Backup</button>
+            <input type="file" ref="fileInput" @change="restoreBackupData" style="display: none;" />
+            <button class="backupBtn" @click="handleFileSelect">Restore</button>
           </div>
         </td>
       </tr>
@@ -194,16 +196,16 @@ import {
   testBmTypeList, bmAnalysisList
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
-import * as process from "process";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import moment from "moment";
-import {backUpDate} from "@/common/api/service/backup/wbcApi";
+import {backUpDate, restoreBackup} from "@/common/api/service/backup/wbcApi";
 
+const store = useStore();
 const showAlert = ref(false);
 const alertType = ref('');
-const alertMessage = ref('');
 
+const alertMessage = ref('');
 const analysisVal = ref<any>([]);
 const testTypeCd = ref('01');
 const diffCellAnalyzingCount = ref('100');
@@ -241,15 +243,17 @@ const saveHttpType = ref('');
 const drive = ref<any>([]);
 const backupDrive = ref<any>([]);
 const cellimgId = ref('');
-const projectType = ref('pb');
 
+const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
-const store = useStore();
+const fileInput = ref<any>(null);
+
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const filteredValue = input.value.replace(/[^0-9]/g, '');
   alarmCount.value = filteredValue.trim();
 };
+
 const createBackup = async () => {
   if (backupRootPath.value === ''){
     showErrorAlert('Please select a backup save path');
@@ -261,8 +265,30 @@ const createBackup = async () => {
     backupPath: backupRootPath.value, // 백업 경로
     sourceFolderPath: `${iaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
   };
+  try {
+    await backUpDate(backupDto);
+    showSuccessAlert('Backup Success')
+  } catch (e) {
+    console.log(e);
+  }
+}
 
-  const res = await backUpDate(backupDto);
+const handleFileSelect = () => {
+  fileInput.value.click();
+}
+
+const restoreBackupData = async (event: any) => {
+  const fileName = event.target.files[0]?.name;
+  if (!fileName) return;
+
+  const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
+
+  try {
+    const result = await restoreBackup({ fileName: fileName, filePath: filePath });
+    console.log(result);
+  } catch (e) {
+    console.log(e);
+  }
 
 }
 
@@ -400,6 +426,7 @@ const cellImgSet = async () => {
     console.log(e);
   }
 }
+
 const toggleNsNbIntegration = () => {
   isNsNbIntegration.value = !isNsNbIntegration.value;
 };

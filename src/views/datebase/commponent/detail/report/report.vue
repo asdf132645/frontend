@@ -425,7 +425,6 @@ const countReAdd = async () => {
       for (const xel of el.classInfo) {
         if (xel.classNm === 'Malaria') {
           malariaTotal += 1;
-          console.log(malariaTotal)
         }
       }
     }
@@ -515,11 +514,18 @@ const getOrderClass = async () => {
 async function initData(data?: any) {
   if (selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0) {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-    console.log("11", classInfoSort.value, selectItems.value?.wbcInfoAfter)
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfoAfter, wbcArrs);
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     wbcInfo.value = sortedWbcInfo;
     wbcArr.value = sortedWbcInfo;
+
+    if (!nonWbcClassList.value || nonWbcClassList.value.length === 0) {
+      const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
+      nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
+      // wbcInfo.value = sortedWbcInfo;
+      // wbcArr.value = sortedWbcInfo;
+
+    }
   } else {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);

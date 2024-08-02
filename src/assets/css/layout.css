@@ -60,6 +60,12 @@
     align-items: center;
 }
 
+.alignItemsCenterSpaceBetween {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .flexColumn {
     display: flex;
     flex-direction: column;
@@ -91,6 +97,34 @@
 
 .modalTitle {
     font-size: 1.0rem;
+}
+
+.wFit {
+    width: fit-content;
+}
+
+.w140 {
+    width: 140px;
+}
+
+.w50 {
+    width: 50px;
+}
+
+.w40 {
+    width: 40px;
+}
+
+.w30 {
+    width: 30px;
+}
+
+.w20 {
+    width: 20px;
+}
+
+.textLeft {
+    text-align: left;
 }
 
 /* header-menu */
@@ -242,9 +276,8 @@ main.bmComponent {
     text-align: left;
 }
 ul.userSetOutUl > li {
-    color: rgb(49 49 49 / 88%);
-    padding-top: 9px;
-    /*border-bottom: 1px solid #000;*/
+    color: var(--white-color);
+    padding: 9px 4px;
     padding-bottom: 5px;
     cursor: pointer;
 }
@@ -252,14 +285,18 @@ table.reportTable tr th {
     width: 145px;
 }
 ul.userSetOutUl > li:hover {
-    background: #000;
-    color: #fff;
+    background: var(--main-bg-7-color);
+    border-radius: 5px;
 }
 ul.userSetOutUl {
-    background: #dedede;
+    position: absolute;
+    background: var(--gray-bg-12-color);
     border-radius: 5px;
+    border: 1px solid var(--white-color);
     padding: 5px 10px 10px 10px;
-    margin-top: 5px;
+    margin-top: 10px;
+    color: var(--white-color);
+    z-index: 9999;
 }
 
 .display-flex > div {
@@ -270,6 +307,7 @@ ul.userSetOutUl {
 }
 
 .logOutBox {
+    position: relative;
     border: 1px solid var(--white-color);
     box-sizing: border-box;
     padding: 5px;
@@ -283,6 +321,7 @@ ul.userSetOutUl {
 }
 
 .lastMenu {
+    width: 190px;
     text-align: right;
     position: absolute;
     right: 0;

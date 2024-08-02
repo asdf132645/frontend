@@ -201,7 +201,7 @@ function onDrop(targetSection: string) {
 
 async function moveImage(targetSection: string, imgName: string) {
   const slotId = props.selectItems.slotId || '';
-  const pathNew = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : iaRootPath;
+  const pathNew = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath;
 
   const path = `${pathNew}/${slotId}/${dirName.rbcClassDirName}`
   const sourceFolder = targetSection === 'malaria' ? `${path}/${dirName.noMalariaDirName}` : `${path}/${dirName.malariaDirName}`;

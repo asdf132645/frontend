@@ -5,3 +5,7 @@ const httpClient = useHttpClient();
 export const backUpDate = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.backUp.backUpDate, request);
 };
+
+export const restoreBackup = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.restore.restoreData, request);
+}

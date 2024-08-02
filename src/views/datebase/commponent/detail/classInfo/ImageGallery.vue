@@ -201,6 +201,7 @@
 import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'vue';
 import {useStore} from "vuex";
 import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
+import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -274,7 +275,6 @@ const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
-  // console.log(newVal)
   loading.value = false;
 });
 
@@ -283,17 +283,16 @@ watch(
     async (newVal) => {
       // await nextTick();
       wbcInfoArrChild.value = [];
-      wbcInfoArrChild.value = newVal.map((item, index) => ({
+      wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
         ...item,
         uniqueKey: `item_${index}_${Date.now()}`,
-        images: item.images.map((image, imgIndex) => ({
+        images: item.images.map((image: any, imgIndex: number) => ({
           ...image,
           uniqueKey: `image_${index}_${imgIndex}_${Date.now()}`
         }))
       }));
       classImgChange('first', null);
       classImgChange('last', null);
-
     },
     {deep: true}
 );

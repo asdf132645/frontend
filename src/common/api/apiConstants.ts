@@ -414,8 +414,14 @@ export const apiConstants = {
         }
     },
     backUp:{
-        backUpDate:{
+        backUpDate: {
             endpoint: 'backup/post',
+            requiresToken: false,
+        },
+    },
+    restore: {
+        restoreData: {
+            endpoint: 'restore/execute',
             requiresToken: false,
         }
     },

@@ -117,7 +117,7 @@ function checkFullscreenStatus() {
   if(path === '/user/login'){
     return;
   }
-  isFullscreen.value = !!document.fullscreenElement;
+  isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
   if(!isFullscreen.value){
     showErrorAlert('Please click the full screen button.');
   }else{
@@ -264,7 +264,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
       });
       // sessionStorage.clear();
-      // await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     }
 

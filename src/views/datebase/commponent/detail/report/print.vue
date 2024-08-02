@@ -139,7 +139,7 @@
 
           <!-- WBC Classification -->
           <div style="margin-top: 20px; border-top: 2px dotted #696969">
-            <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">WBC classification result</h3>
+            <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">{{projectType === 'pb' ? 'WBC' : 'BM'}} classification result</h3>
             <table style="width: 100%;">
               <colgroup>
                 <col style="width: 30%;"/>
@@ -252,10 +252,13 @@ const printReady = ref(false);
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
+  console.log('wbcInfo.value', wbcInfo.value);
   await getOrderClass();
-  await rbcTotalAndReCount();
   await getImagePrintData();
-  await calcShapeOthersCount();
+  if (projectType !== 'bm') {
+    await rbcTotalAndReCount();
+    await calcShapeOthersCount();
+  }
   await printPage();
 });
 

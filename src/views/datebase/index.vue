@@ -145,7 +145,7 @@ const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
 const prevPage = ref(1);
-const selectedItem = ref({});
+const selectedItem = ref<any>({});
 const titleItem = ref<any>([]);
 const titleItemArr = ref([]);
 const nrCount = ref(0);
@@ -435,8 +435,9 @@ const exportToExcel = async () => {
 
 const excecuteExcel = async () => {
   const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
+  const path = selectedItem.value?.img_drive_root_path !== '' && selectedItem.value?.img_drive_root_path ? selectedItem.value?.img_drive_root_path : iaRootPath.value;
   const body = checkedSelectedItems.value.map((checkedItem: any) => {
-    return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
+    return `${path}\\${checkedItem.slotId}\\${folderName}`
   });
 
   try {
@@ -468,7 +469,7 @@ const convertRbcData = async (dataList: any) => {
       }
 
       if (classItem.categoryNm === 'Shape') {
-        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: String(test.doubleNormal + test.artifact) } } }
+        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: String(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
       }
 
       beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
@@ -520,7 +521,7 @@ const createRbcJson = async (slotId: string, sendingData: any) => {
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
   formData.append('file', blob, `RBC.json`);
-  const path = iaRootPath.value;
+  const path = selectedItem.value?.img_drive_root_path !== '' && selectedItem.value?.img_drive_root_path ? selectedItem.value?.img_drive_root_path : iaRootPath.value;
   const filePath = `${path}/${slotId}/RBC_Analysis.json`
   try {
     await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
@@ -558,6 +559,7 @@ const getShapeOthers = async (selectItems: any) => {
 const dateRefresh = () => {
   startDate.value = thirtyDaysAgo
   endDate.value = new Date();
+  search();
 }
 
 const checkListItem = (items: any) => {

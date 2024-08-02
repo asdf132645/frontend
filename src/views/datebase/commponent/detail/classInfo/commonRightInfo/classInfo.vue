@@ -1,10 +1,11 @@
 <template>
-  <img class="mt1" v-if="type !== 'report'"
-       :src="barcodeImg"/>
+  <img class="mt1" v-if="type !== 'report' && !barCodeImageShowError"  @error="onImageError" :src="barcodeImg"/>
+  <div class="mt1" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
   <div class="mt1 mb2 flexSpaceBetween">
     <h3 class="wbcClassInfoLeft">
       {{ wbcClassTileChange() }}
     </h3>
+
     <ul class="leftWbcInfo">
       <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
@@ -49,16 +50,15 @@
         @dragover.prevent
         @drop="drop(idx, $event)"
     >
-<!--toggleLock-->
-      <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)">
+      <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)" title="BLUE text: changed element">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span class="grayText">{{ item.count.before }}</span>
-          <span class="grayText">{{ item?.percent.before ? item?.percent.before + '%' : '-' }}</span>
+          <span class="grayText w20 textLeft">{{ item.count.before }}</span>
+          <span class="grayText w50 textLeft">{{ item?.percent.before ? item?.percent.before + '%' : '-' }}</span>
         </li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span>{{ item?.count.after }}</span>
-          <span>{{ item?.percent.after ? item?.percent.after + '%' : '-' }}</span>
+          <span :class="['w20', 'textLeft', item.isChanged && 'blueText']">{{ item?.count.after }}</span>
+          <span :class="['w50', 'textLeft', item.isChanged && 'blueText']">{{ item?.percent.after ? item?.percent.after + '%' : '-' }}</span>
         </li>
       </ul>
     </div>
@@ -70,14 +70,14 @@
       </ul>
       <ul>
         <li style="display: flex; justify-content: center; gap: 22px;">
-          <p>{{ totalBeforeCount || 0 }}</p>
-          <p>100%</p>
+          <p class="w20 textLeft">{{ totalBeforeCount || 0 }}</p>
+          <p class="w50 textLeft">100%</p>
         </li>
       </ul>
       <ul class="degree">
         <li style="display: flex; justify-content: center; gap: 22px;">
-          <p>{{ totalAfterCount || 0 }}</p>
-          <p>100%</p>
+          <p class="w20 textLeft">{{ totalAfterCount || 0 }}</p>
+          <p class="w50 textLeft">100%</p>
         </li>
       </ul>
     </div>
@@ -95,7 +95,7 @@
         <ul class="nth1Child" v-if="item?.title === 'OT'" @click="goClass(item.id)">
           <li>{{ item?.name }}</li>
           <li class="grayText">{{ item?.count.before }}</li>
-          <li>{{ item?.count.after }}</li>
+          <li :class="item.isChanged && 'blueText'">{{ item?.count.after }}</li>
         </ul>
       </div>
     </div>
@@ -106,11 +106,11 @@
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
             <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
-            <li class="liNormalWidth" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
+            <li class="wFit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul style="width: 21%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li class="grayText" style="cursor: default;">
+            <li class="grayText" style="cursor: default; padding-left: -20px;">
               {{ nWbcItem?.count.before }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
@@ -118,7 +118,7 @@
           </ul>
           <ul class="degree" style="width: 22%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li style="cursor: default;">
+              <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">
                 {{ nWbcItem?.count.after }}
                 <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span></li>
@@ -184,6 +184,7 @@ import {xml2json} from "xml-js";
 import {createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -222,8 +223,10 @@ const lisCodeWbcArr = ref<any>([]);
 const lisCodeRbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
+const barCodeImageShowError = ref(false);
 
 onBeforeMount(async () => {
+  barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
 
@@ -247,6 +250,7 @@ onMounted(async () => {
   }
   await getLisWbcRbcData();
   await getLisPathData();
+  barCodeImageShowError.value = false;
 })
 
 watch(() => props.isCommitChanged, () => {
@@ -869,7 +873,6 @@ const hideConfirm = () => {
 
 const onCommit = async () => {
   const localTime = moment().local();
-  console.log(props.selectItems);
   const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     submitState: 'Submit',
@@ -912,7 +915,6 @@ const getStringValue = (title: string): string => {
     return title;
   }
 };
-
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
@@ -971,22 +973,47 @@ const beforeAfterChange = async (newItem: any) => {
   const filteredItems: any = await classInfoDetailSelectQueryApi(String(selectedSampleId.value));
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id)});
   selectItems.value = filteredItems.data;
+  const customClassItems = selectItems.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
   selectItems.value.wbcInfoAfter = newItem;
 
   const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
+  let wbcBeforeInfo = removeDuplicatesById(selectItems.value.wbcInfo.wbcInfo[0] || [])
+  let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || filteredItems.data.wbcInfo.wbcInfo[0] || []);
 
-  const wbcBeforeInfo = selectItems.value.wbcInfo.wbcInfo[0];
-  const wbcAfterInfo = selectItems.value?.wbcInfoAfter && selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : filteredItems.data.wbcInfo.wbcInfo[0];
+  wbcBeforeInfo = removeDuplicatesById(wbcBeforeInfo);
+  wbcAfterInfo = removeDuplicatesById(wbcAfterInfo);
 
-  for (const item of availableCustomClassArr) {
-    const customItem = {
-      id: String(item.customNum),
-      name: item.fullNm,
-      count: '0',
-      title: item.abbreviation,
-      images: [],
+
+  // customClass가 있는 상태에서 첫 진입 시
+  if (availableCustomClassArr.length > 0 && customClassItems.length === 0) {
+    for (const customClassItem of availableCustomClassArr) {
+      if (wbcAfterInfo.find((beforeItem: any) => beforeItem.id != customClassItem.customNum)) {
+        const customItem = {
+          id: String(customClassItem.customNum),
+          name: customClassItem.fullNm,
+          count: '0',
+          title: customClassItem.abbreviation,
+          images: [],
+        }
+        wbcBeforeInfo.push(customItem)
+        wbcAfterInfo.push(customItem);
+      }
     }
-    wbcBeforeInfo.push(customItem)
+  }
+  if (availableCustomClassArr.length > 0 && customClassItems.length > 0) {
+    for (const customClassItem of customClassItems) {
+      if (wbcAfterInfo.find((item: any) => item.id != customClassItem.id)) {
+        const customItem = {
+          id: String(customClassItem.id),
+          name: customClassItem.name,
+          count: '0',
+          title: customClassItem.title,
+          images: [],
+        }
+        wbcBeforeInfo.push(customItem)
+        wbcAfterInfo.push(customClassItem)
+      }
+    }
   }
 
   const wbcBeforeArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
@@ -1000,8 +1027,13 @@ const beforeAfterChange = async (newItem: any) => {
   totalCountSet('before', wbcInfoBeforeVal.value);
   totalCountSet('after', wbcInfoAfterVal.value);
 
-  createPercent(wbcInfoBeforeVal.value, totalBeforeCount.value);
-  createPercent(wbcInfoAfterVal.value, totalAfterCount.value);
+  for (const item of wbcInfoBeforeVal.value) {
+    createPercent(item, totalBeforeCount.value)
+  }
+
+  for (const item of wbcInfoAfterVal.value) {
+    createPercent(item, totalAfterCount.value)
+  }
 
   nonWbcClassListVal.value = [];
   wbcInfoVal.value = [];
@@ -1013,28 +1045,35 @@ const beforeAfterChange = async (newItem: any) => {
 
   for (const [index, beforeItem] of wbcInfoBeforeVal.value.entries()) {
     const afterItem = wbcInfoAfterVal.value[index]
+
     if (!afterItem) continue;
-    wbcInfoVal.value.push({
+    const isChanged = isBeforeAfterChanged(beforeItem, afterItem);
+    const item = {
       id: beforeItem.id,
       name: beforeItem.name,
       title: beforeItem.title,
       count: { before: beforeItem.count, after: afterItem.count },
       images: { before: beforeItem.images, after: afterItem.images },
-      percent: { before: beforeItem.percent, after: afterItem.percent }
-    });
+      percent: { before: beforeItem.percent, after: afterItem.percent },
+      isChanged
+    }
+    wbcInfoVal.value.push(item);
   }
 
   for (const [index, beforeItem] of nonWbcClassBeforeList.value.entries()) {
     const afterItem = nonWbcClassAfterList.value[index];
     if (!afterItem) continue;
-    nonWbcClassListVal.value.push({
+    const isChanged = isBeforeAfterChanged(beforeItem, afterItem);
+    const item = {
       id: beforeItem.id,
       name: beforeItem.name,
       title: beforeItem.title,
       count: { before: beforeItem.count, after: afterItem.count },
       images: { before: beforeItem.images, after: afterItem.images },
-      percent: { before: beforeItem.percent, after: afterItem.percent }
-    });
+      percent: { before: beforeItem.percent, after: afterItem.percent },
+      isChanged
+    }
+    nonWbcClassListVal.value.push(item);
   }
 
   if (props.selectItems?.submitState === "") {
@@ -1042,9 +1081,26 @@ const beforeAfterChange = async (newItem: any) => {
     const updatedItem = {
       submitState: 'checkFirst',
     };
+
     const updatedRuningInfo = {...result.data, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);
   }
+}
+
+/** Before, After 이미지들이 같은지 비교 */
+const isBeforeAfterChanged = (beforeItem: any, afterItem: any) => {
+  if (Number(beforeItem.count) !== Number(afterItem.count)) return true;
+
+  const sortedBeforeImages = beforeItem.images.slice().sort((a: any, b: any) => a.title - b.title || a.fileName - b.fileName);
+  const sortedAfterImages = afterItem.images.slice().sort((a: any, b: any) => a.title - b.title || a.fileName - b.fileName);
+
+  for (const [index, beforeItem] of sortedBeforeImages.entries()) {
+    if (beforeItem.title !== sortedAfterImages[index].title || beforeItem.fileName !== sortedAfterImages[index].fileName) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 const filterByTitle = (wbcInfoArr: any, isNonWbc: 'wbc' | 'nonWbc') => {
@@ -1056,17 +1112,15 @@ const filterByTitle = (wbcInfoArr: any, isNonWbc: 'wbc' | 'nonWbc') => {
   return wbcInfoArr.filter((item: any) => !titleArr.includes(item.title));
 }
 
-const createPercent = (wbcInfo: any, totalCount: any) => {
-  for (const item of wbcInfo) {
-    if (projectBm.value && item.title !== 'OT') {
-      const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+const createPercent = (item: any, totalCount: any) => {
+  if (projectBm.value && item.title !== 'OT') {
+    const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
+    item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+  } else {
+    const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+    if (!targetArray.includes(item.title)) {
+      const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
       item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-    } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
     }
   }
 }
@@ -1146,19 +1200,8 @@ async function updateOriginalDb() {
       delete image.height;
       delete image.filter;
     });
-    if (projectBm.value) {
-      if (item.title !== 'OT') {
-        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
-    } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
-    }
 
+    createPercent(item, totalCount);
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
@@ -1224,4 +1267,9 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const onImageError = () => {
+  barCodeImageShowError.value = true;
+}
+
 </script>

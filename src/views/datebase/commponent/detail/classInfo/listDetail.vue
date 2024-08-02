@@ -284,9 +284,10 @@ const alertMessage = ref('');
 const wbcReset = ref(false);
 
 onBeforeMount(async () => {
+  await getDetailRunningInfo();
   isLoading.value = false;
   projectType.value = window.PROJECT_TYPE;
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
 })
 
@@ -303,7 +304,6 @@ onMounted(async () => {
 
   cellMarkerIcon.value = false;
   await drawCellMarker(true);
-
   // end
 });
 onUnmounted(async () => {
@@ -502,7 +502,6 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   wbcInfo.value = [];
-  await getDetailRunningInfo();
   try {
     const result = await getWbcCustomClassApi();
 
@@ -540,7 +539,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           title: abbreviation,
         };
 
-        const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
+        const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id == wbcPush.id && wbcItem.name === wbcPush.name);
         if (!foundObject) {
           wbcinfo.push(wbcPush);
           wbcInfo.value = wbcinfo;
@@ -690,7 +689,7 @@ const refreshClass = async (data: any) => {
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
   await getWbcCustomClasses(true, data);
   await imgSetLocalStorage();

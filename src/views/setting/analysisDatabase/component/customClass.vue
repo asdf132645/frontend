@@ -128,17 +128,6 @@ const getWbcCustomClasses = async () => {
 const validateCustomClass = () => {
   let existingClassFullNmArr, existingClassAbbreivationArr;
 
-  const wbcCustomItemFullNms = wbcCustomItems.value.map((item: any) => item.fullNm);
-  const wbcCustomItemAbbreviation = wbcCustomItems.value.map((item: any) => item.abbreviation);
-  if (new Set(...wbcCustomItemFullNms).size !== wbcCustomItemFullNms.length) {
-    showErrorAlert("There is duplicated class name")
-    return false;
-  } else if (new Set(...wbcCustomItemAbbreviation).size !== wbcCustomItemAbbreviation.length) {
-    showErrorAlert("There is duplicated abbreviation")
-    return false;
-  }
-
-
   if (projectBm.value ) {
     existingClassFullNmArr = basicBmClassList.map(item => item.fullNm);
     existingClassAbbreivationArr = basicBmClassList.map(item => item.abbreviation)

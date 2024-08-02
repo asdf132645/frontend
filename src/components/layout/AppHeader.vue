@@ -32,23 +32,19 @@
         <div class="small-icon-menu">
           <div class="lastMenu">
             <ul>
-<!--              <div class="logOutBox" @click='changeScreenMode'>-->
-<!--                FULLSCREEN-->
-<!--                <font-awesome-icon :icon="['fas', 'up-right-and-down-left-from-center']" />-->
-<!--              </div>-->
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
                 <div @click="userSetOut">
-                  <div @click='logOutBoxOn'>
+                  <div class="cursorPointer" @click='logOutBoxOn'>
                     <font-awesome-icon :icon="['fas', 'circle-user']"/>
                     {{ userModuleDataGet.userId }}
                   </div>
                   <ul v-if="userSetOutUl" class="userSetOutUl">
                     <li @click='logout'>LOGOUT</li>
                     <li @click='exit'>EXIT</li>
-                    <li  @click='fullScreen'>FULL SCREEN</li>
                   </ul>
                 </div>
+                <div class="logOutBox"  @click='fullScreen'>FULL SCREEN</div>
               </li>
             </ul>
           </div>
@@ -197,6 +193,7 @@ const alertMessage = ref('');
 const projectBm = ref(false);
 const clickType = ref('');
 const userSetOutUl = ref(false);
+const userSetOutRef = ref(null);
 
 const formattedDate = computed(() => {
   return currentDate.value;
