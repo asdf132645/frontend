@@ -284,14 +284,12 @@ const alertMessage = ref('');
 const wbcReset = ref(false);
 
 onBeforeMount(async () => {
-  await getDetailRunningInfo();
   isLoading.value = false;
   projectType.value = window.PROJECT_TYPE;
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
-  iaRootPath.value = path;
 })
 
 onMounted(async () => {
+  await getDetailRunningInfo();
   wbcInfo.value = [];
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -337,6 +335,9 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await classInfoDetailApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+
+    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
+    iaRootPath.value = path;
 
   } catch (e) {
     console.log(e);
@@ -523,8 +524,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     }
     sessionStorage.setItem('customClass', JSON.stringify(data));
     wbcCustomItems.value = data;
-    let wbcinfo: any = [];
-    wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
+    let wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
     if (newData.length !== 0) {
       for (const item of newData) { // 커스텀클래스 폴더 생성
         const {fullNm, abbreviation, customNum} = item;

@@ -452,31 +452,30 @@ const convertRbcData = async (dataList: any) => {
   let afterRbcData = {};
   for (const data of dataList) {
     const sendingItem = { before: {}, after: {} };
-
     const shapeOthersCount = await getShapeOthers(data);
 
     // Before
     for (const classItem of data.rbcInfo.rbcClass) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
-        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
         beforeItem = { ...beforeItem, ...classInfoDetailItem }
 
         // Add Malaria
         if (classInfoItem.classNm === 'Basophilic Stippling') {
-          beforeItem = { ...beforeItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
+          beforeItem = { ...beforeItem, ...{ Malaria: { degree: '-', count: Number(data.rbcInfo.malariaCount) }} }
         }
       }
 
       if (classItem.categoryNm === 'Shape') {
-        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: String(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
+        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
       }
 
       beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
 
       // Add Others
       if (classItem.categoryNm === 'Inclusion Body') {
-        beforeRbcData = { ...beforeRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
+        beforeRbcData = { ...beforeRbcData, ...{ Others: { Platelet: { degree: '-', count: Number(data.rbcInfo.pltCount) }}}}
       }
 
     }
@@ -485,24 +484,24 @@ const convertRbcData = async (dataList: any) => {
     for (const classItem of data.rbcInfoAfter) {
       let afterItem = {}
       for (const classInfoItem of classItem.classInfo) {
-        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
         afterItem = {...afterItem, ...classInfoDetailItem}
 
         // Add Malaria
         if (classInfoItem.classNm === 'Basophilic Stippling') {
-          afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
+          afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: Number(data.rbcInfo.malariaCount) }} }
         }
       }
 
       if (classItem.categoryNm === 'Shape') {
-        afterItem = { ...afterItem, ...{ Others: { degree: '-', count: String(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
+        afterItem = { ...afterItem, ...{ Others: { degree: '-', count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
       }
 
       afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
 
       // Add Others
       if (classItem.categoryNm === 'Inclusion Body') {
-        afterRbcData = { ...afterRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
+        afterRbcData = { ...afterRbcData, ...{ Others: { Platelet: { degree: '-', count: Number(data.rbcInfo.pltCount) }}}}
       }
     }
     sendingItem.before = beforeRbcData;
