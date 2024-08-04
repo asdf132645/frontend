@@ -34,16 +34,14 @@
             <ul>
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
-                <div @click="userSetOut">
-                  <div class="cursorPointer" @click='logOutBoxOn'>
-                    <font-awesome-icon :icon="['fas', 'circle-user']"/>
-                    {{ userModuleDataGet.userId }}
-                  </div>
-                  <ul v-if="userSetOutUl" class="userSetOutUl">
-                    <li @click='logout'>LOGOUT</li>
-                    <li @click='exit'>EXIT</li>
-                  </ul>
+                <div class="cursorPointer" @click="userSetOutToggle">
+                  <font-awesome-icon :icon="['fas', 'circle-user']" />
+                  {{ userModuleDataGet.userId }}
                 </div>
+                <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
+                  <li @click="logout">LOGOUT</li>
+                  <li @click="exit">EXIT</li>
+                </ul>
                 <div class="logOutBox"  @click='fullScreen'>FULL SCREEN</div>
               </li>
             </ul>
@@ -151,7 +149,6 @@ const appHeaderLeftHidden = ref(false);
 const store = useStore();
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
-const logOutBox = ref(false);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const isBlinkingPrime = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -181,7 +178,7 @@ const statusBarWrapper = ref<HTMLDivElement | null>(null);
 const statusBar = ref<HTMLDivElement | null>(null);
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const isNsNbIntegration = ref('');
+const isNsNbIntegration = computed(() => store.state.dataBaseSetDataModule.dataBaseSetData?.slotInfo.map((slot: any) => slot.isNsNbIntegration));
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
@@ -193,7 +190,6 @@ const alertMessage = ref('');
 const projectBm = ref(false);
 const clickType = ref('');
 const userSetOutUl = ref(false);
-const userSetOutRef = ref(null);
 
 const formattedDate = computed(() => {
   return currentDate.value;
@@ -203,9 +199,15 @@ const formattedTime = computed(() => {
   return currentTime.value;
 });
 
-const userSetOut = () => {
+const userSetOutToggle = () => {
   userSetOutUl.value = !userSetOutUl.value;
 }
+
+const userSetOutOff = () => {
+  userSetOutUl.value = false;
+}
+
+
 const updateDateTime = () => {
   const now = new Date();
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
@@ -252,7 +254,13 @@ onMounted(async () => {
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
     await store.dispatch('userModule/setUserAction', getStoredUser);
   }
+
+  document.addEventListener('click', closeUserSetBox);
 });
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeUserSetBox);
+})
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -293,6 +301,14 @@ watch([runInfo.value], async (newVals: any) => {
 
 });
 
+const closeUserSetBox = (event: any) => {
+  const selectBox = document.querySelector('.userSetOutUl');
+  const selectButton = document.querySelector('.cursorPointer');
+  if (selectButton && selectButton.contains(event.target as Node)) return;
+  if (selectBox && !selectBox.contains(event.target as Node)) {
+    userSetOutUl.value = false;
+  }
+}
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
@@ -312,20 +328,19 @@ const isActive = (path: string) => {
   return route.path === path;
 };
 
-const logOutBoxOn = () => {
-  logOutBox.value = !logOutBox.value;
-}
 const logout = () => {
   clickType.value = 'logout';
   confirmMessage.value = messages.Logout;
   showConfirm.value = true;
   localStorage.removeItem('user')
+  userSetOutUl.value = false;
 }
 
 const exit = async () => {
   clickType.value = 'exit';
   confirmMessage.value = messages.exit;
   showConfirm.value = true;
+  userSetOutUl.value = false;
 }
 
 const oilCountChangeVal = (): string => {
@@ -458,7 +473,6 @@ const cellImgGet = async () => {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
-        sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);

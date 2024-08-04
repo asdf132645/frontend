@@ -8,11 +8,11 @@
 
     <ul class="leftWbcInfo">
       <li style="position: relative">
-        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
+        <font-awesome-icon :icon="['fas', 'comment-dots']" class="memoOpenBtn" @click="memoOpen"/>
         <div v-if="memoModal" class="memoModal">
           <textarea v-model="wbcMemo"></textarea>
-          <button @click="memoChange">ok</button>
-          <button @click="memoCancel">cancel</button>
+          <button class="memoModalBtn" @click="memoChange">ok</button>
+          <button class="memoModalBtn" @click="memoCancel">cancel</button>
         </div>
       </li>
       <li @click="commitConfirmed" :class="{

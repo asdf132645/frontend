@@ -75,9 +75,9 @@ const reqArr = computed(() => store.state.commonModule);
 const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
-const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
+const isNsNbIntegration = computed(() => store.state.dataBaseSetDataModule.dataBaseSetData?.slotInfo.map((slot: any) => slot.isNsNbIntegration));
 
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -229,7 +229,6 @@ onMounted(async () => {
       }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
-    isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
 
@@ -465,7 +464,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
-        const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
 
@@ -528,7 +526,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           submitOfDate: '',
           submitUserId: '',
           // classificationResult: [],
-          isNsNbIntegration: isNsNbIntegration,
+          isNsNbIntegration: isNsNbIntegration.value,
           wbcMemo: '',
           rbcMemo: '',
         }
@@ -630,8 +628,6 @@ const emitSocketData = async (payload: object) => {
 };
 
 const sendSettingInfo = () => {
-  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
-
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
@@ -641,7 +637,7 @@ const sendSettingInfo = () => {
     isOilReset: 'N',
     deviceType: '01',
     // uiVersion: 'uimd-pb-comm_v2.0.102',
-    isNsNbIntegration: isNsNbIntegration || 'N',
+    isNsNbIntegration: isNsNbIntegration.value || 'N',
   };
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
@@ -687,7 +683,6 @@ const cellImgGet = async (newUserId?: string) => {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
-        sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);

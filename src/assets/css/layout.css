@@ -269,6 +269,7 @@ main.bmComponent {
 }
 
 .lastLiM {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -291,6 +292,8 @@ ul.userSetOutUl > li:hover {
 ul.userSetOutUl {
     position: absolute;
     background: var(--gray-bg-12-color);
+    left: 0;
+    top: 30px;
     border-radius: 5px;
     border: 1px solid var(--white-color);
     padding: 5px 10px 10px 10px;
@@ -313,11 +316,28 @@ ul.userSetOutUl {
     padding: 5px;
     border-radius: 4px;
     cursor: pointer;
+    background-color: inherit;
 }
 
 .logOutBox:hover {
     background-color: var(--white-color);
     color: var(--main-bg-0-color);
+}
+
+.memoModalBtn {
+    background-color: var(--gray-bg-12-color);
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin-left: 9px;
+    min-width: 50px;
+    cursor: pointer;
+}
+
+.memoModalBtn:hover {
+    background-color: var(--white-color);
+    color: var(--gray-bg-12-color);
 }
 
 .lastMenu {
@@ -2375,16 +2395,6 @@ table.tableClass {
     min-height: 200px;
     max-height: 400px;
     height: 150px;
-}
-
-.memoModal button {
-    background: var(--white-color);
-    border: none;
-    border-radius: 5px;
-    padding: 5px 5px;
-    margin-left: 9px;
-    min-width: 50px;
-    cursor: pointer;
 }
 
 ul.editOrder li {

@@ -9,8 +9,8 @@
           <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
           <div v-if="memoModal" class="memoModal">
             <textarea v-model="memo"></textarea>
-            <button @click="memoChange">ok</button>
-            <button @click="memoCancel">cancel</button>
+            <button class="memoModalBtn" @click="memoChange">ok</button>
+            <button class="memoModalBtn" @click="memoCancel">cancel</button>
           </div>
         </li>
         <li @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
@@ -248,7 +248,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance, watchEffect} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance } from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -519,7 +519,10 @@ const rbcTotalAndReCount = async () => {
 }
 
 const percentageChange = (count: any): any => {
-  const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+  const percentage: any = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+  if (isNaN(percentage)) {
+    return '-';
+  }
   return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
 }
 
@@ -912,7 +915,6 @@ const getRbcDegreeData = async () => {
     console.log(e);
   }
 };
-
 
 const reDegree = async () => {
   if (projectType.value === 'bm') return;

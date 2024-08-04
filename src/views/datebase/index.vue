@@ -194,6 +194,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   instance?.appContext.config.globalProperties.$socket.off('stateVal', handleStateVal);
+  document.removeEventListener('click', closeClassListBox);
 });
 
 const closeClassListBox = (event: MouseEvent) => {
