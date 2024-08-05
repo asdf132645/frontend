@@ -899,6 +899,7 @@ const toggleViewer = (viewerType: string) => {
 
   if (activeTab.value !== 'malaria') {
     initElement();
+    emits('notCanvasClick', false);
   }
 };
 
