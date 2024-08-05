@@ -181,7 +181,7 @@ import moment from 'moment';
 import {business_id, CbcWbcTestCdList_0002, eqmtcd, instcd, realUrl, spcParams} from "@/common/defines/constFile/lis";
 import axios from "axios";
 import {xml2json} from "xml-js";
-import {createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
+import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
@@ -388,6 +388,16 @@ const uploadLis = () => {
       }
       // 유저 체크
       checkUserAuth(userModuleDataGet.value.userId).then(function (isUserAuth) {
+        const paramsData = {
+          empNo: userModuleDataGet.value.userId,
+          barcodeNo: props.selectItems?.barcodeNo,
+          wbcInfo: wbcTemp
+        }
+        const parmsLisCopy = {
+          filePath: `${pbiaRootDir.value}\\lisUploadCopyData\\${props.selectItems?.barcodeNo}.txt`,
+          data: paramsData,
+        };
+        createCbcFile(parmsLisCopy);
         if (isUserAuth === 'succ') {
           const params = {
             empNo: userModuleDataGet.value.userId,
@@ -740,6 +750,11 @@ const godae = (): string => {
 }
 
 const lisFileUrlCreate = async (data: any) => {
+  const parmsLisCopy = {
+    filePath: `${pbiaRootDir.value}\\lisUploadCopyData\\${props.selectItems?.barcodeNo}.txt`,
+    data: data,
+  };
+  createCbcFile(parmsLisCopy);
   if (!lisFilePathSetArr.value.includes("http")) {
     const url = lisFilePathSetArr.value;
     const fileCreateRes = await createDirectory(url);

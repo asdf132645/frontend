@@ -46,6 +46,7 @@ import {getCbcCodeRbcApi, getFilePathSetApi} from "@/common/api/service/setting/
 import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -53,6 +54,8 @@ const cbcWorkList = ref<any>([]);
 const cbcPatientNo = ref('');
 const cbcPatientNm = ref('');
 const cbcSex = ref('');
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
+
 const cbcAge = ref('');
 const inhaTestCode = ref('');
 const cbcFilePathSetArr: any = ref('');
@@ -96,6 +99,11 @@ const initCbcData = async (newVal: any) => {
         const xml = result.data;
         const json = JSON.parse(xml2json(xml, {compact: true}));
         cbcWorkList.value = json.root.spcworklist.worklist;
+        const parms = {
+          filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+          data: cbcWorkList.value,
+        };
+        createCbcFile(parms);
       }).catch(function (err) {
         console.log(err.message)
       })
@@ -157,6 +165,11 @@ const initCbcData = async (newVal: any) => {
             })
 
           }
+          const parms = {
+            filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+            data: cbcWorkList.value,
+          };
+          createCbcFile(parms);
         }).catch(function (err) {
           console.log(err.message + ' : no CBC result');
         })
@@ -201,6 +214,7 @@ const initCbcData = async (newVal: any) => {
               cbcAge.value = cbcSegment.fields[7].value[0][0].value[0]
             }
           })
+
         }).catch(function (err) {
           console.log(err.message)
         })
@@ -233,7 +247,11 @@ const initCbcData = async (newVal: any) => {
           console.error(readFileTxtRes.data.message);
         }
       }
-
+      const parms = {
+        filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+        data: cbcWorkList.value,
+      };
+      await createCbcFile(parms);
       break;
   }
 
@@ -290,6 +308,11 @@ const kuahGilHosCbc = async () => {
         }
       }
     });
+    const parms = {
+      filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+      data: cbcWorkList.value,
+    };
+    await createCbcFile(parms);
   }
 }
 

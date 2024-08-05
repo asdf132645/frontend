@@ -371,6 +371,10 @@ export const apiConstants = {
         fileCreate:{
             endpoint: 'file/createFile',
             requiresToken: false,
+        },
+        cbcSaveData:{
+            endpoint: 'file/cbcSaveData',
+            requiresToken: false,
         }
     },
     fileTxtRead: {

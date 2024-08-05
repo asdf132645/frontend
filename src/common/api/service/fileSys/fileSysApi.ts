@@ -17,3 +17,7 @@ export const  createDirectory = async (request: any): Promise<ApiResponse<void>>
 export const createFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
     return httpClient.httpPost(apiConstants.filesystem.fileCreate, request, '');
 };
+
+export const createCbcFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.filesystem.cbcSaveData, request, '');
+};

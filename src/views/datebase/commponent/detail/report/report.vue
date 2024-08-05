@@ -285,18 +285,19 @@ const getDetailRunningInfo = async () => {
 }
 
 const calcShapeOthersCount = async () => {
-  const shapeOthers = await getShapeOthers();
-  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal;
+  const shapeOthers: any = await getShapeOthers();
+  shapeOthersCount.value = shapeOthers?.artifact + shapeOthers?.doubleNormal;
 }
 
 const getShapeOthers = async () => {
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
   const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
-  //
   const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  //
   const otherCount = { artifact: 0, doubleNormal: 0 };
+  if(!rbcInfoPathAfter){
+    return;
+  }
   rbcInfoPathAfter.forEach((item: any) => {
     if (item.categoryId === '03') {
       for (const classItem of item.classInfo) {
@@ -348,7 +349,7 @@ const rbcTotalAndReCount = async () => {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-    console.error('rbcInfoPathAfter.value is not iterable');
+    // console.error('rbcInfoPathAfter.value is not iterable');
     return;
   }
   let total = 0;

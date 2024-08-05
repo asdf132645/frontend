@@ -1,10 +1,15 @@
 <template>
   <div v-show="printReady" class="moveImgIsBool"> Loading Print...</div>
-  <div style="width: 900px; height: 90%; overflow-y: auto; background: #fff; color: #000; position: absolute; top: 10%; left: 33%; box-sizing: border-box; padding: 3rem 7rem; border: 2px solid #ccc; border-radius: 10px; z-index:9999;">
-    <button style="position: absolute; right: 8px; background: none; border: 1px solid #000; border-radius: 5px; padding: 7px 25px; top: 5px; cursor: pointer" @click="closePrint">Close</button>
+  <div
+      style="width: 900px; height: 90%; overflow-y: auto; background: #fff; color: #000; position: absolute; top: 10%; left: 33%; box-sizing: border-box; padding: 3rem 7rem; border: 2px solid #ccc; border-radius: 10px; z-index:9999;">
+    <button
+        style="position: absolute; right: 8px; background: none; border: 1px solid #000; border-radius: 5px; padding: 7px 25px; top: 5px; cursor: pointer"
+        @click="closePrint">Close
+    </button>
     <div ref="printContent" style="margin-top: 20px;">
       <div>
-        <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">Analysis Report from UIMD {{projectType === 'bm' ? 'BM' : 'PB'}} system</h3>
+        <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">Analysis Report from UIMD
+          {{ projectType === 'bm' ? 'BM' : 'PB' }} system</h3>
       </div>
       <div style="display: flex; flex-direction: column; justify-content: space-between;">
         <table style="width: 100%;">
@@ -31,7 +36,10 @@
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left;">Ordered Classification</th>
-            <td style="text-align: left; padding: 5px 0;">{{ projectType === 'pb' ? getTestTypeText(selectItems?.testType) : getBmTestTypeText(selectItems?.testType) }}</td>
+            <td style="text-align: left; padding: 5px 0;">{{
+                projectType === 'pb' ? getTestTypeText(selectItems?.testType) : getBmTestTypeText(selectItems?.testType)
+              }}
+            </td>
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left; padding: 5px 0;">Name</th>
@@ -50,153 +58,172 @@
         </table>
 
         <div style="margin-top: 20px; border-top: 2px dotted #696969"></div>
-          <!-- RBC Classification -->
-          <div v-if="['01', '04'].includes(selectItems?.testType)" style="margin-top: 20px;">
-            <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification result</h3>
-            <table style="width: 100%;">
-              <colgroup>
-                <col style="width: 20%;"/>
-                <col style="width: 25%;"/>
-                <col style="width: 25%;"/>
-                <col style="width: 15%;"/>
-                <col style="width: 15%;"/>
-              </colgroup>
-              <thead>
-              <tr style="margin-bottom: 15px; font-size: 18px; font-weight: normal; padding-bottom: 100px;">
-                <th style="text-align: left;">Category</th>
-                <th style="text-align: left;">Class</th>
-                <th style="text-align: left;">Degree</th>
-                <th style="text-align: left;">Count</th>
-                <th style="text-align: left;">Percent</th>
-              </tr>
-              </thead>
-              <tbody>
-              <template v-for="(classList, outerIndex) in [selectItems.rbcInfoAfter]" :key="outerIndex">
-                <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-                  <tr>
-                    <td :rowspan="category.classInfo.length + (category.categoryNm !== 'Shape' ? 1 : 0)" style="text-align: left; vertical-align: top;">{{ category.categoryNm }}</td>
-                    <td style="text-align: left;">{{ category.classInfo[0]?.classNm }}</td>
-                    <td style="text-align: left;">{{ category.classInfo[0]?.degree }}</td>
-                    <td style="text-align: left;">{{ category.classInfo[0]?.originalDegree }}</td>
-                    <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree) }}</td>
-                  </tr>
-
-                  <template v-for="(classInfo, classIndex) in category.classInfo.slice(1)" :key="classIndex">
-                    <tr>
-                      <td style="text-align: left;">{{ classInfo.classNm }}</td>
-                      <td style="text-align: left;">{{ classInfo.degree }}</td>
-                      <td style="text-align: left;">{{ classInfo.originalDegree }}</td>
-                      <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree) }}</td>
-                    </tr>
-
-                    <!-- Shape Others -->
-                    <tr v-if="category.categoryNm === 'Shape' && classIndex === category.classInfo.slice(1).length - 1">
-                      <td></td>
-                      <td style="text-align: left;">Others</td>
-                      <td style="text-align: left;">-</td>
-                      <td style="text-align: left;">{{ shapeOthersCount }}</td>
-                      <td style="text-align: left;">{{ percentageChange(shapeOthersCount) }} %</td>
-                    </tr>
-
-                    <!-- Inclusion Body Malaria -->
-                    <tr v-if="category.categoryNm === 'Inclusion Body' && classIndex === category.classInfo.slice(1).length - 1">
-                      <td style="text-align: left;">Malaria</td>
-                      <td style="text-align: left;">-</td>
-                      <td style="text-align: left;">{{ malariaCount }}</td>
-                      <td style="text-align: left;">{{ percentageChange(malariaCount) }}</td>
-                    </tr>
-                  </template>
-                  <tr v-if="category.categoryNm !== 'Shape' && category.categoryNm !== 'Inclusion Body'">
-                    <td style="text-align: left;"></td>
-                    <td style="text-align: left; font-weight: bold;">Total</td>
-                    <td style="text-align: left; font-weight: bold;">{{ sizeChromiaTotal }}</td>
-                    <td style="text-align: left; font-weight: bold;">{{ percentageChange(sizeChromiaTotal) }} %</td>
-                  </tr>
-
-                  <tr v-if="category.categoryNm == 'Inclusion Body'">
-                    <td></td>
-                    <td></td>
-                    <td style="text-align: left; font-weight: bold;">Total</td>
-                    <td style="text-align: left; font-weight: bold;">{{ shapeBodyTotal }}</td>
-                    <td style="text-align: left; font-weight: bold;">{{ percentageChange(shapeBodyTotal) }} %</td>
-                  </tr>
-                </template>
-              </template>
-              <tr>
-                <th style="text-align: left; padding: 15px 0;">Others</th>
-                <th style="text-align: left; padding: 15px 0;">Platelets</th>
-                <th style="text-align: left; padding: 15px 0;" colspan="3">{{ pltCount }} PLT / 1000 RBC</th>
-              </tr>
-              <tr>
-                <th style="text-align: left; padding-top: 15px;">Comment</th>
-                <th v-show="selectItems?.rbcMemo" style="text-align: left; padding-top: 15px;" colspan="4">
-                  <pre style="text-align: left; outline: 1px solid #252629; padding: 4px;">{{ selectItems?.rbcMemo }}</pre>
-                </th>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- WBC Classification -->
-          <div style="margin-top: 20px; border-top: 2px dotted #696969">
-            <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">{{projectType === 'pb' ? 'WBC' : 'BM'}} classification result</h3>
-            <table style="width: 100%;">
-              <colgroup>
-                <col style="width: 30%;"/>
-                <col style="width: 45%;"/>
-                <col style="width: 25%;"/>
-              </colgroup>
-              <thead>
-                <tr style="margin-bottom: 15px; font-size: 18px; font-weight: normal; padding-bottom: 100px;">
-                  <th style="text-align: left;">Class</th>
-                  <th style="text-align: left;">Count</th>
-                  <th style="text-align: left;">Percent</th>
+        <!-- RBC Classification -->
+        <div v-if="['01', '04'].includes(selectItems?.testType)" style="margin-top: 20px;">
+          <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification
+            result</h3>
+          <table style="width: 100%;">
+            <colgroup>
+              <col style="width: 20%;"/>
+              <col style="width: 25%;"/>
+              <col style="width: 25%;"/>
+              <col style="width: 15%;"/>
+              <col style="width: 15%;"/>
+            </colgroup>
+            <thead>
+            <tr style="margin-bottom: 15px; font-size: 18px; font-weight: normal; padding-bottom: 100px;">
+              <th style="text-align: left;">Category</th>
+              <th style="text-align: left;">Class</th>
+              <th style="text-align: left;">Degree</th>
+              <th style="text-align: left;">Count</th>
+              <th style="text-align: left;">Percent</th>
+            </tr>
+            </thead>
+            <tbody>
+            <template v-for="(classList, outerIndex) in [selectItems.rbcInfoAfter]" :key="outerIndex">
+              <template v-for="(category, innerIndex) in classList" :key="innerIndex">
+                <tr>
+                  <td :rowspan="category.classInfo.length + (category.categoryNm !== 'Shape' ? 1 : 0)"
+                      style="text-align: left; vertical-align: top;">{{ category.categoryNm }}
+                  </td>
+                  <td style="text-align: left;">{{ category.classInfo[0]?.classNm }}</td>
+                  <td style="text-align: left;">{{ category.classInfo[0]?.degree }}</td>
+                  <td style="text-align: left;">{{ category.classInfo[0]?.originalDegree }}</td>
+                  <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree) }}</td>
                 </tr>
-              </thead>
-              <tbody>
-              <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
-                <th style="text-align: left; padding: 5px 0;">{{ item?.name }}</th>
-                <td style="text-align: left; padding: 5px 0;">{{ item?.count }}</td>
-                <td style="text-align: left; padding: 5px 0;">{{ item?.percent }} %</td>
-              </tr>
-              <tr style="padding-bottom: 5px;">
-                <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total</th>
-                <td style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcInfo?.totalCount }}</td>
-                <td style="text-align: left; padding: 5px 0;">100.00%</td>
-              </tr>
 
+                <template v-for="(classInfo, classIndex) in category.classInfo.slice(1)" :key="classIndex">
+                  <tr>
+                    <td style="text-align: left;">{{ classInfo.classNm }}</td>
+                    <td style="text-align: left;">{{ classInfo.degree }}</td>
+                    <td style="text-align: left;">{{ classInfo.originalDegree }}</td>
+                    <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree) }}</td>
+                  </tr>
 
-              <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
-              <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
-                <template v-for="item in nonWbcClassList" :key="item.id" >
-                  <td style="text-align: left; padding: 5px 0;">{{item.name}}</td>
-                  <td style="text-align: left; padding: 5px 0;">{{item.count}}</td>
-                  <td style="text-align: left; padding: 5px 0;">-</td>
+                  <!-- Shape Others -->
+                  <tr v-if="category.categoryNm === 'Shape' && classIndex === category.classInfo.slice(1).length - 1">
+                    <td></td>
+                    <td style="text-align: left;">Others</td>
+                    <td style="text-align: left;">-</td>
+                    <td style="text-align: left;">{{ shapeOthersCount }}</td>
+                    <td style="text-align: left;">{{ percentageChange(shapeOthersCount) }} %</td>
+                  </tr>
 
+                  <!-- Inclusion Body Malaria -->
+                  <tr v-if="category.categoryNm === 'Inclusion Body' && classIndex === category.classInfo.slice(1).length - 1">
+                    <td style="text-align: left;">Malaria</td>
+                    <td style="text-align: left;">-</td>
+                    <td style="text-align: left;">{{ malariaCount }}</td>
+                    <td style="text-align: left;">{{ percentageChange(malariaCount) }}</td>
+                  </tr>
                 </template>
-              </tr>
-              <tr style="padding-bottom: 5px;">
-                <th style="text-align: left; padding: 15px 0;">Comment</th>
-                <td v-show="selectItems?.wbcMemo" colspan="2" style="text-align: left; padding: 5px 0;"><pre style="text-align: left; outline: 1px solid #252629; padding: 4px;">{{ selectItems?.wbcMemo }}</pre></td>
-              </tr>
-              </tbody>
-            </table>
+                <tr v-if="category.categoryNm !== 'Shape' && category.categoryNm !== 'Inclusion Body'">
+                  <td style="text-align: left;"></td>
+                  <td style="text-align: left; font-weight: bold;">Total</td>
+                  <td style="text-align: left; font-weight: bold;">{{ sizeChromiaTotal }}</td>
+                  <td style="text-align: left; font-weight: bold;">{{ percentageChange(sizeChromiaTotal) }} %</td>
+                </tr>
 
-            <!-- Print List -->
-            <ul class="print" style="list-style: none; padding-left: 0; margin-top: 20px; text-align: center; display:flex; flex-direction: column; align-items: center; justify-content: center;">
-              <li v-for="(item) in noImageList(wbcInfo)" :key="item.id" style="">
-                <div style="font-weight: bold; font-size: 18px; margin: 40px auto 20px;">{{ item?.title }} ({{ item?.count }})</div>
-                <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;">
-                  <li v-for="(image) in item.images" :key="image.fileName" style="display: inline-block; margin-right: 5px; margin-top: 5px; outline: 1px solid #2c2d2c; cursor: auto;">
-                    <div style="position: relative;">
-                      <img :src="getImageUrl(image.fileName, item.id, item.title)" :width="image.width ? image.width : '150px'" :height="image.height ? image.height : '150px'" :style="{ filter: image.filter }" class="cellImg" ref="cellRef"/>
-                      <div class="center-point" :style="image.coordinates"></div>
-                    </div>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+                <tr v-if="category.categoryNm == 'Inclusion Body'">
+                  <td></td>
+                  <td></td>
+                  <td style="text-align: left; font-weight: bold;">Total</td>
+                  <td style="text-align: left; font-weight: bold;">{{ shapeBodyTotal }}</td>
+                  <td style="text-align: left; font-weight: bold;">{{ percentageChange(shapeBodyTotal) }} %</td>
+                </tr>
+              </template>
+            </template>
+            <tr>
+              <th style="text-align: left; padding: 15px 0;">Others</th>
+              <th style="text-align: left; padding: 15px 0;">Platelets</th>
+              <th style="text-align: left; padding: 15px 0;" colspan="3">{{ pltCount }} PLT / 1000 RBC</th>
+            </tr>
+            <tr>
+              <th style="text-align: left; padding-top: 15px;">Comment</th>
+              <th v-show="selectItems?.rbcMemo" style="text-align: left; padding-top: 15px;" colspan="4">
+                <pre style="text-align: left; outline: 1px solid #252629; padding: 4px;">{{
+                    selectItems?.rbcMemo
+                  }}</pre>
+              </th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- WBC Classification -->
+        <div style="margin-top: 20px; border-top: 2px dotted #696969">
+          <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">
+            {{ projectType === 'pb' ? 'WBC' : 'BM' }} classification result</h3>
+          <table style="width: 100%;">
+            <colgroup>
+              <col style="width: 30%;"/>
+              <col style="width: 45%;"/>
+              <col style="width: 25%;"/>
+            </colgroup>
+            <thead>
+            <tr style="margin-bottom: 15px; font-size: 18px; font-weight: normal; padding-bottom: 100px;">
+              <th style="text-align: left;">Class</th>
+              <th style="text-align: left;">Count</th>
+              <th style="text-align: left;">Percent</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
+              <th style="text-align: left; padding: 5px 0;">{{ item?.name }}</th>
+              <td style="text-align: left; padding: 5px 0;">{{ item?.count }}</td>
+              <td style="text-align: left; padding: 5px 0;">{{ item?.percent }} %</td>
+            </tr>
+            <tr style="padding-bottom: 5px;">
+              <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total</th>
+              <td style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcInfo?.totalCount }}</td>
+              <td style="text-align: left; padding: 5px 0;">100.00%</td>
+            </tr>
+
+
+            <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
+            <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
+              <template v-for="item in nonWbcClassList" :key="item.id">
+                <td style="text-align: left; padding: 5px 0;">{{ item.name }}</td>
+                <td style="text-align: left; padding: 5px 0;">{{ item.count }}</td>
+                <td style="text-align: left; padding: 5px 0;">-</td>
+
+              </template>
+            </tr>
+            <tr style="padding-bottom: 5px;">
+              <th style="text-align: left; padding: 15px 0;">Comment</th>
+              <td v-show="selectItems?.wbcMemo" colspan="2" style="text-align: left; padding: 5px 0;">
+                <pre style="text-align: left; outline: 1px solid #252629; padding: 4px;">{{
+                    selectItems?.wbcMemo
+                  }}</pre>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <!-- Print List -->
+          <ul class="print"
+              style="list-style: none; padding-left: 0; margin-top: 20px; text-align: center; display:flex; flex-direction: column; align-items: center; justify-content: center;">
+            <li v-for="(item) in noImageList(wbcInfo)" :key="item.id" style="">
+              <div style="font-weight: bold; font-size: 18px; margin: 40px auto 20px;">{{ item?.title }} ({{
+                  item?.count
+                }})
+              </div>
+              <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;">
+                <li v-for="(image) in item.images" :key="image.fileName"
+                    style="display: inline-block; margin-right: 5px; margin-top: 5px; outline: 1px solid #2c2d2c; cursor: auto;">
+                  <div style="position: relative;">
+                    <img
+                        :src="getImageUrl(image.fileName, item.id, item.title)"
+                         :width="image.width ? image.width : '150px'" :height="image.height ? image.height : '150px'"
+                         @error="handleImageError"
+                         :style="{ filter: image.filter }" class="cellImg" ref="cellRef"/>
+                    <div class="center-point" :style="image.coordinates"></div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -263,18 +290,19 @@ onMounted(async () => {
 });
 
 const calcShapeOthersCount = async () => {
-  const shapeOthers = await getShapeOthers();
-  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal;
+  const shapeOthers: any = await getShapeOthers();
+  shapeOthersCount.value = shapeOthers?.artifact + shapeOthers?.doubleNormal;
 }
 
 const getShapeOthers = async () => {
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
   const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
-  //
   const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  //
-  const otherCount = { artifact: 0, doubleNormal: 0 };
+  const otherCount = {artifact: 0, doubleNormal: 0};
+  if (!rbcInfoPathAfter) {
+    return;
+  }
   rbcInfoPathAfter.forEach((item: any) => {
     if (item.categoryId === '03') {
       for (const classItem of item.classInfo) {
@@ -383,6 +411,11 @@ const rbcTotalAndReCount = async () => {
 
   await countReAdd();
 }
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  // 오류 발생 시 빈 src로 설정하여 이미지를 숨김
+  target.src = ''; // 또는 기본 이미지 URL로 설정
+};
 
 const percentageChange = (count: any): any => {
   const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
@@ -478,7 +511,7 @@ const printPage = async () => {
     }
 
     // HTML 컨텐츠를 Gzip으로 압축
-    const compressedContent = pako.gzip(content.innerHTML, { level: 9 });
+    const compressedContent = pako.gzip(content.innerHTML, {level: 9});
 
     // HTML 컨텐츠를 PDF로 변환하는 요청을 보냄
     const response = await fetch(`${apiBaseUrl}/pdf/convert`, {
@@ -507,7 +540,6 @@ const printPage = async () => {
     enableScroll();
   }
 };
-
 
 
 const getImagePrintData = async () => {

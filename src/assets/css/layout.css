@@ -291,7 +291,7 @@ ul.userSetOutUl > li:hover {
     border-radius: 5px;
 }
 ul.userSetOutUl {
-    position: relative;
+    position: absolute;
     background: var(--gray-bg-12-color);
     left: 0;
     top: 30px;
