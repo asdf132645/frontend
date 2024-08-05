@@ -464,6 +464,7 @@ const openContextMenu = (event: MouseEvent, item: any) => {
 
 const moveSelectedImages = async (item: any, itemIdx: any) => {
   // 사진 선택 하지 않고 우클릭 후 이미지 변경 하였을 경우
+
   if (!selectedClickImages.value || Object.entries(selectedClickImages.value).length === 0) {
     showAlert.value = true;
     alertType.value = 'error';
@@ -923,8 +924,10 @@ async function onDropCircle(item: any) {
     } else {
       console.error('일치하는 id를 가진 요소 없음');
     }
+    console.log('selectedClickImages.value', selectedClickImages.value)
+    console.log('draggedImage.id', item.id)
     // 이미지를 한 개만 드래그한 경우에만 이동 API 호출
-    await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], draggedItem, updatedWbcInfo[matchingItemIndex], false);
+    await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], wbcInfo.value[draggedCircleIndex.value], updatedWbcInfo[matchingItemIndex], false);
   } else {
     const matchingItemIndex = wbcInfo.value.findIndex((infoItem: any) => infoItem.id === item.id);
     // 여러 이미지를 드래그한 경우에도 이동 API 호출
@@ -1232,8 +1235,14 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         destinationFolders.push(destinationFolder);
         sourceFolders.push(sourceFolder);
       } else if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
+        let newArr: any;
+        if(!draggedItem[idx]){
+          newArr = draggedItem;
+        }else{
+          newArr = draggedItem[idx];
+        }
         const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
-            `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${draggedItem[idx].id}_${draggedItem[idx].title}`;
+            `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${newArr.id}_${newArr.title}`;
         const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
         destinationFolders.push(destinationFolder);
         sourceFolders.push(sourceFolder);
@@ -1276,13 +1285,19 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             wbcInfo.value[targetItemIndex].count++;
           }
         } else {
-          // 드래그된 이미지를 원래 위치에서 제거
-          const draggedImageIndex = draggedItem[idx].images.findIndex((img: any) => img.fileName === fileName);
-          if (draggedImageIndex !== -1) {
-            draggedItem[idx].images.splice(draggedImageIndex, 1);
+          let newArr: any = [];
+          if(!draggedItem[idx]){
+            newArr = draggedItem;
+          }else{
+            newArr = draggedItem[idx];
           }
-          const newArrIdx = wbcInfo.value.findIndex((item: any)=> item.title === draggedItem[idx].title);
-          wbcInfo.value[newArrIdx] = draggedItem[idx];
+          // 드래그된 이미지를 원래 위치에서 제거
+          const draggedImageIndex = newArr.images.findIndex((img: any) => img.fileName === fileName);
+          if (draggedImageIndex !== -1) {
+            newArr.images.splice(draggedImageIndex, 1);
+          }
+          const newArrIdx = wbcInfo.value.findIndex((item: any)=> item.title === newArr.title);
+          wbcInfo.value[newArrIdx] = newArr;
           const imgAttr = {
             width: imageSize.value,
             height: imageSize.value,
