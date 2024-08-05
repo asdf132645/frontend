@@ -145,7 +145,7 @@ const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
 const prevPage = ref(1);
-const selectedItem = ref({});
+const selectedItem = ref<any>({});
 const titleItem = ref<any>([]);
 const titleItemArr = ref([]);
 const nrCount = ref(0);
@@ -194,6 +194,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   instance?.appContext.config.globalProperties.$socket.off('stateVal', handleStateVal);
+  document.removeEventListener('click', closeClassListBox);
 });
 
 const closeClassListBox = (event: MouseEvent) => {
@@ -435,8 +436,9 @@ const exportToExcel = async () => {
 
 const excecuteExcel = async () => {
   const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
+  const path = selectedItem.value?.img_drive_root_path !== '' && selectedItem.value?.img_drive_root_path ? selectedItem.value?.img_drive_root_path : iaRootPath.value;
   const body = checkedSelectedItems.value.map((checkedItem: any) => {
-    return `${iaRootPath.value}\\${checkedItem.slotId}\\${folderName}`
+    return `${path}\\${checkedItem.slotId}\\${folderName}`
   });
 
   try {
@@ -451,31 +453,30 @@ const convertRbcData = async (dataList: any) => {
   let afterRbcData = {};
   for (const data of dataList) {
     const sendingItem = { before: {}, after: {} };
-
     const shapeOthersCount = await getShapeOthers(data);
 
     // Before
     for (const classItem of data.rbcInfo.rbcClass) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
-        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
         beforeItem = { ...beforeItem, ...classInfoDetailItem }
 
         // Add Malaria
         if (classInfoItem.classNm === 'Basophilic Stippling') {
-          beforeItem = { ...beforeItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
+          beforeItem = { ...beforeItem, ...{ Malaria: { degree: '-', count: Number(data.rbcInfo.malariaCount) }} }
         }
       }
 
       if (classItem.categoryNm === 'Shape') {
-        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: String(test.doubleNormal + test.artifact) } } }
+        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
       }
 
       beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
 
       // Add Others
       if (classItem.categoryNm === 'Inclusion Body') {
-        beforeRbcData = { ...beforeRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
+        beforeRbcData = { ...beforeRbcData, ...{ Others: { Platelet: { degree: '-', count: Number(data.rbcInfo.pltCount) }}}}
       }
 
     }
@@ -484,24 +485,24 @@ const convertRbcData = async (dataList: any) => {
     for (const classItem of data.rbcInfoAfter) {
       let afterItem = {}
       for (const classInfoItem of classItem.classInfo) {
-        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: classInfoItem.originalDegree }}
+        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
         afterItem = {...afterItem, ...classInfoDetailItem}
 
         // Add Malaria
         if (classInfoItem.classNm === 'Basophilic Stippling') {
-          afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: data.rbcInfo.malariaCount }} }
+          afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: Number(data.rbcInfo.malariaCount) }} }
         }
       }
 
       if (classItem.categoryNm === 'Shape') {
-        afterItem = { ...afterItem, ...{ Others: { degree: '-', count: String(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
+        afterItem = { ...afterItem, ...{ Others: { degree: '-', count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
       }
 
       afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
 
       // Add Others
       if (classItem.categoryNm === 'Inclusion Body') {
-        afterRbcData = { ...afterRbcData, ...{ Others: { degree: '-', count: data.rbcInfo.pltCount }}}
+        afterRbcData = { ...afterRbcData, ...{ Others: { Platelet: { degree: '-', count: Number(data.rbcInfo.pltCount) }}}}
       }
     }
     sendingItem.before = beforeRbcData;
@@ -520,7 +521,7 @@ const createRbcJson = async (slotId: string, sendingData: any) => {
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
   formData.append('file', blob, `RBC.json`);
-  const path = iaRootPath.value;
+  const path = selectedItem.value?.img_drive_root_path !== '' && selectedItem.value?.img_drive_root_path ? selectedItem.value?.img_drive_root_path : iaRootPath.value;
   const filePath = `${path}/${slotId}/RBC_Analysis.json`
   try {
     await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
@@ -558,6 +559,7 @@ const getShapeOthers = async (selectItems: any) => {
 const dateRefresh = () => {
   startDate.value = thirtyDaysAgo
   endDate.value = new Date();
+  search();
 }
 
 const checkListItem = (items: any) => {

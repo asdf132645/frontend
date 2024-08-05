@@ -80,6 +80,7 @@
                     <td style="text-align: left;">{{ category.classInfo[0]?.originalDegree }}</td>
                     <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree) }}</td>
                   </tr>
+
                   <template v-for="(classInfo, classIndex) in category.classInfo.slice(1)" :key="classIndex">
                     <tr>
                       <td style="text-align: left;">{{ classInfo.classNm }}</td>
@@ -87,12 +88,37 @@
                       <td style="text-align: left;">{{ classInfo.originalDegree }}</td>
                       <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree) }}</td>
                     </tr>
+
+                    <!-- Shape Others -->
+                    <tr v-if="category.categoryNm === 'Shape' && classIndex === category.classInfo.slice(1).length - 1">
+                      <td></td>
+                      <td style="text-align: left;">Others</td>
+                      <td style="text-align: left;">-</td>
+                      <td style="text-align: left;">{{ shapeOthersCount }}</td>
+                      <td style="text-align: left;">{{ percentageChange(shapeOthersCount) }} %</td>
+                    </tr>
+
+                    <!-- Inclusion Body Malaria -->
+                    <tr v-if="category.categoryNm === 'Inclusion Body' && classIndex === category.classInfo.slice(1).length - 1">
+                      <td style="text-align: left;">Malaria</td>
+                      <td style="text-align: left;">-</td>
+                      <td style="text-align: left;">{{ malariaCount }}</td>
+                      <td style="text-align: left;">{{ percentageChange(malariaCount) }}</td>
+                    </tr>
                   </template>
-                  <tr v-if="category.categoryNm !== 'Shape'">
+                  <tr v-if="category.categoryNm !== 'Shape' && category.categoryNm !== 'Inclusion Body'">
                     <td style="text-align: left;"></td>
-                    <td style="text-align: left;">Total</td>
-                    <td style="text-align: left;">{{ sizeChromiaTotal }}</td>
-                    <td style="text-align: left;">{{ percentageChange(sizeChromiaTotal) }} %</td>
+                    <td style="text-align: left; font-weight: bold;">Total</td>
+                    <td style="text-align: left; font-weight: bold;">{{ sizeChromiaTotal }}</td>
+                    <td style="text-align: left; font-weight: bold;">{{ percentageChange(sizeChromiaTotal) }} %</td>
+                  </tr>
+
+                  <tr v-if="category.categoryNm == 'Inclusion Body'">
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: left; font-weight: bold;">Total</td>
+                    <td style="text-align: left; font-weight: bold;">{{ shapeBodyTotal }}</td>
+                    <td style="text-align: left; font-weight: bold;">{{ percentageChange(shapeBodyTotal) }} %</td>
                   </tr>
                 </template>
               </template>
@@ -100,11 +126,6 @@
                 <th style="text-align: left; padding: 15px 0;">Others</th>
                 <th style="text-align: left; padding: 15px 0;">Platelets</th>
                 <th style="text-align: left; padding: 15px 0;" colspan="3">{{ pltCount }} PLT / 1000 RBC</th>
-              </tr>
-              <tr>
-                <th></th>
-                <th style="text-align: left; padding: 5px 0;">Malaria</th>
-                <th style="text-align: left; padding: 5px 0;" colspan="3">{{ malariaCount }} / {{ maxRbcCount }} RBC</th>
               </tr>
               <tr>
                 <th style="text-align: left; padding-top: 15px;">Comment</th>
@@ -118,7 +139,7 @@
 
           <!-- WBC Classification -->
           <div style="margin-top: 20px; border-top: 2px dotted #696969">
-            <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">WBC classification result</h3>
+            <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">{{projectType === 'pb' ? 'WBC' : 'BM'}} classification result</h3>
             <table style="width: 100%;">
               <colgroup>
                 <col style="width: 30%;"/>
@@ -139,7 +160,7 @@
                 <td style="text-align: left; padding: 5px 0;">{{ item?.percent }} %</td>
               </tr>
               <tr style="padding-bottom: 5px;">
-                <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total count</th>
+                <th style="text-align: left; font-weight: bold; padding: 5px 0;">Total</th>
                 <td style="text-align: left; padding: 5px 0;">{{ selectItems?.wbcInfo?.totalCount }}</td>
                 <td style="text-align: left; padding: 5px 0;">100.00%</td>
               </tr>
@@ -224,18 +245,50 @@ const nonWbcClassList = ref<any[]>([]);
 const maxRbcCount = ref(0);
 const pltCount = ref(0);
 const malariaCount = ref(0);
+const shapeOthersCount = ref(0);
 
 const printReady = ref(false);
 
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
+  console.log('wbcInfo.value', wbcInfo.value);
   await getOrderClass();
-  await rbcTotalAndReCount();
   await getImagePrintData();
+  if (projectType !== 'bm') {
+    await rbcTotalAndReCount();
+    await calcShapeOthersCount();
+  }
   await printPage();
 });
 
+const calcShapeOthersCount = async () => {
+  const shapeOthers = await getShapeOthers();
+  shapeOthersCount.value = shapeOthers.artifact + shapeOthers.doubleNormal;
+}
+
+const getShapeOthers = async () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
+  const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  //
+  const rbcInfoPathAfter = response_old.data[0].rbcClassList;
+  //
+  const otherCount = { artifact: 0, doubleNormal: 0 };
+  rbcInfoPathAfter.forEach((item: any) => {
+    if (item.categoryId === '03') {
+      for (const classItem of item.classInfo) {
+        if (classItem.classNm === 'Artifact') {
+          otherCount.artifact += 1
+        } else if (classItem.classNm === 'DoubleNormal') {
+          otherCount.doubleNormal += 1
+        }
+      }
+    }
+  })
+
+  return otherCount;
+}
 
 const rbcTotalAndReCount = async () => {
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;

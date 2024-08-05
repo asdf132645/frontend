@@ -5,7 +5,7 @@
 
     <div class="topClintInfo">
       <ul>
-        <li>{{ getTestTypeText(selectItems?.testType) }} Smear</li>
+        <li>{{ getTestTypeText(selectItems?.testType) }}</li>
         <li>{{ selectItems?.barcodeNo }}</li>
         <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
         <li>{{ selectItems?.cbcPatientNo }}</li>

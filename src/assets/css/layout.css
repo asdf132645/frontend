@@ -47,9 +47,23 @@
     cursor: pointer;
 }
 
+.cursorDefault {
+    cursor: default;
+}
+
+.cursorMove {
+    cursor: move;
+}
+
 .alignItemsCenter {
     display: flex;
     align-items: center;
+}
+
+.alignItemsCenterSpaceBetween {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .flexColumn {
@@ -83,6 +97,34 @@
 
 .modalTitle {
     font-size: 1.0rem;
+}
+
+.wFit {
+    width: fit-content;
+}
+
+.w140 {
+    width: 140px;
+}
+
+.w50 {
+    width: 50px;
+}
+
+.w40 {
+    width: 40px;
+}
+
+.w30 {
+    width: 30px;
+}
+
+.w20 {
+    width: 20px;
+}
+
+.textLeft {
+    text-align: left;
 }
 
 /* header-menu */
@@ -227,6 +269,7 @@ main.bmComponent {
 }
 
 .lastLiM {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -235,9 +278,8 @@ main.bmComponent {
     cursor: pointer;
 }
 ul.userSetOutUl > li {
-    color: rgb(49 49 49 / 88%);
-    padding-top: 9px;
-    /*border-bottom: 1px solid #000;*/
+    color: var(--white-color);
+    padding: 9px 4px;
     padding-bottom: 5px;
     cursor: pointer;
 }
@@ -245,16 +287,20 @@ table.reportTable tr th {
     width: 145px;
 }
 ul.userSetOutUl > li:hover {
-    background: #000;
-    color: #fff;
+    background: var(--main-bg-7-color);
+    border-radius: 5px;
 }
 ul.userSetOutUl {
-    background: #dedede;
-    border-radius: 5px;
-    padding: 5px 10px 10px 10px;
-    margin-top: 5px;
-    z-index: 999;
     position: relative;
+    background: var(--gray-bg-12-color);
+    left: 0;
+    top: 30px;
+    border-radius: 5px;
+    border: 1px solid var(--white-color);
+    padding: 5px 10px 10px 10px;
+    margin-top: 10px;
+    color: var(--white-color);
+    z-index: 999;
 }
 
 .display-flex > div {
@@ -265,11 +311,13 @@ ul.userSetOutUl {
 }
 
 .logOutBox {
+    position: relative;
     border: 1px solid var(--white-color);
     box-sizing: border-box;
     padding: 5px;
     border-radius: 4px;
     cursor: pointer;
+    background-color: inherit;
 }
 
 .logOutBox:hover {
@@ -277,7 +325,24 @@ ul.userSetOutUl {
     color: var(--main-bg-0-color);
 }
 
+.memoModalBtn {
+    background-color: var(--gray-bg-12-color);
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin-left: 9px;
+    min-width: 50px;
+    cursor: pointer;
+}
+
+.memoModalBtn:hover {
+    background-color: var(--white-color);
+    color: var(--gray-bg-12-color);
+}
+
 .lastMenu {
+    width: 190px;
     text-align: right;
     position: absolute;
     right: 0;
@@ -947,7 +1012,6 @@ ul.nth1Child li {
     display: inline-block;
     font-size: 0.8rem;
     padding: 5px 0;
-    cursor: move;
     user-select: none;
 }
 
@@ -2327,18 +2391,11 @@ table.tableClass {
 
 .memoModal textarea {
     width: 100%;
-    max-width: 300px;
+    min-width: 300px;
+    max-width: 600px;
+    min-height: 200px;
+    max-height: 400px;
     height: 150px;
-}
-
-.memoModal button {
-    background: var(--white-color);
-    border: none;
-    border-radius: 5px;
-    padding: 5px 5px;
-    margin-left: 9px;
-    min-width: 50px;
-    cursor: pointer;
 }
 
 ul.editOrder li {

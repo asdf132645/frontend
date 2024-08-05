@@ -270,10 +270,7 @@ const handleDataResponse = async (dbId: any, res: any) => {
   selectItems.value = resData.value;
 
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
-  const wbcArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
-  const sortedWbcInfo = sortWbcInfo(resClassInfo, wbcArr);
   await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(dbId) });
-  await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: sortedWbcInfo});
   await updateUpDown(resClassInfo, resData.value);
 };
 

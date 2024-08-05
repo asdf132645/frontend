@@ -75,9 +75,9 @@ const reqArr = computed(() => store.state.commonModule);
 const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
-const isNsNbIntegration = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
+const isNsNbIntegration = computed(() => store.state.dataBaseSetDataModule.dataBaseSetData?.slotInfo.map((slot: any) => slot.isNsNbIntegration));
 
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -117,7 +117,7 @@ function checkFullscreenStatus() {
   if(path === '/user/login'){
     return;
   }
-  isFullscreen.value = !!document.fullscreenElement;
+  isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
   if(!isFullscreen.value){
     showErrorAlert('Please click the full screen button.');
   }else{
@@ -196,11 +196,8 @@ const leave = (event: any) => {
 };
 
 onBeforeMount(() => {
-  // 현재 프로젝트가 bm인지 확인하고 클래스 부여
   projectBm.value = window.PROJECT_TYPE === 'bm';
-  if (!projectBm.value) {
-    pbVersion.value = window.PB_VERSION;
-  }
+  pbVersion.value = window.PB_VERSION;
 })
 
 onMounted(async () => {
@@ -232,7 +229,6 @@ onMounted(async () => {
       }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
-    isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
 
@@ -267,7 +263,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
       });
       // sessionStorage.clear();
-      // await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     }
 
@@ -416,6 +412,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
+          tcpReq().embedStatus.runIngComp.workingDone = data?.workingDone;
+          tcpReq().embedStatus.runIngComp.pbVersion = pbVersion.value;
           if (pbVersion.value !== '100a') {
             await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
             await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
@@ -466,7 +464,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
-        const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
 
@@ -529,7 +526,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           submitOfDate: '',
           submitUserId: '',
           // classificationResult: [],
-          isNsNbIntegration: isNsNbIntegration,
+          isNsNbIntegration: isNsNbIntegration.value,
           wbcMemo: '',
           rbcMemo: '',
         }
@@ -631,8 +628,6 @@ const emitSocketData = async (payload: object) => {
 };
 
 const sendSettingInfo = () => {
-  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
-
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
@@ -642,7 +637,7 @@ const sendSettingInfo = () => {
     isOilReset: 'N',
     deviceType: '01',
     // uiVersion: 'uimd-pb-comm_v2.0.102',
-    isNsNbIntegration: isNsNbIntegration || 'N',
+    isNsNbIntegration: isNsNbIntegration.value || 'N',
   };
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
@@ -688,7 +683,6 @@ const cellImgGet = async (newUserId?: string) => {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
-        sessionStorage.setItem('isNsNbIntegration', isNsNbIntegration.value);
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);

@@ -184,7 +184,6 @@ const defaultComputedValueForCreateRequest = async (initializeType: string) => {
 const afterResponse = (initializeType: string) => {
     switch (initializeType) {
         case 'cellImage':
-            sessionStorage.setItem('isNsNbIntegration', defaultCellImgData?.isNsNbIntegration ? 'Y' : 'N');
             sessionStorage.setItem('wbcPositionMargin', String(defaultCellImgData?.diffWbcPositionMargin));
             sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.diffRbcPositionMargin));
             sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.diffPltPositionMargin));

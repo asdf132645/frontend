@@ -68,6 +68,8 @@ export const tcpReq:any = () => {
                 jobCmd: 'RUNNING_COMP',
                 reqUserId: '',
                 reqDttm: reqDttm,
+                workingDone: '',
+                pbVersion: '',
             },
             recovery: {
                 jobCmd: 'RECOVERY',

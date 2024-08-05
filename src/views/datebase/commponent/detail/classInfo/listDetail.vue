@@ -40,7 +40,7 @@
         <div v-show="showSize" class="sizeContainer">
           <div>
             Size {{ imgPixelConvertToPercent(imageSize) }}
-            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>
+<!--            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>-->
             <input
                 type="range"
                 min="50"
@@ -48,7 +48,7 @@
                 v-model="imageSize"
                 @input="changeImageSize"
             />
-            <!--            <button class="resetBtn mb2" @click="imgSizeReset">Size Reset</button>-->
+            <button class="resetBtn mb1" @click="imgSizeReset">Size Reset</button>
           </div>
 
         </div>
@@ -137,6 +137,7 @@
             :onDragOver="onDragOver"
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
+            :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
@@ -286,11 +287,10 @@ const zoomFactor = 1.1;
 onBeforeMount(async () => {
   isLoading.value = false;
   projectType.value = window.PROJECT_TYPE;
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
-  iaRootPath.value = path;
 })
 
 onMounted(async () => {
+  await getDetailRunningInfo();
   wbcInfo.value = [];
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -303,7 +303,6 @@ onMounted(async () => {
 
   cellMarkerIcon.value = false;
   await drawCellMarker(true);
-
   // end
 });
 onUnmounted(async () => {
@@ -337,6 +336,9 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await classInfoDetailApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+
+    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
+    iaRootPath.value = path;
 
   } catch (e) {
     console.log(e);
@@ -502,7 +504,6 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
   wbcInfo.value = [];
-  await getDetailRunningInfo();
   try {
     const result = await getWbcCustomClassApi();
 
@@ -524,8 +525,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     }
     sessionStorage.setItem('customClass', JSON.stringify(data));
     wbcCustomItems.value = data;
-    let wbcinfo: any = [];
-    wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
+    let wbcinfo = selectItems.value?.wbcInfoAfter.length !== 0 ? selectItems.value?.wbcInfoAfter : selectItems.value?.wbcInfo.wbcInfo[0];
     if (newData.length !== 0) {
       for (const item of newData) { // 커스텀클래스 폴더 생성
         const {fullNm, abbreviation, customNum} = item;
@@ -540,7 +540,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
           title: abbreviation,
         };
 
-        const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id === wbcPush.id && wbcItem.name === wbcPush.name);
+        const foundObject = wbcinfo.find((wbcItem: any) => wbcItem.id == wbcPush.id && wbcItem.name === wbcPush.name);
         if (!foundObject) {
           wbcinfo.push(wbcPush);
           wbcInfo.value = wbcinfo;
@@ -698,7 +698,7 @@ const refreshClass = async (data: any) => {
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
-  const path = selectItems.value?.rootPath !== '' && selectItems.value?.rootPath ? selectItems.value?.rootPath : store.state.commonModule.iaRootPath;
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
   await getWbcCustomClasses(true, data);
   await imgSetLocalStorage();
@@ -1137,7 +1137,6 @@ function isSelected(image: any) {
 
 async function onDrop(targetItemIndex: any) {
   await addToRollbackHistory();
-  console.log('onDrop')
   if (selectedClickImages.value.length === 0) {
     return await originalOnDrop(targetItemIndex);
   }
@@ -1207,7 +1206,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
   let sourceFolders = [];
   let destinationFolders = [];
   let fileNames = [];
-  console.log(draggedItem)
   let idx = 0;
   // 선택된 이미지 배열에 대해 반복
   for (const selectedImage of arrType) {
@@ -1267,7 +1265,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             wbcInfo.value[targetItemIndex].count++;
           }
         } else {
-          // console.log(draggedItem[idx])
           // 드래그된 이미지를 원래 위치에서 제거
           const draggedImageIndex = draggedItem[idx].images.findIndex((img: any) => img.fileName === fileName);
           if (draggedImageIndex !== -1) {
@@ -1481,7 +1478,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     // wbcInfoAfter 업데이트
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: selectItems.value?.id})
-    await store.dispatch('commonModule/setCommonInfo', {clonedWbcInfo: clonedWbcInfo});
+    wbcInfo.value = clonedWbcInfo;
 
     // originalDb 업데이트
     const res: any = await classInfoDetailApi(String(selectItems.value?.id));

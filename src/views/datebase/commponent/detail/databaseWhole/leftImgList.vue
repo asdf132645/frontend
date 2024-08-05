@@ -104,7 +104,7 @@ const getImageUrlsSmallImg = (imageName: string, type: string) => {
       break;
   }
   const slotId = props.selectItems?.slotId || "";
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('iaRootPath');
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
   const folderPath = `${path}/${slotId}/${folderName}`;
 
   return `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}`;
@@ -112,7 +112,7 @@ const getImageUrlsSmallImg = (imageName: string, type: string) => {
 
 const getImgUrl = () => {
   const slotId = props.selectItems?.slotId || "";
-  const path = props.selectItems?.rootPath !== '' && props.selectItems?.rootPath ? props.selectItems?.rootPath : sessionStorage.getItem('iaRootPath');
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
 
   for (const item of strArray) {
     axios.get(`${apiBaseUrl}/folders?folderPath=${path}/${slotId}/${item}`)

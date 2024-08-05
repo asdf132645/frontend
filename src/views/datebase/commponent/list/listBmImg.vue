@@ -64,7 +64,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   }
 
   const slotId = selectedItem.slotId || '';
-  const path = selectedItem?.rootPath !== '' && selectedItem?.rootPath ? selectedItem?.rootPath : iaRootPath.value;
+  const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : iaRootPath.value;
   const folderPath = `${path}/${slotId}/04_BM_Classification/${id}_${title}`;
   return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
 }
