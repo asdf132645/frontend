@@ -2856,8 +2856,13 @@ button.rollbackButton {
 
 .wbc-modal-content .buttons {
     position: absolute;
-    left: 47%;
+    left: 0%;
     bottom: 92px;
+    width: 100%;
+}
+.rangeBox {
+    width: 12%;
+    margin: 0 auto;
 }
 
 .wbc-modal-content {

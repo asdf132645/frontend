@@ -171,8 +171,10 @@
                  class="modal-image" ref="modalImage"/>
           </div>
           <div class="buttons">
-            <button @click="zoomIn">+</button>
-            <button @click="zoomOut">-</button>
+            <div class="rangeBox">
+              <p>{{((zoomValue - 150) / 450 * 100).toFixed(0) }} %</p>
+              <input type="range" min="150" max="600" v-model="zoomValue" @input="handleZoom" />
+            </div>
           </div>
         </div>
       </div>
@@ -264,6 +266,7 @@ const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
 const opacity = ref('0.9');
+const zoomValue = ref(150);
 
 const selectItemImageArr = ref<any>([]);
 const moveRightClickArr = ref<any>([]);
@@ -331,6 +334,11 @@ watch(() => moveImgIsBool.value, (currentMoveImgIsBool) => {
     enableScroll();
   }
 })
+const handleZoom = () => {
+  const newSize = zoomValue.value;
+  modalImageWidth.value = `${newSize}px`;
+  modalImageHeight.value = `${newSize}px`;
+};
 
 const getDetailRunningInfo = async () => {
   try {
@@ -665,11 +673,12 @@ const imgSetOpen = () => {
 }
 
 const zoomIn = () => {
-  let newWidth = Math.min(parseFloat(modalImageWidth.value) + 50, 400);
-  let newHeight = Math.min(parseFloat(modalImageHeight.value) + 50, 400);
+  let newWidth = Math.min(parseFloat(modalImageWidth.value) + 50, 600);
+  let newHeight = Math.min(parseFloat(modalImageHeight.value) + 50, 600);
 
   modalImageWidth.value = `${newWidth}px`;
   modalImageHeight.value = `${newHeight}px`;
+  zoomValue.value = Number(newWidth);
 };
 
 
@@ -679,6 +688,8 @@ const zoomOut = () => {
 
   modalImageWidth.value = `${newWidth}px`;
   modalImageHeight.value = `${newHeight}px`;
+  zoomValue.value = Number(newWidth);
+
 };
 
 
