@@ -290,6 +290,9 @@ ul.userSetOutUl > li:hover {
     background: var(--main-bg-7-color);
     border-radius: 5px;
 }
+.reportDivBottom.reportDiff > .wbcLeft {
+    width: 100%;
+}
 ul.userSetOutUl {
     position: absolute;
     background: var(--gray-bg-12-color);

@@ -208,15 +208,16 @@
                   item?.count
                 }})
               </div>
-              <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;">
+              <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;text-align: left;">
                 <li v-for="(image) in item.images" :key="image.fileName"
                     style="display: inline-block; margin-right: 5px; margin-top: 5px; outline: 1px solid #2c2d2c; cursor: auto;">
-                  <div style="position: relative;">
+                  <div  style="position: relative; text-align: left;">
                     <img
                         :src="getImageUrl(image.fileName, item.id, item.title)"
-                         :width="image.width ? image.width : '150px'" :height="image.height ? image.height : '150px'"
-                         @error="handleImageError"
-                         :style="{ filter: image.filter }" class="cellImg" ref="cellRef"/>
+                        v-if="!hiddenImages[`${item.id}-${image.fileName}`]"
+                        :width="image.width ? image.width : '150px'" :height="image.height ? image.height : '150px'"
+                        @error="handleImageError(item.id, image.fileName)"
+                        :style="{ filter: image.filter }" class="cellImg" ref="cellRef"/>
                     <div class="center-point" :style="image.coordinates"></div>
                   </div>
                 </li>
@@ -411,10 +412,10 @@ const rbcTotalAndReCount = async () => {
 
   await countReAdd();
 }
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  // 오류 발생 시 빈 src로 설정하여 이미지를 숨김
-  target.src = ''; // 또는 기본 이미지 URL로 설정
+const hiddenImages = ref<Record<string, boolean>>({});
+
+const handleImageError = (itemId: number, fileName: string) => {
+  hiddenImages.value[`${itemId}-${fileName}`] = true;
 };
 
 const percentageChange = (count: any): any => {

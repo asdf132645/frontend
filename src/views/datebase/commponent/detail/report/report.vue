@@ -7,7 +7,7 @@
       <div class="wbcDiv shadowBox">
         <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
       </div>
-      <div class="rbcDiv shadowBox" v-if="!projectBm">
+      <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
         <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
       </div>
       <div class="reportDetail shadowBox">
@@ -59,7 +59,7 @@
             </tbody>
           </table>
         </div>
-        <div class="reportDivBottom">
+        <div :class="['reportDivBottom', selectItems.testType !== '04' && 'reportDiff']">
           <div :class="['wbcLeft', projectBm && 'wbcLeftBm']">
             <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
             <table class="tableClass">
@@ -115,7 +115,7 @@
             </table>
 
           </div>
-          <div class="rbcRight" v-if="!projectBm">
+          <div class="rbcRight" v-if="!projectBm && selectItems.testType === '04'">
             <h3 class="reportH3 mb1 pl0">RBC classification result</h3>
             <template v-for="(classList, outerIndex) in [rbcInfoAfterData]" :key="outerIndex">
               <template v-for="(category, innerIndex) in classList" :key="innerIndex">
