@@ -162,12 +162,12 @@
         </ul>
       </div>
       <!-- 모달 창 -->
-      <div class="wbcModal" v-show="modalOpen">
+      <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
         <div class="wbc-modal-content" @click="outerClickCloseModal">
           <span class="wbcClose" @click="closeModal">&times;</span>
-          <div class="wbcModalImageContent">
+          <div class="wbcModalImageContent" >
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
-                 class="modal-image"/>
+                 class="modal-image" ref="modalImage"/>
           </div>
           <div class="buttons">
             <button @click="zoomIn">+</button>
@@ -281,6 +281,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
+const zoomFactor = 1.1;
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -650,6 +651,14 @@ const outerClickCloseModal = (e: any) => {
     modalOpen.value = false;
   }
 }
+
+const handleWheel = (event: WheelEvent) => {
+  if (event.deltaY < 0) {
+    zoomIn();
+  } else {
+    zoomOut();
+  }
+};
 
 const imgSetOpen = () => {
   imgSet.value = !imgSet.value
