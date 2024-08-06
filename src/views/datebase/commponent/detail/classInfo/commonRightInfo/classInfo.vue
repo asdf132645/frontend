@@ -267,7 +267,14 @@ watch(() => props.wbcInfo, (newItem) => {
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
     store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
-
+    if (props.selectItems?.submitState === "") {
+      const result: any = detailRunningApi(String(props.selectItems?.id));
+      const updatedItem = {
+        submitState: 'checkFirst',
+      };
+      const updatedRuningInfo = {...result.data, ...updatedItem}
+      resRunningItem(updatedRuningInfo, true);
+    }
   }
 });
 
