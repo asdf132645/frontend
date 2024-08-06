@@ -145,6 +145,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
 import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
 import Button from "@/components/commonUi/Button.vue";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -181,6 +182,7 @@ const statusBar = ref<HTMLDivElement | null>(null);
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = computed(() => store.state.dataBaseSetDataModule.dataBaseSetData?.slotInfo.map((slot: any) => slot.isNsNbIntegration));
+const analysisType = computed(() => store.state.commonModule.analysisType);
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
@@ -192,6 +194,7 @@ const alertMessage = ref('');
 const projectBm = ref(false);
 const clickType = ref('');
 const userSetOutUl = ref(false);
+const isStartCountUpdated = ref(false);
 
 const formattedDate = computed(() => {
   return currentDate.value;
@@ -280,7 +283,24 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   eqStatCdData.value = eqStatCdChangeVal(newVals[0].sysInfo.eqStatCd);
   oilCountData.value = oilCountChangeVal();
   storagePercentData.value = storagePercentChangeVal();
+
+  if (!isStartCountUpdated.value) {
+    searchCardCount();
+  }
+
 });
+
+const searchCardCount = async () => {
+  const reqDttm = getDateTimeStr(); // 현재 날짜와 시간을 가져오는 함수
+  const payload = {
+    jobCmd: 'SEARCH_CARD_COUNT',
+    reqUserId: userId.value,
+    reqDttm: reqDttm,
+    testType: analysisType.value,
+  };
+  EventBus.publish('childEmitSocketData', payload);
+  isStartCountUpdated.value = true;
+}
 
 
 watch([commonDataGet.value], async (newVals: any) => {
