@@ -339,7 +339,7 @@ watch(() => props.selectItems, async (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
   submitState.value = props.selectItems?.submitState;
-  // await afterChange(newItem);
+  await afterChange(newItem);
   rightClickItemSet();
   allCheckType.value = true;
 });
@@ -640,7 +640,7 @@ const afterChange = async (newItem?: any) => {
 
 
   rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
-  rbcInfoAfterVal.value = rbcData?.rbcInfoAfter ? rbcData.rbcInfoAfter : rbcData.rbcInfoAfter;
+  rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter ? props.selectItems.rbcInfoAfter : rbcInfoBeforeVal.value;
 
   // rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
 
@@ -1069,7 +1069,7 @@ const reDegree = async () => {
     });
   });
   rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
-  console.log(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value))
+  // console.log(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value))
 }
 
 </script>
