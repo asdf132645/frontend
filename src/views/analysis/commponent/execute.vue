@@ -103,7 +103,7 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
-const isInitializing = computed(() => store.state.commonModule.isInitializing);
+// const isInitializing = computed(() => store.state.commonModule.isInitializing);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -183,7 +183,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   userStop.value = newUserStop;
   isRecoveryRun.value = newIsRecoveryRun;
   isInit.value = newIsInit;
-  await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
+  // await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
@@ -200,7 +200,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: object) => {
   EventBus.publish('childEmitSocketData', payload);
-  await store.dispatch('commonModule/setCommonInfo', { isInitializing: true });
+  // await store.dispatch('commonModule/setCommonInfo', { isInitializing: true });
 };
 
 const sendSearchCardCount = () => {
@@ -326,10 +326,10 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
-  if (isInitializing.value) {
-    showErrorALert('Program is already running');
-    return;
-  }
+  // if (isInitializing.value) {
+  //   showErrorALert('Program is already running');
+  //   return;
+  // }
 
   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
     showSuccessAlert(messages.alreadyInitialized);
@@ -350,7 +350,7 @@ const initData = async () => {
   isRunningState.value = runInfoObj.isRunningState;
   showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
 
-  await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
+  // await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
 }
 
 const cellImgGet = async () => {

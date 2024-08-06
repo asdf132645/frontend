@@ -1112,13 +1112,12 @@ const beforeAfterChange = async (newItem: any) => {
 const isBeforeAfterChanged = (beforeItem: any, afterItem: any) => {
   if (Number(beforeItem.count) !== Number(afterItem.count)) return true;
 
-  const sortedBeforeImages = beforeItem.images.slice().sort((a: any, b: any) => a.fileName - b.fileName).map((item: any) => item.fileName);
-  const sortedAfterImages = afterItem.images.slice().sort((a: any, b: any) => a.fileName - b.fileName).map((item: any) => item.fileName);
+  const sortedBeforeImages = beforeItem.images.slice().map((item: any) => item.fileName).sort((a: any, b: any) => a.localeCompare(b));
+  const sortedAfterImages = afterItem.images.slice().map((item: any) => item.fileName).sort((a: any, b: any) => b.localeCompare(a));
 
-  for (const [index, beforeItem] of sortedBeforeImages.entries()) {
-    if (beforeItem.fileName !== sortedAfterImages[index].fileName) {
-      return true;
-    }
+
+  if (JSON.stringify(sortedBeforeImages) !== JSON.stringify(sortedAfterImages)) {
+    return true;
   }
 
   return false;
