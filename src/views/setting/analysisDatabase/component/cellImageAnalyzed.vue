@@ -187,7 +187,7 @@
 import {createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
-import { nextTick, onMounted, ref } from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -247,6 +247,9 @@ const cellimgId = ref('');
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const fileInput = ref<any>(null);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -303,6 +306,34 @@ onMounted(async () => {
   await driveGet();
 });
 
+watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
+  pltPositionMargin, pbsCellAnalyzingCount, stitchCount, bfCellAnalyzingCount, iaRootPath, backupRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
+  const cellAfterSettingObj = {
+    analysisType: testTypeCd.value,
+    diffCellAnalyzingCount: diffCellAnalyzingCount.value,
+    diffWbcPositionMargin: wbcPositionMargin.value,
+    diffRbcPositionMargin: rbcPositionMargin.value,
+    diffPltPositionMargin: pltPositionMargin.value,
+    pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
+    stitchCount: stitchCount.value,
+    bfCellAnalyzingCount: bfCellAnalyzingCount.value,
+    iaRootPath: iaRootPath.value,
+    isNsNbIntegration: isNsNbIntegration.value,
+    isAlarm: isAlarm.value,
+    alarmCount: alarmCount.value,
+    keepPage: keepPage.value,
+    backupPath: backupRootPath.value,
+    backupStartDate: moment(backupStartDate.value).local().toDate(),
+    backupEndDate: moment(backupEndDate.value).local().toDate(),
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+})
+
+watch(() => settingChangedChecker.value, () => {
+  console.log("제발");
+  checkIsMovingWhenSettingNoSaved();
+})
 
 const driveGet = async () => {
   try {
@@ -330,6 +361,10 @@ const driveGet = async () => {
 
     console.log(e);
   }
+}
+
+const checkIsMovingWhenSettingNoSaved = () => {
+  showErrorAlert('Setting Not Saved');
 }
 
 const cellImgGet = async () => {
@@ -361,6 +396,27 @@ const cellImgGet = async () => {
         backupStartDate.value = moment(data.backupStartDate).local().toDate();
         backupEndDate.value = moment(data.backupEndDate).local().toDate();
         autoBackUpMonth.value = data?.autoBackUpMonth;
+
+        const cellBeforeSettingObj = {
+          analysisType: data.analysisType,
+          diffCellAnalyzingCount: data.diffCellAnalyzingCount,
+          diffWbcPositionMargin: data.diffWbcPositionMargin,
+          diffRbcPositionMargin: data.diffRbcPositionMargin,
+          diffPltPositionMargin: data.diffPltPositionMargin,
+          pbsCellAnalyzingCount: data.pbsCellAnalyzingCount,
+          stitchCount: data.stitchCount,
+          bfCellAnalyzingCount: data.bfCellAnalyzingCount,
+          iaRootPath: data.iaRootPath,
+          isNsNbIntegration: data.isNsNbIntegration,
+          isAlarm: data.isAlarm,
+          alarmCount: data.alarmCount,
+          keepPage: data.keepPage,
+          backupPath: data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup'),
+          backupStartDate: moment(data.backupStartDate).local().toDate(),
+          backupEndDate: moment(data.backupEndDate).local().toDate(),
+        }
+
+        await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj)});
       }
 
     }

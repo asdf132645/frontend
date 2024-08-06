@@ -50,6 +50,10 @@ export interface CommonState {
     testType: string;
     isNsNbIntegration: string;
     analysisType: string;
+    isInitializing: boolean;
+    beforeSettingFormattedString: string;
+    afterSettingFormattedString: string;
+    settingChangedChecker: boolean;
 }
 
 interface CommonModule {
@@ -106,6 +110,10 @@ interface CommonModule {
         setTestType: (state: CommonState, value: string) => void;
         setIsNsNbIntegration: (state: CommonState, value: string) => void;
         setAnalysisType: (state: CommonState, value: string) => void;
+        setIsInitializing: (state: CommonState, value: boolean) => void;
+        setBeforeSettingFormattedString: (state: CommonState, value: string) => void;
+        setAfterSettingFormattedString: (state: CommonState, value: string) => void;
+        setSettingChangedChecker: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -163,6 +171,10 @@ export const commonModule: CommonModule = {
         testType: '',
         isNsNbIntegration: 'N',
         analysisType: '',
+        isInitializing: false,
+        beforeSettingFormattedString: '',
+        afterSettingFormattedString: '',
+        settingChangedChecker: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -319,6 +331,18 @@ export const commonModule: CommonModule = {
         setAnalysisType(state: CommonState, value: string): void {
             state.analysisType = value;
         },
+        setIsInitializing(state: CommonState, value: boolean): void {
+            state.isInitializing = value;
+        },
+        setBeforeSettingFormattedString(state: CommonState, value: string): void {
+            state.beforeSettingFormattedString = value;
+        },
+        setAfterSettingFormattedString(state: CommonState, value: string): void {
+            state.afterSettingFormattedString = value;
+        },
+        setSettingChangedChecker(state: CommonState, value: boolean): void {
+            state.settingChangedChecker = value;
+        }
 
     },
     actions: {
@@ -476,6 +500,18 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('analysisType')) {
                 commit('setAnalysisType', payload.analysisType);
+            }
+            if (payload.hasOwnProperty('isInitializing')) {
+                commit('setIsInitializing', payload.isInitializing);
+            }
+            if (payload.hasOwnProperty('beforeSettingFormattedString')) {
+                commit('setBeforeSettingFormattedString', payload.beforeSettingFormattedString);
+            }
+            if (payload.hasOwnProperty('afterSettingFormattedString')) {
+                commit('setAfterSettingFormattedString', payload.afterSettingFormattedString);
+            }
+            if (payload.hasOwnProperty('settingChangedChecker')) {
+                commit('setSettingChangedChecker', payload.settingChangedChecker);
             }
         },
     },

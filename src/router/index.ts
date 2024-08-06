@@ -12,6 +12,7 @@ import databaseDetail from '@/views/datebase/commponent/detail/classInfo/listDet
 import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
 
 import {useStore} from "vuex";
+import {computed} from "vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -69,7 +70,7 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach((to, from, next)  => {
+router.beforeEach(async (to, from, next)  => {
     // 페이지 이동 전에 setInterval 정리
     // clearIntervalIfExists();
     // 세션 스토리지에서 사용자 정보 확인
@@ -79,6 +80,20 @@ router.beforeEach((to, from, next)  => {
     const store = useStore();
     // 스토어에서 사용자 정보 확인
     const currentUser = store.state.userModule;
+    const settingChangedChecker = computed(()=> store.state.commonModule.settingChangedChecker);
+
+    if (from.path === '/setting') {
+        const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
+        const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+        if (beforeSettingFormattedString.value === afterSettingFormattedString.value) {
+            await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: ''});
+            await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: ''});
+            next();
+        } else {
+            await store.dispatch('commonModule/setCommonInfo', { settingChangedChecker: !settingChangedChecker.value });
+            return;
+        }
+    }
 
     if ((to.name !== 'login' && to.name !== 'join') && (!getStoredUser.userId && !currentUser.userId)) {
         // 로그인이 필요한 페이지에 접근하려고 할 때 로그인 페이지로 리다이렉트
@@ -88,7 +103,6 @@ router.beforeEach((to, from, next)  => {
         store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: true});
         next();
     } else {
-        // 그 외의 경우에는 계속 진행
         next();
     }
 });

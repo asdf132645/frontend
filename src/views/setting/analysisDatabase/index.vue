@@ -22,6 +22,15 @@
       <component :is="activeTabComponent" />
     </div>
   </div>
+
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -36,11 +45,37 @@ import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.
 import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
 import WbcRunningCount from "@/views/setting/analysisDatabase/component/wbcRunningCount.vue";
 import process from "process";
+import {useStore} from "vuex";
+import {before} from "lodash";
+import Alert from "@/components/commonUi/Alert.vue";
+
+const store = useStore();
 const activeTab = ref('cellImageAnalyzed');
 const projectType = ref('');
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+
 const activateTab = (tabName: string) => {
+  if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
+    showErrorAlert('Setting Not Saved');
+    return;
+  }
   activeTab.value = tabName;
 };
+
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
+}
 
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {

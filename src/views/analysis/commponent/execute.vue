@@ -103,7 +103,7 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
-const isInitializing = ref(false);
+const isInitializing = computed(() => store.state.commonModule.isInitializing);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -114,7 +114,6 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
 });
 
 onMounted(async () => {
-  isInitializing.value = false;
   await initDataExecute();
 });
 
@@ -133,7 +132,6 @@ const initDataExecute = async () => {
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
     showStopBtn.value = false;
-    isInitializing.value = false;
   } else {
     btnStatus.value = 'start';
     showStopBtn.value = true;
@@ -162,7 +160,6 @@ watch([runInfo.value], async (newVals) => {
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
     showStopBtn.value = false;
-    isInitializing.value = false;
   } else {
     // btnStatus.value = 'isInit';
     showStopBtn.value = true;
@@ -186,18 +183,16 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   userStop.value = newUserStop;
   isRecoveryRun.value = newIsRecoveryRun;
   isInit.value = newIsInit;
+  await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
-    isInitializing.value = false;
   } else if (userStop.value && !isRecoveryRun.value) {
     btnStatus.value = 'onRecover';
-    isInitializing.value = false;
   } else if (isInit.value === 'N' || isInit.value === '') {
     btnStatus.value = 'isInit';
   } else {
     btnStatus.value = 'start';
-    isInitializing.value = false;
   }
 
 });
@@ -205,6 +200,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: object) => {
   EventBus.publish('childEmitSocketData', payload);
+  await store.dispatch('commonModule/setCommonInfo', { isInitializing: true });
 };
 
 const sendSearchCardCount = () => {
@@ -342,10 +338,9 @@ const sendInit = () => { // 장비 초기화 진행
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
   emits('initDataChangeText', true);
-  isInitializing.value = true;
 }
 
-const initData = () => {
+const initData = async () => {
   const newObj = {...embeddedStatusJobCmd.value}
   const runInfoObj = {...runInfo.value};
   isInit.value = newObj.isInit;
@@ -355,7 +350,7 @@ const initData = () => {
   isRunningState.value = runInfoObj.isRunningState;
   showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
 
-  isInitializing.value = (isInit.value === 'N' || isInit.value === '') ? false : true;
+  await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
 }
 
 const cellImgGet = async () => {

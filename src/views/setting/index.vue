@@ -10,6 +10,15 @@
     </ul>
     <component class="settingWrap" :is="currentTabComponent" />
   </div>
+
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
@@ -20,14 +29,24 @@ import Report from "@/views/setting/report/index.vue";
 import QualityCheck from "@/views/setting/qualityCheck/index.vue";
 import Version from "@/views/setting/version/index.vue";
 import {useStore} from "vuex";
+import Alert from "@/components/commonUi/Alert.vue";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check', 'Version'] as const;
 const viewerTabs = ['Login/Account', 'Version'] as const;
 const currentTab = ref<typeof tabs[number]>(tabs[0]);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 
 const changeTab = (tab: typeof tabs[number]) => {
+  if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
+    showErrorAlert('Setting Not Saved');
+    return;
+  }
   currentTab.value = tab;
   sessionStorage.setItem('selectedTab', tab);
 };
@@ -40,12 +59,21 @@ if (storedTab && tabs.includes(storedTab as typeof tabs[number])) {
   currentTab.value = storedTab as typeof tabs[number];
 }
 
-
 const currentTabComponent = computed(() => {
   if (viewerCheck.value === 'viewer') {
     return viewerComponents[currentTab.value];
   }
   return components[currentTab.value];
+});
+
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
+
+const hideAlert = () => {
+  showAlert.value = false;
 }
-);
+
 </script>

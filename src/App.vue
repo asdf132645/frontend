@@ -228,7 +228,7 @@ onMounted(async () => {
       }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
-    isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
+    isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || 'N';
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
 
@@ -465,7 +465,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
-        const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration') || '';
+        const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration') || 'N';
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
@@ -529,7 +529,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           submitOfDate: '',
           submitUserId: '',
           // classificationResult: [],
-          isNsNbIntegration: isNsNbIntegration.value || '',
+          isNsNbIntegration: isNsNbIntegration || '',
           wbcMemo: '',
           rbcMemo: '',
         }
@@ -624,7 +624,7 @@ const runInfoPostWebSocket = async () => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 };
 
-const emitSocketData = async (payload: object) => {
+const emitSocketData = async (payload: any) => {
   console.log('emitSocketData', payload)
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
   await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
