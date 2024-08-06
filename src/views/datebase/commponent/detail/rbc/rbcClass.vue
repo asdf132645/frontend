@@ -339,6 +339,7 @@ watch(() => props.selectItems, async (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
   submitState.value = props.selectItems?.submitState;
+  console.log('selectItems')
   // await afterChange(newItem);
   rightClickItemSet();
   allCheckType.value = true;
@@ -375,6 +376,8 @@ watch(() => props.rbcInfo, async (newItem) => {
   await countReAdd();
   await getRbcDegreeData();
   await reDegree();
+  console.log('rbcInfo')
+
 });
 
 watch(() => resetRbcArr, async (newItem) => {
@@ -383,6 +386,7 @@ watch(() => resetRbcArr, async (newItem) => {
     console.log('??')
     await rbcTotalAndReCount();
     await countReAdd();
+    console.log('resetRbcArr')
   }
 }, {deep: true})
 
