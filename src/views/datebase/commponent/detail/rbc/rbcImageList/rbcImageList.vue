@@ -589,7 +589,6 @@ const drawRbcMarker = async (classInfoArr: any) => {
 
 
 const initElement = async () => {
-  console.log(props.selectItems.slotId)
   if (props.selectItems.slotId === undefined) {
     return;
   }

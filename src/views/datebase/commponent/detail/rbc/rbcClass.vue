@@ -339,7 +339,7 @@ watch(() => props.selectItems, async (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
   submitState.value = props.selectItems?.submitState;
-  afterChange(newItem);
+  // await afterChange(newItem);
   rightClickItemSet();
   allCheckType.value = true;
 });
@@ -369,6 +369,7 @@ const rightClickItemSet = () => {
 
 
 watch(() => props.rbcInfo, async (newItem) => {
+  console.log('rbcTotalAndReCount')
   await afterChange(newItem);
   await rbcTotalAndReCount();
   await countReAdd();
@@ -379,6 +380,7 @@ watch(() => props.rbcInfo, async (newItem) => {
 watch(() => resetRbcArr, async (newItem) => {
   if (newItem) {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
+    console.log('??')
     await rbcTotalAndReCount();
     await countReAdd();
   }
@@ -528,7 +530,7 @@ const percentageChange = (count: any): any => {
   return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
 }
 
-const classChange = () => {
+const classChange = async () => {
   const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
   if(!Array.isArray(rbcData)){
     return;
@@ -546,7 +548,6 @@ const classChange = () => {
       return;
     }
   }
-
   sliderValue.value = 50;
 };
 const resetTimer = () => {
