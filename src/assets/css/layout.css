@@ -1138,6 +1138,7 @@ span.rbcSapnDown .degreeActive {
     margin: 0;
     vertical-align: -webkit-baseline-middle;
 }
+
 li.wbcTitleText p {
     text-align: left;
     padding-left: 10px;
@@ -1147,6 +1148,7 @@ li.wbcTitleText p.firstP {
     text-align: center;
     padding-right: 40px;
 }
+
 .sensitivityDiv {
     display: flex;
     align-content: center;
@@ -1156,12 +1158,14 @@ li.wbcTitleText p.firstP {
     margin-top: 40px;
     border: 1px solid var(--gray-1-color);
 }
+
 .wbcClassDbDiv.classTotalColor {
     color: #29c7ca;
 }
+
 .classInfoWbc {
-    display: flex!important;
-    justify-content: space-evenly!important;
+    display: flex !important;
+    justify-content: space-evenly !important;
 }
 
 button.degreeBtn {
@@ -1669,9 +1673,11 @@ input.alarmInput {
     display: flex;
     align-items: start;
 }
+
 .alertMessage {
     padding: 10px;
 }
+
 .filterListDiv > div > button {
     background: transparent;
     color: var(--white-color);
@@ -2017,7 +2023,6 @@ ul.leftWbcInfo {
     height: 82.5vh;
     overflow-y: auto;
     display: block;
-    padding-top: 38px;
     width: 100%;
     border-collapse: collapse;
 

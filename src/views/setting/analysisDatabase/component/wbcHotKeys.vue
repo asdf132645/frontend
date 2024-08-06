@@ -8,7 +8,7 @@
           <input
               v-model="item.key"
               type="text"
-              maxlength="25"
+              maxlength="1"
               placeholder="hot key"
               @input="filterEnglishAndNumbers($event, item, 'key')"
           />
