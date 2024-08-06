@@ -77,7 +77,7 @@ let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
-const isNsNbIntegration = ref('');
+const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
@@ -465,6 +465,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
+        const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration') || '';
+
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
 
@@ -631,6 +633,7 @@ const emitSocketData = async (payload: object) => {
 
 
 const sendSettingInfo = () => {
+  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration') || '';
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
@@ -640,7 +643,7 @@ const sendSettingInfo = () => {
     isOilReset: 'N',
     deviceType: '01',
     // uiVersion: 'uimd-pb-comm_v2.0.102',
-    isNsNbIntegration: isNsNbIntegration.value || '',
+    isNsNbIntegration: isNsNbIntegration,
   };
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }

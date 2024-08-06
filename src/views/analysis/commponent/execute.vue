@@ -103,6 +103,7 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
+const isInitializing = ref(false);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -113,6 +114,7 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
 });
 
 onMounted(async () => {
+  isInitializing.value = false;
   await initDataExecute();
 });
 
@@ -131,6 +133,7 @@ const initDataExecute = async () => {
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
     showStopBtn.value = false;
+    isInitializing.value = false;
   } else {
     btnStatus.value = 'start';
     showStopBtn.value = true;
@@ -159,6 +162,7 @@ watch([runInfo.value], async (newVals) => {
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
     showStopBtn.value = false;
+    isInitializing.value = false;
   } else {
     // btnStatus.value = 'isInit';
     showStopBtn.value = true;
@@ -185,12 +189,15 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
+    isInitializing.value = false;
   } else if (userStop.value && !isRecoveryRun.value) {
     btnStatus.value = 'onRecover';
+    isInitializing.value = false;
   } else if (isInit.value === 'N' || isInit.value === '') {
     btnStatus.value = 'isInit';
   } else {
     btnStatus.value = 'start';
+    isInitializing.value = false;
   }
 
 });
@@ -302,6 +309,12 @@ const showSuccessAlert = (message: string) => {
   alertMessage.value = message;
 };
 
+const showErrorALert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+}
+
 const hideAlert = () => {
   showAlert.value = false;
 };
@@ -317,6 +330,11 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
+  if (isInitializing.value) {
+    showErrorALert('Program is already running');
+    return;
+  }
+
   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
     showSuccessAlert(messages.alreadyInitialized);
     return;
@@ -324,6 +342,7 @@ const sendInit = () => { // 장비 초기화 진행
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
   emits('initDataChangeText', true);
+  isInitializing.value = true;
 }
 
 const initData = () => {
@@ -335,6 +354,8 @@ const initData = () => {
   isRecoveryRun.value = newObj.isRecoveryRun;
   isRunningState.value = runInfoObj.isRunningState;
   showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
+
+  isInitializing.value = (isInit.value === 'N' || isInit.value === '') ? false : true;
 }
 
 const cellImgGet = async () => {
