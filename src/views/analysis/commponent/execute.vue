@@ -103,7 +103,7 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
-const isInitializing = computed(() => store.state.commonModule.isInitializing);
+const isInitializing = ref(false);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -183,7 +183,6 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   userStop.value = newUserStop;
   isRecoveryRun.value = newIsRecoveryRun;
   isInit.value = newIsInit;
-  // await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
@@ -329,8 +328,7 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
-  // Initializing 진행 중
-  if (isInit.value === 'N' && isInitializing.value) {
+  if (isInitializing.value) {
       showErrorALert('Program is already running');
       return;
   }
@@ -342,10 +340,11 @@ const sendInit = () => { // 장비 초기화 진행
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
   emits('initDataChangeText', true);
+  isInitializing.value = true;
 }
 
 const initData = async () => {
-  const newObj = {...embeddedStatusJobCmd.value}
+  const newObj = {...embeddedStatusJobCmd.value }
   const runInfoObj = {...runInfo.value};
   isInit.value = newObj.isInit;
   isPause.value = newObj.isPause;
@@ -353,8 +352,6 @@ const initData = async () => {
   isRecoveryRun.value = newObj.isRecoveryRun;
   isRunningState.value = runInfoObj.isRunningState;
   showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
-
-  // await store.dispatch('commonModule/setCommonInfo', { isInitializing: isInit.value === 'Y' ? true : false });
 }
 
 const cellImgGet = async () => {

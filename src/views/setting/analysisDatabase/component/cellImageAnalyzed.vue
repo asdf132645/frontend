@@ -478,6 +478,8 @@ const cellImgSet = async () => {
 
     }
 
+    await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+    await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   } catch (e) {
 
     console.log(e);

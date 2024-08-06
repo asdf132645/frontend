@@ -86,8 +86,8 @@ router.beforeEach(async (to, from, next)  => {
         const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
         const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
         if (beforeSettingFormattedString.value === afterSettingFormattedString.value) {
-            await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: ''});
-            await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: ''});
+            await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+            await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
             next();
         } else {
             await store.dispatch('commonModule/setCommonInfo', { settingChangedChecker: !settingChangedChecker.value });
