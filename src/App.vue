@@ -624,7 +624,7 @@ const runInfoPostWebSocket = async () => {
 };
 
 const emitSocketData = async (payload: object) => {
-  console.log(payload)
+  console.log('emitSocketData', payload)
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
   await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
 };

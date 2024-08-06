@@ -114,7 +114,6 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
 
 onMounted(async () => {
   await initDataExecute();
-  await sendSearchCardCount();
 });
 
 const initDataExecute = async () => {
@@ -209,6 +208,8 @@ const sendSearchCardCount = () => {
     reqDttm: reqDttm,
     testType: analysisType.value,
   }
+  tcpReq().embedStatus.searchCardCount.reqUserId = userId.value;
+  tcpReq().embedStatus.searchCardCount.testType = analysisType.value;
   EventBus.publish('childEmitSocketData', req);
 }
 
@@ -343,6 +344,7 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
         analysisType.value = data.analysisType;
+        await store.dispatch('commonModule/setCommonInfo', { analysisType: analysisType.value });
         if (window.PROJECT_TYPE === 'bm') {
           wbcCount.value = data.diffCellAnalyzingCount;
         } else {
