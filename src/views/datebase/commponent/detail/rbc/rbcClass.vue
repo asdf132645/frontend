@@ -339,7 +339,6 @@ watch(() => props.selectItems, async (newItem) => {
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
   submitState.value = props.selectItems?.submitState;
-  console.log('selectItems')
   // await afterChange(newItem);
   rightClickItemSet();
   allCheckType.value = true;
@@ -370,23 +369,19 @@ const rightClickItemSet = () => {
 
 
 watch(() => props.rbcInfo, async (newItem) => {
-  console.log('rbcTotalAndReCount')
   await afterChange(newItem);
   await rbcTotalAndReCount();
   await countReAdd();
   await getRbcDegreeData();
   await reDegree();
-  console.log('rbcInfo')
 
 });
 
 watch(() => resetRbcArr, async (newItem) => {
   if (newItem) {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
-    console.log('??')
     await rbcTotalAndReCount();
     await countReAdd();
-    console.log('resetRbcArr')
   }
 }, {deep: true})
 
@@ -610,6 +605,29 @@ const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string
 
 }
 
+
+const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
+
+  // 배열 항목 비교
+  for (let i = 0; i < arr1.length; i++) {
+    const item1 = arr1[i];
+    const item2 = arr2[i];
+
+    for (let j = 0; j < item1.classInfo.length; j++) {
+      const classInfo1 = item1.classInfo[j];
+      const classInfo2 = item2.classInfo[j];
+
+      // degree 값 비교
+      if (String(classInfo1.degree) !== String(classInfo2.degree)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+};
+
+
 const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
@@ -622,11 +640,9 @@ const afterChange = async (newItem?: any) => {
 
 
   rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
-  if (rbcData?.rbcInfoAfter && typeof props.selectItems.rbcInfoAfter === 'object') {
-    rbcInfoAfterVal.value = Object.entries(rbcData.rbcInfoAfter).length === 0 ? rbcInfoBeforeVal.value : rbcData.rbcInfoAfter;
-  } else {
-    rbcInfoAfterVal.value = rbcData.rbcInfoAfter && rbcData.rbcInfoAfter.length === 1 ? rbcInfoBeforeVal.value : rbcData;
-  }
+  rbcInfoAfterVal.value = rbcData?.rbcInfoAfter ? rbcData.rbcInfoAfter : rbcData.rbcInfoAfter;
+  console.log(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value))
+  rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
 
 
   // Report 화면에서 RBC Classification 동기화 문제로 추가
