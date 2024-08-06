@@ -120,7 +120,9 @@ function checkFullscreenStatus() {
   if(!isFullscreen.value){
     showErrorAlert('Please click the full screen button.');
   }else{
-    hideAlert();
+    if (alertMessage.value === 'Please click the full screen button.') {
+      hideAlert();
+    }
   }
 }
 function startChecking() {
@@ -711,6 +713,7 @@ const showSuccessAlert = async (message: string) => {
   alertType.value = 'success';
   alertMessage.value = message;
 };
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
