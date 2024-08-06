@@ -11,8 +11,8 @@
         <font-awesome-icon :icon="['fas', 'comment-dots']" class="memoOpenBtn" @click="memoOpen"/>
         <div v-if="memoModal" class="memoModal">
           <textarea v-model="wbcMemo"></textarea>
-          <button class="memoModalBtn" @click="memoChange">ok</button>
-          <button class="memoModalBtn" @click="memoCancel">cancel</button>
+          <button class="memoModalBtn" @click="memoChange">OK</button>
+          <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
         </div>
       </li>
       <li @click="commitConfirmed" :class="{
@@ -53,12 +53,12 @@
       <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)" title="BLUE text: changed element">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span class="grayText w20 textLeft">{{ item.count.before }}</span>
-          <span class="grayText w50 textLeft">{{ item?.percent.before ? item?.percent.before + '%' : '-' }}</span>
+          <span class="grayText w20 textLeft">{{ Number(item.count.before) || 0 }}</span>
+          <span class="grayText w50 textLeft">{{ Number(item?.percent.before) ? item?.percent.before + '%' : '0' }}</span>
         </li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span :class="['w20', 'textLeft', item.isChanged && 'blueText']">{{ item?.count.after }}</span>
-          <span :class="['w50', 'textLeft', item.isChanged && 'blueText']">{{ item?.percent.after ? item?.percent.after + '%' : '-' }}</span>
+          <span :class="['w20', 'textLeft', item.isChanged && 'blueText']">{{ Number(item?.count.after) || 0 }}</span>
+          <span :class="['w50', 'textLeft', item.isChanged && 'blueText']">{{ Number(item?.percent.after) ? item?.percent.after + '%' : '0' }}</span>
         </li>
       </ul>
     </div>
@@ -70,13 +70,13 @@
       </ul>
       <ul>
         <li style="display: flex; justify-content: center; gap: 22px;">
-          <p class="w20 textLeft">{{ totalBeforeCount || 0 }}</p>
+          <p class="w20 textLeft">{{ Number(totalBeforeCount) || 0 }}</p>
           <p class="w50 textLeft">100%</p>
         </li>
       </ul>
       <ul class="degree">
         <li style="display: flex; justify-content: center; gap: 22px;">
-          <p class="w20 textLeft">{{ totalAfterCount || 0 }}</p>
+          <p class="w20 textLeft">{{ Number(totalAfterCount) || 0 }}</p>
           <p class="w50 textLeft">100%</p>
         </li>
       </ul>
@@ -94,8 +94,8 @@
       >
         <ul class="nth1Child" v-if="item?.title === 'OT'" @click="goClass(item.id)">
           <li>{{ item?.name }}</li>
-          <li class="grayText">{{ item?.count.before }}</li>
-          <li :class="item.isChanged && 'blueText'">{{ item?.count.after }}</li>
+          <li class="grayText">{{ Number(item?.count.before) || 0 }}</li>
+          <li :class="item.isChanged && 'blueText'">{{ Number(item?.count.after) || 0 }}</li>
         </ul>
       </div>
     </div>
@@ -111,17 +111,17 @@
           <ul style="width: 21%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li class="grayText" style="cursor: default; padding-left: -20px;">
-              {{ nWbcItem?.count.before }}
+              {{ Number(nWbcItem?.count.before) || 0 }}
               <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
-                / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span>
+                / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span>
             </li>
           </ul>
           <ul class="degree" style="width: 22%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
               <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">
-                {{ nWbcItem?.count.after }}
+                {{ Number(nWbcItem?.count.after) || 0 }}
                 <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
-                / {{ selectItems?.wbcInfo?.maxWbcCount }} WBC</span></li>
+                / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span></li>
           </ul>
         </div>
       </template>

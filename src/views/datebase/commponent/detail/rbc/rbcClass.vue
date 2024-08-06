@@ -9,8 +9,8 @@
           <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
           <div v-if="memoModal" class="memoModal">
             <textarea v-model="memo"></textarea>
-            <button class="memoModalBtn" @click="memoChange">ok</button>
-            <button class="memoModalBtn" @click="memoCancel">cancel</button>
+            <button class="memoModalBtn" @click="memoChange">OK</button>
+            <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
           </div>
         </li>
         <li @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
@@ -140,26 +140,26 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">
-                {{ classInfo?.originalDegree }}
+                {{ Number(classInfo?.originalDegree) || 0 }}
               </li>
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                {{ countArtifact + countDoubleNormal || 0 }}
+                {{ Number(countArtifact + countDoubleNormal) || 0 }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
-                {{ malariaCount || 0 }}
+                {{ Number(malariaCount) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
                      v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
-                  {{ sizeChromiaTotal }}
+                  {{ Number(sizeChromiaTotal) || 0 }}
                 </div>
               </div>
               <div class="underline"
                    v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
-                {{ shapeBodyTotal }}
+                {{ Number(shapeBodyTotal) || 0 }}
               </div>
             </template>
           </ul>
@@ -168,16 +168,16 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">
-                {{ percentageChange(classInfo?.originalDegree) }}
+                {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
               </li>
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
-                {{ percentageChange(countArtifact + countDoubleNormal) }}
+                {{ percentageChange(countArtifact + countDoubleNormal) || 0 }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
-                {{ percentageChange(malariaCount) }}
+                {{ percentageChange(malariaCount) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"

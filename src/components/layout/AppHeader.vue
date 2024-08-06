@@ -34,7 +34,7 @@
             <ul>
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
-                <div class="cursorPointer" @click="userSetOutToggle">
+                <div class="cursorPointer userBox" @click="userSetOutToggle">
                   <font-awesome-icon :icon="['fas', 'circle-user']" />
                   {{ userModuleDataGet.userId }}
                 </div>
