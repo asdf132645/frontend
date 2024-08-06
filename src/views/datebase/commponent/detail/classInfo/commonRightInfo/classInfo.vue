@@ -1105,11 +1105,11 @@ const beforeAfterChange = async (newItem: any) => {
 const isBeforeAfterChanged = (beforeItem: any, afterItem: any) => {
   if (Number(beforeItem.count) !== Number(afterItem.count)) return true;
 
-  const sortedBeforeImages = beforeItem.images.slice().sort((a: any, b: any) => a.title - b.title || a.fileName - b.fileName);
-  const sortedAfterImages = afterItem.images.slice().sort((a: any, b: any) => a.title - b.title || a.fileName - b.fileName);
+  const sortedBeforeImages = beforeItem.images.slice().sort((a: any, b: any) => a.fileName - b.fileName).map((item: any) => item.fileName);
+  const sortedAfterImages = afterItem.images.slice().sort((a: any, b: any) => a.fileName - b.fileName).map((item: any) => item.fileName);
 
   for (const [index, beforeItem] of sortedBeforeImages.entries()) {
-    if (beforeItem.title !== sortedAfterImages[index].title || beforeItem.fileName !== sortedAfterImages[index].fileName) {
+    if (beforeItem.fileName !== sortedAfterImages[index].fileName) {
       return true;
     }
   }

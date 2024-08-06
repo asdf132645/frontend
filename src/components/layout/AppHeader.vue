@@ -181,7 +181,7 @@ const statusBarWrapper = ref<HTMLDivElement | null>(null);
 const statusBar = ref<HTMLDivElement | null>(null);
 const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
-const isNsNbIntegration = computed(() => store.state.dataBaseSetDataModule.dataBaseSetData?.slotInfo.map((slot: any) => slot.isNsNbIntegration));
+const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
 const analysisType = computed(() => store.state.commonModule.analysisType);
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
@@ -443,7 +443,7 @@ const onReset = () => {
     isOilReset: 'Y',
     // uiVersion: 'uimd-pb-comm_v3',
     userId: '',
-    isNsNbIntegration: isNsNbIntegration.value,
+    isNsNbIntegration: isNsNbIntegration.value || '',
   });
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
@@ -489,12 +489,14 @@ const cellImgGet = async () => {
     if (result) {
       if (result?.data) {
         const data = result.data;
-        isNsNbIntegration.value = data.isNsNbIntegration ? 'Y' : 'N';
+
+        await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data.isNsNbIntegration ? 'Y' : 'N' });
         alarmCount.value = data?.isAlarm ? Number(data.alarmCount) * 1000 : 5000;
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
+        sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);

@@ -407,10 +407,12 @@ const cellImgSet = async () => {
       const text = saveHttpType.value === 'post' ? 'save successful' : messages.UPDATE_SUCCESSFULLY;
       showSuccessAlert(text);
       const data = result?.data;
+      await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
       await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
         isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
       });
       // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
+      sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
       sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
       sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
