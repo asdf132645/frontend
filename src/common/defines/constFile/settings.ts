@@ -1,6 +1,6 @@
 export const testTypeList = [
-    {value: '01', text: 'PB standard'},
-    {value: '04', text: 'PB premium'},
+    {value: '01', text: 'WBC Diff(Standard)'},
+    {value: '04', text: 'PBS(Premium)'},
     // {value: '02', text: 'Body fluid default'},
     // {value: '03', text: 'Body fluid select'}
 ];
