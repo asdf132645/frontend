@@ -207,24 +207,6 @@ const pageGo = (path: string) => {
   pageMoveDeleteStop.value = false;
 }
 
-const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
-
-  let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
-
-  newSortArr.sort((a: any, b: any) => {
-    const nameA = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (a.title || a.abbreviation));
-    const nameB = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (b.title || b.abbreviation));
-
-    // 이름이 없는 경우는 배열 맨 뒤로 배치
-    if (nameA === -1) return 1;
-    if (nameB === -1) return -1;
-
-    return nameA - nameB;
-  });
-
-  return newSortArr;
-};
-
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
     const req = `id=${id}&step=${step}&type=${type}`
