@@ -379,9 +379,9 @@ const imgSetLocalStorage = async () => {
     imageSize.value = Number(imageSizeCopy);
   }
 
-  const red = 255 - imageRgb.value[0];
-  const green = 255 - imageRgb.value[1];
-  const blue = 255 - imageRgb.value[2];
+  const red = imageRgb.value[0];
+  const green = imageRgb.value[1];
+  const blue = imageRgb.value[2];
   wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {
       image.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${imgBrightness.value}%)`;
