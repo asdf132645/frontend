@@ -51,7 +51,7 @@
           </tr>
           <tr style="padding-bottom: 5px;">
             <th style="text-align: left; padding: 5px 0;">Gender</th>
-            <td style="text-align: left; padding: 5px 0;">{{ selectItems?.gender === '01' ? 'Male' : 'Female' }}</td>
+            <td style="text-align: left; padding: 5px 0;">{{ selectItems?.gender === '' ? '' : selectItems?.gender === '01' ? 'Male' : 'Female' }}</td>
           </tr>
 
           </tbody>
