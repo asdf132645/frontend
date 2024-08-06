@@ -381,7 +381,7 @@ watch(() => props.classInfoArr, (newData) => {
     // data-class-nm이 newData에 존재하지 않으면 해당 <ol> 요소를 제거
     if (!validClassNmSet.has(classNm)) {
       console.log('Removing <ol> with data-class-nm:', classNm);
-      el.remove();
+      viewer.value.removeOverlay(el);
     }
   });
 
