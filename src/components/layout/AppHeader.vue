@@ -40,8 +40,10 @@
                 </div>
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>
-                  <li @click="exit">EXIT</li>
                 </ul>
+                <div class="logOutBox"  @click="exit">
+                  EXIT
+                </div>
                 <div class="logOutBox"  @click='fullScreen'>FULL SCREEN</div>
               </li>
             </ul>

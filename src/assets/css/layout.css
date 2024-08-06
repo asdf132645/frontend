@@ -168,7 +168,7 @@
 .logoProjectTitle {
     position: absolute;
     z-index: 3;
-    color:#162E73;
+    color: #162E73;
     font-size: 1.0rem;
     font-weight: bold;
     left: 50%;
@@ -277,22 +277,27 @@ main.bmComponent {
     text-align: left;
     cursor: pointer;
 }
+
 ul.userSetOutUl > li {
     color: var(--white-color);
     padding: 9px 4px;
     padding-bottom: 5px;
     cursor: pointer;
 }
+
 table.reportTable tr th {
     width: 145px;
 }
+
 ul.userSetOutUl > li:hover {
     background: var(--main-bg-7-color);
     border-radius: 5px;
 }
+
 .reportDivBottom.reportDiff > .wbcLeft {
     width: 100%;
 }
+
 ul.userSetOutUl {
     position: absolute;
     background: var(--gray-bg-12-color);
@@ -345,7 +350,7 @@ ul.userSetOutUl {
 }
 
 .lastMenu {
-    width: 190px;
+    width: 240px;
     text-align: right;
     position: absolute;
     right: 0;
@@ -557,12 +562,14 @@ ul.customClass li {
 .v3dp__input_wrapper > input {
     padding: 9px;
 }
+
 .line {
     height: 1px;
     width: 100%;
     background: var(--white-color);
     margin-bottom: 17px;
 }
+
 .autoDateBox {
     display: flex;
 }
@@ -571,7 +578,11 @@ ul.customClass li {
     margin: 0 8px 0 12px;
 }
 
-.autoDateBox span {padding-top: 7px;font-size: 0.9rem;}
+.autoDateBox span {
+    padding-top: 7px;
+    font-size: 0.9rem;
+}
+
 table.settingTable {
     width: 80%;
     text-align: left;
@@ -810,15 +821,18 @@ button.degreeAllCheckBtn {
 .imgSet_img_list div {
     padding: 10px 20px 10px 10px;
 }
+
 .resInfoBox p {
     display: inline-block;
     padding: 0;
 }
+
 .listBox .resInfoBox {
     padding: 0;
     padding-top: 5px;
     font-size: 0.8rem;
 }
+
 .loader {
     border: 16px solid #f3f3f3;
     border-top: 16px solid #3498db;
@@ -834,8 +848,12 @@ button.degreeAllCheckBtn {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -854,6 +872,7 @@ p.loadingText {
     top: 0;
     left: 0;
 }
+
 .excelDivList {
     position: relative;
     display: block;
@@ -1035,7 +1054,7 @@ ul.nth1Child > :nth-child(2) {
 
 ul.nth1Child > :nth-child(3) {
     text-align: center;
-    width: 30%;
+    width: 35%;
 }
 
 .degreeActive {
@@ -1059,13 +1078,14 @@ span.rbcSapnDown {
 }
 
 
-
 .databaseWbcRight.cbcLayer ul.leftWbcInfo.rbcClass {
     width: 58%;
 }
+
 .databaseWbcRight.cbcLayer ul.leftWbcInfo {
     width: 54%;
 }
+
 .sensitivityDiv .slider-container {
     /*width: 45%;*/
     margin-top: 16px;
@@ -1118,7 +1138,15 @@ span.rbcSapnDown .degreeActive {
     margin: 0;
     vertical-align: -webkit-baseline-middle;
 }
+li.wbcTitleText p {
+    text-align: left;
+    padding-left: 10px;
+}
 
+li.wbcTitleText p.firstP {
+    text-align: center;
+    padding-right: 40px;
+}
 .sensitivityDiv {
     display: flex;
     align-content: center;
@@ -1127,6 +1155,13 @@ span.rbcSapnDown .degreeActive {
     padding: 5px 8px 10px 8px;
     margin-top: 40px;
     border: 1px solid var(--gray-1-color);
+}
+.wbcClassDbDiv.classTotalColor {
+    color: #29c7ca;
+}
+.classInfoWbc {
+    display: flex!important;
+    justify-content: space-evenly!important;
 }
 
 button.degreeBtn {
@@ -1710,6 +1745,7 @@ table.defaultTable tbody td {
 .divCompare ul.wbcImgWrap {
     height: 69vh;
 }
+
 .filterDivBox > div {
     padding-bottom: 2rem;
 }
@@ -1752,9 +1788,11 @@ h3.titleH3 {
 .settingDatePickers > select {
     max-width: 130px;
 }
+
 .listBoxTable tr {
     cursor: pointer;
 }
+
 button.backupBtn {
     margin-left: 14px;
     background: var(--main-bg-2-color);
@@ -1768,6 +1806,7 @@ select.autoBackUpPath {
     margin: 0 12px;
     width: 97%;
 }
+
 h3.titleH3 button {
     color: var(--white-color);
     border: 1px solid var(--white-color);
@@ -1927,6 +1966,7 @@ ul.leftWbcInfo li {
     margin-left: 13px;
     cursor: pointer;
 }
+
 .divCompareChild {
     width: 50%;
     display: inline-block;
@@ -1936,14 +1976,17 @@ ul.leftWbcInfo li {
 .divCompareChild ul.cellImgBox {
     max-height: 71.9vh;
 }
+
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
     /*margin-left: 13px;*/
 }
+
 .reportDiv ul.leftWbcInfo {
     width: 59%;
 }
+
 ul.leftWbcInfo {
     display: inline-block;
     width: 68%;
@@ -1975,6 +2018,7 @@ ul.leftWbcInfo {
     border-collapse: collapse;
 
 }
+
 .dbDataTable > thead {
     position: sticky;
     top: -39px;
@@ -1982,6 +2026,7 @@ ul.leftWbcInfo {
     z-index: 1;
 
 }
+
 ul.orderListUi > li {
     margin-bottom: 5px;
 }
@@ -2522,7 +2567,7 @@ ul.normalItems li div span:last-child {
 .resInfoTopContainer {
     /*max-height: 230px;*/
     /*overflow-y: auto;*/
-    overflow-x:hidden;
+    overflow-x: hidden;
 }
 
 .resInfoContainer {
@@ -2783,7 +2828,7 @@ button.rollbackButton {
 
 .iconHeaderMenu {
     position: absolute;
-    right: 207px;
+    right: 265px;
     top: 26px;
 }
 
@@ -2860,10 +2905,12 @@ button.rollbackButton {
     bottom: 92px;
     width: 100%;
 }
+
 .rangeBox {
     width: 12%;
     margin: 0 auto;
 }
+
 .cursorPointer.userBox {
     border: 1px solid #fff;
     border-radius: 5px;
@@ -2881,6 +2928,7 @@ button.rollbackButton {
     background: #fff;
     color: #000;
 }
+
 .wbc-modal-content {
     position: relative;
     height: 100%;
