@@ -378,6 +378,12 @@ const getDbData = async (type: string, pageNum?: number) => {
 
       }
     }
+    if(dbGetData.value.length > 0){
+      await store.dispatch('commonModule/setCommonInfo', { dbListDataFirstNum: Number(dbGetData.value[0].id) })
+      await store.dispatch('commonModule/setCommonInfo', { dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
+    }
+
+
   } catch (e) {
     console.error(e);
   }
