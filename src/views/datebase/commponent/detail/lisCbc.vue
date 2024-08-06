@@ -100,7 +100,7 @@ const initCbcData = async (newVal: any) => {
         const json = JSON.parse(xml2json(xml, {compact: true}));
         cbcWorkList.value = json.root.spcworklist.worklist;
         const parms = {
-          filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+          filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
           data: cbcWorkList.value,
         };
         createCbcFile(parms);
@@ -166,7 +166,7 @@ const initCbcData = async (newVal: any) => {
 
           }
           const parms = {
-            filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+            filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
             data: cbcWorkList.value,
           };
           createCbcFile(parms);
@@ -248,7 +248,7 @@ const initCbcData = async (newVal: any) => {
         }
       }
       const parms = {
-        filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+        filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
         data: cbcWorkList.value,
       };
       await createCbcFile(parms);
@@ -309,7 +309,7 @@ const kuahGilHosCbc = async () => {
       }
     });
     const parms = {
-      filePath: `${pbiaRootDir.value}\\cbcCopyData\\${props.selectItems?.barcodeNo}.txt`,
+      filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
       data: cbcWorkList.value,
     };
     await createCbcFile(parms);

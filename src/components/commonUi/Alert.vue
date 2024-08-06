@@ -1,6 +1,9 @@
 <!-- Alert.vue -->
 <template>
   <div v-if="isVisible" class="alert" :class="typeClass">
+    <p v-if="props.type === 'error'">
+      <font-awesome-icon :icon="['fas', 'circle-exclamation']" class="bigFont" />
+    </p>
     <p class="mb1 alertMessage">
       {{ message }}
     </p>
