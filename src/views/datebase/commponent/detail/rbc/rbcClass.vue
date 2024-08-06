@@ -334,9 +334,16 @@ watch(() => props.allCheckClear, (newItem) => {
   classInfoArr.value = [];
 }, {deep: true})
 
-// watch(() => props.selectItems, async (newItem) => {
-//
-// });
+watch(() => props.selectItems, async (newItem) => {
+  pltCount.value = props.selectItems?.pltCount;
+  malariaCount.value = props.selectItems?.malariaCount;
+  memo.value = props.selectItems?.rbcMemo;
+  submitState.value = props.selectItems?.submitState;
+  console.log('selectItems')
+  // await afterChange(newItem);
+  rightClickItemSet();
+  allCheckType.value = true;
+});
 
 const rightClickItemSet = () => {
   rightClickItem.value = [];
@@ -369,13 +376,7 @@ watch(() => props.rbcInfo, async (newItem) => {
   await countReAdd();
   await getRbcDegreeData();
   await reDegree();
-  pltCount.value = props.selectItems?.pltCount;
-  malariaCount.value = props.selectItems?.malariaCount;
-  memo.value = props.selectItems?.rbcMemo;
-  submitState.value = props.selectItems?.submitState;
-  // await afterChange(newItem);
-  rightClickItemSet();
-  allCheckType.value = true;
+  console.log('rbcInfo')
 
 });
 
