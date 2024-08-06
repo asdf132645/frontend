@@ -223,21 +223,21 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 }
 
 const moveWbc = async (direction: any) => {
-  if(direction === 'up'){
-    if(dbListDataLastNum.value < selectItems.value?.id){
-      showAlert.value = true;
-      alertType.value = 'success';
-      alertMessage.value = 'If you need further customization or more details, please let me know!';
-      return;
-    }
-  } else {
-    if(dbListDataFirstNum.value > selectItems.value?.id){
-      showAlert.value = true;
-      alertType.value = 'success';
-      alertMessage.value = 'This is the last page. Navigation to other pages is not possible.';
-      return;
-    }
-  }
+  // if(direction === 'up'){
+  //   if(dbListDataLastNum.value < selectItems.value?.id){
+  //     showAlert.value = true;
+  //     alertType.value = 'success';
+  //     alertMessage.value = 'If you need further customization or more details, please let me know!';
+  //     return;
+  //   }
+  // } else {
+  //   if(dbListDataFirstNum.value > selectItems.value?.id){
+  //     showAlert.value = true;
+  //     alertType.value = 'success';
+  //     alertMessage.value = 'This is the last page. Navigation to other pages is not possible.';
+  //     return;
+  //   }
+  // }
 
   store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
   if (timeoutId !== undefined) {
