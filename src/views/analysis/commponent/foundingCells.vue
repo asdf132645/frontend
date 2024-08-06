@@ -4,6 +4,7 @@
       <div class="slider-found" v-if="images.length > 0">
         <template v-for="type in images" :key="type.id">
           <img
+              style="width: 150px; height: 150px;"
               :src="getImageUrl(type)"
               v-if="getImageUrl(type)"
               alt="Slide"
