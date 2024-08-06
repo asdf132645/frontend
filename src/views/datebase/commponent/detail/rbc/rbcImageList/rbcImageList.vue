@@ -362,18 +362,41 @@ const closeSelectBox = (event: MouseEvent) => {
 
 watch(() => props.classInfoArr, (newData) => {
   newItemClassInfoArr.value = newData;
+
   if (newData.length === 0) {
     removeDiv();
     removeRbcMarker();
+    return;
   }
+
+  // 모든 <ol> 요소를 선택하고, data-class-nm 값을 배열로 수집
+  const olElements = document.querySelectorAll('ol.overlayElement');
+
+  // newData 배열에서 존재하는 data-class-nm 값을 수집
+  const validClassNmSet = new Set(newData.map((el: any) => el.classNm));
+
+  olElements.forEach(el => {
+    const classNm = el.getAttribute('data-class-nm');
+
+    // data-class-nm이 newData에 존재하지 않으면 해당 <ol> 요소를 제거
+    if (!validClassNmSet.has(classNm)) {
+      console.log('Removing <ol> with data-class-nm:', classNm);
+      el.remove();
+    }
+  });
+
+  // rbcMarker 함수 호출
   rbcMarker(newData);
-}, {deep: true});
+}, { deep: true });
+
+
 
 watch(classInfoArrNewReData, async (nenenen, oldItem) => {
   if (rbcReData.value) {
     if (nenenen.length === 0) {
       removeDiv();
       removeRbcMarker();
+      return;
     }
     await rbcMarker(nenenen);
     await store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
@@ -690,10 +713,10 @@ const initElement = async () => {
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
         //
+        if (!event.originalEvent.ctrlKey) {
+          await removeDiv();
+        }
         if (!event.originalEvent.shiftKey) { // 쉬프트 키를 누르지 않았을 때
-          if (!event.originalEvent.ctrlKey) {
-            await removeDiv();
-          }
           const clickPos = viewer.value.viewport.pointFromPixel(event.position);
           const canvasPos = {
             x: clickPos.x * viewer.value.source.width,
@@ -712,12 +735,21 @@ const initElement = async () => {
               const categoryId = item.categoryId;
               const color = 'lightgreen'; // 연한 연두색
               if (event.originalEvent.ctrlKey) { // 컨트롤 키를 눌렀을 때
+                // 기존의 오버레이가 클릭된 위치에 있는지 확인
+                const existingOverlay = document.querySelector(`.overlayElement[data-class-posX="${itemPos.posX}"][data-class-posY="${itemPos.posY}"]`);
+                if (existingOverlay) {
+                  // 클릭된 위치에 이미 오버레이가 있으면 새로 추가하지 않음
+                  return;
+                }
+
                 moveRbcClass.value.push(item)
                 const element = document.createElement('ol');
                 element.className = 'overlayElement';
                 element.id = 'overlayElement';
                 element.setAttribute('data-category-id', categoryId);
                 element.setAttribute('data-class-nm', item.classNm);
+                element.setAttribute('data-class-posY', itemPos.posY);
+                element.setAttribute('data-class-posX', itemPos.posX);
                 element.style.width = `${item.width}px`;
                 element.style.backgroundColor = color;
                 element.style.height = `${item.height}px`;
