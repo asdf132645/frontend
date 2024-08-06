@@ -379,7 +379,9 @@ const rbcTotalAndReCount = async () => {
   let shapeBodyTotalVal = 0;
   let shapeBodyTotalVal2 = 0;
   rbcInfoPathAfter.value.forEach(el => {
-    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
+    const lastIndex = el.classInfo.length > 0
+        ? (el.classInfo[el.classInfo.length - 1].index || '').replace(/[^\d]/g, '')
+        : '';
 
     switch (el.categoryId) {
       case '01':
