@@ -132,6 +132,11 @@
               <li v-if="classInfo.classNm !== 'Poikilocyte'" @click="moveRbcClassEvent(category.categoryId, classInfo.classId, classInfo.classNm)">
                 <span>{{ classInfo?.classNm }}</span>
               </li>
+
+              <li v-if="classInfo.classNm === 'Basophilic Stippling'" @click="moveRbcClassEvent('05', '03', 'Malaria')">
+                <span>Malaria</span>
+              </li>
+
             </template>
           </ul>
         </div>
@@ -143,9 +148,6 @@
         <ul class="classNmRbc">
           <li @click="moveRbcClassEvent('04', '01', 'Platelet')">
             <span>Platelets</span>
-          </li>
-          <li @click="moveRbcClassEvent('05', '03', 'Malaria')">
-            <span>Malaria</span>
           </li>
         </ul>
       </div>
