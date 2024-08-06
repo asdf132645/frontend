@@ -219,7 +219,7 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
-  titleItem.value = [];
+  // titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   loadingDelayParents.value = true;
   // const lastQuery = loadLastQuery();
@@ -356,8 +356,10 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
         }
 
-        // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
-        titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
+        if(titleItem.value.length === 0){
+          titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
+        }
+
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
           dbGetData.value = dbGetData.value.sort((a, b) => {
             const dateA = moment(a.analyzedDttm, 'YYYYMMDDHHmmssSSS');

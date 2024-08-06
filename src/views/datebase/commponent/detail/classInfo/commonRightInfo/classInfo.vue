@@ -80,24 +80,6 @@
         </li>
       </ul>
     </div>
-<!--    <div class="categories classTotal">-->
-<!--      <ul class="categoryNm">-->
-<!--        <li style="cursor: default;">-->
-<!--          Total-->
-<!--        </li>-->
-<!--      </ul>-->
-<!--      <ul>-->
-<!--        <li class="classInfoWbc">-->
-<!--          <p class="w20 textLeft"></p>-->
-<!--          <p class="w50 textLeft"></p>-->
-<!--        </li>-->
-<!--      </ul>-->
-<!--      <ul class="degree">-->
-<!--        <li class="classInfoWbc">-->
-
-<!--        </li>-->
-<!--      </ul>-->
-<!--    </div>-->
 
     <div v-if="projectBm">
       <div
@@ -125,7 +107,7 @@
             <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
             <li class="wFit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
-          <ul style="width: 21%;">
+          <ul style="width: 29%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li class="grayText" style="cursor: default; padding-left: -20px;">
               {{ Number(nWbcItem?.count.before) || 0 }}
@@ -133,7 +115,7 @@
                 / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span>
             </li>
           </ul>
-          <ul class="degree" style="width: 22%">
+          <ul class="degree" style="width: 27%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">
               {{ Number(nWbcItem?.count.after) || 0 }}
