@@ -1669,7 +1669,9 @@ input.alarmInput {
     display: flex;
     align-items: start;
 }
-
+.alertMessage {
+    padding: 10px;
+}
 .filterListDiv > div > button {
     background: transparent;
     color: var(--white-color);
