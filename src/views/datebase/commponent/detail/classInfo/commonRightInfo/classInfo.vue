@@ -1,5 +1,5 @@
 <template>
-  <img class="mt1" v-if="type !== 'report' && !barCodeImageShowError"  @error="onImageError" :src="barcodeImg"/>
+  <img class="mt1" v-if="type !== 'report' && !barCodeImageShowError" @error="onImageError" :src="barcodeImg"/>
   <div class="mt1" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
   <div class="mt1 mb2 flexSpaceBetween">
     <h3 class="wbcClassInfoLeft">
@@ -32,12 +32,12 @@
   <div class="wbcClassScroll">
     <ul class="nth1Child classAttribute">
       <li>Class</li>
-      <li>
-        <p>Before</p>
+      <li class="wbcTitleText">
+        <p class="firstP">Before</p>
         <p>(Count | Percent)</p>
       </li>
-      <li>
-        <p>After</p>
+      <li class="wbcTitleText">
+        <p class="firstP">After</p>
         <p>(Count | Percent)</p>
       </li>
     </ul>
@@ -50,34 +50,33 @@
         @dragover.prevent
         @drop="drop(idx, $event)"
     >
-      <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)" @click="goClass(item.id)" title="BLUE text: changed element">
+      <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)"
+          @click="goClass(item.id)" title="BLUE text: changed element">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
           <span class="grayText w20 textLeft">{{ Number(item.count.before) || 0 }}</span>
-          <span class="grayText w50 textLeft">{{ Number(item?.percent.before) ? item?.percent.before + '%' : '0' }}</span>
+          <span class="grayText w50 textLeft">{{
+              Number(item?.percent.before) ? item?.percent.before + '%' : '0'
+            }}</span>
         </li>
         <li style="display: flex; justify-content: space-evenly;">
           <span :class="['w20', 'textLeft', item.isChanged && 'blueText']">{{ Number(item?.count.after) || 0 }}</span>
-          <span :class="['w50', 'textLeft', item.isChanged && 'blueText']">{{ Number(item?.percent.after) ? item?.percent.after + '%' : '0' }}</span>
+          <span :class="['w50', 'textLeft', item.isChanged && 'blueText']">{{
+              Number(item?.percent.after) ? item?.percent.after + '%' : '0'
+            }}</span>
         </li>
       </ul>
     </div>
-    <div class="categories classTotal">
-      <ul class="categoryNm">
-        <li style="cursor: default;">
-          Total
+    <div class="wbcClassDbDiv classTotalColor">
+      <ul class="nth1Child">
+        <li>Total</li>
+        <li class="classInfoWbc">
+          <span class="w20 textLeft">{{ Number(totalBeforeCount) || 0 }}</span>
+          <span class="w50 textLeft">100%</span>
         </li>
-      </ul>
-      <ul>
-        <li style="display: flex; justify-content: center; gap: 22px;">
-          <p class="w20 textLeft">{{ Number(totalBeforeCount) || 0 }}</p>
-          <p class="w50 textLeft">100%</p>
-        </li>
-      </ul>
-      <ul class="degree">
-        <li style="display: flex; justify-content: center; gap: 22px;">
-          <p class="w20 textLeft">{{ Number(totalAfterCount) || 0 }}</p>
-          <p class="w50 textLeft">100%</p>
+        <li class="classInfoWbc">
+          <span class="w20 textLeft">{{ Number(totalAfterCount) || 0 }}</span>
+          <span class="w50 textLeft">100%</span>
         </li>
       </ul>
     </div>
@@ -99,7 +98,7 @@
         </ul>
       </div>
     </div>
-<!--    {{ nonWbcClassListVal }}-->
+    <!--    {{ nonWbcClassListVal }}-->
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in nonWbcClassListVal" :key="outerIndex">
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
@@ -108,7 +107,7 @@
             <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
             <li class="wFit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
-          <ul style="width: 21%;">
+          <ul style="width: 29%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
             <li class="grayText" style="cursor: default; padding-left: -20px;">
               {{ Number(nWbcItem?.count.before) || 0 }}
@@ -116,11 +115,11 @@
                 / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span>
             </li>
           </ul>
-          <ul class="degree" style="width: 22%">
+          <ul class="degree" style="width: 27%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">
-                {{ Number(nWbcItem?.count.after) || 0 }}
-                <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
+            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">
+              {{ Number(nWbcItem?.count.after) || 0 }}
+              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
                 / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span></li>
           </ul>
         </div>
@@ -148,7 +147,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import { getWbcCustomClassApi } from "@/common/api/service/setting/settingApi";
+import {getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {
   basicBmClassList,
@@ -314,7 +313,7 @@ const toggleLockEvent = () => {
 }
 
 const commitConfirmed = () => {
-  if(props.selectItems?.submitState === 'Submit'){
+  if (props.selectItems?.submitState === 'Submit') {
     return;
   }
   showConfirm.value = true;
@@ -1067,9 +1066,9 @@ const beforeAfterChange = async (newItem: any) => {
       id: beforeItem.id,
       name: beforeItem.name,
       title: beforeItem.title,
-      count: { before: beforeItem.count, after: afterItem.count },
-      images: { before: beforeItem.images, after: afterItem.images },
-      percent: { before: beforeItem.percent, after: afterItem.percent },
+      count: {before: beforeItem.count, after: afterItem.count},
+      images: {before: beforeItem.images, after: afterItem.images},
+      percent: {before: beforeItem.percent, after: afterItem.percent},
       isChanged
     }
     wbcInfoVal.value.push(item);
@@ -1083,9 +1082,9 @@ const beforeAfterChange = async (newItem: any) => {
       id: beforeItem.id,
       name: beforeItem.name,
       title: beforeItem.title,
-      count: { before: beforeItem.count, after: afterItem.count },
-      images: { before: beforeItem.images, after: afterItem.images },
-      percent: { before: beforeItem.percent, after: afterItem.percent },
+      count: {before: beforeItem.count, after: afterItem.count},
+      images: {before: beforeItem.images, after: afterItem.images},
+      percent: {before: beforeItem.percent, after: afterItem.percent},
       isChanged
     }
     nonWbcClassListVal.value.push(item);
