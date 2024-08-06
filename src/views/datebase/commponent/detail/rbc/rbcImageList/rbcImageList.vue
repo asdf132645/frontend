@@ -129,7 +129,7 @@
           <ul class="classNmRbc">
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li @click="moveRbcClassEvent(category.categoryId, classInfo.classId, classInfo.classNm)">
+              <li v-if="classInfo.classNm !== 'Poikilocyte'" @click="moveRbcClassEvent(category.categoryId, classInfo.classId, classInfo.classNm)">
                 <span>{{ classInfo?.classNm }}</span>
               </li>
             </template>
