@@ -1,18 +1,18 @@
 <template>
   <div v-show="printReady" class="moveImgIsBool"> Loading Print...</div>
   <div
-      style="width: 900px; height: 90%; overflow-y: auto; background: #fff; color: #000; position: absolute; top: 10%; left: 33%; box-sizing: border-box; padding: 3rem 7rem; border: 2px solid #ccc; border-radius: 10px; z-index:9999;">
+      style="font-size: 0.8rem; width: 900px; height: 90%; overflow-y: auto; background: #fff; color: #000; position: absolute; top: 10%; left: 33%; box-sizing: border-box; padding: 3rem 7rem; border: 2px solid #ccc; border-radius: 10px; z-index:9999;">
     <button
         style="position: absolute; right: 8px; background: none; border: 1px solid #000; border-radius: 5px; padding: 7px 25px; top: 5px; cursor: pointer"
         @click="closePrint">Close
     </button>
     <div ref="printContent" style="margin-top: 20px;">
       <div>
-        <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">Analysis Report from UIMD
+        <h3 style="margin: 10px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">Analysis Report from UIMD
           {{ projectType === 'bm' ? 'BM' : 'PB' }} system</h3>
       </div>
       <div style="display: flex; flex-direction: column; justify-content: space-between;">
-        <table style="width: 100%;">
+        <table style="width: 100%; font-size: 0.8rem;">
           <colgroup>
             <col style="width: 30%;"/>
             <col style="width: 70%;"/>
@@ -60,9 +60,9 @@
         <div style="margin-top: 20px; border-top: 2px dotted #696969"></div>
         <!-- RBC Classification -->
         <div v-if="['01', '04'].includes(selectItems?.testType)" style="margin-top: 20px;">
-          <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification
+          <h3 style="margin: 10px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification
             result</h3>
-          <table style="width: 100%;">
+          <table style="width: 100%; font-size: 0.8rem;">
             <colgroup>
               <col style="width: 20%;"/>
               <col style="width: 25%;"/>
@@ -151,10 +151,10 @@
         </div>
 
         <!-- WBC Classification -->
-        <div style="margin-top: 20px; border-top: 2px dotted #696969">
-          <h3 style="margin: 40px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">
+        <div style="margin-top: 150px; margin-bottom: 50px; border-top: 2px dotted #696969">
+          <h3 style="margin: 10px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">
             {{ projectType === 'pb' ? 'WBC' : 'BM' }} classification result</h3>
-          <table style="width: 100%;">
+          <table style="width: 100%; font-size: 0.8rem;">
             <colgroup>
               <col style="width: 30%;"/>
               <col style="width: 45%;"/>
@@ -204,14 +204,15 @@
           <ul class="print"
               style="list-style: none; padding-left: 0; margin-top: 20px; text-align: center; display:flex; flex-direction: column; align-items: center; justify-content: center;">
             <li v-for="(item) in noImageList(wbcInfo)" :key="item.id" style="">
-              <div style="font-weight: bold; font-size: 18px; margin: 40px auto 20px;">{{ item?.title }} ({{
+              <div style="font-weight: bold; font-size: 18px; margin: 10px auto 20px;">{{ item?.title }} ({{
                   item?.count
                 }})
               </div>
-              <ul :class="'wbcImgWrap ' + item?.title" style="list-style: none; padding-left: 0; margin-top: 10px;text-align: left;">
+              <ul :class="'wbcImgWrap ' + item?.title"
+                  style="list-style: none; padding-left: 0; margin-top: 10px;text-align: left;">
                 <li v-for="(image) in item.images" :key="image.fileName"
                     style="display: inline-block; margin-right: 5px; margin-top: 5px; outline: 1px solid #2c2d2c; cursor: auto;">
-                  <div  style="position: relative; text-align: left;">
+                  <div style="position: relative; text-align: left;">
                     <img
                         :src="getImageUrl(image.fileName, item.id, item.title)"
                         v-if="!hiddenImages[`${item.id}-${image.fileName}`]"

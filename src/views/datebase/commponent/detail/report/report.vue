@@ -1,14 +1,17 @@
 <template>
 
-  <ClassInfoMenu @refreshClass="refreshClass" />
+  <ClassInfoMenu @refreshClass="refreshClass"/>
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
-    <LisCbc v-if="cbcLayer" :selectItems="selectItems" />
+    <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div class="reportDiv">
       <div class="wbcDiv shadowBox">
-        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
+        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
+                  @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged"
+                  :isCommitChanged="isCommitChanged"/>
       </div>
       <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
-        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report' @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged" />
+        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
+                  @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
       </div>
       <div class="reportDetail shadowBox">
         <div class="reportTitle">
@@ -42,7 +45,10 @@
             </tr>
             <tr>
               <th>Ordered Classification</th>
-              <td>{{ projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}</td>
+              <td>{{
+                  projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)
+                }}
+              </td>
             </tr>
             <tr>
               <th>Name</th>
@@ -80,7 +86,7 @@
                 <template v-if="shouldRenderCategory(item.title)">
                   <td>{{ item?.name }}</td>
                   <td>{{ item?.count }}</td>
-                  <td> {{ item?.percent || '-' }}</td>
+                  <td> {{ Number(item?.percent) || '0' }}</td>
                 </template>
               </tr>
               <tr>
@@ -103,7 +109,7 @@
                 <tr v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'">
                   <td>{{ getCategoryName(nWbcItem) }}</td>
                   <td>
-                    {{ nWbcItem?.count }}
+                    {{ Number(nWbcItem?.count) || 0 }}
                     <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
                         selectItems?.wbcInfo?.maxWbcCount
                       }} WBC</span>
@@ -140,7 +146,7 @@
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>
-                        {{ classInfo?.degree }}
+                        {{ Number(classInfo?.degree) || 0 }}
                       </li>
 
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
@@ -157,34 +163,36 @@
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Count</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>
-                        {{ classInfo?.originalDegree }}
+                        {{ Number(classInfo?.originalDegree) || 0 }}
                       </li>
 
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                        {{ shapeOthersCount }}
+                        {{ Number(shapeOthersCount) || 0 }}
                       </li>
 
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
-                        {{ malariaCount }}
+                        {{ Number(malariaCount) || 0 }}
                       </li>
                     </template>
 
-                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'">{{ sizeChromiaTotal }}</li>
-                    <li v-show="category?.categoryNm === 'Inclusion Body'">{{ shapeBodyTotal }}</li>
+                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'">
+                      {{ Number(sizeChromiaTotal) || 0 }}
+                    </li>
+                    <li v-show="category?.categoryNm === 'Inclusion Body'">{{ Number(shapeBodyTotal) || 0 }}</li>
                   </ul>
                   <ul class="printRbcPercent">
                     <li v-if="innerIndex === 0" class="mb1 liTitle">Percent</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                       <li>
-                        {{ percentageChange(classInfo?.originalDegree) }}
+                        {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
                       </li>
 
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                        {{ percentageChange(shapeOthersCount) }}
+                        {{ percentageChange(shapeOthersCount) || 0 }}
                       </li>
 
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
-                        {{ percentageChange(malariaCount) }}
+                        {{ percentageChange(malariaCount) || 0 }}
                       </li>
                     </template>
 
@@ -198,15 +206,17 @@
       </div>
     </div>
   </div>
-
-  <Print v-if="printOnOff" ref="printContent" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]" @printClose="printClose" />
+  <div ref="printContent">
+    <Print v-if="printOnOff" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]"
+           @printClose="printClose"/>
+  </div>
 </template>
 
 <script setup lang="ts">
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, onBeforeMount, onMounted, ref} from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
@@ -226,7 +236,6 @@ const store = useStore();
 const selectItems = ref<any>([]);
 const wbcInfo = ref<any>(null);
 const printOnOff = ref(false);
-const printContent = ref(null);
 const rbcInfo = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
@@ -241,6 +250,7 @@ const orderClass = ref<any>([]);
 const isLoading = ref(true);
 const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const nonWbcClassList = ref<any[]>([]);
+const printContent = ref<HTMLElement | null>(null);
 
 const rbcInfoPathAfter = ref<any>([]);
 const rbcTotalVal = ref(0);
@@ -258,6 +268,13 @@ onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
 
+const handleClickOutside = (event: MouseEvent) => {
+  if (printContent.value && !printContent.value.contains(event.target as Node) && printOnOff.value) {
+    printClose();
+  }
+};
+
+
 onMounted(async () => {
   await getDetailRunningInfo();
   isLoading.value = false;
@@ -270,6 +287,11 @@ onMounted(async () => {
     await reDegree();
     await calcShapeOthersCount();
   }
+  document.addEventListener('click', handleClickOutside);
+
+});
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 
 const getDetailRunningInfo = async () => {
@@ -294,8 +316,8 @@ const getShapeOthers = async () => {
   const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
   const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  const otherCount = { artifact: 0, doubleNormal: 0 };
-  if(!rbcInfoPathAfter){
+  const otherCount = {artifact: 0, doubleNormal: 0};
+  if (!rbcInfoPathAfter) {
     return;
   }
   rbcInfoPathAfter.forEach((item: any) => {
@@ -382,7 +404,6 @@ const rbcTotalAndReCount = async () => {
   sizeChromiaTotal.value = Number(total) + 1;
   chromiaTotalTwo.value = chromiaTotalval;
   shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
-
 
 
   // selectItems의 originalDegree 초기화
@@ -489,9 +510,10 @@ const printClose = () => {
 
 const wbcClassTileChange = (): string => !projectBm.value ? 'WBC Classification' : 'BM Classification';
 
-const printStart = () => {
+const printStart = (event: MouseEvent) => {
+  event.stopPropagation(); // 이벤트 전파를 막아 handleClickOutside 실행 방지
   printOnOff.value = true;
-}
+};
 
 const pageGo = (path: string) => {
   router.push(path)
