@@ -381,14 +381,13 @@ watch(() => props.classInfoArr, (newData) => {
     // data-class-nm이 newData에 존재하지 않으면 해당 <ol> 요소를 제거
     if (!validClassNmSet.has(classNm)) {
       console.log('Removing <ol> with data-class-nm:', classNm);
-      el.remove();
+      viewer.value.removeOverlay(el);
     }
   });
 
   // rbcMarker 함수 호출
   rbcMarker(newData);
-}, { deep: true });
-
+}, {deep: true});
 
 
 watch(classInfoArrNewReData, async (nenenen, oldItem) => {
@@ -591,7 +590,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
 
 const initElement = async () => {
   console.log(props.selectItems.slotId)
-  if(props.selectItems.slotId === undefined){
+  if (props.selectItems.slotId === undefined) {
     return;
   }
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -633,7 +632,7 @@ const initElement = async () => {
             return;
           }
 
-          const { canvas } = viewer.value.drawer;
+          const {canvas} = viewer.value.drawer;
           const magCanvas = document.createElement('canvas');
           const magCtx = magCanvas.getContext('2d');
           canvasOverlay.value = magCanvas;
@@ -673,7 +672,6 @@ const initElement = async () => {
           }
         },
       });
-
 
 
       // 캔버스 오버레이 생성 및 추가
@@ -814,35 +812,60 @@ const initElement = async () => {
             }
           }
         } else { // 쉬프트 키를 눌렀을 때
+          const clickPos = viewer.value.viewport.pointFromPixel(event.position);
+          const canvasPos = {
+            x: clickPos.x * viewer.value.source.width,
+            y: clickPos.y * viewer.value.source.height
+          };
 
+          // 함수: 클릭 위치가 아이템 위치와 겹치는지 확인
+          const isItemSelected = (item: any) => {
+            const width = item.width;
+            const height = item.height;
+            return (
+                canvasPos.x >= Number(item.posX) && canvasPos.x <= (Number(item.posX) + width) &&
+                canvasPos.y >= Number(item.posY) && canvasPos.y <= (Number(item.posY) + height)
+            );
+          };
+
+          // 선택된 아이템의 classNm 저장
+          let selectItm = '';
           for (const item of drawPath.value) {
-            if (item.classNm === "Normal") {
-              return;
+            if (item.classNm !== "Normal" && isItemSelected(item)) {
+              selectItm = item.classNm;
+              break; // 하나의 아이템만 선택됨
             }
-            const itemPos = item;
-            const categoryId = item.categoryId;
-            const color = 'lightgreen'; // 연한 연두색
-            moveRbcClass.value.push(item)
-            const element = document.createElement('ol');
-            element.className = 'overlayElement';
-            element.id = 'overlayElement';
-            element.setAttribute('data-category-id', categoryId);
-            element.setAttribute('data-class-nm', item.classNm);
-            element.style.width = item.width;
-            element.style.backgroundColor = color;
-            element.style.height = item.height;
-            element.style.position = 'absolute';
-            element.style.opacity = '0.5';
+          }
 
-            const posX = parseFloat(itemPos.posX);
-            const posY = parseFloat(itemPos.posY);
-            const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, item.width, item.height); // 이미지 좌표를 뷰포트 좌표로 변환
-            viewer.value.addOverlay({
-              element: element,
-              location: overlayRect
-            });
+          // 선택된 아이템의 classNm에 해당하는 모든 아이템 처리
+          for (const item of drawPath.value) {
+            if (item.classNm !== "Normal" && selectItm === item.classNm) {
+              console.log(item.classNm);
+              moveRbcClass.value.push(item);
+
+              const element = document.createElement('ol');
+              element.className = 'overlayElement';
+              element.id = 'overlayElement';
+              element.setAttribute('data-category-id', item.categoryId);
+              element.setAttribute('data-class-nm', item.classNm);
+              element.style.width = `${item.width}px`; // 픽셀 단위 추가
+              element.style.backgroundColor = 'lightgreen';
+              element.style.height = `${item.height}px`; // 픽셀 단위 추가
+              element.style.position = 'absolute';
+              element.style.opacity = '0.5';
+
+              const posX = parseFloat(item.posX);
+              const posY = parseFloat(item.posY);
+              const overlayRect = viewer.value.viewport.imageToViewportRectangle(posX, posY, item.width, item.height);
+              viewer.value.addOverlay({
+                element: element,
+                location: overlayRect
+              });
+            }
           }
         }
+
+
       });
 
 
