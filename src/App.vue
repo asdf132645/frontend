@@ -77,8 +77,7 @@ let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
-const isNsNbIntegration = computed(() => store.state.dataBaseSetDataModule.dataBaseSetData?.slotInfo.map((slot: any) => slot.isNsNbIntegration));
-
+const isNsNbIntegration = computed(() => store.state.commonModule.isNsNbIntegration);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
@@ -229,6 +228,7 @@ onMounted(async () => {
       }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
+    // isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || '';
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
 
@@ -272,6 +272,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
+
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'RBC_RE_CLASSIFICATION':
@@ -352,6 +353,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         console.log('err')
         await showSuccessAlert(messages.IDS_MSG_FAILED);
         break;
+      case 'SEARCH_CARD_COUNT':
+        break;
     }
 
     async function runnComp() {
@@ -412,8 +415,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          tcpReq().embedStatus.runIngComp.workingDone = data?.workingDone;
-          tcpReq().embedStatus.runIngComp.pbVersion = pbVersion.value;
           if (pbVersion.value !== '100a') {
             await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
             await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
@@ -464,6 +465,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
+        // const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
 
@@ -627,7 +629,11 @@ const emitSocketData = async (payload: object) => {
   await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
 };
 
+
+
 const sendSettingInfo = () => {
+  // const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
+
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
@@ -637,7 +643,7 @@ const sendSettingInfo = () => {
     isOilReset: 'N',
     deviceType: '01',
     // uiVersion: 'uimd-pb-comm_v2.0.102',
-    isNsNbIntegration: isNsNbIntegration.value || 'N',
+    isNsNbIntegration: isNsNbIntegration.value,
   };
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
@@ -683,13 +689,13 @@ const cellImgGet = async (newUserId?: string) => {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
+        await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }
-
   } catch (e) {
     console.log(e);
   }

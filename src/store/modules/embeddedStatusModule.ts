@@ -11,6 +11,8 @@ export interface SystemInfo {
     isDoorOpen: string;
     oilCount: string;
     storageSize: string;
+    currentCardCount: string;
+    currentCardName: string;
 }
 
 export interface EmbeddedStatusState {
@@ -53,6 +55,8 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
             isDoorOpen: '',
             oilCount: '',
             storageSize: '',
+            currentCardCount: '',
+            currentCardName: '',
         },
         isInit: '',
     }),

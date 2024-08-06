@@ -22,6 +22,10 @@
         <span class="proSpan">Oil Count</span>
         <span class="proVal">{{ prevOilCount }}</span>
       </li>
+      <li>
+        <span class="proSpan">{{ currentCardName }}</span>
+        <span class="proVal">{{ currentCardCount }}</span>
+      </li>
     </ul>
   </div>
 </template>
@@ -44,14 +48,18 @@ const processInfoItem = ref<any>({});
 const prevOilCount = ref<string | null>(null);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
+const currentCardCount = ref('');
+const currentCardName = ref('');
 
 watch([embeddedStatusJobCmd.value], async (newVal) => {
   if (newVal.length > 0) {
     const sysInfo = newVal[0].sysInfo;
     if(sysInfo.oilCount !== prevOilCount.value){
       processInfoItem.value.oilCount = sysInfo.oilCount;
-      prevOilCount.value = sysInfo.oilCount
+      prevOilCount.value = sysInfo.oilCount;
     }
+    currentCardCount.value = sysInfo.currentCardCount;
+    currentCardName.value = sysInfo.currentCardName;
   }
 })
 

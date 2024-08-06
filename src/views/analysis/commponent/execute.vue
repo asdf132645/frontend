@@ -1,7 +1,7 @@
 <template>
   <div class="execute">
     <div class='startDiv'>
-      <select v-model="analysisType" :disabled="isRunningState">
+      <select v-model="analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
         <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
@@ -69,6 +69,7 @@ import {testBmTypeList, wbcRunningCount} from "@/common/defines/constFile/settin
 import Confirm from "@/components/commonUi/Confirm.vue";
 import router from "@/router";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 
 const store = useStore();
@@ -113,6 +114,7 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
 
 onMounted(async () => {
   await initDataExecute();
+  await sendSearchCardCount();
 });
 
 const initDataExecute = async () => {
@@ -198,6 +200,17 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 const emitSocketData = async (type: string, payload: object) => {
   EventBus.publish('childEmitSocketData', payload);
 };
+
+const sendSearchCardCount = () => {
+  const reqDttm = getDateTimeStr(); // 현재 날짜와 시간을 가져오는 함수
+  const req = {
+    jobCmd: 'SEARCH_CARD_COUNT',
+    reqUserId: userId.value,
+    reqDttm: reqDttm,
+    testType: analysisType.value,
+  }
+  EventBus.publish('childEmitSocketData', req);
+}
 
 const toggleStartStop = (action: 'start' | 'stop') => {
   if (action === 'start') {

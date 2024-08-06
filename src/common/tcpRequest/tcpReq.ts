@@ -68,8 +68,6 @@ export const tcpReq:any = () => {
                 jobCmd: 'RUNNING_COMP',
                 reqUserId: '',
                 reqDttm: reqDttm,
-                workingDone: '',
-                pbVersion: '',
             },
             recovery: {
                 jobCmd: 'RECOVERY',
@@ -106,7 +104,13 @@ export const tcpReq:any = () => {
                 jobCmd: 'clientExit',
                 reqUserId: '',
                 reqDttm: reqDttm,
-            }
+            },
+            searchCardCount: {
+                jobCmd: 'SEARCH_CARD_COUNT',
+                reqUserId: '',
+                reqDttm: reqDttm,
+                testType: '',
+            },
         },
     };
 };

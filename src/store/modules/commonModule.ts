@@ -48,6 +48,7 @@ export interface CommonState {
     dataBasePageReset: boolean;
     resetAnalyzing: boolean;
     testType: string;
+    isNsNbIntegration: string;
 }
 
 interface CommonModule {
@@ -102,6 +103,7 @@ interface CommonModule {
         setDataBasePageReset: (state: CommonState, value: boolean) => void;
         setResetAnalyzing: (state: CommonState, value: boolean) => void;
         setTestType: (state: CommonState, value: string) => void;
+        setIsNsNbIntegration: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -157,6 +159,7 @@ export const commonModule: CommonModule = {
         dataBasePageReset: false,
         resetAnalyzing: false,
         testType: '',
+        isNsNbIntegration: 'N',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -306,6 +309,9 @@ export const commonModule: CommonModule = {
         },
         setTestType(state: CommonState, value: string): void {
             state.testType = value;
+        },
+        setIsNsNbIntegration(state: CommonState, value: string): void {
+            state.isNsNbIntegration = value;
         },
 
     },
@@ -458,6 +464,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('testType')){
                 commit('setTestType', payload.testType);
+            }
+            if (payload.hasOwnProperty('isNsNbIntegration')) {
+                commit('setIsNsNbIntegration', payload.isNsNbIntegration);
             }
         },
     },
