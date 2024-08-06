@@ -394,7 +394,7 @@ const uploadLis = () => {
           wbcInfo: wbcTemp
         }
         const parmsLisCopy = {
-          filePath: `${pbiaRootDir.value}\\lisUploadCopyData\\${props.selectItems?.barcodeNo}.txt`,
+          filePath: `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`,
           data: paramsData,
         };
         createCbcFile(parmsLisCopy);
@@ -751,7 +751,7 @@ const godae = (): string => {
 
 const lisFileUrlCreate = async (data: any) => {
   const parmsLisCopy = {
-    filePath: `${pbiaRootDir.value}\\lisUploadCopyData\\${props.selectItems?.barcodeNo}.txt`,
+    filePath: `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`,
     data: data,
   };
   createCbcFile(parmsLisCopy);
