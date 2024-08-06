@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onBeforeMount, ref, watch} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
@@ -66,6 +66,7 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    console.log(selectItems.value)
   } catch (e) {
     console.log(e);
     selectItems.value = null;
