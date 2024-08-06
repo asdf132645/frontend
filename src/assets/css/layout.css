@@ -1697,6 +1697,7 @@ table.defaultTable tbody td {
 .filterDivBox {
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     position: absolute;
     top: 0;
     background: var(--black-color);
@@ -1712,6 +1713,7 @@ table.defaultTable tbody td {
 }
 .filterDivBox > div {
     padding-bottom: 2rem;
+    width: 100%;
 }
 
 .filterDivBox > div > span {
@@ -1721,7 +1723,7 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox input {
-    width: 85%;
+    width: 90%;
 }
 
 .filterDivBox select {

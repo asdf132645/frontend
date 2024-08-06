@@ -37,7 +37,7 @@
             <span>NR count</span>
             <input type="text" v-model="nrCount"/>
           </div>
-          <div class="wbcTotal">
+          <div>
             <span>WBC Total</span>
             <select v-model="wbcCountOrder">
               <option value="all">Do Not Select</option>
@@ -197,6 +197,10 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', closeClassListBox);
 });
 
+watchEffect(() => {
+  console.log('titleItem.value', titleItem.value);
+})
+
 const closeClassListBox = (event: MouseEvent) => {
   const selectBox = document.querySelector('.filterDivBox');
   const selectButton = document.querySelector('.classificationListBtn');
@@ -311,6 +315,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   }
   if (titleItemArr.value.length !== 0) {
     requestData.title = titleItemArr.value;
+    titleItem.value = titleItemArr.value
   }
 
   if (testType.value !== '00' && testType.value !== '') {
@@ -358,6 +363,10 @@ const getDbData = async (type: string, pageNum?: number) => {
 
         // dbGetData.value = Array.from(new Set(dbGetData.value.map(item => item.id))).map(id => dbGetData.value.find(item => item.id === id));
         titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
+        for (const item of titleItem.value) {
+          item.checked = false;
+        }
+
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
           dbGetData.value = dbGetData.value.sort((a, b) => {
             const dateA = moment(a.analyzedDttm, 'YYYYMMDDHHmmssSSS');
