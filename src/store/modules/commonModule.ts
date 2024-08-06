@@ -54,6 +54,8 @@ export interface CommonState {
     beforeSettingFormattedString: string;
     afterSettingFormattedString: string;
     settingChangedChecker: boolean;
+    dbListDataFirstNum: number;
+    dbListDataLastNum: number;
 }
 
 interface CommonModule {
@@ -114,6 +116,8 @@ interface CommonModule {
         setBeforeSettingFormattedString: (state: CommonState, value: string) => void;
         setAfterSettingFormattedString: (state: CommonState, value: string) => void;
         setSettingChangedChecker: (state: CommonState, value: boolean) => void;
+        setDbListDataFirstNum: (state: CommonState, value: number) => void;
+        setDbListDataLastNum: (state: CommonState, value: number) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -175,6 +179,8 @@ export const commonModule: CommonModule = {
         beforeSettingFormattedString: '',
         afterSettingFormattedString: '',
         settingChangedChecker: false,
+        dbListDataFirstNum: 0,
+        dbListDataLastNum: 0,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -342,8 +348,13 @@ export const commonModule: CommonModule = {
         },
         setSettingChangedChecker(state: CommonState, value: boolean): void {
             state.settingChangedChecker = value;
-        }
-
+        },
+        setDbListDataFirstNum(state: CommonState, value: number): void {
+            state.dbListDataFirstNum = value;
+        },
+        setDbListDataLastNum(state: CommonState, value: number): void {
+            state.dbListDataLastNum = value;
+        },
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -512,6 +523,12 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('settingChangedChecker')) {
                 commit('setSettingChangedChecker', payload.settingChangedChecker);
+            }
+            if (payload.hasOwnProperty('dbListDataFirstNum')) {
+                commit('setDbListDataFirstNum', payload.dbListDataFirstNum);
+            }
+            if (payload.hasOwnProperty('dbListDataLastNum')) {
+                commit('setDbListDataLastNum', payload.dbListDataLastNum);
             }
         },
     },
