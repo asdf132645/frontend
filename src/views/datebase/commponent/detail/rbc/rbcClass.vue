@@ -379,6 +379,8 @@ watch(() => props.rbcInfo, async (newItem) => {
 watch(() => resetRbcArr, async (newItem) => {
   if (newItem) {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
+    await rbcTotalAndReCount();
+    await countReAdd();
   }
 }, {deep: true})
 
