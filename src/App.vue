@@ -273,6 +273,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
 
+    console.log("마지막 값을 보자", parseDataWarp);
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'RBC_RE_CLASSIFICATION':
@@ -294,6 +295,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
         break;
       case 'INIT':
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
         sendSettingInfo();
         break;
       case 'START':
@@ -629,8 +631,6 @@ const emitSocketData = async (payload: any) => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
   await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
 };
-
-
 
 const sendSettingInfo = () => {
   const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration') || '';
