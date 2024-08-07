@@ -980,20 +980,24 @@ async function moveSelectedImagesToTargetItem(targetItem: any) {
   const targetIndex = wbcInfo.value.findIndex((item: any) => (item.title || item.abbreviation) === (targetItem.title || targetItem.abbreviation));
   const selectedImages = selectedClickImages.value;
   await addToRollbackHistory();
+
+  const selectedImagesToMove = [];
   for (const selectedImage of selectedImages) {
     const sourceItemIndex = wbcInfo.value.findIndex((item: any) => (item.title || item.abbreviation) === (selectedImage.title || selectedImage.abbreviation));
     const sourceItem = wbcInfo.value[sourceItemIndex];
     const imageIndex = sourceItem.images.findIndex((image: any) => image.fileName === selectedImage.fileName);
     if (imageIndex !== -1) {
-      // 이동된 이미지 정보를 moveImage 함수로 전달하여 데이터 업데이트
-      await moveImage(targetIndex, [{
+      selectedImagesToMove.push({
         fileName: selectedImage.fileName,
         id: selectedImage.id,
         title: selectedImage.title
-      }], targetItem, wbcInfo.value[targetIndex], true, 'keyMove');
+      });
     }
   }
 
+  if (selectedImagesToMove.length > 0) {
+    await moveImage(targetIndex, selectedImagesToMove, selectedImages, targetItem, true, 'keyMove');
+  }
 }
 
 
@@ -1227,11 +1231,13 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     fileNames.push(fileName);
     try {
       if (keyMove === 'keyMove') { // 단축키로 움직였을 경우
+        const formattedTargetItemId = targetItem.id < 10 ? `0${targetItem.id}` : targetItem.id;
+
         const classInfoBagic = window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
         const matchingItem = classInfoBagic.find(item => item.abbreviation === (selectedImage.title || selectedImage.abbreviation));
         const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${selectedImage.title}` :
             `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${matchingItem?.id}_${draggedItem[idx].title}`;
-        const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
+        const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${formattedTargetItemId}_${targetItem.abbreviation}`;
         destinationFolders.push(destinationFolder);
         sourceFolders.push(sourceFolder);
       } else if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시

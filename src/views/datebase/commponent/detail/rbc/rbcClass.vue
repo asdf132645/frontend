@@ -218,15 +218,15 @@
         <ul class="rbcPercent"></ul>
       </div>
     </div>
-<!--    <div class="sensitivityDiv" v-if="type !== 'report'">-->
-<!--      <select v-model="selectedClass" @change="classChange">-->
-<!--        <option v-for="(item) in rightClickItem" :key="item.classNm">-->
-<!--          {{ item.classNm }}-->
-<!--        </option>-->
-<!--      </select>-->
-<!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
-<!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
-<!--    </div>-->
+    <!--    <div class="sensitivityDiv" v-if="type !== 'report'">-->
+    <!--      <select v-model="selectedClass" @change="classChange">-->
+    <!--        <option v-for="(item) in rightClickItem" :key="item.classNm">-->
+    <!--          {{ item.classNm }}-->
+    <!--        </option>-->
+    <!--      </select>-->
+    <!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
+    <!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
+    <!--    </div>-->
   </div>
   <Alert
       v-if="showAlert"
@@ -248,7 +248,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance } from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -346,7 +346,7 @@ watch(() => props.selectItems, async (newItem) => {
 
 const rightClickItemSet = () => {
   rightClickItem.value = [];
-  if(!props.selectItems?.rbcInfo){
+  if (!props.selectItems?.rbcInfo) {
     return;
   }
   const processItems = props.selectItems?.rbcInfo.rbcClass || props.selectItems?.rbcInfo;
@@ -373,8 +373,10 @@ watch(() => props.rbcInfo, async (newItem) => {
   await rbcTotalAndReCount();
   await countReAdd();
   await getRbcDegreeData();
-  await reDegree();
-
+  await reDegree(rbcInfoBeforeVal.value);
+  await reDegree(rbcInfoAfterVal.value);
+  console.log('rbcInfoBeforeVal.value', rbcInfoBeforeVal.value);
+  console.log('rbcInfoAfterVal.value', rbcInfoAfterVal.value);
 });
 
 watch(() => resetRbcArr, async (newItem) => {
@@ -402,7 +404,8 @@ watch(() => rbcReData, async (newItem) => {
       await rbcTotalAndReCount();
       await countReAdd();
       await getRbcDegreeData();
-      await reDegree();
+      await reDegree(rbcInfoBeforeVal.value);
+      await reDegree(rbcInfoAfterVal.value);
     }, 1000);
   }
 
@@ -485,13 +488,13 @@ const rbcTotalAndReCount = async () => {
   countArtifact.value = 0;
   countDoubleNormal.value = 0;
   rbcInfoPathAfter.value.forEach(el => {
-    if(el.categoryId === '03'){
+    if (el.categoryId === '03') {
       for (const classItem of el.classInfo) {
-          if(classItem.classNm === 'Artifact'){
-            countArtifact.value += 1
-          }else if(classItem.classNm === 'DoubleNormal'){
-            countDoubleNormal.value += 1
-          }
+        if (classItem.classNm === 'Artifact') {
+          countArtifact.value += 1
+        } else if (classItem.classNm === 'DoubleNormal') {
+          countDoubleNormal.value += 1
+        }
       }
     }
     switch (el.categoryId) {
@@ -516,7 +519,7 @@ const rbcTotalAndReCount = async () => {
   sizeChromiaTotal.value = Number(total);
   chromiaTotalTwo.value = chromiaTotalval;
   bodyTotal.value = Number(inclusionBody);
-  shapeTotal.value=  Number(shapeTotalVal);
+  shapeTotal.value = Number(shapeTotalVal);
   shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
 
 }
@@ -531,7 +534,7 @@ const percentageChange = (count: any): any => {
 
 const classChange = async () => {
   const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
-  if(!Array.isArray(rbcData)){
+  if (!Array.isArray(rbcData)) {
     return;
   }
   const category = rbcData.find((el: any) => el.categoryNm === selectedClass.value);
@@ -661,7 +664,7 @@ const afterChange = async (newItem?: any) => {
     const result: any = await detailRunningApi(String(selectedSampleId.value));
     rbcInfoAfterVal.value = result.data.rbcInfoAfter;
 
-    await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: result.data.rbcInfoAfter });
+    await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: result.data.rbcInfoAfter});
   }
   await classChange();
 }
@@ -749,7 +752,7 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
 }
 
 const toggleAll = (check: boolean, category?: any) => {
-  if(props.notCanvasClickVal){
+  if (props.notCanvasClickVal) {
     return;
   }
   let allCheckboxes: any = [];
@@ -789,7 +792,7 @@ const toggleAll = (check: boolean, category?: any) => {
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
-  if(props.notCanvasClickVal){
+  if (props.notCanvasClickVal) {
     return;
   }
   if (isChecked) {
@@ -908,7 +911,7 @@ const hideAlert = () => {
 };
 
 const commitConfirmed = () => {
-  if(submitState.value === 'Submit'){
+  if (submitState.value === 'Submit') {
     return;
   }
   showConfirm.value = true;
@@ -950,21 +953,25 @@ const getRbcDegreeData = async () => {
   }
 };
 
-const reDegree = async () => {
-  if (projectType.value === 'bm') return;
-
-  let totalCount = rbcTotalVal.value;
-  let sizeTotal = sizeChromiaTotal.value;
-  let chromiaTotal = chromiaTotalTwo.value;
-  if(!Array.isArray(rbcInfoBeforeVal.value)){
+const reDegree = async (rbcInfoArray: any) => {
+  if (!rbcInfoArray || !Array.isArray(rbcInfoArray) || rbcInfoArray.length === 0) {
     return;
   }
-  rbcInfoBeforeVal.value.forEach((rbcCategory: any, idx1: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
-      if (!rbcDegreeStandard.value) {
+
+  const {projectTypeVal, rbcTotal, sizeChromiaTotal, chromiaTotalTwo, degreeStandards} = rbcInfoArray[0];
+
+  if (projectTypeVal === 'bm') return;
+
+  let totalCount = rbcTotal;
+  let sizeTotal = sizeChromiaTotal;
+  let chromiaTotal = chromiaTotalTwo;
+
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
+      if (!degreeStandards) {
         return;
       }
-      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+      degreeStandards.forEach((degreeStandard) => {
         if (
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
@@ -985,7 +992,7 @@ const reDegree = async () => {
             percent = 0;
           }
 
-          const setDegree = (value: any) => (rbcClass.degree = value);
+          const setDegree = (value) => (rbcClass.degree = value);
 
           // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');
@@ -995,17 +1002,17 @@ const reDegree = async () => {
           else if (percent < Number(degreeStandard.degree3)) setDegree('2');
           // 3
           else setDegree('3');
-
         }
       });
     });
   });
-  rbcInfoBeforeVal.value.forEach((rbcCategory: any, idx1: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any, idx2: any) => {
-      if (!rbcDegreeStandard.value) {
+
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
+      if (!degreeStandards) {
         return;
       }
-      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+      degreeStandards.forEach((degreeStandard) => {
         if (
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
@@ -1026,7 +1033,7 @@ const reDegree = async () => {
             percent = 0;
           }
 
-          const setDegree = (value: any) => (rbcClass.degree = value);
+          const setDegree = (value) => (rbcClass.degree = value);
 
           // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');
@@ -1036,15 +1043,13 @@ const reDegree = async () => {
           else if (percent < Number(degreeStandard.degree3)) setDegree('2');
           // 3
           else setDegree('3');
-
         }
       });
     });
   });
 
-
-  rbcInfoBeforeVal.value.forEach((rbcCategory: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any) => {
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
       // size
       if (rbcCategory.categoryId === '01') {
         if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
@@ -1079,8 +1084,7 @@ const reDegree = async () => {
       }
     });
   });
-  rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
-  // console.log(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value))
-}
+};
+
 
 </script>
