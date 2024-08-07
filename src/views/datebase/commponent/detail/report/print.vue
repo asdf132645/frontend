@@ -182,15 +182,14 @@
 
 
             <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
-            <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
+
               <template v-for="item in nonWbcClassList" :key="item.id">
-                <tr>
+                <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
                   <td style="text-align: left; padding: 5px 0; width: 30%;">{{ item.name }}</td>
                   <td style="text-align: left; padding: 5px 0; width: 45%;">{{ item.count }}</td>
                   <td style="text-align: left; padding: 5px 0; width: 25%;">-</td>
                 </tr>
               </template>
-            </tr>
             <tr style="padding-bottom: 5px;">
               <th style="text-align: left; padding: 15px 0;">Comment</th>
               <td v-show="selectItems?.wbcMemo" colspan="2" style="text-align: left; padding: 5px 0;">
