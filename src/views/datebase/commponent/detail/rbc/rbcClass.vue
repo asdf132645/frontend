@@ -335,7 +335,6 @@ watch(() => props.allCheckClear, (newItem) => {
 }, {deep: true})
 
 watch(() => props.selectItems, async (newItem) => {
-  console.log('selectItems')
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
@@ -375,9 +374,10 @@ watch(() => props.rbcInfo, async (newItem) => {
   await countReAdd();
   await getRbcDegreeData();
   await reDegree(rbcInfoBeforeVal.value);
-  await reDegree(rbcInfoAfterVal.value);
-  // console.log('rbcInfoBeforeVal.value', rbcInfoBeforeVal.value);
-  // console.log('rbcInfoAfterVal.value', rbcInfoAfterVal.value);
+  if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
+    await reDegree(rbcInfoAfterVal.value);
+  }
+
 });
 
 watch(() => resetRbcArr, async (newItem) => {
@@ -406,7 +406,9 @@ watch(() => rbcReData, async (newItem) => {
       await countReAdd();
       await getRbcDegreeData();
       await reDegree(rbcInfoBeforeVal.value);
-      await reDegree(rbcInfoAfterVal.value);
+      if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
+        await reDegree(rbcInfoAfterVal.value);
+      }
     }, 1000);
   }
 
