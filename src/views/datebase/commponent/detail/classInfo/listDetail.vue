@@ -616,11 +616,21 @@ const getWbcHotKeyClasses = async () => {
 
 function isBorderChanged(image: any) {
   const prefix = image.fileName.split('_')[0];
+  const pp = sessionStorage.getItem('isNsNbIntegration');
+  const ppText = JSON.parse(JSON.stringify(pp));
+  let replacements: any = {}
+  if(ppText === 'N'){
+    replacements = {
+      'NES': 'NS',
+      'NEB': 'NB'
+    };
+  }else{
+    replacements = {
+      'NES': 'NE',
+      'NEB': 'NB'
+    };
+  }
 
-  const replacements: any = {
-    'NES': 'NS',
-    'NEB': 'NB'
-  };
 
   const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
@@ -630,11 +640,20 @@ function isBorderChanged(image: any) {
 }
 
 function replaceFileNamePrefix(fileName: string) {
-  const replacements: any = {
-    'NES': 'NS',
-    'NEB': 'NB'
-  };
-
+  const pp = sessionStorage.getItem('isNsNbIntegration');
+  const ppText = JSON.parse(JSON.stringify(pp));
+  let replacements: any = {}
+  if(ppText === 'N'){
+    replacements = {
+      'NES': 'NS',
+      'NEB': 'NB'
+    };
+  }else{
+    replacements = {
+      'NES': 'NE',
+      'NEB': 'NB'
+    };
+  }
   const prefix = fileName.split('_')[0];
 
   // 대체 규칙에 따라 prefix를 변경
