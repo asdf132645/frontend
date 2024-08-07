@@ -954,24 +954,21 @@ const getRbcDegreeData = async () => {
 };
 
 const reDegree = async (rbcInfoArray: any) => {
-  if (!rbcInfoArray || !Array.isArray(rbcInfoArray) || rbcInfoArray.length === 0) {
+
+  if (projectType.value === 'bm') return;
+
+  let totalCount = rbcTotalVal.value;
+  let sizeTotal = sizeChromiaTotal.value;
+  let chromiaTotal = chromiaTotalTwo.value;
+  if(!Array.isArray(rbcInfoBeforeVal.value)){
     return;
   }
-
-  const {projectTypeVal, rbcTotal, sizeChromiaTotal, chromiaTotalTwo, degreeStandards} = rbcInfoArray[0];
-
-  if (projectTypeVal === 'bm') return;
-
-  let totalCount = rbcTotal;
-  let sizeTotal = sizeChromiaTotal;
-  let chromiaTotal = chromiaTotalTwo;
-
   rbcInfoArray.forEach((rbcCategory) => {
     rbcCategory.classInfo.forEach((rbcClass) => {
-      if (!degreeStandards) {
+      if (!rbcDegreeStandard.value) {
         return;
       }
-      degreeStandards.forEach((degreeStandard) => {
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
         if (
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
@@ -991,8 +988,7 @@ const reDegree = async (rbcInfoArray: any) => {
           if (isNaN(percent)) {
             percent = 0;
           }
-
-          const setDegree = (value) => (rbcClass.degree = value);
+          const setDegree = (value: any) => (rbcClass.degree = value);
 
           // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');
@@ -1009,10 +1005,10 @@ const reDegree = async (rbcInfoArray: any) => {
 
   rbcInfoArray.forEach((rbcCategory) => {
     rbcCategory.classInfo.forEach((rbcClass) => {
-      if (!degreeStandards) {
+      if (!rbcDegreeStandard.value) {
         return;
       }
-      degreeStandards.forEach((degreeStandard) => {
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
         if (
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
@@ -1033,7 +1029,7 @@ const reDegree = async (rbcInfoArray: any) => {
             percent = 0;
           }
 
-          const setDegree = (value) => (rbcClass.degree = value);
+          const setDegree = (value: any) => (rbcClass.degree = value);
 
           // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');

@@ -66,7 +66,6 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
-    console.log(selectItems.value)
   } catch (e) {
     console.log(e);
     selectItems.value = null;
