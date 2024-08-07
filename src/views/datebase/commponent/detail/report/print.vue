@@ -182,14 +182,14 @@
 
 
             <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
-            <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
-              <template v-for="item in nonWbcClassList" :key="item.id">
-                <td style="text-align: left; padding: 5px 0;">{{ item.name }}</td>
-                <td style="text-align: left; padding: 5px 0;">{{ item.count }}</td>
-                <td style="text-align: left; padding: 5px 0;">-</td>
 
+              <template v-for="item in nonWbcClassList" :key="item.id">
+                <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
+                  <td style="text-align: left; padding: 5px 0; width: 30%;">{{ item.name }}</td>
+                  <td style="text-align: left; padding: 5px 0; width: 45%;">{{ item.count }}</td>
+                  <td style="text-align: left; padding: 5px 0; width: 25%;">-</td>
+                </tr>
               </template>
-            </tr>
             <tr style="padding-bottom: 5px;">
               <th style="text-align: left; padding: 15px 0;">Comment</th>
               <td v-show="selectItems?.wbcMemo" colspan="2" style="text-align: left; padding: 5px 0;">
@@ -549,22 +549,32 @@ const getImagePrintData = async () => {
     if (result && result.data) {
       const data = result.data;
 
-      if (!data || (data instanceof Array && data.length === 0)) {
-        console.log(null);
-      } else {
-        imagePrintAndWbcArr.value = data.filter((item) => item.checked).map(item => item.classId);
+      imagePrintAndWbcArr.value = data.filter((item) => item.checked).map(item => item.classId);
 
-        // count가 없는 경우 print에서 보여줄 wbcInfo에서 제거
-        wbcInfo.value = wbcInfo.value.filter((item: any) => item.count !== '0');
+      // count가 없는 경우 print에서 보여줄 wbcInfo에서 제거
+      wbcInfo.value = wbcInfo.value.filter((item: any) => item.count !== '0');
 
-        // wbcClassification Order 적용
-        const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
-        const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
-        const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
-        wbcInfo.value = sortedWbcInfoData;
-        nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
-        console.log('nonWbcClassList', nonWbcClassList.value);
-      }
+      // wbcClassification Order 적용
+      const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+      const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
+      const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
+      wbcInfo.value = sortedWbcInfoData;
+      nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
+      // if (!data || (data instanceof Array && data.length === 0)) {
+      //   console.log(null);
+      // } else {
+      //   imagePrintAndWbcArr.value = data.filter((item) => item.checked).map(item => item.classId);
+      //
+      //   // count가 없는 경우 print에서 보여줄 wbcInfo에서 제거
+      //   wbcInfo.value = wbcInfo.value.filter((item: any) => item.count !== '0');
+      //
+      //   // wbcClassification Order 적용
+      //   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+      //   const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
+      //   const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
+      //   wbcInfo.value = sortedWbcInfoData;
+      //   nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
+      // }
     }
   } catch (e) {
     console.error(e);
