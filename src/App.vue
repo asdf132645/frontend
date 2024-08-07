@@ -11,6 +11,7 @@
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
+                :canInitialize="canInitialize"
       />
     </main>
     <Alert
@@ -91,6 +92,7 @@ const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
+const canInitialize = ref(false);
 
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
@@ -256,18 +258,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
-      instance?.appContext.config.globalProperties.$socket.emit('message', {
-        type: 'SEND_DATA',
-        payload: {
-          jobCmd: 'clientExit',
-          reqUserId: '',
-          reqDttm: '',
-        }
-      });
       // sessionStorage.clear();
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      canInitialize.value = false;
       return
     }
+    canInitialize.value = true;
 
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
@@ -275,7 +271,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
 
-    console.log("마지막 값을 보자", parseDataWarp);
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
       case 'RBC_RE_CLASSIFICATION':

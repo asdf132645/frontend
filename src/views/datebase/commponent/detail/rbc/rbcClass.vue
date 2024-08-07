@@ -629,6 +629,17 @@ const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
 
 
 const afterChange = async (newItem?: any) => {
+
+  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
+    const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const updatedItem = {
+      submitState: 'checkFirst',
+    };
+
+    const updatedRuningInfo = {...result.data, ...updatedItem}
+    await resRunningItem(updatedRuningInfo, false);
+  }
+
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   let rbcData: any = {};
