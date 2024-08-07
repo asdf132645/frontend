@@ -239,7 +239,7 @@ onMounted(async () => {
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
 
   // 첫 진입시
-  if (props.selectItems?.submitState === "") {
+  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
     const updatedItem = {
       submitState: 'checkFirst',
@@ -1097,7 +1097,7 @@ const beforeAfterChange = async (newItem: any) => {
     nonWbcClassListVal.value.push(item);
   }
 
-  if (props.selectItems?.submitState === "") {
+  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
     const updatedItem = {
       submitState: 'checkFirst',

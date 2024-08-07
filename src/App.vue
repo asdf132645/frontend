@@ -11,6 +11,7 @@
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
+                :canInitialize="canInitialize"
       />
     </main>
     <Alert
@@ -39,7 +40,7 @@ import {
   onBeforeUnmount,
   onBeforeMount,
   provide,
-  onUnmounted
+  onUnmounted, watchEffect
 } from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
@@ -91,7 +92,7 @@ const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
-
+const canInitialize = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -256,18 +257,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
-      instance?.appContext.config.globalProperties.$socket.emit('message', {
-        type: 'SEND_DATA',
-        payload: {
-          jobCmd: 'clientExit',
-          reqUserId: '',
-          reqDttm: '',
-        }
-      });
       // sessionStorage.clear();
       await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      canInitialize.value = false;
       return
     }
+    canInitialize.value = true;
 
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
@@ -284,6 +279,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'SYSINFO':
         const res = await sysInfoStore(parseDataWarp);
+        canInitialize.value = true;
         if(res !== null){
           showErrorAlert(res);
         }
@@ -628,7 +624,6 @@ const runInfoPostWebSocket = async () => {
 };
 
 const emitSocketData = async (payload: any) => {
-  console.log('emitSocketData', payload)
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
   await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
 };

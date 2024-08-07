@@ -1,6 +1,6 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <Execute @initDataChangeText="initDataChangeText"/>
+    <Execute @initDataChangeText="initDataChangeText" :canInitialize="canInitialize" />
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
@@ -31,7 +31,7 @@ const emits = defineEmits();
 
 const store = useStore();
 const bmIsBoolen = ref(false);
-const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
+const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette', 'canInitialize']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);

@@ -136,7 +136,8 @@
             <tr>
               <th style="text-align: left; padding: 15px 0;">Others</th>
               <th style="text-align: left; padding: 15px 0;">Platelets</th>
-              <th style="text-align: left; padding: 15px 0;" colspan="3">{{ pltCount }} PLT / 1000 RBC</th>
+              <th></th>
+              <th style="text-align: left; padding: 15px 0;" colspan="2">{{ pltCount }} PLT / 1000 RBC</th>
             </tr>
             <tr>
               <th style="text-align: left; padding-top: 15px;">Comment</th>
@@ -281,7 +282,6 @@ const printReady = ref(false);
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
-  console.log('wbcInfo.value', wbcInfo.value);
   await getOrderClass();
   await getImagePrintData();
   if (projectType !== 'bm') {
@@ -442,7 +442,6 @@ const countReAdd = async () => {
       for (const xel of el.classInfo) {
         if (xel.classNm === 'Malaria') {
           malariaTotal += 1;
-          console.log(malariaTotal)
         }
       }
     }
@@ -485,7 +484,6 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   if (!showImage) {
     return '';
   }
-  console.log("SHOW_IMAGES", showImage, id);
 
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
@@ -565,6 +563,7 @@ const getImagePrintData = async () => {
         const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
         wbcInfo.value = sortedWbcInfoData;
         nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
+        console.log('nonWbcClassList', nonWbcClassList.value);
       }
     }
   } catch (e) {
