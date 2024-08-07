@@ -883,10 +883,10 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
         await rbcTotalAndReCount();
         await countReAdd();
         await getRbcDegreeData();
-        await reDegree(rbcInfoBeforeVal.value);
-        await reDegree(rbcInfoAfterVal.value);
-        rightClickItemSet();
-        allCheckType.value = true;
+        // await reDegree(rbcInfoBeforeVal.value);
+        // await reDegree(rbcInfoAfterVal.value);
+        // rightClickItemSet();
+        // allCheckType.value = true;
       }
       if (alertShow) {
         showSuccessAlert('success');
@@ -965,7 +965,7 @@ const getRbcDegreeData = async () => {
 };
 
 const reDegree = async (rbcInfoArray: any) => {
-
+  console.log(projectType.value)
   if (projectType.value === 'bm') return;
 
   let totalCount = rbcTotalVal.value;
@@ -974,8 +974,8 @@ const reDegree = async (rbcInfoArray: any) => {
   if(!Array.isArray(rbcInfoBeforeVal.value)){
     return;
   }
-  rbcInfoArray.forEach((rbcCategory) => {
-    rbcCategory.classInfo.forEach((rbcClass) => {
+  rbcInfoArray.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
       if (!rbcDegreeStandard.value) {
         return;
       }
@@ -984,7 +984,7 @@ const reDegree = async (rbcInfoArray: any) => {
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
         ) {
-          const degreeCount = Number(rbcClass.degree);
+          const degreeCount = Number(rbcClass.originalDegree);
           let percent = 0;
 
           if (degreeStandard.categoryId === '01') { // size total
@@ -995,20 +995,31 @@ const reDegree = async (rbcInfoArray: any) => {
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
           }
-
+          // console.log(degreeStandard.degree1)
           if (isNaN(percent)) {
             percent = 0;
           }
           const setDegree = (value: any) => (rbcClass.degree = value);
-
           // 0
-          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          if (percent < Number(degreeStandard.degree1)) {
+            setDegree('0');
+            return;
+          }
           // 1
-          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          else if (percent < Number(degreeStandard.degree2)) {
+            setDegree('1');
+            return;
+          }
           // 2
-          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          else if (percent < Number(degreeStandard.degree3)) {
+            setDegree('2');
+            return;
+          }
           // 3
-          else setDegree('3');
+          else {
+            setDegree('3');
+            return;
+          }
         }
       });
     });
