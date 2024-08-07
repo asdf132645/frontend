@@ -24,7 +24,7 @@
           {{ option.text }}
         </option>
       </select>
-      <div class="initBtn" @click="canInitialize && sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
+      <div class="initBtn" @click="canInitialize && sendInit()" :class="{'isInitDisabled': isInit === 'Y'}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
         />
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, watch, onMounted, nextTick, defineEmits, defineProps} from "vue";
+import {ref, computed, watch, onMounted, nextTick, defineEmits, defineProps, watchEffect} from "vue";
 
 import {useStore} from "vuex";
 import {

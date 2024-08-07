@@ -40,7 +40,7 @@ import {
   onBeforeUnmount,
   onBeforeMount,
   provide,
-  onUnmounted
+  onUnmounted, watchEffect
 } from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
@@ -93,7 +93,6 @@ let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
 const canInitialize = ref(false);
-
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -280,6 +279,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'SYSINFO':
         const res = await sysInfoStore(parseDataWarp);
+        canInitialize.value = true;
         if(res !== null){
           showErrorAlert(res);
         }
@@ -624,7 +624,6 @@ const runInfoPostWebSocket = async () => {
 };
 
 const emitSocketData = async (payload: any) => {
-  console.log('emitSocketData', payload)
   await store.dispatch('commonModule/setCommonInfo', {reqArr: payload});
   await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: true});
 };
