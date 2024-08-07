@@ -335,6 +335,7 @@ watch(() => props.allCheckClear, (newItem) => {
 }, {deep: true})
 
 watch(() => props.selectItems, async (newItem) => {
+  console.log('selectItems')
   pltCount.value = props.selectItems?.pltCount;
   malariaCount.value = props.selectItems?.malariaCount;
   memo.value = props.selectItems?.rbcMemo;
@@ -375,8 +376,8 @@ watch(() => props.rbcInfo, async (newItem) => {
   await getRbcDegreeData();
   await reDegree(rbcInfoBeforeVal.value);
   await reDegree(rbcInfoAfterVal.value);
-  console.log('rbcInfoBeforeVal.value', rbcInfoBeforeVal.value);
-  console.log('rbcInfoAfterVal.value', rbcInfoAfterVal.value);
+  // console.log('rbcInfoBeforeVal.value', rbcInfoBeforeVal.value);
+  // console.log('rbcInfoAfterVal.value', rbcInfoAfterVal.value);
 });
 
 watch(() => resetRbcArr, async (newItem) => {
@@ -844,10 +845,11 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfter,
   };
-
   const updatedRuningInfo = {...result.data, ...updatedItem};
   await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: rbcInfoAfter});
-  await resRunningItem(updatedRuningInfo, false);
+  await resRunningItem(updatedRuningInfo, false, 'degree');
+
+
 };
 
 const memoOpen = () => {
@@ -870,17 +872,26 @@ const memoChange = async () => {
   memoModal.value = false;
 }
 
-const resRunningItem = async (updatedRuningInfo: any, alertShow?: any) => {
+const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: any) => {
   try {
-    const response = await updateRunningApi({
+    const response: any = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: [updatedRuningInfo]
     })
     if (response) {
+      if(degree === 'degree'){
+        await rbcTotalAndReCount();
+        await countReAdd();
+        await getRbcDegreeData();
+        await reDegree(rbcInfoBeforeVal.value);
+        await reDegree(rbcInfoAfterVal.value);
+        rightClickItemSet();
+        allCheckType.value = true;
+      }
       if (alertShow) {
         showSuccessAlert('success');
       }
-
+      console.log(response)
       const filteredItems = updatedRuningInfo;
       memo.value = filteredItems.rbcMemo;
     } else {
