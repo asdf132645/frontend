@@ -982,7 +982,7 @@ input[type="range"]::-ms-thumb.slider-range {
 .slider-found {
     position: relative;
     overflow: hidden;
-    max-height: 135px;
+    max-height: 150px;
 }
 
 .slider-found img {

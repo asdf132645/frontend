@@ -262,13 +262,16 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       canInitialize.value = false;
       return
     }
-    canInitialize.value = true;
 
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
+
+    if (alertMessage.value === messages.TCP_DiSCONNECTED) {
+      hideAlert();
+    }
 
     // 시스템정보 스토어에 담기
     switch (parseDataWarp.jobCmd) {
@@ -279,9 +282,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'SYSINFO':
         const res = await sysInfoStore(parseDataWarp);
-        canInitialize.value = true;
         if(res !== null){
           showErrorAlert(res);
+        } else {
+          canInitialize.value = true;
         }
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
@@ -355,6 +359,8 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
       case 'SEARCH_CARD_COUNT':
         break;
     }
+
+
 
     async function runnComp() {
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
