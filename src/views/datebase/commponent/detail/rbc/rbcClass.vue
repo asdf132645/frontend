@@ -375,7 +375,8 @@ watch(() => props.rbcInfo, async (newItem) => {
   await getRbcDegreeData();
   await reDegree(rbcInfoBeforeVal.value);
   await reDegree(rbcInfoAfterVal.value);
-
+  console.log('rbcInfoBeforeVal.value', rbcInfoBeforeVal.value);
+  console.log('rbcInfoAfterVal.value', rbcInfoAfterVal.value);
 });
 
 watch(() => resetRbcArr, async (newItem) => {
