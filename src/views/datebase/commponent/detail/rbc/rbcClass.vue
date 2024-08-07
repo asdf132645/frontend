@@ -869,7 +869,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
     })
     if (response) {
       if(degree === 'degree'){
-        // await afterChange(response?.data[0]);
         await rbcTotalAndReCount();
         await countReAdd();
         await getRbcDegreeData();
