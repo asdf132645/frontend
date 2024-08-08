@@ -9,6 +9,7 @@ export interface WbcInfo {
     barcodeID?: string;
     id: string;
     abbreviation: string;
+    title: string;
     fullNm: string;
     count: string | number;
     percent?: string | number;

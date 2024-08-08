@@ -10,7 +10,7 @@
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories" v-if="shouldRenderCategory(category)">
             <ul class="categoryNm">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
               <li style="cursor: default;">{{ getCategoryName(category) }}</li>
             </ul>
             <ul class="classNm">
@@ -67,22 +67,23 @@
           </div>
         </template>
       </template>
-      <!--      nonrbc-->
+
+      <!-- nonWbc -->
       <div class='mt1'>
         <template v-for="(nWbcItem, outerIndex) in selectNonWbc(dspWbcClassList)" :key="outerIndex">
           <div class="categories">
-            <ul class="categoryNm">
-              <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
-              <li>{{ getCategoryName(nWbcItem) }}</li>
+            <ul class="categoryNm" style="cursor: default;">
+              <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
+              <li style="cursor: default;">{{ getCategoryName(nWbcItem) }}</li>
             </ul>
             <ul class="classNm">
               <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li>{{ nWbcItem?.count }} <span
+              <li style="cursor: default;">{{ nWbcItem?.count }} <span
                   v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ maxWbcCount }} WBC</span></li>
             </ul>
             <ul class="degree">
               <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-              <li>-</li>
+              <li style="cursor: default;">-</li>
             </ul>
           </div>
         </template>
@@ -102,11 +103,11 @@ import {
   basicWbcArrClint,
   basicBmClassListClint
 } from "@/store/modules/analysis/wbcclassification";
-import EventBus from "@/eventBus/eventBus";
 
 const props = defineProps(['bmIsBoolen','parsedData']);
 const storeEm = useStore();
 const siteCd = computed(() => storeEm.state.commonModule.siteCd);
+const firstTry = ref(false);
 
 interface SlotInfo {
   stateCd: string;
@@ -124,9 +125,12 @@ const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
 const emits = defineEmits();
 
+const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
+
 onMounted(() => {
   updateDataArray( basicBmClassList, null, true);
 });
+
 watch(
     () => props.parsedData, // 감시할 데이터
     (newVal, oldVal) => {
@@ -142,11 +146,6 @@ const runningInfoGet = async (data: any) => {
   }
 }
 
-const checkisNsNbIntegration = () => {
-  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
-  return isNsNbIntegration === 'Y' ? true : false;
-}
-
 const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolean) => {
   const slotArray = JSON.parse(JSON.stringify(newSlotInfo));
   if (slotArray.wbcInfo) {
@@ -155,6 +154,7 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
     const wbcInfoArray = wbcinfoType;
     const arrType = props.bmIsBoolen ? [basicBmClassListClint] : [basicWbcArrClint];
     dspWbcClassList.value = wbcInfoArray[0].length > 0 ? wbcInfoArray : arrType;
+
     const areAllCountsZero = (classList: any[]) => {
       // 모든 요소의 count가 0인지 확인
       return classList.every((classGroup) => {
@@ -253,9 +253,6 @@ const calculateWbcPercentages = (
 
   return total;
 };
-
-
-
 
 const updateCounts = async (currentSlot: any) => {
   const arrType = props.bmIsBoolen ? currentSlot.bmInfo : currentSlot.wbcInfo;
