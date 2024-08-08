@@ -98,9 +98,9 @@
         </ul>
       </div>
     </div>
-    <!--    {{ nonWbcClassListVal }}-->
+
     <div v-if="!projectBm">
-      <template v-for="(nWbcItem, outerIndex) in nonWbcClassListVal" :key="outerIndex">
+      <template v-for="(nWbcItem, outerIndex) in filterByTitle(wbcInfoVal, 'nonWbc')" :key="outerIndex">
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
@@ -198,10 +198,6 @@ const memoModal = ref(false);
 const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
-const nonWbcClassListVal = ref<any>([]);
-const nonWbcClassList = ref<any>([]);
-const nonWbcClassBeforeList = ref<any>([]);
-const nonWbcClassAfterList = ref<any>([]);
 
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
@@ -1043,29 +1039,27 @@ const beforeAfterChange = async (newItem: any) => {
   const wbcBeforeArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const wbcAfterArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
 
-  wbcInfoAfterVal.value = filterByTitle(wbcAfterInfo, 'wbc');
-  wbcInfoBeforeVal.value = filterByTitle(wbcBeforeInfo, 'wbc')
-  nonWbcClassAfterList.value = filterByTitle(wbcAfterInfo, 'nonWbc');
-  nonWbcClassBeforeList.value = filterByTitle(wbcBeforeInfo, 'nonWbc');
+  wbcInfoAfterVal.value = wbcAfterInfo;
+  wbcInfoBeforeVal.value = wbcBeforeInfo;
+  const wbcInfoAfterValForTotalCount = filterByTitle(wbcAfterInfo, 'wbc');
+  const wbcInfoBeforeValForTotalCount = filterByTitle(wbcBeforeInfo, 'wbc');
 
-  totalCountSet('before', wbcInfoBeforeVal.value);
-  totalCountSet('after', wbcInfoAfterVal.value);
+  totalCountSet('before', wbcInfoBeforeValForTotalCount);
+  totalCountSet('after', wbcInfoAfterValForTotalCount);
 
-  for (const item of wbcInfoBeforeVal.value) {
+  // totalCount, percent - 따로
+  for (const item of wbcInfoBeforeValForTotalCount) {
     createPercent(item, totalBeforeCount.value)
   }
 
-  for (const item of wbcInfoAfterVal.value) {
+  for (const item of wbcInfoAfterValForTotalCount) {
     createPercent(item, totalAfterCount.value)
   }
 
-  nonWbcClassListVal.value = [];
   wbcInfoVal.value = [];
 
   wbcInfoAfterVal.value = sortWbcInfo(wbcInfoAfterVal.value, wbcAfterArr);
   wbcInfoBeforeVal.value = sortWbcInfo(wbcInfoBeforeVal.value, wbcBeforeArr);
-  nonWbcClassAfterList.value = sortWbcInfo(nonWbcClassAfterList.value, wbcAfterArr);
-  nonWbcClassBeforeList.value = sortWbcInfo(nonWbcClassBeforeList.value, wbcBeforeArr);
 
   for (const [index, beforeItem] of wbcInfoBeforeVal.value.entries()) {
     const afterItem = wbcInfoAfterVal.value[index]
@@ -1082,22 +1076,6 @@ const beforeAfterChange = async (newItem: any) => {
       isChanged
     }
     wbcInfoVal.value.push(item);
-  }
-
-  for (const [index, beforeItem] of nonWbcClassBeforeList.value.entries()) {
-    const afterItem = nonWbcClassAfterList.value[index];
-    if (!afterItem) continue;
-    const isChanged = isBeforeAfterChanged(beforeItem, afterItem);
-    const item = {
-      id: beforeItem.id,
-      name: beforeItem.name,
-      title: beforeItem.title,
-      count: {before: beforeItem.count, after: afterItem.count},
-      images: {before: beforeItem.images, after: afterItem.images},
-      percent: {before: beforeItem.percent, after: afterItem.percent},
-      isChanged
-    }
-    nonWbcClassListVal.value.push(item);
   }
 
   if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
@@ -1209,7 +1187,7 @@ const totalCountSet = (showType: string, wbcInfoChangeVal: any) => {
 
 async function updateOriginalDb() {
   // wbcInfo.value를 깊은 복제(clone)하여 새로운 배열을 생성
-  let clonedWbcInfo = JSON.parse(JSON.stringify([...wbcInfoAfterVal.value, ...nonWbcClassList.value]));
+  let clonedWbcInfo = JSON.parse(JSON.stringify([...wbcInfoAfterVal.value]));
   let totalCount = 0;
   clonedWbcInfo.forEach((item: any) => {
     item.images.forEach((image: any) => {
@@ -1238,7 +1216,7 @@ async function updateOriginalDb() {
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
   selectItems.value.wbcInfoAfter = clonedWbcInfo;
-  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoAfterVal.value, ...nonWbcClassList.value]});
+  await store.dispatch('commonModule/setCommonInfo', {classInfoSort: [...wbcInfoAfterVal.value]});
 
 
   const sortArr = sortWbcInfo(orderClass.value, wbcInfoVal.value);
