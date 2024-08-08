@@ -338,7 +338,7 @@ const handleOkConfirm = () => {
 }
 
 const uploadLis = () => {
-  if (siteCd.value === '0002') {
+  if (siteCd.value === '0002' || siteCd.value === '' || siteCd.value === '0000') {
     const codeList = CbcWbcTestCdList_0002;
 
     // cbc 결과 조회
