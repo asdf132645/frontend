@@ -201,12 +201,26 @@ onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   pbVersion.value = window.PB_VERSION;
 })
+const isIpMatching = (url: any, ip: any) => {
+  // URL에서 IP 주소 추출
+  const urlPattern = /http:\/\/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+):/;
+  const match = url.match(urlPattern);
+
+  if (match && match[1]) {
+    // 추출된 IP 주소와 주어진 IP 주소 비교
+    return match[1] === ip;
+  }
+
+  return false;
+};
 
 onMounted(async () => {
   await nextTick();
   await cellImgGet();
   startChecking();
-
+  const result = await getDeviceIpApi();
+  const ipMatches = isIpMatching(window.APP_API_BASE_URL, result.data);
+  // console.log(ipMatches)
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
 
@@ -219,7 +233,7 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
-    if (!commonDataGet.value.firstLoading) {
+    if (!commonDataGet.value.firstLoading && ipMatches) {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
       }, 400);
