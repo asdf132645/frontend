@@ -233,7 +233,7 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
-    if (!commonDataGet.value.firstLoading && ipMatches) {
+    if (!commonDataGet.value.firstLoading && ipMatches && window.FORCE_VIEWER === 'main') {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
       }, 400);
