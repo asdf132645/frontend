@@ -11,7 +11,6 @@
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
-                :canInitialize="canInitialize"
       />
     </main>
     <Alert
@@ -79,6 +78,7 @@ let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
+const canInitialize = computed(() => store.state.commonModule.canInitialize);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
@@ -92,7 +92,7 @@ const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
-const canInitialize = ref(false);
+
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -256,13 +256,19 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   }
   deleteData.value = false;
   try {
+    console.log('typeof Data', typeof data);
     if (typeof data === 'string') {
-      // sessionStorage.clear();
-      await showSuccessAlert(messages.TCP_DiSCONNECTED);
-      canInitialize.value = false;
+      if (data === 'tcpConnected') {
+        await store.dispatch('commonModule/setCommonInfo', { canInitialize: true });
+        return;
+      } else {
+        await store.dispatch('commonModule/setCommonInfo', { canInitialize: false });
+        await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      }
+
       return
     }
-
+    console.log('data', data);
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
@@ -285,7 +291,12 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         if(res !== null){
           showErrorAlert(res);
         } else {
-          canInitialize.value = true;
+          // await store.dispatch('commonModule/setCommonInfo', {canInitialize: true });
+          // if (!canInitialize.value) {
+          //   // setTimeout(async () => {
+          //
+          //   // }, 1500)
+          // }
         }
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
@@ -296,7 +307,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         }
         break;
       case 'INIT':
-        await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
         sendSettingInfo();
         break;
       case 'START':

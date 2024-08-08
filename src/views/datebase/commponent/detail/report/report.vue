@@ -68,17 +68,17 @@
         <div :class="['reportDivBottom', selectItems.testType !== '04' && 'reportDiff']">
           <div :class="['wbcLeft', projectBm && 'wbcLeftBm']">
             <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
-            <table class="tableClass">
+            <table class="tableClass mt22">
               <colgroup>
                 <col width="40%">
                 <col width="20%">
                 <col width="20%">
               </colgroup>
               <thead>
-              <tr>
+              <tr class="reportWbcclassificationSmallTitle">
                 <th>Class</th>
                 <th>Count</th>
-                <th>%</th>
+                <th>Percent</th>
               </tr>
               </thead>
               <tbody>
@@ -122,34 +122,41 @@
 
           </div>
           <div class="rbcRight" v-if="!projectBm && selectItems.testType === '04'">
-            <h3 class="reportH3 mb1 pl0">RBC classification result</h3>
+            <h3 class="reportH3 pl0">RBC classification result</h3>
             <template v-for="(classList, outerIndex) in [rbcInfoAfterData]" :key="outerIndex">
               <template v-for="(category, innerIndex) in classList" :key="innerIndex">
                 <div class="categories">
                   <ul class="printRbcCategory">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-                    <li>{{ category?.categoryNm }}</li>
+                    {{ type }}
+                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Category</li>
+                    <li style="cursor: default;">{{ category?.categoryNm }}</li>
                   </ul>
                   <ul class="printRbcClass">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
+                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li>{{ classInfo?.classNm }}</li>
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                      <li style="cursor: default;">{{ classInfo?.classNm }}</li>
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                          style="cursor: default;"
+                      >
                         Others
                       </li>
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
+                          style="cursor: default;"
+                      >
                         Malaria
                       </li>
                     </template>
                   </ul>
                   <ul class="printRbcDegree">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
+                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Degree</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li>
+                      <li style="cursor: default;">
                         {{ Number(classInfo?.degree) || 0 }}
                       </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                          style="cursor: default;"
+                      >
                         -
                       </li>
                       <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
@@ -157,46 +164,56 @@
                       </li>
                     </template>
 
-                    <li class="printTotalText" v-show="category.categoryNm !== 'Shape'">Total</li>
+                    <li class="printTotalText" v-show="category.categoryNm !== 'Shape'"
+                        style="cursor: default;"
+                    >Total</li>
                   </ul>
                   <ul class="printRbcCount">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle">Count</li>
+                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li>
+                      <li style="cursor: default;">
                         {{ Number(classInfo?.originalDegree) || 0 }}
                       </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                          style="cursor: default;"
+                      >
                         {{ Number(shapeOthersCount) || 0 }}
                       </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
+                          style="cursor: default;"
+                      >
                         {{ Number(malariaCount) || 0 }}
                       </li>
                     </template>
 
-                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'">
+                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'" style="cursor: default;">
                       {{ Number(sizeChromiaTotal) || 0 }}
                     </li>
-                    <li v-show="category?.categoryNm === 'Inclusion Body'">{{ Number(shapeBodyTotal) || 0 }}</li>
+                    <li v-show="category?.categoryNm === 'Inclusion Body'" style="cursor: default;">{{ Number(shapeBodyTotal) || 0 }}</li>
                   </ul>
                   <ul class="printRbcPercent">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle">Percent</li>
+                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Percent</li>
                     <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li>
+                      <li style="cursor: default;">
                         {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
                       </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                          style="cursor: default;"
+                      >
                         {{ percentageChange(shapeOthersCount) || 0 }}
                       </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
+                          style="cursor: default;"
+                      >
                         {{ percentageChange(malariaCount) || 0 }}
                       </li>
                     </template>
 
-                    <li v-show="category.categoryNm !== 'Shape'">100%</li>
+                    <li v-show="category.categoryNm !== 'Shape'" style="cursor: default;">100%</li>
                   </ul>
                 </div>
               </template>
@@ -488,8 +505,8 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 제외할 부분 정의

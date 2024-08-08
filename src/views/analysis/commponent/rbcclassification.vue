@@ -33,19 +33,21 @@
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories">
             <ul class="categoryNm">
-              <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-              <li>{{ getCategoryName(category) }}</li>
+              <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Category</li>
+              <li style="cursor: default;">{{ getCategoryName(category) }}</li>
             </ul>
             <ul class="classNmRbc">
-              <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
+              <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
               <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                <li>{{ classInfo?.classNm }}</li>
+                <li style="cursor: default;">{{ classInfo?.classNm }}</li>
+
+                <li v-if="classInfo.classNm === 'Basophilic Stippling'" style="cursor: default;">Malaria</li>
               </template>
             </ul>
             <ul class="degree analysis">
-              <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
+              <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Degree</li>
               <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                <li v-if="classInfo.classId !== '01' || category.categoryId === '05'">
+                <li v-if="classInfo.classId !== '01' || category.categoryId === '05'" style="cursor: default;">
                   <font-awesome-icon
                       :icon="['fas', 'circle']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
@@ -53,9 +55,10 @@
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
                       }"
+                      style="cursor: default;"
                   />
                 </li>
-                <li v-else>
+                <li v-else style="cursor: default;">
                   <div v-if="classInfo.degree === '0'">
                     <font-awesome-icon
                         :icon="['fas', 'circle']"
@@ -68,25 +71,28 @@
                     />
                   </div>
                 </li>
+
+                <li v-if="classInfo.classNm === 'Basophilic Stippling'" style="font-size: 0.7rem; cursor: default;">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
               </template>
             </ul>
           </div>
         </template>
       </template>
     </div>
-    <!--orders-->
+
+    <!-- Others -->
     <div>
       <div class="categories">
         <ul class="categoryNm">
-          <li>Others</li>
+          <li style="cursor: default;">Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li>Platelets</li>
-          <li>Malaria</li>
+          <li style="cursor: default;">Platelets</li>
+<!--          <li style="cursor: default;">Malaria</li>-->
         </ul>
         <ul class="degree analysis">
-          <li style="font-size: 0.7rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
-          <li style="font-size: 0.7rem">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>
+          <li style="font-size: 0.7rem; cursor: default;">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+<!--          <li style="font-size: 0.7rem; cursor: default;">{{ malariaCount || 0 }} / {{ maxRbcCount || 0 }} RBC</li>-->
         </ul>
       </div>
     </div>
@@ -278,6 +284,9 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
     });
   });
   dspRbcClassList.value[0] = rbcInfo;
+  if (rbcInfo.length === 0) {
+    dspRbcClassList.value[0] = basicRbcArr;
+  }
   const str: any = parsedData?.iCasStat ?? '';
   const iCasStatArr: any = [...str];
   if(iCasStatArr.lastIndexOf("2") !== -1){

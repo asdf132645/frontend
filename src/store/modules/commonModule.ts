@@ -50,7 +50,7 @@ export interface CommonState {
     testType: string;
     isNsNbIntegration: string;
     analysisType: string;
-    isInitializing: boolean;
+    canInitialize: boolean;
     beforeSettingFormattedString: string;
     afterSettingFormattedString: string;
     settingChangedChecker: boolean;
@@ -112,7 +112,7 @@ interface CommonModule {
         setTestType: (state: CommonState, value: string) => void;
         setIsNsNbIntegration: (state: CommonState, value: string) => void;
         setAnalysisType: (state: CommonState, value: string) => void;
-        setIsInitializing: (state: CommonState, value: boolean) => void;
+        setCanInitialize: (state: CommonState, value: boolean) => void;
         setBeforeSettingFormattedString: (state: CommonState, value: string) => void;
         setAfterSettingFormattedString: (state: CommonState, value: string) => void;
         setSettingChangedChecker: (state: CommonState, value: boolean) => void;
@@ -175,7 +175,7 @@ export const commonModule: CommonModule = {
         testType: '',
         isNsNbIntegration: 'N',
         analysisType: '',
-        isInitializing: false,
+        canInitialize: false,
         beforeSettingFormattedString: '',
         afterSettingFormattedString: '',
         settingChangedChecker: false,
@@ -337,8 +337,8 @@ export const commonModule: CommonModule = {
         setAnalysisType(state: CommonState, value: string): void {
             state.analysisType = value;
         },
-        setIsInitializing(state: CommonState, value: boolean): void {
-            state.isInitializing = value;
+        setCanInitialize(state: CommonState, value: boolean): void {
+            state.canInitialize = value;
         },
         setBeforeSettingFormattedString(state: CommonState, value: string): void {
             state.beforeSettingFormattedString = value;
@@ -512,8 +512,8 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('analysisType')) {
                 commit('setAnalysisType', payload.analysisType);
             }
-            if (payload.hasOwnProperty('isInitializing')) {
-                commit('setIsInitializing', payload.isInitializing);
+            if (payload.hasOwnProperty('canInitialize')) {
+                commit('setCanInitialize', payload.canInitialize);
             }
             if (payload.hasOwnProperty('beforeSettingFormattedString')) {
                 commit('setBeforeSettingFormattedString', payload.beforeSettingFormattedString);
