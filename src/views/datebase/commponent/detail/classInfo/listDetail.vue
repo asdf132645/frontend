@@ -903,19 +903,18 @@ function changeImgBrightness(event: any) {
 }
 
 function changeImageSize(event: any) {
-  wbcInfo.value.forEach((item: any) => {
-    item.images.forEach((image: any) => {
-      // 현재 이미지의 width와 height
-      let currentWidth = event?.target?.value;
-      let currentHeight = event?.target?.value;
+  const newSize = Number(event?.target?.value);
 
-      // 이미지의 width와 height를 조절
-      image.width = Number(currentWidth);
-      image.height = Number(currentHeight);
-    });
-  });
-  drawCellMarker(true);
+  for (const item of wbcInfo.value) {
+    for (const image of item.images) {
+      image.width = newSize;
+      image.height = newSize;
+    }
+  }
+
+  requestAnimationFrame(() => drawCellMarker(true));
 }
+
 
 
 function onDragOverCircle() {

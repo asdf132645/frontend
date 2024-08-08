@@ -60,6 +60,7 @@
                   ref="cellRef"
                   @error="() => $emit('hideImage', item.id, image.fileName, item.title)"
                   @load="handleImageLoad(itemIndex)"
+                  loading="lazy"
               />
               <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
             </div>
