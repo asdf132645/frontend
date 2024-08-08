@@ -86,6 +86,7 @@ const initCbcData = async (newVal: any) => {
     hospitalName = '0000';
   }
   switch (hospitalName) {
+    // 서울 성모 cbc - 외부 url 진행 - 파일 없음
     case '서울성모병원':
       const realUrl = 'http://emr012.cmcnu.or.kr/cmcnu/.live';
       axios.get(realUrl, {
