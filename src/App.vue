@@ -256,7 +256,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   }
   deleteData.value = false;
   try {
-    console.log('typeof Data', typeof data);
     if (typeof data === 'string') {
       if (data === 'tcpConnected') {
         await store.dispatch('commonModule/setCommonInfo', { canInitialize: true });
@@ -268,7 +267,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 
       return
     }
-    console.log('data', data);
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 

@@ -69,7 +69,7 @@
       </template>
       <!--      nonrbc-->
       <div class='mt1'>
-        <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
+        <template v-for="(nWbcItem, outerIndex) in selectNonWbc(dspWbcClassList)" :key="outerIndex">
           <div class="categories">
             <ul class="categoryNm">
               <li class="mb1 liTitle" v-if="outerIndex === 0">non-WBC</li>
@@ -118,7 +118,6 @@ interface SlotInfo {
 
 const dspWbcClassList = ref<any>([]);
 const dspBfClassList = ref<any[]>([]);
-const nonWbcClassList = ref<any[]>([]);
 
 const testType = ref<string>("");
 const totalCount = ref<string>("0");
@@ -174,13 +173,6 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
 
     dspBfClassList.value = dspWbcClassList.value.flat();
 
-    const nonRbcWbcInfoArray = wbcInfoArray
-        .flat()  // 중첩 배열을 평탄화
-        .filter((item: any) =>
-            ['NR', 'AR', 'GP', 'PA', 'MC', 'MA', 'GP', 'PA', 'SM'].includes(item?.title)
-        );
-    nonWbcClassList.value = nonRbcWbcInfoArray;
-
   } else {
     const arrType = props.bmIsBoolen ? [basicBmClassListClint] : [basicWbcArrClint];
     dspWbcClassList.value = arrType;
@@ -217,6 +209,10 @@ const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolea
   }
 };
 
+const selectNonWbc = (wbcArray: any) => {
+  return wbcArray.flat().filter((item: any) => ['NR', 'AR', 'GP', 'PA', 'MC', 'MA', 'GP', 'PA', 'SM'].includes(item?.title));
+}
+
 const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {
   if (!siteCd || siteCd === '') {
     siteCd = '0000';
@@ -232,8 +228,8 @@ const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", "GP", "PA", "OT"],
-    includesStr2: ["NR", "AR", "MC", "MA", "SM", "GP", "PA", "OT"],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "NE", "MA", "GP", "PA", "OT"],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", "NE", "GP", "PA", "OT"],
   };
 
   // testType에 따라 적절한 배열을 반환
@@ -281,10 +277,7 @@ const updateCounts = async (currentSlot: any) => {
 };
 
 const shouldRenderCategory = (category: WbcInfo) => {
-  // siteCd와 testType을 입력으로 getStringArrayBySiteCd 함수를 호출
   const targetArray = getStringArrayBySiteCd(siteCd.value, testType.value);
-
-  // category.title이 targetArray에 포함되어 있는지 확인
   return !targetArray.includes(category.title);
 };
 
@@ -300,8 +293,8 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC","SM", "MA", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", 'NE',"SM", 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 적절한 배열을 반환

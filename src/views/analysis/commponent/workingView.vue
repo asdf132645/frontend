@@ -99,6 +99,7 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     stopTotalCounting();
     stopCounting();
   }
+
   const regex = /[1,2,9]/g;
   const dataICasStat = String(sysInfo?.iCasStat);
   if (String(sysInfo?.iCasStat) !== '999999999999') {
@@ -124,6 +125,7 @@ watch([commonDataGet.value], async (newVals: any) => {
   if (!newValsObj[0].isRunningState) {
     stopTotalCounting();
     stopCounting();
+    dashoffset.value = circumference.value;
   }
 });
 
