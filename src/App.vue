@@ -360,8 +360,6 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
     }
 
-
-
     async function runnComp() {
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
       await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
