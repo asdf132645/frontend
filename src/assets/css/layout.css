@@ -1830,6 +1830,21 @@ button.backupBtn {
     cursor: pointer;
 }
 
+.imagePrintBtn {
+    width: 100px;
+    height: 30px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    color: var(--white-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.imagePrintBtn:hover {
+    background: var(--white-color);
+    color: var(--main-bg-2-color);
+}
+
 select.autoBackUpPath {
     margin: 0 12px;
     width: 97%;

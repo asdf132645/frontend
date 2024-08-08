@@ -169,7 +169,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="item in filteredWbcInfo" :key="item.id" style="padding-bottom: 5px;">
+            <tr v-for="item in filteredWbcInfo(wbcInfo, 'wbc')" :key="item.id" style="padding-bottom: 5px;">
               <th style="text-align: left; padding: 5px 0;">{{ item?.name }}</th>
               <td style="text-align: left; padding: 5px 0;">{{ item?.count }}</td>
               <td style="text-align: left; padding: 5px 0;">{{ item?.percent }} %</td>
@@ -183,7 +183,7 @@
 
             <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
 
-              <template v-for="item in nonWbcClassList" :key="item.id">
+              <template v-for="item in filteredWbcInfo(wbcInfo, 'nonWbc')" :key="item.id">
                 <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
                   <td style="text-align: left; padding: 5px 0; width: 30%;">{{ item.name }}</td>
                   <td style="text-align: left; padding: 5px 0; width: 45%;">{{ item.count }}</td>
@@ -269,9 +269,6 @@ const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
 const shapeBodyTotal = ref(0);
 
-const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
-const nonWbcClassList = ref<any[]>([]);
-
 const maxRbcCount = ref(0);
 const pltCount = ref(0);
 const malariaCount = ref(0);
@@ -281,7 +278,6 @@ const printReady = ref(false);
 
 onMounted(async () => {
   await getDetailRunningInfo();
-  wbcInfo.value = typeof props.selectItemWbc === 'object' ? props.selectItemWbc : JSON.parse(props.selectItemWbc);
   await getOrderClass();
   await getImagePrintData();
   if (projectType !== 'bm') {
@@ -469,14 +465,18 @@ const getDetailRunningInfo = async () => {
   try {
     const result: any = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    wbcInfo.value = result.data.wbcInfoAfter;
   } catch (e) {
     console.log(e);
   }
 }
 
-const filteredWbcInfo = computed(() => {
-  return wbcInfo.value.filter((item: any) => !nonWbcIdList.includes(item.id) && item.count > 0);
-});
+const filteredWbcInfo = (wbcInfoArr, type: 'wbc' | 'nonWbc') => {
+  if (type === 'nonWbc') {
+    return wbcInfoArr.filter((item: any) => nonWbcIdList.includes(item.id) && item.count > 0);
+  }
+  return wbcInfoArr.filter((item: any) => !nonWbcIdList.includes(item.id) && item.count > 0);
+}
 
 function getImageUrl(imageName: any, id: string, title: string): string {
   // 이미지 정보가 없다면 빈 문자열 반환
@@ -559,7 +559,6 @@ const getImagePrintData = async () => {
       const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
       const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
       wbcInfo.value = sortedWbcInfoData;
-      nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
       // if (!data || (data instanceof Array && data.length === 0)) {
       //   console.log(null);
       // } else {
@@ -573,7 +572,6 @@ const getImagePrintData = async () => {
       //   const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
       //   const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
       //   wbcInfo.value = sortedWbcInfoData;
-      //   nonWbcClassList.value = sortedWbcInfoData.filter((item: any) => nonWbcTitleArr.includes(item.title));
       // }
     }
   } catch (e) {

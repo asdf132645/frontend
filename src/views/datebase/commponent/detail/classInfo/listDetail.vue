@@ -172,8 +172,8 @@
           </div>
           <div class="buttons">
             <div class="rangeBox">
-              <p>{{((zoomValue - 150) / 450 * 100).toFixed(0) }} %</p>
-              <input type="range" min="150" max="600" v-model="zoomValue" @input="handleZoom" />
+              <p>{{((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
+              <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom" />
             </div>
           </div>
         </div>
@@ -256,8 +256,8 @@ const cellRef = ref(null);
 const cellMarkerIcon = ref(false);
 const modalOpen = ref(false);
 const selectedImageSrc = ref('');
-const modalImageWidth = ref('150px');
-const modalImageHeight = ref('150px');
+const modalImageWidth = ref('200px');
+const modalImageHeight = ref('200px');
 const imgSet = ref(false);
 const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const wbcCustomItems = ref<any>([]);
@@ -266,7 +266,7 @@ const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
 const projectType = ref<any>('bm');
 const opacity = ref('0.9');
-const zoomValue = ref(150);
+const zoomValue = ref(200);
 
 const selectItemImageArr = ref<any>([]);
 const moveRightClickArr = ref<any>([]);
@@ -708,8 +708,8 @@ const zoomIn = () => {
 
 
 const zoomOut = () => {
-  let newWidth = Math.max(parseFloat(modalImageWidth.value) - 50, 150);
-  let newHeight = Math.max(parseFloat(modalImageHeight.value) - 50, 150);
+  let newWidth = Math.max(parseFloat(modalImageWidth.value) - 50, 200);
+  let newHeight = Math.max(parseFloat(modalImageHeight.value) - 50, 200);
 
   modalImageWidth.value = `${newWidth}px`;
   modalImageHeight.value = `${newHeight}px`;
