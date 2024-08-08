@@ -340,6 +340,8 @@ const handleOkConfirm = () => {
 const uploadLis = () => {
   if (siteCd.value === '0002') {
     const codeList = CbcWbcTestCdList_0002;
+
+    // cbc 결과 조회
     axios.get('http://emr012.cmcnu.or.kr/cmcnu/.live', {
       params: spcParams
     }).then(function (result) {
@@ -393,9 +395,9 @@ const uploadLis = () => {
         })
       }
       // 유저 체크
-      checkUserAuth(userModuleDataGet.value.userId).then(function (isUserAuth) {
+      checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
         const paramsData = {
-          empNo: userModuleDataGet.value.userId,
+          empNo: userModuleDataGet.value.employeeNo,
           barcodeNo: props.selectItems?.barcodeNo,
           wbcInfo: wbcTemp
         }
@@ -433,6 +435,7 @@ const uploadLis = () => {
 
           const url = `${realUrl}?submit_id=TXLII00101&business_id=${business_id}&ex_interface=${params.empNo}|${instcd}&instcd=${instcd}&userid=${params.empNo}&eqmtcd=${eqmtcd}&bcno=${params.barcodeNo}&result=${result}&testcont=MANUAL DIFFERENTIAL COUNT RESULT&testcontcd=01&execdeptcd=H1`;
 
+          // LIS 최종 업로드 Report
           axios.get(url).then(function (result) {
             const xml = result.data;
             const json = JSON.parse(xml2json(xml, {compact: true}));

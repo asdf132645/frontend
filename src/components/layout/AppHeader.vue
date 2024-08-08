@@ -196,6 +196,12 @@ const clickType = ref('');
 const userSetOutUl = ref(false);
 const isStartCountUpdated = ref(false);
 
+const keydownHandler = (e: KeyboardEvent) => {
+  if (e.ctrlKey && ['61', '107', '173', '109', '187', '189'].includes(String(e.which))) {
+    e.preventDefault();
+  }
+}
+
 const formattedDate = computed(() => {
   return currentDate.value;
 });
@@ -240,7 +246,6 @@ const hideConfirm = () => {
 }
 
 const fullScreen = () => {
-  console.log('fiill')
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen();
   }
@@ -261,10 +266,12 @@ onMounted(async () => {
   }
 
   document.addEventListener('click', closeUserSetBox);
+  window.addEventListener('wheel', preventScroll, { passive: false });
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeUserSetBox);
+  window.removeEventListener('wheel', preventScroll);
 })
 
 
@@ -289,6 +296,12 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   }
 
 });
+
+const preventScroll = (event: any) => {
+  if (event.ctrlKey) {
+    event.preventDefault();
+  }
+};
 
 const searchCardCount = async () => {
   const reqDttm = getDateTimeStr(); // 현재 날짜와 시간을 가져오는 함수

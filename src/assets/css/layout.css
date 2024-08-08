@@ -7,6 +7,10 @@
     margin-top: 20px;
 }
 
+.mt22 {
+    margin-top: 22px;
+}
+
 .mt3 {
     margin-top: 30px;
 }
@@ -125,6 +129,18 @@
 
 .textLeft {
     text-align: left;
+}
+
+.fs08 {
+    font-size: 0.8rem;
+}
+
+.fs10 {
+    font-size: 1rem;
+}
+
+.fs12 {
+    font-size: 1.2rem;
 }
 
 /* header-menu */
@@ -1214,6 +1230,11 @@ li.mb1.liTitle {
     margin-top: 20px;
 }
 
+.reportWbcclassificationSmallTitle {
+    font-weight: 600;
+    margin-top: 20px;
+}
+
 .liNormalWidth {
     width: 200px;
 }
@@ -1290,7 +1311,7 @@ ul.slideContent .outClassDefault {
 }
 
 .orderListTableContainer {
-    height: 46.5vh;
+    height: 45.1vh;
 }
 
 .orderListTable {
@@ -1636,9 +1657,6 @@ input.alarmInput {
     /* display: flex; */
     justify-content: space-between;
     align-items: center;
-}
-
-.rbcDegreeCategoryNm {
 }
 
 .settingTabSubButtons {

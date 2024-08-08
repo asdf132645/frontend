@@ -1,9 +1,9 @@
 <template>
   <div :class="[bmIsBoolen ? 'bmclass' : '']">
     <h3 class="titleText">
-      <template v-if="bmIsBoolen"><span class="greenColor">BM</span> <span class="greenColor">C</span>lassification
+      <template v-if="bmIsBoolen"><span class="greenColor">BM</span>Classification
       </template>
-      <template v-else><span class="greenColor">WBC</span> <span class="greenColor">C</span>lassification</template>
+      <template v-else><span class="greenColor">WBC</span> Classification</template>
     </h3>
     <div class="analysisWbc">
       <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
@@ -11,15 +11,15 @@
           <div class="categories" v-if="shouldRenderCategory(category)">
             <ul class="categoryNm">
               <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
-              <li>{{ getCategoryName(category) }}</li>
+              <li style="cursor: default;">{{ getCategoryName(category) }}</li>
             </ul>
             <ul class="classNm">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
-              <li style="text-align: center">{{ category?.count }}</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
+              <li style="text-align: center; cursor: default;">{{ category?.count }}</li>
             </ul>
             <ul class="degree">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">%</li>
-              <li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle" style="cursor: default;">%</li>
+              <li style="cursor: default;">
                 {{
                   totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed((Number(category?.count) / Number(totalCount)) === 0 ? 0 : 1) : '0'
                 }}
@@ -30,17 +30,17 @@
       </template>
       <div class="categories">
         <ul class="categoryNm">
-          <li>
+          <li style="cursor: default;">
             Total
           </li>
         </ul>
         <ul class="classNm">
-          <li>
+          <li style="cursor: default;">
             {{ totalCount || 0 }}
           </li>
         </ul>
         <ul class="degree">
-          <li>
+          <li style="cursor: default;">
             100.00
           </li>
         </ul>
@@ -93,8 +93,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, watch, defineProps, getCurrentInstance, defineEmits} from "vue";
-import {useStore} from "vuex";
+import { computed, ref, onMounted, watch, defineProps, getCurrentInstance, defineEmits } from "vue";
+import { useStore } from "vuex";
 import {
   WbcInfo,
   basicWbcArr,
@@ -125,7 +125,6 @@ const totalCount = ref<string>("0");
 const maxWbcCount = ref<string>('');
 const emits = defineEmits();
 
-
 onMounted(() => {
   updateDataArray( basicBmClassList, null, true);
 });
@@ -142,6 +141,11 @@ const runningInfoGet = async (data: any) => {
   if(parsedData.jobCmd === 'RUNNING_INFO'){
     await updateDataArray({wbcInfo: parsedData.slotInfo}, parsedData);
   }
+}
+
+const checkisNsNbIntegration = () => {
+  const isNsNbIntegration = sessionStorage.getItem('isNsNbIntegration');
+  return isNsNbIntegration === 'Y' ? true : false;
 }
 
 const updateDataArray = async (newSlotInfo: any, parsedData?: any, type?: boolean) => {
@@ -228,8 +232,8 @@ const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA","NE", "GP", "PA", "OT"],
-    includesStr2: ["NR", "AR", "MC", "MA", "NE","SM", "GP", "PA", "OT"],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", "GP", "PA", "OT"],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", "GP", "PA", "OT"],
   };
 
   // testType에 따라 적절한 배열을 반환

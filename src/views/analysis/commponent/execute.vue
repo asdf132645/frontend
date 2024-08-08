@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, watch, onMounted, nextTick, defineEmits, defineProps, watchEffect} from "vue";
+import { ref, computed, watch, onMounted, nextTick, defineEmits } from "vue";
 
 import {useStore} from "vuex";
 import {
@@ -71,7 +71,6 @@ import router from "@/router";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
-const props = defineProps([ 'canInitialize']);
 
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
@@ -86,6 +85,7 @@ const isRunningState = ref(executeState.value?.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
+const canInitialize = computed(() => store.state.commonModule.canInitialize);
 const userId = ref('');
 const analysisType = ref();
 const wbcCount = ref();
@@ -177,7 +177,8 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     isPause: newIsPause,
     userStop: newUserStop,
     isRecoveryRun: newIsRecoveryRun,
-    isInit: newIsInit
+    isInit: newIsInit,
+    sysInfo: newSysInfo,
   } = newEmbeddedStatusJobCmd || {};
 
   isPause.value = newIsPause;
@@ -195,15 +196,15 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     btnStatus.value = 'start';
   }
 
+  if (newSysInfo.currentCardCount !== '' && newSysInfo.currentCardCount) {
+
+  }
+
 });
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: any) => {
   EventBus.publish('childEmitSocketData', payload);
-
-  if (payload.jobCmd === 'INIT') {
-    await store.dispatch('commonModule/setCommonInfo', { isInitializing: true });
-  }
 };
 
 const sendSearchCardCount = () => {
@@ -330,6 +331,9 @@ const handleOkConfirm = () => {
 
 const sendInit = () => { // 장비 초기화 진행
   if (isInitializing.value) {
+    if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
+      showSuccessAlert(messages.alreadyInitialized);
+    }
       showErrorALert('Program is already running');
       return;
   }

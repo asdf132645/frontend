@@ -22,9 +22,9 @@
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">
           <ul class="categoryNm">
-            <li v-if="innerIndex === 0" class="mb1 liTitle">Category</li>
-            <li>
-              <span>{{ getCategoryName(category) }}</span>
+            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Category</li>
+            <li  :style="type === 'report' && 'cursor: default;'">
+              <span :style="type === 'report' && 'cursor: default;'">{{ getCategoryName(category) }}</span>
               <button class="degreeAllCheckBtn" v-if="getCategoryName(category) === 'Shape' && type !== 'report'"
                       @click="toggleAll(allCheckType, category)">
                 {{ allCheckType ? 'All Check' : 'All Uncheck' }}
@@ -32,25 +32,26 @@
             </li>
           </ul>
           <ul class="classNmRbc">
-            <li v-if="innerIndex === 0" class="mb1 liTitle">Class</li>
+            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li @click="handleLiClick(outerIndex, innerIndex, classIndex, classInfo, category)">
+              <li @click="handleLiClick(outerIndex, innerIndex, classIndex, classInfo, category)" :style="type === 'report' && 'cursor: default;'">
                 <div
                     v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report' && classInfo?.classNm !== 'Poikilocyte'">
                   <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
                          v-show="!except"
                          v-model="checkedClassIndices">
                 </div>
-                <span>
+                <span :style="type === 'report' && 'cursor: default;'">
                   {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}
                 </span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
-                <span>Others</span>
+              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'" :style="type === 'report' && 'cursor: default;'">
+                <span :style="type === 'report' && 'cursor: default;'">Others</span>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
                   @click="handleClick(0, 0, 2, { classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '9-9-2')"
+                  :style="type === 'report' && 'cursor: default;'"
               >
                 <div v-if="type !== 'report'">
                   <input type="checkbox"
@@ -59,16 +60,20 @@
                          v-model="checkedClassIndices"
                          @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
                 </div>
-                <span>Malaria</span>
+                <span :style="type === 'report' && 'cursor: default;'">Malaria</span>
               </li>
             </template>
           </ul>
           <ul class="degree analysis">
-            <li v-if="innerIndex === 0" class="mb1 liTitle">Degree</li>
+            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Degree</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')">
-                <span v-if="classInfo.classId !== '01' || category.categoryId === '05'" class="rbcSapn">
+              <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
+                <span v-if="classInfo.classId !== '01' || category.categoryId === '05'" class="rbcSapn"
+                      :style="type === 'report' && 'cursor: default;'"
+                >
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
@@ -81,7 +86,9 @@
                 </span>
                 <span
                     v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05'"
-                    class="rbcSapnDown">
+                    class="rbcSapnDown"
+                    :style="type === 'report' && 'cursor: default;'"
+                >
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-down']"
                       v-for="degreeIndex in 4" :key="degreeIndex + '-down'"
@@ -94,25 +101,31 @@
                 </span>
 
               </li>
-              <li v-else>
-                <span v-if="classInfo.degree === '0'" class="rbcSapn">
+              <li v-else
+                  :style="type === 'report' && 'cursor: default;'"
+              >
+                <span v-if="classInfo.degree === '0'" class="rbcSapn" :style="type === 'report' && 'cursor: default;'">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                   />
                 </span>
-                <span v-else class="rbcSapn">
+                <span v-else class="rbcSapn" :style="type === 'report' && 'cursor: default;'">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       class="degreeActive"
                   />
                 </span>
-                <span v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree === '0'" class="rbcSapnDown">
+                <span v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"
+                      :style="type === 'report' && 'cursor: default;'"
+                >
                   <font-awesome-icon
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex],'0', true)"
                       :icon="['fac', 'half-circle-down']"
                   />
                 </span>
-                <span v-else class="rbcSapnDown">
+                <span v-else class="rbcSapnDown"
+                      :style="type === 'report' && 'cursor: default;'"
+                >
                   <font-awesome-icon
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], '1', true) "
                       :icon="['fac', 'half-circle-down']"
@@ -120,10 +133,14 @@
                   />
                 </span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
                 -
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
                 -
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
@@ -136,52 +153,66 @@
 
           </ul>
           <ul class="rbcPercent">
-            <li v-if="innerIndex === 0" class="mb1 liTitle">count</li>
+            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">count</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="classInfo?.classNm !== 'Poikilocyte'">
+              <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
                 {{ Number(classInfo?.originalDegree) || 0 }}
               </li>
               <li v-else>-</li>
               <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
                 {{ Number(countArtifact + countDoubleNormal) || 0 }}
               </li>
               <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
                 {{ Number(malariaCount) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
-                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId"
+                     :style="type === 'report' && 'cursor: default;'"
+                >
                   {{ Number(sizeChromiaTotal) || 0 }}
                 </div>
               </div>
               <div class="underline"
-                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
+                   :style="type === 'report' && 'cursor: default;'"
+              >
                 {{ Number(shapeBodyTotal) || 0 }}
               </div>
             </template>
           </ul>
           <ul class="rbcPercent mr1">
-            <li v-if="innerIndex === 0" class="mb1 liTitle">percent</li>
+            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="classInfo?.classNm !== 'Poikilocyte'">
+              <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
                 {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
               </li>
-              <li v-else>-</li>
+              <li v-else :style="type === 'report' && 'cursor: default;'">-</li>
               <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
                 {{ percentageChange(countArtifact + countDoubleNormal) || 0 }}
               </li>
               <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
+                  :style="type === 'report' && 'cursor: default;'"
+              >
                 {{ percentageChange(malariaCount) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
-                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId"
+                     :style="type === 'report' && 'cursor: default;'"
+                >
                   100%
                 </div>
               </div>
@@ -196,7 +227,7 @@
     <div>
       <div class="categories rbcClass">
         <ul class="categoryNm">
-          <li>Others</li>
+          <li :style="type === 'report' && 'cursor: default;'">Others</li>
         </ul>
         <ul class="classNmRbc">
           <li @click="handleClick(0, 0, 1, { classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '9-9-1')"
@@ -208,16 +239,17 @@
                      v-model="checkedClassIndices"
                      @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')">
             </div>
-            <span>Platelet</span>
+            <span :style="type === 'report' && 'cursor: default;'">Platelet</span>
           </li>
         </ul>
         <ul class="degree analysis">
-          <li style="font-size: 0.8rem">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li :style="type === 'report' && 'cursor: default;'">{{ pltCount || 0 }} PLT / 1000 RBC</li>
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
       </div>
     </div>
+    <!--  RBC 감도 조절 기능  -->
     <!--    <div class="sensitivityDiv" v-if="type !== 'report'">-->
     <!--      <select v-model="selectedClass" @change="classChange">-->
     <!--        <option v-for="(item) in rightClickItem" :key="item.classNm">-->
