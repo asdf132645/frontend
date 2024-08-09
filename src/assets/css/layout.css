@@ -2603,7 +2603,11 @@ ul.normalItems li div span:last-child {
 }
 
 .resultInformationContainer {
-    height: 500px;
+    height: 380px;
+}
+
+.listTableImageContainer {
+    overflow-y: hidden;
 }
 
 .resInfoTopContainer {
