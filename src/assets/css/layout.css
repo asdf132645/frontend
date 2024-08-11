@@ -2991,9 +2991,12 @@ button.rollbackButton {
 }
 
 .slider-found {
+    display: flex;
+    justify-content: start;
     width: 100%;
     height: 152px;
     overflow: hidden;
+
 }
 
 .cbcDiv {

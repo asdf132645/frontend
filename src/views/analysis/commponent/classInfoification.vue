@@ -228,8 +228,8 @@ const getIncludesStrBySiteCd = (siteCd: string, testType: string): string[] => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "NE", "MA", "GP", "PA", "OT"],
-    includesStr2: ["NR", "AR", "MC", "MA", "SM", "NE", "GP", "PA", "OT"],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", "GP", "PA", "OT"],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", "GP", "PA", "OT"],
   };
 
   // testType에 따라 적절한 배열을 반환
