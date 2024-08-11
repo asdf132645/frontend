@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h3 class="titleText"><span class="greenColor">W</span>orking <span class="greenColor">V</span>iew </h3>
+    <h3 class="titleText">Working View</h3>
     <div>
       <p :class="{'blinkColor': isBlinking}">{{ changeWqStatCd() }}</p>
-      <p>{{ wbcCount }}</p>
+      <p> {{ timeDataGet.totalSlideTime }} </p>
 
       <div class="circular-progress-bar mt2">
         <svg class="progress-ring" width="120" height="120">
@@ -29,7 +29,7 @@
         <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
       </div>
       <p class="slideTime1 mt2">Number of {{ isBm ? 'BMs' : 'WBCs' }}</p>
-      <p> {{ timeDataGet.totalSlideTime }} </p>
+      <p>{{ wbcCount }}</p>
 
     </div>
     <div class='slideCardWrap'>
