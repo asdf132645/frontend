@@ -339,6 +339,7 @@ const uploadLis = () => {
     const codeList = CbcWbcTestCdList_0002;
     // 테스트 서버 - http://emr012edu.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00124&business_id=li&instcd=012&bcno=E27JN0IS0
     // 운영 - http://emr012.cmcnu.or.kr/cmcnu/.live
+    // 프론트 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
 
     // 파서 에러일 경우
     // const xml = result.data;
@@ -350,20 +351,24 @@ const uploadLis = () => {
     //
     // // cbcWorkList에 해당하는 데이터를 추출
     // const cbcWorkList = json.root?.spcworklist?.worklist;
+    let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
     // cbc 결과 조회
-    axios.get('http://emr012.cmcnu.or.kr/cmcnu/.live', {
+    axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
       params: spcParams,
       headers: {
-        'Referrer-Policy': 'no-referrer-when-downgrade'
+        'Content-Type': 'application/json',
       }
     }).then(function (result) {
+
       // 결과 처리 코드
-      const xml = result.data;
+      // console.log(result.data);
+      const xml = result.data.data.trim(); // 불필요한 공백 제거
       const json = JSON.parse(xml2json(xml, {compact: true}));
-      console.log('json - lis test', json)
+      console.log('json - lis test', json);
       const cbcWorkList = json.root.spcworklist.worklist;
-      console.log('cbcWorkList - lis test', cbcWorkList)
+      console.log('cbcWorkList - lis test', cbcWorkList);
+
       const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
       const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {

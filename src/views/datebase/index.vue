@@ -14,7 +14,7 @@
             <option value="patientId">Patient ID</option>
             <option value="patientNm">Patient Name</option>
           </select>
-          <input type="text" v-model='searchText' class="searchInputBox"/>
+          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput"   @focus="handleFocus"/>
           <button class="searchClass" @click="dateRefresh">
             <font-awesome-icon :icon="['fas', 'calendar-days']"/>
             Refresh
@@ -166,6 +166,7 @@ const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
+const barcodeInput = ref<any>(null); // 입력 필드에 대한 ref
 
 function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -186,11 +187,35 @@ onMounted(async () => {
   }
 
   document.addEventListener('click', closeClassListBox);
+  barcodeInput.value.focus();
 
   notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
+  document.addEventListener('keydown', handleGlobalKeydown);
 
 });
+const handleGlobalKeydown = (event: any) => {
+  if (event.key === 'Enter' || event.key === 'Tab') {
+    // Enter 키가 눌리면 입력 필드에 포커스를 설정
+    barcodeInput.value.focus();
+  }
+};
+
+
+const handleFocus = () => {
+  // 포커스가 되어 있지 않을 때 포커스를 강제로 설정
+  barcodeInput.value.focus();
+};
+
+
+const handleEnter = () => {
+  // Enter 키가 눌렸을 때 처리할 로직
+  // console.log('바코드 입력:', searchText.value);
+  searchText.value = ''; // 입력 필드를 비우거나 다른 처리를 할 수 있음
+
+  // 포커스를 다시 입력 필드로 이동
+  barcodeInput.value.focus();
+};
 
 onBeforeUnmount(() => {
   instance?.appContext.config.globalProperties.$socket.off('stateVal', handleStateVal);
