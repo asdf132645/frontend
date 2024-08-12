@@ -575,8 +575,8 @@ ul.customClass li {
     margin: 0 12px;
 }
 
-.v3dp__input_wrapper > input {
-    padding: 9px;
+.settingDatePickers > div > div > input {
+    height: 24px;
 }
 
 .line {
