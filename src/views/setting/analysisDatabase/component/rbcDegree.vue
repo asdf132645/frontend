@@ -1,7 +1,28 @@
 <template>
   <div>
-    <div id="collapse-4">
-      <!--      {{ rbcClassListArr }}-->
+    <div>
+<!--      <div class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">-->
+<!--        <div style="display: flex; flex-direction: column">-->
+<!--          <h2 class="fs12">{{ category?.categoryNm }}</h2>-->
+
+<!--          <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">-->
+
+<!--            <div style="display: flex; align-items: center; justify-content: space-between;">-->
+<!--              <template v-if="classItem.classNm !== 'Normal'">-->
+<!--                <h3 class="fs10">{{ classItem.classNm }} [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]</h3>-->
+<!--                <div class="mt1">-->
+<!--                  <div class='degreeInput mb1' style="display: flex;">-->
+<!--                    <input type="number" v-model="classItem.degree1"/>-->
+<!--                    <input type="number" v-model="classItem.degree2"/>-->
+<!--                    <input type="number" v-model="classItem.degree3"/>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </template>-->
+<!--            </div>-->
+
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
       <div class="mt2 mb4 rbcClassListArr" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
         <div class="mb1 fs12">
           {{ category?.categoryNm }}
