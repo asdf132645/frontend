@@ -184,6 +184,7 @@ import {createCbcFile, createDirectory, createFile} from "@/common/api/service/f
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
+import {parseXMLToJSON} from "@/common/lib/utils/changeData";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -336,15 +337,33 @@ const handleOkConfirm = () => {
 const uploadLis = () => {
   if (siteCd.value === '0002' || siteCd.value === '' || siteCd.value === '0000') {
     const codeList = CbcWbcTestCdList_0002;
+    // 테스트 서버 - http://emr012edu.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00124&business_id=li&instcd=012&bcno=E27JN0IS0
+    // 운영 - http://emr012.cmcnu.or.kr/cmcnu/.live
+
+    // 파서 에러일 경우
+    // const xml = result.data;
+    // const parser = new DOMParser();
+    // const xmlDoc = parser.parseFromString(xml, "text/xml");
+    //
+    // // XML 데이터를 JavaScript 객체로 변환하는 로직
+    // const json = parseXMLToJSON(xmlDoc);
+    //
+    // // cbcWorkList에 해당하는 데이터를 추출
+    // const cbcWorkList = json.root?.spcworklist?.worklist;
 
     // cbc 결과 조회
     axios.get('http://emr012.cmcnu.or.kr/cmcnu/.live', {
-      params: spcParams
+      params: spcParams,
+      headers: {
+        'Referrer-Policy': 'no-referrer-when-downgrade'
+      }
     }).then(function (result) {
       // 결과 처리 코드
       const xml = result.data;
       const json = JSON.parse(xml2json(xml, {compact: true}));
+      console.log('json - lis test', json)
       const cbcWorkList = json.root.spcworklist.worklist;
+      console.log('cbcWorkList - lis test', cbcWorkList)
       const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
       const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
@@ -450,6 +469,8 @@ const uploadLis = () => {
       })
 
     }).catch(function (err) {
+      // alert('에러')
+      console.log('error.config', err.config)
       showErrorAlert(err.message);
     });
   } else {
@@ -855,7 +876,6 @@ const getLisWbcRbcData = async () => {
 const getLisPathData = async () => {
   try {
     const result = await getFilePathSetApi();
-
     if (result && result.data && result.data.length !== 0) {
       lisFilePathSetArr.value = result.data[0].lisFilePath;
     }

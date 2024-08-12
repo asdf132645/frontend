@@ -95,6 +95,9 @@ const initCbcData = async (newVal: any) => {
           business_id: 'li',
           instcd: '012',
           bcno: newVal.barcodeNo
+        },
+        headers: {
+          withCredentials: true
         }
       }).then(function (result) {
         const xml = result.data;
