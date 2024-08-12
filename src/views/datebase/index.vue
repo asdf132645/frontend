@@ -436,7 +436,8 @@ const exportToExcel = async () => {
     return;
   }
 
-  // convertRbcData(checkedSelectedItems.value);
+  /** RBC Excel Print */
+  // await convertRbcData(checkedSelectedItems.value);
 
   // WBC Print
   await excecuteExcel()
@@ -461,7 +462,7 @@ const convertRbcData = async (dataList: any) => {
   let afterRbcData = {};
   for (const data of dataList) {
     const sendingItem = { before: {}, after: {} };
-    const shapeOthersCount = await getShapeOthers(data);
+    const shapeOthersCount: any = await getShapeOthers(data);
 
     // Before
     for (const classItem of data.rbcInfo.rbcClass) {
