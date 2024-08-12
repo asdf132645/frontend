@@ -65,3 +65,43 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
 
     return resultObj;
 };
+
+export function parseXMLToJSON(xml: any): any {
+    let obj: any = {};
+
+    if (xml.nodeType === 1) { // element
+        if (xml.attributes.length > 0) {
+            obj["@attributes"] = {};
+            for (let j = 0; j < xml.attributes.length; j++) {
+                const attribute = xml.attributes.item(j);
+                if (attribute) {
+                    obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                }
+            }
+        }
+    } else if (xml.nodeType === 3) { // text
+        obj = xml.nodeValue;
+    }
+
+    // 자식 노드들을 반복하면서 JSON으로 변환
+    if (xml.hasChildNodes()) {
+        for (let i = 0; i < xml.childNodes.length; i++) {
+            const item = xml.childNodes.item(i);
+            const nodeName = item.nodeName;
+
+            if (typeof obj[nodeName] === "undefined") {
+                obj[nodeName] = parseXMLToJSON(item);
+            } else {
+                if (typeof obj[nodeName].push === "undefined") {
+                    const old = obj[nodeName];
+                    obj[nodeName] = [];
+                    obj[nodeName].push(old);
+                }
+                obj[nodeName].push(parseXMLToJSON(item));
+            }
+        }
+    }
+
+    return obj;
+}
+
