@@ -50,12 +50,12 @@ export interface CommonState {
     testType: string;
     isNsNbIntegration: string;
     analysisType: string;
-    canInitialize: boolean;
     beforeSettingFormattedString: string;
     afterSettingFormattedString: string;
     settingChangedChecker: boolean;
     dbListDataFirstNum: number;
     dbListDataLastNum: number;
+    isTcpConnected: boolean;
 }
 
 interface CommonModule {
@@ -112,12 +112,12 @@ interface CommonModule {
         setTestType: (state: CommonState, value: string) => void;
         setIsNsNbIntegration: (state: CommonState, value: string) => void;
         setAnalysisType: (state: CommonState, value: string) => void;
-        setCanInitialize: (state: CommonState, value: boolean) => void;
         setBeforeSettingFormattedString: (state: CommonState, value: string) => void;
         setAfterSettingFormattedString: (state: CommonState, value: string) => void;
         setSettingChangedChecker: (state: CommonState, value: boolean) => void;
         setDbListDataFirstNum: (state: CommonState, value: number) => void;
         setDbListDataLastNum: (state: CommonState, value: number) => void;
+        setIsTcpConnected: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -175,12 +175,12 @@ export const commonModule: CommonModule = {
         testType: '',
         isNsNbIntegration: 'N',
         analysisType: '',
-        canInitialize: false,
         beforeSettingFormattedString: '',
         afterSettingFormattedString: '',
         settingChangedChecker: false,
         dbListDataFirstNum: 0,
         dbListDataLastNum: 0,
+        isTcpConnected: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -337,9 +337,6 @@ export const commonModule: CommonModule = {
         setAnalysisType(state: CommonState, value: string): void {
             state.analysisType = value;
         },
-        setCanInitialize(state: CommonState, value: boolean): void {
-            state.canInitialize = value;
-        },
         setBeforeSettingFormattedString(state: CommonState, value: string): void {
             state.beforeSettingFormattedString = value;
         },
@@ -355,6 +352,9 @@ export const commonModule: CommonModule = {
         setDbListDataLastNum(state: CommonState, value: number): void {
             state.dbListDataLastNum = value;
         },
+        setIsTcpConnected(state: CommonState, value: boolean): void {
+            state.isTcpConnected = value;
+        }
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -512,9 +512,6 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('analysisType')) {
                 commit('setAnalysisType', payload.analysisType);
             }
-            if (payload.hasOwnProperty('canInitialize')) {
-                commit('setCanInitialize', payload.canInitialize);
-            }
             if (payload.hasOwnProperty('beforeSettingFormattedString')) {
                 commit('setBeforeSettingFormattedString', payload.beforeSettingFormattedString);
             }
@@ -529,6 +526,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('dbListDataLastNum')) {
                 commit('setDbListDataLastNum', payload.dbListDataLastNum);
+            }
+            if (payload.hasOwnProperty('isTcpConnected')) {
+                commit('setIsTcpConnected', payload.isTcpConnected);
             }
         },
     },

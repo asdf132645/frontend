@@ -1,4 +1,5 @@
 <template>
+  <LoadingOverlay :isLoading="!isTcpConnected" />
   <div class='uimdLogin'>
     <div class='loginContent'>
       <p class="loginTitle"><span class="loginColorSpan">U</span>IMD</p>
@@ -31,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import {getCurrentInstance, ref, onMounted} from "vue";
+import {getCurrentInstance, ref, onMounted, computed} from "vue";
 import { login } from "@/common/api/service/user/userApi";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
@@ -40,6 +41,7 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import { initializeAllSettings } from "@/common/lib/commonfunction/settingFunctions";
+import LoadingOverlay from "@/components/commonUi/LoadingOverlay.vue";
 
 // 스토어
 const store = useStore();
@@ -50,6 +52,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const isAutoLoginEnabled = ref(false);
+const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 
 onMounted(() => {
   isAutoLogginable();
