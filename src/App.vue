@@ -115,18 +115,19 @@ const getIpAddress = async (ip: string) => {
 
 function checkFullscreenStatus() {
   const {path} = router.currentRoute.value;
-  if(path === '/user/login'){
+  if (path === '/user/login') {
     return;
   }
   isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
-  if(!isFullscreen.value){
+  if (!isFullscreen.value) {
     showErrorAlert('Please click the full screen button.');
-  }else{
+  } else {
     if (alertMessage.value === 'Please click the full screen button.') {
       hideAlert();
     }
   }
 }
+
 function startChecking() {
   // 화면 상태를 즉시 업데이트
   checkFullscreenStatus();
@@ -159,8 +160,6 @@ watch(reqArr.value, async (newVal, oldVal) => {
   // `reqArrPaste` 상태 초기화
   await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
 });
-
-
 
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
@@ -266,6 +265,9 @@ onBeforeUnmount(() => {
 });
 
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
+  await socketData(data);
+});
+async function socketData(data: any) {
   if (commonDataGet.value.viewerCheck !== 'main') {
     return;
   }
@@ -273,10 +275,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   try {
     if (typeof data === 'string') {
       if (data === 'tcpConnected') {
-        await store.dispatch('commonModule/setCommonInfo', { canInitialize: true });
+        await store.dispatch('commonModule/setCommonInfo', {canInitialize: true});
         return;
       } else {
-        await store.dispatch('commonModule/setCommonInfo', { canInitialize: false });
+        await store.dispatch('commonModule/setCommonInfo', {canInitialize: false});
         await showSuccessAlert(messages.TCP_DiSCONNECTED);
       }
 
@@ -301,7 +303,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
         break;
       case 'SYSINFO':
         const res = await sysInfoStore(parseDataWarp);
-        if(res !== null){
+        if (res !== null) {
           showErrorAlert(res);
         } else {
           // await store.dispatch('commonModule/setCommonInfo', {canInitialize: true });
@@ -574,7 +576,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
           siteCdDvBarCode.value = true;
         }
 
-        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
+        await store.dispatch('commonModule/setCommonInfo', {siteCd: parseDataWarp.siteCd})
         localStorage.setItem('siteCd', parseDataWarp.siteCd);
       } catch (err) {
         console.error("Error handling device information", err);
@@ -601,7 +603,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   } catch (error) {
     console.error(error);
   }
-});
+}
 const delayedEmit = (type: string, payload: string, delay: number) => {
   if (socketTimeoutId !== undefined) {
     clearTimeout(socketTimeoutId); // 이전 타이머 클리어
@@ -712,7 +714,7 @@ const cellImgGet = async (newUserId?: string) => {
         });
         isNsNbIntegrationLocal.value = data?.isNsNbIntegration ? 'Y' : 'N';
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
-        await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
+        await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'});
         sessionStorage.setItem('isNsNbIntegration', data?.isNsNbIntegration ? 'Y' : 'N');
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
