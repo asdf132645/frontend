@@ -305,13 +305,6 @@ async function socketData(data: any) {
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           showErrorAlert(res);
-        } else {
-          // await store.dispatch('commonModule/setCommonInfo', {canInitialize: true });
-          // if (!canInitialize.value) {
-          //   // setTimeout(async () => {
-          //
-          //   // }, 1500)
-          // }
         }
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
