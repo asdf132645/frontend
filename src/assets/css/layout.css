@@ -2496,6 +2496,20 @@ table.tableClass {
     width: 100%;
 }
 
+.restoreModal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    background: var(--gray-bg-12-color);
+    padding: 10px 15px 10px 10px;
+    z-index: 9999999;
+    border-color: var(--white-color);
+    border-radius: 5px;
+}
+
 .memoModal {
     position: absolute;
     left: 0;

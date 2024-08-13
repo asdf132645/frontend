@@ -427,6 +427,10 @@ export const apiConstants = {
         restoreData: {
             endpoint: 'restore/execute',
             requiresToken: false,
+        },
+        checkDuplicated: {
+            endpoint: 'restore/checkDuplicatedData',
+            requiresToken: false,
         }
     },
     excel: {

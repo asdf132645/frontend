@@ -9,3 +9,7 @@ export const backUpDate = async (request: any): Promise<ApiResponse<void>> => {
 export const restoreBackup = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.restore.restoreData, request);
 }
+
+export const checkDuplicatedData = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.restore.checkDuplicated, request);
+}

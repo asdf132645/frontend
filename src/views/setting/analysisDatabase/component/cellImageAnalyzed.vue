@@ -171,8 +171,25 @@
       </tbody>
     </table>
     <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
-
   </div>
+
+  <div v-if="showRestoreModal" class="restoreModal">
+    <h3 v-if="restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length === 0">Would you like to Restore?</h3>
+    <h3 v-else-if="restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length > 0">
+      There is duplicated slot Id. Would you like to overwrite data?
+    </h3>
+    <p>Restore Enable Count: {{ restoreSlotIdObj?.nonDuplicated && restoreSlotIdObj?.nonDuplicated.length }}</p>
+    <p>Duplicated Slot Id Count: {{ restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length }}</p>
+    <ul v-if="restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length > 0">
+      <p></p>
+      <li v-for="slotId in restoreSlotIdObj?.duplicated" :key="slotId">
+        {{ slotId }}
+      </li>
+    </ul>
+    <button class="memoModalBtn" @click="restoreConfirm">OK</button>
+    <button class="memoModalBtn" @click="restoreCancel">CANCEL</button>
+  </div>
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -199,11 +216,13 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import moment from "moment";
-import {backUpDate, restoreBackup} from "@/common/api/service/backup/wbcApi";
+import {backUpDate, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
+import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 
 const store = useStore();
 const showAlert = ref(false);
 const alertType = ref('');
+const showRestoreModal = ref(false);
 
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
@@ -247,9 +266,9 @@ const cellimgId = ref('');
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const fileInput = ref<any>(null);
-const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
-const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const restoreSlotIdObj = ref({});
+const selectedFileName = ref('');
 
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -281,14 +300,19 @@ const handleFileSelect = () => {
 }
 
 const restoreBackupData = async (event: any) => {
+  /** TODO Restore Logic 정리 */
+  return;
   const fileName = event.target.files[0]?.name;
   if (!fileName) return;
+  selectedFileName.value = fileName;
 
   const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
 
   try {
-    const result = await restoreBackup({ fileName: fileName, filePath: filePath });
-    console.log(result);
+    const result = await checkDuplicatedData({ fileName: fileName, filePath: filePath });
+    showRestoreModal.value = true;
+    // const result = await restoreBackup({ fileName: fileName, filePath: filePath });
+    restoreSlotIdObj.value = result.data;
   } catch (e) {
     console.log(e);
   }
@@ -331,7 +355,6 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
 })
 
 watch(() => settingChangedChecker.value, () => {
-  console.log("제발");
   checkIsMovingWhenSettingNoSaved();
 })
 
@@ -497,6 +520,22 @@ const toggleAlarm = () => {
 const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
+
+const restoreConfirm = async () => {
+
+  const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
+  try {
+    const result = await restoreBackup({ fileName: selectedFileName.value, filePath: filePath });
+    showSuccessAlert('Restoration completed successfully');
+  } catch (e) {
+    console.log(e);
+  }
+  showRestoreModal.value = false;
+}
+
+const restoreCancel = async () => {
+  showRestoreModal.value = false;
+}
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
