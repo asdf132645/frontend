@@ -188,7 +188,6 @@ watch(() => initValData.value, (newVal) => {
     eqStatCd.value = '05';
   }
   stataasdasd.value = newVal;
-  console.log(stataasdasd.value);
 })
 
 

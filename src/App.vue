@@ -316,7 +316,6 @@ async function socketData(data: any) {
         }
         break;
       case 'INIT':
-        console.log('init')
         await store.dispatch('commonModule/setCommonInfo', {initValData: false});
         sendSettingInfo();
         break;
@@ -722,11 +721,6 @@ const cellImgGet = async (newUserId?: string) => {
     console.log(e);
   }
 }
-
-const isFullScreen = () => {
-  return window.matchMedia('(display-mode: fullscreen)').matches;
-}
-
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';

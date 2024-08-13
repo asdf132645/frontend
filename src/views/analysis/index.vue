@@ -55,7 +55,6 @@ const classInfoUpdate = (data: any) => {
 }
 
 const initDataChangeText = (val: any) => {
-  console.log('initDataChangeText', val);
   store.dispatch('commonModule/setCommonInfo', {initValData: val});
 }
 
