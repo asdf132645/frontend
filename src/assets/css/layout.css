@@ -2611,8 +2611,8 @@ ul.normalItems li div span:last-child {
 }
 
 .resInfoTopContainer {
-    /*max-height: 230px;*/
-    /*overflow-y: auto;*/
+    max-height: 380px;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
