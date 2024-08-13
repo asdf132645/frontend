@@ -1,5 +1,8 @@
 <template>
-  <LoadingOverlay :isLoading="!isTcpConnected" />
+  <div class="loaderBackgroundForLogin" v-if="!isViewer && !isTcpConnected">
+    <div class="loaderForLogin"></div>
+    <p class="loadingTextLogin">Loading...</p>
+  </div>
   <div class='uimdLogin'>
     <div class='loginContent'>
       <p class="loginTitle"><span class="loginColorSpan">U</span>IMD</p>
@@ -32,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {getCurrentInstance, ref, onMounted, computed} from "vue";
+import { getCurrentInstance, ref, onMounted, computed } from "vue";
 import { login } from "@/common/api/service/user/userApi";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
@@ -41,7 +44,6 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import { initializeAllSettings } from "@/common/lib/commonfunction/settingFunctions";
-import LoadingOverlay from "@/components/commonUi/LoadingOverlay.vue";
 
 // 스토어
 const store = useStore();
@@ -53,8 +55,10 @@ const alertType = ref('');
 const alertMessage = ref('');
 const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
+const isViewer = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
+  await checkIsViewer()
   isAutoLogginable();
 })
 
@@ -101,6 +105,19 @@ const loginUser = async () => {
     }
   } catch (e) {
     showSuccessAlert('server Err.')
+    console.log(e);
+  }
+}
+
+const checkIsViewer = async () => {
+  try {
+    const result = await getDeviceIpApi();
+    if((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data)))) {
+      isViewer.value = false;
+    } else {
+      isViewer.value = true;
+    }
+  } catch (e) {
     console.log(e);
   }
 }

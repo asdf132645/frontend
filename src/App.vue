@@ -96,10 +96,11 @@ let intervalId: any;
 const stataasdasd = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
+  console.log('isTcpConnected', isTcpConnected);
   if (isTcpConnected) {
     setTimeout(async () => {
       await store.dispatch('commonModule/setCommonInfo', { isTcpConnected: true });
-    }, 2000)
+    }, 1500)
   }
 })
 
@@ -149,7 +150,14 @@ function startChecking() {
 watch(reqArr.value, async (newVal, oldVal) => {
   if (!newVal.reqArr) return;
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
+  const isInitInfo = uniqueReqArr.filter((item: any) => ['INIT'].includes(item.jobCmd));
   const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
+
+  if (isInitInfo.length > 0) {
+    await sendMessage(isInitInfo[0]);
+    await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
+    return;
+  }
 
   if (deleteData.value) {
     deleteData.value = false;
@@ -158,6 +166,7 @@ watch(reqArr.value, async (newVal, oldVal) => {
   }
 
   if (uniqueReqArr.length === 0) return;
+
 
   // `notSysRunInfo`와 `uniqueReqArr` 처리
   if (notSysRunInfo.length > 0) {
