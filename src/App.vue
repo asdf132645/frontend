@@ -79,7 +79,6 @@ let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
-const canInitialize = computed(() => store.state.commonModule.canInitialize);
 const isNsNbIntegrationLocal = ref('N');
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -96,6 +95,11 @@ const isFullscreen = ref<boolean>(false);
 let intervalId: any;
 const stataasdasd = ref(false);
 
+instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
+  if (isTcpConnected) {
+    await store.dispatch('commonModule/setCommonInfo', { isTcpConnected: true });
+  }
+})
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
@@ -276,14 +280,7 @@ async function socketData(data: any) {
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
-      if (data === 'tcpConnected') {
-        await store.dispatch('commonModule/setCommonInfo', {canInitialize: true});
-        return;
-      } else {
-        await store.dispatch('commonModule/setCommonInfo', {canInitialize: false});
-        await showSuccessAlert(messages.TCP_DiSCONNECTED);
-      }
-
+      await showSuccessAlert(messages.TCP_DiSCONNECTED);
       return
     }
     const textDecoder = new TextDecoder('utf-8');

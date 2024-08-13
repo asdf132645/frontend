@@ -24,7 +24,7 @@
           {{ option.text }}
         </option>
       </select>
-      <div class="initBtn" @click="canInitialize && sendInit()" :class="{'isInitDisabled': isInit === 'Y'}">
+      <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
         <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                            :class="{ 'disabled': isInit !== 'N' }"
         />
@@ -85,7 +85,6 @@ const isRunningState = ref(executeState.value?.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
-const canInitialize = computed(() => store.state.commonModule.canInitialize);
 const userId = ref('');
 const analysisType = ref();
 const wbcCount = ref();
