@@ -863,6 +863,17 @@ button.degreeAllCheckBtn {
     transform: translate(-50%, -50%);
 }
 
+.loaderForLogin {
+    position: absolute;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    margin: auto;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -872,6 +883,10 @@ button.degreeAllCheckBtn {
     }
 }
 
+p.loadingTextLogin {
+    margin-top: 200px;
+    font-size: 1.2rem;
+}
 
 p.loadingText {
     position: absolute;
@@ -887,6 +902,17 @@ p.loadingText {
     height: 100%;
     top: 0;
     left: 0;
+}
+
+.loaderBackgroundForLogin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    background: #0000005c;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
 }
 
 .excelDivList {
@@ -2468,6 +2494,20 @@ table.tableClass td, table.tableClass th {
 
 table.tableClass {
     width: 100%;
+}
+
+.restoreModal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    background: var(--gray-bg-12-color);
+    padding: 10px 15px 10px 10px;
+    z-index: 9999999;
+    border-color: var(--white-color);
+    border-radius: 5px;
 }
 
 .memoModal {
