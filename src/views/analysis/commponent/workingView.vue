@@ -87,11 +87,14 @@ let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
 let interval: any = ref(null);
 const isBm = ref(false);
+const stataasdasd = ref(false);
 
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
-  eqStatCd.value = newData.sysInfo.eqStatCd;
+  if(!stataasdasd.value){
+    eqStatCd.value = newData.sysInfo.eqStatCd;
+  }
   if (commonDataGet.value.isRunningState) {
     updateInputState(sysInfo.iCasStat, slideCardData.value.input);
     updateInputState(sysInfo.oCasStat, slideCardData.value.output);
@@ -109,7 +112,6 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     }
   }
 }, {deep: true});
-
 
 // 장비가 슬라이드 검사를 완료 할때 감시
 watch([commonDataGet.value], async (newVals: any) => {
@@ -184,6 +186,7 @@ watch(() => props.initValData, (newVal) => {
   if(newVal){
     eqStatCd.value = '05';
   }
+  stataasdasd.value = newVal;
 })
 
 

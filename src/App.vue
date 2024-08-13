@@ -11,6 +11,7 @@
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
+                :stataasdasd="stataasdasd"
       />
     </main>
     <Alert
@@ -93,11 +94,13 @@ const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
+const stataasdasd = ref(false);
 
 
 instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip) => { // 뷰어인지 아닌지 체크하는곳
   await getIpAddress(ip)
-})
+});
+
 const siteCdDvBarCode = ref(false);
 
 const getIpAddress = async (ip: string) => {
@@ -220,7 +223,6 @@ onMounted(async () => {
   startChecking();
   const result = await getDeviceIpApi();
   const ipMatches = isIpMatching(window.APP_API_BASE_URL, result.data);
-  // console.log(ipMatches)
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
 
@@ -315,6 +317,7 @@ async function socketData(data: any) {
         }
         break;
       case 'INIT':
+        stataasdasd.value = true;
         sendSettingInfo();
         break;
       case 'START':
