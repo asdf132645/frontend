@@ -97,7 +97,9 @@ const stataasdasd = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {
-    await store.dispatch('commonModule/setCommonInfo', { isTcpConnected: true });
+    setTimeout(async () => {
+      await store.dispatch('commonModule/setCommonInfo', { isTcpConnected: true });
+    }, 2000)
   }
 })
 
