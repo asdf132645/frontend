@@ -47,6 +47,7 @@ import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
+import {spcParams} from "@/common/defines/constFile/lis";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -88,8 +89,9 @@ const initCbcData = async (newVal: any) => {
   switch (hospitalName) {
     // 서울 성모 cbc - 외부 url 진행 - 파일 없음
     case '서울성모병원':
-      const realUrl = 'http://emr012.cmcnu.or.kr/cmcnu/.live';
-      axios.get(realUrl, {
+      let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
+      axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
         params: {
           submit_id: 'TRLII00124',
           business_id: 'li',
@@ -97,7 +99,7 @@ const initCbcData = async (newVal: any) => {
           bcno: newVal.barcodeNo
         },
         headers: {
-          withCredentials: true
+          'Content-Type': 'application/json',
         }
       }).then(function (result) {
         const xml = result.data;

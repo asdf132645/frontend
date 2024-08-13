@@ -60,6 +60,7 @@
                   ref="cellRef"
                   @error="() => $emit('hideImage', item.id, image.fileName, item.title)"
                   @load="handleImageLoad(itemIndex)"
+                  fetchpriority="high"
               />
               <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
             </div>
@@ -165,25 +166,27 @@
                   <div v-if="image" class="titleImg"
                        v-show="replaceFileNamePrefix(image.fileName) !== lastClassObj?.title">
                     <div class="fileTitle"
-                         :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
+                         :style="{ fontSize: imageSize ? (parseInt(String(imageSize)) / 6) + 'px' : '15px' }">
                       {{ replaceFileNamePrefix(image.fileName) }}
                       <font-awesome-icon
                           :icon="['fas', 'arrow-right']"/>
                       {{ image.title }}
                     </div>
                   </div>
-                  <img
+                  <picture
                       v-if="image && image.fileName && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
                       :src="getImageUrl(image.fileName, lastClassObj.id, lastClassObj.title, '')"
-                       :width="imageSize"
-                       :height="imageSize"
-                       :style="{ filter: image.filter }"
-                       @dragstart="() => $emit('onDragStart', lastItemIndex, imageIndex)"
-                       draggable="true"
-                       class="cellImg"
-                       ref="cellRef"
-                       @error="() => $emit('hideImage', lastClassObj.id, image.fileName, lastClassObj.title)"
-                       @load="handleImageLoad(lastItemIndex)"
+                      :width="imageSize"
+                      :height="imageSize"
+                      :style="{ filter: image.filter }"
+                      @dragstart="() => $emit('onDragStart', lastItemIndex, imageIndex)"
+                      draggable="true"
+                      class="cellImg"
+                      ref="cellRef"
+                      @error="() => $emit('hideImage', lastClassObj.id, image.fileName, lastClassObj.title)"
+                      @load="handleImageLoad(lastItemIndex)"
+                      loading="lazy"
+                      decoding="async"
                   />
                   <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
                 </div>

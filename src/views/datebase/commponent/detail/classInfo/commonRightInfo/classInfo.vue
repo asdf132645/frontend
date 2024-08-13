@@ -339,18 +339,8 @@ const uploadLis = () => {
     const codeList = CbcWbcTestCdList_0002;
     // 테스트 서버 - http://emr012edu.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00124&business_id=li&instcd=012&bcno=E27JN0IS0
     // 운영 - http://emr012.cmcnu.or.kr/cmcnu/.live
-    // 프론트 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
+    // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
 
-    // 파서 에러일 경우
-    // const xml = result.data;
-    // const parser = new DOMParser();
-    // const xmlDoc = parser.parseFromString(xml, "text/xml");
-    //
-    // // XML 데이터를 JavaScript 객체로 변환하는 로직
-    // const json = parseXMLToJSON(xmlDoc);
-    //
-    // // cbcWorkList에 해당하는 데이터를 추출
-    // const cbcWorkList = json.root?.spcworklist?.worklist;
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
     // cbc 결과 조회
@@ -360,9 +350,8 @@ const uploadLis = () => {
         'Content-Type': 'application/json',
       }
     }).then(function (result) {
-
       // 결과 처리 코드
-      // console.log(result.data);
+      console.log('cbc 결과 값', result.data);
       const xml = result.data.data.trim(); // 불필요한 공백 제거
       const json = JSON.parse(xml2json(xml, {compact: true}));
       console.log('json - lis test', json);
@@ -425,6 +414,7 @@ const uploadLis = () => {
           filePath: `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`,
           data: paramsData,
         };
+        console.log('유저체크', isUserAuth);
         createCbcFile(parmsLisCopy);
         if (isUserAuth === 'succ') {
           const params = {
@@ -452,12 +442,27 @@ const uploadLis = () => {
               .filter((wbcItem: any) => wbcItem.classCd !== null && wbcItem.classCd !== '')
               .map((wbcItem: any) => `${wbcItem.classCd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
               .join('');
-
-          const url = `${realUrl}?submit_id=TXLII00101&business_id=${business_id}&ex_interface=${params.empNo}|${instcd}&instcd=${instcd}&userid=${params.empNo}&eqmtcd=${eqmtcd}&bcno=${params.barcodeNo}&result=${result}&testcont=MANUAL DIFFERENTIAL COUNT RESULT&testcontcd=01&execdeptcd=H1`;
-
           // LIS 최종 업로드 Report
-          axios.get(url).then(function (result) {
+          axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+            params: {
+              submit_id: 'TXLII00101',
+              business_id: business_id,
+              ex_interface: `${params.empNo}|${instcd}`,
+              instcd: instcd,
+              userid: params.empNo,
+              eqmtcd: eqmtcd,
+              bcno: params.barcodeNo,
+              result: result,
+              testcont:'MANUAL DIFFERENTIAL COUNT RESULT',
+              testcontcd: '01',
+              execdeptcd: 'H1',
+            },
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }).then(function (result) {
             const xml = result.data;
+            console.log('LIS 최종 업로드 Report 값', result)
             const json = JSON.parse(xml2json(xml, {compact: true}));
             const resultFlag = json.root.ResultFlag.resultflag._text;
             if (resultFlag === 'Y') {
@@ -892,8 +897,18 @@ const getLisPathData = async () => {
 const checkUserAuth = async (empNo: any) => {
   return new Promise((succ, fail) => {
     if (siteCd.value === '0002') {
-      const url = `http://emr012.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00104&business_id=li&instcd=012&userid=${empNo}`;
-      axios.get(url).then(function (result) {
+      let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+      axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+        params: {
+          submit_id: 'TRLII00104',
+          business_id: 'li',
+          instcd: '012', // 병원 코드
+          userid: empNo
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }).then(function (result) {
         const xml = result.data
         const json = JSON.parse(xml2json(xml, {compact: true}));
         const userNm = json.root.getUsernm.usernm._text;
