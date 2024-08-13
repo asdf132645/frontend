@@ -173,7 +173,7 @@
                       {{ image.title }}
                     </div>
                   </div>
-                  <picture
+                  <img
                       v-if="image && image.fileName && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
                       :src="getImageUrl(image.fileName, lastClassObj.id, lastClassObj.title, '')"
                       :width="imageSize"
