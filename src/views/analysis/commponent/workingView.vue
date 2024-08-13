@@ -61,8 +61,9 @@ import {slideCard} from "@/common/defines/constFile/analysis";
 const store = useStore();
 const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
+const initValData = computed(() => store.state.commonModule.initValData);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData', 'initValData']);
+const props = defineProps([ 'parsedData']);
 
 
 // 스토어
@@ -182,11 +183,12 @@ watch(()=>eqStatCd.value, (newVal) => {
   }
 })
 
-watch(() => props.initValData, (newVal) => {
+watch(() => initValData.value, (newVal) => {
   if(newVal){
     eqStatCd.value = '05';
   }
   stataasdasd.value = newVal;
+  console.log(stataasdasd.value);
 })
 
 

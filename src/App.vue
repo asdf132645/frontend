@@ -314,7 +314,8 @@ async function socketData(data: any) {
         }
         break;
       case 'INIT':
-        stataasdasd.value = true;
+        console.log('init')
+        await store.dispatch('commonModule/setCommonInfo', {initValData: false});
         sendSettingInfo();
         break;
       case 'START':

@@ -56,6 +56,7 @@ export interface CommonState {
     dbListDataFirstNum: number;
     dbListDataLastNum: number;
     isTcpConnected: boolean;
+    initValData: boolean;
 }
 
 interface CommonModule {
@@ -118,6 +119,7 @@ interface CommonModule {
         setDbListDataFirstNum: (state: CommonState, value: number) => void;
         setDbListDataLastNum: (state: CommonState, value: number) => void;
         setIsTcpConnected: (state: CommonState, value: boolean) => void;
+        setInitValData: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -181,6 +183,7 @@ export const commonModule: CommonModule = {
         dbListDataFirstNum: 0,
         dbListDataLastNum: 0,
         isTcpConnected: false,
+        initValData: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -354,7 +357,10 @@ export const commonModule: CommonModule = {
         },
         setIsTcpConnected(state: CommonState, value: boolean): void {
             state.isTcpConnected = value;
-        }
+        },
+        setInitValData(state: CommonState, value: boolean): void {
+            state.initValData = value;
+        },
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -529,6 +535,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isTcpConnected')) {
                 commit('setIsTcpConnected', payload.isTcpConnected);
+            }
+            if (payload.hasOwnProperty('initValData')) {
+                commit('setInitValData', payload.initValData);
             }
         },
     },

@@ -31,7 +31,7 @@ const emits = defineEmits();
 
 const store = useStore();
 const bmIsBoolen = ref(false);
-const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette', 'stataasdasd']);
+const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
@@ -45,11 +45,6 @@ onBeforeMount(async () => {
   bmIsBoolen.value = window.PROJECT_TYPE === 'bm' ? true : false;
 });
 
-watch(props.stataasdasd, async (newVal) =>{
-  if (newVal){
-    initValData.value = false;
-  }
-})
 
 const rbcUpdate = (data: any) => {
   emits('rbcAppUpdate', data);
@@ -60,7 +55,8 @@ const classInfoUpdate = (data: any) => {
 }
 
 const initDataChangeText = (val: any) => {
-  initValData.value = val;
+  console.log('initDataChangeText', val);
+  store.dispatch('commonModule/setCommonInfo', {initValData: val});
 }
 
 </script>
