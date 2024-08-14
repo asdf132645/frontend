@@ -2026,6 +2026,38 @@ ul.cellImgBox input {
     margin-left: 30px;
 }
 
+.customImgSet.rgb > input {
+    width: 17%;
+}
+
+.customImgSet.rgb {
+    display: inline;
+}
+
+.sizeTitle {
+    display: inline-block;
+    width: 16%;
+    text-align: left;
+}
+
+.sizeContainer div .sizeTitle {
+    text-align: left;
+}
+
+.customImgSet.size {
+    width: 62%;
+}
+
+.customImgSet.size > input {
+    width: 100%;
+}
+
+.customImgSet {
+    width: 23%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .reportSection.cbcLayer ul.leftWbcInfo {
     width: 50%;
 }
@@ -2309,6 +2341,7 @@ h3.orderTitle {
     left: 14%;
     top: 29px;
     border: 1px solid var(--white-color);
+    font-size: 0.8rem;
 }
 
 select.selectSizeTitle {

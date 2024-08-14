@@ -39,8 +39,16 @@
         </button>
         <div v-show="showSize" class="sizeContainer">
           <div>
-            Size {{ imgPixelConvertToPercent(imageSize) }}
-<!--            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>-->
+            <div class="sizeTitle">Size</div>
+            <div class="customImgSet size">
+<!--              {{ imgPixelConvertToPercent(imageSize) }}-->
+              <input
+                  type="number"
+                  :value="displayValue"
+                  @input="updateImageSize"
+              />
+            </div>
+            <!--            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>-->
             <input
                 type="range"
                 min="50"
@@ -60,7 +68,9 @@
           <div class="imgSet" v-show="imgSet">
             <div>
               <font-awesome-icon :icon="['fas', 'sun']"/>
-              Brightness {{ imgBrightness }}
+              Brightness
+              <div class="customImgSet"><input type="number" v-model="imgBrightness" @input="changeImgBrightness"/>
+              </div>
               <input
                   type="range"
                   min="50"
@@ -72,8 +82,14 @@
             </div>
             <div>
               <font-awesome-icon :icon="['fas', 'palette']"/>
-              RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}` }} ]
-
+              RGB
+              <div class="customImgSet rgb">
+                [
+                <input type="number" v-model="imageRgb[0]" @input="changeImageRgb('')"/>,
+                <input type="number" v-model="imageRgb[1]" @input="changeImageRgb('')"/>,
+                <input type="number" v-model="imageRgb[2]" @input="changeImageRgb('')"/>
+                ]
+              </div>
               <div class="alignItemsCenter">
                 <label>R</label>
                 <input
@@ -166,14 +182,14 @@
       <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
         <div class="wbc-modal-content" @click="outerClickCloseModal">
           <span class="wbcClose" @click="closeModal">&times;</span>
-          <div class="wbcModalImageContent" >
+          <div class="wbcModalImageContent">
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
                  class="modal-image" ref="modalImage"/>
           </div>
           <div class="buttons">
             <div class="rangeBox">
-              <p>{{((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
-              <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom" />
+              <p>{{ ((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
+              <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom"/>
             </div>
           </div>
         </div>
@@ -247,7 +263,7 @@ const draggedCircleImgIndex = ref<any>(null);
 const selectedClickImages = ref<any>([]);
 const shiftClickImages = ref<any>([]);
 const rollbackHistory: any = [];
-const imageSize = ref(150);
+const imageSize = ref(100);
 const imgBrightness = ref(100);
 const imageRgb = ref([0, 0, 0]);
 const selectSizeTitle = ref('ME')
@@ -285,7 +301,6 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
-const zoomFactor = 1.1;
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -363,6 +378,10 @@ const classCompare = () => {
 const imgPixelConvertToPercent = (imageSize: number) => {
   return Math.floor(((imageSize - 50) / 240) * 170 + 30) + '%';
 }
+const percentConvertToPixel = (percent: number): number => {
+  return Math.floor((percent - 30) * 240 / 170 + 50);
+}
+
 
 const imgSetLocalStorage = async () => {
   const storedBrightness = localStorage.getItem('imgBrightness');
@@ -618,15 +637,15 @@ function isBorderChanged(image: any) {
   const prefix = image.fileName.split('_')[0];
   const isNsNbIntegration = selectItems.value.wbcInfoAfter.find((el: any) => {
     return el.title === 'NE'
-  } )
+  })
 
   let replacements: any = {}
-  if(!isNsNbIntegration){
+  if (!isNsNbIntegration) {
     replacements = {
       'NES': 'NS',
       'NEB': 'NB'
     };
-  }else{
+  } else {
     replacements = {
       'NES': 'NE',
       'NEB': 'NB'
@@ -644,15 +663,15 @@ function isBorderChanged(image: any) {
 function replaceFileNamePrefix(fileName: string) {
   const isNsNbIntegration = selectItems.value.wbcInfoAfter.find((el: any) => {
     return el.title === 'NE'
-  } )
+  })
 
   let replacements: any = {}
-  if(!isNsNbIntegration){
+  if (!isNsNbIntegration) {
     replacements = {
       'NES': 'NS',
       'NEB': 'NB'
     };
-  }else{
+  } else {
     replacements = {
       'NES': 'NE',
       'NEB': 'NB'
@@ -915,7 +934,17 @@ function changeImageSize(event: any) {
   requestAnimationFrame(() => drawCellMarker(true));
 }
 
-
+const updateImageSize = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const newPercentValue = parseFloat(target.value);
+  if (!isNaN(newPercentValue)) {
+    imageSize.value = percentConvertToPixel(newPercentValue + 1);
+  }
+  requestAnimationFrame(() => drawCellMarker(true));
+}
+const displayValue = computed(() => {
+  return imgPixelConvertToPercent(imageSize.value).replace('%', '');
+});
 
 function onDragOverCircle() {
   // 드래그 동작을 위한 빈 함수, 이벤트 리스너가 있어야 드롭이 작동함 지우지 마세요.
@@ -1182,7 +1211,7 @@ async function onDrop(targetItemIndex: any) {
     return await originalOnDrop(targetItemIndex);
   }
 
-  await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: true });
+  await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
 
   const selectedImagesToMove = [];
   const draggedItems = [];
@@ -1209,7 +1238,7 @@ async function onDrop(targetItemIndex: any) {
       continue;
     }
 
-    selectedImagesToMove.push({ fileName: selectedImage.fileName });
+    selectedImagesToMove.push({fileName: selectedImage.fileName});
     draggedItems.push(draggedItem);
     targetItems.push(wbcInfo.value[targetItemIndex]);
 
@@ -1220,7 +1249,7 @@ async function onDrop(targetItemIndex: any) {
     await moveImage(targetItemIndex, selectedImagesToMove, draggedItems, targetItems[0], type, keyMove);
   }
 
-  await store.dispatch('commonModule/setCommonInfo', { moveImgIsBool: false });
+  await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: false});
 
   selectedClickImages.value = [];
   selectItemImageArr.value = [];
@@ -1265,9 +1294,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         sourceFolders.push(sourceFolder);
       } else if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
         let newArr: any;
-        if(!draggedItem[idx]){
+        if (!draggedItem[idx]) {
           newArr = draggedItem;
-        }else{
+        } else {
           newArr = draggedItem[idx];
         }
         const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
@@ -1315,9 +1344,9 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
           }
         } else {
           let newArr: any = [];
-          if(!draggedItem[idx]){
+          if (!draggedItem[idx]) {
             newArr = draggedItem;
-          }else{
+          } else {
             newArr = draggedItem[idx];
           }
           // 드래그된 이미지를 원래 위치에서 제거
@@ -1325,7 +1354,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
           if (draggedImageIndex !== -1) {
             newArr.images.splice(draggedImageIndex, 1);
           }
-          const newArrIdx = wbcInfo.value.findIndex((item: any)=> item.title === newArr.title);
+          const newArrIdx = wbcInfo.value.findIndex((item: any) => item.title === newArr.title);
           wbcInfo.value[newArrIdx] = newArr;
           const imgAttr = {
             width: imageSize.value,
@@ -1679,6 +1708,7 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
   // 원본 데이터베이스 업데이트
   await updateOriginalDb();
 }
+
 const handleMoveImages = async () => {
   try {
     const folderPath = `${iaRootPath.value}/${selectItems.value.slotId}/${projectTypeReturn(projectType.value)}`;
@@ -1687,7 +1717,7 @@ const handleMoveImages = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ folderPath, wbcInfo: wbcInfo.value }),
+      body: JSON.stringify({folderPath, wbcInfo: wbcInfo.value}),
     });
 
     if (!response.ok) {
