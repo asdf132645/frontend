@@ -135,9 +135,9 @@
             <label for="signedState">Signed state</label>
             <input id="signedState" class="inputDisabled" type="text" v-model="itemObj.submitState" readonly disabled/>
           </li>
-          <li>
+          <li v-if="!barCodeImageShowError">
             <p>Barcode Image</p>
-            <img class="mt1" :src="barcodeImg"/>
+            <img class="mt1" :src="barcodeImg" @error="onImageError"/>
           </li>
         </ul>
       </div>
@@ -228,6 +228,7 @@ const firstShiftKeyStr = ref('');
 const lastShiftKeyStr = ref('');
 let socketTimeoutId = undefined; // 타이머 ID 저장
 const scrollableDiv = ref(null);
+const barCodeImageShowError = ref(false);
 
 
 onMounted(async () => {
@@ -655,9 +656,11 @@ const submitStateChangeText = (text, submitUserId) => {
     default:
       return 'Ready';
   }
-
 }
 
+const onImageError = () => {
+  barCodeImageShowError.value = true;
+}
 
 </script>
 

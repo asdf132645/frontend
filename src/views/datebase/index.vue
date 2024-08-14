@@ -462,7 +462,7 @@ const exportToExcel = async () => {
   }
 
   /** RBC Excel Print */
-  // await convertRbcData(checkedSelectedItems.value);
+  await convertRbcData(checkedSelectedItems.value);
 
   // WBC Print
   await excecuteExcel()
