@@ -177,7 +177,7 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
-import {business_id, CbcWbcTestCdList_0002, eqmtcd, instcd, realUrl, spcParams} from "@/common/defines/constFile/lis";
+import {business_id, CbcWbcTestCdList_0002, eqmtcd, instcd} from "@/common/defines/constFile/lis";
 import axios from "axios";
 import {xml2json} from "xml-js";
 import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
@@ -345,7 +345,12 @@ const uploadLis = () => {
 
     // cbc 결과 조회
     axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-      params: spcParams,
+      params: {
+        submit_id: 'TRLII00124',
+        business_id: 'li',
+        instcd: '012', // 병원 코드
+        bcno: props.selectItems?.barcodeNo,
+      },
       headers: {
         'Content-Type': 'application/json',
       }

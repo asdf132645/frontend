@@ -31,11 +31,6 @@ export const CbcWbcTestCdList_0002 = [{
     id: '11', title: 'PC', name: 'Plasma cell', cd: 'LHR10517'
 }]
 
-export const spcParams = {
-    submit_id: 'TRLII00124',
-    business_id: 'li',
-    instcd: '012', // 병원 코드
-    bcno: 'H59'
-}
+
 
 
