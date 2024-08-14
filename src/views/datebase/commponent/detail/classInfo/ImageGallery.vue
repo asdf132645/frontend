@@ -202,6 +202,7 @@ import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'v
 import {useStore} from "vuex";
 import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
+import {debounce} from "lodash";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -278,24 +279,42 @@ watch(props.hiddenImages, (newVal) => {
   loading.value = false;
 });
 
-watch(
-    wbcInfo,
-    async (newVal) => {
-      // await nextTick();
-      wbcInfoArrChild.value = [];
-      wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
-        ...item,
-        uniqueKey: `item_${index}_${Date.now()}`,
-        images: item.images.map((image: any, imgIndex: number) => ({
-          ...image,
-          uniqueKey: `image_${index}_${imgIndex}_${Date.now()}`
-        }))
-      }));
-      classImgChange('first', null);
-      classImgChange('last', null);
-    },
-    {deep: true}
-);
+const debouncedUpdate = debounce(async (newVal) => {
+  const timestamp = Date.now();
+  wbcInfoArrChild.value = [];
+  wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
+    ...item,
+    uniqueKey: `item_${index}_${timestamp}`,
+    images: item.images.map((image: any, imgIndex: number) => ({
+      ...image,
+      uniqueKey: `image_${index}_${imgIndex}_${timestamp}`
+    }))
+  }));
+  classImgChange('first', null);
+  classImgChange('last', null);
+}, 10); //디바운스 적용
+
+watch(wbcInfo, debouncedUpdate, { deep: true });
+//
+// watch(
+//     wbcInfo,
+//     async (newVal) => {
+//       const timestamp = Date.now(); // Date.now()를 한 번만 호출
+//       wbcInfoArrChild.value = [];
+//       wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
+//         ...item,
+//         uniqueKey: `item_${index}_${timestamp}`, // 저장한 timestamp 사용
+//         images: item.images.map((image: any, imgIndex: number) => ({
+//           ...image,
+//           uniqueKey: `image_${index}_${imgIndex}_${timestamp}` // 저장한 timestamp 사용
+//         }))
+//       }));
+//       classImgChange('first', null);
+//       classImgChange('last', null);
+//     },
+//     {deep: true}
+// );
+
 
 watch(
     () => props.wbcReset,
