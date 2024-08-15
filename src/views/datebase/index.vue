@@ -486,6 +486,11 @@ const convertRbcData = async (dataList: any) => {
   let beforeRbcData = {};
   let afterRbcData = {};
   for (const data of dataList) {
+
+    // PB & RBC일 경우
+    if (bmClassIsBoolen.value || data.testType !== '04') {
+      continue;
+    }
     const sendingItem = { before: {}, after: {} };
     const shapeOthersCount: any = await getShapeOthers(data);
 

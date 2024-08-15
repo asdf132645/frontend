@@ -55,7 +55,6 @@ import { ref, computed, watch, onMounted, nextTick, defineEmits } from "vue";
 
 import {useStore} from "vuex";
 import {
-  analysisOptions,
   wbcCountOptions,
   stitchCountOptions,
   bmCountOptions
@@ -65,7 +64,7 @@ import {tcpReq} from '@/common/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import {testBmTypeList, wbcRunningCount} from "@/common/defines/constFile/settings";
+import {testBmTypeList, testTypeList, wbcRunningCount} from "@/common/defines/constFile/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import router from "@/router";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
@@ -119,7 +118,7 @@ onMounted(async () => {
 
 const initDataExecute = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : analysisOptions;
+  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
 
   countType.value = window.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
   // userId.value = getStoredUser.id;

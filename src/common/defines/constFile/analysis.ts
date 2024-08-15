@@ -1,11 +1,3 @@
-export const analysisOptions = [
-    {value: '01', text: 'WBC Diff (Standard)'},
-    {value: '04', text: 'PBS (Premium)'},
-    // {value: '02', text: 'Body fluid default'},
-    // {value: '03', text: 'Body fluid select'},
-    // {value: '05', text: 'Quality Check'}
-];
-
 export const wbcCountOptions = [
     {value: '100', text: '100 WBC'},
     {value: '150', text: '150 WBC'},
