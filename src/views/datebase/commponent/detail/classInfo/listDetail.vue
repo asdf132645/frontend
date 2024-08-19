@@ -41,7 +41,7 @@
           <div>
             <div class="sizeTitle">Size</div>
             <div class="customImgSet size">
-<!--              {{ imgPixelConvertToPercent(imageSize) }}-->
+              <!--              {{ imgPixelConvertToPercent(imageSize) }}-->
               <input
                   type="number"
                   :value="displayValue"
@@ -136,6 +136,7 @@
       </div>
       <div>
         <ImageGallery
+            v-if="showImageGallery"
             ref="$imageGalleryRef"
             :wbcInfoRefresh="wbcInfoRefresh"
             :wbcInfo="wbcInfo"
@@ -301,6 +302,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
+const showImageGallery = ref(true);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -749,14 +751,21 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 });
 
 const refreshClass = async (data: any) => {
+  showImageGallery.value = false;
+
   cellMarkerIcon.value = false;
+  await getDetailRunningInfo();
+  showImageGallery.value = true;
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
+
   await getWbcCustomClasses(true, data);
   await imgSetLocalStorage();
+
+
 }
 
 const drawCellMarker = async (imgResize?: boolean) => {
