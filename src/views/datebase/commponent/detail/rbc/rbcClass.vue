@@ -556,7 +556,6 @@ const rbcTotalAndReCount = async () => {
   bodyTotal.value = Number(inclusionBody);
   shapeTotal.value = Number(shapeTotalVal);
   shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
-
 }
 
 const percentageChange = (count: any): any => {
@@ -925,7 +924,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
       if (alertShow) {
         showSuccessAlert('success');
       }
-      console.log(response)
       const filteredItems = updatedRuningInfo;
       memo.value = filteredItems.rbcMemo;
     } else {
@@ -999,7 +997,6 @@ const getRbcDegreeData = async () => {
 };
 
 const reDegree = async (rbcInfoArray: any) => {
-  console.log(projectType.value)
   if (projectType.value === 'bm') return;
 
   let totalCount = rbcTotalVal.value;
@@ -1029,7 +1026,6 @@ const reDegree = async (rbcInfoArray: any) => {
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
           }
-          // console.log(degreeStandard.degree1)
           if (isNaN(percent)) {
             percent = 0;
           }
