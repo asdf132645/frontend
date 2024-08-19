@@ -149,7 +149,7 @@
             <Datepicker v-model="backupStartDate"></Datepicker>
             <Datepicker v-model="backupEndDate"></Datepicker>
             <button class="backupBtn" @click="createBackup">Backup</button>
-            <input type="file" ref="fileInput" @change="restoreBackupData" style="display: none;" />
+            <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" />
             <button class="backupBtn" @click="handleFileSelect">Restore</button>
           </div>
         </td>
@@ -173,22 +173,40 @@
     <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
   </div>
 
-  <div v-if="showRestoreModal" class="restoreModal">
-    <h3 v-if="restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length === 0">Would you like to Restore?</h3>
-    <h3 v-else-if="restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length > 0">
-      There is duplicated slot Id. Would you like to overwrite data?
-    </h3>
-    <p>Restore Enable Count: {{ restoreSlotIdObj?.nonDuplicated && restoreSlotIdObj?.nonDuplicated.length }}</p>
-    <p>Duplicated Slot Id Count: {{ restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length }}</p>
-    <ul v-if="restoreSlotIdObj?.duplicated && restoreSlotIdObj?.duplicated.length > 0">
-      <p></p>
-      <li v-for="slotId in restoreSlotIdObj?.duplicated" :key="slotId">
-        {{ slotId }}
-      </li>
-    </ul>
-    <button class="memoModalBtn" @click="restoreConfirm">OK</button>
-    <button class="memoModalBtn" @click="restoreCancel">CANCEL</button>
+  <div v-if="showRestoreModal" :class="impossibleRestoreCount === 0 ? 'restoreModalSmall' : 'restoreModal'">
+    <p v-if="impossibleRestoreCount === 0" class="fs12" style="top: 0;">Would you like to Restore?</p>
+    <pre v-else-if="impossibleRestoreCount > 0"
+        class="fs12"
+    >
+      There are duplicated Items.
+      Would you like to <span style="color: red;">overwrite</span> data?
+    </pre>
+    <div :class="impossibleRestoreCount === 0 && 'restoreModalCountWrapperSmall'">
+      <p>Non-duplicated Count: {{ possibleRestoreCount }}</p>
+      <p>Duplicated Count: {{ impossibleRestoreCount }}</p>
+    </div>
+    <div v-if="impossibleRestoreCount > 0" class="restoreDuplicatedSlotContainer">
+      <p style="color: black;">Duplicated Barcode Numbers</p>
+      <ul class="restoreDuplicatedSlotWrapper">
+          <li class="userSelectText" v-for="barcodeNo in restoreSlotIdObj?.duplicated" :key="barcodeNo">
+            {{ barcodeNo }}
+          </li>
+      </ul>
+    </div>
+    <div class="restoreModalBtnContainer">
+      <button class="memoModalBtn" @click="restoreConfirm">RESTORE</button>
+      <button class="memoModalBtn" @click="restoreCancel">CANCEL</button>
+    </div>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :type="confirmType"
+      :message="confirmMessage"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
 
   <Alert
       v-if="showAlert"
@@ -201,10 +219,10 @@
 </template>
 
 <script setup lang="ts">
-import {createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
+import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -218,6 +236,7 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import moment from "moment";
 import {backUpDate, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import Confirm from "@/components/commonUi/Confirm.vue";
 
 const store = useStore();
 const showAlert = ref(false);
@@ -267,8 +286,12 @@ const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const fileInput = ref<any>(null);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
-const restoreSlotIdObj = ref({});
+const restoreSlotIdObj = ref({duplicated: [], nonDuplicated: []});
 const selectedFileName = ref('');
+const possibleRestoreCount = computed(() => restoreSlotIdObj.value?.nonDuplicated && restoreSlotIdObj.value?.nonDuplicated.length);
+const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated && restoreSlotIdObj.value?.duplicated.length);
+const showConfirm = ref(false);
+const confirmMessage = ref('');
 
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -296,22 +319,28 @@ const createBackup = async () => {
 }
 
 const handleFileSelect = () => {
+  fileInput.value.value = null;
   fileInput.value.click();
+}
+
+const handleFileChange = async (event: any) => {
+  await restoreBackupData(event);
 }
 
 const restoreBackupData = async (event: any) => {
   /** TODO Restore Logic 정리 */
-  return;
   const fileName = event.target.files[0]?.name;
-  if (!fileName) return;
+  if (!fileName || !fileName.includes('.sql')) {
+    showErrorAlert('File type is not supported.')
+    return;
+  }
   selectedFileName.value = fileName;
 
   const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
 
   try {
-    const result = await checkDuplicatedData({ fileName: fileName, filePath: filePath });
+    const result: any = await checkDuplicatedData({ fileName: fileName, filePath: filePath });
     showRestoreModal.value = true;
-    // const result = await restoreBackup({ fileName: fileName, filePath: filePath });
     restoreSlotIdObj.value = result.data;
   } catch (e) {
     console.log(e);
@@ -387,7 +416,9 @@ const driveGet = async () => {
 }
 
 const checkIsMovingWhenSettingNoSaved = () => {
-  showErrorAlert('Setting Not Saved');
+  showConfirm.value = true;
+  confirmMessage.value = 'Setting Not Saved';
+  // showErrorAlert('Setting Not Saved');
 }
 
 const cellImgGet = async () => {
@@ -552,6 +583,14 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const hideConfirm = () => {
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = async () => {
+  await cellImgSet();
+}
 
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="loaderBackgroundForLogin" v-if="!isViewer && !isTcpConnected">
+  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -56,8 +56,10 @@ const alertMessage = ref('');
 const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
+const forceViewer = ref('');
 
 onMounted(async () => {
+  forceViewer.value = window.FORCE_VIEWER;
   await checkIsViewer()
   isAutoLogginable();
 })
