@@ -281,6 +281,7 @@ watch(props.hiddenImages, (newVal) => {
 
 const debouncedUpdate = debounce(async (newVal) => {
   const timestamp = Date.now();
+  loading.value = false;
   wbcInfoArrChild.value = [];
   wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
     ...item,
@@ -295,25 +296,7 @@ const debouncedUpdate = debounce(async (newVal) => {
 }, 10); //디바운스 적용
 
 watch(wbcInfo, debouncedUpdate, { deep: true });
-//
-// watch(
-//     wbcInfo,
-//     async (newVal) => {
-//       const timestamp = Date.now(); // Date.now()를 한 번만 호출
-//       wbcInfoArrChild.value = [];
-//       wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
-//         ...item,
-//         uniqueKey: `item_${index}_${timestamp}`, // 저장한 timestamp 사용
-//         images: item.images.map((image: any, imgIndex: number) => ({
-//           ...image,
-//           uniqueKey: `image_${index}_${imgIndex}_${timestamp}` // 저장한 timestamp 사용
-//         }))
-//       }));
-//       classImgChange('first', null);
-//       classImgChange('last', null);
-//     },
-//     {deep: true}
-// );
+
 
 
 watch(
