@@ -184,7 +184,6 @@ import {createCbcFile, createDirectory, createFile} from "@/common/api/service/f
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
-import {parseXMLToJSON} from "@/common/lib/utils/changeData";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -423,7 +422,7 @@ const uploadLis = () => {
         createCbcFile(parmsLisCopy);
         if (isUserAuth === 'succ') {
           const params = {
-            empNo: userModuleDataGet.value.userId,
+            empNo: userModuleDataGet.value.employeeNo,
             barcodeNo: props.selectItems?.barcodeNo,
             wbcInfo: wbcTemp
           }
@@ -505,9 +504,9 @@ const lisLastStep = () => {
           if (lisCode.IA_CD === wbcItem.id) {
             if (Number(wbcItem.percent) > 0 || Number(wbcItem.count)) {
               // count
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.name + '\n'
               // percent
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.name + '\n'
             }
 
           }
@@ -768,18 +767,18 @@ const godae = (): string => {
           if (wbcItem.id === '01' || wbcItem.id === '71' || wbcItem.id === '05' ||
               wbcItem.id === '07' || wbcItem.id === '08' || wbcItem.id === '09') {
             // count
-            data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+            data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.name + '\n'
 
             // percent
-            data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+            data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.name + '\n'
 
           } else {
             if (Number(wbcItem.percent) > 0) {
               // count
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '|' + wbcItem.count + '|||||||^' + userModuleDataGet.value.name + '\n'
 
               // percent
-              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.userId + '\n'
+              data += 'R|' + (++seq) + '|^^^^' + lisCode.LIS_CD + '%|' + wbcItem.percent + '|%||||||^' + userModuleDataGet.value.name + '\n'
             }
           }
         }
@@ -795,7 +794,7 @@ const lisFileUrlCreate = async (data: any) => {
     filePath: `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`,
     data: data,
   };
-  createCbcFile(parmsLisCopy);
+  await createCbcFile(parmsLisCopy);
   if (!lisFilePathSetArr.value.includes("http")) {
     const url = lisFilePathSetArr.value;
     const fileCreateRes = await createDirectory(url);
@@ -830,7 +829,7 @@ const sendLisMessage = (data: any) => {
   const params = {
     url: lisFilePathSetArr.value,
     barcodeNo: props.selectItems?.barcodeNo,
-    userId: userModuleDataGet.value.userId,
+    userId: userModuleDataGet.value.name,
     deviceBarcode: deviceSerialNm.value,
     resultMsg: data
   }
