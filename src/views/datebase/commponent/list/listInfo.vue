@@ -92,7 +92,6 @@ onBeforeMount(() => {
 onMounted(async () => {
   await getClassOrder();
   barCodeImageShowError.value = false;
-  sortClassOrder();
   // iaRootPath가 존재하면 getImageUrl 함수 호출
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg');
