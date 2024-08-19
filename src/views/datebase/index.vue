@@ -25,7 +25,7 @@
           </div>
 
           <button type="button" class="searchClass" @click="search">Search</button>
-          <div v-if="viewerCheck !== 'viewer'" class="excelDivList">
+          <div v-if="isCompany === 'company'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
         </div>
@@ -167,6 +167,7 @@ const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
 const barcodeInput = ref<any>(null); // 입력 필드에 대한 ref
+const isCompany = ref('');
 
 function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -178,6 +179,8 @@ function handleStateVal(data: any) {
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
+  isCompany.value = window.IS_COMPANY;
+
 })
 
 onMounted(async () => {

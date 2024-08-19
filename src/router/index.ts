@@ -88,9 +88,11 @@ router.beforeEach(async (to, from, next)  => {
         if (beforeSettingFormattedString.value === afterSettingFormattedString.value) {
             await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
             await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+            await store.dispatch('commonModule/setCommonInfo', { enteringRouterPath: '' });
             next();
         } else {
             await store.dispatch('commonModule/setCommonInfo', { settingChangedChecker: !settingChangedChecker.value });
+            await store.dispatch('commonModule/setCommonInfo', { enteringRouterPath: to.path });
             return;
         }
     }

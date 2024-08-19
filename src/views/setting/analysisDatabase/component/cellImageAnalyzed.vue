@@ -204,6 +204,8 @@
       :is-visible="showConfirm"
       :type="confirmType"
       :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -235,10 +237,11 @@ import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import moment from "moment";
 import {backUpDate, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
-import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
+import {useRouter} from "vue-router";
 
 const store = useStore();
+const router = useRouter();
 const showAlert = ref(false);
 const alertType = ref('');
 const showRestoreModal = ref(false);
@@ -292,6 +295,8 @@ const possibleRestoreCount = computed(() => restoreSlotIdObj.value?.nonDuplicate
 const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated && restoreSlotIdObj.value?.duplicated.length);
 const showConfirm = ref(false);
 const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+
 
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -584,12 +589,17 @@ const hideAlert = () => {
   showAlert.value = false;
 };
 
-const hideConfirm = () => {
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   showConfirm.value = false;
+  console.log('제발', enteringRouterPath.value);
+  router.push(enteringRouterPath.value);
 }
 
 const handleOkConfirm = async () => {
   await cellImgSet();
+  showConfirm.value = false;
 }
 
 

@@ -57,6 +57,7 @@ export interface CommonState {
     dbListDataLastNum: number;
     isTcpConnected: boolean;
     initValData: boolean;
+    enteringRouterPath: string;
 }
 
 interface CommonModule {
@@ -120,6 +121,7 @@ interface CommonModule {
         setDbListDataLastNum: (state: CommonState, value: number) => void;
         setIsTcpConnected: (state: CommonState, value: boolean) => void;
         setInitValData: (state: CommonState, value: boolean) => void;
+        setEnteringRouterPath: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -184,6 +186,7 @@ export const commonModule: CommonModule = {
         dbListDataLastNum: 0,
         isTcpConnected: false,
         initValData: false,
+        enteringRouterPath: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -361,6 +364,9 @@ export const commonModule: CommonModule = {
         setInitValData(state: CommonState, value: boolean): void {
             state.initValData = value;
         },
+        setEnteringRouterPath(state: CommonState, value: string): void {
+            state.enteringRouterPath = value;
+        }
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -538,6 +544,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('initValData')) {
                 commit('setInitValData', payload.initValData);
+            }
+            if (payload.hasOwnProperty('enteringRouterPath')) {
+                commit('setEnteringRouterPath', payload.enteringRouterPath);
             }
         },
     },
