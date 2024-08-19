@@ -219,6 +219,7 @@ const lisCodeRbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
 const barCodeImageShowError = ref(false);
+const submittedScreen = ref(false);
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -316,9 +317,10 @@ const toggleLockEvent = () => {
 }
 
 const commitConfirmed = () => {
-  if (props.selectItems?.submitState === 'Submit') {
-    return;
-  }
+  // if (props.selectItems?.submitState === 'Submit' || submittedScreen.value) {
+  //   return;
+  // }
+  submittedScreen.value = true;
   showConfirm.value = true;
   confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
   okMessageType.value = 'commit';
