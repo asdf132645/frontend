@@ -1,4 +1,9 @@
 <template>
+  <div class="loaderBackgroundForLogin" v-if="isPrintingExcel">
+    <div class="loaderForLogin"></div>
+    <p class="loadingTextLogin">Loading...</p>
+  </div>
+
   <div>
     <h3 class="titleH3">
       Classification List
@@ -168,6 +173,7 @@ const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
 const barcodeInput = ref<any>(null); // 입력 필드에 대한 ref
 const isCompany = ref('');
+const isPrintingExcel = ref(false);
 
 function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -463,12 +469,14 @@ const exportToExcel = async () => {
     showSuccessAlert('Select an Item')
     return;
   }
+  isPrintingExcel.value = true;
 
   /** RBC Excel Print */
   await convertRbcData(checkedSelectedItems.value);
 
   // WBC Print
   await excecuteExcel()
+  isPrintingExcel.value = false;
 }
 
 const excecuteExcel = async () => {
@@ -480,8 +488,10 @@ const excecuteExcel = async () => {
 
   try {
     await executeExcelCreate(body);
+    await showSuccessAlert('Excel created');
   } catch (e) {
     console.log(e);
+    await showSuccessAlert('Excel create failed');
   }
 }
 

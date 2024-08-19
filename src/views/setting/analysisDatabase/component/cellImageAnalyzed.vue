@@ -593,7 +593,6 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
   await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   showConfirm.value = false;
-  console.log('제발', enteringRouterPath.value);
   router.push(enteringRouterPath.value);
 }
 
