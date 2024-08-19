@@ -351,8 +351,13 @@ const restoreBackupData = async (event: any) => {
   try {
     isRestoring.value = true;
     const result: any = await checkDuplicatedData({ fileName: fileName, filePath: filePath, sourceFolderPath: iaRootPath.value });
-    showRestoreModal.value = true;
-    restoreSlotIdObj.value = result.data;
+
+    if (typeof result.data === 'string') {
+      showErrorAlert(result.data);
+    } else {
+      showRestoreModal.value = true;
+      restoreSlotIdObj.value = result.data;
+    }
   } catch (e) {
     console.log(e);
   } finally {
@@ -570,8 +575,13 @@ const restoreConfirm = async () => {
   const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
   try {
     isRestoring.value = true;
-    await restoreBackup({ fileName: selectedFileName.value, filePath: filePath });
-    showSuccessAlert('Restoration completed successfully');
+    const result = await restoreBackup({ fileName: selectedFileName.value, filePath: filePath });
+
+    if (typeof result.data === 'string') {
+      showErrorAlert(result.data);
+    } else {
+      showSuccessAlert('Restoration completed successfully');
+    }
   } catch (e) {
     console.log(e);
   } finally {
