@@ -13,6 +13,7 @@ declare global {
         VIEWER_CHECK: string;
         FORCE_VIEWER: string;
         MAIN_WEBSOCKET_IP: string;
+        IS_COMPANY: string;
     }
 }
 

@@ -133,6 +133,7 @@ import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
 import pako from "pako";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import router from "@/router";
 
 
 const store = useStore();
@@ -171,7 +172,7 @@ const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
-const barcodeInput = ref<any>(null); // 입력 필드에 대한 ref
+const barcodeInput = ref<HTMLInputElement | null>(null);
 const isCompany = ref('');
 const isPrintingExcel = ref(false);
 
@@ -196,18 +197,30 @@ onMounted(async () => {
   }
 
   document.addEventListener('click', closeClassListBox);
-  barcodeInput.value.focus();
+  if (barcodeInput.value) {
+    barcodeInput.value.focus();
+  }
 
   notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
   document.addEventListener('keydown', handleGlobalKeydown);
 
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleGlobalKeydown);
+});
+
 const handleGlobalKeydown = (event: any) => {
-  if (event.key === 'Enter' || event.key === 'Tab') {
-    // Enter 키가 눌리면 입력 필드에 포커스를 설정
-    barcodeInput.value.focus();
+  if(router.currentRoute.value.path === '/dataBase'){
+    if (event.key === 'Enter' || event.key === 'Tab') {
+      // Enter 키가 눌리면 입력 필드에 포커스를 설정
+      if (barcodeInput.value) {
+        barcodeInput.value.focus();
+      }
+    }
   }
+
 };
 
 
