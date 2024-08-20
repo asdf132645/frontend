@@ -1,4 +1,9 @@
 <template>
+  <div class="loaderBackgroundForLogin" v-if="isRestoring">
+    <div class="loaderForLogin"></div>
+    <p class="loadingTextLogin">Loading...</p>
+  </div>
+
   <div>
     <table class="settingTable">
       <tbody>
@@ -296,6 +301,7 @@ const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const isRestoring = ref(false);
 
 
 const filterNumbersOnly = (event: Event) => {
@@ -333,7 +339,6 @@ const handleFileChange = async (event: any) => {
 }
 
 const restoreBackupData = async (event: any) => {
-  /** TODO Restore Logic 정리 */
   const fileName = event.target.files[0]?.name;
   if (!fileName || !fileName.includes('.sql')) {
     showErrorAlert('File type is not supported.')
@@ -344,11 +349,19 @@ const restoreBackupData = async (event: any) => {
   const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
 
   try {
-    const result: any = await checkDuplicatedData({ fileName: fileName, filePath: filePath });
-    showRestoreModal.value = true;
-    restoreSlotIdObj.value = result.data;
+    isRestoring.value = true;
+    const result: any = await checkDuplicatedData({ fileName: fileName, filePath: filePath, sourceFolderPath: iaRootPath.value });
+
+    if (typeof result.data === 'string') {
+      showErrorAlert(result.data);
+    } else {
+      showRestoreModal.value = true;
+      restoreSlotIdObj.value = result.data;
+    }
   } catch (e) {
     console.log(e);
+  } finally {
+    isRestoring.value = false;
   }
 
 }
@@ -561,10 +574,18 @@ const restoreConfirm = async () => {
 
   const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
   try {
+    isRestoring.value = true;
     const result = await restoreBackup({ fileName: selectedFileName.value, filePath: filePath });
-    showSuccessAlert('Restoration completed successfully');
+
+    if (typeof result.data === 'string') {
+      showErrorAlert(result.data);
+    } else {
+      showSuccessAlert('Restoration completed successfully');
+    }
   } catch (e) {
     console.log(e);
+  } finally {
+    isRestoring.value = false;
   }
   showRestoreModal.value = false;
 }

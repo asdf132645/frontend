@@ -122,7 +122,7 @@ import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
 import {computed, getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, ref, watch, watchEffect} from "vue";
-import {getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {detailRunningApi, getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
@@ -133,6 +133,7 @@ import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
 import pako from "pako";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import router from "@/router";
 
 
@@ -175,6 +176,19 @@ const notStartLoading = ref(false);
 const barcodeInput = ref<HTMLInputElement | null>(null);
 const isCompany = ref('');
 const isPrintingExcel = ref(false);
+const rbcInfoPathAfter = ref<any>([]);
+const countArtifact = ref(0);
+const countDoubleNormal = ref(0);
+const maxRbcCount = ref(0);
+const pltCount = ref(0);
+const malariaCount = ref(0);
+const rbcTotalVal = ref(0);
+const sizeChromiaTotal = ref(0);
+const chromiaTotalTwo = ref(0);
+const shapeBodyTotal = ref(0);
+const rbcDegreeStandard = ref<any>([]);
+const rbcInfoAfterVal = ref<any>([]);
+const rbcInfoBeforeVal = ref<any>([]);
 
 function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -493,8 +507,7 @@ const exportToExcel = async () => {
   await convertRbcData(checkedSelectedItems.value);
 
   // WBC Print
-  await excecuteExcel()
-  isPrintingExcel.value = false;
+  await excecuteExcel();
 }
 
 const excecuteExcel = async () => {
@@ -510,23 +523,42 @@ const excecuteExcel = async () => {
   } catch (e) {
     console.log(e);
     await showSuccessAlert('Excel create failed');
+  } finally {
+    isPrintingExcel.value = false;
   }
 }
 
 const convertRbcData = async (dataList: any) => {
+  if (bmClassIsBoolen.value) {
+    return;
+  }
+
   let beforeRbcData = {};
   let afterRbcData = {};
-  for (const data of dataList) {
 
+  for (const item of dataList) {
     // PB & RBC일 경우
-    if (bmClassIsBoolen.value || data.testType !== '04') {
+    if (item.testType !== '04') {
       continue;
     }
+
+    const result: any = await detailRunningApi(String(item.id));
+    await getRbcDegreeData();
+
+    const data = result.data;
+    rbcInfoAfterVal.value = data.rbcInfo.rbcClass;
+    rbcInfoBeforeVal.value = data.rbcInfoAfter;
+    await rbcTotalAndReCount(data);
+    await reDegree(rbcInfoAfterVal.value);
+    await reDegree(rbcInfoBeforeVal.value);
+
+    console.log('rbcInfoAfter', rbcInfoAfterVal.value);
+
     const sendingItem = { before: {}, after: {} };
     const shapeOthersCount: any = await getShapeOthers(data);
 
     // Before
-    for (const classItem of data.rbcInfo.rbcClass) {
+    for (const classItem of rbcInfoAfterVal.value) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
@@ -552,7 +584,7 @@ const convertRbcData = async (dataList: any) => {
     }
 
     // After
-    for (const classItem of data.rbcInfoAfter) {
+    for (const classItem of rbcInfoBeforeVal.value) {
       let afterItem = {}
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
@@ -580,8 +612,6 @@ const convertRbcData = async (dataList: any) => {
 
     await createRbcJson(data.slotId, sendingItem);
   }
-
-
 }
 
 const createRbcJson = async (slotId: string, sendingData: any) => {
@@ -600,8 +630,130 @@ const createRbcJson = async (slotId: string, sendingData: any) => {
     });
   } catch (error) {
     console.error('Error:', error);
+    showSuccessAlert('Excel print failed');
+    isPrintingExcel.value = false;
   }
 }
+
+const rbcTotalAndReCount = async (selectItem: any) => {
+  const path = selectItem?.img_drive_root_path !== '' && selectItem?.img_drive_root_path ? selectItem?.img_drive_root_path : iaRootPath.value;
+  const url_new = `${path}/${selectItem?.slotId}/03_RBC_Classification/${selectItem?.slotId}_new.json`;
+  const response_new = await readJsonFile({fullPath: url_new});
+  const url_Old = `${path}/${selectItem?.slotId}/03_RBC_Classification/${selectItem?.slotId}.json`;
+  const response_old = await readJsonFile({fullPath: url_Old});
+  if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
+    const newJsonData = response_new?.data;
+    for (const rbcItem of response_old.data[0].rbcClassList) {
+      for (const newRbcData of newJsonData) {
+        // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
+        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
+            Number(el.index) === Number(newRbcData.index)
+        );
+        if (foundElementIndex !== -1) {
+          rbcItem.classInfo.splice(foundElementIndex, 1);
+        }
+        if (rbcItem.categoryId === newRbcData.categoryId) {
+          let newRbcDataObj = {
+            classNm: newRbcData.classNm,
+            classId: newRbcData.classId,
+            posX: String(newRbcData.posX),
+            posY: String(newRbcData.posY),
+            width: newRbcData.width,
+            height: newRbcData.height,
+            index: newRbcData.index,
+          }
+          rbcItem.classInfo.push(newRbcDataObj);
+        }
+      }
+    }
+    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
+  } else {
+    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+  }
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    console.error('rbcInfoPathAfter.value is not iterable');
+    return;
+  }
+  let total = 0;
+  let chromiaTotalval = 0;
+  let shapeBodyTotalVal = 0;
+  let shapeBodyTotalVal2 = 0;
+
+  rbcInfoPathAfter.value.forEach(el => {
+    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
+
+    switch (el.categoryId) {
+      case '01':
+        total = lastIndex;
+        break;
+      case '02':
+        chromiaTotalval = lastIndex;
+        break;
+      case '03':
+        shapeBodyTotalVal = lastIndex;
+        break;
+      case '05':
+        shapeBodyTotalVal2 = lastIndex;
+        break;
+      default:
+        // Handle unexpected categoryId if needed
+        break;
+    }
+  });
+
+  rbcTotalVal.value = Number(total) + 1;
+  sizeChromiaTotal.value = Number(total) + 1;
+  chromiaTotalTwo.value = chromiaTotalval;
+  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
+
+  // selectItems의 originalDegree 초기화
+  selectItem.rbcInfoAfter.forEach((category: any) => {
+    category.classInfo.forEach((item: any) => {
+      item.originalDegree = 0;
+    });
+  });
+
+  // rbcInfoPathAfter에서 아이템들 classId와 categoryId를 비교하여 originalDegree 증가시키기
+  rbcInfoPathAfter.value.forEach(pathCategory => {
+    const category = selectItem.rbcInfoAfter.find((cat: any) => cat.categoryId === pathCategory.categoryId);
+    if (category) {
+      pathCategory.classInfo.forEach((pathClass: any) => {
+        const classInfo = category.classInfo.find((item: any) => item.classId === pathClass.classId);
+        if (classInfo) {
+          classInfo.originalDegree++;
+        }
+      });
+    }
+  });
+
+  await countReAdd();
+}
+
+const countReAdd = async () => {
+  let totalPLT = 0;
+  let malariaTotal = 0;
+  for (const el of rbcInfoPathAfter.value) {
+    if (el.categoryId === '01') {
+      const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
+      maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
+    }
+    if (el.categoryId === '04') {
+      for (const xel of el.classInfo) {
+        if (xel.classNm === 'Platelet') {
+          totalPLT += 1;
+        }
+      }
+    } else if (el.categoryId === '05') {
+      for (const xel of el.classInfo) {
+        if (xel.classNm === 'Malaria') {
+          malariaTotal += 1;
+        }
+      }
+    }
+  }
+  pltCount.value = Math.floor((totalPLT / parseFloat(String(maxRbcCount.value))) * 1000);
+  malariaCount.value = malariaTotal
+};
 
 const getShapeOthers = async (selectItems: any) => {
   const path = selectItems.img_drive_root_path !== '' && selectItems.img_drive_root_path ? selectItems?.img_drive_root_path : iaRootPath.value;
@@ -626,6 +778,156 @@ const getShapeOthers = async (selectItems: any) => {
 
   return otherCount;
 }
+
+const getRbcDegreeData = async () => {
+  try {
+    const result = await getRbcDegreeApi();
+    const data = result.data;
+    rbcDegreeStandard.value = data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const reDegree = async (rbcInfoArray: any) => {
+  if (bmClassIsBoolen.value) {
+    return;
+  }
+
+  let totalCount = rbcTotalVal.value;
+  let sizeTotal = sizeChromiaTotal.value;
+  let chromiaTotal = chromiaTotalTwo.value;
+  if(!Array.isArray(rbcInfoBeforeVal.value)){
+    return;
+  }
+  rbcInfoArray.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.originalDegree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+          const setDegree = (value: any) => (rbcClass.degree = value);
+          // 0
+          if (percent < Number(degreeStandard.degree1)) {
+            setDegree('0');
+            return;
+          }
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) {
+            setDegree('1');
+            return;
+          }
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) {
+            setDegree('2');
+            return;
+          }
+          // 3
+          else {
+            setDegree('3');
+            return;
+          }
+        }
+      });
+    });
+  });
+
+  rbcInfoArray.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.originalDegree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === '01') { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === '02') { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          // 0
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          // 3
+          else setDegree('3');
+        }
+      });
+    });
+  });
+
+  rbcInfoArray.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      // size
+      if (rbcCategory.categoryId === '01') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // chromia
+      if (rbcCategory.categoryId === '02') {
+        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
+        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // Poikilocytosis
+      if (rbcCategory.categoryId === '03') {
+        if (rbcClass.classId === '01') {
+          // normal
+          rbcCategory.classInfo[0].degree = '1'
+          // poikilo
+          rbcCategory.classInfo[1].degree = '0'
+        }
+
+        if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
+          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+
+          if (Number(rbcClass.degree) > poikiloDegree) {
+            rbcCategory.classInfo[0].degree = '0'
+            rbcCategory.classInfo[1].degree = rbcClass.degree
+          }
+        }
+      }
+    });
+  });
+};
 
 const dateRefresh = () => {
   startDate.value = thirtyDaysAgo

@@ -985,8 +985,6 @@ async function onDropCircle(item: any) {
     } else {
       console.error('일치하는 id를 가진 요소 없음');
     }
-    console.log('selectedClickImages.value', selectedClickImages.value)
-    console.log('draggedImage.id', item.id)
     // 이미지를 한 개만 드래그한 경우에만 이동 API 호출
     await moveImage(matchingItemIndex, [{fileName: draggedImage.fileName}], wbcInfo.value[draggedCircleIndex.value], updatedWbcInfo[matchingItemIndex], false);
   } else {

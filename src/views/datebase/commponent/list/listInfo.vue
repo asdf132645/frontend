@@ -37,7 +37,7 @@
               <p>Count</p>
               <p>Percent</p>
             </li>
-            <template v-for="result in selectedItem?.wbcInfoAfter" :key="result.title" >
+            <template v-for="result in wbcInfoAfter" :key="result.title" >
               <li v-if="showClassificationResults(result.title) && result.count > 0" class="resInfoWrapper resInfoWrapperLine">
                 <p>{{ result.title }}</p>
                 <p>{{ result.count }}</p>
@@ -50,7 +50,7 @@
               <p>100%</p>
             </li>
 
-            <template v-for="result in selectedItem?.wbcInfoAfter" :key="result.title" >
+            <template v-for="result in wbcInfoAfter" :key="result.title" >
               <li v-if="showClassificationNonWbcResults(result.title) && result.count > 0" class="resInfoWrapper resInfoWrapperLine">
                 <p>{{ result.title }}</p>
                 <p>{{ result.count }}</p>
@@ -69,8 +69,10 @@ import {ref, defineProps, onMounted, watch, computed, onBeforeMount} from 'vue';
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";
-const store = useStore();
+import { getOrderClassApi } from "@/common/api/service/setting/settingApi";
+import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
+const store = useStore();
 const props = defineProps(['selectedItem']);
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
@@ -78,29 +80,74 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
 const wbcTotal = ref(0);
-const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM', 'OT'];
 const projectType = ref('');
+const orderClass = ref({});
+const wbcInfoAfter = ref({});
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
 })
 
-onMounted(() => {
+onMounted(async () => {
+  await getClassOrder();
   barCodeImageShowError.value = false;
   // iaRootPath가 존재하면 getImageUrl 함수 호출
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg');
   }
-
 });
+
 watch(() => props.selectedItem, (newSelectedItem) => {
   barCodeImageShowError.value = false;
   setWbcTotalAndPercent();
+  sortClassOrder();
 
   if (iaRootPath.value) {
     pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
 });
+
+const sortClassOrder = () => {
+  if (!orderClass.value || orderClass.value.length === 0) {
+    wbcInfoAfter.value = props.selectedItem.wbcInfoAfter;
+    return;
+  }
+  const oArr = orderClass.value.sort((a, b) => Number(a.orderIdx) - Number(b.orderIdx));
+  const sortArr = orderClass.value.length !== 0 ? oArr : projectType.value === 'bm' ? basicBmClassList : basicWbcArr;
+  const sortedWbcInfoData = sortWbcInfo(props.selectedItem.wbcInfoAfter, sortArr);
+  wbcInfoAfter.value = sortedWbcInfoData;
+}
+
+const sortWbcInfo = (wbcInfo, basicWbcArr) => {
+  let newSortArr = wbcInfo.slice(); // 기존 배열 복사
+
+  return newSortArr.sort((a, b) => {
+    const nameA = basicWbcArr.findIndex((item) => (item.title || item.abbreviation) === (a.title || a.abbreviation));
+    const nameB = basicWbcArr.findIndex((item) => (item.title || item.abbreviation) === (b.title || b.abbreviation));
+
+    // 이름이 없는 경우는 배열 맨 뒤로 배치
+    if (nameA === -1) return 1;
+    if (nameB === -1) return -1;
+
+    return nameA - nameB;
+  });
+};
+
+const getClassOrder = async () => {
+  try {
+    const result = await getOrderClassApi();
+    if (result) {
+      if (result?.data.length === 0) {
+        orderClass.value = [];
+      } else {
+        orderClass.value = result.data.sort((a, b) => Number(a.orderIdx) - Number(b.orderIdx));
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 const setWbcTotalAndPercent = () => {
   wbcTotal.value = props.selectedItem.wbcInfoAfter.reduce((acc,item) => {
