@@ -226,7 +226,10 @@ const handleGlobalKeydown = (event: any) => {
 
 const handleFocus = () => {
   // 포커스가 되어 있지 않을 때 포커스를 강제로 설정
-  barcodeInput.value.focus();
+
+  if (barcodeInput.value) {
+    barcodeInput.value.focus();
+  }
 };
 
 
@@ -236,7 +239,9 @@ const handleEnter = () => {
   searchText.value = ''; // 입력 필드를 비우거나 다른 처리를 할 수 있음
 
   // 포커스를 다시 입력 필드로 이동
-  barcodeInput.value.focus();
+  if (barcodeInput.value) {
+    barcodeInput.value.focus();
+  }
 };
 
 onBeforeUnmount(() => {
