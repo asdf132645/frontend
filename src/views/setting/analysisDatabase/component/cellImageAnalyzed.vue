@@ -207,7 +207,6 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
-      :type="confirmType"
       :message="confirmMessage"
       confirmText="save"
       closeText="leave"
@@ -301,6 +300,7 @@ const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 
 
@@ -399,6 +399,9 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
   }
 
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+  if (settingType.value !== 'cellImageAnalyzed') {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: 'cellImageAnalyzed' });
+  }
 })
 
 watch(() => settingChangedChecker.value, () => {
@@ -435,8 +438,7 @@ const driveGet = async () => {
 
 const checkIsMovingWhenSettingNoSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = 'Setting Not Saved';
-  // showErrorAlert('Setting Not Saved');
+  confirmMessage.value = `${settingType.value} Setting Not Saved`;
 }
 
 const cellImgGet = async () => {
