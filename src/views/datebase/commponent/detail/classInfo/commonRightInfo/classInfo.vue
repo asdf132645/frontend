@@ -367,15 +367,15 @@ const uploadLis = () => {
       const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
       const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
-        return item.classCd._cdata === 'LHR100'
+        return item.testcd._cdata === 'LHR100'
       })
 
       props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
-        wbcItem.classCd = ''
+        wbcItem.testcd = ''
 
         codeList.forEach(function (code) {
           if (wbcItem.id === code.id) {
-            wbcItem.classCd = code.cd
+            wbcItem.testcd = code.cd
           }
         })
       })
@@ -385,10 +385,10 @@ const uploadLis = () => {
       // five diff push
       props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         fiveDiffWorkList.forEach(function (fiveDiffItem) {
-          if (wbcItem.classCd === fiveDiffItem) {
+          if (wbcItem.testcd === fiveDiffItem) {
             wbcTemp.push(wbcItem)
           } else {
-            if ((wbcItem.count > 0) && wbcItem.classCd !== '') {
+            if ((wbcItem.count > 0) && wbcItem.testcd !== '') {
               wbcTemp.push(wbcItem)
             }
           }
@@ -397,7 +397,7 @@ const uploadLis = () => {
 
       // neutrophil-seg
       const nsPercentItem = wbcTemp.filter(function (item: any) {
-        return item.classCd === 'LHR10501'
+        return item.testcd === 'LHR10501'
       })
 
       // ANC insert
@@ -405,7 +405,7 @@ const uploadLis = () => {
         const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2)
 
         wbcTemp.push({
-          classCd: 'LHR10599',
+          testcd: 'LHR10599',
           percent: ancResult
         })
       }
@@ -423,6 +423,7 @@ const uploadLis = () => {
         console.log('유저체크', isUserAuth);
         createCbcFile(parmsLisCopy);
         if (isUserAuth === 'succ') {
+          console.log('succ');
           const params = {
             empNo: userModuleDataGet.value.employeeNo,
             barcodeNo: props.selectItems?.barcodeNo,
@@ -445,8 +446,8 @@ const uploadLis = () => {
           const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
 
           const result = params.wbcInfo
-              .filter((wbcItem: any) => wbcItem.classCd !== null && wbcItem.classCd !== '')
-              .map((wbcItem: any) => `${wbcItem.classCd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
+              .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
+              .map((wbcItem: any) => `${wbcItem.testcd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
               .join('');
           // LIS 최종 업로드 Report
           axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
@@ -467,14 +468,15 @@ const uploadLis = () => {
               'Content-Type': 'application/json',
             }
           }).then(function (result) {
-            const xml = result.data;
+            const xml = result.data.data;
             console.log('LIS 최종 업로드 Report 값', result)
             const json = JSON.parse(xml2json(xml, {compact: true}));
             const resultFlag = json.root.ResultFlag.resultflag._text;
             if (resultFlag === 'Y') {
               showSuccessAlert(messages.IDS_MSG_SUCCESS);
             } else {
-              showErrorAlert(json.root.ResultFlag.error2._text);
+              const errText = json.root.ResultFlag.error2._text === '1' ? 'LIS 전송이 실패 했습니다.' : json.root.ResultFlag.error2._text;
+              showErrorAlert(errText);
             }
           }).catch(function (err) {
             showErrorAlert(err.message);
@@ -915,7 +917,7 @@ const checkUserAuth = async (empNo: any) => {
           'Content-Type': 'application/json',
         }
       }).then(function (result) {
-        const xml = result.data
+        const xml = result.data.data;
         const json = JSON.parse(xml2json(xml, {compact: true}));
         const userNm = json.root.getUsernm.usernm._text;
         if (userNm === null || userNm === '') {
