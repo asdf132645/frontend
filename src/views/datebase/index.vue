@@ -542,6 +542,11 @@ const convertRbcData = async (dataList: any) => {
       continue;
     }
 
+
+    /** TODO
+     * RBC Degree Modify needed
+     * Count & Percent is Correct
+     * */
     const result: any = await detailRunningApi(String(item.id));
     await getRbcDegreeData();
 
@@ -553,6 +558,7 @@ const convertRbcData = async (dataList: any) => {
     await reDegree(rbcInfoBeforeVal.value);
 
     console.log('rbcInfoAfter', rbcInfoAfterVal.value);
+
 
     const sendingItem = { before: {}, after: {} };
     const shapeOthersCount: any = await getShapeOthers(data);

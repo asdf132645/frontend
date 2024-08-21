@@ -88,14 +88,19 @@ let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
 let interval: any = ref(null);
 const isBm = ref(false);
-const stataasdasd = ref(false);
+const fixEqStatCd = ref(false);
 
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
-  if(!stataasdasd.value){
+  if(sysInfo.eqStatCd === '02'){
+    fixEqStatCd.value = false;
+  }
+
+  if(!fixEqStatCd.value){
     eqStatCd.value = newData.sysInfo.eqStatCd;
   }
+
   if (commonDataGet.value.isRunningState) {
     updateInputState(sysInfo.iCasStat, slideCardData.value.input);
     updateInputState(sysInfo.oCasStat, slideCardData.value.output);
@@ -187,7 +192,7 @@ watch(() => initValData.value, (newVal) => {
   if(newVal){
     eqStatCd.value = '05';
   }
-  stataasdasd.value = newVal;
+  fixEqStatCd.value = newVal;
 })
 
 
