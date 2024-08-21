@@ -291,6 +291,7 @@ async function socketData(data: any) {
   if (commonDataGet.value.viewerCheck !== 'main') {
     return;
   }
+
   deleteData.value = false;
   try {
     if (typeof data === 'string') {

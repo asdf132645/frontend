@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, ref, onMounted, computed } from "vue";
+import {getCurrentInstance, ref, onMounted, computed, onBeforeMount} from "vue";
 import { login } from "@/common/api/service/user/userApi";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
@@ -58,6 +58,7 @@ const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
 
+//
 onMounted(async () => {
   forceViewer.value = window.FORCE_VIEWER;
   await checkIsViewer()

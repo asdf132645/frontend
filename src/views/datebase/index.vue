@@ -30,7 +30,7 @@
           </div>
 
           <button type="button" class="searchClass" @click="search">Search</button>
-          <div v-if="isCompany === 'company'" class="excelDivList">
+          <div v-if="viewerCheck === 'main'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
         </div>
@@ -183,7 +183,6 @@ const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
 const barcodeInput = ref<HTMLInputElement | null>(null);
-const isCompany = ref('');
 const isPrintingExcel = ref(false);
 const rbcInfoPathAfter = ref<any>([]);
 
@@ -218,7 +217,6 @@ function handleStateVal(data: any) {
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
-  isCompany.value = window.IS_COMPANY;
 
 })
 
@@ -543,7 +541,7 @@ const hideAlert = () => {
 
 const exportToExcel = async () => {
   if (checkedSelectedItems.value.length === 0) {
-    showSuccessAlert('Select an Item')
+    await showSuccessAlert('Select an Item')
     return;
   }
   isPrintingExcel.value = true;
@@ -563,8 +561,12 @@ const excecuteExcel = async () => {
   });
 
   try {
-    await executeExcelCreate(body);
-    await showSuccessAlert('Excel created');
+    const result: any = await executeExcelCreate(body);
+    if (result.data.message === 'Application executed successfully') {
+      await showSuccessAlert('Excel created');
+    } else {
+      await showSuccessAlert('Excel create failed');
+    }
   } catch (e) {
     console.log(e);
     await showSuccessAlert('Excel create failed');
@@ -594,13 +596,16 @@ const convertRbcData = async (dataList: any) => {
      * */
     const result: any = await detailRunningApi(String(item.id));
     await getRbcDegreeData();
-
     const data = result.data;
-    rbcInfoAfterVal.value = data.rbcInfo.rbcClass;
-    rbcInfoBeforeVal.value = data.rbcInfoAfter;
+    rbcInfoBeforeVal.value = data.rbcInfo.rbcClass;
+    rbcInfoAfterVal.value = data.rbcInfoAfter;
     await rbcTotalAndReCount(data);
-    await reDegree(rbcInfoAfterVal.value);
+    await countReAdd();
     await reDegree(rbcInfoBeforeVal.value);
+    if (areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)) {
+      await reDegree(rbcInfoAfterVal.value);
+    }
+
 
     console.log('rbcInfoAfter', rbcInfoAfterVal.value);
 
@@ -609,7 +614,7 @@ const convertRbcData = async (dataList: any) => {
     const shapeOthersCount: any = await getShapeOthers(data);
 
     // Before
-    for (const classItem of rbcInfoAfterVal.value) {
+    for (const classItem of rbcInfoBeforeVal.value) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
@@ -635,7 +640,7 @@ const convertRbcData = async (dataList: any) => {
     }
 
     // After
-    for (const classItem of rbcInfoBeforeVal.value) {
+    for (const classItem of rbcInfoAfterVal.value) {
       let afterItem = {}
       for (const classInfoItem of classItem.classInfo) {
         const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
@@ -664,6 +669,27 @@ const convertRbcData = async (dataList: any) => {
     await createRbcJson(data.slotId, sendingItem);
   }
 }
+
+const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
+
+  // 배열 항목 비교
+  for (let i = 0; i < arr1.length; i++) {
+    const item1 = arr1[i];
+    const item2 = arr2[i];
+
+    for (let j = 0; j < item1.classInfo.length; j++) {
+      const classInfo1 = item1.classInfo[j];
+      const classInfo2 = item2.classInfo[j];
+
+      // degree 값 비교
+      if (String(classInfo1.degree) !== String(classInfo2.degree)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+};
 
 const createRbcJson = async (slotId: string, sendingData: any) => {
   const jsonString = JSON.stringify(sendingData);
@@ -727,60 +753,94 @@ const rbcTotalAndReCount = async (selectItem: any) => {
   }
   let total = 0;
   let chromiaTotalval = 0;
-  let shapeBodyTotalVal = 0;
-  let shapeBodyTotalVal2 = 0;
-
+  let shapeTotalVal = 0;
+  let inclusionBody = 0;
+  countArtifact.value = 0;
+  countDoubleNormal.value = 0;
   rbcInfoPathAfter.value.forEach(el => {
-    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
-
+    if (el.categoryId === '03') {
+      for (const classItem of el.classInfo) {
+        if (classItem.classNm === 'Artifact') {
+          countArtifact.value += 1
+        } else if (classItem.classNm === 'DoubleNormal') {
+          countDoubleNormal.value += 1
+        }
+      }
+    }
     switch (el.categoryId) {
       case '01':
-        total = lastIndex;
+        total = el.classInfo.length;
         break;
       case '02':
-        chromiaTotalval = lastIndex;
+        chromiaTotalval = el.classInfo.length;
         break;
       case '03':
-        shapeBodyTotalVal = lastIndex;
+        shapeTotalVal = el.classInfo.length;
         break;
       case '05':
-        shapeBodyTotalVal2 = lastIndex;
+        inclusionBody = el.classInfo.length;
         break;
       default:
-        // Handle unexpected categoryId if needed
         break;
     }
   });
 
-  rbcTotalVal.value = Number(total) + 1;
-  sizeChromiaTotal.value = Number(total) + 1;
+  rbcTotalVal.value = Number(total);
+  sizeChromiaTotal.value = Number(total);
   chromiaTotalTwo.value = chromiaTotalval;
-  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
-
-  // selectItems의 originalDegree 초기화
-  selectItem.rbcInfoAfter.forEach((category: any) => {
-    category.classInfo.forEach((item: any) => {
-      item.originalDegree = 0;
-    });
-  });
-
-  // rbcInfoPathAfter에서 아이템들 classId와 categoryId를 비교하여 originalDegree 증가시키기
-  rbcInfoPathAfter.value.forEach(pathCategory => {
-    const category = selectItem.rbcInfoAfter.find((cat: any) => cat.categoryId === pathCategory.categoryId);
-    if (category) {
-      pathCategory.classInfo.forEach((pathClass: any) => {
-        const classInfo = category.classInfo.find((item: any) => item.classId === pathClass.classId);
-        if (classInfo) {
-          classInfo.originalDegree++;
-        }
-      });
-    }
-  });
-
-  await countReAdd();
+  shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
 }
 
 const countReAdd = async () => {
+  // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
+  if (!rbcInfoAfterVal.value || !Array.isArray(rbcInfoAfterVal.value)) {
+    return;
+  }
+
+  if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
+    return;
+  }
+
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    return;
+  }
+
+
+  for (const category of rbcInfoAfterVal.value) {
+    for (const classItem of category.classInfo) {
+      let count = 0;
+
+      for (const afterCategory of rbcInfoPathAfter.value) {
+        for (const afterClassItem of afterCategory.classInfo) {
+          if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
+            count++;
+          }
+        }
+      }
+
+      classItem.originalDegree = count;
+    }
+  }
+
+  /** TODO
+   * json 파일을 변경하기 때문에 초기 before 값을 저장하는 곳이 따로 필요하다.
+   * */
+  // for (const category of rbcInfoBeforeVal.value) {
+  //   for (const classItem of category.classInfo) {
+  //     let count = 0;
+  //
+  //     for (const afterCategory of rbcInfoPathAfter.value) {
+  //       for (const afterClassItem of afterCategory.classInfo) {
+  //         if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
+  //           count++;
+  //         }
+  //       }
+  //     }
+  //
+  //     classItem.originalDegree = count;
+  //   }
+  // }
+
   let totalPLT = 0;
   let malariaTotal = 0;
   for (const el of rbcInfoPathAfter.value) {
@@ -802,8 +862,9 @@ const countReAdd = async () => {
       }
     }
   }
-  pltCount.value = Math.floor((totalPLT / parseFloat(String(maxRbcCount.value))) * 1000);
-  malariaCount.value = malariaTotal
+
+  pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
+  malariaCount.value = malariaTotal;
 };
 
 const getShapeOthers = async (selectItems: any) => {
@@ -841,9 +902,7 @@ const getRbcDegreeData = async () => {
 };
 
 const reDegree = async (rbcInfoArray: any) => {
-  if (bmClassIsBoolen.value) {
-    return;
-  }
+  if (bmClassIsBoolen.value) return;
 
   let totalCount = rbcTotalVal.value;
   let sizeTotal = sizeChromiaTotal.value;
@@ -851,6 +910,7 @@ const reDegree = async (rbcInfoArray: any) => {
   if(!Array.isArray(rbcInfoBeforeVal.value)){
     return;
   }
+
   rbcInfoArray.forEach((rbcCategory: any) => {
     rbcCategory.classInfo.forEach((rbcClass: any) => {
       if (!rbcDegreeStandard.value) {
@@ -901,8 +961,8 @@ const reDegree = async (rbcInfoArray: any) => {
     });
   });
 
-  rbcInfoArray.forEach((rbcCategory: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any) => {
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
       if (!rbcDegreeStandard.value) {
         return;
       }
@@ -942,8 +1002,8 @@ const reDegree = async (rbcInfoArray: any) => {
     });
   });
 
-  rbcInfoArray.forEach((rbcCategory: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any) => {
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
       // size
       if (rbcCategory.categoryId === '01') {
         if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
