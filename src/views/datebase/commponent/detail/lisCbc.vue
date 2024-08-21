@@ -4,13 +4,13 @@
     <div v-if="siteCd ==='0002'" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
-          <td>{{ cbcItem?.tclsscrnnm._cdata }}</td>
+<!--          <td>{{ cbcItem.tclsscrnnm._cdata }}</td>-->
           <td>{{ cbcItem.tclsscrnnm._cdata }}</td>
           <td>{{ cbcItem.inptrslt._cdata }}</td>
         </tr>
       </table>
     </div>
-    <div v-if="siteCd ==='0007'" class="cbcDivWarp">
+    <div v-else-if="siteCd ==='0007'" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
@@ -102,7 +102,7 @@ const initCbcData = async (newVal: any) => {
           'Content-Type': 'application/json',
         }
       }).then(function (result) {
-        const xml = result.data;
+        const xml = result.data?.data;
         const json = JSON.parse(xml2json(xml, {compact: true}));
         cbcWorkList.value = json.root.spcworklist.worklist;
         const parms = {
