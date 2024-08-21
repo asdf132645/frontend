@@ -109,7 +109,7 @@ watch(() => props.selectedItem, (newSelectedItem) => {
 });
 
 const sortClassOrder = () => {
-  if (!orderClass.value || orderClass.value.length === 0) {
+  if (!orderClass.value || orderClass.value.length === 0 || !Array.isArray(orderClass.value)) {
     wbcInfoAfter.value = props.selectedItem.wbcInfoAfter;
     return;
   }
@@ -184,8 +184,8 @@ const getStringArrayBySiteCd = (siteCd, testType) => {
 
   // 지정된 siteCd에 대한 배열을 가져오거나, 기본 배열을 반환
   const arraysForSiteCd = arraysBySiteCd[siteCd] || {
-    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'NE', 'GP', 'PA', 'OT'],
-    includesStr2: ["NR", "AR", "MC", "MA", 'NE', "SM", 'GP', 'PA', 'OT'],
+    includesStr: ["AR", "NR", "GP", "PA", "MC", "SM", "MA", 'GP', 'PA', 'OT'],
+    includesStr2: ["NR", "AR", "MC", "MA", "SM", 'GP', 'PA', 'OT'],
   };
 
   // testType에 따라 제외할 부분 정의
