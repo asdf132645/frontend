@@ -94,6 +94,7 @@ let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
 const stataasdasd = ref(false);
+const ipMatches = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   console.log('isTcpConnected', isTcpConnected);
@@ -201,6 +202,8 @@ window.addEventListener('beforeunload', function (event: any) {
 });
 
 window.addEventListener('unload', () => {
+  if (!ipMatches.value) return;
+
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: {
@@ -237,7 +240,7 @@ onMounted(async () => {
   await cellImgGet();
   startChecking();
   const result = await getDeviceIpApi();
-  const ipMatches = isIpMatching(window.APP_API_BASE_URL, result.data);
+  ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
 
@@ -250,7 +253,7 @@ onMounted(async () => {
     if (userId.value && userId.value !== '') {
       await getNormalRange();
     }
-    if (!commonDataGet.value.firstLoading && ipMatches && window.FORCE_VIEWER === 'main') {
+    if (!commonDataGet.value.firstLoading && ipMatches.value && window.FORCE_VIEWER === 'main') {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
       }, 400);
@@ -730,6 +733,7 @@ const cellImgGet = async (newUserId?: string) => {
     console.log(e);
   }
 }
+
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
