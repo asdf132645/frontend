@@ -1346,6 +1346,13 @@ ul.slideContent .outClassDefault {
 
 .orderListTable {
     width: 100%;
+    border-collapse: collapse;
+}
+
+.orderListTable tbody {
+    display: block;
+    max-height: 410px; /* 스크롤이 생기는 높이 설정 */
+    overflow-y: auto; /* 세로 스크롤 활성화 */
 }
 
 .orderListTable th, .orderListTable td {
@@ -1363,6 +1370,20 @@ ul.slideContent .outClassDefault {
 .orderListTable th {
     background: var(--main-bg-8-color);
     color: var(--white-color);
+}
+
+.orderListTable thead, .orderListTable tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* 고정된 레이아웃으로 설정하여 열 너비 조정 */
+}
+
+.orderListTable thead {
+    width: calc(100% - 1em); /* 스크롤바에 따른 너비 조정 */
+}
+
+.orderListTable tbody::-webkit-scrollbar {
+    width: 8px;
 }
 
 p.slideTime {

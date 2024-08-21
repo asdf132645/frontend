@@ -1,6 +1,6 @@
 <template>
   <div class="orderListTableContainer">
-    <h3 class="titleText"><span class="greenColor">O</span>rder <span class="greenColor">L</span>ist</h3>
+    <h3 class="titleText">Order List</h3>
     <table class="orderListTable">
       <thead>
       <tr>
@@ -11,17 +11,16 @@
       </tr>
       </thead>
       <tbody v-if="dspOrderList.length > 0">
-      <tr v-for="(slot, index) in dspOrderList" :key="index">
-        <td>{{ slot?.barcodeId }}</td>
-        <td>{{ slot?.patientName }}</td>
-        <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
-        <td>{{
-            slot?.analyzedDttm ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
-          }}
-        </td>
-        <!--        {{ slot?.state }}-->
-        <td>{{ getCommonCode('14', slot?.state) }}</td>
-      </tr>
+        <tr v-for="(slot, index) in dspOrderList" :key="index">
+          <td>{{ slot?.barcodeId }}</td>
+          <td>{{ slot?.patientName }}</td>
+          <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
+          <td>{{
+              slot?.analyzedDttm ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
+            }}
+          </td>
+          <td>{{ getCommonCode('14', slot?.state) }}</td>
+        </tr>
       </tbody>
       <tbody v-else>
       <tr>
@@ -80,6 +79,14 @@ const runningInfoGet = async (data: any) => {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
       if (existingItemIndex === -1 && barcodeNo !== '') {
+
+        /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
+        // Start
+        if (dspOrderList.value.length > 10) {
+          dspOrderList.value = [];
+        }
+        // End
+
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
@@ -87,7 +94,7 @@ const runningInfoGet = async (data: any) => {
           analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
           state: currentSlot.stateCd,
         });
-      }else{
+      } else {
         dspOrderList.value[existingItemIndex] = {
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,

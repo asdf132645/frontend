@@ -207,7 +207,6 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
-      :type="confirmType"
       :message="confirmMessage"
       confirmText="save"
       closeText="leave"
@@ -235,7 +234,7 @@ import {
   PositionMarginList, stitchCountList,
   testTypeList,
   WbcPositionMarginList,
-  testBmTypeList, bmAnalysisList
+  testBmTypeList, bmAnalysisList, settingName
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
@@ -301,6 +300,7 @@ const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 
 
@@ -372,6 +372,7 @@ onMounted(async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
 
   await cellImgGet();
   await driveGet();
@@ -380,6 +381,7 @@ onMounted(async () => {
 watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
   pltPositionMargin, pbsCellAnalyzingCount, stitchCount, bfCellAnalyzingCount, iaRootPath, backupRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
   const cellAfterSettingObj = {
+    id: cellimgId.value,
     analysisType: testTypeCd.value,
     diffCellAnalyzingCount: diffCellAnalyzingCount.value,
     diffWbcPositionMargin: wbcPositionMargin.value,
@@ -394,11 +396,14 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
     backupPath: backupRootPath.value,
-    backupStartDate: moment(backupStartDate.value).local().toDate(),
-    backupEndDate: moment(backupEndDate.value).local().toDate(),
+    backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+    backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
   }
 
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+  if (settingType.value !== settingName.cellImageAnalyzed) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+  }
 })
 
 watch(() => settingChangedChecker.value, () => {
@@ -435,8 +440,7 @@ const driveGet = async () => {
 
 const checkIsMovingWhenSettingNoSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = 'Setting Not Saved';
-  // showErrorAlert('Setting Not Saved');
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
 }
 
 const cellImgGet = async () => {
@@ -470,6 +474,7 @@ const cellImgGet = async () => {
         autoBackUpMonth.value = data?.autoBackUpMonth;
 
         const cellBeforeSettingObj = {
+          id: cellimgId.value,
           analysisType: data.analysisType,
           diffCellAnalyzingCount: data.diffCellAnalyzingCount,
           diffWbcPositionMargin: data.diffWbcPositionMargin,
@@ -484,8 +489,8 @@ const cellImgGet = async () => {
           alarmCount: data.alarmCount,
           keepPage: data.keepPage,
           backupPath: data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup'),
-          backupStartDate: moment(data.backupStartDate).local().toDate(),
-          backupEndDate: moment(data.backupEndDate).local().toDate(),
+          backupStartDate: moment(data.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
+          backupEndDate: moment(data.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
         }
 
         await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj)});
@@ -532,7 +537,7 @@ const cellImgSet = async () => {
     }
 
     if (result) {
-      const text = saveHttpType.value === 'post' ? 'save successful' : messages.UPDATE_SUCCESSFULLY;
+      const text = saveHttpType.value === 'post' ? messages.settingSaveSuccess : messages.UPDATE_SUCCESSFULLY;
       showSuccessAlert(text);
       const data = result?.data;
       await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
@@ -547,7 +552,6 @@ const cellImgSet = async () => {
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
-
     }
 
     await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});

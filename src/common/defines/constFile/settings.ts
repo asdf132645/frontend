@@ -829,3 +829,18 @@ export const dirName = {
     bfClassDirName: '05_BF_Classification',
     iaRootPath: 'D:/ia_proc',
 }
+
+export const settingName = {
+    cellImageAnalyzed: 'cellImageAnalyzed',
+    rbcDegree: 'rbcDegree',
+    wbcRunningCount: 'wbcRunningCount',
+    wbcCustomClass: 'wbcCustomClass',
+    wbcHotKeys: 'wbcHotKeys',
+    bfHotKeys: 'bfHotKeys',
+    normalRange: 'normalRange',
+    wbcOrder: 'wbcOrder',
+    imagePrint: 'imagePrint',
+    lisCode: 'lisCode',
+    cbcCode: 'cbcCode',
+    filePathSet: 'filePathSet',
+}

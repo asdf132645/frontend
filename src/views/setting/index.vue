@@ -11,6 +11,16 @@
     <component class="settingWrap" :is="currentTabComponent" />
   </div>
 
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -30,6 +40,10 @@ import QualityCheck from "@/views/setting/qualityCheck/index.vue";
 import Version from "@/views/setting/version/index.vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {settingUpdate} from "@/common/lib/utils/settingSave";
+import {settingName} from "@/common/defines/constFile/settings";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check', 'Version'] as const;
@@ -41,14 +55,20 @@ const alertType = ref('');
 const alertMessage = ref('');
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const settingType = computed(() => store.state.commonModule.settingType);
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const movingTab = ref<typeof tabs[number]>(tabs[0]);
 
 const changeTab = (tab: typeof tabs[number]) => {
+  movingTab.value = tab;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
-    showErrorAlert('Setting Not Saved');
-    return;
+    showConfirm.value = true;
+    confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  } else {
+    currentTab.value = movingTab.value;
+    sessionStorage.setItem('selectedTab', movingTab.value);
   }
-  currentTab.value = tab;
-  sessionStorage.setItem('selectedTab', tab);
 };
 
 const components = { 'Login/Account': LoginAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Quality Check': QualityCheck, 'Version': Version };
@@ -66,6 +86,12 @@ const currentTabComponent = computed(() => {
   return components[currentTab.value];
 });
 
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+}
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
@@ -74,6 +100,30 @@ const showErrorAlert = (message: string) => {
 
 const hideAlert = () => {
   showAlert.value = false;
+}
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
+  currentTab.value = movingTab.value;
+  sessionStorage.setItem('selectedTab', movingTab.value);
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = async () => {
+  showConfirm.value = false;
+  try {
+    switch (settingType.value) {
+      case settingName.cellImageAnalyzed:
+        await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
+        break;
+      default:
+        break;
+    }
+    await showSuccessAlert(messages.settingSaveSuccess);
+  } catch (e) {
+    await showErrorAlert(messages.settingSaveFailure);
+  }
 }
 
 </script>

@@ -58,6 +58,7 @@ export interface CommonState {
     isTcpConnected: boolean;
     initValData: boolean;
     enteringRouterPath: string;
+    settingType: string;
 }
 
 interface CommonModule {
@@ -122,6 +123,7 @@ interface CommonModule {
         setIsTcpConnected: (state: CommonState, value: boolean) => void;
         setInitValData: (state: CommonState, value: boolean) => void;
         setEnteringRouterPath: (state: CommonState, value: string) => void;
+        setSettingType: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -187,6 +189,7 @@ export const commonModule: CommonModule = {
         isTcpConnected: false,
         initValData: false,
         enteringRouterPath: '',
+        settingType: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -366,6 +369,9 @@ export const commonModule: CommonModule = {
         },
         setEnteringRouterPath(state: CommonState, value: string): void {
             state.enteringRouterPath = value;
+        },
+        setSettingType(state: CommonState, value: string): void {
+            state.settingType = value;
         }
     },
     actions: {
@@ -547,6 +553,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('enteringRouterPath')) {
                 commit('setEnteringRouterPath', payload.enteringRouterPath);
+            }
+            if (payload.hasOwnProperty('settingType')) {
+                commit('setSettingType', payload.settingType);
             }
         },
     },

@@ -599,10 +599,6 @@ const convertRbcData = async (dataList: any) => {
       await reDegree(rbcInfoAfterVal.value);
     }
 
-
-    console.log('rbcInfoAfter', rbcInfoAfterVal.value);
-
-
     const sendingItem = { before: {}, after: {} };
     const shapeOthersCount: any = await getShapeOthers(data);
 
