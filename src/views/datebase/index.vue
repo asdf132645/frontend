@@ -19,7 +19,7 @@
             <option value="patientId">Patient ID</option>
             <option value="patientNm">Patient Name</option>
           </select>
-          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput"   @focus="handleFocus"/>
+          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
           <button class="searchClass" @click="dateRefresh">
             <font-awesome-icon :icon="['fas', 'calendar-days']"/>
             Refresh
@@ -121,7 +121,17 @@
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
-import {computed, getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, ref, watch, watchEffect} from "vue";
+import {
+  computed,
+  getCurrentInstance,
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  watchEffect
+} from "vue";
 import {detailRunningApi, getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
@@ -165,7 +175,6 @@ const prevDataPage = ref('');
 const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
-const dataBaseOneCall = ref<any>(store.state.commonModule.dataBaseOneCall);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
@@ -177,8 +186,7 @@ const barcodeInput = ref<HTMLInputElement | null>(null);
 const isCompany = ref('');
 const isPrintingExcel = ref(false);
 const rbcInfoPathAfter = ref<any>([]);
-const countArtifact = ref(0);
-const countDoubleNormal = ref(0);
+
 const maxRbcCount = ref(0);
 const pltCount = ref(0);
 const malariaCount = ref(0);
@@ -189,6 +197,16 @@ const shapeBodyTotal = ref(0);
 const rbcDegreeStandard = ref<any>([]);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
+const inputTimeout = ref<any>(null);
+const bufferDelay = 100; // 입력 완료 감지 지연 시간 (ms)
+const inputBuffer = ref('');
+const barcodePattern = /^[0-9A-Z]{8,}$/; // 바코드 패턴 (예: 8자리 이상의 숫자 및 대문자)
+
+const isBarcodeInput = (value: any) => {
+  return barcodePattern.test(value);
+};
+
+
 
 function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -221,38 +239,67 @@ onMounted(async () => {
 
 });
 
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleGlobalKeydown);
+onUnmounted(() => {
+  // window.removeEventListener('keydown', handleGlobalKeydown);
 });
+const previousValue = ref('');
+const handleInput = (event) => {
+  if(!event.data){
+    return;
+  }
+  // 입력 버퍼에 추가된 문자
+  inputBuffer.value += event.data;
 
-const handleGlobalKeydown = (event: any) => {
-  if(router.currentRoute.value.path === '/dataBase'){
+  // 이전 타이머가 설정되어 있으면 클리어
+  if (inputTimeout.value) {
+    clearTimeout(inputTimeout.value);
+  }
+
+  // 새로운 타이머 설정
+  inputTimeout.value = setTimeout(() => {
+    // 입력 완료로 간주
+    const trimmedValue = inputBuffer.value.trim();
+
+    // 입력된 값과 이전 값이 다를 때만 업데이트
+    if (trimmedValue !== previousValue.value) {
+      searchText.value = trimmedValue;
+      previousValue.value = trimmedValue;
+    }
+
+    // 버퍼 초기화
+    inputBuffer.value = '';
+    search();
+  }, bufferDelay);
+};
+
+const handleGlobalKeydown = (event) => {
+  if (router.currentRoute.value.path === '/dataBase') {
     if (event.key === 'Enter' || event.key === 'Tab') {
-      // Enter 또는 Tab 키가 눌리면 입력 필드에 포커스를 설정
-      if (barcodeInput.value) {
-        searchText.value = searchText.value.trim();
-        barcodeInput.value.focus();
-        search();
-      }
+      setTimeout(() => {
+        if (barcodeInput.value) {
+          barcodeInput.value.focus();
+          searchText.value = searchText.value.trim();
+          const trimmedValue = searchText.value.trim();
+          if (trimmedValue !== previousValue.value) {
+            // 입력된 값과 이전 값이 다를 때만 업데이트
+            previousValue.value = trimmedValue;
+          }
+        }
+      }, 10); // 아주 짧은 지연을 주어 바코드 리더기가 입력을 시작할 수 있도록 함
+
     }
   }
 };
 
-const handleFocus = () => {
-  // 포커스가 되어 있지 않을 때 포커스를 강제로 설정
-  if (barcodeInput.value) {
-    searchText.value = searchText.value.trim();
-    barcodeInput.value.focus();
-  }
-};
 
 
 const handleEnter = () => {
+  console.log('엔터')
   // Enter 키가 눌렸을 때 처리할 로직
   // 포커스를 다시 입력 필드로 이동
   if (barcodeInput.value) {
-    searchText.value = searchText.value.trim();
-    barcodeInput.value.focus();
+    // barcodeInput.value.focus();
+    search();
   }
 };
 
@@ -554,6 +601,9 @@ const convertRbcData = async (dataList: any) => {
     await rbcTotalAndReCount(data);
     await reDegree(rbcInfoAfterVal.value);
     await reDegree(rbcInfoBeforeVal.value);
+
+    console.log('rbcInfoAfter', rbcInfoAfterVal.value);
+
 
     const sendingItem = { before: {}, after: {} };
     const shapeOthersCount: any = await getShapeOthers(data);
