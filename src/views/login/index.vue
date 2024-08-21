@@ -1,5 +1,5 @@
 <template>
-  <div class="loaderBackgroundForLogin" v-if="showLoading">
+  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -57,19 +57,12 @@ const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
-const isCompany = ref('');
-const showLoading = ref(false);
 
-onBeforeMount(() => {
-  forceViewer.value = window.FORCE_VIEWER;
-  isCompany.value = window.IS_COMPANY;
-})
 //
 onMounted(async () => {
+  forceViewer.value = window.FORCE_VIEWER;
   await checkIsViewer()
   isAutoLogginable();
-
-  showLoading.value = isCompany.value === 'company' && forceViewer.value === 'main' && !isViewer.value && !isTcpConnected.value;
 })
 
 /** 자동 로그인 확인 */

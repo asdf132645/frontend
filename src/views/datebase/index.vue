@@ -174,7 +174,6 @@ const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
 const notStartLoading = ref(false);
 const barcodeInput = ref<HTMLInputElement | null>(null);
-const isCompany = ref('');
 const isPrintingExcel = ref(false);
 const rbcInfoPathAfter = ref<any>([]);
 const countArtifact = ref(0);
@@ -200,7 +199,6 @@ function handleStateVal(data: any) {
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
-  isCompany.value = window.IS_COMPANY;
 
 })
 
