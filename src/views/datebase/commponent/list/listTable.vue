@@ -93,7 +93,6 @@
       <li @click="classificationRowDbClick">Classification</li>
       <li @click="editOrderData">Edit order data</li>
       <li @click="deleteRow">Delete</li>
-      <!--      <li>export XLSX</li>-->
     </ul>
   </div>
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
