@@ -1,5 +1,5 @@
 <template>
-  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected">
+  <div class="loaderBackgroundForLogin" v-if="showLoading">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, ref, onMounted, computed } from "vue";
+import {getCurrentInstance, ref, onMounted, computed, onBeforeMount} from "vue";
 import { login } from "@/common/api/service/user/userApi";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
@@ -57,11 +57,19 @@ const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
+const isCompany = ref('');
+const showLoading = ref(false);
 
-onMounted(async () => {
+onBeforeMount(() => {
   forceViewer.value = window.FORCE_VIEWER;
+  isCompany.value = window.IS_COMPANY;
+})
+//
+onMounted(async () => {
   await checkIsViewer()
   isAutoLogginable();
+
+  showLoading.value = isCompany.value === 'company' && forceViewer.value === 'main' && !isViewer.value && !isTcpConnected.value;
 })
 
 /** 자동 로그인 확인 */

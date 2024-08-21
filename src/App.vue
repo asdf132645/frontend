@@ -95,6 +95,7 @@ const isFullscreen = ref<boolean>(false);
 let intervalId: any;
 const stataasdasd = ref(false);
 const ipMatches = ref(false);
+const isCompany = ref('');
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   console.log('isTcpConnected', isTcpConnected);
@@ -191,6 +192,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
 
 
 onBeforeMount(() => {
+  isCompany.value = window.IS_COMPANY;
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
     type: 'SEND_DATA',
     payload: window.APP_API_BASE_URL
@@ -288,9 +290,10 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
   await socketData(data);
 });
 async function socketData(data: any) {
-  if (commonDataGet.value.viewerCheck !== 'main') {
+  if (commonDataGet.value.viewerCheck !== 'main' || isCompany.value === 'company') {
     return;
   }
+
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
