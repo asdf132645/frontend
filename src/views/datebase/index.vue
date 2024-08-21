@@ -306,9 +306,6 @@ const closeClassListBox = (event: MouseEvent) => {
   if (selectBox && !selectBox.contains(event.target as Node)) {
     classListToggle.value = false; // 셀렉트 박스 닫기
   }
-  if (barcodeInput.value) {
-    barcodeInput.value.focus();
-  }
 };
 
 const classListToggleEvent = () => {
