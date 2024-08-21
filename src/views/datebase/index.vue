@@ -228,20 +228,20 @@ onBeforeUnmount(() => {
 const handleGlobalKeydown = (event: any) => {
   if(router.currentRoute.value.path === '/dataBase'){
     if (event.key === 'Enter' || event.key === 'Tab') {
-      // Enter 키가 눌리면 입력 필드에 포커스를 설정
+      // Enter 또는 Tab 키가 눌리면 입력 필드에 포커스를 설정
       if (barcodeInput.value) {
+        searchText.value = searchText.value.trim();
         barcodeInput.value.focus();
+        search();
       }
     }
   }
-
 };
-
 
 const handleFocus = () => {
   // 포커스가 되어 있지 않을 때 포커스를 강제로 설정
-
   if (barcodeInput.value) {
+    searchText.value = searchText.value.trim();
     barcodeInput.value.focus();
   }
 };
@@ -249,11 +249,9 @@ const handleFocus = () => {
 
 const handleEnter = () => {
   // Enter 키가 눌렸을 때 처리할 로직
-  // console.log('바코드 입력:', searchText.value);
-  searchText.value = ''; // 입력 필드를 비우거나 다른 처리를 할 수 있음
-
   // 포커스를 다시 입력 필드로 이동
   if (barcodeInput.value) {
+    searchText.value = searchText.value.trim();
     barcodeInput.value.focus();
   }
 };
@@ -620,8 +618,6 @@ const convertRbcData = async (dataList: any) => {
     sendingItem.before = beforeRbcData;
     sendingItem.after = afterRbcData;
 
-    console.log('sendingItem', sendingItem);
-
     await createRbcJson(data.slotId, sendingItem);
   }
 }
@@ -818,7 +814,6 @@ const countReAdd = async () => {
       }
     }
   }
-  //
 
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal;
