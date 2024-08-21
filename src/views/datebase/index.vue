@@ -237,9 +237,6 @@ onMounted(async () => {
 
 });
 
-onUnmounted(() => {
-  // window.removeEventListener('keydown', handleGlobalKeydown);
-});
 const previousValue = ref('');
 const handleInput = (event) => {
   if(!event.data){
@@ -292,11 +289,7 @@ const handleGlobalKeydown = (event) => {
 
 
 const handleEnter = () => {
-  console.log('엔터')
-  // Enter 키가 눌렸을 때 처리할 로직
-  // 포커스를 다시 입력 필드로 이동
   if (barcodeInput.value) {
-    // barcodeInput.value.focus();
     search();
   }
 };
@@ -312,6 +305,9 @@ const closeClassListBox = (event: MouseEvent) => {
   if (selectButton && selectButton.contains(event.target as Node)) return;
   if (selectBox && !selectBox.contains(event.target as Node)) {
     classListToggle.value = false; // 셀렉트 박스 닫기
+  }
+  if (barcodeInput.value) {
+    barcodeInput.value.focus();
   }
 };
 
