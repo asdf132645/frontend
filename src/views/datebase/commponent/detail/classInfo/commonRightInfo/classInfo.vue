@@ -372,13 +372,14 @@ const uploadLis = () => {
 
       props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         wbcItem.testcd = ''
-
+        // testcd 없음 필드 자체에 추가 하는 로직
         codeList.forEach(function (code) {
           if (wbcItem.id === code.id) {
             wbcItem.testcd = code.cd
           }
         })
       })
+      console.log('props.selectItems?.wbcInfoAfter testcd 추가', props.selectItems?.wbcInfoAfter)
 
       let wbcTemp: any = [];
 
@@ -441,9 +442,9 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
-          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
-          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+          const separator1 = '\u0017';  // ASCII 23
+          const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
+          const terminator = '\u0003';  // ASCII 3
 
           const result = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')

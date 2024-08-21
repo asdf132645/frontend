@@ -236,6 +236,9 @@ const isIpMatching = (url: any, ip: any) => {
 };
 
 onMounted(async () => {
+  // console.log(separator1)
+  // console.log(separator2)
+  // console.log(terminator)
   await nextTick();
   await cellImgGet();
   startChecking();
