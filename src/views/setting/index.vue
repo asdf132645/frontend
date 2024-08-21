@@ -41,6 +41,9 @@ import Version from "@/views/setting/version/index.vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
+import {settingUpdate} from "@/common/lib/utils/settingSave";
+import {settingName} from "@/common/defines/constFile/settings";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check', 'Version'] as const;
@@ -61,7 +64,7 @@ const changeTab = (tab: typeof tabs[number]) => {
   movingTab.value = tab;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
-    confirmMessage.value = `${settingType.value} Setting Not Saved`;
+    confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
   } else {
     currentTab.value = movingTab.value;
     sessionStorage.setItem('selectedTab', movingTab.value);
@@ -83,6 +86,12 @@ const currentTabComponent = computed(() => {
   return components[currentTab.value];
 });
 
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+}
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
@@ -101,8 +110,20 @@ const hideConfirm = async () => {
   showConfirm.value = false;
 }
 
-const handleOkConfirm = () => {
+const handleOkConfirm = async () => {
   showConfirm.value = false;
+  try {
+    switch (settingType.value) {
+      case settingName.cellImageAnalyzed:
+        await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
+        break;
+      default:
+        break;
+    }
+    await showSuccessAlert(messages.settingSaveSuccess);
+  } catch (e) {
+    await showErrorAlert(messages.settingSaveFailure);
+  }
 }
 
 </script>

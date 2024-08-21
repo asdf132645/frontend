@@ -23,6 +23,16 @@
     </div>
   </div>
 
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -44,10 +54,12 @@ import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
 import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
 import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
 import WbcRunningCount from "@/views/setting/analysisDatabase/component/wbcRunningCount.vue";
-import process from "process";
 import {useStore} from "vuex";
-import {before} from "lodash";
 import Alert from "@/components/commonUi/Alert.vue";
+import {messages} from "@/common/defines/constFile/constantMessageText";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {settingName} from "@/common/defines/constFile/settings";
+import {settingUpdate} from "@/common/lib/utils/settingSave";
 
 const store = useStore();
 const activeTab = ref('cellImageAnalyzed');
@@ -55,17 +67,33 @@ const projectType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const showConfirm = ref(false);
+const confirmMessage = ref('');
 
+const movingTab = ref('');
+const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 
+onMounted(async () => {
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+})
+
 const activateTab = (tabName: string) => {
+  movingTab.value = tabName;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
-    showErrorAlert('Setting Not Saved');
-    return;
+    showConfirm.value = true;
+    confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  } else {
+    activeTab.value = movingTab.value;
   }
-  activeTab.value = tabName;
 };
+
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+}
 
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
@@ -101,8 +129,22 @@ const activeTabComponent = computed(() => {
       return null;
   }
 });
-onMounted(async () => {
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-})
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
+  activeTab.value = movingTab.value;
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = async () => {
+  showConfirm.value = false;
+  try {
+    await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
+    await showSuccessAlert(messages.settingSaveSuccess);
+  } catch (e) {
+    await showErrorAlert(messages.settingSaveFailure);
+  }
+}
 
 </script>

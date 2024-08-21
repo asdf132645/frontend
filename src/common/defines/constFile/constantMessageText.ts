@@ -413,4 +413,8 @@ export  const messages: Messages = {
 
     lockRow: 'Deletion is not allowed when locked.',
     exit: 'Are you sure you want to quit the program?',
+
+    settingSaveSuccess: 'Saved successfully',
+    settingSaveFailure: 'Save failed',
+    settingNotSaved: 'Setting not saved',
 };
