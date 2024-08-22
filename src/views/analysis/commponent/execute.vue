@@ -328,22 +328,22 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
-  if (isInitializing.value) {
-    if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
-      showSuccessAlert(messages.alreadyInitialized);
-    }
-      showErrorALert('Program is already running');
-      return;
-  }
+  // if (isInitializing.value) {
+  //   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
+  //     showSuccessAlert(messages.alreadyInitialized);
+  //   }
+  //     showErrorALert('Program is already running');
+  //     return;
+  // }
 
-  if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
-    showSuccessAlert(messages.alreadyInitialized);
-    return;
-  }
+  // if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
+  //   showSuccessAlert(messages.alreadyInitialized);
+  //   return;
+  // }
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
   emits('initDataChangeText', true);
-  isInitializing.value = true;
+  // isInitializing.value = true;
 }
 
 const initData = async () => {

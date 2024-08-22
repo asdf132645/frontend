@@ -1,5 +1,5 @@
 <template>
-  <div class="loaderBackgroundForLogin" v-if="isRestoring">
+  <div class="loadingBackground" v-if="isRestoring">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -183,8 +183,7 @@
     <pre v-else-if="impossibleRestoreCount > 0"
         class="fs12"
     >
-      There are duplicated Items.
-      Would you like to <span style="color: red;">overwrite</span> data?
+      There are <span style="color: red;">duplicated</span> items
     </pre>
     <div :class="impossibleRestoreCount === 0 && 'restoreModalCountWrapperSmall'">
       <p>Non-duplicated Count: {{ possibleRestoreCount }}</p>
@@ -199,8 +198,8 @@
       </ul>
     </div>
     <div class="restoreModalBtnContainer">
-      <button class="memoModalBtn" @click="restoreConfirm">RESTORE</button>
-      <button class="memoModalBtn" @click="restoreCancel">CANCEL</button>
+      <button v-show="impossibleRestoreCount === 0" class="memoModalBtn" @click="restoreConfirm">RESTORE</button>
+      <button class="memoModalBtn" @click="restoreCancel">{{ impossibleRestoreCount === 0 ? 'Cancel' : 'Close' }}</button>
     </div>
   </div>
 
@@ -346,11 +345,9 @@ const restoreBackupData = async (event: any) => {
   }
   selectedFileName.value = fileName;
 
-  const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
-
   try {
     isRestoring.value = true;
-    const result: any = await checkDuplicatedData({ fileName: fileName, filePath: filePath, sourceFolderPath: iaRootPath.value });
+    const result: any = await checkDuplicatedData({ fileName: fileName, saveFilePath: iaRootPath.value, backupFilePath: backupRootPath.value });
 
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
@@ -575,11 +572,10 @@ const toggleKeepPage = () => {
 };
 
 const restoreConfirm = async () => {
-
-  const filePath = window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup';
+  showRestoreModal.value = false;
   try {
     isRestoring.value = true;
-    const result = await restoreBackup({ fileName: selectedFileName.value, filePath: filePath });
+    const result = await restoreBackup({ fileName: selectedFileName.value, saveFilePath: iaRootPath.value, backupFilePath: backupRootPath.value });
 
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
@@ -591,7 +587,6 @@ const restoreConfirm = async () => {
   } finally {
     isRestoring.value = false;
   }
-  showRestoreModal.value = false;
 }
 
 const restoreCancel = async () => {
