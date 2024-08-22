@@ -372,13 +372,14 @@ const uploadLis = () => {
 
       props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
         wbcItem.testcd = ''
-
+        // testcd 없음 필드 자체에 추가 하는 로직
         codeList.forEach(function (code) {
           if (wbcItem.id === code.id) {
             wbcItem.testcd = code.cd
           }
         })
       })
+      console.log('props.selectItems?.wbcInfoAfter testcd 추가', props.selectItems?.wbcInfoAfter)
 
       let wbcTemp: any = [];
 
@@ -394,6 +395,30 @@ const uploadLis = () => {
           }
         })
       })
+
+      // 중복제거 코드
+      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
+      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
+      //       // 중복 확인
+      //       if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
+      //         wbcTemp.push(wbcItem);
+      //       }
+      //     }
+      //   });
+      // });
+
+      // set 함수로 중복 제거
+      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
+      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
+      //       wbcTemp.add(wbcItem); // Set은 자동으로 중복을 제거합니다.
+      //     }
+      //   });
+      // });
+      //
+      // wbcTemp = Array.from(wbcTemp); // Set을 배열로 변환
+
 
       // neutrophil-seg
       const nsPercentItem = wbcTemp.filter(function (item: any) {
@@ -441,9 +466,9 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
-          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
-          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+          const separator1 = '\u0017';  // ASCII 23
+          const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
+          const terminator = '\u0003';  // ASCII 3
 
           const result = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')

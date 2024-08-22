@@ -227,7 +227,7 @@ const moveWbc = async (direction: any) => {
     if(dbListDataFirstNum.value === selectItems.value?.id){
       showAlert.value = true;
       alertType.value = 'success';
-      alertMessage.value = 'If you need further customization or more details, please let me know!';
+      alertMessage.value = 'This is the first page. Navigation to other pages is not possible.';
       return;
     }
   } else {

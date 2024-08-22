@@ -1,16 +1,23 @@
 <template>
   <div class="cbcDiv">
+    <div class="loaderBackground cbc" v-if="loading">
+      <div class="loader"></div>
+      <p class="loadingText">Loading...</p>
+    </div>
     <h1 class="titleCbc">CBC + DIFF</h1>
-    <div v-if="siteCd ==='0002'" class="cbcDivWarp">
+    <div v-if="siteCd ==='0002' && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
+        <colgroup>
+          <col width="50%"/>
+          <col width="50%"/>
+        </colgroup>
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
-<!--          <td>{{ cbcItem.tclsscrnnm._cdata }}</td>-->
           <td>{{ cbcItem.tclsscrnnm._cdata }}</td>
           <td>{{ cbcItem.inptrslt._cdata }}</td>
         </tr>
       </table>
     </div>
-    <div v-else-if="siteCd ==='0007'" class="cbcDivWarp">
+    <div v-else-if="siteCd ==='0007' && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
@@ -24,7 +31,7 @@
         </tr>
       </table>
     </div>
-    <div v-else class="cbcDivWarp">
+    <div v-else-if="cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
@@ -33,6 +40,9 @@
           </td>
         </tr>
       </table>
+    </div>
+    <div v-if="cbcWorkList.length === 0">
+      No Data
     </div>
   </div>
 </template>
@@ -47,7 +57,6 @@ import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
-import {spcParams} from "@/common/defines/constFile/lis";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -56,6 +65,7 @@ const cbcPatientNo = ref('');
 const cbcPatientNm = ref('');
 const cbcSex = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
+const loading = ref(false);
 
 const cbcAge = ref('');
 const inhaTestCode = ref('');
@@ -82,40 +92,16 @@ onMounted(async () => {
 });
 
 const initCbcData = async (newVal: any) => {
+  loading.value = true;
   let hospitalName = hospitalSiteCd.find(hospital => hospital.siteCd === siteCd.value)?.hospitalNm;
-  if(siteCd.value === ''){
+  if (siteCd.value === '') {
     hospitalName = '0000';
   }
   switch (hospitalName) {
-    // 서울 성모 cbc - 외부 url 진행 - 파일 없음
+      // 서울 성모 cbc - 외부 url 진행 - 파일 없음
     case '서울성모병원':
-      let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
-      axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-        params: {
-          submit_id: 'TRLII00124',
-          business_id: 'li',
-          instcd: '012',
-          bcno: newVal.barcodeNo
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }).then(function (result) {
-        const xml = result.data?.data;
-        const json = JSON.parse(xml2json(xml, {compact: true}));
-        cbcWorkList.value = json.root.spcworklist.worklist;
-        const parms = {
-          filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-          data: cbcWorkList.value,
-        };
-        createCbcFile(parms);
-      }).catch(function (err) {
-        console.log(err.message)
-      })
-
+      await cmcSeoulCbc(newVal);
       break;
-
     case '고대안암병원':
       await kuahGilHosCbc();
       break;
@@ -128,136 +114,12 @@ const initCbcData = async (newVal: any) => {
     case '삼광의료재단':
       /** Todo 작업 필요 */
       break;
-
     case '인하대병원':
-      if (cbcFilePathSetArr.value.includes("http")) { // url 설정인 경우
-        const params = {
-          url: cbcFilePathSetArr.value,
-          machine: 'ADUIMD',
-          episode: props.selectItems.barcodeNo
-        }
-        console.log(params.url, params.machine, params.episode);
-        await axios.post(params.url + '/api/MifMain/Order', {
-          machine: params.machine,
-          episode: params.episode
-        }).then(function (result) {
-          cbcWorkList.value = [];
-          const res = result.data[0];
-          if (res?.returnCode === '0') {
-            cbcPatientNo.value = res?.regNo;
-            cbcPatientNm.value = res.name;
-            cbcSex.value = res.sex;
-            cbcAge.value = res.age;
-            inhaTestCode.value = res.testCode;
-            store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res.testCode}); // lis 에서 사용함
-
-            const testCodeList = res.testCode.split(',');
-            testCodeList.forEach(function (codes: any) {
-              const codeArray = codes.split('|');
-              const code = codeArray[0];
-              const value = codeArray[1];
-              const unit = codeArray[2];
-              cbcCodeList.value.forEach(function (cbcCode: any) {
-                if (cbcCode.cd === code) {
-                  const obj = {
-                    classNm: cbcCode.classCd,
-                    count: value,
-                    unit: unit
-                  }
-                  cbcWorkList.value.push(obj);
-                }
-              })
-
-            })
-
-          }
-          const parms = {
-            filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-            data: cbcWorkList.value,
-          };
-          createCbcFile(parms);
-        }).catch(function (err) {
-          console.log(err.message + ' : no CBC result');
-        })
-      }
-
+      await inhaCbc();
       break;
-
-    // CBC 공통
+      // CBC 공통
     default:
-      if (cbcFilePathSetArr.value.includes("http")) { // url
-        const params = {
-          url: cbcFilePathSetArr.value,
-          barcodeNo: props.selectItems.barcodeNo,
-          userId: userModuleDataGet.value.userId,
-          deviceBarcode: deviceSerialNm.value
-        }
-        const url = params.url + '?' +
-            'barcodeNo=' + params.barcodeNo + '&' +
-            'deviceBarcode=' + deviceSerialNm.value + '&' +
-            'userid=' + params.userId
-
-        await axios.get(url).then(async function  (result) {
-          const msg: any = await readH7File(result.data);
-          cbcWorkList.value = [];
-          msg.data?.segments.forEach(function (cbcSegment: any) {
-            if (cbcSegment.name.trim() === 'OBX') {
-              cbcCodeList.value.forEach(function (cbcCode: any) {
-                if (cbcCode.CBC_CD === cbcSegment.fields[3].value[0][0].value[0]) {
-                  var obj = {
-                    classNm: cbcCode.cd,
-                    count: cbcSegment.fields[5].value[0][0].value[0],
-                    unit: cbcSegment.fields[6].value[0][0].value[0]
-                  }
-                  cbcWorkList.value.push(obj)
-                }
-              })
-
-            } else if (cbcSegment.name.trim() === 'PID') {
-              cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
-              cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
-              cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
-              cbcAge.value = cbcSegment.fields[7].value[0][0].value[0]
-            }
-          })
-
-        }).catch(function (err) {
-          console.log(err.message)
-        })
-      }
-      else { // 파일
-        const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}.hl7`);
-        // const readFileTxtRes: any = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
-        if (readFileTxtRes.data.success) {
-          const msg: any = await readH7File(readFileTxtRes.data.data);
-
-          cbcWorkList.value = [];
-          msg?.data?.segments.forEach((cbcSegment: any) => {
-            if (cbcSegment.name.trim() === 'OBX') {
-              cbcCodeList.value.forEach((cbcCode: any) => {
-                //CBC_CD = > cbcCode.cd, CD_NM => cbcCode.testCd
-                if (cbcCode.cd === cbcSegment.fields[3].value[0][0].value[0]) {
-                  const obj = {
-                    classNm: cbcCode.cd,
-                    count: cbcSegment.fields[5].value[0][0].value[0],
-                    unit: cbcSegment.fields[6].value[0][0].value[0]
-                  }
-                  cbcWorkList.value.push(obj);
-                }
-              })
-            }
-
-          })
-
-        }else{
-          console.error(readFileTxtRes.data.message);
-        }
-      }
-      const parms = {
-        filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-        data: cbcWorkList.value,
-      };
-      await createCbcFile(parms);
+      await commonCbc();
       break;
   }
 
@@ -274,16 +136,178 @@ const initCbcData = async (newVal: any) => {
   };
 
   const result: any = await detailRunningApi(String(selectedSampleId.value));
-  const updatedRuningInfo ={...result.data,...req }
+  const updatedRuningInfo = {...result.data, ...req}
   await updateRunningApiPost([updatedRuningInfo]);
 
 }
 
+const commonCbc = async () => {
+  if (cbcFilePathSetArr.value.includes("http")) { // url
+    const params = {
+      url: cbcFilePathSetArr.value,
+      barcodeNo: props.selectItems.barcodeNo,
+      userId: userModuleDataGet.value.userId,
+      deviceBarcode: deviceSerialNm.value
+    }
+    const url = params.url + '?' +
+        'barcodeNo=' + params.barcodeNo + '&' +
+        'deviceBarcode=' + deviceSerialNm.value + '&' +
+        'userid=' + params.userId
+
+    await axios.get(url).then(async function (result) {
+      const msg: any = await readH7File(result.data);
+      cbcWorkList.value = [];
+      msg.data?.segments.forEach(function (cbcSegment: any) {
+        if (cbcSegment.name.trim() === 'OBX') {
+          cbcCodeList.value.forEach(function (cbcCode: any) {
+            if (cbcCode.CBC_CD === cbcSegment.fields[3].value[0][0].value[0]) {
+              var obj = {
+                classNm: cbcCode.cd,
+                count: cbcSegment.fields[5].value[0][0].value[0],
+                unit: cbcSegment.fields[6].value[0][0].value[0]
+              }
+              cbcWorkList.value.push(obj)
+            }
+          })
+
+        } else if (cbcSegment.name.trim() === 'PID') {
+          cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
+          cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
+          cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
+          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0]
+        }
+      })
+      loading.value = false;
+    }).catch(function (err) {
+      console.log(err.message)
+      loading.value = false;
+    })
+  } else { // 파일
+    const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}.hl7`);
+    // const readFileTxtRes: any = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
+    if (readFileTxtRes.data.success) {
+      const msg: any = await readH7File(readFileTxtRes.data.data);
+
+      cbcWorkList.value = [];
+      msg?.data?.segments.forEach((cbcSegment: any) => {
+        if (cbcSegment.name.trim() === 'OBX') {
+          cbcCodeList.value.forEach((cbcCode: any) => {
+            //CBC_CD = > cbcCode.cd, CD_NM => cbcCode.testCd
+            if (cbcCode.cd === cbcSegment.fields[3].value[0][0].value[0]) {
+              const obj = {
+                classNm: cbcCode.cd,
+                count: cbcSegment.fields[5].value[0][0].value[0],
+                unit: cbcSegment.fields[6].value[0][0].value[0]
+              }
+              cbcWorkList.value.push(obj);
+            }
+          })
+        }
+
+      })
+      loading.value = false;
+    } else {
+      console.error(readFileTxtRes.data.message);
+      loading.value = false;
+    }
+  }
+  const parms = {
+    filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
+    data: cbcWorkList.value,
+  };
+  await createCbcFile(parms);
+}
+
+const inhaCbc = async () => {
+  if (cbcFilePathSetArr.value.includes("http")) { // url 설정인 경우
+    const params = {
+      url: cbcFilePathSetArr.value,
+      machine: 'ADUIMD',
+      episode: props.selectItems.barcodeNo
+    }
+    console.log(params.url, params.machine, params.episode);
+    await axios.post(params.url + '/api/MifMain/Order', {
+      machine: params.machine,
+      episode: params.episode
+    }).then(function (result) {
+      cbcWorkList.value = [];
+      const res = result.data[0];
+      if (res?.returnCode === '0') {
+        cbcPatientNo.value = res?.regNo;
+        cbcPatientNm.value = res.name;
+        cbcSex.value = res.sex;
+        cbcAge.value = res.age;
+        inhaTestCode.value = res.testCode;
+        store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res.testCode}); // lis 에서 사용함
+
+        const testCodeList = res.testCode.split(',');
+        testCodeList.forEach(function (codes: any) {
+          const codeArray = codes.split('|');
+          const code = codeArray[0];
+          const value = codeArray[1];
+          const unit = codeArray[2];
+          cbcCodeList.value.forEach(function (cbcCode: any) {
+            if (cbcCode.cd === code) {
+              const obj = {
+                classNm: cbcCode.classCd,
+                count: value,
+                unit: unit
+              }
+              cbcWorkList.value.push(obj);
+            }
+          })
+
+        })
+
+      }
+      const parms = {
+        filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
+        data: cbcWorkList.value,
+      };
+      createCbcFile(parms);
+      loading.value = false;
+    }).catch(function (err) {
+      console.log(err.message + ' : no CBC result');
+      loading.value = false;
+    })
+  }
+}
+
+
+const cmcSeoulCbc = async (newVal: any) => {
+  let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
+  axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+    params: {
+      submit_id: 'TRLII00124',
+      business_id: 'li',
+      instcd: '012',
+      bcno: newVal.barcodeNo
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }).then(function (result) {
+    const xml = result.data?.data;
+    const json = JSON.parse(xml2json(xml, {compact: true}));
+    cbcWorkList.value = json.root.spcworklist.worklist;
+    const parms = {
+      filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
+      data: cbcWorkList.value,
+    };
+    createCbcFile(parms);
+    loading.value = false;
+  }).catch(function (err) {
+    console.log(err.message)
+    loading.value = false;
+  })
+}
+
 const kuahGilHosCbc = async () => {
   let readFileTxtRes: any;
-  if(siteCd.value === '0000' || siteCd.value === ''){
+  if (siteCd.value === '0000' || siteCd.value === '') {
     readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
-  }else{
+  } else {
     readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
   }
   if (readFileTxtRes.data.success) {
@@ -320,6 +344,7 @@ const kuahGilHosCbc = async () => {
     };
     await createCbcFile(parms);
   }
+  loading.value = false;
 }
 
 const getCbcPathData = async () => {
@@ -348,7 +373,10 @@ const getCbcCodeList = async () => {
 
 async function updateRunningApiPost(originalDb: any) {
   try {
-    const response = await updateRunningApi({userId: Number(userModuleDataGet.value.id), runingInfoDtoItems: originalDb})
+    const response = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: originalDb
+    })
     if (response) {
       // console.log('')
     } else {
