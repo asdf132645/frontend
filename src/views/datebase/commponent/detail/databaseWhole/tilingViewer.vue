@@ -10,6 +10,7 @@
 import {defineProps, onMounted, ref, watch, computed, nextTick} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { useStore } from "vuex";
+import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['selectItems']);
 const store = useStore();
@@ -31,6 +32,7 @@ watch( () => props.selectItems, async(newItem) => {
   await nextTick()
   await onImageLoad(false);
 });
+
 const onImageLoad = async (bool: boolean) => {
   const imgElement = hideImageRef.value;
   const slotId = props.selectItems?.slotId || "";
@@ -51,8 +53,6 @@ const onImageLoad = async (bool: boolean) => {
 
   }
 };
-
-
 
 const initElement = async (imageHeight: any, bool: boolean) => {
   if (viewer) {
@@ -123,7 +123,11 @@ const fetchTilesInfo = async (folderPath: string) => {
   const fileNames = await response.json();
   const tilesInfo = [];
   for (const fileName of fileNames) {
+    console.log(fileName);
     if (fileName.endsWith('_files')) {
+
+      const fileNameResult = extractSubStringBeforeFiles(fileName);
+      const {width, height} = await dziWidthHeight(fileNameResult)
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",
@@ -132,8 +136,8 @@ const fetchTilesInfo = async (folderPath: string) => {
           Overlap: "1",
           TileSize: "1024",
           Size: {
-            Width: newImgWidth.value,
-            Height: newImgHeight.value
+            Width: width,
+            Height: height
           }
         }
       });
@@ -142,5 +146,32 @@ const fetchTilesInfo = async (folderPath: string) => {
 
   return tilesInfo;
 };
+
+const dziWidthHeight = async (imageFileName: any): Promise<any> => {
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
+  const urlImage = `${path}/${props.selectItems.slotId}/01_Stitching_Image/${imageFileName}.dzi`;
+  const imageResponse = await readDziFile({filePath: urlImage});
+  return await extractWidthHeightFromDzi(`${imageFileName}`, imageResponse);
+}
+
+const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+  const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
+  const width = sizeElement.getAttribute("Width");
+  const height = sizeElement.getAttribute("Height");
+  return {fileName, width: Number(width), height: Number(height)}
+}
+
+const extractSubStringBeforeFiles = (str: string) => {
+  const searchString = '_files';
+  const endIndex = str.indexOf(searchString);
+
+  if (endIndex !== -1) {
+    return str.substring(0, endIndex);
+  }
+
+  return str;
+}
 
 </script>
