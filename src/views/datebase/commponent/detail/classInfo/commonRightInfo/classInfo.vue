@@ -396,6 +396,30 @@ const uploadLis = () => {
         })
       })
 
+      // 중복제거 코드
+      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
+      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
+      //       // 중복 확인
+      //       if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
+      //         wbcTemp.push(wbcItem);
+      //       }
+      //     }
+      //   });
+      // });
+
+      // set 함수로 중복 제거
+      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
+      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
+      //       wbcTemp.add(wbcItem); // Set은 자동으로 중복을 제거합니다.
+      //     }
+      //   });
+      // });
+      //
+      // wbcTemp = Array.from(wbcTemp); // Set을 배열로 변환
+
+
       // neutrophil-seg
       const nsPercentItem = wbcTemp.filter(function (item: any) {
         return item.testcd === 'LHR10501'

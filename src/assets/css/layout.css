@@ -3174,14 +3174,23 @@ button.rollbackButton {
 
 .cbcDiv {
     display: inline-block;
-    width: 14%;
+    width: 15%;
     margin-left: 8px;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
     height: 94%;
     margin-right: 4px;
+    position: relative;
 }
-
+.loaderBackground.cbc .loader {
+    width: 50px;
+    height: 50px;
+    left: 36%;
+}
+.loaderBackground.cbc p.loadingText {
+    top: 57%;
+    left: 38%;
+}
 .databaseWbcRight.cbcLayer {
     width: 24%;
 }
@@ -3244,7 +3253,9 @@ table.cbcTable {
 table.cbcTable td {
     padding: 9px;
     font-size: 0.8rem;
+    border-bottom: 1px solid #dedede;
 }
+
 
 .half-circle {
     clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
