@@ -52,7 +52,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
-import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {checkDuplicateRunningApi, createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
 import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
@@ -595,18 +595,43 @@ async function socketData(data: any) {
       }
     }
 
+    // const test = async () => {
+    //   const testtt = {
+    //     slotId: '123',
+    //     analyzedDttm: ''
+    //   }
+    //   const result = await checkDuplicateRunningApi(testtt);
+    //   if (!result.data) {
+    //     // No Save
+    //   }
+    // }
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
-        let result: ApiResponse<void>;
-        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
-
-        if (result) {
-          if (slotId) {
-            console.log('save successful');
-          }
-          delayedEmit('SEND_DATA', 'refreshDb', 300);
-          // alert('성공~')
+        const checkDto = {
+          slotId: runningInfo.slotId,
+          analyzedDttm: runningInfo.analyzedDttm
         }
+        const isNotDuplicated = await checkDuplicateRunningApi(checkDto);
+
+        if (isNotDuplicated) {
+          const result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
+          if (result && slotId) {
+            console.log('saved successful');
+          }
+        }
+        delayedEmit('SEND_DATA', 'refreshDb', 300);
+
+        /** 이전 코드 Start */
+        // let result: ApiResponse<void>;
+        // result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
+        //
+        // if (result) {
+        //   if (slotId) {
+        //     console.log('save successful');
+        //   }
+        //   delayedEmit('SEND_DATA', 'refreshDb', 300);
+        // }
+        /** 이전 코드 End */
       } catch (e) {
         console.error(e);
       }

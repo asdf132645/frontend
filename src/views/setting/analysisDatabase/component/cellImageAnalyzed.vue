@@ -303,6 +303,50 @@ const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 
 
+onMounted(async () => {
+  await nextTick();
+  testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
+  analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+
+  await cellImgGet();
+  await driveGet();
+});
+
+watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
+  pltPositionMargin, pbsCellAnalyzingCount, stitchCount, bfCellAnalyzingCount, iaRootPath, backupRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
+  const cellAfterSettingObj = {
+    id: cellimgId.value,
+    analysisType: testTypeCd.value,
+    diffCellAnalyzingCount: diffCellAnalyzingCount.value,
+    diffWbcPositionMargin: wbcPositionMargin.value,
+    diffRbcPositionMargin: rbcPositionMargin.value,
+    diffPltPositionMargin: pltPositionMargin.value,
+    pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
+    stitchCount: stitchCount.value,
+    bfCellAnalyzingCount: bfCellAnalyzingCount.value,
+    iaRootPath: iaRootPath.value,
+    isNsNbIntegration: isNsNbIntegration.value,
+    isAlarm: isAlarm.value,
+    alarmCount: alarmCount.value,
+    keepPage: keepPage.value,
+    backupPath: backupRootPath.value,
+    backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+    backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+  if (settingType.value !== settingName.cellImageAnalyzed) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+  }
+})
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNoSaved();
+})
+
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const filteredValue = input.value.replace(/[^0-9]/g, '');
@@ -362,50 +406,6 @@ const restoreBackupData = async (event: any) => {
   }
 
 }
-
-onMounted(async () => {
-  await nextTick();
-  testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
-  analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
-
-  await cellImgGet();
-  await driveGet();
-});
-
-watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
-  pltPositionMargin, pbsCellAnalyzingCount, stitchCount, bfCellAnalyzingCount, iaRootPath, backupRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
-  const cellAfterSettingObj = {
-    id: cellimgId.value,
-    analysisType: testTypeCd.value,
-    diffCellAnalyzingCount: diffCellAnalyzingCount.value,
-    diffWbcPositionMargin: wbcPositionMargin.value,
-    diffRbcPositionMargin: rbcPositionMargin.value,
-    diffPltPositionMargin: pltPositionMargin.value,
-    pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
-    stitchCount: stitchCount.value,
-    bfCellAnalyzingCount: bfCellAnalyzingCount.value,
-    iaRootPath: iaRootPath.value,
-    isNsNbIntegration: isNsNbIntegration.value,
-    isAlarm: isAlarm.value,
-    alarmCount: alarmCount.value,
-    keepPage: keepPage.value,
-    backupPath: backupRootPath.value,
-    backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
-  }
-
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
-  if (settingType.value !== settingName.cellImageAnalyzed) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
-  }
-})
-
-watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNoSaved();
-})
 
 const driveGet = async () => {
   try {

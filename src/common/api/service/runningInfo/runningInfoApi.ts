@@ -15,6 +15,10 @@ export const jsonCreatePost = async (request: any): Promise<ApiResponse<any | un
     return httpClient.httpPost(apiConstants.jsonReader.jsonCreate, request, '', true);
 };
 
+export const checkDuplicateRunningApi = async (req: any): Promise<ApiResponse<boolean>> => {
+    return httpClient.httpPost(apiConstants.settings.runningInfo.check, req);
+}
+
 
 export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiResponse<any | undefined>> => {
     const queryString = Object.entries(req)
