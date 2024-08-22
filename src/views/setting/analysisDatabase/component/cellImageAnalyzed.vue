@@ -358,9 +358,18 @@ const createBackup = async () => {
     showErrorAlert('Please select a backup save path');
     return
   }
+
+  const sendingBackupStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingBackupEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+
+  if (!moment(sendingBackupStartDate).isSameOrBefore(sendingBackupEndDate)) {
+    showErrorAlert('Please check the date');
+    return
+  }
+
   const backupDto = {
-    startDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 시작일
-    endDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0], // 백업 종료일
+    startDate: sendingBackupStartDate, // 백업 시작일
+    endDate: sendingBackupEndDate, // 백업 종료일
     backupPath: backupRootPath.value, // 백업 경로
     sourceFolderPath: `${iaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
   };
