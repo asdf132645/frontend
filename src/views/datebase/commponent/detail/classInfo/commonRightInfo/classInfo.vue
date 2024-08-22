@@ -374,7 +374,7 @@ const uploadLis = () => {
         wbcItem.testcd = ''
         // testcd 없음 필드 자체에 추가 하는 로직
         codeList.forEach(function (code) {
-          if (wbcItem.id === code.id) {
+          if (String(wbcItem.id) === String(code.id)) {
             wbcItem.testcd = code.cd
           }
         })
@@ -419,6 +419,28 @@ const uploadLis = () => {
       //
       // wbcTemp = Array.from(wbcTemp); // Set을 배열로 변환
 
+      // 중복 제거 3
+      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
+      //     // 이미 wbcTemp에 동일한 testcd가 있는지 확인
+      //     const isDuplicate = wbcTemp.some((item: any) => item.testcd === wbcItem.testcd);
+      //
+      //     if (!isDuplicate) {
+      //       if (wbcItem.testcd === fiveDiffItem) {
+      //         wbcTemp.push(wbcItem);
+      //       } else if (wbcItem.count > 0 && wbcItem.testcd !== '') {
+      //         wbcTemp.push(wbcItem);
+      //       }
+      //     }
+      //   });
+      // });
+
+
+      // 중복제거 4
+      // 중복 제거 (Set 사용)
+      // const uniqueItems = new Set(wbcTemp.map(item => item.testcd));
+      // wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find(item => item.testcd === testcd));
+
 
       // neutrophil-seg
       const nsPercentItem = wbcTemp.filter(function (item: any) {
@@ -448,7 +470,6 @@ const uploadLis = () => {
         console.log('유저체크', isUserAuth);
         createCbcFile(parmsLisCopy);
         if (isUserAuth === 'succ') {
-          console.log('succ');
           const params = {
             empNo: userModuleDataGet.value.employeeNo,
             barcodeNo: props.selectItems?.barcodeNo,
@@ -469,11 +490,28 @@ const uploadLis = () => {
           const separator1 = '\u0017';  // ASCII 23
           const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
           const terminator = '\u0003';  // ASCII 3
+          // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
+          // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
+          // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+
 
           const result = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
               .map((wbcItem: any) => `${wbcItem.testcd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
               .join('');
+
+          // 전임자 코드
+          // let result = ''
+          // params.wbcInfo.forEach(function(wbcItem: any) {
+          //   if (wbcItem.testCd !== null && wbcItem.testCd !== '') {
+          //     eslint-disable-next-line vue/no-parsing-error
+          //     result += wbcItem.testCd + encodeURIComponent('') +
+          //         eslint-disable-next-line vue/no-parsing-error
+          //         wbcItem.percent + encodeURIComponent('') +
+          //         eslint-disable-next-line vue/no-parsing-error
+          //         year + month + day + encodeURIComponent('')
+          //   }
+          // })
           // LIS 최종 업로드 Report
           axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
             params: {
