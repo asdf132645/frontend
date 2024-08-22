@@ -490,10 +490,10 @@ const uploadLis = () => {
           const separator1 = '\u0017';  // ASCII 23
           const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
           const terminator = '\u0003';  // ASCII 3
+
           // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
           // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
           // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
-
 
           const result = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
@@ -513,6 +513,7 @@ const uploadLis = () => {
           //   }
           // })
           // LIS 최종 업로드 Report
+
           axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
             params: {
               submit_id: 'TXLII00101',
@@ -522,7 +523,7 @@ const uploadLis = () => {
               userid: params.empNo,
               eqmtcd: eqmtcd,
               bcno: params.barcodeNo,
-              result: result,
+              result: JSON.stringify(result),
               testcont:'MANUAL DIFFERENTIAL COUNT RESULT',
               testcontcd: '01',
               execdeptcd: 'H1',
