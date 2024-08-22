@@ -247,10 +247,6 @@ export const apiConstants = {
                 endpoint: 'runningInfo/getAll',
                 requiresToken: false,
             },
-            check: {
-                endpoint: 'runningInfo/checkDuplicate',
-                requiresToken: false,
-            },
             delete:{
                 endpoint: 'runningInfo/delete',
                 requiresToken: false,

@@ -592,43 +592,17 @@ async function socketData(data: any) {
       }
     }
 
-    // const test = async () => {
-    //   const testtt = {
-    //     slotId: '123',
-    //     analyzedDttm: ''
-    //   }
-    //   const result = await checkDuplicateRunningApi(testtt);
-    //   if (!result.data) {
-    //     // No Save
-    //   }
-    // }
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
-        const checkDto = {
-          slotId: runningInfo.slotId,
-          analyzedDttm: runningInfo.analyzedDttm
-        }
-        const isNotDuplicated = await checkDuplicateRunningApi(checkDto);
+        let result: ApiResponse<void>;
+        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
-        if (isNotDuplicated) {
-          const result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
-          if (result && slotId) {
-            console.log('saved successful');
+        if (result) {
+          if (slotId) {
+            console.log('save successful');
           }
+          delayedEmit('SEND_DATA', 'refreshDb', 300);
         }
-        delayedEmit('SEND_DATA', 'refreshDb', 300);
-
-        /** 이전 코드 Start */
-        // let result: ApiResponse<void>;
-        // result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
-        //
-        // if (result) {
-        //   if (slotId) {
-        //     console.log('save successful');
-        //   }
-        //   delayedEmit('SEND_DATA', 'refreshDb', 300);
-        // }
-        /** 이전 코드 End */
       } catch (e) {
         console.error(e);
       }
