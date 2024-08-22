@@ -1193,7 +1193,7 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
     }
 
     // 선택된 이미지가 배열에 있는지 확인
-    const imageIndexInSelected = selectedClickImages.value.findIndex((img: any) => img === selectedImage);
+    const imageIndexInSelected = selectedClickImages.value.findIndex((img: any) => img.fileName === selectedImage.fileName);
 
     if (imageIndexInSelected === -1) {
       selectedClickImages.value.push({...selectedImage, id: wbcInfo.value[itemIndex].id});
