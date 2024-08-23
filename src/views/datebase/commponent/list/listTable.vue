@@ -487,7 +487,7 @@ const getIpAddress = async (item) => {
     const result = await getDeviceIpApi();
     const ipAddress = result.data;
     const day = sessionStorage.getItem('lastSearchParams') || '';
-    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
 
     await updatePcIpStateApi(req).then(response => {
@@ -561,7 +561,7 @@ const dbDataEditSet = async () => {
       localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
     }
     const day = sessionStorage.getItem('lastSearchParams') || '';
-    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: [localDbData[indexToUpdate]],
@@ -609,7 +609,7 @@ const deleteRow = async () => {
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = `${path}/${selectedItems.slotId}`;
       const day = sessionStorage.getItem('lastSearchParams') || '';
-      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
       const req = {
         ids: [idsToDelete.id],
         img_drive_root_path: [rootArr],
@@ -634,7 +634,7 @@ const deleteRow = async () => {
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
       const day = sessionStorage.getItem('lastSearchParams') || '';
-      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
       const req = {
         ids: idsToDelete,
         img_drive_root_path: rootArr,
