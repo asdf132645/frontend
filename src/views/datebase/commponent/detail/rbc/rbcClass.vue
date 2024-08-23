@@ -907,9 +907,12 @@ const memoChange = async () => {
 
 const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: any) => {
   try {
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
     const response: any = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [updatedRuningInfo]
+      runingInfoDtoItems: [updatedRuningInfo],
+      dayQuery: dayQuery,
     })
     if (response) {
       if(degree === 'degree'){

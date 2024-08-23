@@ -259,6 +259,7 @@ async function handleKeyDown(event) {
     isShiftKeyPressed.value = true;
   }
 }
+
 const handleScroll = () => {
   // if (scrollableDiv.value.scrollTop === 0) {
   //   emits('loadPrevData');
@@ -288,10 +289,10 @@ onUnmounted(() => {
 watch(
     () => props.loadingDelayParents,
     (newVal) => {
-      if(newVal){
+      if (newVal) {
         loadingDelay.value = true;
         // console.log('?');
-      }else{
+      } else {
         loadingDelay.value = false;
         // console.log('?')
       }
@@ -303,7 +304,7 @@ watchEffect(async () => {
   if (props.dbData.length > 0) {
     await nextTick();
 
-    if (props.selectedItemIdFalse){
+    if (props.selectedItemIdFalse) {
       // selectedItemId.value = '0';
       // const filteredItems = props.dbData[0].id
       // const selectedRow = document.querySelector(`[data-row-id="${filteredItems}"]`);
@@ -315,13 +316,13 @@ watchEffect(async () => {
     const observer = new IntersectionObserver(handleIntersection, {
       root: null,
       rootMargin: '0px',
-      threshold: 0.2,
+      threshold: 0.5,
     });
     if (loadMoreRef.value) {
       observer.observe(loadMoreRef.value);
     }
 
-    if(selectedItemId.value === '0' || !selectedItemId.value){
+    if (selectedItemId.value === '0' || !selectedItemId.value) {
       loadingDelay.value = false;
     }
 
@@ -486,7 +487,7 @@ const getIpAddress = async (item) => {
     const result = await getDeviceIpApi();
     const ipAddress = result.data;
     const day = sessionStorage.getItem('lastSearchParams') || '';
-    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
 
     await updatePcIpStateApi(req).then(response => {
@@ -559,10 +560,12 @@ const dbDataEditSet = async () => {
     if (indexToUpdate !== -1) {
       localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
     }
-
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [localDbData[indexToUpdate]]
+      runingInfoDtoItems: [localDbData[indexToUpdate]],
+      dayQuery: dayQuery,
     })
     if (response) {
       showSuccessAlert('success');
@@ -606,7 +609,7 @@ const deleteRow = async () => {
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = `${path}/${selectedItems.slotId}`;
       const day = sessionStorage.getItem('lastSearchParams') || '';
-      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
       const req = {
         ids: [idsToDelete.id],
         img_drive_root_path: [rootArr],
@@ -631,7 +634,7 @@ const deleteRow = async () => {
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
       const day = sessionStorage.getItem('lastSearchParams') || '';
-      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
       const req = {
         ids: idsToDelete,
         img_drive_root_path: rootArr,

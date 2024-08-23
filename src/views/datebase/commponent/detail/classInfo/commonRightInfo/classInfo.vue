@@ -397,22 +397,22 @@ const uploadLis = () => {
       })
 
       // 중복제거 코드
-      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
-      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
-      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
-      //       // 중복 확인
-      //       if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
-      //         wbcTemp.push(wbcItem);
-      //       }
-      //     }
-      //   });
-      // });
+      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+        fiveDiffWorkList.forEach(function (fiveDiffItem) {
+          if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
+            // 중복 확인
+            if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
+              wbcTemp.push(wbcItem);
+            }
+          }
+        });
+      });
 
       // set 함수로 중복 제거
       // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
       //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
       //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
-      //       wbcTemp.add(wbcItem); // Set은 자동으로 중복을 제거합니다.
+      //       wbcTemp.add(wbcItem);
       //     }
       //   });
       // });
@@ -438,8 +438,8 @@ const uploadLis = () => {
 
       // 중복제거 4
       // 중복 제거 (Set 사용)
-      // const uniqueItems = new Set(wbcTemp.map(item => item.testcd));
-      // wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find(item => item.testcd === testcd));
+      // const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
+      // wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
 
 
       // neutrophil-seg
@@ -487,13 +487,13 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          const separator1 = '\u0017';  // ASCII 23
-          const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
-          const terminator = '\u0003';  // ASCII 3
+          // const separator1 = '\u0017';  // ASCII 23
+          // const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
+          // const terminator = '\u0003';  // ASCII 3
 
-          // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
-          // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
-          // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
+          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
+          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
 
           const result = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
@@ -523,7 +523,7 @@ const uploadLis = () => {
               userid: params.empNo,
               eqmtcd: eqmtcd,
               bcno: params.barcodeNo,
-              result: JSON.stringify(result),
+              result: result,
               testcont:'MANUAL DIFFERENTIAL COUNT RESULT',
               testcontcd: '01',
               execdeptcd: 'H1',
@@ -1050,9 +1050,12 @@ const getStringValue = (title: string): string => {
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [updatedRuningInfo]
+      runingInfoDtoItems: [updatedRuningInfo],
+      dayQuery: dayQuery,
     })
     if (response) {
       if (!noAlert) {
@@ -1354,7 +1357,9 @@ async function updateOriginalDb() {
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   // 러닝 인포 디비에 다시 재저장
   try {
-    const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb})
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+    const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb, dayQuery: dayQuery})
     if (response) {
 
     } else {
