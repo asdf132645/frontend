@@ -7,5 +7,5 @@ window.PROJECT_VERSION='0.1.67v';
 window.WEB_BACKEND_VERSION='0.0.55v';
 window.WEB_FRONTEND_VERSION='0.1.67v';
 window.PB_VERSION='12a';  // 12a or 100a
-window.FORCE_VIEWER = 'viewer'; // main or viewer
+window.FORCE_VIEWER = 'main'; // main or viewer
 window.PORT = '8080';

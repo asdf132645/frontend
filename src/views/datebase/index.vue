@@ -19,7 +19,8 @@
             <option value="patientId">Patient ID</option>
             <option value="patientNm">Patient Name</option>
           </select>
-          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
+          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput"
+                 @input="handleInput"/>
           <button class="searchClass" @click="dateRefresh">
             <font-awesome-icon :icon="['fas', 'calendar-days']"/>
             Refresh
@@ -206,7 +207,6 @@ const isBarcodeInput = (value: any) => {
 };
 
 
-
 function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
@@ -239,7 +239,7 @@ onMounted(async () => {
 
 const previousValue = ref('');
 const handleInput = (event) => {
-  if(!event.data){
+  if (!event.data) {
     return;
   }
   // 입력 버퍼에 추가된 문자
@@ -285,7 +285,6 @@ const handleGlobalKeydown = (event) => {
     }
   }
 };
-
 
 
 const handleEnter = () => {
@@ -352,7 +351,7 @@ const initDbData = async () => {
     // for (let i = 1; i <= numberOfCalls; i++) {
     //   await getDbData('mounted', i);
     // }
-    await getDbData('search') ;
+    await getDbData('search');
   } else {
     await getDbData('mounted', 1);
   }
@@ -391,18 +390,18 @@ const getDbData = async (type: string, pageNum?: number) => {
     notStartLoading.value = false;
   }
   let pageChange = 0;
-  if(type === 'loadMoreData'){
+  if (type === 'loadMoreData') {
     pageChange = page.value;
-  }else if(type === 'loadPrevData'){
+  } else if (type === 'loadPrevData') {
     pageChange = prevPage.value;
-  }else{
+  } else {
     pageChange = page.value;
   }
   const requestData: any = {
     page: type !== 'mounted' ? pageChange : Number(pageNum),
     pageSize: 20,
-    startDay: formatDate(startDate.value),
-    endDay: formatDate(endDate.value),
+    startDay: searchText.value === '' ? formatDate(startDate.value) : '',
+    endDay: searchText.value === '' ? formatDate(endDate.value) : '',
     barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
     patientId: searchType.value === 'patientId' ? searchText.value : undefined,
     patientNm: searchType.value === 'patientNm' ? searchText.value : undefined,
@@ -425,7 +424,7 @@ const getDbData = async (type: string, pageNum?: number) => {
 
   try {
     const result = await getRunningApi(requestData);
-    if(page.value === 1 && result.data.data.length === 0){
+    if (page.value === 1 && result.data.data.length === 0) {
       loadingDelayParents.value = false;
       return;
     }
@@ -458,7 +457,7 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
         }
 
-        if(titleItem.value.length === 0){
+        if (titleItem.value.length === 0) {
           titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
         }
 
@@ -474,15 +473,15 @@ const getDbData = async (type: string, pageNum?: number) => {
         // 마지막 조회 결과 저장
         if (dbGetData.value.length !== 0) {
           saveLastSearchParams();
-        }else{
+        } else {
           page.value -= 1;
         }
 
       }
     }
-    if(dbGetData.value.length > 0){
-      await store.dispatch('commonModule/setCommonInfo', { dbListDataFirstNum: Number(dbGetData.value[0].id) })
-      await store.dispatch('commonModule/setCommonInfo', { dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
+    if (dbGetData.value.length > 0) {
+      await store.dispatch('commonModule/setCommonInfo', {dbListDataFirstNum: Number(dbGetData.value[0].id)})
+      await store.dispatch('commonModule/setCommonInfo', {dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
     }
 
 
@@ -599,31 +598,43 @@ const convertRbcData = async (dataList: any) => {
       await reDegree(rbcInfoAfterVal.value);
     }
 
-    const sendingItem = { before: {}, after: {} };
+    const sendingItem = {before: {}, after: {}};
     const shapeOthersCount: any = await getShapeOthers(data);
 
     // Before
     for (const classItem of rbcInfoBeforeVal.value) {
       let beforeItem = {}
       for (const classInfoItem of classItem.classInfo) {
-        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
-        beforeItem = { ...beforeItem, ...classInfoDetailItem }
+        const classInfoDetailItem = {
+          [classInfoItem.classNm]: {
+            degree: classInfoItem.degree,
+            count: Number(classInfoItem.originalDegree)
+          }
+        }
+        beforeItem = {...beforeItem, ...classInfoDetailItem}
 
         // Add Malaria
         if (classInfoItem.classNm === 'Basophilic Stippling') {
-          beforeItem = { ...beforeItem, ...{ Malaria: { degree: '-', count: Number(data.rbcInfo.malariaCount) }} }
+          beforeItem = {...beforeItem, ...{Malaria: {degree: '-', count: Number(data.rbcInfo.malariaCount)}}}
         }
       }
 
       if (classItem.categoryNm === 'Shape') {
-        beforeItem = { ...beforeItem, ...{ Others: { degree: '-', count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
+        beforeItem = {
+          ...beforeItem, ...{
+            Others: {
+              degree: '-',
+              count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact)
+            }
+          }
+        }
       }
 
-      beforeRbcData = { ...beforeRbcData, ...{ [classItem.categoryNm]: beforeItem } }
+      beforeRbcData = {...beforeRbcData, ...{[classItem.categoryNm]: beforeItem}}
 
       // Add Others
       if (classItem.categoryNm === 'Inclusion Body') {
-        beforeRbcData = { ...beforeRbcData, ...{ Others: { Platelet: { degree: '-', count: Number(data.rbcInfo.pltCount) }}}}
+        beforeRbcData = {...beforeRbcData, ...{Others: {Platelet: {degree: '-', count: Number(data.rbcInfo.pltCount)}}}}
       }
 
     }
@@ -632,24 +643,36 @@ const convertRbcData = async (dataList: any) => {
     for (const classItem of rbcInfoAfterVal.value) {
       let afterItem = {}
       for (const classInfoItem of classItem.classInfo) {
-        const classInfoDetailItem = {[classInfoItem.classNm]: { degree: classInfoItem.degree, count: Number(classInfoItem.originalDegree) }}
+        const classInfoDetailItem = {
+          [classInfoItem.classNm]: {
+            degree: classInfoItem.degree,
+            count: Number(classInfoItem.originalDegree)
+          }
+        }
         afterItem = {...afterItem, ...classInfoDetailItem}
 
         // Add Malaria
         if (classInfoItem.classNm === 'Basophilic Stippling') {
-          afterItem = { ...afterItem, ...{ Malaria: { degree: '-', count: Number(data.rbcInfo.malariaCount) }} }
+          afterItem = {...afterItem, ...{Malaria: {degree: '-', count: Number(data.rbcInfo.malariaCount)}}}
         }
       }
 
       if (classItem.categoryNm === 'Shape') {
-        afterItem = { ...afterItem, ...{ Others: { degree: '-', count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact) } } }
+        afterItem = {
+          ...afterItem, ...{
+            Others: {
+              degree: '-',
+              count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact)
+            }
+          }
+        }
       }
 
-      afterRbcData = { ...afterRbcData, ...{ [classItem.categoryNm]: afterItem } }
+      afterRbcData = {...afterRbcData, ...{[classItem.categoryNm]: afterItem}}
 
       // Add Others
       if (classItem.categoryNm === 'Inclusion Body') {
-        afterRbcData = { ...afterRbcData, ...{ Others: { Platelet: { degree: '-', count: Number(data.rbcInfo.pltCount) }}}}
+        afterRbcData = {...afterRbcData, ...{Others: {Platelet: {degree: '-', count: Number(data.rbcInfo.pltCount)}}}}
       }
     }
     sendingItem.before = beforeRbcData;
@@ -814,21 +837,21 @@ const countReAdd = async () => {
   /** TODO
    * json 파일을 변경하기 때문에 초기 before 값을 저장하는 곳이 따로 필요하다.
    * */
-  // for (const category of rbcInfoBeforeVal.value) {
-  //   for (const classItem of category.classInfo) {
-  //     let count = 0;
-  //
-  //     for (const afterCategory of rbcInfoPathAfter.value) {
-  //       for (const afterClassItem of afterCategory.classInfo) {
-  //         if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
-  //           count++;
-  //         }
-  //       }
-  //     }
-  //
-  //     classItem.originalDegree = count;
-  //   }
-  // }
+      // for (const category of rbcInfoBeforeVal.value) {
+      //   for (const classItem of category.classInfo) {
+      //     let count = 0;
+      //
+      //     for (const afterCategory of rbcInfoPathAfter.value) {
+      //       for (const afterClassItem of afterCategory.classInfo) {
+      //         if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
+      //           count++;
+      //         }
+      //       }
+      //     }
+      //
+      //     classItem.originalDegree = count;
+      //   }
+      // }
 
   let totalPLT = 0;
   let malariaTotal = 0;
@@ -861,8 +884,8 @@ const getShapeOthers = async (selectItems: any) => {
   const url_Old = `${path}/${selectItems.slotId}/03_RBC_Classification/${selectItems.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
   const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  const otherCount = { artifact: 0, doubleNormal: 0 };
-  if(!rbcInfoPathAfter){
+  const otherCount = {artifact: 0, doubleNormal: 0};
+  if (!rbcInfoPathAfter) {
     return;
   }
   rbcInfoPathAfter.forEach((item: any) => {
@@ -896,7 +919,7 @@ const reDegree = async (rbcInfoArray: any) => {
   let totalCount = rbcTotalVal.value;
   let sizeTotal = sizeChromiaTotal.value;
   let chromiaTotal = chromiaTotalTwo.value;
-  if(!Array.isArray(rbcInfoBeforeVal.value)){
+  if (!Array.isArray(rbcInfoBeforeVal.value)) {
     return;
   }
 
