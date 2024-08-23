@@ -345,7 +345,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
 })
 
 watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNoSaved();
+  checkIsMovingWhenSettingNotSaved();
 })
 
 const filterNumbersOnly = (event: Event) => {
@@ -450,7 +450,7 @@ const driveGet = async () => {
   }
 }
 
-const checkIsMovingWhenSettingNoSaved = () => {
+const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
 }

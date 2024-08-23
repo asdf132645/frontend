@@ -48,7 +48,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             break;
         case settingName.normalRange:
             break;
-        case settingName.wbcOrder:
+        case settingName.classOrder:
             break;
         case settingName.imagePrint:
             break;

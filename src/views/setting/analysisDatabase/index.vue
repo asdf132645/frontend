@@ -140,7 +140,34 @@ const hideConfirm = async () => {
 const handleOkConfirm = async () => {
   showConfirm.value = false;
   try {
-    await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
+    switch (settingType.value) {
+      case settingName.cellImageAnalyzed:
+        await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
+        break;
+      case settingName.classOrder:
+        break;
+      case settingName.filePathSet:
+        break;
+      case settingName.cbcCode:
+        break;
+      case settingName.lisCode:
+        break;
+      case settingName.imagePrint:
+        break;
+      case settingName.normalRange:
+        break;
+      case settingName.bfHotKeys:
+        break;
+      case settingName.wbcHotKeys:
+        break;
+      case settingName.wbcCustomClass:
+        break;
+      case settingName.wbcRunningCount:
+        break;
+      case settingName.rbcDegree:
+        break;
+    }
+
     await showSuccessAlert(messages.settingSaveSuccess);
   } catch (e) {
     await showErrorAlert(messages.settingSaveFailure);
