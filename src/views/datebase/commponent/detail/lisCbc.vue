@@ -373,9 +373,12 @@ const getCbcCodeList = async () => {
 
 async function updateRunningApiPost(originalDb: any) {
   try {
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: originalDb
+      runingInfoDtoItems: originalDb,
+      dayQuery: dayQuery,
     })
     if (response) {
       // console.log('')
