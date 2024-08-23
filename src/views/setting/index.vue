@@ -61,6 +61,8 @@ const confirmMessage = ref('');
 const movingTab = ref<typeof tabs[number]>(tabs[0]);
 
 const changeTab = (tab: typeof tabs[number]) => {
+  if (currentTab.value === tab) return;
+
   movingTab.value = tab;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
@@ -106,20 +108,14 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   currentTab.value = movingTab.value;
-  sessionStorage.setItem('selectedTab', movingTab.value);
   showConfirm.value = false;
 }
 
 const handleOkConfirm = async () => {
   showConfirm.value = false;
   try {
-    switch (settingType.value) {
-      case settingName.cellImageAnalyzed:
-        await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
-        break;
-      default:
-        break;
-    }
+    console.log('seeting');
+    await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
     await showSuccessAlert(messages.settingSaveSuccess);
   } catch (e) {
     await showErrorAlert(messages.settingSaveFailure);

@@ -66,8 +66,8 @@ const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const settingType = computed(() => store.state.commonModule.settingType);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 
 onMounted(async () => {
   wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
@@ -75,12 +75,12 @@ onMounted(async () => {
   await getOrderClass();
 })
 
-watch(wbcInfoChangeVal.value, async (classOrderAfterSettingObj) => {
+watch(() => wbcInfoChangeVal.value, async (classOrderAfterSettingObj) => {
   await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderAfterSettingObj)});
   if (settingType.value !== settingName.classOrder) {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.classOrder });
   }
-})
+}, { deep: true });
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -104,6 +104,7 @@ const getOrderClass = async () => {
 
       const classOrderBeforeSettingObj = wbcInfoChangeVal.value;
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
     }
   } catch (e) {
     console.log(e)
@@ -115,6 +116,7 @@ const saveOrderClassSave = async () => {
   for (const index in orderList) {
     orderList[index].orderIdx = index;
   }
+
   try {
     let result = {};
     if (saveHttpType.value === 'post') {
@@ -123,9 +125,12 @@ const saveOrderClassSave = async () => {
       result = await putOrderClassApi(orderList);
     }
     if (result) {
-      const text = saveHttpType.value === 'post' ? 'save successful' : messages.UPDATE_SUCCESSFULLY
+      const text = saveHttpType.value === 'post' ? messages.settingSaveSuccess : messages.UPDATE_SUCCESSFULLY
       showSuccessAlert(text);
     }
+
+    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
     console.log(e);
   }
@@ -165,12 +170,15 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
   await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   showConfirm.value = false;
-  router.push(enteringRouterPath.value);
+  await router.push(enteringRouterPath.value);
 
 }
 
 const handleOkConfirm = async () => {
+  await saveOrderClassSave();
   showConfirm.value = false;
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
 }
 
 </script>

@@ -54,13 +54,13 @@ const saveCbcCode = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
       return;
     }
 
     if (result) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
     }

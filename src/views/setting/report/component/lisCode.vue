@@ -54,7 +54,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 
-
 const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
 const minCountArr = ref<minCountItem[]>([]);
@@ -88,13 +87,13 @@ const saveLisCode = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
       return;
     }
 
     if (result && rbcResult && minCountResult) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
     }

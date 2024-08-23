@@ -63,13 +63,13 @@ const saveFilePathSet = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getFilePathSetData();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
       return;
     }
 
     if (result) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getFilePathSetData();
     }

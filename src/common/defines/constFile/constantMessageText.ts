@@ -416,5 +416,7 @@ export  const messages: Messages = {
 
     settingSaveSuccess: 'Saved successfully',
     settingSaveFailure: 'Save failed',
+    settingUpdateSuccess: 'Updated successfully',
+    settingUpdateFailure: 'Update failed',
     settingNotSaved: 'Setting not saved',
 };

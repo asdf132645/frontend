@@ -291,7 +291,6 @@ const cellimgId = ref('');
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const fileInput = ref<any>(null);
-const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const restoreSlotIdObj = ref({duplicated: [], nonDuplicated: []});
 const selectedFileName = ref('');
 const possibleRestoreCount = computed(() => restoreSlotIdObj.value?.nonDuplicated && restoreSlotIdObj.value?.nonDuplicated.length);
@@ -299,6 +298,7 @@ const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 const isBackuping = ref(false);
@@ -505,7 +505,7 @@ const cellImgGet = async () => {
           backupEndDate: moment(data.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
         }
 
-        await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj)});
+        await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
 
     }
@@ -566,8 +566,8 @@ const cellImgSet = async () => {
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
     }
 
-    await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-    await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
+    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
 
     console.log(e);
@@ -628,7 +628,7 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
   await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   showConfirm.value = false;
-  router.push(enteringRouterPath.value);
+  await router.push(enteringRouterPath.value);
 }
 
 const handleOkConfirm = async () => {
