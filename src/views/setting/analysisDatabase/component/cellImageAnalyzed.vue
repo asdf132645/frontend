@@ -1,5 +1,5 @@
 <template>
-  <div class="loadingBackground" v-if="isRestoring">
+  <div class="loadingBackground" v-if="isRestoring || isBackuping">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -301,6 +301,7 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
+const isBackuping = ref(false);
 
 
 onMounted(async () => {
@@ -374,10 +375,13 @@ const createBackup = async () => {
     sourceFolderPath: `${iaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
   };
   try {
+    isBackuping.value = true;
     await backUpDate(backupDto);
     showSuccessAlert('Backup Success')
+    isBackuping.value = false;
   } catch (e) {
     console.log(e);
+    isBackuping.value = false;
   }
 }
 
