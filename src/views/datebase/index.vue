@@ -238,10 +238,36 @@ onMounted(async () => {
 });
 
 const previousValue = ref('');
-const handleInput = (event) => {
+let lastInputTime = Date.now();
+const isBarcodeScannerInput = { value: false };
+
+// 이벤트 핸들러 함수
+const handleInput = (event: any) => {
   if (!event.data) {
     return;
   }
+
+  // 현재 입력 시간
+  const currentTime = Date.now();
+
+  // 현재 입력과 마지막 입력 사이의 시간 차이 계산
+  const timeDiff = currentTime - lastInputTime;
+
+  // 바코드 리더기에서 입력된 것인지 확인 (시간 차이가 50ms 이하이면 바코드 리더기에서 입력된 것으로 간주)
+  if (timeDiff < 50) {
+    isBarcodeScannerInput.value = true;
+  } else {
+    isBarcodeScannerInput.value = false;
+  }
+
+  // 마지막 입력 시간을 현재 시간으로 업데이트
+  lastInputTime = currentTime;
+
+  // 바코드 리더기 입력이 아니면 이벤트 종료
+  if (!isBarcodeScannerInput.value) {
+    return;
+  }
+
   // 입력 버퍼에 추가된 문자
   inputBuffer.value += event.data;
 
@@ -369,8 +395,10 @@ const saveLastSearchParams = () => {
     searchText: searchText.value,
     startDate: formatDate(startDate.value),
     endDate: formatDate(endDate.value),
+    nrCount: nrCount.value,
   };
   sessionStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
+  localStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
 };
 
 const loadLastSearchParams = () => {

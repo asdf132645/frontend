@@ -1051,7 +1051,7 @@ const getStringValue = (title: string): string => {
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: [updatedRuningInfo],
@@ -1358,7 +1358,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   // 러닝 인포 디비에 다시 재저장
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page;
+        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
     const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb, dayQuery: dayQuery})
     if (response) {
 
