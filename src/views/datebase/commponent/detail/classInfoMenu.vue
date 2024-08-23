@@ -152,8 +152,9 @@ const hideAlert = () => {
 
 const deleteConnectionStatus = async () => {
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id) });
-
-  const req = `oldPcIp=${ipAddress.value}`
+  const day = sessionStorage.getItem('lastSearchParams') || '';
+  const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+  const req = `oldPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
   await clearPcIpState(req)
       .then(response => {
         delayedEmit('SEND_DATA', 'refreshDb', 300);
@@ -164,7 +165,9 @@ const deleteConnectionStatus = async () => {
 
 const upDownBlockAccess = async (selectItems: any) => {
   try {
-    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}`
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
 
     await updatePcIpStateApi(req).then(response => {
@@ -211,7 +214,9 @@ const pageGo = (path: string) => {
 
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
-    const req = `id=${id}&step=${step}&type=${type}`
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+    const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}`
     const res = await pageUpDownRunnIngApi(req);
     if (res.data !== null) {
       resData.value = res.data;
