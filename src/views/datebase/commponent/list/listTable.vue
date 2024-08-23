@@ -485,7 +485,9 @@ const getIpAddress = async (item) => {
   try {
     const result = await getDeviceIpApi();
     const ipAddress = result.data;
-    const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}`
+    const day = sessionStorage.getItem('lastSearchParams') || '';
+    const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
+    const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
 
     await updatePcIpStateApi(req).then(response => {
       delayedEmit('SEND_DATA', 'refreshDb', 300);
@@ -603,9 +605,12 @@ const deleteRow = async () => {
       const idsToDelete = selectedItems
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = `${path}/${selectedItems.slotId}`;
+      const day = sessionStorage.getItem('lastSearchParams') || '';
+      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
       const req = {
         ids: [idsToDelete.id],
-        img_drive_root_path: [rootArr]
+        img_drive_root_path: [rootArr],
+        dayQuery: dayQuery
       }
       const response = await deleteRunningApi(req);
 
@@ -625,9 +630,12 @@ const deleteRow = async () => {
       }
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
+      const day = sessionStorage.getItem('lastSearchParams') || '';
+      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate;
       const req = {
         ids: idsToDelete,
-        img_drive_root_path: rootArr
+        img_drive_root_path: rootArr,
+        dayQuery: dayQuery,
       }
       const response = await deleteRunningApi(req);
 
