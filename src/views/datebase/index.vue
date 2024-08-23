@@ -398,6 +398,7 @@ const saveLastSearchParams = () => {
     nrCount: nrCount.value,
   };
   sessionStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
+  localStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
 };
 
 const loadLastSearchParams = () => {

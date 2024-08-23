@@ -152,8 +152,8 @@ const hideAlert = () => {
 
 const deleteConnectionStatus = async () => {
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id) });
-  const day = sessionStorage.getItem('lastSearchParams') || '';
-      const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
+  const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+  const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
   const req = `oldPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
   await clearPcIpState(req)
       .then(response => {
