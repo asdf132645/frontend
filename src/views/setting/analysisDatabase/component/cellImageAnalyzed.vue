@@ -386,8 +386,10 @@ const createBackup = async () => {
 }
 
 const handleFileSelect = () => {
+  setTimeout(() => {
+    fileInput.value.click();
+  }, 100)
   fileInput.value.value = null;
-  fileInput.value.click();
 }
 
 const handleFileChange = async (event: any) => {
