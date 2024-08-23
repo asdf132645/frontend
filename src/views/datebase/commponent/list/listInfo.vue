@@ -10,16 +10,6 @@
             <span class="mb1">Order ID:</span>
             <span class="mb2">{{ selectedItem?.slotId }}</span>
           </li>
-<!--          <li class="flexColumn">-->
-<!--            <span>LIS status</span>-->
-<!--            <span class="mb1">No data sent or received from LIS</span>-->
-<!--          </li>-->
-<!--          <li class="flexColumn">-->
-<!--            <span>Type of order</span>-->
-<!--            <span class="mb1" v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04'">WBC + RBC</span>-->
-<!--            <span class="mb1" v-else>{{ selectedItem?.testType }}</span>-->
-<!--          </li>-->
-<!--          <li class="flexColumn">-->
             <li>NS, NB Integration: {{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</li>
         </ul>
         <div>
