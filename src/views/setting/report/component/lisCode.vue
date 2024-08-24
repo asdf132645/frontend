@@ -30,6 +30,17 @@
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveLisCode()">Save</button>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -41,8 +52,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { lisCodeWbcOption , lisCodeRbcOption, minRunCount} from "@/common/defines/constFile/settings";
+import {ref, onMounted, computed, watch} from 'vue';
+import {lisCodeWbcOption, lisCodeRbcOption, minRunCount, settingName} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
   createLisCodeWbcApi, createLisCodeRbcApi, createMinCountApi,
@@ -53,19 +64,51 @@ import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/l
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
 
+const store = useStore();
+const router = useRouter();
 const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
 const minCountArr = ref<minCountItem[]>([]);
-
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 
 onMounted(async () => {
   await getImagePrintData();
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.lisCode });
 });
+
+watch(() => [lisCodeWbcArr.value, lisCodeRbcArr.value, minCountArr.value], async () => {
+  const afterSetting = {
+    lisCodeWbcArr: lisCodeWbcArr.value,
+    lisCodeRbcArr: lisCodeRbcArr.value,
+    minCountArr: minCountArr.value
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(afterSetting) });
+  if (settingType.value !== settingName.lisCode) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.lisCode });
+  }
+}, { deep: true });
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNotSaved();
+})
+
+const checkIsMovingWhenSettingNotSaved = () => {
+  showConfirm.value = true;
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
 
 const saveLisCode = async () => {
   try {
@@ -89,6 +132,8 @@ const saveLisCode = async () => {
       } else {
         showErrorAlert(messages.settingUpdateFailure);
       }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
 
@@ -96,6 +141,8 @@ const saveLisCode = async () => {
       showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
     console.error(e);
@@ -145,6 +192,14 @@ const getImagePrintData = async () => {
         saveHttpType.value = 'put';
         minCountArr.value = minCountData;
       }
+
+      const settingObj = {
+        lisCodeWbcArr: lisCodeWbcArr.value,
+        lisCodeRbcArr: lisCodeRbcArr.value,
+        minCountArr: minCountArr.value
+      }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: settingObj });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: settingObj });
     }
   } catch (e) {
     console.error(e);
@@ -167,5 +222,18 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  showConfirm.value = false;
+  await router.push(enteringRouterPath.value);
+}
+
+const handleOkConfirm = async () => {
+  await saveLisCode();
+  showConfirm.value = false;
+}
+
 </script>
 

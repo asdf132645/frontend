@@ -1,9 +1,18 @@
 import { settingName } from "@/common/defines/constFile/settings";
 import {
     putCellImgApi,
-    putOrderClassApi, putRbcDegreeApi,
-    updateBfHotKeysApi, updateImagePrintApi,
-    updateNormalRangeApi, updateRunInfoApi, updateWbcCustomClassApi, updateWbcHotKeysApi
+    putOrderClassApi,
+    putRbcDegreeApi,
+    updateBfHotKeysApi,
+    updateCbcCodeRbcApi,
+    updateFilePathSetApi,
+    updateImagePrintApi,
+    updateLisCodeRbcApi,
+    updateLisCodeWbcApi, updateMinCountApi,
+    updateNormalRangeApi,
+    updateRunInfoApi,
+    updateWbcCustomClassApi,
+    updateWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
 import store from "@/store/index";
 
@@ -121,12 +130,25 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             break;
 
         case settingName.lisCode:
+            await updateLisCodeWbcApi({ lisCodeItems: settingUpdatingData.lisCodeWbcArr });
+            await updateLisCodeRbcApi({ lisCodeItems: settingUpdatingData.lisCodeRbcArr });
+            await updateMinCountApi({ minCountItems: settingUpdatingData.minCountArr });
             break;
 
         case settingName.cbcCode:
+            try {
+                await updateCbcCodeRbcApi({ cbcCodeItems: settingUpdatingData });
+            } catch (e) {
+                console.log(e);
+            }
             break;
 
         case settingName.filePathSet:
+            try {
+                await updateFilePathSetApi({ filePathSetItems: settingUpdatingData });
+            } catch (e) {
+                console.log(e);
+            }
             break;
 
         default:
