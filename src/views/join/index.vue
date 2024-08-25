@@ -73,6 +73,10 @@ const createAccount = async () => {
     await showErrorAlert('Please enter id');
     return;
   }
+  else if (idVal.value.includes('_')) {
+    await showErrorAlert('UserId is not available');
+    return;
+  }
   else if (password.value === "") {
     await showErrorAlert('Please enter password');
     return;
@@ -112,13 +116,13 @@ const createAccount = async () => {
 
       // User Id 중복
       if (result.data.includes('Duplicate')) {
-        await showErrorAlert('Duplicate User Id');
+        await showErrorAlert('Duplicated user id');
       }
 
     }
   } catch (e) {
     console.log(e);
-    await showErrorAlert('Signin Fail');
+    await showErrorAlert('Signin fail');
   }
 }
 
