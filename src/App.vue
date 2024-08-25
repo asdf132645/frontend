@@ -39,8 +39,6 @@ import {
   nextTick,
   onBeforeUnmount,
   onBeforeMount,
-  provide,
-  onUnmounted, watchEffect
 } from 'vue';
 import {useStore} from "vuex";
 import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
@@ -52,14 +50,14 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
-import {checkDuplicateRunningApi, createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import { createRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {useRouter} from "vue-router";
-import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import { useRouter} from "vue-router";
+import { createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
-import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import Analysis from "@/views/analysis/index.vue";
+import { logoutApi } from "@/common/api/service/user/userApi";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -201,9 +199,10 @@ window.addEventListener('beforeunload', function (event: any) {
   store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
 
-window.addEventListener('unload', () => {
+window.addEventListener('unload', async () => {
   if (!ipMatches.value) return;
 
+  await logoutApi({ userId: userId.value });
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: {

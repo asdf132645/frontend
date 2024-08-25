@@ -26,15 +26,19 @@ export const apiConstants = {
         }
     },
     user:{
-        register:{
+        register: {
             endpoint: 'user/register',
             requiresToken: false,
         },
-        login:{
+        login: {
             endpoint:'user/login',
             requiresToken: false,
         },
-        userCheck:{
+        logout: {
+            endpoint: 'user/logout',
+            requiresToken: false,
+        },
+        userCheck: {
             endpoint: 'user',
             requiresToken: false,
         },
@@ -42,7 +46,7 @@ export const apiConstants = {
         //     endpoint: 'ip',
         //     requiresToken: false,
         // },
-        getUsers:{
+        getUsers: {
             endpoint:'user/getUsers',
             requiresToken: false,
         },
@@ -55,32 +59,32 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
-    settings:{
-        cellImgAnalyzedPost:{
-            cellImgAdd:{
+    settings: {
+        cellImgAnalyzedPost: {
+            cellImgAdd: {
                 endpoint:'cellImgAnalyzed/cellImgAdd',
                 requiresToken: false,
             },
-            cellImgGet:{
+            cellImgGet: {
                 endpoint:'cellImgAnalyzed',
                 requiresToken: false,
             },
-            cellImgPut:{
+            cellImgPut: {
                 endpoint:'cellImgAnalyzed/update',
                 requiresToken: false,
             }
         },
-        rbcDegree:{
+        rbcDegree: {
             rbcDegreeAdd: {
                 endpoint: 'rbcDegree/rbcDegreeAdd',
                 requiresToken: false,
             },
-            rbcDegree:{
+            rbcDegree: {
                 endpoint: 'rbcDegree',
                 requiresToken: false,
             }
         },
-        wbcCustomClass:{
+        wbcCustomClass: {
             create: {
                 endpoint: 'wbcCustomClass/create',
                 requiresToken: false,

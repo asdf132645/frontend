@@ -13,6 +13,10 @@ export const login = async (request: loginUser): Promise<ApiResponse<UserRespons
     return httpClient.httpPost(apiConstants.user.login, request);
 };
 
+export const logoutApi = async (request: Pick<loginUser, 'userId'>): Promise<ApiResponse<UserResponse | string | undefined>> => {
+    return httpClient.httpPost(apiConstants.user.logout, request);
+}
+
 export const getAllUsersApi = async (userId: string): Promise<ApiResponse<UserResponse | undefined>> => {
     return httpClient.httpGet(apiConstants.user.getUsers, userId);
 }
