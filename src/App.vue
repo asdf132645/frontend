@@ -195,14 +195,13 @@ onBeforeMount(() => {
   });
 });
 
-window.addEventListener('beforeunload', function (event: any) {
-  store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
+window.addEventListener('beforeunload', async function (event: any) {
+  await logoutApi({ userId: userId.value });
+  await store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
 
 window.addEventListener('unload', async () => {
   if (!ipMatches.value) return;
-
-  await logoutApi({ userId: userId.value });
   instance?.appContext.config.globalProperties.$socket.emit('message', {
     type: 'SEND_DATA',
     payload: {
