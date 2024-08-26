@@ -239,7 +239,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import moment from "moment";
-import {backUpDate, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
+import {backUpDate, backupPossibleApi, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 
@@ -376,8 +376,13 @@ const createBackup = async () => {
   };
   try {
     isBackuping.value = true;
-    await backUpDate(backupDto);
-    showSuccessAlert('Backup Success')
+    const isPossibleToBackup = await backupPossibleApi(backupDto);
+    if (isPossibleToBackup.data) {
+      await backUpDate(backupDto);
+      showSuccessAlert('Backup Success')
+    } else {
+      showErrorAlert('The backup file for the specified date already exists');
+    }
     isBackuping.value = false;
   } catch (e) {
     console.log(e);

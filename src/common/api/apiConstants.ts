@@ -426,6 +426,10 @@ export const apiConstants = {
             endpoint: 'backup/post',
             requiresToken: false,
         },
+        checkIsPossibleToBackup: {
+            endpoint: 'backup/check',
+            requiresToken: false,
+        }
     },
     restore: {
         restoreData: {

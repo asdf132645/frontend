@@ -6,6 +6,10 @@ export const backUpDate = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.backUp.backUpDate, request);
 };
 
+export const backupPossibleApi = async (request: any): Promise<ApiResponse<string>> => {
+    return httpClient.httpPost(apiConstants.backUp.checkIsPossibleToBackup, request);
+}
+
 export const restoreBackup = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.restore.restoreData, request);
 }
