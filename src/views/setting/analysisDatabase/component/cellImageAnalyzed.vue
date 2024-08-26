@@ -140,7 +140,7 @@
       </colgroup>
       <tbody>
       <tr>
-        <th>Backup Save Path</th>
+        <th>Download Save Path</th>
         <td>
           <select v-model='backupRootPath' class="autoBackUpPath">
             <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
@@ -148,14 +148,14 @@
         </td>
       </tr>
       <tr>
-        <th>Backup and Restore</th>
+        <th>Download and Upload</th>
         <td>
           <div class="settingDatePickers">
             <Datepicker v-model="backupStartDate"></Datepicker>
             <Datepicker v-model="backupEndDate"></Datepicker>
-            <button class="backupBtn" @click="createBackup">Backup</button>
+            <button class="backupBtn" @click="createBackup">Download</button>
             <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" />
-            <button class="backupBtn" @click="handleFileSelect">Restore</button>
+            <button class="backupBtn" @click="handleFileSelect">Upload</button>
           </div>
         </td>
       </tr>
@@ -213,6 +213,18 @@
       @okConfirm="handleOkConfirm"
   />
 
+  <ConfirmThreeBtn
+      v-if="showBackupConfirm"
+      :is-visible="showBackupConfirm"
+      :message="backupConfirmMessage"
+      confirmText="move"
+      confirmText2="copy"
+      closeText="close"
+      @hide="handleBackupClose"
+      @okConfirm="handleBackupMove"
+      @okConfirm2="handleBackupCopy"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -242,6 +254,7 @@ import moment from "moment";
 import {backUpDate, backupPossibleApi, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -302,6 +315,9 @@ const settingChangedChecker = computed(() => store.state.commonModule.settingCha
 const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 const isBackuping = ref(false);
+const showBackupConfirm = ref(false);
+const backupConfirmMessage = ref('');
+const backupDto = ref<any>({});
 
 
 onMounted(async () => {
@@ -368,7 +384,7 @@ const createBackup = async () => {
     return
   }
 
-  const backupDto: any = {
+  backupDto.value = {
     startDate: sendingBackupStartDate, // 백업 시작일
     endDate: sendingBackupEndDate, // 백업 종료일
     backupPath: backupRootPath.value, // 백업 경로
@@ -376,16 +392,12 @@ const createBackup = async () => {
   };
   try {
     isBackuping.value = true;
-    const isPossibleToBackup = await backupPossibleApi(backupDto);
+    const isPossibleToBackup = await backupPossibleApi(backupDto.value);
     if (isPossibleToBackup.data) {
-      const day = localStorage.getItem('lastSearchParams') || '';
-      const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-      const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-      backupDto['dayQuery'] = dayQuery;
-      await backUpDate(backupDto);
-      showSuccessAlert('Backup Success')
+      showBackupConfirm.value = true;
+      backupConfirmMessage.value = `Would you move or copy files`;
     } else {
-      showErrorAlert('The backup file for the specified date already exists');
+      showErrorAlert('The download file for the specified date already exists');
     }
     isBackuping.value = false;
   } catch (e) {
@@ -648,5 +660,42 @@ const handleOkConfirm = async () => {
   showConfirm.value = false;
 }
 
+const handleBackupClose = () => {
+  showBackupConfirm.value = false;
+}
+
+const handleBackupMove = async () => {
+  showBackupConfirm.value = false;
+  isBackuping.value = true;
+  const day = localStorage.getItem('lastSearchParams') || '';
+  const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+  const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+  backupDto.value['dayQuery'] = dayQuery;
+  backupDto.value['method'] = 'move';
+  try {
+    await backUpDate(backupDto.value);
+    await showSuccessAlert('Download Success')
+  } catch (e) {
+    console.log(e);
+  }
+  isBackuping.value = false;
+}
+
+const handleBackupCopy = async () => {
+  showBackupConfirm.value = false;
+  isBackuping.value = true;
+  const day = localStorage.getItem('lastSearchParams') || '';
+  const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+  const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+  backupDto.value['dayQuery'] = dayQuery;
+  backupDto.value['method'] = 'copy';
+  try {
+    await backUpDate(backupDto.value);
+    await showSuccessAlert('Download Success')
+  } catch (e) {
+    console.log(e);
+  }
+  isBackuping.value = false;
+}
 
 </script>
