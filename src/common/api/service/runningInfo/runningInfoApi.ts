@@ -3,7 +3,7 @@ import {useHttpClient, ApiResponse} from '@/common/api/httpClient';
 import { RuningInfoApiRequest } from "@/common/api/service/runningInfo/dto/runningInfoDto";
 const httpClient = useHttpClient();
 
-export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: any }): Promise<ApiResponse<void>> => {
+export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: any, dayQuery: any }): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.runningInfo.create, request);
 };
 

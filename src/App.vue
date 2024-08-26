@@ -594,7 +594,10 @@ async function socketData(data: any) {
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
         let result: ApiResponse<void>;
-        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
+        const day = sessionStorage.getItem('lastSearchParams') || '';
+        const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+        const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo, dayQuery});
 
         if (result) {
           if (slotId) {
