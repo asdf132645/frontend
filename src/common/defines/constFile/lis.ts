@@ -6,7 +6,7 @@ export const instcd = '012'
 export const eqmtcd = 'H59'
 
 export const CbcWbcTestCdList_0002 = [{
-    id: '01', title: 'NS', name: 'Neutrophil-Segmented', cd: 'LHR10501'
+    id: '71', title: 'NS', name: 'Neutrophil-Segmented', cd: 'LHR10501'
 }, {
     id: '02', title: 'ME', name: 'Metamyelocyte', cd: 'LHR10507'
 }, {

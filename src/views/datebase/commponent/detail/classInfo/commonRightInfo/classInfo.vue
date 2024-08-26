@@ -389,7 +389,7 @@ const uploadLis = () => {
           if (wbcItem.testcd === fiveDiffItem) {
             wbcTemp.push(wbcItem)
           } else {
-            if ((wbcItem.count > 0) && wbcItem.testcd !== '') {
+            if ((Number(wbcItem.count) > 0) && wbcItem.testcd !== '') {
               wbcTemp.push(wbcItem)
             }
           }
@@ -397,16 +397,16 @@ const uploadLis = () => {
       })
 
       // 중복제거 코드
-      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
-        fiveDiffWorkList.forEach(function (fiveDiffItem) {
-          if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
-            // 중복 확인
-            if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
-              wbcTemp.push(wbcItem);
-            }
-          }
-        });
-      });
+      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
+      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
+      //       // 중복 확인
+      //       if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
+      //         wbcTemp.push(wbcItem);
+      //       }
+      //     }
+      //   });
+      // });
 
       // set 함수로 중복 제거
       // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
@@ -475,7 +475,7 @@ const uploadLis = () => {
             barcodeNo: props.selectItems?.barcodeNo,
             wbcInfo: wbcTemp
           }
-
+          console.log('조합 wbcInfo', wbcTemp);
           const now = new Date();
           const year = `${now.getFullYear()}`;
           let month = `${now.getMonth() + 1}`;
@@ -513,21 +513,23 @@ const uploadLis = () => {
           //   }
           // })
           // LIS 최종 업로드 Report
+          const newparams = {
+            submit_id: 'TXLII00101',
+            business_id: business_id,
+            ex_interface: `${params.empNo}|${instcd}`,
+            instcd: instcd,
+            userid: params.empNo,
+            eqmtcd: eqmtcd,
+            bcno: params.barcodeNo,
+            result: result,
+            testcont: 'MANUAL DIFFERENTIAL COUNT RESULT',
+            testcontcd: '01',
+            execdeptcd: 'H1',
+          }
+          console.log('프론트에서 보내는 파라메터 값', newparams);
 
           axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-            params: {
-              submit_id: 'TXLII00101',
-              business_id: business_id,
-              ex_interface: `${params.empNo}|${instcd}`,
-              instcd: instcd,
-              userid: params.empNo,
-              eqmtcd: eqmtcd,
-              bcno: params.barcodeNo,
-              result: result,
-              testcont:'MANUAL DIFFERENTIAL COUNT RESULT',
-              testcontcd: '01',
-              execdeptcd: 'H1',
-            },
+            params: newparams,
             headers: {
               'Content-Type': 'application/json',
             }
@@ -1051,7 +1053,7 @@ const getStringValue = (title: string): string => {
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
@@ -1359,9 +1361,13 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   // 러닝 인포 디비에 다시 재저장
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-        const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb, dayQuery: dayQuery})
+    const response = await updateRunningApi({
+      userId: Number(userId.value),
+      runingInfoDtoItems: originalDb,
+      dayQuery: dayQuery
+    })
     if (response) {
 
     } else {
