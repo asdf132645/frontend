@@ -78,7 +78,7 @@ import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import Alert from "@/components/commonUi/Alert.vue";
-import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -151,9 +151,10 @@ const hideAlert = () => {
 };
 
 const deleteConnectionStatus = async () => {
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id) });
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
   const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-  const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
+  const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+  const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
   const req = `oldPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
   await clearPcIpState(req)
       .then(response => {
@@ -166,7 +167,8 @@ const deleteConnectionStatus = async () => {
 const upDownBlockAccess = async (selectItems: any) => {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
 
@@ -215,12 +217,13 @@ const pageGo = (path: string) => {
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}`
     const res = await pageUpDownRunnIngApi(req);
     if (res.data !== null) {
       resData.value = res.data;
-      await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(res.data.id) });
+      await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(res.data.id)});
     }
   } catch (e) {
     console.log(e)
@@ -228,15 +231,15 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 }
 
 const moveWbc = async (direction: any) => {
-  if(direction === 'up'){
-    if(dbListDataFirstNum.value === selectItems.value?.id){
+  if (direction === 'up') {
+    if (dbListDataFirstNum.value === selectItems.value?.id) {
       showAlert.value = true;
       alertType.value = 'success';
       alertMessage.value = 'This is the first page. Navigation to other pages is not possible.';
       return;
     }
   } else {
-    if( dbListDataLastNum.value === selectItems.value?.id){
+    if (dbListDataLastNum.value === selectItems.value?.id) {
       showAlert.value = true;
       alertType.value = 'success';
       alertMessage.value = 'This is the last page. Navigation to other pages is not possible.';
@@ -274,13 +277,13 @@ const handleDataResponse = async (dbId: any, res: any) => {
   selectItems.value = resData.value;
 
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
-  await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(dbId) });
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(dbId)});
   await updateUpDown(resClassInfo, resData.value);
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
 
-  await store.dispatch('commonModule/setCommonInfo', { selectedSampleId: String(selectItemsNewVal.id) });
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(selectItemsNewVal.id)});
   if ((projectType.value === 'pb' && selectItems.value?.testType === '01' && isActive("/databaseRbc")) || (!keepPage.value || keepPage.value === "false")) {
     pageGo('/databaseDetail');
   }

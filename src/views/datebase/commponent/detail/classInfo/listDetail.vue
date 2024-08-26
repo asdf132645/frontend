@@ -1587,7 +1587,8 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || '';
-        const dayQuery = JSON.parse(day)?.startDate + JSON.parse(day)?.endDate + JSON.parse(day)?.page + JSON.parse(day)?.searchText + JSON.parse(day)?.nrCount;
+        const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response: any = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb, dayQuery:dayQuery})
     if (response && response?.data.length !== 0) {
 
