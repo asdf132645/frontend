@@ -94,10 +94,6 @@ const loginUser = async () => {
   try {
     const result: ApiResponse<UserResponse | undefined | any> = await login(user);
     if (result?.data?.user) {
-      if (typeof result.data.user === 'string' && result.data.user.includes('Already logged in')) {
-        showSuccessAlert(result.data.user);
-        return;
-      }
 
       await initializeAllSettings();
       await store.dispatch('userModule/setUserAction', result.data?.user);
