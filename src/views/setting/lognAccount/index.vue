@@ -18,7 +18,7 @@
           <th>Employee</th>
           <th>Subscription Date</th>
           <th>Latest Date</th>
-          <template v-if="getStoredUser.userType === 'admin'">
+          <template v-if="getStoredUser.userType.includes('admin')">
             <th>Edit</th>
             <th>Delete</th>
           </template>
@@ -27,13 +27,13 @@
       <tbody>
         <tr v-for="user in allUsers" :key="user.id">
           <td>{{ user.id }}</td>
-          <td>{{ user.userType }}</td>
+          <td>{{ user.userType.split('_')[0] }}</td>
           <td>{{ user.userId }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.employeeNo }}</td>
           <td>{{ date(user.subscriptionDate) }}</td>
           <td>{{ date(user.latestDate) }}</td>
-          <template v-if="getStoredUser.userType === 'admin'">
+          <template v-if="getStoredUser.userType.includes('admin')">
             <td class="cursorPointer hoverSizeAction" @click="openLayer(user.userId)">
               <font-awesome-icon :icon="['fas', 'pen-to-square']" />
             </td>
@@ -169,6 +169,11 @@ const onSearch = async () => {
 };
 
 const putSelectedUserData = async () => {
+  const tempUser: any = allUsers.value.find((item: any) => String(selectedUserData.value.id) === String(item.id));
+  if (tempUser && tempUser.userType.includes('_')) {
+    const selectedUserType = selectedUserData.value.userType;
+    selectedUserData.value.userType = selectedUserType + '_' + String(selectedUserData.value.id)
+  }
   try {
     await putUserDataApi(selectedUserData.value, selectedUserId.value);
     await getAllUsers();
