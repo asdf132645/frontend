@@ -418,8 +418,8 @@ const uploadLis = () => {
       // });
       //
       // wbcTemp = Array.from(wbcTemp); // Set을 배열로 변환
-
-      // 중복 제거 3
+      // let wbcTemp2: any = [];
+      // // 중복 제거 3
       // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
       //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
       //     // 이미 wbcTemp에 동일한 testcd가 있는지 확인
@@ -427,14 +427,14 @@ const uploadLis = () => {
       //
       //     if (!isDuplicate) {
       //       if (wbcItem.testcd === fiveDiffItem) {
-      //         wbcTemp.push(wbcItem);
+      //         wbcTemp2.push(wbcItem);
       //       } else if (wbcItem.count > 0 && wbcItem.testcd !== '') {
-      //         wbcTemp.push(wbcItem);
+      //         wbcTemp2.push(wbcItem);
       //       }
       //     }
       //   });
       // });
-
+      // wbcTemp = wbcTemp2;
 
       // 중복제거 4
       // 중복 제거 (Set 사용)
@@ -446,7 +446,7 @@ const uploadLis = () => {
       const nsPercentItem = wbcTemp.filter(function (item: any) {
         return item.testcd === 'LHR10501'
       })
-
+      console.log('nsPercentItem', nsPercentItem);
       // ANC insert
       if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
         const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2)
@@ -456,6 +456,7 @@ const uploadLis = () => {
           percent: ancResult
         })
       }
+
       // 유저 체크
       checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
         const paramsData = {
@@ -491,9 +492,14 @@ const uploadLis = () => {
           // const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
           // const terminator = '\u0003';  // ASCII 3
 
-          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
-          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
-          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+          // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
+          // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
+          // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+
+          const separator1 = String.fromCharCode(23); // '\u0017'
+          const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
+          const terminator = String.fromCharCode(3); // '\u0003'
+
 
           const result = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
@@ -504,11 +510,11 @@ const uploadLis = () => {
           // let result = ''
           // params.wbcInfo.forEach(function(wbcItem: any) {
           //   if (wbcItem.testCd !== null && wbcItem.testCd !== '') {
-          //     eslint-disable-next-line vue/no-parsing-error
+             // eslint-disable-next-line vue/no-parsing-error
           //     result += wbcItem.testCd + encodeURIComponent('') +
-          //         eslint-disable-next-line vue/no-parsing-error
+               //   eslint-disable-next-line vue/no-parsing-error
           //         wbcItem.percent + encodeURIComponent('') +
-          //         eslint-disable-next-line vue/no-parsing-error
+                 // eslint-disable-next-line vue/no-parsing-error
           //         year + month + day + encodeURIComponent('')
           //   }
           // })
