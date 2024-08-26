@@ -8,6 +8,17 @@
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -19,8 +30,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { defaultCbcList, defaultCbcList_0011 } from "@/common/defines/constFile/settings";
+import {ref, onMounted, computed, watch} from 'vue';
+import {defaultCbcList, defaultCbcList_0011, settingName} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -28,18 +39,45 @@ import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
 
+const store = useStore();
+const router = useRouter();
 const cbcCodeArr = ref<cbcCodeItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 const siteCd = ref('');
 
 onMounted(async () => {
   await getDeviceInfo();
   await getImagePrintData();
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
 });
+
+watch(() => cbcCodeArr.value, async (cbcCodeArrAfterSetting) => {
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cbcCodeArrAfterSetting) });
+  if (settingType.value !== settingName.cbcCode) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
+  }
+}, { deep: true });
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNotSaved();
+})
+
+const checkIsMovingWhenSettingNotSaved = () => {
+  showConfirm.value = true;
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
 
 const saveCbcCode = async () => {
   try {
@@ -54,15 +92,19 @@ const saveCbcCode = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
 
     if (result) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
     console.error(e);
@@ -90,6 +132,9 @@ const getImagePrintData = async () => {
         saveHttpType.value = 'put';
         cbcCodeArr.value = data;
       }
+
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cbcCodeArr.value) });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cbcCodeArr.value) });
     }
   }
   catch (e) {
@@ -121,5 +166,18 @@ const getDeviceInfo = async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  showConfirm.value = false;
+  await router.push(enteringRouterPath.value);
+}
+
+const handleOkConfirm = async () => {
+  await saveCbcCode();
+  showConfirm.value = false;
+}
+
 </script>
 

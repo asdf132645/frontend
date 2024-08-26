@@ -21,6 +21,17 @@
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveFilePathSet()">Save</button>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -32,23 +43,50 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
-import {lisHotKeyAndLisFilePathAndUrl} from "@/common/defines/constFile/settings";
+import {ref, onMounted, computed, watch} from 'vue';
+import {lisHotKeyAndLisFilePathAndUrl, settingName} from "@/common/defines/constFile/settings";
 import {ApiResponse} from "@/common/api/httpClient";
 import { createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
 
+const store = useStore();
+const router = useRouter();
 const filePathSetArr = ref<FilePathItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 
 onMounted(async () => {
   await getFilePathSetData();
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.filePathSet });
 });
+
+watch(() => filePathSetArr.value, async (filePathSetArr) => {
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(filePathSetArr)});
+  if (settingType.value !== settingName.filePathSet) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.filePathSet });
+  }
+}, { deep: true });
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNotSaved();
+})
+
+const checkIsMovingWhenSettingNotSaved = () => {
+  showConfirm.value = true;
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
 
 const saveFilePathSet = async () => {
   try {
@@ -63,15 +101,19 @@ const saveFilePathSet = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getFilePathSetData();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
 
     if (result) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getFilePathSetData();
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
     console.error(e);
@@ -92,6 +134,8 @@ const getFilePathSetData = async () => {
         saveHttpType.value = 'put';
         filePathSetArr.value = data;
       }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(filePathSetArr.value) });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(filePathSetArr.value) });
     }
   } catch (e) {
     console.error(e);
@@ -126,5 +170,18 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  showConfirm.value = false;
+  await router.push(enteringRouterPath.value);
+}
+
+const handleOkConfirm = async () => {
+  await saveFilePathSet();
+  showConfirm.value = false;
+}
+
 </script>
 

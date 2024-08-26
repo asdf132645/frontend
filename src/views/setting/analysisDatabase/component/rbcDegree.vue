@@ -53,6 +53,17 @@
       <button class="saveBtn mb2" type="button" @click="createRbcDegreeData">Save</button>
     </div>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -65,21 +76,48 @@
 
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue';
-import {rbcClassList, defaultRbcDegree} from '@/common/defines/constFile/settings';
-import {Category, ClassItem} from '@/common/api/service/setting/dto/rbcDegree';
+import {computed, onMounted, reactive, ref, watch, watchEffect} from 'vue';
+import {rbcClassList, defaultRbcDegree, settingName} from '@/common/defines/constFile/settings';
 import {createRbcDegreeApi, getRbcDegreeApi, putRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
+const store = useStore();
+const router = useRouter();
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 const saveHttpType = ref('post');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 
 onMounted(async () => {
   await getRbcDegreeData();
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.rbcDegree });
 });
+
+watch(() => rbcClassListArr.value, async (rbcClassListArrAfterSettingObj) => {
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(rbcClassListArrAfterSettingObj) });
+  if (settingType.value !== settingName.rbcDegree) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.rbcDegree });
+  }
+}, { deep: true });
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNotSaved();
+})
+
+const checkIsMovingWhenSettingNotSaved = () => {
+  showConfirm.value = true;
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
 
 const combindDegree = async () => {
   rbcClassListArr.value = rbcClassList.rbcClassList.map((category: any) => {
@@ -133,13 +171,15 @@ const createRbcDegreeData = async () => {
     }
 
     if (result) {
-      // showSuccessAlert('Save successful');
-      showSuccessAlert('Save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
     }
   } catch (e) {
-    showErrorAlert(e);
+    showErrorAlert(messages.settingSaveFailure);
     console.error(e);
+  } finally {
+    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   }
 };
 
@@ -153,6 +193,9 @@ const getRbcDegreeData = async () => {
     saveHttpType.value = 'post';
     await combindDegree();
   }
+
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(rbcClassListArr.value) });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(rbcClassListArr.value) });
 };
 
 
@@ -202,6 +245,7 @@ const showSuccessAlert = (message: string) => {
   alertType.value = 'success';
   alertMessage.value = message;
 };
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
@@ -211,4 +255,17 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  showConfirm.value = false;
+  await router.push(enteringRouterPath.value);
+}
+
+const handleOkConfirm = async () => {
+  await createRbcDegreeData();
+  showConfirm.value = false;
+}
+
 </script>

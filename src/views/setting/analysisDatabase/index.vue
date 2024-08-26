@@ -58,7 +58,6 @@ import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {settingName} from "@/common/defines/constFile/settings";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 
 const store = useStore();
@@ -80,6 +79,7 @@ onMounted(async () => {
 })
 
 const activateTab = (tabName: string) => {
+  if (activeTab.value === tabName) return;
   movingTab.value = tabName;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
@@ -140,7 +140,8 @@ const hideConfirm = async () => {
 const handleOkConfirm = async () => {
   showConfirm.value = false;
   try {
-    await settingUpdate(settingName.cellImageAnalyzed, JSON.parse(afterSettingFormattedString.value));
+    console.log(settingType.value);
+    await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
     await showSuccessAlert(messages.settingSaveSuccess);
   } catch (e) {
     await showErrorAlert(messages.settingSaveFailure);

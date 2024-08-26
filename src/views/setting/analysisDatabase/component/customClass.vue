@@ -25,6 +25,17 @@
     </ul>
     <button class="saveBtn" type="button" @click="saveWbcCustomClass">Save</button>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -37,7 +48,7 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeMount} from 'vue';
+import {ref, onMounted, onBeforeMount, computed, watch} from 'vue';
 import {
   createWbcCustomClassApi,
   updateWbcCustomClassApi,
@@ -47,7 +58,13 @@ import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclassification";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
+import {settingName} from "@/common/defines/constFile/settings";
 
+const store = useStore();
+const router = useRouter();
 const saveHttpType = ref('');
 const wbcCustomParm = [
   { customNum: 90, abbreviation: '', fullNm: '' },
@@ -62,6 +79,11 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const projectBm = ref(false);
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm'
@@ -69,13 +91,31 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   await getWbcCustomClasses();
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcCustomClass });
 });
+
+watch(() => wbcCustomItems.value, async (wbcCustomItemsAfterSettingObj) => {
+  if (validateCustomClass()) {
+    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcCustomItemsAfterSettingObj) });
+  }
+  if (settingType.value !== settingName.wbcCustomClass) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcCustomClass });
+  }
+}, { deep: true });
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNotSaved();
+})
+
+const checkIsMovingWhenSettingNotSaved = () => {
+  showConfirm.value = true;
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
 
 const saveWbcCustomClass = async () => {
   if (!validateCustomClass()) {
     return;
   }
-
 
   try {
     let result: ApiResponse<void>;
@@ -88,14 +128,18 @@ const saveWbcCustomClass = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getWbcCustomClasses();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getWbcCustomClasses();
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
     console.log(e);
@@ -116,9 +160,11 @@ const getWbcCustomClasses = async () => {
         wbcCustomItems.value = wbcCustomParm;
       } else {
         saveHttpType.value = 'put';
-        const data = result.data;
-        wbcCustomItems.value = data;
+        wbcCustomItems.value = result.data;
       }
+
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(wbcCustomItems.value) });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcCustomItems.value) });
     }
   } catch (e) {
     console.log(e);
@@ -175,4 +221,17 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  showConfirm.value = false;
+  await router.push(enteringRouterPath.value);
+}
+
+const handleOkConfirm = async () => {
+  await saveWbcCustomClass();
+  showConfirm.value = false;
+}
+
 </script>

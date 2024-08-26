@@ -132,20 +132,21 @@
 </template>
 
 <script setup lang="ts">
-import {useRoute} from 'vue-router';
-import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
-import {useStore} from "vuex";
+import { useRoute } from 'vue-router';
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {messages} from "@/common/defines/constFile/constantMessageText";
-import {getCellImgApi} from "@/common/api/service/setting/settingApi";
+import { messages } from "@/common/defines/constFile/constantMessageText";
+import { getCellImgApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {tcpReq} from "@/common/tcpRequest/tcpReq";
+import { tcpReq } from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
-import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
+import { getBrowserExit } from "@/common/api/service/browserExit/browserExitApi";
 import Button from "@/components/commonUi/Button.vue";
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import { getDateTimeStr } from "@/common/lib/utils/dateUtils";
+import { logoutApi } from "@/common/api/service/user/userApi";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -218,14 +219,15 @@ const userSetOutOff = () => {
   userSetOutUl.value = false;
 }
 
-
 const updateDateTime = () => {
   const now = new Date();
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
   currentTime.value = now.toLocaleTimeString('en-US');
 };
+
 const handleOkConfirm = async () => {
   showConfirm.value = false;
+  await logoutApi({ userId: userId.value });
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
       EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);

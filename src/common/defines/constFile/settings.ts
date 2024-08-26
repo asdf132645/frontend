@@ -838,7 +838,7 @@ export const settingName = {
     wbcHotKeys: 'wbcHotKeys',
     bfHotKeys: 'bfHotKeys',
     normalRange: 'normalRange',
-    wbcOrder: 'wbcOrder',
+    classOrder: 'classOrder',
     imagePrint: 'imagePrint',
     lisCode: 'lisCode',
     cbcCode: 'cbcCode',

@@ -92,8 +92,13 @@ const loginUser = async () => {
   }
 
   try {
-    const result: ApiResponse<UserResponse | undefined> = await login(user);
+    const result: ApiResponse<UserResponse | undefined | any> = await login(user);
     if (result?.data?.user) {
+      if (typeof result.data.user === 'string' && result.data.user.includes('is logged in already')) {
+        showSuccessAlert(result.data.user);
+        return;
+      }
+
       await initializeAllSettings();
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));

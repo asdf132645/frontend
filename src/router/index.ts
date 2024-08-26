@@ -79,8 +79,8 @@ router.beforeEach(async (to, from, next)  => {
 // 스토어
     const store = useStore();
     // 스토어에서 사용자 정보 확인
+    const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
     const currentUser = store.state.userModule;
-    const settingChangedChecker = computed(()=> store.state.commonModule.settingChangedChecker);
 
     if (from.path === '/setting') {
         const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
@@ -94,7 +94,7 @@ router.beforeEach(async (to, from, next)  => {
         } else {
             await store.dispatch('commonModule/setCommonInfo', { settingChangedChecker: !settingChangedChecker.value });
             await store.dispatch('commonModule/setCommonInfo', { enteringRouterPath: to.path });
-            return;
+            next(false);
         }
     }
 

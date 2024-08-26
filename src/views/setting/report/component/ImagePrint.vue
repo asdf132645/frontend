@@ -9,6 +9,17 @@
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveImagePrint()">Save</button>
   </div>
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      confirmText="save"
+      closeText="leave"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -20,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue';
-import {imagePrintAndBm, imagePrintAndWbc} from "@/common/defines/constFile/settings";
+import { ref, onMounted, computed, watch } from 'vue';
+import { imagePrintAndBm, imagePrintAndWbc, settingName } from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
   createImagePrintApi,
@@ -29,22 +40,50 @@ import {
   updateImagePrintApi
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import process from "process";
-import {messages} from '@/common/defines/constFile/constantMessageText';
+import { messages } from '@/common/defines/constFile/constantMessageText';
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import Confirm from "@/components/commonUi/Confirm.vue";
 
+const store = useStore();
+const router = useRouter();
 const imagePrintAndWbcArr = ref<any[]>([]);
 const selectedItems = ref<string[]>([]);
-
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 const allChecked = ref(false);
 
 onMounted(async () => {
   await getImagePrintData();
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.imagePrint });
 });
+
+watch(() => selectedItems.value, async (newItem) => {
+  imagePrintAndWbcArr.value.forEach((item) => {
+    item.checked = newItem.includes(item.classId);
+  });
+
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(imagePrintAndWbcArr.value) });
+  if (settingType.value !== settingName.imagePrint) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.imagePrint });
+  }
+}, { deep: true });
+
+watch(() => settingChangedChecker.value, () => {
+  checkIsMovingWhenSettingNotSaved();
+})
+
+const checkIsMovingWhenSettingNotSaved = () => {
+  showConfirm.value = true;
+  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
 
 const saveImagePrint = async () => {
   try {
@@ -63,15 +102,19 @@ const saveImagePrint = async () => {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert('update failed');
+        showErrorAlert(messages.settingUpdateFailure);
       }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
 
     if (result) {
-      showSuccessAlert('save successful');
+      showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
     console.error(e);
@@ -92,7 +135,11 @@ const getImagePrintData = async () => {
         saveHttpType.value = 'put';
         imagePrintAndWbcArr.value = data;
         selectedItems.value = data.filter((item) => item.checked).map((item) => item.classId);
+        allChecked.value = selectedItems.value.length === imagePrintAndWbcArr.value.length ? true : false;
       }
+
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
     console.error(e);
@@ -123,4 +170,17 @@ const toggleAllChecks = () => {
     selectedItems.value = [];
   }
 };
+
+const hideConfirm = async () => {
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  showConfirm.value = false;
+  await router.push(enteringRouterPath.value);
+}
+
+const handleOkConfirm = async () => {
+  await saveImagePrint();
+  showConfirm.value = false;
+}
+
 </script>
