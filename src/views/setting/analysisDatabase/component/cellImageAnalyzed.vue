@@ -368,7 +368,7 @@ const createBackup = async () => {
     return
   }
 
-  const backupDto = {
+  const backupDto: any = {
     startDate: sendingBackupStartDate, // 백업 시작일
     endDate: sendingBackupEndDate, // 백업 종료일
     backupPath: backupRootPath.value, // 백업 경로
@@ -378,6 +378,10 @@ const createBackup = async () => {
     isBackuping.value = true;
     const isPossibleToBackup = await backupPossibleApi(backupDto);
     if (isPossibleToBackup.data) {
+      const day = localStorage.getItem('lastSearchParams') || '';
+      const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+      const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+      backupDto['dayQuery'] = dayQuery;
       await backUpDate(backupDto);
       showSuccessAlert('Backup Success')
     } else {
@@ -595,7 +599,10 @@ const restoreConfirm = async () => {
   showRestoreModal.value = false;
   try {
     isRestoring.value = true;
-    const result = await restoreBackup({ fileName: selectedFileName.value, saveFilePath: iaRootPath.value, backupFilePath: backupRootPath.value });
+    const day = localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+    const result = await restoreBackup({ fileName: selectedFileName.value, saveFilePath: iaRootPath.value, backupFilePath: backupRootPath.value, dayQuery });
 
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
