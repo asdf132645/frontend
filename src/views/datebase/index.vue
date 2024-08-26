@@ -396,6 +396,9 @@ const saveLastSearchParams = () => {
     startDate: formatDate(startDate.value),
     endDate: formatDate(endDate.value),
     nrCount: nrCount.value,
+    wbcTotal: wbcCountOrder.value,
+    wbcInfo: titleItemArr.value,
+    testType: testType.value,
   };
   sessionStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));
   localStorage.setItem('lastSearchParams', JSON.stringify(lastSearchParams));

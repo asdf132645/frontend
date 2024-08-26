@@ -241,6 +241,7 @@ onMounted(async () => {
   startChecking();
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
+  console.log(ipMatches.value)
   siteCdDvBarCode.value = false;
   window.addEventListener('beforeunload', leave);
 
