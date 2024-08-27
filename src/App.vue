@@ -58,6 +58,7 @@ import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import Analysis from "@/views/analysis/index.vue";
 import { logoutApi } from "@/common/api/service/user/userApi";
+import {formatDate} from "@/common/lib/utils/dateUtils";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -595,8 +596,12 @@ async function socketData(data: any) {
       try {
         let result: ApiResponse<void>;
         const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-        const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-        const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 29);
+        const { page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+        const dayQuery = formatDate(thirtyDaysAgo) + formatDate(new Date()) + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+        // console.log(dayQuery);
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo, dayQuery});
 
         if (result) {
