@@ -875,18 +875,18 @@ const initElement = async () => {
     console.error('Error:', err);
   }
 };
-const drawOverlays = () => {
-  const overlays = drawPath.value; // drawPath에 있는 아이템들을 오버레이로 추가
-  overlays.forEach((item: any) => {
-    const element = document.createElement('div');
-    element.className = 'overlayElement';
-    element.style.background = 'rgba(255, 0, 0, 0.5)'; // 예시 스타일
-    viewer.value?.addOverlay({
-      element: element,
-      location: new OpenSeadragon.Rect(item.x, item.y, item.width, item.height)
-    });
-  });
-};
+// const drawOverlays = () => {
+//   const overlays = drawPath.value; // drawPath에 있는 아이템들을 오버레이로 추가
+//   overlays.forEach((item: any) => {
+//     const element = document.createElement('div');
+//     element.className = 'overlayElement';
+//     element.style.background = 'rgba(255, 0, 0, 0.5)'; // 예시 스타일
+//     viewer.value?.addOverlay({
+//       element: element,
+//       location: new OpenSeadragon.Rect(item.x, item.y, item.width, item.height)
+//     });
+//   });
+// };
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;

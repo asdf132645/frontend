@@ -467,17 +467,17 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          // const separator1 = '\u0017';  // ASCII 23
-          // const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
-          // const terminator = '\u0003';  // ASCII 3
+          const separator1 = '\u0017';  // ASCII 23
+          const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
+          const terminator = '\u0003';  // ASCII 3
 
           // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
           // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
           // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
 
-          const separator1 = String.fromCharCode(23); // '\u0017'
-          const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
-          const terminator = String.fromCharCode(3); // '\u0003'
+          // const separator1 = String.fromCharCode(23); // '\u0017'
+          // const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
+          // const terminator = String.fromCharCode(3); // '\u0003'
 
 
           const result = params.wbcInfo
