@@ -601,7 +601,6 @@ async function socketData(data: any) {
         thirtyDaysAgo.setDate(today.getDate() - 29);
         const { page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
         const dayQuery = formatDate(thirtyDaysAgo) + formatDate(new Date()) + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-        // console.log(dayQuery);
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo, dayQuery});
 
         if (result) {
