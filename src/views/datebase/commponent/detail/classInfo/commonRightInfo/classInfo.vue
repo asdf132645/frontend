@@ -417,8 +417,8 @@ const uploadLis = () => {
 
       // 중복제거 4
       // 중복 제거 (Set 사용)
-      // const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
-      // wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
+      const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
+      wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
 
 
       // neutrophil-seg
@@ -467,13 +467,13 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          const separator1 = '\u0017';  // ASCII 23
-          const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
-          const terminator = '\u0003';  // ASCII 3
+          // const separator1 = '\u0017';  // ASCII 23
+          // const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
+          // const terminator = '\u0003';  // ASCII 3
 
-          // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
-          // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
-          // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
+          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
+          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
+          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
 
           // const separator1 = String.fromCharCode(23); // '\u0017'
           // const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
@@ -512,11 +512,11 @@ const uploadLis = () => {
             execdeptcd: 'H1',
           }
           console.log('프론트에서 보내는 파라메터 값', newparams);
-          // const url = `${apiBaseUrl}/cbc/lisCbcMarys?submit_id=${newparams.submit_id}&business_id=${newparams.business_id}&ex_interface=${newparams.ex_interface}&instcd=${newparams.instcd}&userid=${newparams.userid}&eqmtcd=${newparams.eqmtcd}&bcno=${newparams.bcno}&result=${result}&testcont=${newparams.testcont}&testcontcd=${newparams.testcontcd}&execdeptcd=${newparams.execdeptcd}`;
+          const url = `${apiBaseUrl}/cbc/lisCbcMarys?submit_id=${newparams.submit_id}&business_id=${newparams.business_id}&ex_interface=${newparams.ex_interface}&instcd=${newparams.instcd}&userid=${newparams.userid}&eqmtcd=${newparams.eqmtcd}&bcno=${newparams.bcno}&result=${result}&testcont=${newparams.testcont}&testcontcd=${newparams.testcontcd}&execdeptcd=${newparams.execdeptcd}`;
 
-          // axios.get(url, {
-          axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-            params: newparams,
+          axios.get(url, {
+          // axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+            // params: newparams,
             headers: {
               'Content-Type': 'application/json',
             }
