@@ -451,6 +451,7 @@ const getDbData = async (type: string, pageNum?: number) => {
 
   try {
     const result = await getRunningApi(requestData);
+    saveLastSearchParams();
     if (page.value === 1 && result.data.data.length === 0) {
       loadingDelayParents.value = false;
       return;
@@ -499,7 +500,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         }
         // 마지막 조회 결과 저장
         if (dbGetData.value.length !== 0) {
-          saveLastSearchParams();
+        //
         } else {
           page.value -= 1;
         }
