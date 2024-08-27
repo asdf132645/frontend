@@ -128,10 +128,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onMounted,
-  onUnmounted,
   ref,
-  watch,
-  watchEffect
 } from "vue";
 import {detailRunningApi, getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
@@ -139,7 +136,6 @@ import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
 import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 import Alert from "@/components/commonUi/Alert.vue";
-import * as XLSX from 'xlsx';
 import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
 import pako from "pako";

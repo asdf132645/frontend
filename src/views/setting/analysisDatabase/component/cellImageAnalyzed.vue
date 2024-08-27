@@ -134,6 +134,7 @@
         </tbody>
       </table>
       </template>
+
       <table class="settingTable auto">
         <colgroup>
           <col width="90">
@@ -181,12 +182,12 @@
         <!--      </tr>-->
         </tbody>
       </table>
-      <button v-if="viewerCheck !== 'viewer'" class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
+      <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
     </div>
 
 
   <div v-if="showRestoreModal" :class="impossibleRestoreCount === 0 ? 'restoreModalSmall' : 'restoreModal'">
-    <p v-if="impossibleRestoreCount === 0" class="fs12" style="top: 0;">Would you like to Restore?</p>
+    <p v-if="impossibleRestoreCount === 0" class="fs12" style="top: 0;">Would you like to upload?</p>
     <pre v-else-if="impossibleRestoreCount > 0"
         class="fs12"
     >
@@ -205,7 +206,7 @@
       </ul>
     </div>
     <div class="restoreModalBtnContainer">
-      <button v-show="impossibleRestoreCount === 0" class="memoModalBtn" @click="restoreConfirm">RESTORE</button>
+      <button v-show="impossibleRestoreCount === 0" class="memoModalBtn" @click="restoreConfirm">Upload</button>
       <button class="memoModalBtn" @click="restoreCancel">{{ impossibleRestoreCount === 0 ? 'Cancel' : 'Close' }}</button>
     </div>
   </div>
@@ -319,7 +320,6 @@ const confirmMessage = ref('');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
-const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 const isBackuping = ref(false);
@@ -357,9 +357,6 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
-    backupPath: backupRootPath.value,
-    backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
   }
 
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
@@ -380,23 +377,17 @@ const filterNumbersOnly = (event: Event) => {
 
 const createBackup = async () => {
   if (backupRootPath.value === ''){
-    showErrorAlert('Please select a backup save path');
+    showErrorAlert('Please select a download save path');
     return
   }
 
   const sendingBackupStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
   const sendingBackupEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
 
-  const beforeSetting = JSON.parse(beforeSettingFormattedString.value);
-  beforeSetting.backupStartDate = sendingBackupStartDate;
-  beforeSetting.backupEndDate = sendingBackupEndDate;
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(beforeSetting) });
-
   if (!moment(sendingBackupStartDate).isSameOrBefore(sendingBackupEndDate)) {
     showErrorAlert('Please check the date');
     return
   }
-
 
   backupDto.value = {
     startDate: sendingBackupStartDate, // 백업 시작일
@@ -535,9 +526,6 @@ const cellImgGet = async () => {
           isAlarm: data.isAlarm,
           alarmCount: data.alarmCount,
           keepPage: data.keepPage,
-          backupPath: data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup'),
-          backupStartDate: moment(data.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-          backupEndDate: moment(data.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
         }
 
         await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
@@ -632,7 +620,7 @@ const restoreConfirm = async () => {
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
     } else {
-      showSuccessAlert('Restoration completed successfully');
+      showSuccessAlert('Upload completed successfully');
     }
   } catch (e) {
     console.log(e);
