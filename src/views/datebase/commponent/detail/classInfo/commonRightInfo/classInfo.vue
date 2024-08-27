@@ -396,27 +396,6 @@ const uploadLis = () => {
         })
       })
 
-      // 중복제거 코드
-      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
-      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
-      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
-      //       // 중복 확인
-      //       if (!wbcTemp.some((item: any) => item.testcd === wbcItem.testcd)) {
-      //         wbcTemp.push(wbcItem);
-      //       }
-      //     }
-      //   });
-      // });
-
-      // set 함수로 중복 제거
-      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
-      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
-      //     if (wbcItem.testcd === fiveDiffItem || (wbcItem.count > 0 && wbcItem.testcd !== '')) {
-      //       wbcTemp.add(wbcItem);
-      //     }
-      //   });
-      // });
-      //
       // wbcTemp = Array.from(wbcTemp); // Set을 배열로 변환
       // let wbcTemp2: any = [];
       // // 중복 제거 3
@@ -510,11 +489,11 @@ const uploadLis = () => {
           // let result = ''
           // params.wbcInfo.forEach(function(wbcItem: any) {
           //   if (wbcItem.testCd !== null && wbcItem.testCd !== '') {
-             // eslint-disable-next-line vue/no-parsing-error
+          // eslint-disable-next-line vue/no-parsing-error
           //     result += wbcItem.testCd + encodeURIComponent('') +
-               //   eslint-disable-next-line vue/no-parsing-error
+          //   eslint-disable-next-line vue/no-parsing-error
           //         wbcItem.percent + encodeURIComponent('') +
-                 // eslint-disable-next-line vue/no-parsing-error
+          // eslint-disable-next-line vue/no-parsing-error
           //         year + month + day + encodeURIComponent('')
           //   }
           // })
@@ -533,7 +512,9 @@ const uploadLis = () => {
             execdeptcd: 'H1',
           }
           console.log('프론트에서 보내는 파라메터 값', newparams);
+          // const url = `${apiBaseUrl}/cbc/lisCbcMarys?submit_id=${newparams.submit_id}&business_id=${newparams.business_id}&ex_interface=${newparams.ex_interface}&instcd=${newparams.instcd}&userid=${newparams.userid}&eqmtcd=${newparams.eqmtcd}&bcno=${newparams.bcno}&result=${result}&testcont=${newparams.testcont}&testcontcd=${newparams.testcontcd}&execdeptcd=${newparams.execdeptcd}`;
 
+          // axios.get(url, {
           axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
             params: newparams,
             headers: {

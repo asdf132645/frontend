@@ -13,12 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, onMounted, onBeforeMount, nextTick} from "vue";
+import { computed, ref, onMounted, onBeforeMount } from "vue";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
 import TilingViewer from './tilingViewer.vue';
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import {useStore} from "vuex";
-import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import { useStore } from "vuex";
+import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
 
 const store = useStore()
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
