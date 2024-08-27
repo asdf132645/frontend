@@ -93,7 +93,7 @@
         <tr>
           <th>IA Root Path</th>
           <td colspan="2">
-            <select v-model='iaRootPath'>
+            <select disabled v-model='iaRootPath'>
               <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
             </select>
           </td>
@@ -142,13 +142,17 @@
         </colgroup>
         <tbody>
         <tr>
-          <th>Download Save Path</th>
-          <td colspan="2">
-            <select v-model='backupRootPath' class="autoBackUpPath">
-              <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
-            </select>
-          </td>
+          <th></th>
+          <td></td>
         </tr>
+<!--        <tr>-->
+<!--          <th>Download Save Path</th>-->
+<!--          <td colspan="2">-->
+<!--            <select disabled v-model='backupRootPath' class="autoBackUpPath">-->
+<!--              <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>-->
+<!--            </select>-->
+<!--          </td>-->
+<!--        </tr>-->
         <tr>
           <th>Download</th>
           <td>
