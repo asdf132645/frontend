@@ -907,7 +907,7 @@ const memoChange = async () => {
 
 const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: any) => {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
         const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response: any = await updateRunningApi({

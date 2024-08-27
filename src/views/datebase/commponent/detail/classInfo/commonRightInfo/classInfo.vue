@@ -467,17 +467,17 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          // const separator1 = '\u0017';  // ASCII 23
-          // const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
-          // const terminator = '\u0003';  // ASCII 3
+          const separator1 = '\u0017';  // ASCII 23
+          const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
+          const terminator = '\u0003';  // ASCII 3
 
           // const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
           // const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
           // const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
 
-          const separator1 = String.fromCharCode(23); // '\u0017'
-          const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
-          const terminator = String.fromCharCode(3); // '\u0003'
+          // const separator1 = String.fromCharCode(23); // '\u0017'
+          // const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
+          // const terminator = String.fromCharCode(3); // '\u0003'
 
 
           const result = params.wbcInfo
@@ -1039,7 +1039,7 @@ const getStringValue = (title: string): string => {
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
@@ -1347,7 +1347,7 @@ async function updateOriginalDb() {
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   // 러닝 인포 디비에 다시 재저장
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({

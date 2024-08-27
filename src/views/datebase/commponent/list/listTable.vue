@@ -486,7 +486,7 @@ const getIpAddress = async (item) => {
   try {
     const result = await getDeviceIpApi();
     const ipAddress = result.data;
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
@@ -561,7 +561,7 @@ const dbDataEditSet = async () => {
     if (indexToUpdate !== -1) {
       localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
     }
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
@@ -610,7 +610,7 @@ const deleteRow = async () => {
       const idsToDelete = selectedItems
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = `${path}/${selectedItems.slotId}`;
-      const day = sessionStorage.getItem('lastSearchParams') || '';
+              const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
       const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
       const req = {
@@ -636,7 +636,7 @@ const deleteRow = async () => {
       }
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
-      const day = sessionStorage.getItem('lastSearchParams') || '';
+              const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
       const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
       const req = {
