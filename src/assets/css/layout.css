@@ -584,6 +584,12 @@ ul.customClass li {
     margin-bottom: 2px;
 }
 
+.uploadButton {
+    display: flex;
+    justify-content: flex-end;
+    height: 30px;
+}
+
 .settingDatePickers {
     display: flex;
     justify-content: center;
@@ -595,6 +601,23 @@ ul.customClass li {
 
 .settingDatePickers > div > div > input {
     height: 24px;
+}
+
+.backupDatePickers {
+    display: flex;
+    justify-content: center;
+}
+
+.backupDatePickers > div {
+    margin: 0 12px;
+}
+
+.backupDatePickers > div > div > input {
+    height: 24px;
+}
+
+.backupDatePickers > div > div:nth-child(4) {
+    top: -270px;
 }
 
 .line {
@@ -1866,6 +1889,17 @@ h3.titleH3 {
 }
 
 button.backupBtn {
+    margin-left: 14px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    color: var(--white-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button.restoreBtn {
+    width: 100px;
+    height: 36px;
     margin-left: 14px;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);

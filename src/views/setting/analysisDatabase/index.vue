@@ -2,20 +2,22 @@
   <div>
     <div class="settingTabSubButtons">
       <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
-      <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
-      <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
-      <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
-      <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
-        {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
-      </button>
-      <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">
-        {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
-      </button>
-      <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
-      <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
-      <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
-        {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
-      </button>
+      <template v-if="viewerCheck !== 'viewer'">
+        <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
+        <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
+        <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
+        <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
+          {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
+        </button>
+        <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">
+          {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
+        </button>
+        <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
+        <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
+        <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
+          {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
+        </button>
+      </template>
     </div>
 
     <div class="tab-content">
@@ -70,6 +72,7 @@ const showConfirm = ref(false);
 const confirmMessage = ref('');
 
 const movingTab = ref('');
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);

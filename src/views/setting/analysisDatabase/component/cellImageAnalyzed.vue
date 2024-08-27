@@ -4,179 +4,186 @@
     <p class="loadingTextLogin">Loading...</p>
   </div>
 
-  <div>
-    <table class="settingTable">
-      <tbody>
-      <tr>
-        <th>Analysis Type</th>
-        <td colspan="2">
-          <select v-model='testTypeCd'>
-            <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <!--Common analysis values-->
+    <div>
+      <template v-if="viewerCheck !== 'viewer'">
+        <table class="settingTable">
+        <tbody>
+        <tr>
+          <th>Analysis Type</th>
+          <td colspan="2">
+            <select v-model='testTypeCd'>
+              <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <!--Common analysis values-->
 
-      <tr>
-        <!-- WBC diff analysis values -->
-        <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
+        <tr>
+          <!-- WBC diff analysis values -->
+          <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
 
-        <!-- BM diff analysis values -->
-        <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
-        <th>Cell Analyzing Count</th>
-        <td>
+          <!-- BM diff analysis values -->
+          <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
+          <th>Cell Analyzing Count</th>
+          <td>
 
-          <select v-model='diffCellAnalyzingCount'>
-            <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <!--      PBS analysis values-->
-      <tr v-if="projectType === 'pb'">
-        <th rowspan="2">PBS Analysis Values</th>
-        <th>
-          Cell Analyzing Count
-        </th>
-        <td>
-          <select v-model='pbsCellAnalyzingCount'>
-            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <th v-if="projectType === 'bm'"></th>
-        <th>Stitch Count</th>
-        <td>
-          <select v-model='stitchCount'>
-            <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <!--      BF analysis values-->
-      <tr v-if="projectType === 'pb'">
-        <th>BF Analysis Values</th>
-        <th>Cell Analyzing Count</th>
-        <td>
-          <select v-model='bfCellAnalyzingCount'>
-            <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
+            <select v-model='diffCellAnalyzingCount'>
+              <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <!--      PBS analysis values-->
+        <tr v-if="projectType === 'pb'">
+          <th rowspan="2">PBS Analysis Values</th>
+          <th>
+            Cell Analyzing Count
+          </th>
+          <td>
+            <select v-model='pbsCellAnalyzingCount'>
+              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th v-if="projectType === 'bm'"></th>
+          <th>Stitch Count</th>
+          <td>
+            <select v-model='stitchCount'>
+              <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <!--      BF analysis values-->
+        <tr v-if="projectType === 'pb'">
+          <th>BF Analysis Values</th>
+          <th>Cell Analyzing Count</th>
+          <td>
+            <select v-model='bfCellAnalyzingCount'>
+              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-      <tr v-if="projectType === 'pb'">
-        <th rowspan="3">Common</th>
-        <th>Wbc Position Margin</th>
-        <td>
-          <select v-model='wbcPositionMargin'>
-            <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr v-if="projectType === 'pb'">
-        <th>Rbc Position Margin</th>
-        <td>
-          <select v-model='rbcPositionMargin'>
-            <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr v-if="projectType === 'pb'">
-        <th>Plt Position Margin</th>
-        <td>
-          <select v-model='pltPositionMargin'>
-            <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
-          </select>
-        </td>
-      </tr>
+        <tr v-if="projectType === 'pb'">
+          <th rowspan="3">Common</th>
+          <th>Wbc Position Margin</th>
+          <td>
+            <select v-model='wbcPositionMargin'>
+              <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="projectType === 'pb'">
+          <th>Rbc Position Margin</th>
+          <td>
+            <select v-model='rbcPositionMargin'>
+              <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="projectType === 'pb'">
+          <th>Plt Position Margin</th>
+          <td>
+            <select v-model='pltPositionMargin'>
+              <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-      <tr>
-        <th>IA Root Path</th>
-        <td colspan="2">
-          <select v-model='iaRootPath'>
-            <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <th>NS/NB Integration</th>
-        <td>
-          <font-awesome-icon
-              :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              class="iconSize"
-              @click="toggleNsNbIntegration"
-          />
-        </td>
-      </tr>
-      <tr>
-        <th>Alarm Timer (sec)</th>
-        <td>
-          <font-awesome-icon
-              :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              class="iconSize"
-              @click="toggleAlarm"
-          />
-        </td>
-        <td>
-          <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
-        </td>
-      </tr>
-      <tr v-if="projectType === 'pb'">
-        <th>Keep Page</th>
-        <td>
-          <font-awesome-icon
-              :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              class="iconSize"
-              @click="toggleKeepPage"
-          />
-        </td>
-      </tr>
-      </tbody>
-    </table>
-
-    <table class="settingTable auto">
-      <colgroup>
-        <col width="80">
-        <col width="20">
-      </colgroup>
-      <tbody>
-      <tr>
-        <th>Download Save Path</th>
-        <td>
-          <select v-model='backupRootPath' class="autoBackUpPath">
-            <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <th>Download and Upload</th>
-        <td>
-          <div class="settingDatePickers">
-            <Datepicker v-model="backupStartDate"></Datepicker>
-            <Datepicker v-model="backupEndDate"></Datepicker>
-            <button class="backupBtn" @click="createBackup">Download</button>
+        <tr>
+          <th>IA Root Path</th>
+          <td colspan="2">
+            <select v-model='iaRootPath'>
+              <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>NS/NB Integration</th>
+          <td>
+            <font-awesome-icon
+                :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="toggleNsNbIntegration"
+            />
+          </td>
+        </tr>
+        <tr>
+          <th>Alarm Timer (sec)</th>
+          <td>
+            <font-awesome-icon
+                :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="toggleAlarm"
+            />
+          </td>
+          <td>
+            <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
+          </td>
+        </tr>
+        <tr v-if="projectType === 'pb'">
+          <th>Keep Page</th>
+          <td>
+            <font-awesome-icon
+                :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="toggleKeepPage"
+            />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      </template>
+      <table class="settingTable auto">
+        <colgroup>
+          <col width="90">
+          <col width="10">
+        </colgroup>
+        <tbody>
+        <tr>
+          <th>Download Save Path</th>
+          <td colspan="2">
+            <select v-model='backupRootPath' class="autoBackUpPath">
+              <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>Download and Upload</th>
+          <td>
+            <div class="backupDatePickers">
+              <Datepicker v-model="backupStartDate"></Datepicker>
+              <Datepicker v-model="backupEndDate"></Datepicker>
+              <button class="backupBtn" @click="createBackup">Download</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>Upload</th>
+          <td class="uploadButton">
             <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" />
-            <button class="backupBtn" @click="handleFileSelect">Upload</button>
-          </div>
-        </td>
-      </tr>
-<!--      나중에 기능 추가 할 부분 자동 백업-->
-<!--      <tr>-->
-<!--        <th>Auto Backup</th>-->
-<!--        <td>-->
-<!--          <div class="autoDateBox">-->
-<!--            <select v-model='autoBackUpMonth'>-->
-<!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
-<!--                {{ month.value }}-->
-<!--              </option>-->
-<!--            </select>-->
-<!--            <span>Month</span>-->
-<!--          </div>-->
-<!--        </td>-->
-<!--      </tr>-->
-      </tbody>
-    </table>
-    <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
-  </div>
+            <button class="restoreBtn" @click="handleFileSelect">Upload</button>
+          </td>
+        </tr>
+        <!--      나중에 기능 추가 할 부분 자동 백업-->
+        <!--      <tr>-->
+        <!--        <th>Auto Backup</th>-->
+        <!--        <td>-->
+        <!--          <div class="autoDateBox">-->
+        <!--            <select v-model='autoBackUpMonth'>-->
+        <!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
+        <!--                {{ month.value }}-->
+        <!--              </option>-->
+        <!--            </select>-->
+        <!--            <span>Month</span>-->
+        <!--          </div>-->
+        <!--        </td>-->
+        <!--      </tr>-->
+        </tbody>
+      </table>
+      <button v-if="viewerCheck !== 'viewer'" class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
+    </div>
+
 
   <div v-if="showRestoreModal" :class="impossibleRestoreCount === 0 ? 'restoreModalSmall' : 'restoreModal'">
     <p v-if="impossibleRestoreCount === 0" class="fs12" style="top: 0;">Would you like to Restore?</p>
@@ -234,7 +241,6 @@
       @update:hideAlert="hideAlert"
   />
 </template>
-
 <script setup lang="ts">
 import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
@@ -310,8 +316,10 @@ const possibleRestoreCount = computed(() => restoreSlotIdObj.value?.nonDuplicate
 const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated && restoreSlotIdObj.value?.duplicated.length);
 const showConfirm = ref(false);
 const confirmMessage = ref('');
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
 const isBackuping = ref(false);
@@ -379,10 +387,16 @@ const createBackup = async () => {
   const sendingBackupStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
   const sendingBackupEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
 
+  const beforeSetting = JSON.parse(beforeSettingFormattedString.value);
+  beforeSetting.backupStartDate = sendingBackupStartDate;
+  beforeSetting.backupEndDate = sendingBackupEndDate;
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(beforeSetting) });
+
   if (!moment(sendingBackupStartDate).isSameOrBefore(sendingBackupEndDate)) {
     showErrorAlert('Please check the date');
     return
   }
+
 
   backupDto.value = {
     startDate: sendingBackupStartDate, // 백업 시작일
@@ -590,7 +604,6 @@ const cellImgSet = async () => {
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
     await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
-
     console.log(e);
   }
 }

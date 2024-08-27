@@ -42,12 +42,11 @@ import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
-import {settingName} from "@/common/defines/constFile/settings";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check', 'Version'] as const;
-const viewerTabs = ['Login/Account', 'Version'] as const;
+const viewerTabs = ['Login/Account', 'Analysis/Database', 'Version'] as const;
 const currentTab = ref<typeof tabs[number]>(tabs[0]);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const showAlert = ref(false);
@@ -74,7 +73,7 @@ const changeTab = (tab: typeof tabs[number]) => {
 };
 
 const components = { 'Login/Account': LoginAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Quality Check': QualityCheck, 'Version': Version };
-const viewerComponents: any = { 'Login/Account': LoginAccount, 'Version': Version };
+const viewerComponents: any = { 'Login/Account': LoginAccount, 'Version': Version, 'Analysis/Database': AnalysisDatabase };
 
 const storedTab = sessionStorage.getItem('selectedTab');
 if (storedTab && tabs.includes(storedTab as typeof tabs[number])) {
