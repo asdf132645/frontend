@@ -166,7 +166,7 @@ const deleteConnectionStatus = async () => {
 
 const upDownBlockAccess = async (selectItems: any) => {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
@@ -216,7 +216,7 @@ const pageGo = (path: string) => {
 
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}`

@@ -1039,7 +1039,7 @@ const getStringValue = (title: string): string => {
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
@@ -1347,7 +1347,7 @@ async function updateOriginalDb() {
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   // 러닝 인포 디비에 다시 재저장
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || '';
+            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
