@@ -150,7 +150,7 @@
           </td>
         </tr>
         <tr>
-          <th>Download and Upload</th>
+          <th>Download</th>
           <td>
             <div class="backupDatePickers">
               <Datepicker v-model="backupStartDate"></Datepicker>
