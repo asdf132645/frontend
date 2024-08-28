@@ -5,8 +5,7 @@
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <workingView  :initValData="initValData" :parsedData="props.parsedData" class="contentRightChild" v-if="pbVersion !== '100a'"/>
-    <WorkingView100A :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild" v-else/>
+    <workingView  :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild" />
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
     <div class="contentBottom">
@@ -24,7 +23,6 @@ import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
 import {defineEmits, defineProps, onMounted, ref, onBeforeMount, computed, watch} from "vue";
-import WorkingView100A from "@/views/analysis/commponent/workingView100A.vue";
 import router from "@/router";
 import {useStore} from "vuex";
 const emits = defineEmits();
