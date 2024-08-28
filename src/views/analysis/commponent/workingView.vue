@@ -32,7 +32,7 @@
       <p> {{ timeDataGet.totalSlideTime }} </p>
 
     </div>
-    <div class='slideCardWrap'>
+    <div class='slideCardWrap' v-if="pbVersion === '12a'">
       <!-- input -->
       <ul class='slideContent'>
         <li v-for="item in slideCardData.input" :key="item.slotNo"
@@ -46,11 +46,20 @@
         <p class="mt1">OUTPUT</p>
       </ul>
     </div>
+    <div class='slideCardWrap' v-else>
+      <!-- input -->
+      <ul class='slideContent pb100a'>
+        <p>INPUT : {{ casExistChangeText(iCasExist) }}</p>
+        <li v-for="item in slideCardData.input" :key="item.slotNo"
+            :class="getSlotStateClass(item.slotState,'input')"></li>
+        <p class="mt1">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount, watch, computed, defineProps} from 'vue';
+import {ref, onMounted, onBeforeUnmount, watch, computed, defineProps, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
@@ -63,7 +72,7 @@ const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const initValData = computed(() => store.state.commonModule.initValData);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData']);
+const props = defineProps([ 'parsedData','pb100aCassette']);
 
 
 // 스토어
@@ -89,7 +98,9 @@ const isBlinking = ref(false);
 let interval: any = ref(null);
 const isBm = ref(false);
 const fixEqStatCd = ref(false);
-
+const pbVersion = ref<any>('');
+const iCasExist = ref<any>('0');
+const oCasExist = ref<any>('0');
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
@@ -140,7 +151,8 @@ watch([commonDataGet.value], async (newVals: any) => {
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot))
-
+  iCasExist.value = slotArray[0]?.runningInfo?.iCasExist;
+  oCasExist.value = slotArray[0]?.runningInfo?.oCasExist;
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
     startCounting();
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
@@ -194,7 +206,21 @@ watch(() => initValData.value, (newVal) => {
   }
   fixEqStatCd.value = newVal;
 })
+watch(
+    () => props.pb100aCassette,
+    (newVal) => {
+      if(newVal === 'reset'){
+        stopTotalCounting();
+        startTotalCounting();
+        stopCounting();
+      }
+    },
+    { deep: true }
+);
 
+onBeforeMount(() => {
+  pbVersion.value = window.PB_VERSION;
+})
 
 onMounted(() => {
   eqStatCd.value = '01';
@@ -323,6 +349,17 @@ const getSlotStateClass = (state: string, type: string): string => {
     }
   }
 
+}
+
+const casExistChangeText = (val: string) => {
+  switch (val) {
+    case '0':
+      return 'EMPTY';
+    case '1':
+      return 'EXIST';
+    case '2':
+      return 'FULL';
+  }
 }
 
 </script>
