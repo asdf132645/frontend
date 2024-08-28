@@ -282,6 +282,10 @@ export const apiConstants = {
             clearPcIpState:{
                 endpoint:'runningInfo/clearPcIpState',
                 requiresToken: false,
+            },
+            removePageAllData:{
+                endpoint:'runningInfo/removePageAllData',
+                requiresToken: false,
             }
         },
         folder: {

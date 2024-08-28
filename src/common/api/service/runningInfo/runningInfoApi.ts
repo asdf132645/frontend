@@ -55,3 +55,7 @@ export const updatePcIpStateApi = async (req: any): Promise<ApiResponse<any>> =>
 export const clearPcIpState = async (req: any): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.settings.runningInfo.clearPcIpState, `${req}`, true)
 }
+
+export const removePageAllDataApi = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.runningInfo.removePageAllData, ``, true)
+}

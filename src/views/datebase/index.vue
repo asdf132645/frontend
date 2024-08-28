@@ -130,7 +130,7 @@ import {
   onMounted,
   ref,
 } from "vue";
-import {detailRunningApi, getRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {detailRunningApi, getRunningApi, removePageAllDataApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
@@ -203,10 +203,11 @@ const isBarcodeInput = (value: any) => {
 };
 
 
-function handleStateVal(data: any) {
+async function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
-  initDbData().then(() => {
+  await removePageAllDataApi();
+  await initDbData().then(() => {
     // loadingDelayParents.value = false;
   });
 }
