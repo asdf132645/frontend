@@ -529,9 +529,8 @@ p.startStopP {
 }
 
 .settingWrapDiv {
-    min-height: 84vh;
+    min-height: 85vh;
     padding: 40px;
-    max-height: 85vh;
 }
 
 .customSettingContainer {
