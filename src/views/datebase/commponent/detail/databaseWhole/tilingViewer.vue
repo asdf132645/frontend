@@ -116,19 +116,17 @@ const fetchTilesInfo = async (folderPath: string) => {
   const fileNames = await response.json();
   const tilesInfo = [];
   for (const fileName of fileNames) {
-    console.log(fileName);
     if (fileName.endsWith('_files')) {
 
       const fileNameResult = extractSubStringBeforeFiles(fileName);
-      const {width, height} = await dziWidthHeight(fileNameResult);
-      console.log(height)
+      const {width, height, tileSize} = await dziWidthHeight(fileNameResult);
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",
           Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
           Format: "jpg",
           Overlap: "1",
-          TileSize: "1024",
+          TileSize: tileSize,
           Size: {
             Width: width,
             Height: height
@@ -152,9 +150,11 @@ const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "application/xml");
   const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
+  const tileSizeEl = xmlDoc.getElementsByTagName('Image')[0];
+  const tileSize = tileSizeEl.getAttribute("TileSize");
   const width = sizeElement.getAttribute("Width");
   const height = sizeElement.getAttribute("Height");
-  return {fileName, width: Number(width), height: Number(height)}
+  return {fileName, width: Number(width), height: Number(height), tileSize: Number(tileSize)}
 }
 
 const extractSubStringBeforeFiles = (str: string) => {
