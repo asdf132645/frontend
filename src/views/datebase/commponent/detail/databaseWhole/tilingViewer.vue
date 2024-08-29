@@ -1,7 +1,8 @@
 <template>
-  <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad(true)"  />
+<!--  <img :src="hideImage" ref="hideImageRef" style="display: none" @load="onImageLoad(true)"  />-->
     <div class="tilingViewerContainer" style="height: 100%" id="tiling-container">
-      <div ref="tilingViewerLayer" id="tiling-viewer" ></div>
+      <div ref="tilingViewerLayer" id="tiling-viewer" :style="{ height: viewerHeight }">
+      </div>
     </div>
 </template>
 
@@ -10,7 +11,7 @@
 import {defineProps, onMounted, ref, watch, computed, nextTick} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { useStore } from "vuex";
-import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['selectItems']);
 const store = useStore();
@@ -18,42 +19,36 @@ const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const tilingViewerLayer = ref(null);
-const hideImageRef = ref(null);
 const newImgHeight = ref('');
 const newImgWidth = ref('');
-const hideImage = ref('');
+const viewerHeight = ref('85vh'); // 기본값 설정
+
 let viewer:any = null;
 
 onMounted(async () => {
-  await onImageLoad(true);
-});
+  const urlImage = `PMC_Result`;
+  const {width, height} = await dziWidthHeight(urlImage)
+  newImgHeight.value = height;
+  newImgWidth.value = width;
+  viewerHeight.value = `${Math.min((height / window.innerHeight) * 100, 85)}vh`; // 최대 80vh로 제한
+  await initElement(height, false);});
 
 watch( () => props.selectItems, async(newItem) => {
   await nextTick()
-  await onImageLoad(false);
+  // await onImageLoad(false);
+  const urlImage = `PMC_Result`;
+  const {width, height} = await dziWidthHeight(urlImage)
+  newImgHeight.value = height;
+  newImgWidth.value = width;
+  await initElement(height, false);
 });
 
-const onImageLoad = async (bool: boolean) => {
-  const imgElement = hideImageRef.value;
-  const slotId = props.selectItems?.slotId || "";
-  const path = props.selectItems?.img_drive_root_path  !== '' && props.selectItems?.img_drive_root_path  ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-  const folderPath = `${path}/${slotId}/01_Stitching_Image`;
-
-  const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
-  hideImage.value = imageUrl;
-  if (imgElement && imgElement.complete) {
-    const imageHeight = imgElement.naturalHeight;
-    const imageWidth = imgElement.naturalWidth;
-
-    if (imageHeight !== 0) {
-      newImgHeight.value = imageHeight;
-      newImgWidth.value = imageWidth;
-      await initElement(imageHeight, bool);
+watch(
+    () => window.innerHeight,
+    () => {
+      viewerHeight.value = `${Math.min((Number(newImgHeight.value) / window.innerHeight) * 100, 85)}vh`; // 최대 80vh로 제한
     }
-
-  }
-};
-
+);
 const initElement = async (imageHeight: any, bool: boolean) => {
   if (viewer) {
     viewer.destroy();
@@ -63,8 +58,6 @@ const initElement = async (imageHeight: any, bool: boolean) => {
 
   const folderPath = `${path}/${slotId}/01_Stitching_Image`;
 
-  const imageUrl =  `${apiBaseUrl}/folders?folderPath=${folderPath}/PMC_Result.jpg`;
-  hideImage.value = imageUrl;
   try {
     const tilesInfo = await fetchTilesInfo(folderPath);
     viewer = OpenSeadragon({
@@ -127,7 +120,8 @@ const fetchTilesInfo = async (folderPath: string) => {
     if (fileName.endsWith('_files')) {
 
       const fileNameResult = extractSubStringBeforeFiles(fileName);
-      const {width, height} = await dziWidthHeight(fileNameResult)
+      const {width, height} = await dziWidthHeight(fileNameResult);
+      console.log(height)
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",

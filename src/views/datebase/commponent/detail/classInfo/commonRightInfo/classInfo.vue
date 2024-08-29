@@ -242,7 +242,9 @@ onMounted(async () => {
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
-  lisBtnColor.value = props.selectItems.submitState === 'lis';
+  if(props.selectItems?.submitState){
+    lisBtnColor.value = props.selectItems.submitState === 'lis';
+  }
   // 첫 진입시
   if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
