@@ -239,7 +239,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     const rbcPositionMargin = sessionStorage.getItem('rbcPositionMargin');
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
-    const sideEdgeWbcMode = sessionStorage.getItem('sideEdgeWbcMode') || '0';
+    // const sideEdgeWbcMode = sessionStorage.getItem('sideEdgeWbcMode') || '0';
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {

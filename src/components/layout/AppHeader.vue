@@ -515,7 +515,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
-        sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
+        // sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
         sessionStorage.setItem('iaRootPath', data?.iaRootPath);
         await store.dispatch('commonModule/setCommonInfo', {iaRootPath: String(data?.iaRootPath)});
 
