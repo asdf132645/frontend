@@ -1,5 +1,15 @@
 <template>
-  <div class="loadingBackground" v-if="isRestoring || isBackuping">
+  <div class="loadingBackground" v-show="isLoadingProgressBar">
+    <div class="progressContainer">
+      <p class="loadingProgressBarText">Loading...</p>
+      <div
+          class="progressBar"
+          :style="{ animationDuration: downloadUploadType === 'copy' ? Number(loadingFileCount / 3) + 's' : Number(loadingFileCount / 5) + 's' }"
+      ></div>
+    </div>
+  </div>
+
+  <div class="loadingBackground" v-if="isRestoring || isDownloading">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -34,7 +44,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb'">
-          <th rowspan="2">PBS Analysis Values</th>
+          <th :rowspan="testTypeCd === '04' ? 3 : 2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
@@ -50,6 +60,14 @@
           <td>
             <select v-model='stitchCount'>
               <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-show="projectType === 'pb' && testTypeCd === '04'">
+          <th>Edge Shot Type</th>
+          <td>
+            <select v-model='sideEdgeWbcMode'>
+              <option v-for="type in sideEdgeWbcModeList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
@@ -93,7 +111,7 @@
         <tr>
           <th>IA Root Path</th>
           <td colspan="2">
-            <select disabled v-model='iaRootPath'>
+            <select v-model='iaRootPath'>
               <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
             </select>
           </td>
@@ -142,17 +160,16 @@
         </colgroup>
         <tbody>
         <tr>
-          <th></th>
-          <td></td>
+          <th>Download Save Path</th>
+          <td>
+<!--            <div class="downloadSavePathContainer">-->
+              <select v-model='downloadRootPath' class="downloadPath">
+                <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
+              </select>
+<!--              <button class="backupBtn" @click="openSourceDrive">Search</button>-->
+<!--            </div>-->
+          </td>
         </tr>
-<!--        <tr>-->
-<!--          <th>Download Save Path</th>-->
-<!--          <td colspan="2">-->
-<!--            <select disabled v-model='backupRootPath' class="autoBackUpPath">-->
-<!--              <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>-->
-<!--            </select>-->
-<!--          </td>-->
-<!--        </tr>-->
         <tr>
           <th>Download</th>
           <td>
@@ -165,9 +182,14 @@
         </tr>
         <tr>
           <th>Upload</th>
-          <td class="uploadButton">
-            <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" />
-            <button class="restoreBtn" @click="handleFileSelect">Upload</button>
+          <td colspan="2">
+            <div class="settingUploadContainer">
+              <select v-model='uploadRootPath' class="uploadSavePath">
+                <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+              </select>
+              <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" />
+              <button class="uploadBtn" @click="handleFileSelect">Upload</button>
+            </div>
           </td>
         </tr>
         <!--      나중에 기능 추가 할 부분 자동 백업-->
@@ -190,28 +212,29 @@
     </div>
 
 
-  <div v-if="showRestoreModal" :class="impossibleRestoreCount === 0 ? 'restoreModalSmall' : 'restoreModal'">
-    <p v-if="impossibleRestoreCount === 0" class="fs12" style="top: 0;">Would you like to upload?</p>
-    <pre v-else-if="impossibleRestoreCount > 0"
+  <div v-if="showUploadModal" :class="impossibleUploadCount === 0 ? 'uploadModalSmall' : 'uploadModal'">
+    <p v-if="impossibleUploadCount === 0" class="fs12" style="top: 0;">Would you like to upload?</p>
+    <pre v-else-if="impossibleUploadCount > 0"
         class="fs12"
     >
       There are <span style="color: red;">duplicated</span> items
     </pre>
-    <div :class="impossibleRestoreCount === 0 && 'restoreModalCountWrapperSmall'">
-      <p>Non-duplicated Count: {{ possibleRestoreCount }}</p>
-      <p>Duplicated Count: {{ impossibleRestoreCount }}</p>
+    <div :class="impossibleUploadCount === 0 && 'uploadModalCountWrapperSmall'">
+      <p>Non-duplicated Count: {{ possibleUploadCount }}</p>
+      <p>Duplicated Count: {{ impossibleUploadCount }}</p>
     </div>
-    <div v-if="impossibleRestoreCount > 0" class="restoreDuplicatedSlotContainer">
+    <div v-if="impossibleUploadCount > 0" class="uploadDuplicatedSlotContainer">
       <p style="color: black;">Duplicated Barcode Numbers</p>
-      <ul class="restoreDuplicatedSlotWrapper">
-          <li class="userSelectText" v-for="barcodeNo in restoreSlotIdObj?.duplicated" :key="barcodeNo">
+      <ul class="uploadDuplicatedSlotWrapper">
+          <li class="userSelectText" v-for="barcodeNo in uploadSlotIdObj?.duplicated" :key="barcodeNo">
             {{ barcodeNo }}
           </li>
       </ul>
     </div>
-    <div class="restoreModalBtnContainer">
-      <button v-show="impossibleRestoreCount === 0" class="memoModalBtn" @click="restoreConfirm">Upload</button>
-      <button class="memoModalBtn" @click="restoreCancel">{{ impossibleRestoreCount === 0 ? 'Cancel' : 'Close' }}</button>
+    <div class="uploadModalBtnContainer">
+      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('copy')">Upload by Copy</button>
+      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('move')">Upload by Move</button>
+      <button class="memoModalBtn" @click="uploadCancel">{{ impossibleUploadCount === 0 ? messages.CANCEL : messages.CLOSE }}</button>
     </div>
   </div>
 
@@ -219,22 +242,22 @@
       v-if="showConfirm"
       :is-visible="showConfirm"
       :message="confirmMessage"
-      confirmText="save"
-      closeText="leave"
+      :confirmText="messages.SAVE"
+      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
 
   <ConfirmThreeBtn
-      v-if="showBackupConfirm"
-      :is-visible="showBackupConfirm"
-      :message="backupConfirmMessage"
-      confirmText="move"
-      confirmText2="copy"
-      closeText="close"
-      @hide="handleBackupClose"
-      @okConfirm="handleBackupMove"
-      @okConfirm2="handleBackupCopy"
+      v-if="showDownloadConfirm"
+      :is-visible="showDownloadConfirm"
+      :message="downloadConfirmMessage"
+      :confirmText="messages.MOVE"
+      :confirmText2="messages.COPY"
+      :closeText="messages.CLOSE"
+      @hide="handleDownloadClose"
+      @okConfirm="handleDownloadMove"
+      @okConfirm2="handleDownloadCopy"
   />
 
   <Alert
@@ -256,13 +279,18 @@ import {
   PositionMarginList, stitchCountList,
   testTypeList,
   WbcPositionMarginList,
-  testBmTypeList, bmAnalysisList, settingName
+  testBmTypeList, bmAnalysisList, settingName, sideEdgeWbcModeList
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import moment from "moment";
-import {backUpDate, backupPossibleApi, checkDuplicatedData, restoreBackup} from "@/common/api/service/backup/wbcApi";
+import {
+  backUpDateApi,
+  downloadPossibleApi,
+  uploadPossibleApi,
+  uploadBackupApi, openDriveApi
+} from "@/common/api/service/backup/wbcApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
@@ -271,7 +299,7 @@ const store = useStore();
 const router = useRouter();
 const showAlert = ref(false);
 const alertType = ref('');
-const showRestoreModal = ref(false);
+const showUploadModal = ref(false);
 
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
@@ -282,9 +310,11 @@ const rbcPositionMargin = ref('0');
 const pltPositionMargin = ref('0');
 const pbsCellAnalyzingCount = ref('100');
 const stitchCount = ref('1');
+const sideEdgeWbcMode = ref('0');
 const bfCellAnalyzingCount = ref('100');
 const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
-const backupRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup');
+const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
+const uploadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
 const alarmCount = ref('5');
@@ -315,10 +345,10 @@ const cellimgId = ref('');
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const fileInput = ref<any>(null);
-const restoreSlotIdObj = ref({duplicated: [], nonDuplicated: []});
+const uploadSlotIdObj = ref({duplicated: [], nonDuplicated: []});
 const selectedFileName = ref('');
-const possibleRestoreCount = computed(() => restoreSlotIdObj.value?.nonDuplicated && restoreSlotIdObj.value?.nonDuplicated.length);
-const impossibleRestoreCount = computed(() => restoreSlotIdObj.value?.duplicated && restoreSlotIdObj.value?.duplicated.length);
+const possibleUploadCount = computed(() => uploadSlotIdObj.value?.nonDuplicated && uploadSlotIdObj.value?.nonDuplicated.length);
+const impossibleUploadCount = computed(() => uploadSlotIdObj.value?.duplicated && uploadSlotIdObj.value?.duplicated.length);
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
@@ -326,10 +356,13 @@ const enteringRouterPath = computed(() => store.state.commonModule.enteringRoute
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const isRestoring = ref(false);
-const isBackuping = ref(false);
-const showBackupConfirm = ref(false);
-const backupConfirmMessage = ref('');
-const backupDto = ref<any>({});
+const isDownloading = ref(false);
+const isLoadingProgressBar = ref(false);
+const showDownloadConfirm = ref(false);
+const downloadConfirmMessage = ref('');
+const downloadDto = ref<any>({});
+const loadingFileCount = ref(1000);
+const downloadUploadType = ref('copy');
 
 
 onMounted(async () => {
@@ -345,7 +378,7 @@ onMounted(async () => {
 });
 
 watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
-  pltPositionMargin, pbsCellAnalyzingCount, stitchCount, bfCellAnalyzingCount, iaRootPath, backupRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
+  pltPositionMargin, pbsCellAnalyzingCount, sideEdgeWbcMode, stitchCount, bfCellAnalyzingCount, iaRootPath, downloadRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
   const cellAfterSettingObj = {
     id: cellimgId.value,
     analysisType: testTypeCd.value,
@@ -355,6 +388,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
+    sideEdgeWbcMode: sideEdgeWbcMode.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
@@ -379,79 +413,6 @@ const filterNumbersOnly = (event: Event) => {
   alarmCount.value = filteredValue.trim();
 };
 
-const createBackup = async () => {
-  if (backupRootPath.value === ''){
-    showErrorAlert('Please select a download save path');
-    return
-  }
-
-  const sendingBackupStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
-  const sendingBackupEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
-
-  if (!moment(sendingBackupStartDate).isSameOrBefore(sendingBackupEndDate)) {
-    showErrorAlert('Please check the date');
-    return
-  }
-
-  backupDto.value = {
-    startDate: sendingBackupStartDate, // 백업 시작일
-    endDate: sendingBackupEndDate, // 백업 종료일
-    backupPath: backupRootPath.value, // 백업 경로
-    sourceFolderPath: `${iaRootPath.value}` //이미지가 있는 경로 옮겨져야 하는 폴더 위치
-  };
-  try {
-    isBackuping.value = true;
-    const isPossibleToBackup = await backupPossibleApi(backupDto.value);
-    if (isPossibleToBackup.data) {
-      showBackupConfirm.value = true;
-      backupConfirmMessage.value = `Would you move or copy files`;
-    } else {
-      showErrorAlert('The download file for the specified date already exists');
-    }
-    isBackuping.value = false;
-  } catch (e) {
-    console.log(e);
-    isBackuping.value = false;
-  }
-}
-
-const handleFileSelect = () => {
-  setTimeout(() => {
-    fileInput.value.click();
-  }, 100)
-  fileInput.value.value = null;
-}
-
-const handleFileChange = async (event: any) => {
-  await restoreBackupData(event);
-}
-
-const restoreBackupData = async (event: any) => {
-  const fileName = event.target.files[0]?.name;
-  if (!fileName || !fileName.includes('.sql')) {
-    showErrorAlert('File type is not supported.')
-    return;
-  }
-  selectedFileName.value = fileName;
-
-  try {
-    isRestoring.value = true;
-    const result: any = await checkDuplicatedData({ fileName: fileName, saveFilePath: iaRootPath.value, backupFilePath: backupRootPath.value });
-
-    if (typeof result.data === 'string') {
-      showErrorAlert(result.data);
-    } else {
-      showRestoreModal.value = true;
-      restoreSlotIdObj.value = result.data;
-    }
-  } catch (e) {
-    console.log(e);
-  } finally {
-    isRestoring.value = false;
-  }
-
-}
-
 const driveGet = async () => {
   try {
     const result = await getDrivesApi();
@@ -463,7 +424,7 @@ const driveGet = async () => {
         const backUpData = JSON.parse(JSON.stringify(data));
 
         const savePlace = window.PROJECT_TYPE === 'bm' ? 'BMIA_proc' : 'PBIA_proc';
-        const backupPlace = window.PROJECT_TYPE === 'bm' ? 'BM_backup' : 'PB_backup';
+        const backupPlace = window.PROJECT_TYPE === 'bm' ? 'UIMD_BM_backup' : 'UIMD_PB_backup';
         for (const dataKey in data) {
           saveData[dataKey] = saveData[dataKey] + `\\${savePlace}`;
           backUpData[dataKey] = backUpData[dataKey] + `\\${backupPlace}`;
@@ -505,8 +466,9 @@ const cellImgGet = async () => {
         pbsCellAnalyzingCount.value = data.pbsCellAnalyzingCount;
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
+        sideEdgeWbcMode.value = String(data?.sideEdgeWbcMode);
         iaRootPath.value = data.iaRootPath;
-        backupRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\BM_backup' : 'D:\\PB_backup');
+        downloadRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
         isNsNbIntegration.value = data.isNsNbIntegration;
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;
@@ -524,6 +486,7 @@ const cellImgGet = async () => {
           diffPltPositionMargin: data.diffPltPositionMargin,
           pbsCellAnalyzingCount: data.pbsCellAnalyzingCount,
           stitchCount: data.stitchCount,
+          sideEdgeWbcMode: data.sideEdgeWbcMode,
           bfCellAnalyzingCount: data.bfCellAnalyzingCount,
           iaRootPath: data.iaRootPath,
           isNsNbIntegration: data.isNsNbIntegration,
@@ -543,7 +506,6 @@ const cellImgGet = async () => {
 }
 
 const cellImgSet = async () => {
-
   const cellImgSet = {
     analysisType: testTypeCd.value,
     diffCellAnalyzingCount: diffCellAnalyzingCount.value,
@@ -551,6 +513,7 @@ const cellImgSet = async () => {
     diffRbcPositionMargin: rbcPositionMargin.value,
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
+    sideEdgeWbcMode: sideEdgeWbcMode.value,
     stitchCount: stitchCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
@@ -558,12 +521,11 @@ const cellImgSet = async () => {
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
-    backupPath: backupRootPath.value,
+    backupPath: downloadRootPath.value,
     backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
     backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
     autoBackUpMonth: autoBackUpMonth.value,
     autoBackUpStartDate: autoBackUpMonth.value !== 'Not selected' ? moment(new Date()).local().toDate().toISOString().split('T')[0]:null,
-
   }
 
   try {
@@ -588,6 +550,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
       sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
+      sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
@@ -612,14 +575,24 @@ const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
 
-const restoreConfirm = async () => {
-  showRestoreModal.value = false;
+const uploadConfirm = async (uploadType: 'move' | 'copy') => {
+  showUploadModal.value = false;
   try {
-    isRestoring.value = true;
+    isLoadingProgressBar.value = true;
     const day = localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const result = await restoreBackup({ fileName: selectedFileName.value, saveFilePath: iaRootPath.value, backupFilePath: backupRootPath.value, dayQuery });
+    const uploadDto = {
+      fileName: selectedFileName.value,
+      destinationUploadPath: uploadRootPath.value,
+      originUploadPath: downloadRootPath.value,
+      dayQuery,
+      projectType: projectType.value,
+      uploadType
+    }
+    downloadUploadType.value = uploadType;
+
+    const result = await uploadBackupApi(uploadDto);
 
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
@@ -629,12 +602,12 @@ const restoreConfirm = async () => {
   } catch (e) {
     console.log(e);
   } finally {
-    isRestoring.value = false;
+    isLoadingProgressBar.value = false;
   }
 }
 
-const restoreCancel = async () => {
-  showRestoreModal.value = false;
+const uploadCancel = async () => {
+  showUploadModal.value = false;
 }
 
 const showSuccessAlert = (message: string) => {
@@ -665,42 +638,148 @@ const handleOkConfirm = async () => {
   showConfirm.value = false;
 }
 
-const handleBackupClose = () => {
-  showBackupConfirm.value = false;
+const handleDownloadClose = () => {
+  showDownloadConfirm.value = false;
 }
 
-const handleBackupMove = async () => {
-  showBackupConfirm.value = false;
-  isBackuping.value = true;
-  const day = localStorage.getItem('lastSearchParams') || '';
-  const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-  const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-  backupDto.value['dayQuery'] = dayQuery;
-  backupDto.value['method'] = 'move';
+const handleDownloadMove = async () => {
+  const downloadDto = downloadDtoObj('move')
+  isLoadingProgressBar.value = true;
   try {
-    await backUpDate(backupDto.value);
+    await backUpDateApi(downloadDto);
     await showSuccessAlert('Download Success')
   } catch (e) {
     console.log(e);
   }
-  isBackuping.value = false;
+  isLoadingProgressBar.value = false;
 }
 
-const handleBackupCopy = async () => {
-  showBackupConfirm.value = false;
-  isBackuping.value = true;
-  const day = localStorage.getItem('lastSearchParams') || '';
-  const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-  const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-  backupDto.value['dayQuery'] = dayQuery;
-  backupDto.value['method'] = 'copy';
+const handleDownloadCopy = async () => {
+  const downloadDto = downloadDtoObj('copy');
+  isLoadingProgressBar.value = true;
   try {
-    await backUpDate(backupDto.value);
+    await backUpDateApi(downloadDto);
     await showSuccessAlert('Download Success')
   } catch (e) {
     console.log(e);
   }
-  isBackuping.value = false;
+  isLoadingProgressBar.value = false;
+}
+
+const downloadDtoObj = (downloadType: string) => {
+  downloadUploadType.value = downloadType;
+  showDownloadConfirm.value = false;
+  const day = localStorage.getItem('lastSearchParams') || '';
+  const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+  const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+  const sendingDownloadStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingDownloadEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const downloadDto = {
+    startDate: sendingDownloadStartDate, // 백업 시작일
+    endDate: sendingDownloadEndDate, // 백업 종료일
+    originDownloadPath: `${iaRootPath.value}`, //이미지가 있는 경로 옮겨져야 하는 폴더 위치
+    destinationDownloadPath: downloadRootPath.value, // 백업 경로
+    projectType: projectType.value,
+    dayQuery,
+    downloadType
+  }
+
+  return downloadDto;
+}
+
+const createBackup = async () => {
+  if (downloadRootPath.value === ''){
+    showErrorAlert('Please select a download save path');
+    return
+  }
+
+  const sendingDownloadStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingDownloadEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+
+  if (!moment(sendingDownloadStartDate).isSameOrBefore(sendingDownloadEndDate)) {
+    showErrorAlert('Please check the date');
+    return
+  }
+
+  downloadDto.value = {
+    startDate: sendingDownloadStartDate, // 백업 시작일
+    endDate: sendingDownloadEndDate, // 백업 종료일
+    originDownloadPath: `${iaRootPath.value}`, //이미지가 있는 경로 옮겨져야 하는 폴더 위치
+    destinationDownloadPath: downloadRootPath.value, // 백업 경로
+    projectType: projectType.value,
+  };
+  try {
+    isDownloading.value = true;
+    const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
+    console.log('isPossibleToBackup', isPossibleToBackup.data);
+    if (isPossibleToBackup.data.success) {
+      loadingFileCount.value = Number(isPossibleToBackup.data.message.split(' ')[1]);
+      showDownloadConfirm.value = true;
+      downloadConfirmMessage.value = `Would you move or copy files`;
+    } else {
+      showErrorAlert(isPossibleToBackup.data.message);
+    }
+  } catch (e) {
+    console.log(e);
+  } finally {
+    isDownloading.value = false;
+  }
+}
+
+const handleFileSelect = () => {
+  setTimeout(() => {
+    fileInput.value.click();
+  }, 100)
+  fileInput.value.value = null;
+}
+
+const handleFileChange = async (event: any) => {
+  await uploadBackupData(event);
+}
+
+const uploadBackupData = async (event: any) => {
+  const fileName = event.target.files[0]?.name;
+  if (!fileName || !fileName.includes('.sql')) {
+    showErrorAlert('File type is not supported.')
+    return;
+  }
+  selectedFileName.value = fileName;
+
+  try {
+    isRestoring.value = true;
+    const uploadDto = {
+      fileName: fileName,
+      destinationUploadPath: uploadRootPath.value,
+      originUploadPath: downloadRootPath.value,
+      projectType: projectType.value
+    }
+
+    const result: any = await uploadPossibleApi(uploadDto);
+
+    if (typeof result.data === 'string') {
+      showErrorAlert(result.data);
+    } else {
+      showUploadModal.value = true;
+      uploadSlotIdObj.value = result.data;
+    }
+  } catch (e) {
+    console.log(e);
+  } finally {
+    isRestoring.value = false;
+  }
+
+}
+
+const openSourceDrive = async () => {
+  const downloadDto = {
+    originDownloadPath: downloadRootPath.value
+  };
+
+  try {
+    await openDriveApi(downloadDto);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 </script>

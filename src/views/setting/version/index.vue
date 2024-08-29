@@ -35,8 +35,8 @@ const setAIVersions = async () => {
     const iniFileData = result.data.data;
     const aiVersionPattern = /BACKEND\s*=\s*V([\d.]+)/;
     const tcpVersionPattern = /TCP_VERSION\s*=\s*V([\d.]+)/;
-    aiVersion.value = iniFileData.match(aiVersionPattern)[1] || '';
-    coreVersion.value = iniFileData.match(tcpVersionPattern)[1] || '';
+    coreVersion.value = iniFileData.match(aiVersionPattern)[1] || '';
+    aiVersion.value = iniFileData.match(tcpVersionPattern)[1] || '';
   } catch (e) {
     console.log(e);
     aiVersion.value = '';

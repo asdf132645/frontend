@@ -425,23 +425,27 @@ export const apiConstants = {
             }
         }
     },
-    backUp:{
+    download:{
         backUpDate: {
-            endpoint: 'backup/post',
+            endpoint: 'download/post',
             requiresToken: false,
         },
         checkIsPossibleToBackup: {
-            endpoint: 'backup/check',
+            endpoint: 'download/check',
+            requiresToken: false,
+        },
+        openDrive: {
+            endpoint: 'download/openDrive',
             requiresToken: false,
         }
     },
-    restore: {
+    upload: {
         restoreData: {
-            endpoint: 'restore/execute',
+            endpoint: 'upload/execute',
             requiresToken: false,
         },
         checkDuplicated: {
-            endpoint: 'restore/checkDuplicatedData',
+            endpoint: 'upload/checkDuplicatedData',
             requiresToken: false,
         }
     },

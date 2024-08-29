@@ -732,6 +732,7 @@ const cellImgGet = async (newUserId?: string) => {
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
+        sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }
