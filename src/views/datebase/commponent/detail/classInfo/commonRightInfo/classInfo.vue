@@ -7,6 +7,9 @@
     </h3>
 
     <ul class="leftWbcInfo">
+      <li @click="barcodeCopy">
+        <font-awesome-icon :icon="['fas', 'copy']"/>
+      </li>
       <li style="position: relative">
         <font-awesome-icon :icon="['fas', 'comment-dots']" class="memoOpenBtn" @click="memoOpen"/>
         <div v-if="memoModal" class="memoModal">
@@ -15,12 +18,16 @@
           <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
         </div>
       </li>
-      <li @click="commitConfirmed" :class="{
-    'submitted': selectItems?.submitState === 'Submit',
-  }">
+      <li
+          @click="commitConfirmed"
+          :class="{'submitted': selectItems?.submitState === 'Submit',}"
+      >
         <font-awesome-icon :icon="['fas', 'square-check']"/>
       </li>
-      <li @click="lisModalOpen">
+      <li
+          @click="lisModalOpen"
+          :class="{'submitted': selectItems?.submitState === 'lis',}"
+      >
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
       <li>
@@ -316,6 +323,15 @@ const toggleLockEvent = () => {
   toggleLock.value = !toggleLock.value;
 }
 
+const barcodeCopy = async () => {
+  const textarea = document.createElement('textarea');
+  textarea.value = props.selectItems.barcodeNo;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+}
+
 const commitConfirmed = () => {
   // if (props.selectItems?.submitState === 'Submit' || submittedScreen.value) {
   //   return;
@@ -336,202 +352,299 @@ const handleOkConfirm = () => {
 }
 
 const uploadLis = () => {
-  if (siteCd.value === '0002' || siteCd.value === '' || siteCd.value === '0000') {
-    const codeList = CbcWbcTestCdList_0002;
-    const { barcodeNo, wbcInfoAfter } = props.selectItems ?? {};
-    // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
-
-    let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
-    // cbc 결과 조회
-    axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-      params: {
-        submit_id: 'TRLII00124',
-        business_id: 'li',
-        instcd: '012', // 병원 코드
-        bcno: barcodeNo,
-      },
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    }).then(function (resultCbc) {
-      // 결과 처리 코드
-      const xml = resultCbc.data.data.trim(); // 불필요한 공백 제거
-      const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
-      const cbcWorkList = cbcJson.root.spcworklist.worklist;
-
-      const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
-
-      const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
-        return item.testcd._cdata === 'LHR100'
-      })
-
-      wbcInfoAfter.forEach(function (wbcItem: any) {
-        wbcItem.testcd = ''
-        // testcd 없음 필드 자체에 추가 하는 로직
-        codeList.forEach(function (code) {
-          if (String(wbcItem.id) === String(code.id)) {
-            wbcItem.testcd = code.cd
-          }
-        })
-      })
-
-      let wbcTemp: any = [];
-      // five diff push
-      wbcInfoAfter.forEach(function (wbcItem: any) {
-        fiveDiffWorkList.forEach(function (fiveDiffItem) {
-          if (wbcItem.testcd === fiveDiffItem) {
-            wbcTemp.push(wbcItem)
-          } else {
-            if ((Number(wbcItem.count) > 0) && wbcItem.testcd !== '') {
-              wbcTemp.push(wbcItem)
-            }
-          }
-        })
-      })
-
-      // wbcTemp = Array.from(wbcTemp); // Set을 배열로 변환
-      // let wbcTemp2: any = [];
-      // // 중복 제거 3
-      // props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
-      //   fiveDiffWorkList.forEach(function (fiveDiffItem) {
-      //     // 이미 wbcTemp에 동일한 testcd가 있는지 확인
-      //     const isDuplicate = wbcTemp.some((item: any) => item.testcd === wbcItem.testcd);
-      //
-      //     if (!isDuplicate) {
-      //       if (wbcItem.testcd === fiveDiffItem) {
-      //         wbcTemp2.push(wbcItem);
-      //       } else if (wbcItem.count > 0 && wbcItem.testcd !== '') {
-      //         wbcTemp2.push(wbcItem);
-      //       }
-      //     }
-      //   });
-      // });
-      // wbcTemp = wbcTemp2;
-
-      // 중복제거 4
-      // 중복 제거 (Set 사용)
-      // const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
-      // wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
-
-
-      // neutrophil-seg
-      const nsPercentItem = wbcTemp.filter(function (item: any) {
-        return item.testcd === 'LHR10501'
-      })
-      // ANC insert
-      if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
-        const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2)
-
-        wbcTemp.push({
-          testcd: 'LHR10599',
-          percent: ancResult
-        })
-      }
-
-      // 유저 체크
-      checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
-        if (isUserAuth === 'succ') {
-          const params = {
-            empNo: userModuleDataGet.value.employeeNo,
-            barcodeNo: barcodeNo,
-            wbcInfo: wbcTemp
-          }
-          const now = new Date();
-          const year = `${now.getFullYear()}`;
-          let month = `${now.getMonth() + 1}`;
-          if (month.length === 1) {
-            month = `0${month}`;
-          }
-          let day = `${now.getDate()}`;
-          if (day.length === 1) {
-            day = `0${day}`;
-          }
-
-
-          const separator1 = String.fromCharCode(23); // '\u0017'
-          const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
-          const terminator = String.fromCharCode(3); // '\u0003'
-
-
-          const paramsResult = params.wbcInfo
-              .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
-              .map((wbcItem: any) => `${wbcItem.testcd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
-              .join('');
-
-          // LIS 최종 업로드 Report
-          const newparams = {
-            submit_id: 'TXLII00101',
-            business_id: business_id,
-            ex_interface: `${params.empNo}|${instcd}`,
-            instcd: instcd,
-            userid: params.empNo,
-            eqmtcd: eqmtcd,
-            bcno: params.barcodeNo,
-            result: paramsResult,
-            testcont: 'MANUAL DIFFERENTIAL COUNT RESULT',
-            testcontcd: '01',
-            execdeptcd: 'H1',
-          }
-          axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-            params: newparams,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }).then(function (result) {
-            const xml = result.data.data;
-            const json = JSON.parse(xml2json(xml, {compact: true}));
-            const resultFlag = json.root.ResultFlag.resultflag._text;
-            const paramsDataCbcLisLog = {
-              empNo: userModuleDataGet.value.employeeNo,
-              barcodeNo,
-              wbcTemp,
-              frontendSendData: newparams,
-              processSendData: paramsResult,
-              uimdDefaultData: wbcInfoAfter,
-              nsPercentItem,
-              cbcJson,
-              cbcWorkList,
-            };
-
-            const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${barcodeNo}.txt`;
-            const paramsLisCopyLogData = {
-              filePath,
-              data: {
-                frontendData: paramsDataCbcLisLog,
-                lisLastReportVal: result,
-              },
-            };
-            createCbcFile(paramsLisCopyLogData);
-            if (resultFlag === 'Y') {
-              const result: any = detailRunningApi(String(props.selectItems?.id));
-              const updatedItem = {
-                submitState: 'lis',
-              };
-              const updatedRuningInfo = {...result.data, ...updatedItem}
-              resRunningItem(updatedRuningInfo, true);
-              showSuccessAlert(messages.IDS_MSG_SUCCESS);
-            } else {
-              const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
-              const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
-              const errText = json.root.ResultFlag.error2._text === '1' ? 'LIS 전송이 실패 했습니다.' : result;
-              showErrorAlert(errText);
-            }
-          }).catch(function (err) {
-            showErrorAlert(err.message);
-          })
-        } else {
-          showErrorAlert(messages.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
-        }
-      })
-    }).catch(function (err) {
-      console.log('error.config', err.config)
-      showErrorAlert(err.message);
-    });
+  if (siteCd.value === '0002') {
+    cmcseoulLisAndCbcDataGet();
+  } else if (siteCd.value === '' || siteCd.value === '0000') {
+    uimdTestCbcLisDataGet();
   } else {
     // lis 최종호출
     lisLastStep();
   }
+}
+
+const uimdTestCbcLisDataGet = () => {
+  const codeList = CbcWbcTestCdList_0002;
+  const {wbcInfoAfter} = props.selectItems ?? {};
+  let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+  // cbc 결과 조회
+  axios.get(`${apiBaseUrl}/cbc/liveTest`, {   // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }).then(async function (resultCbc) {
+    // 결과 처리 코드
+    const xml = resultCbc.data.trim(); // 불필요한 공백 제거
+    const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
+    const cbcWorkList = cbcJson.root.spcworklist.worklist;
+    const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
+
+    // LHR100는 WBC를 뜻함 -> 평화이즈 데이터를 WBC로 변경하는 과정
+    const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
+      return item.testcd._cdata === 'LHR100'
+    })
+    wbcInfoAfter.forEach(function (wbcItem: any) {
+      wbcItem.testcd = ''
+      // testcd 없음 필드 자체에 추가 하는 로직
+      codeList.forEach(function (code) {
+        if (String(wbcItem.id) === String(code.id)) {
+          wbcItem.testcd = code.cd
+        }
+      })
+    })
+    // five diff push
+    let wbcTemp: any = [];
+    wbcInfoAfter.forEach(function (wbcItem: any) {
+      fiveDiffWorkList.forEach(function (fiveDiffItem) {
+        if (wbcItem.testcd === fiveDiffItem) {
+          wbcTemp.push({
+            testcd: wbcItem.testcd,
+            percent: wbcItem.percent,
+            name: wbcItem.name,
+          })
+        } else {
+          if ((Number(wbcItem.count) > 0) && wbcItem.testcd !== '') {
+            wbcTemp.push({
+              testcd: wbcItem.testcd,
+              percent: wbcItem.percent,
+              name: wbcItem.name,
+            })
+          }
+        }
+      })
+    })
+
+    // 중복제거
+    const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
+    wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
+
+    const totalPercentRounded = wbcTemp
+        .filter((item: any) => item.name !== "Neutrophil")
+        .map((item: any) => Math.round(parseFloat(item.percent)))
+        .reduce((sum: any, percent: any) => sum + percent, 0);
+    const updatedWbcTemp = wbcTemp.map((item: any) =>
+        item.name === "Neutrophil"
+            ? {...item, percent: 100 - totalPercentRounded}
+            : {...item, percent: Math.round(parseFloat(item.percent))}
+    );
+    wbcTemp = updatedWbcTemp;
+
+    // neutrophil-seg
+    const nsPercentItem = wbcTemp.filter((item: any) => item.testcd === 'LHR10501');
+
+    // ANC insert LHR10599=> ANC 계산
+    if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
+      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
+      wbcTemp.push({
+        testcd: 'LHR10599',
+        percent: ancResult,
+        name: 'ANC 계산'
+      })
+    }
+    // ANC 정수 계산식 ANC 결과를 정수로 반올림
+    // if (nsPercentItem.length > 0 && wbcDiffCountItem.length > 0) {
+    //   const wbcDiffCountValue = parseInt(wbcDiffCountItem[0].inptrslt._cdata, 10);
+    //   const nsPercent = nsPercentItem[0].percent;
+    //   const ancResult = Math.floor((wbcDiffCountValue * nsPercent) / 100);
+    //   wbcTemp.push({
+    //     testcd: 'LHR10599',
+    //     percent: ancResult,
+    //     name: 'ANC 계산'
+    //   });
+    // }
+    console.log(wbcTemp);
+    const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const updatedItem = {
+      submitState: 'lis',
+    };
+    const updatedRuningInfo = {...result.data, ...updatedItem}
+    await resRunningItem(updatedRuningInfo, true);
+
+  }).catch(function (err) {
+    console.log('error.config', err.config)
+    showErrorAlert(err.message);
+  });
+}
+
+const cmcseoulLisAndCbcDataGet = () => {
+  const codeList = CbcWbcTestCdList_0002;
+  const {barcodeNo, wbcInfoAfter} = props.selectItems ?? {};
+  let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+  // cbc 결과 조회
+  axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+    params: {
+      submit_id: 'TRLII00124',
+      business_id: 'li',
+      instcd: '012', // 병원 코드
+      bcno: barcodeNo,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }).then(function (resultCbc) {
+    // 결과 처리 코드
+    const xml = resultCbc.data.data.trim(); // 불필요한 공백 제거
+    const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
+    const cbcWorkList = cbcJson.root.spcworklist.worklist;
+    const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
+    // LHR100는 WBC를 뜻함 -> 평화이즈 데이터를 WBC로 변경하는 과정
+    const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
+      return item.testcd._cdata === 'LHR100'
+    })
+
+    wbcInfoAfter.forEach(function (wbcItem: any) {
+      wbcItem.testcd = ''
+      // testcd 없음 필드 자체에 추가 하는 로직
+      codeList.forEach(function (code) {
+        if (String(wbcItem.id) === String(code.id)) {
+          wbcItem.testcd = code.cd
+        }
+      })
+    })
+
+    // five diff push
+    let wbcTemp: any = [];
+    wbcInfoAfter.forEach(function (wbcItem: any) {
+      fiveDiffWorkList.forEach(function (fiveDiffItem) {
+        if (wbcItem.testcd === fiveDiffItem) {
+          wbcTemp.push({
+            testcd: wbcItem.testcd,
+            percent: wbcItem.percent,
+          })
+        } else {
+          if ((Number(wbcItem.count) > 0) && wbcItem.testcd !== '') {
+            wbcTemp.push({
+              testcd: wbcItem.testcd,
+              percent: wbcItem.percent,
+            })
+          }
+        }
+      })
+    })
+    // 중복제거
+    const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
+    wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
+    // 뉴트로필 외 반올림 뉴트로필 100기준 정수로 재 계산
+    const totalPercentRounded = wbcTemp
+        .filter((item: any) => item.name !== "Neutrophil")
+        .map((item: any) => Math.round(parseFloat(item.percent)))
+        .reduce((sum: any, percent: any) => sum + percent, 0);
+    const updatedWbcTemp = wbcTemp.map((item: any) =>
+        item.name === "Neutrophil"
+            ? {...item, percent: 100 - totalPercentRounded}
+            : {...item, percent: Math.round(parseFloat(item.percent))}
+    );
+    wbcTemp = updatedWbcTemp;
+
+    // neutrophil-seg ANC 계산을 위해서 전체 다 뉴트로필로 변경 전체 개수를 측정 하기 위해서
+    const nsPercentItem = wbcTemp.filter((item: any) => item.testcd === 'LHR10501');
+
+
+    // ANC insert LHR10599=> ANC 계산
+    if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
+      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
+      wbcTemp.push({
+        testcd: 'LHR10599',
+        percent: ancResult,
+        name: 'ANC 계산'
+      })
+    }
+
+    // 유저 체크
+    checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
+      if (isUserAuth === 'succ') {
+        const params = {
+          empNo: userModuleDataGet.value.employeeNo,
+          barcodeNo: barcodeNo,
+          wbcInfo: wbcTemp
+        }
+        const now = new Date();
+        const year = `${now.getFullYear()}`;
+        let month = `${now.getMonth() + 1}`;
+        if (month.length === 1) {
+          month = `0${month}`;
+        }
+        let day = `${now.getDate()}`;
+        if (day.length === 1) {
+          day = `0${day}`;
+        }
+
+        const separator1 = String.fromCharCode(23); // '\u0017'
+        const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
+        const terminator = String.fromCharCode(3); // '\u0003'
+        const paramsResult = params.wbcInfo
+            .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
+            .map((wbcItem: any) => `${wbcItem.testcd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
+            .join('');
+
+        // LIS 최종 업로드 Report
+        const newparams = {
+          submit_id: 'TXLII00101',
+          business_id: business_id,
+          ex_interface: `${params.empNo}|${instcd}`,
+          instcd: instcd,
+          userid: params.empNo,
+          eqmtcd: eqmtcd,
+          bcno: params.barcodeNo,
+          result: paramsResult,
+          testcont: 'MANUAL DIFFERENTIAL COUNT RESULT',
+          testcontcd: '01',
+          execdeptcd: 'H1',
+        }
+        axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+          params: newparams,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }).then(async function (result) {
+          const xml = result.data.data;
+          const json = JSON.parse(xml2json(xml, {compact: true}));
+          const resultFlag = json.root.ResultFlag.resultflag._text;
+          const paramsDataCbcLisLog = {
+            empNo: userModuleDataGet.value.employeeNo,
+            barcodeNo,
+            wbcTemp,
+            frontendSendData: newparams,
+            processSendData: paramsResult,
+            uimdDefaultData: wbcInfoAfter,
+            nsPercentItem,
+            cbcJson,
+            cbcWorkList,
+          };
+          const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${barcodeNo}.txt`;
+          const paramsLisCopyLogData = {
+            filePath,
+            data: {
+              frontendData: paramsDataCbcLisLog,
+              lisLastReportVal: result,
+            },
+          };
+          await createCbcFile(paramsLisCopyLogData);
+          if (resultFlag === 'Y') {
+            // lis 등록 후 list 테이블에서 로우 색상 변경 코드
+            const result: any = await detailRunningApi(String(props.selectItems?.id));
+            const updatedItem = {
+              submitState: 'lis',
+            };
+            const updatedRuningInfo = {...result.data, ...updatedItem}
+            await resRunningItem(updatedRuningInfo, true);
+            showSuccessAlert(messages.IDS_MSG_SUCCESS);
+          } else {
+            const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
+            const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
+            const errText = json.root.ResultFlag.error2._text === '1' ? 'LIS 전송이 실패 했습니다.' : result;
+            showErrorAlert(errText);
+          }
+        }).catch(function (err) {
+          showErrorAlert(err.message);
+        })
+      } else {
+        showErrorAlert(messages.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
+      }
+    })
+  }).catch(function (err) {
+    console.log('error.config', err.config)
+    showErrorAlert(err.message);
+  });
 }
 
 const lisLastStep = () => {
