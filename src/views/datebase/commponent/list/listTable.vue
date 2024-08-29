@@ -233,10 +233,6 @@ const barCodeImageShowError = ref(false);
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
   projectType.value = window.PROJECT_TYPE;
-  scrollableDiv.value.scrollTop = 50;
-  if (scrollableDiv.value) {
-    scrollableDiv.value.addEventListener('scroll', handleScroll);
-  }
   try {
 
     userId.value = getStoredUser.id;
@@ -260,12 +256,6 @@ async function handleKeyDown(event) {
   }
 }
 
-const handleScroll = () => {
-  // if (scrollableDiv.value.scrollTop === 0) {
-  //   emits('loadPrevData');
-  //   scrollableDiv.value.scrollTop = 50;
-  // }
-};
 
 function handleKeyUp(event) {
   // Ctrl 키가 떼어졌는지 확인
@@ -281,9 +271,6 @@ function handleKeyUp(event) {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
-  if (scrollableDiv.value) {
-    scrollableDiv.value.removeEventListener('scroll', handleScroll);
-  }
 });
 
 watch(
@@ -291,10 +278,8 @@ watch(
     (newVal) => {
       if (newVal) {
         loadingDelay.value = true;
-        // console.log('?');
       } else {
         loadingDelay.value = false;
-        // console.log('?')
       }
     },
     {deep: true}

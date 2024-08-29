@@ -338,8 +338,7 @@ const handleOkConfirm = () => {
 const uploadLis = () => {
   if (siteCd.value === '0002' || siteCd.value === '' || siteCd.value === '0000') {
     const codeList = CbcWbcTestCdList_0002;
-    // 테스트 서버 - http://emr012edu.cmcnu.or.kr/cmcnu/.live?submit_id=TRLII00124&business_id=li&instcd=012&bcno=E27JN0IS0
-    // 운영 - http://emr012.cmcnu.or.kr/cmcnu/.live
+    const { barcodeNo, wbcInfoAfter } = props.selectItems ?? {};
     // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
 
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -350,19 +349,16 @@ const uploadLis = () => {
         submit_id: 'TRLII00124',
         business_id: 'li',
         instcd: '012', // 병원 코드
-        bcno: props.selectItems?.barcodeNo,
+        bcno: barcodeNo,
       },
       headers: {
         'Content-Type': 'application/json',
       }
-    }).then(function (result) {
+    }).then(function (resultCbc) {
       // 결과 처리 코드
-      console.log('cbc 결과 값', result.data);
-      const xml = result.data.data.trim(); // 불필요한 공백 제거
-      const json = JSON.parse(xml2json(xml, {compact: true}));
-      console.log('json - lis test', json);
-      const cbcWorkList = json.root.spcworklist.worklist;
-      console.log('cbcWorkList - lis test', cbcWorkList);
+      const xml = resultCbc.data.data.trim(); // 불필요한 공백 제거
+      const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
+      const cbcWorkList = cbcJson.root.spcworklist.worklist;
 
       const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
@@ -370,7 +366,7 @@ const uploadLis = () => {
         return item.testcd._cdata === 'LHR100'
       })
 
-      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      wbcInfoAfter.forEach(function (wbcItem: any) {
         wbcItem.testcd = ''
         // testcd 없음 필드 자체에 추가 하는 로직
         codeList.forEach(function (code) {
@@ -379,12 +375,10 @@ const uploadLis = () => {
           }
         })
       })
-      console.log('props.selectItems?.wbcInfoAfter testcd 추가', props.selectItems?.wbcInfoAfter)
 
       let wbcTemp: any = [];
-
       // five diff push
-      props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+      wbcInfoAfter.forEach(function (wbcItem: any) {
         fiveDiffWorkList.forEach(function (fiveDiffItem) {
           if (wbcItem.testcd === fiveDiffItem) {
             wbcTemp.push(wbcItem)
@@ -417,15 +411,14 @@ const uploadLis = () => {
 
       // 중복제거 4
       // 중복 제거 (Set 사용)
-      const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
-      wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
+      // const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
+      // wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
 
 
       // neutrophil-seg
       const nsPercentItem = wbcTemp.filter(function (item: any) {
         return item.testcd === 'LHR10501'
       })
-      console.log('nsPercentItem', nsPercentItem);
       // ANC insert
       if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
         const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2)
@@ -438,24 +431,12 @@ const uploadLis = () => {
 
       // 유저 체크
       checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
-        const paramsData = {
-          empNo: userModuleDataGet.value.employeeNo,
-          barcodeNo: props.selectItems?.barcodeNo,
-          wbcInfo: wbcTemp
-        }
-        const parmsLisCopy = {
-          filePath: `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`,
-          data: paramsData,
-        };
-        console.log('유저체크', isUserAuth);
-        createCbcFile(parmsLisCopy);
         if (isUserAuth === 'succ') {
           const params = {
             empNo: userModuleDataGet.value.employeeNo,
-            barcodeNo: props.selectItems?.barcodeNo,
+            barcodeNo: barcodeNo,
             wbcInfo: wbcTemp
           }
-          console.log('조합 wbcInfo', wbcTemp);
           const now = new Date();
           const year = `${now.getFullYear()}`;
           let month = `${now.getMonth() + 1}`;
@@ -467,36 +448,17 @@ const uploadLis = () => {
             day = `0${day}`;
           }
 
-          // const separator1 = '\u0017';  // ASCII 23
-          // const separator2 = '\u0017\u0017';  // 두 개의 ASCII 23
-          // const terminator = '\u0003';  // ASCII 3
 
-          const separator1 = encodeURIComponent(String.fromCharCode(23)); // '\u0017'
-          const separator2 = encodeURIComponent(String.fromCharCode(23, 23)); // '\u0017\u0017'
-          const terminator = encodeURIComponent(String.fromCharCode(3)); // '\u0003'
-
-          // const separator1 = String.fromCharCode(23); // '\u0017'
-          // const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
-          // const terminator = String.fromCharCode(3); // '\u0003'
+          const separator1 = String.fromCharCode(23); // '\u0017'
+          const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
+          const terminator = String.fromCharCode(3); // '\u0003'
 
 
-          const result = params.wbcInfo
+          const paramsResult = params.wbcInfo
               .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
               .map((wbcItem: any) => `${wbcItem.testcd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
               .join('');
 
-          // 전임자 코드
-          // let result = ''
-          // params.wbcInfo.forEach(function(wbcItem: any) {
-          //   if (wbcItem.testCd !== null && wbcItem.testCd !== '') {
-          // eslint-disable-next-line vue/no-parsing-error
-          //     result += wbcItem.testCd + encodeURIComponent('') +
-          //   eslint-disable-next-line vue/no-parsing-error
-          //         wbcItem.percent + encodeURIComponent('') +
-          // eslint-disable-next-line vue/no-parsing-error
-          //         year + month + day + encodeURIComponent('')
-          //   }
-          // })
           // LIS 최종 업로드 Report
           const newparams = {
             submit_id: 'TXLII00101',
@@ -506,29 +468,53 @@ const uploadLis = () => {
             userid: params.empNo,
             eqmtcd: eqmtcd,
             bcno: params.barcodeNo,
-            result: result,
+            result: paramsResult,
             testcont: 'MANUAL DIFFERENTIAL COUNT RESULT',
             testcontcd: '01',
             execdeptcd: 'H1',
           }
-          console.log('프론트에서 보내는 파라메터 값', newparams);
-          const url = `${apiBaseUrl}/cbc/lisCbcMarys?submit_id=${newparams.submit_id}&business_id=${newparams.business_id}&ex_interface=${newparams.ex_interface}&instcd=${newparams.instcd}&userid=${newparams.userid}&eqmtcd=${newparams.eqmtcd}&bcno=${newparams.bcno}&result=${result}&testcont=${newparams.testcont}&testcontcd=${newparams.testcontcd}&execdeptcd=${newparams.execdeptcd}`;
-
-          axios.get(url, {
-          // axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-            // params: newparams,
+          axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
+            params: newparams,
             headers: {
               'Content-Type': 'application/json',
             }
           }).then(function (result) {
             const xml = result.data.data;
-            console.log('LIS 최종 업로드 Report 값', result)
             const json = JSON.parse(xml2json(xml, {compact: true}));
             const resultFlag = json.root.ResultFlag.resultflag._text;
+            const paramsDataCbcLisLog = {
+              empNo: userModuleDataGet.value.employeeNo,
+              barcodeNo,
+              wbcTemp,
+              frontendSendData: newparams,
+              processSendData: paramsResult,
+              uimdDefaultData: wbcInfoAfter,
+              nsPercentItem,
+              cbcJson,
+              cbcWorkList,
+            };
+
+            const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${barcodeNo}.txt`;
+            const paramsLisCopyLogData = {
+              filePath,
+              data: {
+                frontendData: paramsDataCbcLisLog,
+                lisLastReportVal: result,
+              },
+            };
+            createCbcFile(paramsLisCopyLogData);
             if (resultFlag === 'Y') {
+              const result: any = detailRunningApi(String(props.selectItems?.id));
+              const updatedItem = {
+                submitState: 'lis',
+              };
+              const updatedRuningInfo = {...result.data, ...updatedItem}
+              resRunningItem(updatedRuningInfo, true);
               showSuccessAlert(messages.IDS_MSG_SUCCESS);
             } else {
-              const errText = json.root.ResultFlag.error2._text === '1' ? 'LIS 전송이 실패 했습니다.' : json.root.ResultFlag.error2._text;
+              const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
+              const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
+              const errText = json.root.ResultFlag.error2._text === '1' ? 'LIS 전송이 실패 했습니다.' : result;
               showErrorAlert(errText);
             }
           }).catch(function (err) {
@@ -538,9 +524,7 @@ const uploadLis = () => {
           showErrorAlert(messages.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
         }
       })
-
     }).catch(function (err) {
-      // alert('에러')
       console.log('error.config', err.config)
       showErrorAlert(err.message);
     });
@@ -1039,7 +1023,7 @@ const getStringValue = (title: string): string => {
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
-            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
@@ -1347,7 +1331,7 @@ async function updateOriginalDb() {
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   // 러닝 인포 디비에 다시 재저장
   try {
-            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({

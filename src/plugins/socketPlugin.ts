@@ -1,7 +1,6 @@
 import { Plugin } from 'vue';
 import { io, Socket } from 'socket.io-client';
 
-// 소켓 인스턴스를 보유할 앱 컨텍스트의 속성을 생성합니다.
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         $socket: Socket;
@@ -48,7 +47,7 @@ const socketPlugin: Plugin = {
         // 전역 속성에 소켓 인스턴스 등록
         app.config.globalProperties.$socket = socket;
 
-        // Vue 컴포넌트가 해제될 때 소켓 연결을 정리합니다.
+        // Vue 컴포넌트가 해제될 때 소켓 연결을 정리
         const originalUnmount = app.unmount.bind(app);
 
         app.unmount = () => {
