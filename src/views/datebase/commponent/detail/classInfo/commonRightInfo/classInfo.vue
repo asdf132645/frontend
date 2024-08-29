@@ -535,7 +535,7 @@ const cmcseoulLisAndCbcDataGet = () => {
     );
     wbcTemp = updatedWbcTemp;
 
-    // neutrophil-seg
+    // neutrophil-seg ANC 계산을 위해서 전체 다 뉴트로필로 변경 전체 개수를 측정 하기 위해서
     const nsPercentItem = wbcTemp.filter((item: any) => item.testcd === 'LHR10501');
 
 
