@@ -162,12 +162,15 @@
         <tr>
           <th>Download Save Path</th>
           <td>
-<!--            <div class="downloadSavePathContainer">-->
+            <div class="downloadSavePathContainer">
               <select v-model='downloadRootPath' class="downloadPath">
                 <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
               </select>
 <!--              <button class="backupBtn" @click="openSourceDrive">Search</button>-->
-<!--            </div>-->
+
+<!--              <input type="file" ref="downloadFileInput" @change="handleDownloadFileChange" style="display: none;" />-->
+<!--              <button class="uploadBtn" @click="handleDownloadFileSelect">Search</button>-->
+            </div>
           </td>
         </tr>
         <tr>
@@ -187,8 +190,8 @@
               <select v-model='uploadRootPath' class="uploadSavePath">
                 <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
               </select>
-              <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" />
-              <button class="uploadBtn" @click="handleFileSelect">Upload</button>
+              <input type="file" ref="uploadFileInput" @change="handleUploadFileChange" style="display: none;" accept=".sql" />
+              <button class="uploadBtn" @click="handleUploadFileSelect">Upload</button>
             </div>
           </td>
         </tr>
@@ -344,7 +347,7 @@ const cellimgId = ref('');
 
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
-const fileInput = ref<any>(null);
+const uploadFileInput = ref<any>(null);
 const uploadSlotIdObj = ref({duplicated: [], nonDuplicated: []});
 const selectedFileName = ref('');
 const possibleUploadCount = computed(() => uploadSlotIdObj.value?.nonDuplicated && uploadSlotIdObj.value?.nonDuplicated.length);
@@ -363,6 +366,7 @@ const downloadConfirmMessage = ref('');
 const downloadDto = ref<any>({});
 const loadingFileCount = ref(1000);
 const downloadUploadType = ref('copy');
+const downloadFileInput = ref<any>(null);
 
 
 onMounted(async () => {
@@ -726,15 +730,31 @@ const createBackup = async () => {
   }
 }
 
-const handleFileSelect = () => {
+const handleUploadFileSelect = () => {
   setTimeout(() => {
-    fileInput.value.click();
+    uploadFileInput.value.click();
   }, 100)
-  fileInput.value.value = null;
+  uploadFileInput.value.value = null;
 }
 
-const handleFileChange = async (event: any) => {
+const handleDownloadFileSelect = () => {
+  setTimeout(() => {
+    downloadFileInput.value.click();
+  }, 100);
+  downloadFileInput.value.value = null;
+}
+
+const handleDownloadFileChange = async (event: any) => {
+  await downloadSavePathOpen(event);
+}
+
+const handleUploadFileChange = async (event: any) => {
   await uploadBackupData(event);
+}
+
+const downloadSavePathOpen = async (event: any) => {
+  const fileName = event.target.files[0]?.name;
+  console.log(fileName);
 }
 
 const uploadBackupData = async (event: any) => {
