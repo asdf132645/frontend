@@ -44,7 +44,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb'">
-          <th :rowspan="testTypeCd === '04' ? 3 : 2">PBS Analysis Values</th>
+          <th rowspan="2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
