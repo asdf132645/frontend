@@ -26,7 +26,7 @@
       </li>
       <li
           @click="lisModalOpen"
-          :class="{'submitted': selectItems?.submitState === 'lis',}"
+          :class="{'submitted': selectItems?.submitState === 'lis' || lisBtnColor,}"
       >
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
@@ -227,6 +227,7 @@ const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
 const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
+const lisBtnColor = ref(false);
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -241,7 +242,9 @@ onMounted(async () => {
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
-
+  if(props.selectItems?.submitState){
+    lisBtnColor.value = props.selectItems.submitState === 'lis';
+  }
   // 첫 진입시
   if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
@@ -440,23 +443,13 @@ const uimdTestCbcLisDataGet = () => {
         name: 'ANC 계산'
       })
     }
-    // ANC 정수 계산식 ANC 결과를 정수로 반올림
-    // if (nsPercentItem.length > 0 && wbcDiffCountItem.length > 0) {
-    //   const wbcDiffCountValue = parseInt(wbcDiffCountItem[0].inptrslt._cdata, 10);
-    //   const nsPercent = nsPercentItem[0].percent;
-    //   const ancResult = Math.floor((wbcDiffCountValue * nsPercent) / 100);
-    //   wbcTemp.push({
-    //     testcd: 'LHR10599',
-    //     percent: ancResult,
-    //     name: 'ANC 계산'
-    //   });
-    // }
-    console.log(wbcTemp);
+
     const result: any = await detailRunningApi(String(props.selectItems?.id));
     const updatedItem = {
       submitState: 'lis',
     };
-    const updatedRuningInfo = {...result.data, ...updatedItem}
+    lisBtnColor.value = true;
+    const updatedRuningInfo = {id: result.data.id, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);
 
   }).catch(function (err) {
@@ -480,7 +473,7 @@ const cmcseoulLisAndCbcDataGet = () => {
     headers: {
       'Content-Type': 'application/json',
     }
-  }).then(function (resultCbc) {
+  }).then(async function (resultCbc) {
     // 결과 처리 코드
     const xml = resultCbc.data.data.trim(); // 불필요한 공백 제거
     const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
@@ -549,6 +542,31 @@ const cmcseoulLisAndCbcDataGet = () => {
       })
     }
 
+    // 반올림 계산법
+    // if (nsPercentItem.length > 0 && wbcDiffCountItem.length > 0) {
+    //   const wbcDiffCountValue = parseInt(wbcDiffCountItem[0].inptrslt._cdata, 10);
+    //   const nsPercent = nsPercentItem[0].percent;
+    //
+    //   // 버림 처리 예시
+    //   const ancResult = calculateWithRounding(wbcDiffCountValue, nsPercent, 'round');
+    //
+    //   wbcTemp.push({
+    //     testcd: 'LHR10599',
+    //     percent: ancResult,
+    //     name: 'ANC 계산'
+    //   });
+    // }
+
+
+    const filePath = `D:\\UIMD_Data\\UI_Log\\CBCLookUP\\${barcodeNo}.txt`;
+    const paramsLisCopyLogData = {
+      filePath,
+      data: {
+        cbcJson,
+        cbcWorkList
+      },
+    };
+    await createCbcFile(paramsLisCopyLogData);
     // 유저 체크
     checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
       if (isUserAuth === 'succ') {
@@ -610,7 +628,7 @@ const cmcseoulLisAndCbcDataGet = () => {
             cbcJson,
             cbcWorkList,
           };
-          const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${barcodeNo}.txt`;
+          const filePath = `D:\\UIMD_Data\\UI_Log\\LISFinalReport\\${barcodeNo}.txt`;
           const paramsLisCopyLogData = {
             filePath,
             data: {
@@ -625,6 +643,7 @@ const cmcseoulLisAndCbcDataGet = () => {
             const updatedItem = {
               submitState: 'lis',
             };
+            lisBtnColor.value = true;
             const updatedRuningInfo = {...result.data, ...updatedItem}
             await resRunningItem(updatedRuningInfo, true);
             showSuccessAlert(messages.IDS_MSG_SUCCESS);
@@ -646,7 +665,20 @@ const cmcseoulLisAndCbcDataGet = () => {
     showErrorAlert(err.message);
   });
 }
+function calculateWithRounding(value: any, percent: any, roundingMethod: any) {
+  const result = (value * percent) / 100;
 
+  switch (roundingMethod) {
+    case 'round':
+      return Math.round(result); // 반올림
+    case 'floor':
+      return Math.floor(result); // 버림
+    case 'ceil':
+      return Math.ceil(result);  // 올림
+    default:
+      throw new Error('Invalid rounding method');
+  }
+}
 const lisLastStep = () => {
   if (siteCd.value === '0019') {
     let data = 'H|\^&||||||||||P||' + props.selectItems?.barcodeNo + '\n';
