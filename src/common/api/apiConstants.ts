@@ -437,6 +437,10 @@ export const apiConstants = {
         openDrive: {
             endpoint: 'download/openDrive',
             requiresToken: false,
+        },
+        checkDataMoved: {
+            endpoint: 'download/checkDownloadDataMoved',
+            requiresToken: false,
         }
     },
     upload: {
@@ -446,6 +450,10 @@ export const apiConstants = {
         },
         checkDuplicated: {
             endpoint: 'upload/checkDuplicatedData',
+            requiresToken: false,
+        },
+        checkDataMoved: {
+            endpoint: 'upload/checkUploadDataMoved',
             requiresToken: false,
         }
     },

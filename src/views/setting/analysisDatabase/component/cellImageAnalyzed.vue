@@ -1,10 +1,10 @@
 <template>
   <div class="loadingBackground" v-show="isLoadingProgressBar">
     <div class="progressContainer">
-      <p class="loadingProgressBarText">Loading...</p>
+      <p class="loadingProgressBarText">{{ successFileCount }} / {{ totalFileCount  }}files moved...</p>
       <div
           class="progressBar"
-          :style="{ animationDuration: loadingFileCount + 's' }"
+          :style="{ width: (successFileCount / totalFileCount) * 100 + '%' }"
       ></div>
     </div>
   </div>
@@ -256,8 +256,8 @@
       :confirmText2="messages.COPY"
       :closeText="messages.CLOSE"
       @hide="handleDownloadClose"
-      @okConfirm="handleDownloadMove"
-      @okConfirm2="handleDownloadCopy"
+      @okConfirm="handleDownload('move')"
+      @okConfirm2="handleDownload('copy')"
   />
 
   <Alert
@@ -289,7 +289,7 @@ import {
   backUpDateApi,
   downloadPossibleApi,
   uploadPossibleApi,
-  uploadBackupApi, openDriveApi
+  uploadBackupApi, openDriveApi, checkDownloadDataMovedApi, checkUploadDataMovedApi
 } from "@/common/api/service/backup/wbcApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
@@ -361,8 +361,10 @@ const isLoadingProgressBar = ref(false);
 const showDownloadConfirm = ref(false);
 const downloadConfirmMessage = ref('');
 const downloadDto = ref<any>({});
-const loadingFileCount = ref(1000);
+const totalFileCount = ref(1);
+const successFileCount = ref(0);
 const downloadUploadType = ref('copy');
+const intervalId = ref(null);
 
 
 onMounted(async () => {
@@ -391,6 +393,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     sideEdgeWbcMode: sideEdgeWbcMode.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
+    backupPath: downloadRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
@@ -479,23 +482,25 @@ const cellImgGet = async () => {
 
         const cellBeforeSettingObj = {
           id: cellimgId.value,
-          analysisType: data.analysisType,
-          diffCellAnalyzingCount: data.diffCellAnalyzingCount,
-          diffWbcPositionMargin: data.diffWbcPositionMargin,
-          diffRbcPositionMargin: data.diffRbcPositionMargin,
-          diffPltPositionMargin: data.diffPltPositionMargin,
-          pbsCellAnalyzingCount: data.pbsCellAnalyzingCount,
-          stitchCount: data.stitchCount,
-          sideEdgeWbcMode: data.sideEdgeWbcMode,
-          bfCellAnalyzingCount: data.bfCellAnalyzingCount,
-          iaRootPath: data.iaRootPath,
-          isNsNbIntegration: data.isNsNbIntegration,
-          isAlarm: data.isAlarm,
-          alarmCount: data.alarmCount,
-          keepPage: data.keepPage,
+          analysisType: data?.analysisType,
+          diffCellAnalyzingCount: data?.diffCellAnalyzingCount,
+          diffWbcPositionMargin: data?.diffWbcPositionMargin,
+          diffRbcPositionMargin: data?.diffRbcPositionMargin,
+          diffPltPositionMargin: data?.diffPltPositionMargin,
+          pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
+          stitchCount: data?.stitchCount,
+          sideEdgeWbcMode: data?.sideEdgeWbcMode,
+          bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
+          iaRootPath: data?.iaRootPath,
+          isNsNbIntegration: data?.isNsNbIntegration,
+          backupPath: data?.backupPath,
+          isAlarm: data?.isAlarm,
+          alarmCount: data?.alarmCount,
+          keepPage: data?.keepPage,
         }
 
         await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
+        await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
 
     }
@@ -593,8 +598,8 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     }
     downloadUploadType.value = uploadType;
 
+    handleUploadPolling();
     const result = await uploadBackupApi(uploadDto);
-
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
     } else {
@@ -603,8 +608,9 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
   } catch (e) {
     console.log(e);
   } finally {
-    isLoadingProgressBar.value = false;
+    clearInterval(intervalId.value);
   }
+  await updateFileCounts('Upload');
 }
 
 const uploadCancel = async () => {
@@ -643,38 +649,55 @@ const handleDownloadClose = () => {
   showDownloadConfirm.value = false;
 }
 
-const handleDownloadMove = async () => {
-  const downloadDto = downloadDtoObj('move')
-  isLoadingProgressBar.value = true;
-  try {
-    await backUpDateApi(downloadDto);
-    await showSuccessAlert('Download Success')
-  } catch (e) {
-    console.log(e);
-  }
-  loadingFileCount.value = 0;
-  setTimeout(() => {
-    isLoadingProgressBar.value = false;
-  }, 1000)
-
+const handleDownloadPolling = async () => {
+  intervalId.value = setInterval(async () => {
+    try {
+      const result: any = await checkDownloadDataMovedApi();
+      successFileCount.value = Number(result.data.success);
+    } catch (error) {
+      console.log(`Error polling data: `, error);
+      clearInterval(intervalId.value);
+    }
+  }, 1000);
 }
 
-const handleDownloadCopy = async () => {
-  const downloadDto = downloadDtoObj('copy');
-  isLoadingProgressBar.value = true;
-  try {
-    await backUpDateApi(downloadDto);
-    await showSuccessAlert('Download Success')
-  } catch (e) {
-    console.log(e);
-  }
-  loadingFileCount.value = 0;
-  setTimeout(() => {
-    isLoadingProgressBar.value = false;
-  }, 3000)
+const handleUploadPolling = async () => {
+  intervalId.value = setInterval(async () => {
+    try {
+      const result: any = await checkUploadDataMovedApi();
+      successFileCount.value = Number(result.data.success);
+    } catch (error) {
+      console.log(`Error polling data: `, error);
+      clearInterval(intervalId.value);
+    }
+  }, 1000);
 }
 
-const downloadDtoObj = (downloadType: string) => {
+const handleDownload = async (downloadType: 'move' | 'copy') => {
+  const downloadDto = downloadDtoObj(downloadType);
+  try {
+    handleDownloadPolling();
+    await backUpDateApi(downloadDto);
+  } catch (e) {
+    console.log(e);
+  } finally {
+    clearInterval(intervalId.value);
+  }
+
+  await updateFileCounts('Download');
+}
+
+const updateFileCounts = (downloadUploadType: 'Download' | 'Upload') => {
+  successFileCount.value = totalFileCount.value;
+  setTimeout(async () => {
+    totalFileCount.value = 0;
+    successFileCount.value = 0;
+    isLoadingProgressBar.value = false;
+    await showSuccessAlert(`${downloadUploadType} Success`);
+  }, 2000)
+}
+
+const downloadDtoObj = (downloadType: 'move' | 'copy') => {
   downloadUploadType.value = downloadType;
   showDownloadConfirm.value = false;
   const day = localStorage.getItem('lastSearchParams') || '';
@@ -691,6 +714,7 @@ const downloadDtoObj = (downloadType: string) => {
     dayQuery,
     downloadType
   }
+  isLoadingProgressBar.value = true;
 
   return downloadDto;
 }
@@ -721,7 +745,7 @@ const createBackup = async () => {
     const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
     console.log('isPossibleToBackup', isPossibleToBackup.data);
     if (isPossibleToBackup.data.success) {
-      loadingFileCount.value = Number(isPossibleToBackup.data.message.split(' ')[1]);
+      totalFileCount.value = Number(isPossibleToBackup.data.message.split(' ')[1]);
       showDownloadConfirm.value = true;
       downloadConfirmMessage.value = `Would you move or copy files`;
     } else {
