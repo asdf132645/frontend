@@ -620,6 +620,11 @@ ul.customClass li {
     top: -270px;
 }
 
+.settingUploadContainer {
+    display: flex;
+    justify-content: center;
+}
+
 .line {
     height: 1px;
     width: 100%;
@@ -922,6 +927,41 @@ button.degreeAllCheckBtn {
     100% {
         transform: rotate(360deg);
     }
+}
+
+.progressContainer {
+    width: 80%;
+    background-color: #f3f3f3;
+    border-radius: 25px;
+    overflow: hidden;
+    height: 30px;
+    margin: 20px 0;
+}
+
+.progressBar {
+    height: 100%;
+    width: 0%;
+    background-color: #3498db; /* Blue color */
+    animation: progress-animation 800s linear forwards;
+}
+
+@keyframes progress-animation {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.loadingProgressBarText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: -60px;
+    font-size: 2.2rem;
+    color: var(--white-color);
 }
 
 p.loadingTextLogin {
@@ -1897,7 +1937,7 @@ button.backupBtn {
     cursor: pointer;
 }
 
-button.restoreBtn {
+button.uploadBtn {
     width: 100px;
     height: 36px;
     margin-left: 14px;
@@ -1923,9 +1963,19 @@ button.restoreBtn {
     color: var(--main-bg-2-color);
 }
 
-select.autoBackUpPath {
+.downloadSavePathContainer {
+    display: flex;
+}
+
+select.downloadPath {
     margin: 0 12px;
     width: 97%;
+    /*width: 80%;*/
+}
+
+select.uploadSavePath {
+    margin: 0 -2px 0 12px;
+    width: 100%;
 }
 
 h3.titleH3 button {
@@ -2581,7 +2631,7 @@ table.tableClass {
     width: 100%;
 }
 
-.restoreModal {
+.uploadModal {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -2596,7 +2646,7 @@ table.tableClass {
     border-color: var(--white-color);
 }
 
-.restoreModalSmall {
+.uploadModalSmall {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -2611,12 +2661,12 @@ table.tableClass {
     border-color: var(--white-color);
 }
 
-.restoreModalCountWrapperSmall {
+.uploadModalCountWrapperSmall {
     margin-top: 20px;
     gap: 10px;
 }
 
-.restoreDuplicatedSlotContainer {
+.uploadDuplicatedSlotContainer {
     display: flex;
     justify-content: start;
     flex-direction: column;
@@ -2629,12 +2679,12 @@ table.tableClass {
     padding-top: 10px;
 }
 
-.restoreDuplicatedSlotContainer p {
+.uploadDuplicatedSlotContainer p {
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-.restoreDuplicatedSlotWrapper {
+.uploadDuplicatedSlotWrapper {
     display: inline-block;
     flex-direction: column;
     /*justify-content: center;*/
@@ -2649,7 +2699,7 @@ table.tableClass {
     overflow-y: auto;
 }
 
-.restoreDuplicatedSlotWrapper li {
+.uploadDuplicatedSlotWrapper li {
     margin: 10px 100px 1px 100px;
     padding: 2px 10px;
     background-color: #f9f9f9;
@@ -2658,14 +2708,14 @@ table.tableClass {
     color: #555;
 }
 
-.restoreModalBtnContainer {
+.uploadModalBtnContainer {
     position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translate(-50%, 0);
 }
 
-.restoreModal p {
+.uploadModal p {
     margin: 0 0 10px 0;
     line-height: 1.5;
 }

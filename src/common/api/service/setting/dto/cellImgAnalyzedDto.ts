@@ -7,6 +7,7 @@ export interface CellImgAnalyzedRequest {
     diffPltPositionMargin: string;
     pbsCellAnalyzingCount: string;
     stitchCount: string;
+    // sideEdgeWbcMode: boolean;
     bfCellAnalyzingCount: string;
     iaRootPath: string;
     isNsNbIntegration: boolean;
@@ -30,6 +31,7 @@ export interface CellImgAnalyzedResponse {
     diffPltPositionMargin: string;
     pbsCellAnalyzingCount: string;
     stitchCount: string;
+    // sideEdgeWbcMode: boolean;
     bfCellAnalyzingCount: string;
     iaRootPath: string;
     isNsNbIntegration: boolean;

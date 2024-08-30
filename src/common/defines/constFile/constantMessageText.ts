@@ -419,4 +419,11 @@ export  const messages: Messages = {
     settingUpdateSuccess: 'Updated successfully',
     settingUpdateFailure: 'Update failed',
     settingNotSaved: 'Setting not saved',
+
+    SAVE: 'Save',
+    LEAVE: 'Leave',
+    CANCEL: 'Cancel',
+    CLOSE: 'Close',
+    COPY: 'Copy',
+    MOVE: 'Move',
 };
