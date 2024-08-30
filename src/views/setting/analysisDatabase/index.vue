@@ -92,13 +92,13 @@ const activateTab = (tabName: string) => {
   }
 };
 
-const showSuccessAlert = (message: string) => {
+const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
 }
 
-const showErrorAlert = (message: string) => {
+const showErrorAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
   alertMessage.value = message;

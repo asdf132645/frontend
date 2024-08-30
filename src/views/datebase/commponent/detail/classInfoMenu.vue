@@ -116,7 +116,8 @@ onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
   isLoading.value = false;
-  keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem('keepPage')));
+  const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
+  keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
 })
 
 onMounted(async () => {
