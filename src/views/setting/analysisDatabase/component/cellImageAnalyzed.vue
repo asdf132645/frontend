@@ -44,7 +44,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb'">
-          <th rowspan="2">PBS Analysis Values</th>
+          <th :rowspan="projectType === 'pb' && testTypeCd === '04' ? 3 : 2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
@@ -63,14 +63,14 @@
             </select>
           </td>
         </tr>
-<!--        <tr v-show="projectType === 'pb' && testTypeCd === '04'">-->
-<!--          <th>Edge Shot Type</th>-->
-<!--          <td>-->
-<!--            <select v-model='sideEdgeWbcMode'>-->
-<!--              <option v-for="type in sideEdgeWbcModeList" :key="type.value" :value="type.value">{{ type.text }}</option>-->
-<!--            </select>-->
-<!--          </td>-->
-<!--        </tr>-->
+        <tr v-show="projectType === 'pb' && testTypeCd === '04'">
+          <th>Edge Shot Type</th>
+          <td>
+            <select v-model='sideEdgeWbcMode'>
+              <option v-for="type in sideEdgeWbcModeList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
         <!--      BF analysis values-->
         <tr v-if="projectType === 'pb'">
           <th>BF Analysis Values</th>
@@ -392,7 +392,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
-    // sideEdgeWbcMode: sideEdgeWbcMode.value,
+    sideEdgeWbcMode: sideEdgeWbcMode.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
@@ -470,7 +470,7 @@ const cellImgGet = async () => {
         pbsCellAnalyzingCount.value = data.pbsCellAnalyzingCount;
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
-        // sideEdgeWbcMode.value = String(data?.sideEdgeWbcMode);
+        sideEdgeWbcMode.value = String(data?.sideEdgeWbcMode);
         iaRootPath.value = data.iaRootPath;
         downloadRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
         isNsNbIntegration.value = data.isNsNbIntegration;
@@ -490,7 +490,7 @@ const cellImgGet = async () => {
           diffPltPositionMargin: data.diffPltPositionMargin,
           pbsCellAnalyzingCount: data.pbsCellAnalyzingCount,
           stitchCount: data.stitchCount,
-          // sideEdgeWbcMode: data.sideEdgeWbcMode,
+          sideEdgeWbcMode: data.sideEdgeWbcMode,
           bfCellAnalyzingCount: data.bfCellAnalyzingCount,
           iaRootPath: data.iaRootPath,
           isNsNbIntegration: data.isNsNbIntegration,
@@ -517,7 +517,7 @@ const cellImgSet = async () => {
     diffRbcPositionMargin: rbcPositionMargin.value,
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
-    // sideEdgeWbcMode: sideEdgeWbcMode.value,
+    sideEdgeWbcMode: sideEdgeWbcMode.value,
     stitchCount: stitchCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
@@ -554,7 +554,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
       sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
-      // sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
+      sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('keepPage', String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});

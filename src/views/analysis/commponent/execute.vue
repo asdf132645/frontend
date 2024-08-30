@@ -239,7 +239,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     const rbcPositionMargin = sessionStorage.getItem('rbcPositionMargin');
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
-    // const sideEdgeWbcMode = sessionStorage.getItem('sideEdgeWbcMode') || '0';
+    const sideEdgeWbcMode = sessionStorage.getItem('sideEdgeWbcMode') || '0';
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
@@ -250,7 +250,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       rbcPositionMargin: rbcPositionMargin || '0',
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
-      // sideEdgeWbcMode: sideEdgeWbcMode || '0',
+      sideEdgeWbcMode: sideEdgeWbcMode || '0',
     });
     if (window.PROJECT_TYPE === 'bm') {
       startAction = {
