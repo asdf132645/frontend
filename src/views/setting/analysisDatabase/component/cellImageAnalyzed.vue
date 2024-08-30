@@ -139,7 +139,7 @@
             <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
           </td>
         </tr>
-        <tr v-if="projectType === 'pb'">
+        <tr>
           <th>Keep Page</th>
           <td>
             <font-awesome-icon
@@ -556,7 +556,8 @@ const cellImgSet = async () => {
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
       sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
-      sessionStorage.setItem('keepPage', String(data?.keepPage));
+      const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
+      sessionStorage.setItem(keepPageType, String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
     }
 

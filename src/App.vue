@@ -141,7 +141,6 @@ function checkFullscreenStatus() {
 function startChecking() {
   // 화면 상태를 즉시 업데이트
   checkFullscreenStatus();
-
   // 1분(60000ms)마다 체크를 수행
   intervalId = setInterval(checkFullscreenStatus, 60000);
 }
@@ -183,7 +182,7 @@ watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   if (newUserId.id === '') {
     return;
   }
-  cellImgGet(newUserId.id);
+  cellImgGet();
   userId.value = newUserId.id;
 });
 
@@ -713,7 +712,7 @@ const sendMessage = async (payload: any) => {
 };
 
 
-const cellImgGet = async (newUserId?: string) => {
+const cellImgGet = async () => {
   try {
     const result = await getCellImgApi();
     if (result) {
@@ -725,12 +724,13 @@ const cellImgGet = async (newUserId?: string) => {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
         isNsNbIntegrationLocal.value = data?.isNsNbIntegration ? 'Y' : 'N';
-        // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'});
         sessionStorage.setItem('isNsNbIntegration', data?.isNsNbIntegration ? 'Y' : 'N');
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
+        const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage': 'bmKeepPage';
+        sessionStorage.setItem(keepPageType, String(data?.keepPage));
         sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
