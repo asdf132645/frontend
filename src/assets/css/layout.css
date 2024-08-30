@@ -1968,9 +1968,12 @@ button.uploadBtn {
 }
 
 select.downloadPath {
-    margin: 0 12px;
+    margin: 0 5px 0 12px;
     width: 97%;
-    /*width: 80%;*/
+}
+
+.settingCellImgAnalyzedContainer {
+    max-height: 750px;
 }
 
 select.uploadSavePath {

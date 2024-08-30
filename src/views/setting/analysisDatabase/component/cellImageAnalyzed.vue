@@ -4,7 +4,7 @@
       <p class="loadingProgressBarText">Loading...</p>
       <div
           class="progressBar"
-          :style="{ animationDuration: downloadUploadType === 'copy' ? Number(loadingFileCount / 3) + 's' : Number(loadingFileCount / 5) + 's' }"
+          :style="{ animationDuration: loadingFileCount + 's' }"
       ></div>
     </div>
   </div>
@@ -14,7 +14,7 @@
     <p class="loadingTextLogin">Loading...</p>
   </div>
 
-    <div>
+    <div class="settingCellImgAnalyzedContainer">
       <template v-if="viewerCheck !== 'viewer'">
         <table class="settingTable">
         <tbody>
@@ -140,7 +140,7 @@
           </td>
         </tr>
         <tr>
-          <th>Keep Page</th>
+          <th title="Keep page when moving in Database detail page by up, down arrows">Keep Page</th>
           <td>
             <font-awesome-icon
                 :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -160,21 +160,18 @@
         </colgroup>
         <tbody>
         <tr>
-          <th>Download Save Path</th>
+          <th title="Destination path for download and Origin path for upload">Download Save Path</th>
           <td>
             <div class="downloadSavePathContainer">
               <select v-model='downloadRootPath' class="downloadPath">
                 <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
               </select>
-<!--              <button class="backupBtn" @click="openSourceDrive">Search</button>-->
-
-<!--              <input type="file" ref="downloadFileInput" @change="handleDownloadFileChange" style="display: none;" />-->
-<!--              <button class="uploadBtn" @click="handleDownloadFileSelect">Search</button>-->
+              <button class="backupBtn" @click="openSourceDrive">Directory</button>
             </div>
           </td>
         </tr>
         <tr>
-          <th>Download</th>
+          <th title="Download data from start to end date">Download</th>
           <td>
             <div class="backupDatePickers">
               <Datepicker v-model="backupStartDate"></Datepicker>
@@ -366,7 +363,6 @@ const downloadConfirmMessage = ref('');
 const downloadDto = ref<any>({});
 const loadingFileCount = ref(1000);
 const downloadUploadType = ref('copy');
-const downloadFileInput = ref<any>(null);
 
 
 onMounted(async () => {
@@ -656,7 +652,11 @@ const handleDownloadMove = async () => {
   } catch (e) {
     console.log(e);
   }
-  isLoadingProgressBar.value = false;
+  loadingFileCount.value = 0;
+  setTimeout(() => {
+    isLoadingProgressBar.value = false;
+  }, 1000)
+
 }
 
 const handleDownloadCopy = async () => {
@@ -668,7 +668,10 @@ const handleDownloadCopy = async () => {
   } catch (e) {
     console.log(e);
   }
-  isLoadingProgressBar.value = false;
+  loadingFileCount.value = 0;
+  setTimeout(() => {
+    isLoadingProgressBar.value = false;
+  }, 3000)
 }
 
 const downloadDtoObj = (downloadType: string) => {
@@ -738,24 +741,8 @@ const handleUploadFileSelect = () => {
   uploadFileInput.value.value = null;
 }
 
-const handleDownloadFileSelect = () => {
-  setTimeout(() => {
-    downloadFileInput.value.click();
-  }, 100);
-  downloadFileInput.value.value = null;
-}
-
-const handleDownloadFileChange = async (event: any) => {
-  await downloadSavePathOpen(event);
-}
-
 const handleUploadFileChange = async (event: any) => {
   await uploadBackupData(event);
-}
-
-const downloadSavePathOpen = async (event: any) => {
-  const fileName = event.target.files[0]?.name;
-  console.log(fileName);
 }
 
 const uploadBackupData = async (event: any) => {
