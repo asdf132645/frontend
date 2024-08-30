@@ -64,7 +64,7 @@ import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
-import {slideCard} from "@/common/defines/constFile/analysis";
+import {slideCard, slideCard100a} from "@/common/defines/constFile/analysis";
 
 // 스토어
 const store = useStore();
@@ -72,7 +72,7 @@ const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const initValData = computed(() => store.state.commonModule.initValData);
 const timeDataGet = computed(() => store.state.timeModule);
-const props = defineProps([ 'parsedData','pb100aCassette']);
+const props = defineProps(['parsedData', 'pb100aCassette']);
 
 
 // 스토어
@@ -104,11 +104,11 @@ const oCasExist = ref<any>('0');
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
-  if(sysInfo.eqStatCd === '02'){
+  if (sysInfo.eqStatCd === '02') {
     fixEqStatCd.value = false;
   }
 
-  if(!fixEqStatCd.value){
+  if (!fixEqStatCd.value) {
     eqStatCd.value = newData.sysInfo.eqStatCd;
   }
 
@@ -136,7 +136,7 @@ watch([commonDataGet.value], async (newVals: any) => {
 
   if (!newValsObj[0].startEmbedded) {
     stopCounting();
-  } else if(newValsObj[0].runningSlotId === '' && newValsObj[0].startEmbedded) {
+  } else if (newValsObj[0].runningSlotId === '' && newValsObj[0].startEmbedded) {
     startTotalCounting();
   }
 
@@ -188,7 +188,7 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 });
 
 
-watch(()=>eqStatCd.value, (newVal) => {
+watch(() => eqStatCd.value, (newVal) => {
   if (newVal === '05') {
     interval.value = setInterval(() => {
       isBlinking.value = !isBlinking.value;
@@ -201,7 +201,7 @@ watch(()=>eqStatCd.value, (newVal) => {
 })
 
 watch(() => initValData.value, (newVal) => {
-  if(newVal){
+  if (newVal) {
     eqStatCd.value = '05';
   }
   fixEqStatCd.value = newVal;
@@ -209,17 +209,19 @@ watch(() => initValData.value, (newVal) => {
 watch(
     () => props.pb100aCassette,
     (newVal) => {
-      if(newVal === 'reset'){
+      if (newVal === 'reset') {
         stopTotalCounting();
         startTotalCounting();
         stopCounting();
       }
     },
-    { deep: true }
+    {deep: true}
 );
 
 onBeforeMount(() => {
   pbVersion.value = window.PB_VERSION;
+  // slideCard100a
+  slideCardData.value = pbVersion.value === '100a' ? slideCard100a : slideCard;
 })
 
 onMounted(() => {
@@ -234,7 +236,6 @@ onMounted(() => {
 
   isBm.value = window.PROJECT_TYPE === 'bm';
 });
-
 
 
 const updateInputState = (source: string, target: any[]): void => {
