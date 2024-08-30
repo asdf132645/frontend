@@ -50,7 +50,7 @@
       <!-- input -->
       <ul class='slideContent pb100a'>
         <p>INPUT : {{ casExistChangeText(iCasExist) }}</p>
-        <li v-for="item in slideCardData.input" :key="item.slotNo"
+        <li v-for="item in [...slideCardData.input].reverse()" :key="item.slotNo"
             :class="getSlotStateClass(item.slotState,'input')"></li>
         <p class="mt1">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
       </ul>

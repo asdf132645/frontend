@@ -150,11 +150,10 @@ function startChecking() {
 watch(reqArr.value, async (newVal, oldVal) => {
   if (!newVal.reqArr) return;
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
-  const isInitInfo = uniqueReqArr.filter((item: any) => ['INIT'].includes(item.jobCmd));
   const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
 
-  if (isInitInfo.length > 0) {
-    await sendMessage(isInitInfo[0]);
+  if (notSysRunInfo.length > 0) {
+    await sendMessage(notSysRunInfo[0]);
     await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
     return;
   }
