@@ -20,7 +20,8 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "webapi"
+      "webapi",
+      "node"
     ],
     "paths": {
       "@/*": ["src/*"]
