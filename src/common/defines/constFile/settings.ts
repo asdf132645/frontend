@@ -66,8 +66,8 @@ export const stitchCountList = [
 ]
 
 export const sideEdgeWbcModeList = [
-    { value: '0', text: 'PLT Aggregation' },
-    { value: '1', text: 'PLT Aggregation + WBC' },
+    { value: '0', text: 'Smear Top' },
+    { value: '1', text: 'Smear Top + Side' },
 ]
 
 export const PositionMarginList = [

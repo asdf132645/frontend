@@ -273,7 +273,7 @@
 import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch, getCurrentInstance } from "vue";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -295,6 +295,8 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
+
+const instance = getCurrentInstance();
 const store = useStore();
 const router = useRouter();
 const showAlert = ref(false);
@@ -598,6 +600,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     }
     downloadUploadType.value = uploadType;
 
+    downloadUploadStopWebSocket(true);
     handleUploadPolling();
     const result = await uploadBackupApi(uploadDto);
     if (typeof result.data === 'string') {
@@ -609,6 +612,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     console.log(e);
   } finally {
     clearInterval(intervalId.value);
+    downloadUploadStopWebSocket(false);
   }
   await updateFileCounts('Upload');
 }
@@ -675,8 +679,18 @@ const handleUploadPolling = async () => {
   }, duration * 1500);
 }
 
+const downloadUploadStopWebSocket = (state: boolean) => {
+  instance?.appContext.config.globalProperties.$socket.emit('isDownloadUploading', {
+    type: 'SEND_DATA',
+    payload: state
+  });
+}
+
 const handleDownload = async (downloadType: 'move' | 'copy') => {
   const downloadDto = downloadDtoObj(downloadType);
+
+  downloadUploadStopWebSocket(true);
+
   try {
     handleDownloadPolling();
     await backUpDateApi(downloadDto);
@@ -684,6 +698,7 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
     console.log(e);
   } finally {
     clearInterval(intervalId.value);
+    downloadUploadStopWebSocket(false);
   }
 
   console.log('Complete Download')
