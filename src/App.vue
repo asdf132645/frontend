@@ -264,7 +264,6 @@ onMounted(async () => {
       }, 500);
       await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
-    // isNsNbIntegration.value = sessionStorage.getItem('isNsNbIntegration') || 'N';
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
 

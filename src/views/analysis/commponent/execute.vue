@@ -127,7 +127,7 @@ const initDataExecute = async () => {
   await cellImgGet();
   await getDeviceInfo();
   await setWbcRunningCount();
-  initData();
+  await initData();
   if (isRunningState.value) {
     btnStatus.value = 'isRunning';
     showStopBtn.value = false;
@@ -168,7 +168,7 @@ watch([runInfo.value], async (newVals) => {
 
 // 스토어 변경 감시
 watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
-  const [newEmbeddedStatusJobCmd, newExecuteState] = newVals;
+  const [newEmbeddedStatusJobCmd] = newVals;
 
   await nextTick();
   const {
@@ -176,7 +176,6 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     userStop: newUserStop,
     isRecoveryRun: newIsRecoveryRun,
     isInit: newIsInit,
-    sysInfo: newSysInfo,
   } = newEmbeddedStatusJobCmd || {};
 
   isPause.value = newIsPause;
@@ -193,12 +192,8 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   } else {
     btnStatus.value = 'start';
   }
-
-  if (newSysInfo.currentCardCount !== '' && newSysInfo.currentCardCount) {
-
-  }
-
 });
+
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: any) => {

@@ -257,15 +257,18 @@ const startCounting = (): void => {
       }
     }, 1000);
   }
-
-  onBeforeUnmount(() => {
-    if (countingInterval) {
-      clearInterval(countingInterval);
-      countingInterval = null;
-    }
-  });
 };
 
+onBeforeUnmount(() => {
+  if (countingInterval) {
+    clearInterval(countingInterval);
+    countingInterval = null;
+  }
+  if (countingIntervalTotal) {
+    clearInterval(countingIntervalTotal);
+    countingIntervalTotal = null;
+  }
+});
 
 const startTotalCounting = (): void => {
   if (!countingIntervalTotal) {
@@ -277,13 +280,6 @@ const startTotalCounting = (): void => {
       }
     }, 1000);
   }
-
-  onBeforeUnmount(() => {
-    if (countingIntervalTotal) {
-      clearInterval(countingIntervalTotal);
-      countingIntervalTotal = null;
-    }
-  });
 };
 
 const stopCounting = () => {
