@@ -250,7 +250,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       rbcPositionMargin: rbcPositionMargin || '0',
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
-      // sideEdgeWbcMode: sideEdgeWbcMode || '0',
+      sideEdgeWbcMode: sideEdgeWbcMode || '0',
     });
     if (window.PROJECT_TYPE === 'bm') {
       startAction = {
