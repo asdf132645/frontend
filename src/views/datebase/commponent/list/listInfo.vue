@@ -10,10 +10,11 @@
             <span class="mb1">Order ID:</span>
             <span class="mb2">{{ selectedItem?.slotId }}</span>
           </li>
-            <li>NS, NB Integration: {{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</li>
+          <li>NS, NB Integration: {{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</li>
         </ul>
         <div>
-          <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath" style="width: 200px; float:right;"/>
+          <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath"
+               style="width: 200px; float:right;"/>
         </div>
       </div>
     </div>
@@ -27,8 +28,9 @@
               <p>Count</p>
               <p>Percent</p>
             </li>
-            <template v-for="result in wbcInfoAfter" :key="result.title" >
-              <li v-if="showClassificationResults(result.title) && result.count > 0" class="resInfoWrapper resInfoWrapperLine">
+            <template v-for="result in wbcInfoAfter" :key="result.title">
+              <li v-if="showClassificationResults(result.title) && result.count > 0"
+                  class="resInfoWrapper resInfoWrapperLine">
                 <p>{{ result.title }}</p>
                 <p>{{ result.count }}</p>
                 <p>{{ result.percent + '%' }}</p>
@@ -40,8 +42,9 @@
               <p>100%</p>
             </li>
 
-            <template v-for="result in wbcInfoAfter" :key="result.title" >
-              <li v-if="showClassificationNonWbcResults(result.title) && result.count > 0" class="resInfoWrapper resInfoWrapperLine">
+            <template v-for="result in wbcInfoAfter" :key="result.title">
+              <li v-if="showClassificationNonWbcResults(result.title) && result.count > 0"
+                  class="resInfoWrapper resInfoWrapperLine">
                 <p>{{ result.title }}</p>
                 <p>{{ result.count }}</p>
                 <p>-</p>
@@ -54,12 +57,12 @@
   </div>
 </template>
 
-<script setup >
+<script setup>
 import {ref, defineProps, onMounted, watch, computed, onBeforeMount} from 'vue';
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";
-import { getOrderClassApi } from "@/common/api/service/setting/settingApi";
+import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 
 const store = useStore();
@@ -107,6 +110,9 @@ const sortClassOrder = () => {
   const sortArr = orderClass.value.length !== 0 ? oArr : projectType.value === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoData = sortWbcInfo(props.selectedItem.wbcInfoAfter, sortArr);
   wbcInfoAfter.value = sortedWbcInfoData;
+  if (siteCd.value === '0011') {
+    wbcInfoAfter.value = inhaDataChangeSave(props.selectedItem, props.selectedItem.wbcInfoAfter)
+  }
 }
 
 const sortWbcInfo = (wbcInfo, basicWbcArr) => {
@@ -140,7 +146,7 @@ const getClassOrder = async () => {
 }
 
 const setWbcTotalAndPercent = () => {
-  wbcTotal.value = props.selectedItem.wbcInfoAfter.reduce((acc,item) => {
+  wbcTotal.value = props.selectedItem.wbcInfoAfter.reduce((acc, item) => {
     if (!nonWbcTitles.includes(item.title)) return acc + Number(item.count)
     return acc
   }, 0)
@@ -151,14 +157,75 @@ const setWbcTotalAndPercent = () => {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
-      if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      if (siteCd.value !== '0011') {
+        const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
+        if (!targetArray.includes(item.title)) {
+          const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+          item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+        }
       }
     }
   }
 }
+
+async function inhaDataChangeSave(runningInfoData, wbcInfo) {
+  if (runningInfoData.testType !== '04') {
+    const excludedTitles = ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'];
+
+    // wbcTotal 계산
+    let wbcTotal = 0;
+    wbcInfo.forEach((wbcItem) => {
+      if (Number(wbcItem.count) > 0 && !excludedTitles.includes(wbcItem.title)) {
+        wbcTotal += Number(wbcItem.count);
+      }
+    });
+    // console.log('wbcTotal : ' + wbcTotal);
+
+    let maxItem = null;
+    let percentTotal = 0;
+
+    // 퍼센트 계산 및 maxItem 결정
+    wbcInfo.forEach((wbcItem, index) => {
+      let percent = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(0));
+      let percentN2 = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(2));
+
+      // console.log(percentN2);
+
+      // 특정 조건에 따라 퍼센트 조정
+      if ((wbcItem.title === 'BL' || ['LA', 'IM', 'MB', 'AM'].includes(wbcItem.title)) &&
+          Number(wbcItem.count) > 0 &&
+          percentN2 >= 0 &&
+          percentN2 <= 1) {
+        percent = 1;
+      }
+
+      wbcItem.percent = percent;
+      // console.log(wbcItem.title + ':' + wbcItem.percent);
+
+      // 제외할 타이틀이 아닌 경우 percentTotal 및 maxItem 갱신
+      if (!excludedTitles.includes(wbcItem.title)) {
+        percentTotal += Number(wbcItem.percent);
+        if (maxItem === null || Number(maxItem.count) < Number(wbcItem.count)) {
+          maxItem = wbcItem;
+        }
+      }
+
+      // console.log('maxItem : ' + (maxItem ? maxItem.title : 'null'));
+      // console.log(percentTotal);
+
+      // 마지막 항목일 때 백분율 오차 보정
+      if (maxItem !== null && (index + 1) === wbcInfo.length) {
+        // console.log(Number(maxItem.percent));
+        // console.log(100 - percentTotal);
+        maxItem.percent = Number(maxItem.percent) + (100 - percentTotal);
+        // console.log(maxItem.percent);
+      }
+    });
+
+    return wbcInfo;
+  }
+}
+
 
 const getStringArrayBySiteCd = (siteCd, testType) => {
   if (!siteCd && siteCd === '') {
@@ -202,7 +269,7 @@ const showClassificationNonWbcResults = (classificationResult) => {
 
 const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
-function getImageUrl(imageName){
+function getImageUrl(imageName) {
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;
   return `${apiBaseUrl}/images?folder=${path + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
 }

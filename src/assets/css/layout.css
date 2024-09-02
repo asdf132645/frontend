@@ -1983,6 +1983,7 @@ h3.titleH3 button {
 }
 
 ul.wbcInfoDbUl > li {
+    padding: 4px;
     display: inline-block;
     border: 1px solid var(--gray-1-color);
     border-radius: 100%;

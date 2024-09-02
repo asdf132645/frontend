@@ -50,14 +50,14 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
-import { createRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
+import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import { useRouter} from "vue-router";
-import { createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {useRouter} from "vue-router";
+import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import Analysis from "@/views/analysis/index.vue";
-import { logoutApi } from "@/common/api/service/user/userApi";
+import {logoutApi} from "@/common/api/service/user/userApi";
 import {formatDate} from "@/common/lib/utils/dateUtils";
 
 const showAlert = ref(false);
@@ -95,12 +95,12 @@ const isFullscreen = ref<boolean>(false);
 let intervalId: any;
 const stataasdasd = ref(false);
 const ipMatches = ref(false);
-
+const barcodeNum = ref('');
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   console.log('isTcpConnected', isTcpConnected);
   if (isTcpConnected) {
     setTimeout(async () => {
-      await store.dispatch('commonModule/setCommonInfo', { isTcpConnected: true });
+      await store.dispatch('commonModule/setCommonInfo', {isTcpConnected: true});
     }, 1500)
   }
 })
@@ -196,7 +196,7 @@ onBeforeMount(() => {
 });
 
 window.addEventListener('beforeunload', async function (event: any) {
-  await logoutApi({ userId: userId.value });
+  await logoutApi({userId: userId.value});
   await store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
 
@@ -285,11 +285,11 @@ onBeforeUnmount(() => {
 instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => {
   await socketData(data);
 });
+
 async function socketData(data: any) {
   if (commonDataGet.value.viewerCheck !== 'main') {
     return;
   }
-
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
@@ -327,10 +327,12 @@ async function socketData(data: any) {
         }
         break;
       case 'INIT':
+        barcodeNum.value = '';
         await store.dispatch('commonModule/setCommonInfo', {initValData: false});
         sendSettingInfo();
         break;
       case 'START':
+        barcodeNum.value = '';
         await runnStart();
         break;
       case 'RUNNING_INFO':
@@ -341,6 +343,7 @@ async function socketData(data: any) {
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
+        barcodeNum.value = '';
         await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
@@ -352,9 +355,11 @@ async function socketData(data: any) {
         runningInfoBoolen.value = false;
         break;
       case 'RUNNING_COMP':// 완료가 된 상태이므로 각 페이지에 완료가 되었다는 정보를 저장한다.
+        barcodeNum.value = '';
         await runnComp();
         break;
       case 'PAUSE':
+        barcodeNum.value = '';
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
@@ -364,6 +369,7 @@ async function socketData(data: any) {
         runningInfoBoolen.value = false;
         break;
       case 'RESTART':
+        barcodeNum.value = '';
         await runningInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: false}); // start 가 되면 false로 변경
@@ -378,6 +384,7 @@ async function socketData(data: any) {
         rbcArr.value = [];
         break;
       case 'RECOVERY':
+        barcodeNum.value = '';
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
         await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
@@ -512,10 +519,16 @@ async function socketData(data: any) {
           totalCount: matchedWbcInfo?.totalCount,
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
-        if(siteCd.value === '0011'){
-          await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
-        } else if(siteCd.value === '' || siteCd.value === '0000'){
-          await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
+        let wbcInfoAfter: any = [];
+        if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') {
+          newWbcInfo.wbcInfo = [await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0])];
+          wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
+          if (barcodeNum.value !== completeSlot.barcodeNo) {
+            EventBus.publish('appVueSlideDataSaveLisSave', newWbcInfo.wbcInfo, rbcArrElements[0].rbcInfo, completeSlot.barcodeNo);
+            barcodeNum.value = completeSlot?.barcodeNo;
+          }
+        } else {
+          wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0];
         }
 
         const newObj = {
@@ -536,7 +549,7 @@ async function socketData(data: any) {
           maxWbcCount: completeSlot.maxWbcCount,
           bf_lowPowerPath: completeSlot.bf_lowPowerPath,
           wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
-          wbcInfoAfter: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0],
+          wbcInfoAfter: wbcInfoAfter,
           rbcInfo: !projectBm.value ? {
             pltCount: completeSlot.pltCount,
             malariaCount: completeSlot.malariaCount,
@@ -563,57 +576,60 @@ async function socketData(data: any) {
       if (runningInfoData.testType !== '04') {
         const excludedTitles = ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'];
 
-        // wbcTotal을 선언형 방식으로 계산
-        const wbcTotal = wbcInfo
-            .filter((item: any) => Number(item.count) > 0 && !excludedTitles.includes(item.title))
-            .reduce((total: any, item: any) => total + Number(item.count), 0);
+        // wbcTotal 계산
+        let wbcTotal = 0;
+        wbcInfo.forEach((wbcItem: any) => {
+          if (Number(wbcItem.count) > 0 && !excludedTitles.includes(wbcItem.title)) {
+            wbcTotal += Number(wbcItem.count);
+          }
+        });
+        // console.log('wbcTotal : ' + wbcTotal);
 
-        // 퍼센트 계산 및 데이터 변형
-        const updatedWbcInfo = wbcInfo.map((wbcItem: any) => {
+        let maxItem: any = null;
+        let percentTotal = 0;
+
+        // 퍼센트 계산 및 maxItem 결정
+        wbcInfo.forEach((wbcItem: any, index: any) => {
           let percent = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(0));
-          const percentN2 = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(2));
+          let percentN2 = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(2));
+
+          // console.log(percentN2);
 
           // 특정 조건에 따라 퍼센트 조정
-          if (
-              (wbcItem.title === 'BL' || ['LA', 'IM', 'MB', 'AM'].includes(wbcItem.title)) &&
+          if ((wbcItem.title === 'BL' || ['LA', 'IM', 'MB', 'AM'].includes(wbcItem.title)) &&
               Number(wbcItem.count) > 0 &&
               percentN2 >= 0 &&
-              percentN2 <= 1
-          ) {
+              percentN2 <= 1) {
             percent = 1;
           }
 
-          return {
-            ...wbcItem,
-            percent,
-          };
+          wbcItem.percent = percent;
+          // console.log(wbcItem.title + ':' + wbcItem.percent);
+
+          // 제외할 타이틀이 아닌 경우 percentTotal 및 maxItem 갱신
+          if (!excludedTitles.includes(wbcItem.title)) {
+            percentTotal += Number(wbcItem.percent);
+            if (maxItem === null || Number(maxItem.count) < Number(wbcItem.count)) {
+              maxItem = wbcItem;
+            }
+          }
+
+          // console.log('maxItem : ' + (maxItem ? maxItem.title : 'null'));
+          // console.log(percentTotal);
+
+          // 마지막 항목일 때 백분율 오차 보정
+          if (maxItem !== null && (index + 1) === wbcInfo.length) {
+            // console.log(Number(maxItem.percent));
+            // console.log(100 - percentTotal);
+            maxItem.percent = Number(maxItem.percent) + (100 - percentTotal);
+            // console.log(maxItem.percent);
+          }
         });
 
-        // maxItem 및 percentTotal 계산
-        const { maxItem, percentTotal } = updatedWbcInfo.reduce(
-            (acc: any, wbcItem: any) => {
-              if (!excludedTitles.includes(wbcItem.title)) {
-                acc.percentTotal += wbcItem.percent;
-
-                if (acc.maxItem === null || Number(acc.maxItem.count) < Number(wbcItem.count)) {
-                  acc.maxItem = wbcItem;
-                }
-              }
-
-              return acc;
-            },
-            { maxItem: null, percentTotal: 0 }
-        );
-
-        // 백분율 오차 보정
-        if (maxItem) {
-          console.log(Number(maxItem.percent))
-          console.log(100 - percentTotal)
-          maxItem.percent += 100 - percentTotal;
-          console.log(maxItem.percent)
-        }
+        return wbcInfo;
       }
     }
+
 
 
     async function saveDeviceInfo(deviceInfo: any) {
@@ -641,7 +657,7 @@ async function socketData(data: any) {
         const today = new Date();
         const thirtyDaysAgo = new Date(today);
         thirtyDaysAgo.setDate(today.getDate() - 29);
-        const { page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+        const {page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
         const dayQuery = formatDate(thirtyDaysAgo) + formatDate(new Date()) + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo, dayQuery});
 
@@ -659,6 +675,7 @@ async function socketData(data: any) {
     console.error(error);
   }
 }
+
 const delayedEmit = (type: string, payload: string, delay: number) => {
   if (socketTimeoutId !== undefined) {
     clearTimeout(socketTimeoutId); // 이전 타이머 클리어
@@ -773,7 +790,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
-        const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage': 'bmKeepPage';
+        const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
         sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
