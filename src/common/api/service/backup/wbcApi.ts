@@ -21,3 +21,11 @@ export const uploadBackupApi = async (request: any): Promise<ApiResponse<void>> 
 export const uploadPossibleApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.upload.checkDuplicated, request);
 }
+
+export const checkDownloadDataMovedApi = async (): Promise<ApiResponse<number>> => {
+    return httpClient.httpGet(apiConstants.download.checkDataMoved);
+}
+
+export const checkUploadDataMovedApi = async (): Promise<ApiResponse<number>> => {
+    return httpClient.httpGet(apiConstants.upload.checkDataMoved);
+}

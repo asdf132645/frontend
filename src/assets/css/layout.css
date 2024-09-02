@@ -940,18 +940,9 @@ button.degreeAllCheckBtn {
 
 .progressBar {
     height: 100%;
+    background-color: #3498db;
     width: 0%;
-    background-color: #3498db; /* Blue color */
-    animation: progress-animation 800s linear forwards;
-}
-
-@keyframes progress-animation {
-    0% {
-        width: 0%;
-    }
-    100% {
-        width: 100%;
-    }
+    transition: width 0.3s ease;
 }
 
 .loadingProgressBarText {
@@ -1968,9 +1959,12 @@ button.uploadBtn {
 }
 
 select.downloadPath {
-    margin: 0 12px;
+    margin: 0 5px 0 12px;
     width: 97%;
-    /*width: 80%;*/
+}
+
+.settingCellImgAnalyzedContainer {
+    max-height: 750px;
 }
 
 select.uploadSavePath {
