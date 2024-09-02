@@ -191,6 +191,8 @@ import {createCbcFile, createDirectory, createFile} from "@/common/api/service/f
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
+import EventBus from "@/eventBus/eventBus";
+import {tcpReq} from "@/common/tcpRequest/tcpReq";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -239,10 +241,17 @@ onMounted(async () => {
   await nextTick();
   await getOrderClass();
   await getCustomClass();
+  if (inhaTestCode.value === '' && siteCd.value === '0011') {
+    EventBus.publish('classInfoCbcDataGet', true);
+  }
+  if (inhaTestCode.value === '' && siteCd.value === '0000' && siteCd.value === '') {
+    EventBus.publish('classInfoCbcDataGet', true);
+  }
+  EventBus.subscribe('appVueSlideDataSaveLisSave', lisInhaDataSend);
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
-  if(props.selectItems?.submitState){
+  if (props.selectItems?.submitState) {
     lisBtnColor.value = props.selectItems.submitState === 'lis';
   }
   // 첫 진입시
@@ -665,6 +674,7 @@ const cmcseoulLisAndCbcDataGet = () => {
     showErrorAlert(err.message);
   });
 }
+
 function calculateWithRounding(value: any, percent: any, roundingMethod: any) {
   const result = (value * percent) / 100;
 
@@ -679,6 +689,7 @@ function calculateWithRounding(value: any, percent: any, roundingMethod: any) {
       throw new Error('Invalid rounding method');
   }
 }
+
 const lisLastStep = () => {
   if (siteCd.value === '0019') {
     let data = 'H|\^&||||||||||P||' + props.selectItems?.barcodeNo + '\n';
@@ -707,7 +718,7 @@ const lisLastStep = () => {
     lisFileUrlCreate(data);
 
   } else if (siteCd.value === '0011') { // 인하대
-    inhaDataSend();
+    inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
   } else {
     otherDataSend();
   }
@@ -753,19 +764,27 @@ const otherDataSend = async () => {
     }
   }
 }
+const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
+  // console.log(wbcInfoAfter)
+  // console.log(rbcInfoAfter)
+  // console.log(barcodeNo)
+  await getLisWbcRbcData();
+  await inhaDataSend(wbcInfoAfter[0], rbcInfoAfter, barcodeNo);
+}
 
-const inhaDataSend = () => {
+const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
   let resultStr = '';
+
   const testCodeList = inhaTestCode.value.split(',');
   let tmpList: any = [];
   testCodeList.forEach(function (codes: any) {
     if (codes.length > 0) {
-      var codeArray = codes.split('|')
-      var code = codeArray[0]
-      var value = codeArray[1]
-      var unit = codeArray[2]
-      var type = codeArray[3]
-      var tmpStr = ''
+      const codeArray = codes.split('|')
+      let code = codeArray[0]
+      let value = codeArray[1]
+      let unit = codeArray[2]
+      let type = codeArray[3]
+      let tmpStr = ''
 
       if (code === 'L0210') {
         value = value + '5'
@@ -810,7 +829,7 @@ const inhaDataSend = () => {
   let rbcTmp = '';
   //wbc
   lisCodeWbcArr.value.forEach(function (lisCode: any, index: any) {
-    props.selectItems?.wbcInfoAfter.forEach(function (wbcItem: any) {
+    wbcInfoAfter.forEach(function (wbcItem: any) {
       if (lisCode.IA_CD === wbcItem.id) {
         if (lisCode.LIS_CD === 'H9600' || lisCode.LIS_CD === 'H9365' ||
             lisCode.LIS_CD === 'H9366') {
@@ -844,7 +863,7 @@ const inhaDataSend = () => {
 
   lisCodeRbcArr.value.forEach(function (lisCode: any) {
     if (lisCode.LIS_CD !== '') {
-      props.selectItems?.rbcInfoAfter.forEach(function (rbcItem: any) {
+      rbcInfoAfter.forEach(function (rbcItem: any) {
         if (lisCode.IA_CATEGORY_CD === rbcItem.IA_CATEGORY_CD) {
           for (const rbcItemElement of rbcItem.classInfo) {
             if (lisCode.IA_CLASS_CD === rbcItemElement.IA_CLASS_CD) {
@@ -893,7 +912,7 @@ const inhaDataSend = () => {
   var params = {
     url: lisFilePathSetArr.value,
     machine: 'ADUIMD',
-    episode: props.selectItems?.barcodeNo,
+    episode: barcodeNo,
     result: resultStr
   }
 
@@ -1361,10 +1380,12 @@ const createPercent = (item: any, totalCount: any) => {
     const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
     item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
   } else {
-    const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
-    if (!targetArray.includes(item.title)) {
-      const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-      item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+    if (siteCd.value !== '0011') {
+      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      if (!targetArray.includes(item.title)) {
+        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
+      }
     }
   }
 }

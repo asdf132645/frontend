@@ -57,6 +57,7 @@ import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
+import EventBus from "@/eventBus/eventBus";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -89,6 +90,7 @@ onMounted(async () => {
   await getCbcPathData();
   await getCbcCodeList();
   await initCbcData(selectItemsVal.value);
+  EventBus.subscribe('classInfoCbcDataGet', inhaCbc);
 });
 
 const initCbcData = async (newVal: any) => {
