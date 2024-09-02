@@ -42,7 +42,7 @@ import OpenSeadragon from "openseadragon";
 import axios from "axios";
 import {useStore} from "vuex";
 import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {fileRead} from "@/common/api/service/fileSys/fileSysApi";
+import {fileReadJpg} from "@/common/api/service/fileSys/fileSysApi";
 
 const props = defineProps(['selectItems']);
 
@@ -57,20 +57,34 @@ const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Sti
 const buttonOfen = ref(false);
 let viewerSmall: any = null;
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
+const oldBmData = ref(false);
 
 onMounted(async () => {
   await nextTick();
+  await bmOldDataDivision();
+  console.log(oldBmData.value)
   await getImgUrl();
 });
 
 watch(() => props.selectItems, async (newItem) => {
+  await bmOldDataDivision();
   await getImgUrl();
 });
+
+const bmOldDataDivision = async () => {
+  const slotId = props.selectItems?.slotId || "";
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
+  const folderPath = `${path}/${slotId}/01_Stitching_Image`;
+  const params = `directoryPath=${folderPath}&filename=PMC_Result.jpg`
+  const res: any = await fileReadJpg(params);
+  oldBmData.value = res.data.fileExists;
+}
 
 const getImageUrls = (imageName: string, type: string) => {
   let folderName;
   switch (type) {
     case 'particle':
+      // oldBmData
       folderName = '02_Particle_Image/Thumb';
       break;
     case 'idealZone':
@@ -93,6 +107,7 @@ const getImageUrls = (imageName: string, type: string) => {
 };
 
 const getImageUrlsSmallImg = (imageName: string, type: string) => {
+  // oldBmData
   let folderName;
   const slotId = props.selectItems?.slotId || "";
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
@@ -101,49 +116,43 @@ const getImageUrlsSmallImg = (imageName: string, type: string) => {
   switch (type) {
     case 'particle':
       folderName = `02_Particle_Image/${imageName}/10`;
-      returnVal = `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg`;
+      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg` : '02_Particle_Image/Thumb';
       break;
     case 'idealZone':
-      returnVal = `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/03_Cell_Ideal_Image/${imageName}`;
+      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/03_Cell_Ideal_Image/${imageName}` : '03_Cell_Ideal_Image';
       break;
     case 'idealStitch':
       folderName = `04_Cell_Ideal_Stitch_Image/${imageName}/10`;
-      returnVal = `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg`;
+      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg` : '04_Cell_Ideal_Stitch_Image';
       break;
     case 'mega':
       folderName = '';
-      returnVal = `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}`;
+      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}` : '05_Mega_Image';
       break;
     default:
       break;
   }
 
-  return returnVal;
+  return !oldBmData.value ? returnVal : `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${returnVal}/${imageName}`;
 };
 
 const getImgUrl = async () => {
   const slotId = props.selectItems?.slotId || "";
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-  const folderPath = `${path}/${slotId}/'01_Stitching_Image'`;
-  const params = {
-    path: folderPath,
-    filename: 'PMC_Result.jpg',
-  }
-  const res = await fileRead(params);
-  console.log(res);
+
+
   for (const item of strArray) {
     axios.get(`${apiBaseUrl}/folders?folderPath=${path}/${slotId}/${item}`)
         .then(response => {
           switch (item) {
             case '02_Particle_Image':
-              paImages.value = response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7);
-              console.log(paImages.value)
+              paImages.value = !oldBmData.value ? response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7) : paImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 7);
               break;
             case '03_Cell_Ideal_Image':
               idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 14);
               break;
             case '04_Cell_Ideal_Stitch_Image':
-              idealStitchImages.value = response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7);
+              idealStitchImages.value = !oldBmData.value ? response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7) : idealStitchImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
               break;
             case '05_Mega_Image':
               megaImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
@@ -163,7 +172,7 @@ const openInViewer = async (imageUrl: string, type: string) => {
     viewerSmall.destroy();
   }
   let urlTileSources = {};
-  if (type === '03_Cell_Ideal_Image') {
+  if (type === '03_Cell_Ideal_Image' || oldBmData.value) {
     urlTileSources = {
       type: "image",
       url: imageUrl,

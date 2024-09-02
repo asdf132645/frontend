@@ -368,8 +368,8 @@ export const apiConstants = {
             endpoint: 'filesystem/delete-folder',
             requiresToken: false,
         },
-        readGet:{
-            endpoint: 'file/read',
+        readGetJpg:{
+            endpoint: 'file/check-file-exists',
             requiresToken: false,
         },
         createDirectory: {
