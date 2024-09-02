@@ -77,7 +77,8 @@ let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
-const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
+const siteCd = computed(() => store.state.commonModule.siteCd);
+// const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
 const isNsNbIntegrationLocal = ref('N');
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -490,6 +491,7 @@ async function socketData(data: any) {
     async function saveTestHistory(params: any, idx: any, slotId?: any, lastCompleteIndex?: any) {
       const completeSlot = params.slotInfo;
       if (completeSlot) {
+
         completeSlot.userId = userId.value;
         completeSlot.cassetId = params.cassetId;
         // PB 비정상 클래스 체크
@@ -511,6 +513,11 @@ async function socketData(data: any) {
           totalCount: matchedWbcInfo?.totalCount,
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
+        if(siteCd.value === '0011'){
+          await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
+        } else if(siteCd.value === '' || siteCd.value === '0000'){
+          await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
+        }
 
         const newObj = {
           slotNo: completeSlot.slotNo,
@@ -526,15 +533,9 @@ async function socketData(data: any) {
           orderDttm: completeSlot.orderDttm,
           testType: completeSlot.testType,
           analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
-          // createDate: tcpReq().embedStatus.settings.reqDttm,
-          // pltCount: completeSlot.pltCount,
-          // malariaCount: completeSlot.malariaCount,
-          // maxRbcCount: completeSlot.maxRbcCount,
-          // stateCd: completeSlot.stateCd,
           tactTime: completeSlot.tactTime,
           maxWbcCount: completeSlot.maxWbcCount,
           bf_lowPowerPath: completeSlot.bf_lowPowerPath,
-          // runningPath: completeSlot.runningPath,
           wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
           wbcInfoAfter: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0],
           rbcInfo: !projectBm.value ? {
@@ -545,24 +546,11 @@ async function socketData(data: any) {
           } : [],
           rbcInfoAfter: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
           bminfo: completeSlot.bminfo,
-          // userId: userModuleDataGet.value.name,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
-          // processInfo: {
-          //   processInfo: processInfoItem,
-          //   slotId: completeSlot.slotId
-          // },
-          // orderList: {
-          //   barcodeId: completeSlot.barcodeNo,
-          //   patientName: completeSlot.patientNm,
-          //   orderDate: stringToDateTime(completeSlot.orderDttm),
-          //   analyzedDttm: stringToDateTime(completeSlot.analyzedDttm),
-          //   state: completeSlot.stateCd,
-          // },
           submitState: '',
           submitOfDate: '',
           submitUserId: '',
-          // classificationResult: [],
           isNsNbIntegration: isNsNbIntegrationLocal.value || '',
           wbcMemo: '',
           rbcMemo: '',
@@ -571,6 +559,63 @@ async function socketData(data: any) {
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
       }
     }
+
+    async function inhaDataChangeSave(runningInfoData: any, wbcInfo: any) {
+      if (runningInfoData.testType !== '04') {
+        const excludedTitles = ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'];
+
+        // wbcTotal을 선언형 방식으로 계산
+        const wbcTotal = wbcInfo
+            .filter((item: any) => Number(item.count) > 0 && !excludedTitles.includes(item.title))
+            .reduce((total: any, item: any) => total + Number(item.count), 0);
+
+        // 퍼센트 계산 및 데이터 변형
+        const updatedWbcInfo = wbcInfo.map((wbcItem: any) => {
+          let percent = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(0));
+          const percentN2 = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(2));
+
+          // 특정 조건에 따라 퍼센트 조정
+          if (
+              (wbcItem.title === 'BL' || ['LA', 'IM', 'MB', 'AM'].includes(wbcItem.title)) &&
+              Number(wbcItem.count) > 0 &&
+              percentN2 >= 0 &&
+              percentN2 <= 1
+          ) {
+            percent = 1;
+          }
+
+          return {
+            ...wbcItem,
+            percent,
+          };
+        });
+
+        // maxItem 및 percentTotal 계산
+        const { maxItem, percentTotal } = updatedWbcInfo.reduce(
+            (acc: any, wbcItem: any) => {
+              if (!excludedTitles.includes(wbcItem.title)) {
+                acc.percentTotal += wbcItem.percent;
+
+                if (acc.maxItem === null || Number(acc.maxItem.count) < Number(wbcItem.count)) {
+                  acc.maxItem = wbcItem;
+                }
+              }
+
+              return acc;
+            },
+            { maxItem: null, percentTotal: 0 }
+        );
+
+        // 백분율 오차 보정
+        if (maxItem) {
+          console.log(Number(maxItem.percent))
+          console.log(100 - percentTotal)
+          maxItem.percent += 100 - percentTotal;
+          console.log(maxItem.percent)
+        }
+      }
+    }
+
 
     async function saveDeviceInfo(deviceInfo: any) {
       try {
