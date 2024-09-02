@@ -232,8 +232,8 @@
       </ul>
     </div>
     <div class="uploadModalBtnContainer">
-      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('copy')">Upload by Copy</button>
-      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('move')">Upload by Move</button>
+      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ messages.COPY }}</button>
+      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>
       <button class="memoModalBtn" @click="uploadCancel">{{ impossibleUploadCount === 0 ? messages.CANCEL : messages.CLOSE }}</button>
     </div>
   </div>
@@ -650,6 +650,7 @@ const handleDownloadClose = () => {
 }
 
 const handleDownloadPolling = async () => {
+  const duration = String(totalFileCount.value).length
   intervalId.value = setInterval(async () => {
     try {
       const result: any = await checkDownloadDataMovedApi();
@@ -658,10 +659,11 @@ const handleDownloadPolling = async () => {
       console.log(`Error polling data: `, error);
       clearInterval(intervalId.value);
     }
-  }, 1000);
+  }, duration * 1500);
 }
 
 const handleUploadPolling = async () => {
+  const duration = String(totalFileCount.value).length;
   intervalId.value = setInterval(async () => {
     try {
       const result: any = await checkUploadDataMovedApi();
@@ -670,7 +672,7 @@ const handleUploadPolling = async () => {
       console.log(`Error polling data: `, error);
       clearInterval(intervalId.value);
     }
-  }, 1000);
+  }, duration * 1500);
 }
 
 const handleDownload = async (downloadType: 'move' | 'copy') => {
@@ -684,17 +686,18 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
     clearInterval(intervalId.value);
   }
 
+  console.log('Complete Download')
   await updateFileCounts('Download');
 }
 
-const updateFileCounts = (downloadUploadType: 'Download' | 'Upload') => {
+const updateFileCounts = async (downloadUploadType: 'Download' | 'Upload') => {
   successFileCount.value = totalFileCount.value;
   setTimeout(async () => {
     totalFileCount.value = 0;
     successFileCount.value = 0;
     isLoadingProgressBar.value = false;
-    await showSuccessAlert(`${downloadUploadType} Success`);
   }, 2000)
+  await showSuccessAlert(`${downloadUploadType} Success`);
 }
 
 const downloadDtoObj = (downloadType: 'move' | 'copy') => {
@@ -743,7 +746,6 @@ const createBackup = async () => {
   try {
     isDownloading.value = true;
     const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
-    console.log('isPossibleToBackup', isPossibleToBackup.data);
     if (isPossibleToBackup.data.success) {
       totalFileCount.value = Number(isPossibleToBackup.data.message.split(' ')[1]);
       showDownloadConfirm.value = true;
@@ -791,6 +793,8 @@ const uploadBackupData = async (event: any) => {
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
     } else {
+      totalFileCount.value = result.data.totalMove;
+      successFileCount.value = result.data.successMove;
       showUploadModal.value = true;
       uploadSlotIdObj.value = result.data;
     }
