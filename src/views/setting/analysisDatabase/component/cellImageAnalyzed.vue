@@ -759,6 +759,7 @@ const createBackup = async () => {
     projectType: projectType.value,
   };
   try {
+    downloadUploadStopWebSocket(true);
     isDownloading.value = true;
     const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
     if (isPossibleToBackup.data.success) {
@@ -772,6 +773,7 @@ const createBackup = async () => {
     console.log(e);
   } finally {
     isDownloading.value = false;
+    downloadUploadStopWebSocket(false);
   }
 }
 
@@ -802,6 +804,7 @@ const uploadBackupData = async (event: any) => {
       originUploadPath: downloadRootPath.value,
       projectType: projectType.value
     }
+    downloadUploadStopWebSocket(true);
 
     const result: any = await uploadPossibleApi(uploadDto);
 
@@ -816,6 +819,7 @@ const uploadBackupData = async (event: any) => {
   } catch (e) {
     console.log(e);
   } finally {
+    downloadUploadStopWebSocket(false);
     isRestoring.value = false;
   }
 
