@@ -441,7 +441,7 @@ export const apiConstants = {
         checkDataMoved: {
             endpoint: 'download/checkDownloadDataMoved',
             requiresToken: false,
-        }
+        },
     },
     upload: {
         restoreData: {
@@ -454,6 +454,10 @@ export const apiConstants = {
         },
         checkDataMoved: {
             endpoint: 'upload/checkUploadDataMoved',
+            requiresToken: false,
+        },
+        checkPossibleUploadFile: {
+            endpoint: 'upload/checkPossibleUploadFile',
             requiresToken: false,
         }
     },

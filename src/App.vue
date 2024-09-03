@@ -520,7 +520,7 @@ async function socketData(data: any) {
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
         let wbcInfoAfter: any = [];
-        if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') {
+        if (siteCd.value === '0011') {
           newWbcInfo.wbcInfo = [await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0])];
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
           if (barcodeNum.value !== completeSlot.barcodeNo) {
@@ -659,6 +659,7 @@ async function socketData(data: any) {
         thirtyDaysAgo.setDate(today.getDate() - 29);
         const {page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
         const dayQuery = formatDate(thirtyDaysAgo) + formatDate(new Date()) + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+        console.log('저장 전 runingInfoDtoItems', runningInfo);
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo, dayQuery});
 
         if (result) {

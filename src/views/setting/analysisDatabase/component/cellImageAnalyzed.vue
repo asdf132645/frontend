@@ -1,7 +1,7 @@
 <template>
   <div class="loadingBackground" v-show="isLoadingProgressBar">
     <div class="progressContainer">
-      <p class="loadingProgressBarText">{{ successFileCount }} / {{ totalFileCount  }}files moved...</p>
+      <p class="loadingProgressBarText">{{ successFileCount }} / {{ totalFileCount  }} files {{ loadingState }}...</p>
       <div
           class="progressBar"
           :style="{ width: (successFileCount / totalFileCount) * 100 + '%' }"
@@ -109,7 +109,10 @@
         </tr>
 
         <tr>
-          <th>IA Root Path</th>
+          <th>
+            IA Root Path
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_IA_ROOT_PATH_KO" />
+          </th>
           <td colspan="2">
             <select v-model='iaRootPath'>
               <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
@@ -117,7 +120,10 @@
           </td>
         </tr>
         <tr>
-          <th>NS/NB Integration</th>
+          <th>
+            NS/NB Integration
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_NS_NB_INTEGRATION_KO" />
+          </th>
           <td>
             <font-awesome-icon
                 :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -127,7 +133,10 @@
           </td>
         </tr>
         <tr>
-          <th>Alarm Timer (sec)</th>
+          <th>
+            Alarm Timer (sec)
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_ALARM_TIME_KO" />
+          </th>
           <td>
             <font-awesome-icon
                 :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -140,7 +149,10 @@
           </td>
         </tr>
         <tr>
-          <th title="Keep page when moving in Database detail page by up, down arrows">Keep Page</th>
+          <th>
+            Keep Page
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_KEEP_PAGE_KO" />
+          </th>
           <td>
             <font-awesome-icon
                 :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -160,18 +172,25 @@
         </colgroup>
         <tbody>
         <tr>
-          <th title="Destination path for download and Origin path for upload">Download Save Path</th>
+          <th>
+            Download Save Path
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />
+          </th>
+
           <td>
             <div class="downloadSavePathContainer">
               <select v-model='downloadRootPath' class="downloadPath">
                 <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
               </select>
-              <button class="backupBtn" @click="openSourceDrive">Directory</button>
+              <font-awesome-icon :icon="['fas', 'folder-open']" @click="openSourceDrive" class="openDriveIcon" />
             </div>
           </td>
         </tr>
         <tr>
-          <th title="Download data from start to end date">Download</th>
+          <th title="Download data from start to end date">
+            Download
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_KO" />
+          </th>
           <td>
             <div class="backupDatePickers">
               <Datepicker v-model="backupStartDate"></Datepicker>
@@ -181,14 +200,18 @@
           </td>
         </tr>
         <tr>
-          <th>Upload</th>
+          <th>
+            Upload
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_UPLOAD_KO" />
+          </th>
           <td colspan="2">
             <div class="settingUploadContainer">
               <select v-model='uploadRootPath' class="uploadSavePath">
                 <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
               </select>
-              <input type="file" ref="uploadFileInput" @change="handleUploadFileChange" style="display: none;" accept=".sql" />
-              <button class="uploadBtn" @click="handleUploadFileSelect">Upload</button>
+
+<!--              <input type="file" ref="uploadFileInput" @change="handleUploadFileChange" style="display: none;" accept=".sql" />-->
+              <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>
             </div>
           </td>
         </tr>
@@ -212,6 +235,7 @@
     </div>
 
 
+  <!-- Upload 확인 모달 -->
   <div v-if="showUploadModal" :class="impossibleUploadCount === 0 ? 'uploadModalSmall' : 'uploadModal'">
     <p v-if="impossibleUploadCount === 0" class="fs12" style="top: 0;">Would you like to upload?</p>
     <pre v-else-if="impossibleUploadCount > 0"
@@ -235,6 +259,29 @@
       <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ messages.COPY }}</button>
       <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>
       <button class="memoModalBtn" @click="uploadCancel">{{ impossibleUploadCount === 0 ? messages.CANCEL : messages.CLOSE }}</button>
+    </div>
+  </div>
+
+  <!-- Upload 선택 모달 -->
+  <div v-show="showUploadSelectModal" class='downloadDeleteModal'>
+    <p class="fs12" style="top: 0;">Upload file list</p>
+    <div v-show="possibleUploadFileNames.length > 0" class="downloadDeleteContainer">
+      <p class="downloadDeleteSemiTitle">Select upload file</p>
+      <ul class="downloadDeleteWrapper">
+        <li class="userSelectText flexSpaceBetween" v-for="folderName in possibleUploadFileNames" :key="folderName">
+          <p>{{ folderName }}</p>
+          <input style="margin: 0;" v-model="selectedUploadFile" type="radio" :value="folderName" />
+        </li>
+
+      </ul>
+    </div>
+    <p class="mt4" v-show="possibleUploadFileNames.length === 0">No files</p>
+    <div class="uploadModalBtnContainer">
+      <template v-if="possibleUploadFileNames.length > 0">
+        <button class="memoModalBtn" @click="handleUploadSelectFile">{{ messages.UPLOAD }}</button>
+        <button class="memoModalBtn" @click="handleUploadSelectModalClose">{{ messages.CANCEL }}</button>
+      </template>
+      <button v-else class="memoModalBtn" @click="handleUploadSelectModalClose">{{ messages.CLOSE }}</button>
     </div>
   </div>
 
@@ -289,7 +336,11 @@ import {
   backUpDateApi,
   downloadPossibleApi,
   uploadPossibleApi,
-  uploadBackupApi, openDriveApi, checkDownloadDataMovedApi, checkUploadDataMovedApi
+  uploadBackupApi,
+  openDriveApi,
+  checkDownloadDataMovedApi,
+  checkUploadDataMovedApi,
+  checkPossibleUploadFileApi
 } from "@/common/api/service/backup/wbcApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
@@ -346,9 +397,7 @@ const cellimgId = ref('');
 
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
-const uploadFileInput = ref<any>(null);
 const uploadSlotIdObj = ref({duplicated: [], nonDuplicated: []});
-const selectedFileName = ref('');
 const possibleUploadCount = computed(() => uploadSlotIdObj.value?.nonDuplicated && uploadSlotIdObj.value?.nonDuplicated.length);
 const impossibleUploadCount = computed(() => uploadSlotIdObj.value?.duplicated && uploadSlotIdObj.value?.duplicated.length);
 const showConfirm = ref(false);
@@ -367,7 +416,11 @@ const totalFileCount = ref(1);
 const successFileCount = ref(0);
 const downloadUploadType = ref('copy');
 const intervalId = ref(null);
-
+const deletableDownloadFiles = ref({});
+const loadingState = ref('');
+const showUploadSelectModal = ref(false);
+const possibleUploadFileNames = ref([]);
+const selectedUploadFile = ref('');
 
 onMounted(async () => {
   await nextTick();
@@ -382,7 +435,7 @@ onMounted(async () => {
 });
 
 watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
-  pltPositionMargin, pbsCellAnalyzingCount, sideEdgeWbcMode, stitchCount, bfCellAnalyzingCount, iaRootPath, downloadRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, backupStartDate, backupEndDate], async () => {
+  pltPositionMargin, pbsCellAnalyzingCount, sideEdgeWbcMode, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage], async () => {
   const cellAfterSettingObj = {
     id: cellimgId.value,
     analysisType: testTypeCd.value,
@@ -395,7 +448,6 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     sideEdgeWbcMode: sideEdgeWbcMode.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
-    backupPath: downloadRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
@@ -495,7 +547,6 @@ const cellImgGet = async () => {
           bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
           iaRootPath: data?.iaRootPath,
           isNsNbIntegration: data?.isNsNbIntegration,
-          backupPath: data?.backupPath,
           isAlarm: data?.isAlarm,
           alarmCount: data?.alarmCount,
           keepPage: data?.keepPage,
@@ -590,8 +641,9 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     const day = localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+
     const uploadDto = {
-      fileName: selectedFileName.value,
+      fileName: selectedUploadFile.value,
       destinationUploadPath: uploadRootPath.value,
       originUploadPath: downloadRootPath.value,
       dayQuery,
@@ -599,6 +651,12 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
       uploadType
     }
     downloadUploadType.value = uploadType;
+
+    if (uploadType === 'move') {
+      loadingState.value = 'moved';
+    } else {
+      loadingState.value = 'copied';
+    }
 
     downloadUploadStopWebSocket(true);
     handleUploadPolling();
@@ -653,11 +711,11 @@ const handleDownloadClose = () => {
   showDownloadConfirm.value = false;
 }
 
-const handleDownloadPolling = async () => {
+const handlePolling = async (apiFunc: any) => {
   const duration = String(totalFileCount.value).length
   intervalId.value = setInterval(async () => {
     try {
-      const result: any = await checkDownloadDataMovedApi();
+      const result: any = await apiFunc();
       successFileCount.value = Number(result.data.success);
     } catch (error) {
       console.log(`Error polling data: `, error);
@@ -666,17 +724,12 @@ const handleDownloadPolling = async () => {
   }, duration * 1500);
 }
 
+const handleDownloadPolling = async () => {
+  await handlePolling(checkDownloadDataMovedApi)
+}
+
 const handleUploadPolling = async () => {
-  const duration = String(totalFileCount.value).length;
-  intervalId.value = setInterval(async () => {
-    try {
-      const result: any = await checkUploadDataMovedApi();
-      successFileCount.value = Number(result.data.success);
-    } catch (error) {
-      console.log(`Error polling data: `, error);
-      clearInterval(intervalId.value);
-    }
-  }, duration * 1500);
+  await handlePolling(checkUploadDataMovedApi)
 }
 
 const downloadUploadStopWebSocket = (state: boolean) => {
@@ -691,6 +744,12 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
 
   downloadUploadStopWebSocket(true);
 
+  if (downloadType === 'move') {
+    loadingState.value = 'moved';
+  } else {
+    loadingState.value = 'copied';
+  }
+
   try {
     handleDownloadPolling();
     await backUpDateApi(downloadDto);
@@ -701,7 +760,6 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
     downloadUploadStopWebSocket(false);
   }
 
-  console.log('Complete Download')
   await updateFileCounts('Download');
 }
 
@@ -777,29 +835,42 @@ const createBackup = async () => {
   }
 }
 
-const handleUploadFileSelect = () => {
-  setTimeout(() => {
-    uploadFileInput.value.click();
-  }, 100)
-  uploadFileInput.value.value = null;
-}
-
-const handleUploadFileChange = async (event: any) => {
-  await uploadBackupData(event);
-}
-
-const uploadBackupData = async (event: any) => {
-  const fileName = event.target.files[0]?.name;
-  if (!fileName || !fileName.includes('.sql')) {
-    showErrorAlert('File type is not supported.')
-    return;
-  }
-  selectedFileName.value = fileName;
+const handleSelectUploadFile = async () => {
+  const uploadDto = {
+    originUploadPath: downloadRootPath.value
+  };
 
   try {
+    const result = await checkPossibleUploadFileApi(uploadDto);
+    if (result.success) {
+      possibleUploadFileNames.value = result.data;
+    }
+  } catch (error) {
+    console.log(error);
+    possibleUploadFileNames.value = [];
+  } finally {
+    showUploadSelectModal.value = true;
+  }
+}
+
+const openSourceDrive = async () => {
+  const downloadDto = {
+    originDownloadPath: downloadRootPath.value
+  };
+
+  try {
+    await openDriveApi(downloadDto);
+  } catch (e) {
+    deletableDownloadFiles.value = [];
+    console.log(e);
+  }
+}
+
+const handleUploadSelectFile = async () => {
+    try {
     isRestoring.value = true;
     const uploadDto = {
-      fileName: fileName,
+      fileName: selectedUploadFile.value,
       destinationUploadPath: uploadRootPath.value,
       originUploadPath: downloadRootPath.value,
       projectType: projectType.value
@@ -823,18 +894,12 @@ const uploadBackupData = async (event: any) => {
     isRestoring.value = false;
   }
 
+  showUploadSelectModal.value = false;
 }
 
-const openSourceDrive = async () => {
-  const downloadDto = {
-    originDownloadPath: downloadRootPath.value
-  };
-
-  try {
-    await openDriveApi(downloadDto);
-  } catch (e) {
-    console.log(e);
-  }
+const handleUploadSelectModalClose = () => {
+  showUploadSelectModal.value = false;
+  selectedUploadFile.value = '';
 }
 
 </script>

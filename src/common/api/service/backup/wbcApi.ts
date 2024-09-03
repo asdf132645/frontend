@@ -29,3 +29,7 @@ export const checkDownloadDataMovedApi = async (): Promise<ApiResponse<number>> 
 export const checkUploadDataMovedApi = async (): Promise<ApiResponse<number>> => {
     return httpClient.httpGet(apiConstants.upload.checkDataMoved);
 }
+
+export const checkPossibleUploadFileApi = async (request: any): Promise<ApiResponse<any>> => {
+    return httpClient.httpPost(apiConstants.upload.checkPossibleUploadFile, request);
+}

@@ -226,6 +226,14 @@ main.bmComponent {
     color: var(--red-bg-4-color) !important;
 }
 
+.openDriveIcon {
+    width: 50px; cursor: pointer;
+}
+
+.openDriveIcon:hover {
+    transform: scale(1.2);
+}
+
 .loadingBackground {
     position: absolute;
     display: flex;
@@ -236,7 +244,8 @@ main.bmComponent {
     height: 100%;
     top: 0;
     left: 0;
-    background: var(--main-bg-3-color);
+    background: black;
+    opacity: 90%;
     font-size: 2rem;
 }
 
@@ -1956,11 +1965,12 @@ button.uploadBtn {
 
 .downloadSavePathContainer {
     display: flex;
+    align-items: center;
 }
 
 select.downloadPath {
-    margin: 0 5px 0 12px;
-    width: 97%;
+    margin: 0 0 0 12px;
+    width: 60%;
 }
 
 .settingCellImgAnalyzedContainer {
@@ -2626,6 +2636,36 @@ table.tableClass {
     width: 100%;
 }
 
+.downloadDeleteModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 340px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background: var(--gray-bg-12-color);
+    z-index: 9999999;
+    border-color: var(--white-color);
+}
+
+.downloadDeleteSmallModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 140px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background: var(--gray-bg-12-color);
+    z-index: 9999999;
+    border-color: var(--white-color);
+}
+
 .uploadModal {
     position: fixed;
     top: 50%;
@@ -2682,8 +2722,6 @@ table.tableClass {
 .uploadDuplicatedSlotWrapper {
     display: inline-block;
     flex-direction: column;
-    /*justify-content: center;*/
-    /*align-items: center;*/
     color: var(--main-bg-2-color);
     list-style: none;
     padding: 0;
@@ -2714,6 +2752,62 @@ table.tableClass {
     margin: 0 0 10px 0;
     line-height: 1.5;
 }
+
+.downloadDeleteWrapper {
+    display: inline-block;
+    flex-direction: column;
+    color: var(--main-bg-2-color);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    top: 0;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.downloadDeleteWrapper li {
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px auto;
+    /*margin: 0px 40px 1px 40px;*/
+    padding: 0px 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #555;
+    font-weight: bold;
+}
+
+.downloadDeleteWrapper > li > input {
+    width: fit-content;
+}
+
+.downloadDeleteSemiTitle {
+    color: black;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.downloadDeleteContainer {
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 250px;
+    background-color: var(--white-color);
+    margin-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 10px;
+}
+
+/*.downloadDeleteContainer p {*/
+/*    font-weight: bold;*/
+/*    margin-bottom: 10px;*/
+/*}*/
 
 .memoModal {
     position: absolute;
