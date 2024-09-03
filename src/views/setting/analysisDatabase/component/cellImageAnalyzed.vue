@@ -264,7 +264,7 @@
   </div>
 
   <!-- Upload 선택 모달 -->
-  <div v-show="showUploadSelectModal" class='downloadDeleteModal'>
+  <div v-show="showUploadSelectModal" :class="possibleUploadFileNames.length === 0 ? 'downloadDeleteSmallModal' : 'downloadDeleteModal'">
     <p class="fs12" style="top: 0;">Upload file list</p>
     <div v-show="possibleUploadFileNames.length > 0" class="downloadDeleteContainer">
       <p class="downloadDeleteSemiTitle">Select upload file</p>
