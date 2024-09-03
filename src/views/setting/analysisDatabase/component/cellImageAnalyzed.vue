@@ -242,9 +242,10 @@
         class="fs12"
     >
       There are <span style="color: red;">duplicated</span> items
+      Would you like to upload possible items?
     </pre>
     <div :class="impossibleUploadCount === 0 && 'uploadModalCountWrapperSmall'">
-      <p>Non-duplicated Count: {{ possibleUploadCount }}</p>
+      <p>Movable Items Count: {{ possibleUploadCount }}</p>
       <p>Duplicated Count: {{ impossibleUploadCount }}</p>
     </div>
     <div v-if="impossibleUploadCount > 0" class="uploadDuplicatedSlotContainer">
@@ -256,8 +257,8 @@
       </ul>
     </div>
     <div class="uploadModalBtnContainer">
-      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ messages.COPY }}</button>
-      <button v-show="impossibleUploadCount === 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ messages.COPY }}</button>
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>
       <button class="memoModalBtn" @click="uploadCancel">{{ impossibleUploadCount === 0 ? messages.CANCEL : messages.CLOSE }}</button>
     </div>
   </div>
@@ -269,7 +270,7 @@
       <p class="downloadDeleteSemiTitle">Select upload file</p>
       <ul class="downloadDeleteWrapper">
         <li class="userSelectText flexSpaceBetween" v-for="folderName in possibleUploadFileNames" :key="folderName">
-          <p>{{ folderName }}</p>
+          <p style="font-size: 0.8rem;">{{ folderName }}</p>
           <input style="margin: 0;" v-model="selectedUploadFile" type="radio" :value="folderName" />
         </li>
 
@@ -636,6 +637,7 @@ const toggleKeepPage = () => {
 
 const uploadConfirm = async (uploadType: 'move' | 'copy') => {
   showUploadModal.value = false;
+  totalFileCount.value = possibleUploadCount.value;
   try {
     isLoadingProgressBar.value = true;
     const day = localStorage.getItem('lastSearchParams') || '';
@@ -658,6 +660,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
       loadingState.value = 'copied';
     }
 
+    successFileCount.value = 0;
     downloadUploadStopWebSocket(true);
     handleUploadPolling();
     const result = await uploadBackupApi(uploadDto);
@@ -749,6 +752,8 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
   } else {
     loadingState.value = 'copied';
   }
+
+  successFileCount.value = 0;
 
   try {
     handleDownloadPolling();

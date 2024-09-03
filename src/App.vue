@@ -520,6 +520,7 @@ async function socketData(data: any) {
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
         let wbcInfoAfter: any = [];
+        console.log('matchedWbcInfo', matchedWbcInfo);
         if (siteCd.value === '0011') {
           newWbcInfo.wbcInfo = [await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0])];
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
