@@ -483,7 +483,7 @@ function toggleCheckbox(outerIndex: number, innerIndex: number, classIndex: numb
   updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
 }
 
-const rbcTotalAndReCount = async (pageNumber: string) => {
+const rbcTotalAndReCount = async (pageNumber: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response_new = await readJsonFile({fullPath: url_new});
@@ -491,6 +491,7 @@ const rbcTotalAndReCount = async (pageNumber: string) => {
   rbcResponseOldArr.value = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
+    console.log('rbcResponseOldArr.value', rbcResponseOldArr.value);
     for (const rbcItem of rbcResponseOldArr.value.data[pageNumber].rbcClassList) {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함

@@ -52,7 +52,7 @@ const selectedSampleId = computed(() => store.state.commonModule.selectedSampleI
 const isLoading = ref(false);
 const allUnCheck = ref(false);
 const notCanvasClickVal = ref(false);
-const currentRbcPageNumber = ref('');
+const currentRbcPageNumber = ref(0);
 
 onMounted(async () => {
   isLoading.value = false;
@@ -83,6 +83,7 @@ const refreshClass = async (data: any) => {
   rbcInfo.value = data;
   selectItems.value = data;
   allCheckClear.value = !allCheckClear.value;
+  currentRbcPageNumber.value = 0;
 }
 
 const classInfoArrUpdate = (data: any) => {
@@ -106,7 +107,7 @@ const notCanvasClick = (val: any) => {
   notCanvasClickVal.value = val;
 }
 
-const changeCurrentRbcImagePageNumber = (pageNumber: string) => {
+const changeCurrentRbcImagePageNumber = (pageNumber: number) => {
   currentRbcPageNumber.value = pageNumber;
 }
 
