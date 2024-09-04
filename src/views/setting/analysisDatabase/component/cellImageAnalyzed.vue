@@ -339,8 +339,6 @@ import {
   uploadPossibleApi,
   uploadBackupApi,
   openDriveApi,
-  checkDownloadDataMovedApi,
-  checkUploadDataMovedApi,
   checkPossibleUploadFileApi
 } from "@/common/api/service/backup/wbcApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
@@ -662,7 +660,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
 
     successFileCount.value = 0;
     downloadUploadStopWebSocket(true);
-    handleUploadPolling();
+    handlePolling();
     const result = await uploadBackupApi(uploadDto);
     if (typeof result.data === 'string') {
       showErrorAlert(result.data);
@@ -672,6 +670,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
   } catch (e) {
     console.log(e);
   } finally {
+    successFileCount.value = totalFileCount.value;
     clearInterval(intervalId.value);
     downloadUploadStopWebSocket(false);
   }
@@ -714,25 +713,14 @@ const handleDownloadClose = () => {
   showDownloadConfirm.value = false;
 }
 
-const handlePolling = async (apiFunc: any) => {
-  const duration = String(totalFileCount.value).length
+const handlePolling = async () => {
+  const duration = String(totalFileCount.value).length // 1초
   intervalId.value = setInterval(async () => {
-    try {
-      const result: any = await apiFunc();
-      successFileCount.value = Number(result.data.success);
-    } catch (error) {
-      console.log(`Error polling data: `, error);
+    successFileCount.value += 1;
+    if (successFileCount.value === totalFileCount.value - 1) {
       clearInterval(intervalId.value);
     }
   }, duration * 1500);
-}
-
-const handleDownloadPolling = async () => {
-  await handlePolling(checkDownloadDataMovedApi)
-}
-
-const handleUploadPolling = async () => {
-  await handlePolling(checkUploadDataMovedApi)
 }
 
 const downloadUploadStopWebSocket = (state: boolean) => {
@@ -756,12 +744,13 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
   successFileCount.value = 0;
 
   try {
-    handleDownloadPolling();
+    handlePolling();
     await backUpDateApi(downloadDto);
   } catch (e) {
     console.log(e);
   } finally {
     clearInterval(intervalId.value);
+    successFileCount.value = totalFileCount.value;
     downloadUploadStopWebSocket(false);
   }
 

@@ -20,11 +20,12 @@
                 @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable'
                 :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
                 :notCanvasClickVal="notCanvasClickVal"
+                :currentRbcPageNumber="currentRbcPageNumber"
       />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore"
+      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" @changeCurrentRbcImagePageNumber="changeCurrentRbcImagePageNumber"
                     :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
@@ -51,6 +52,7 @@ const selectedSampleId = computed(() => store.state.commonModule.selectedSampleI
 const isLoading = ref(false);
 const allUnCheck = ref(false);
 const notCanvasClickVal = ref(false);
+const currentRbcPageNumber = ref('');
 
 onMounted(async () => {
   isLoading.value = false;
@@ -101,9 +103,11 @@ const unChecked = () => {
 }
 
 const notCanvasClick = (val: any) => {
-//
-  console.log(val)
   notCanvasClickVal.value = val;
+}
+
+const changeCurrentRbcImagePageNumber = (pageNumber: string) => {
+  currentRbcPageNumber.value = pageNumber;
 }
 
 </script>

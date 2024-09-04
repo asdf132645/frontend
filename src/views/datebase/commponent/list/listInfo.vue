@@ -101,7 +101,7 @@ watch(() => props.selectedItem, (newSelectedItem) => {
   }
 });
 
-const sortClassOrder = () => {
+const sortClassOrder = async () => {
   if (!orderClass.value || orderClass.value.length === 0 || !Array.isArray(orderClass.value)) {
     wbcInfoAfter.value = props.selectedItem.wbcInfoAfter;
     return;
@@ -111,8 +111,9 @@ const sortClassOrder = () => {
   const sortedWbcInfoData = sortWbcInfo(props.selectedItem.wbcInfoAfter, sortArr);
   wbcInfoAfter.value = sortedWbcInfoData;
   if (siteCd.value === '0011') {
-    wbcInfoAfter.value = inhaDataChangeSave(props.selectedItem, props.selectedItem.wbcInfoAfter)
+    wbcInfoAfter.value = await inhaDataChangeSave(props.selectedItem, props.selectedItem.wbcInfoAfter)
   }
+
 }
 
 const sortWbcInfo = (wbcInfo, basicWbcArr) => {

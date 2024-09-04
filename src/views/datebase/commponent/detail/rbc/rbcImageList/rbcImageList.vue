@@ -226,8 +226,10 @@ const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
 const notCanvasClick = ref(false);
+const rbcImagePageNumber = ref(0);
 
 onMounted(async () => {
+  rbcImagePageNumber.value = 0;
   await nextTick();
   await initElement();
   document.addEventListener('click', closeSelectBox);
@@ -390,7 +392,7 @@ watch(() => props.classInfoArr, (newData) => {
   });
 
   // rbcMarker 함수 호출
-  rbcMarker(newData);
+  rbcMarker(newData, rbcImagePageNumber.value);
 }, {deep: true});
 
 
@@ -401,7 +403,7 @@ watch(classInfoArrNewReData, async (nenenen, oldItem) => {
       removeRbcMarker();
       return;
     }
-    await rbcMarker(nenenen);
+    await rbcMarker(nenenen, rbcImagePageNumber.value);
     await store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
     await store.dispatch('commonModule/setCommonInfo', {classInfoArr: []});
     return;
@@ -432,7 +434,7 @@ const hideAlert = () => {
 };
 
 
-const rbcMarker = async (newItem: any) => {
+const rbcMarker = async (newItem: any, imgNum: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
   const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
@@ -441,7 +443,7 @@ const rbcMarker = async (newItem: any) => {
   const response_old = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
-    for (const rbcItem of response_old.data[0].rbcClassList) {
+    for (const rbcItem of response_old.data[imgNum].rbcClassList) {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
         const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
@@ -464,9 +466,9 @@ const rbcMarker = async (newItem: any) => {
         }
       }
     }
-    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
+    rbcInfoPathAfter.value = response_old.data[imgNum].rbcClassList;
   } else {
-    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+    rbcInfoPathAfter.value = response_old?.data[imgNum].rbcClassList;
   }
   classInfoArr.value = newItem;
 
@@ -693,7 +695,11 @@ const initElement = async () => {
       });
 
       viewer.value.addHandler('page', function (event: any) {
-        const notCanvasClick = fileNameResultArr.value[event.page] !== 'RBC_Image_0';
+        const notCanvasClick = !fileNameResultArr.value[event.page].includes('RBC_Image');
+        if (!notCanvasClick) {
+          rbcImagePageNumber.value = event.page;
+          emits('changeCurrentRbcImagePageNumber', event.page);
+        }
         emits('notCanvasClick', notCanvasClick);
         // 페이지가 변경될 때 오버레이를 다시 추가
         if (canvas.parentElement !== viewer.value.container) {
