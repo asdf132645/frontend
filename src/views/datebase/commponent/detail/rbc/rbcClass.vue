@@ -298,7 +298,7 @@ import EventBus from "@/eventBus/eventBus";
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<any>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal', 'currentRbcPageNumber']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
@@ -343,9 +343,12 @@ const submitState = ref('');
 const projectType = ref(window.PROJECT_TYPE);
 const countArtifact = ref(0);
 const countDoubleNormal = ref(0);
+const rbcResponseOldArr = ref([]);
+const rbcImagePageNumber = ref(0);
 
 onMounted(async () => {
-  const {path} = router.currentRoute.value;
+  rbcImagePageNumber.value = 0;
+  const { path } = router.currentRoute.value;
   memo.value = props.selectItems?.rbcMemo;
   pltCount.value = props.selectItems?.rbcInfo.pltCount;
   malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
@@ -365,6 +368,11 @@ watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
 }, {deep: true})
+
+watch(() => props.currentRbcPageNumber, async (newRbcPageNumber) => {
+  rbcImagePageNumber.value = newRbcPageNumber;
+  await rbcTotalAndReCount(newRbcPageNumber)
+})
 
 watch(() => props.selectItems, async (newItem) => {
   pltCount.value = props.selectItems?.pltCount;
@@ -402,20 +410,19 @@ const rightClickItemSet = () => {
 
 watch(() => props.rbcInfo, async (newItem) => {
   await afterChange(newItem);
-  await rbcTotalAndReCount();
+  await rbcTotalAndReCount(rbcImagePageNumber.value);
   await countReAdd();
   await getRbcDegreeData();
   await reDegree(rbcInfoBeforeVal.value);
   if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
     await reDegree(rbcInfoAfterVal.value);
   }
-
 });
 
 watch(() => resetRbcArr, async (newItem) => {
   if (newItem) {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
-    await rbcTotalAndReCount();
+    await rbcTotalAndReCount(rbcImagePageNumber.value);
     await countReAdd();
   }
 }, {deep: true})
@@ -428,13 +435,12 @@ watch(() => props.allCheckClear, (newItem) => {
 
 
 watch(() => rbcReData, async (newItem) => {
-
   if (newItem) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(async () => {
       jsonIsBool.value = false;
       // await afterChange();
-      await rbcTotalAndReCount();
+      await rbcTotalAndReCount(rbcImagePageNumber.value);
       await countReAdd();
       await getRbcDegreeData();
       await reDegree(rbcInfoBeforeVal.value);
@@ -477,15 +483,15 @@ function toggleCheckbox(outerIndex: number, innerIndex: number, classIndex: numb
   updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
 }
 
-const rbcTotalAndReCount = async () => {
+const rbcTotalAndReCount = async (pageNumber: string) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
   const response_new = await readJsonFile({fullPath: url_new});
   const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
-  const response_old = await readJsonFile({fullPath: url_Old});
+  rbcResponseOldArr.value = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
-    for (const rbcItem of response_old.data[0].rbcClassList) {
+    for (const rbcItem of rbcResponseOldArr.value.data[pageNumber].rbcClassList) {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
         const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
@@ -508,9 +514,9 @@ const rbcTotalAndReCount = async () => {
         }
       }
     }
-    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
+    rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
   } else {
-    rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
+    rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
     // console.error('rbcInfoPathAfter.value is not iterable');
@@ -839,6 +845,7 @@ const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: str
 
   emits('classInfoArrUpdate', classInfoArr.value);
 };
+
 watch(rbcReData, async (newItem, oldItem) => {
   if (newItem) {
     updataClassInfoaArr();
@@ -917,7 +924,7 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
     })
     if (response) {
       if(degree === 'degree'){
-        await rbcTotalAndReCount();
+        await rbcTotalAndReCount(rbcImagePageNumber.value);
         await countReAdd();
         await getRbcDegreeData();
         // await reDegree(rbcInfoBeforeVal.value);
