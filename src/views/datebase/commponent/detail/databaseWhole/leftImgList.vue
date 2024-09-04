@@ -5,47 +5,45 @@
     <ul class="leftImgUl">
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index" class="leftImgLi">
-        <img :src="getImageUrlsSmallImg(image, 'particle')" alt="Partical Image"
-             @dblclick="openInViewer(getImageUrls(image, 'particle'), '02_Particle_Image')">
+        <img :src="particleImageUrls[index]" alt="Partical Image"
+             @dblclick="openInViewer(particleImageUrls[index], '02_Particle_Image')">
       </li>
     </ul>
     <ul class="leftImgUl">
       <p>Ideal Zone</p>
       <li v-for="(image, index) in idealZoneImages" :key="index" class="leftImgLi" style="width:100px">
-        <img :src="getImageUrlsSmallImg(image, 'idealZone')"
-             @dblclick="openInViewer(getImageUrls(image, 'idealZone'),'03_Cell_Ideal_Image')">
+        <img :src="idealZoneImageUrls[index]"
+             @dblclick="openInViewer(idealZoneImageUrls[index], '03_Cell_Ideal_Image')">
       </li>
     </ul>
     <ul class="leftImgUl">
       <div>
-        <p>Ideal stitch</p>
+        <p>Ideal Stitch</p>
         <li v-for="(image, index) in idealStitchImages" :key="index" class="leftImgLi">
-          <img :src="getImageUrlsSmallImg(image, 'idealStitch')"
-               @dblclick="openInViewer(getImageUrls(image, 'idealStitch'), '04_Cell_Ideal_Stitch_Image')">
+          <img :src="idealStitchImageUrls[index]"
+               @dblclick="openInViewer(idealStitchImageUrls[index], '04_Cell_Ideal_Stitch_Image')">
         </li>
       </div>
       <div>
         <p>Megakaryocyte</p>
         <li v-for="(image, index) in megaImages" :key="index" class="leftImgLi">
-          <img :src="getImageUrlsSmallImg(image, 'mega')"
-               @dblclick="openInViewer(getImageUrls(image, 'mega'),'05_Mega_Image')">
+          <img :src="megaImageUrls[index]"
+               @dblclick="openInViewer(megaImageUrls[index], '05_Mega_Image')">
         </li>
       </div>
     </ul>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, nextTick, onMounted, ref, watch} from "vue";
+import { computed, defineProps, onMounted, ref, watch } from "vue";
 import OpenSeadragon from "openseadragon";
 import axios from "axios";
-import {useStore} from "vuex";
-import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {fileReadJpg} from "@/common/api/service/fileSys/fileSysApi";
+import { useStore } from "vuex";
+import { readDziFile } from "@/common/api/service/fileReader/fileReaderApi";
+import { fileReadJpg } from "@/common/api/service/fileSys/fileSysApi";
 
 const props = defineProps(['selectItems']);
-
 const store = useStore();
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
@@ -53,115 +51,107 @@ const paImages = ref([]);
 const idealZoneImages = ref([]);
 const idealStitchImages = ref([]);
 const megaImages = ref([]);
+
+const particleImageUrls: any = ref([]);
+const idealZoneImageUrls: any = ref([]);
+const idealStitchImageUrls: any = ref([]);
+const megaImageUrls: any = ref([]);
+
 const strArray = ['02_Particle_Image', '03_Cell_Ideal_Image', '04_Cell_Ideal_Stitch_Image', '05_Mega_Image'];
 const buttonOfen = ref(false);
 let viewerSmall: any = null;
+
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const oldBmData = ref(false);
 
 onMounted(async () => {
-  await nextTick();
-  await bmOldDataDivision();
-  console.log(oldBmData.value)
   await getImgUrl();
 });
 
-watch(() => props.selectItems, async (newItem) => {
-  await bmOldDataDivision();
+watch(() => props.selectItems, async () => {
   await getImgUrl();
 });
 
-const bmOldDataDivision = async () => {
-  const slotId = props.selectItems?.slotId || "";
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-  const folderPath = `${path}/${slotId}/01_Stitching_Image`;
-  const params = `directoryPath=${folderPath}&filename=PMC_Result.jpg`
-  const res: any = await fileReadJpg(params);
-  oldBmData.value = res.data.fileExists;
-}
-
-const getImageUrls = (imageName: string, type: string) => {
-  let folderName;
-  switch (type) {
-    case 'particle':
-      // oldBmData
-      folderName = '02_Particle_Image/Thumb';
-      break;
-    case 'idealZone':
-      folderName = '03_Cell_Ideal_Image';
-      break;
-    case 'idealStitch':
-      folderName = '04_Cell_Ideal_Stitch_Image';
-      break;
-    case 'mega':
-      folderName = '05_Mega_Image';
-      break;
-    default:
-      break;
-  }
+const bmOldDataDivision = async (folderName: string): Promise<boolean> => {
   const slotId = props.selectItems?.slotId || "";
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
   const folderPath = `${path}/${slotId}/${folderName}`;
 
-  return `${apiBaseUrl}/folders?folderPath=${folderPath}/${imageName}`;
-};
+  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+  const response = await fetch(url);
+  const fileNames = await response.json();
+  return fileNames.some((fileName: any) => fileName.endsWith('_files'));
+}
 
-const getImageUrlsSmallImg = (imageName: string, type: string) => {
-  // oldBmData
+const getImageUrlsSmallImg = async (imageName: string, type: string) => {
   let folderName;
   const slotId = props.selectItems?.slotId || "";
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-  let folderPath = ``;
   let returnVal = '';
+
   switch (type) {
     case 'particle':
       folderName = `02_Particle_Image/${imageName}/10`;
-      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg` : '02_Particle_Image/Thumb';
+      returnVal = await bmOldDataDivision('02_Particle_Image')
+          ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg`
+          : '02_Particle_Image/Thumb';
       break;
     case 'idealZone':
-      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/03_Cell_Ideal_Image/${imageName}` : '03_Cell_Ideal_Image';
+      returnVal = await bmOldDataDivision('03_Cell_Ideal_Image')
+          ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/03_Cell_Ideal_Image/${imageName}`
+          : '03_Cell_Ideal_Image';
       break;
     case 'idealStitch':
       folderName = `04_Cell_Ideal_Stitch_Image/${imageName}/10`;
-      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg` : '04_Cell_Ideal_Stitch_Image';
+      returnVal = await bmOldDataDivision('04_Cell_Ideal_Stitch_Image')
+          ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${folderName}/0_0.jpg`
+          : '04_Cell_Ideal_Stitch_Image';
       break;
     case 'mega':
-      folderName = '';
-      returnVal = !oldBmData.value ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${folderPath}/${imageName}` : '05_Mega_Image';
+      returnVal = await bmOldDataDivision('05_Mega_Image')
+          ? `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/05_Mega_Image/${imageName}`
+          : '05_Mega_Image';
       break;
     default:
       break;
   }
 
-  return !oldBmData.value ? returnVal : `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${returnVal}/${imageName}`;
+  return returnVal.includes(apiBaseUrl)
+      ? returnVal
+      : `${apiBaseUrl}/folders/getFilesInFolderWhole?folderPath=${path}/${slotId}/${returnVal}/${imageName}`;
 };
 
 const getImgUrl = async () => {
   const slotId = props.selectItems?.slotId || "";
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
 
-
   for (const item of strArray) {
-    axios.get(`${apiBaseUrl}/folders?folderPath=${path}/${slotId}/${item}`)
-        .then(response => {
-          switch (item) {
-            case '02_Particle_Image':
-              paImages.value = !oldBmData.value ? response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7) : paImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 7);
-              break;
-            case '03_Cell_Ideal_Image':
-              idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 14);
-              break;
-            case '04_Cell_Ideal_Stitch_Image':
-              idealStitchImages.value = !oldBmData.value ? response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7) : idealStitchImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
-              break;
-            case '05_Mega_Image':
-              megaImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
-              break;
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
+    try {
+      const response = await axios.get(`${apiBaseUrl}/folders?folderPath=${path}/${slotId}/${item}`);
+      switch (item) {
+        case '02_Particle_Image':
+          paImages.value = await bmOldDataDivision('02_Particle_Image')
+              ? response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7)
+              : response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 7);
+          particleImageUrls.value = await Promise.all(paImages.value.map((image: string) => getImageUrlsSmallImg(image, 'particle')));
+          break;
+        case '03_Cell_Ideal_Image':
+          idealZoneImages.value = response.data.filter((resp: any) => resp !== 'Thumb').slice(0, 14);
+          idealZoneImageUrls.value = await Promise.all(idealZoneImages.value.map((image: string) => getImageUrlsSmallImg(image, 'idealZone')));
+          break;
+        case '04_Cell_Ideal_Stitch_Image':
+          idealStitchImages.value = await bmOldDataDivision('04_Cell_Ideal_Stitch_Image')
+              ? response.data.filter((resp: any) => !resp.includes('.dzi')).slice(0, 7)
+              : response.data.filter((resp: any) => resp !== 'Thumb');
+          idealStitchImageUrls.value = await Promise.all(idealStitchImages.value.map((image: string) => getImageUrlsSmallImg(image, 'idealStitch')));
+          break;
+        case '05_Mega_Image':
+          megaImages.value = response.data.filter((resp: any) => resp !== 'Thumb');
+          megaImageUrls.value = await Promise.all(megaImages.value.map((image: string) => getImageUrlsSmallImg(image, 'mega')));
+          break;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 };
 
@@ -172,7 +162,7 @@ const openInViewer = async (imageUrl: string, type: string) => {
     viewerSmall.destroy();
   }
   let urlTileSources = {};
-  if (type === '03_Cell_Ideal_Image' || oldBmData.value) {
+  if (type === '03_Cell_Ideal_Image' || await bmOldDataDivision('02_Particle_Image')) {
     urlTileSources = {
       type: "image",
       url: imageUrl,
@@ -260,7 +250,7 @@ const fetchTilesInfo = async (folderPath: string) => {
     if (fileName.endsWith('_files')) {
 
       const fileNameResult = extractSubStringBeforeFiles(fileName);
-      const {width, height, tileSize} = await dziWidthHeight(fileNameResult, folderPath);
+      const { width, height, tileSize } = await dziWidthHeight(fileNameResult, folderPath);
       tilesInfo.push({
         Image: {
           xmlns: "http://schemas.microsoft.com/deepzoom/2009",
@@ -291,7 +281,7 @@ const extractSubStringBeforeFiles = (str: string) => {
 }
 const dziWidthHeight = async (imageFileName: any, folderPath: string): Promise<any> => {
   const urlImage = `${folderPath}/${imageFileName}.dzi`;
-  const imageResponse = await readDziFile({filePath: urlImage});
+  const imageResponse = await readDziFile({ filePath: urlImage });
   return await extractWidthHeightFromDzi(`${imageFileName}`, imageResponse);
 }
 const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
@@ -302,6 +292,6 @@ const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
   const tileSize = tileSizeEl.getAttribute("TileSize");
   const width = sizeElement.getAttribute("Width");
   const height = sizeElement.getAttribute("Height");
-  return {fileName, width: Number(width), height: Number(height), tileSize: Number(tileSize)}
+  return { fileName, width: Number(width), height: Number(height), tileSize: Number(tileSize) }
 }
 </script>
