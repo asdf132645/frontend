@@ -59,6 +59,7 @@ export interface CommonState {
     initValData: boolean;
     enteringRouterPath: string;
     settingType: string;
+    isDownloadOrUploading: boolean;
 }
 
 interface CommonModule {
@@ -124,6 +125,7 @@ interface CommonModule {
         setInitValData: (state: CommonState, value: boolean) => void;
         setEnteringRouterPath: (state: CommonState, value: string) => void;
         setSettingType: (state: CommonState, value: string) => void;
+        setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -190,6 +192,7 @@ export const commonModule: CommonModule = {
         initValData: false,
         enteringRouterPath: '',
         settingType: '',
+        isDownloadOrUploading: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -372,6 +375,9 @@ export const commonModule: CommonModule = {
         },
         setSettingType(state: CommonState, value: string): void {
             state.settingType = value;
+        },
+        setIsDownloadOrUploading(state: CommonState, value: boolean): void {
+            state.isDownloadOrUploading = value;
         }
     },
     actions: {
@@ -556,6 +562,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('settingType')) {
                 commit('setSettingType', payload.settingType);
+            }
+            if (payload.hasOwnProperty('isDownloadOrUploading')) {
+                commit('setIsDownloadOrUploading', payload.isDownloadOrUploading);
             }
         },
     },

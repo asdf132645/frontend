@@ -414,7 +414,7 @@ const downloadDto = ref<any>({});
 const totalFileCount = ref(1);
 const successFileCount = ref(0);
 const downloadUploadType = ref('copy');
-const intervalId = ref(null);
+const intervalId = ref<any>(null);
 const deletableDownloadFiles = ref({});
 const loadingState = ref('');
 const showUploadSelectModal = ref(false);
@@ -659,6 +659,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     }
 
     successFileCount.value = 0;
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
     handlePolling();
     const result = await uploadBackupApi(uploadDto);
@@ -673,6 +674,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     successFileCount.value = totalFileCount.value;
     clearInterval(intervalId.value);
     downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
   await updateFileCounts('Upload');
 }
@@ -733,6 +735,7 @@ const downloadUploadStopWebSocket = (state: boolean) => {
 const handleDownload = async (downloadType: 'move' | 'copy') => {
   const downloadDto = downloadDtoObj(downloadType);
 
+  await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
   downloadUploadStopWebSocket(true);
 
   if (downloadType === 'move') {
@@ -752,6 +755,7 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
     clearInterval(intervalId.value);
     successFileCount.value = totalFileCount.value;
     downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
 
   await updateFileCounts('Download');
@@ -811,6 +815,7 @@ const createBackup = async () => {
     projectType: projectType.value,
   };
   try {
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
     isDownloading.value = true;
     const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
@@ -826,6 +831,7 @@ const createBackup = async () => {
   } finally {
     isDownloading.value = false;
     downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
 }
 
@@ -869,6 +875,7 @@ const handleUploadSelectFile = async () => {
       originUploadPath: downloadRootPath.value,
       projectType: projectType.value
     }
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
 
     const result: any = await uploadPossibleApi(uploadDto);
@@ -885,6 +892,7 @@ const handleUploadSelectFile = async () => {
     console.log(e);
   } finally {
     downloadUploadStopWebSocket(false);
+      await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
     isRestoring.value = false;
   }
 

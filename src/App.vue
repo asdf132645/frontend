@@ -78,7 +78,8 @@ let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-// const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
+const isDownloadOrUploading = computed(() => store.state.commonModule.isDownloadOrUploading);
+
 const isNsNbIntegrationLocal = ref('N');
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
@@ -96,6 +97,7 @@ let intervalId: any;
 const stataasdasd = ref(false);
 const ipMatches = ref(false);
 const barcodeNum = ref('');
+
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   console.log('isTcpConnected', isTcpConnected);
   if (isTcpConnected) {
@@ -151,6 +153,11 @@ watch(reqArr.value, async (newVal, oldVal) => {
   if (!newVal.reqArr) return;
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
   const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
+
+  if (isDownloadOrUploading.value) {
+    await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
+    return;
+  }
 
   if (notSysRunInfo.length > 0) {
     await sendMessage(notSysRunInfo[0]);
@@ -769,7 +776,6 @@ const sendMessage = async (payload: any) => {
       payload: payload
     });
   };
-
   await executeAfterDelay();
   deleteData.value = true;
 };
