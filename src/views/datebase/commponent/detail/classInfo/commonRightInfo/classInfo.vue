@@ -230,6 +230,7 @@ const customClassArr = ref<any>([]);
 const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const lisBtnColor = ref(false);
+const totalPercentRounded0002 = ref(0);
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -469,7 +470,7 @@ const uimdTestCbcLisDataGet = () => {
 
 const cmcseoulLisAndCbcDataGet = () => {
   const codeList = CbcWbcTestCdList_0002;
-  const {barcodeNo, wbcInfoAfter} = props.selectItems ?? {};
+  const { barcodeNo, wbcInfoAfter } = props.selectItems ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
@@ -1300,6 +1301,15 @@ const beforeAfterChange = async (newItem: any) => {
   totalCountSet('before', wbcInfoBeforeValForTotalCount);
   totalCountSet('after', wbcInfoAfterValForTotalCount);
 
+  // const totalPercentRounded = wbcTemp
+  //     .filter((item: any) => item.name !== "Neutrophil")
+  //     .map((item: any) => Math.round(parseFloat(item.percent)))
+  //     .reduce((sum: any, percent: any) => sum + percent, 0);
+  // const updatedWbcTemp = wbcTemp.map((item: any) =>
+  //     item.name === "Neutrophil"
+  //         ? {...item, percent: 100 - totalPercentRounded}
+  //         : {...item, percent: Math.round(parseFloat(item.percent))}
+  // );
   // totalCount, percent - 따로
   for (const item of wbcInfoBeforeValForTotalCount) {
     createPercent(item, totalBeforeCount.value)
@@ -1307,6 +1317,29 @@ const beforeAfterChange = async (newItem: any) => {
 
   for (const item of wbcInfoAfterValForTotalCount) {
     createPercent(item, totalAfterCount.value)
+  }
+
+  // 서울 성모
+  if (siteCd.value === '0002') {
+    totalPercentRounded0002.value = wbcInfoBeforeValForTotalCount.filter((item: any) => item.name !== "Neutrophil")
+        .map((item: any) => Math.round(parseFloat(item.percent)))
+        .reduce((sum: any, percent: any) => sum + percent, 0);
+
+    wbcInfoBeforeVal.value = wbcInfoBeforeVal.value.map((item: any) =>
+        item.name === "Neutrophil"
+            ? {...item, percent: 100 - totalPercentRounded0002.value}
+            : {...item, percent: Math.round(parseFloat(item.percent))}
+    );
+
+    totalPercentRounded0002.value = wbcInfoAfterValForTotalCount.filter((item: any) => item.name !== "Neutrophil")
+        .map((item: any) => Math.round(parseFloat(item.percent)))
+        .reduce((sum: any, percent: any) => sum + percent, 0);
+
+    wbcInfoAfterVal.value = wbcInfoAfterVal.value.map((item: any) =>
+        item.name === "Neutrophil"
+            ? {...item, percent: 100 - totalPercentRounded0002.value}
+            : {...item, percent: Math.round(parseFloat(item.percent))}
+    );
   }
 
   wbcInfoVal.value = [];
@@ -1515,6 +1548,19 @@ async function updateOriginalDb() {
     });
 
     createPercent(item, totalCount);
+
+    // 서울 성모
+    if (siteCd.value === '0002') {
+      totalPercentRounded0002.value = clonedWbcInfo.filter((item: any) => item.name !== "Neutrophil")
+          .map((item: any) => Math.round(parseFloat(item.percent)))
+          .reduce((sum: any, percent: any) => sum + percent, 0);
+
+      wbcInfoAfterVal.value = wbcInfoAfterVal.value.map((item: any) =>
+          item.name === "Neutrophil"
+              ? {...item, percent: 100 - totalPercentRounded0002.value}
+              : {...item, percent: Math.round(parseFloat(item.percent))}
+      );
+    }
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장
