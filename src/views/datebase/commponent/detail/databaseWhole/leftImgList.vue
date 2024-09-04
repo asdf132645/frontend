@@ -6,14 +6,14 @@
       <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index" class="leftImgLi">
         <img :src="particleImageUrls[index]" alt="Partical Image"
-             @dblclick="openInViewer(particleImageUrls[index], '02_Particle_Image')">
+             @dblclick="openInViewer(particleImageUrls[index], '02_Particle_Image', bmOldDataDivision('02_Particle_Image'))">
       </li>
     </ul>
     <ul class="leftImgUl">
       <p>Ideal Zone</p>
       <li v-for="(image, index) in idealZoneImages" :key="index" class="leftImgLi" style="width:100px">
         <img :src="idealZoneImageUrls[index]"
-             @dblclick="openInViewer(idealZoneImageUrls[index], '03_Cell_Ideal_Image')">
+             @dblclick="openInViewer(idealZoneImageUrls[index], '03_Cell_Ideal_Image',bmOldDataDivision('03_Cell_Ideal_Image'))">
       </li>
     </ul>
     <ul class="leftImgUl">
@@ -21,14 +21,14 @@
         <p>Ideal Stitch</p>
         <li v-for="(image, index) in idealStitchImages" :key="index" class="leftImgLi">
           <img :src="idealStitchImageUrls[index]"
-               @dblclick="openInViewer(idealStitchImageUrls[index], '04_Cell_Ideal_Stitch_Image')">
+               @dblclick="openInViewer(idealStitchImageUrls[index], '04_Cell_Ideal_Stitch_Image',bmOldDataDivision('04_Cell_Ideal_Stitch_Image'))">
         </li>
       </div>
       <div>
         <p>Megakaryocyte</p>
         <li v-for="(image, index) in megaImages" :key="index" class="leftImgLi">
           <img :src="megaImageUrls[index]"
-               @dblclick="openInViewer(megaImageUrls[index], '05_Mega_Image')">
+               @dblclick="openInViewer(megaImageUrls[index], '05_Mega_Image',bmOldDataDivision('05_Mega_Image'))">
         </li>
       </div>
     </ul>
@@ -156,13 +156,13 @@ const getImgUrl = async () => {
 };
 
 // 이미지를 더블클릭하면 OpenSeadragon 뷰어에서 열기
-const openInViewer = async (imageUrl: string, type: string) => {
+const openInViewer = async (imageUrl: string, type: string, bmOldData: any) => {
   // 기존의 뷰어 제거
   if (viewerSmall) {
     viewerSmall.destroy();
   }
   let urlTileSources = {};
-  if (type === '03_Cell_Ideal_Image' || await bmOldDataDivision('02_Particle_Image')) {
+  if (type === '03_Cell_Ideal_Image' || !await bmOldData) {
     urlTileSources = {
       type: "image",
       url: imageUrl,
