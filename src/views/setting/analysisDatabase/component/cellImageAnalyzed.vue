@@ -13,12 +13,10 @@
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
-
     <div class="settingCellImgAnalyzedContainer">
-      <template v-if="viewerCheck !== 'viewer'">
         <table class="settingTable">
         <tbody>
-        <tr>
+        <tr v-if="viewerCheck !== 'viewer'">
           <th>Analysis Type</th>
           <td colspan="2">
             <select v-model='testTypeCd'>
@@ -28,7 +26,7 @@
         </tr>
         <!--Common analysis values-->
 
-        <tr>
+        <tr v-if="viewerCheck !== 'viewer'">
           <!-- WBC diff analysis values -->
           <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
 
@@ -43,7 +41,7 @@
           </td>
         </tr>
         <!--      PBS analysis values-->
-        <tr v-if="projectType === 'pb'">
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th :rowspan="projectType === 'pb' && testTypeCd === '04' ? 3 : 2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
@@ -54,7 +52,7 @@
             </select>
           </td>
         </tr>
-        <tr>
+        <tr v-if="viewerCheck !== 'viewer'">
           <th v-if="projectType === 'bm'"></th>
           <th>Stitch Count</th>
           <td>
@@ -63,7 +61,7 @@
             </select>
           </td>
         </tr>
-        <tr v-show="projectType === 'pb' && testTypeCd === '04'">
+        <tr v-show="projectType === 'pb' && testTypeCd === '04' && viewerCheck !== 'viewer'">
           <th>Edge Shot Type</th>
           <td>
             <select v-model='sideEdgeWbcMode'>
@@ -72,7 +70,7 @@
           </td>
         </tr>
         <!--      BF analysis values-->
-        <tr v-if="projectType === 'pb'">
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>BF Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
@@ -82,7 +80,7 @@
           </td>
         </tr>
 
-        <tr v-if="projectType === 'pb'">
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th rowspan="3">Common</th>
           <th>Wbc Position Margin</th>
           <td>
@@ -91,7 +89,7 @@
             </select>
           </td>
         </tr>
-        <tr v-if="projectType === 'pb'">
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>Rbc Position Margin</th>
           <td>
             <select v-model='rbcPositionMargin'>
@@ -99,7 +97,7 @@
             </select>
           </td>
         </tr>
-        <tr v-if="projectType === 'pb'">
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>Plt Position Margin</th>
           <td>
             <select v-model='pltPositionMargin'>
@@ -107,9 +105,8 @@
             </select>
           </td>
         </tr>
-
         <tr>
-          <th>
+          <th :style="viewerCheck === 'viewer' && 'width: 214px;'">
             IA Root Path
             <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_IA_ROOT_PATH_KO" />
           </th>
@@ -119,7 +116,7 @@
             </select>
           </td>
         </tr>
-        <tr>
+        <tr v-if="viewerCheck !== 'viewer'">
           <th>
             NS/NB Integration
             <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_NS_NB_INTEGRATION_KO" />
@@ -132,7 +129,7 @@
             />
           </td>
         </tr>
-        <tr>
+        <tr v-if="viewerCheck !== 'viewer'">
           <th>
             Alarm Timer (sec)
             <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_ALARM_TIME_KO" />
@@ -148,7 +145,7 @@
             <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
           </td>
         </tr>
-        <tr>
+        <tr v-if="viewerCheck !== 'viewer'">
           <th>
             Keep Page
             <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_KEEP_PAGE_KO" />
@@ -163,7 +160,6 @@
         </tr>
         </tbody>
       </table>
-      </template>
 
       <table class="settingTable auto">
         <colgroup>
@@ -414,7 +410,7 @@ const downloadDto = ref<any>({});
 const totalFileCount = ref(1);
 const successFileCount = ref(0);
 const downloadUploadType = ref('copy');
-const intervalId = ref(null);
+const intervalId = ref<any>(null);
 const deletableDownloadFiles = ref({});
 const loadingState = ref('');
 const showUploadSelectModal = ref(false);
@@ -659,6 +655,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     }
 
     successFileCount.value = 0;
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
     handlePolling();
     const result = await uploadBackupApi(uploadDto);
@@ -673,6 +670,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     successFileCount.value = totalFileCount.value;
     clearInterval(intervalId.value);
     downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
   await updateFileCounts('Upload');
 }
@@ -733,6 +731,7 @@ const downloadUploadStopWebSocket = (state: boolean) => {
 const handleDownload = async (downloadType: 'move' | 'copy') => {
   const downloadDto = downloadDtoObj(downloadType);
 
+  await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
   downloadUploadStopWebSocket(true);
 
   if (downloadType === 'move') {
@@ -752,6 +751,7 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
     clearInterval(intervalId.value);
     successFileCount.value = totalFileCount.value;
     downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
 
   await updateFileCounts('Download');
@@ -811,6 +811,7 @@ const createBackup = async () => {
     projectType: projectType.value,
   };
   try {
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
     isDownloading.value = true;
     const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
@@ -826,6 +827,7 @@ const createBackup = async () => {
   } finally {
     isDownloading.value = false;
     downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
 }
 
@@ -869,6 +871,7 @@ const handleUploadSelectFile = async () => {
       originUploadPath: downloadRootPath.value,
       projectType: projectType.value
     }
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
 
     const result: any = await uploadPossibleApi(uploadDto);
@@ -885,6 +888,7 @@ const handleUploadSelectFile = async () => {
     console.log(e);
   } finally {
     downloadUploadStopWebSocket(false);
+      await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
     isRestoring.value = false;
   }
 

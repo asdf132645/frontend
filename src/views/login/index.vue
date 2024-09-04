@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {getCurrentInstance, ref, onMounted, computed, onBeforeMount} from "vue";
+import { getCurrentInstance, ref, onMounted, computed } from "vue";
 import { login } from "@/common/api/service/user/userApi";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
