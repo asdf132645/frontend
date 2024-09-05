@@ -95,6 +95,7 @@
       <li @click="deleteRow">Delete</li>
     </ul>
   </div>
+
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
     <!-- 헤더 슬롯에 들어갈 내용 -->
     <template #header>

@@ -64,11 +64,14 @@ import moment from "moment/moment";
 import {useStore} from "vuex";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
+import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
-const siteCd = computed(() => store.state.commonModule.siteCd);
+// const siteCd = computed(() => store.state.commonModule.siteCd);
+const siteCd = ref('0011');
 
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
@@ -110,8 +113,10 @@ const sortClassOrder = async () => {
   const sortArr = orderClass.value.length !== 0 ? oArr : projectType.value === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoData = sortWbcInfo(props.selectedItem.wbcInfoAfter, sortArr);
   wbcInfoAfter.value = sortedWbcInfoData;
-  if (siteCd.value === '0011') {
-    wbcInfoAfter.value = await inhaDataChangeSave(props.selectedItem, props.selectedItem.wbcInfoAfter)
+
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원').siteCd === siteCd.value;
+  if (isInhaHospitalSiteCd) {
+    wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
   }
 
 }
@@ -158,7 +163,8 @@ const setWbcTotalAndPercent = () => {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      if (siteCd.value !== '0011') {
+      const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원').siteCd === siteCd.value;
+      if (!isInhaHospitalSiteCd) {
         const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
         if (!targetArray.includes(item.title)) {
           const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
@@ -168,65 +174,6 @@ const setWbcTotalAndPercent = () => {
     }
   }
 }
-
-async function inhaDataChangeSave(runningInfoData, wbcInfo) {
-  if (runningInfoData.testType !== '04') {
-    const excludedTitles = ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'];
-
-    // wbcTotal 계산
-    let wbcTotal = 0;
-    wbcInfo.forEach((wbcItem) => {
-      if (Number(wbcItem.count) > 0 && !excludedTitles.includes(wbcItem.title)) {
-        wbcTotal += Number(wbcItem.count);
-      }
-    });
-    // console.log('wbcTotal : ' + wbcTotal);
-
-    let maxItem = null;
-    let percentTotal = 0;
-
-    // 퍼센트 계산 및 maxItem 결정
-    wbcInfo.forEach((wbcItem, index) => {
-      let percent = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(0));
-      let percentN2 = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(2));
-
-      // console.log(percentN2);
-
-      // 특정 조건에 따라 퍼센트 조정
-      if ((wbcItem.title === 'BL' || ['LA', 'IM', 'MB', 'AM'].includes(wbcItem.title)) &&
-          Number(wbcItem.count) > 0 &&
-          percentN2 >= 0 &&
-          percentN2 <= 1) {
-        percent = 1;
-      }
-
-      wbcItem.percent = percent;
-      // console.log(wbcItem.title + ':' + wbcItem.percent);
-
-      // 제외할 타이틀이 아닌 경우 percentTotal 및 maxItem 갱신
-      if (!excludedTitles.includes(wbcItem.title)) {
-        percentTotal += Number(wbcItem.percent);
-        if (maxItem === null || Number(maxItem.count) < Number(wbcItem.count)) {
-          maxItem = wbcItem;
-        }
-      }
-
-      // console.log('maxItem : ' + (maxItem ? maxItem.title : 'null'));
-      // console.log(percentTotal);
-
-      // 마지막 항목일 때 백분율 오차 보정
-      if (maxItem !== null && (index + 1) === wbcInfo.length) {
-        // console.log(Number(maxItem.percent));
-        // console.log(100 - percentTotal);
-        maxItem.percent = Number(maxItem.percent) + (100 - percentTotal);
-        // console.log(maxItem.percent);
-      }
-    });
-
-    return wbcInfo;
-  }
-}
-
 
 const getStringArrayBySiteCd = (siteCd, testType) => {
   if (!siteCd && siteCd === '') {

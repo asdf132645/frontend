@@ -435,7 +435,7 @@ export  const messages: Messages = {
     SETTING_INFO_UPLOAD_EN: '',
     SETTING_INFO_UPLOAD_KO: 'Download Save Path에서 업로드할 폴더 선택 & 데이터 업로드 폴더 경로 선택',
     SETTING_INFO_DOWNLOAD_EN: '',
-    SETTING_INFO_DOWNLOAD_KO: '다운로드 받을 날짜 선택 & 다운로드 방식 선택 [move: 현재 컴퓨터에서 데이터 다른 드라이브로 백업시 사용(데이터 이동), copy: 다른 컴퓨터로 이동시킬때 사용(데이터 복사)]',
+    SETTING_INFO_DOWNLOAD_KO: '다운로드 받을 날짜 선택 & copy: 다른 컴퓨터로 이동시킬때 사용(데이터 복사)',
     SETTING_INFO_KEEP_PAGE_EN: 'Keep page when moving in Database detail page by up, down arrows',
     SETTING_INFO_KEEP_PAGE_KO: '데이터베이스 상세 페이지에서 좌측 하단 위, 아래 화살표를 사용하여 검체 이동할 때 탭 유지',
     SETTING_INFO_ALARM_TIME_EN: '',
