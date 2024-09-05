@@ -59,6 +59,7 @@ import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr
 import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
 import {formatDate} from "@/common/lib/utils/dateUtils";
+import axios from "axios";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -116,6 +117,7 @@ const siteCdDvBarCode = ref(false);
 const getIpAddress = async (ip: string) => {
   try {
     const result = await getDeviceIpApi();
+    // console.log(result.data)
     if (result.data === ip) {
       viewerCheckApp.value = result.data;
     } else {
@@ -219,8 +221,14 @@ window.addEventListener('unload', async () => {
   });
 })
 
-const leave = (event: any) => {
+const leave = async (event: any) => {
   event.preventDefault();
+  if (!ipMatches.value) {
+    const result = await getDeviceIpApi();
+    const ipAddress = `ip=${result.data}`
+    const url = `http://${result.data}:3000/close?${ipAddress}`;
+    await axios.get(url);
+  }
 };
 
 onBeforeMount(() => {
@@ -276,7 +284,7 @@ onMounted(async () => {
 
 });
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
   window.removeEventListener('beforeunload', leave);
 
   if (countingInterRunval) {
@@ -637,7 +645,6 @@ async function socketData(data: any) {
         return wbcInfo;
       }
     }
-
 
 
     async function saveDeviceInfo(deviceInfo: any) {

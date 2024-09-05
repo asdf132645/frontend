@@ -2100,7 +2100,7 @@ ul.wbcImgWrap > li {
 }
 
 ul.cellImgBox {
-    height: 76.9vh;
+    height: 76vh;
     /*max-height: 76.9vh;*/
     overflow-y: scroll;
     overflow-x: hidden;

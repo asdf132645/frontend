@@ -35,16 +35,16 @@
               <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
                 <div class="cursorPointer userBox" @click="userSetOutToggle">
-                  <font-awesome-icon :icon="['fas', 'circle-user']" />
+                  <font-awesome-icon :icon="['fas', 'circle-user']"/>
                   {{ userModuleDataGet.userId }}
                 </div>
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>
                 </ul>
-                <div class="logOutBox"  @click="exit">
+                <div class="logOutBox" @click="exit">
                   EXIT
                 </div>
-                <div class="logOutBox"  @click='fullScreen'>FULL SCREEN</div>
+                <div class="logOutBox" @click='fullScreen'>FULL SCREEN</div>
               </li>
             </ul>
           </div>
@@ -132,21 +132,23 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { useStore } from "vuex";
+import {useRoute} from 'vue-router';
+import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import { messages } from "@/common/defines/constFile/constantMessageText";
-import { getCellImgApi } from "@/common/api/service/setting/settingApi";
+import {messages} from "@/common/defines/constFile/constantMessageText";
+import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import { tcpReq } from "@/common/tcpRequest/tcpReq";
+import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
-import { getBrowserExit } from "@/common/api/service/browserExit/browserExitApi";
+import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
 import Button from "@/components/commonUi/Button.vue";
-import { getDateTimeStr } from "@/common/lib/utils/dateUtils";
-import { logoutApi } from "@/common/api/service/user/userApi";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {logoutApi} from "@/common/api/service/user/userApi";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import axios from "axios";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -227,12 +229,18 @@ const updateDateTime = () => {
 
 const handleOkConfirm = async () => {
   showConfirm.value = false;
-  await logoutApi({ userId: userId.value });
+  await logoutApi({userId: userId.value});
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
       EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
     } else {
-      await getBrowserExit();
+      const result = await getDeviceIpApi();
+      console.log(result.data);
+      const ipAddress = `ip=${result.data}`
+      const url = `http://${result.data}:3000/close?${ipAddress}`;
+      console.log(url);
+      await axios.get(url);
+      // await getBrowserExit(ipAddress);
     }
   } else {
     sessionStorage.clear();
@@ -268,7 +276,7 @@ onMounted(async () => {
   }
 
   document.addEventListener('click', closeUserSetBox);
-  window.addEventListener('wheel', preventScroll, { passive: false });
+  window.addEventListener('wheel', preventScroll, {passive: false});
 });
 
 onBeforeUnmount(() => {
@@ -505,7 +513,7 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
 
-        await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data.isNsNbIntegration ? 'Y' : 'N' });
+        await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data.isNsNbIntegration ? 'Y' : 'N'});
         alarmCount.value = data?.isAlarm ? Number(data.alarmCount) * 1000 : 5000;
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
