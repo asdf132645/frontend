@@ -65,7 +65,8 @@ export const stitchCountList = [
     {value: '5', text: '5'}
 ]
 
-export const sideEdgeWbcModeList = [
+export const edgeShotTypeList = [
+    { value: '0', text: 'None' },
     { value: '0', text: 'Smear Top' },
     { value: '1', text: 'Smear Top + Side' },
 ]

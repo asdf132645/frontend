@@ -64,8 +64,8 @@
         <tr v-show="projectType === 'pb' && testTypeCd === '04' && viewerCheck !== 'viewer'">
           <th>Edge Shot Type</th>
           <td>
-            <select v-model='sideEdgeWbcMode'>
-              <option v-for="type in sideEdgeWbcModeList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            <select v-model='edgeShotType'>
+              <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
@@ -332,7 +332,7 @@ import {
   PositionMarginList, stitchCountList,
   testTypeList,
   WbcPositionMarginList,
-  testBmTypeList, bmAnalysisList, settingName, sideEdgeWbcModeList
+  testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList
 } from "@/common/defines/constFile/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
@@ -367,7 +367,7 @@ const rbcPositionMargin = ref('0');
 const pltPositionMargin = ref('0');
 const pbsCellAnalyzingCount = ref('100');
 const stitchCount = ref('1');
-const sideEdgeWbcMode = ref('0');
+const edgeShotType = ref('0');
 const bfCellAnalyzingCount = ref('100');
 const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
@@ -439,7 +439,7 @@ onMounted(async () => {
 });
 
 watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
-  pltPositionMargin, pbsCellAnalyzingCount, sideEdgeWbcMode, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage], async () => {
+  pltPositionMargin, pbsCellAnalyzingCount, edgeShotType, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage], async () => {
   const cellAfterSettingObj = {
     id: cellimgId.value,
     analysisType: testTypeCd.value,
@@ -449,7 +449,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
-    sideEdgeWbcMode: sideEdgeWbcMode.value,
+    edgeShotType: edgeShotType.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
@@ -527,7 +527,7 @@ const cellImgGet = async () => {
         pbsCellAnalyzingCount.value = data.pbsCellAnalyzingCount;
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
-        sideEdgeWbcMode.value = String(data?.sideEdgeWbcMode);
+        edgeShotType.value = String(data?.edgeShotType);
         iaRootPath.value = data.iaRootPath;
         downloadRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
         isNsNbIntegration.value = data.isNsNbIntegration;
@@ -547,7 +547,7 @@ const cellImgGet = async () => {
           diffPltPositionMargin: data?.diffPltPositionMargin,
           pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
           stitchCount: data?.stitchCount,
-          sideEdgeWbcMode: data?.sideEdgeWbcMode,
+          edgeShotType: data?.edgeShotType,
           bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
           iaRootPath: data?.iaRootPath,
           isNsNbIntegration: data?.isNsNbIntegration,
@@ -575,7 +575,7 @@ const cellImgSet = async () => {
     diffRbcPositionMargin: rbcPositionMargin.value,
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
-    sideEdgeWbcMode: sideEdgeWbcMode.value,
+    edgeShotType: edgeShotType.value,
     stitchCount: stitchCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
@@ -612,7 +612,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
       sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
-      sessionStorage.setItem('sideEdgeWbcMode', String(data?.sideEdgeWbcMode));
+      sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
       sessionStorage.setItem(keepPageType, String(data?.keepPage));

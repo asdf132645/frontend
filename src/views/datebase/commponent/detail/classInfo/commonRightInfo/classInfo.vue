@@ -242,28 +242,7 @@ onMounted(async () => {
   await nextTick();
   await getOrderClass();
   await getCustomClass();
-  if (inhaTestCode.value === '' && siteCd.value === '0011') {
-    EventBus.publish('classInfoCbcDataGet', true);
-  }
-  if (inhaTestCode.value === '' && siteCd.value === '0000' && siteCd.value === '') {
-    EventBus.publish('classInfoCbcDataGet', true);
-  }
-  EventBus.subscribe('appVueSlideDataSaveLisSave', lisInhaDataSend);
-  wbcMemo.value = props.selectItems?.wbcMemo;
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
-  if (props.selectItems?.submitState) {
-    lisBtnColor.value = props.selectItems.submitState === 'lis';
-  }
-  // 첫 진입시
-  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
-    const result: any = await detailRunningApi(String(props.selectItems?.id));
-    const updatedItem = {
-      submitState: 'checkFirst',
-    };
-    const updatedRuningInfo = {...result.data, ...updatedItem}
-    await resRunningItem(updatedRuningInfo, true);
-  }
+  await mountedMethod();
   await getLisWbcRbcData();
   await getLisPathData();
   barCodeImageShowError.value = false;
@@ -294,6 +273,31 @@ watch(() => props.wbcInfo, (newItem) => {
     }
   }
 });
+
+const mountedMethod = async () => {
+  if (inhaTestCode.value === '' && siteCd.value === '0011') {
+    EventBus.publish('classInfoCbcDataGet', true);
+  }
+  if (inhaTestCode.value === '' && siteCd.value === '0000' && siteCd.value === '') {
+    EventBus.publish('classInfoCbcDataGet', true);
+  }
+  EventBus.subscribe('appVueSlideDataSaveLisSave', lisInhaDataSend);
+  wbcMemo.value = props.selectItems?.wbcMemo;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
+  if (props.selectItems?.submitState) {
+    lisBtnColor.value = props.selectItems.submitState === 'lis';
+  }
+  // 첫 진입시
+  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
+    const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const updatedItem = {
+      submitState: 'checkFirst',
+    };
+    const updatedRuningInfo = {...result.data, ...updatedItem}
+    await resRunningItem(updatedRuningInfo, true);
+  }
+}
 
 const lisModalOpen = () => {
   showConfirm.value = true;
@@ -343,6 +347,7 @@ const barcodeCopy = async () => {
   textarea.select();
   document.execCommand('copy');
   document.body.removeChild(textarea);
+  showSuccessAlert(messages.IDS_MSG_SUCCESS);
 }
 
 const commitConfirmed = () => {
