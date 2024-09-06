@@ -235,12 +235,9 @@ const handleOkConfirm = async () => {
       EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
     } else {
       const result = await getDeviceIpApi();
-      console.log(result.data);
       const ipAddress = `ip=${result.data}`
       const url = `http://${result.data}:3000/close?${ipAddress}`;
-      console.log(url);
       await axios.get(url);
-      // await getBrowserExit(ipAddress);
     }
   } else {
     sessionStorage.clear();

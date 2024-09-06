@@ -658,11 +658,9 @@ const replaceFileNamePrefix = (fileName: string, selectItems: any = {}) => {
       ? { 'NES': 'NE', 'NEB': 'NB' }
       : { 'NES': 'NS', 'NEB': 'NB' };
 
-  const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
+  return Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
-
-  return modifiedPrefix;
 };
 
 

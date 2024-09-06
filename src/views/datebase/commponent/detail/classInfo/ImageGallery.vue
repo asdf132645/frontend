@@ -292,12 +292,9 @@ const debouncedUpdate = debounce(async (newVal) => {
       uniqueKey: `image_${index}_${imgIndex}_${timestamp}`
     })) || []
   }));
-  const isNsNbIntegration = wbcInfoArrChild.value?.find((el: any) => el.title === 'NE');
-  if(isNsNbIntegration){
-    firstClass.value = 'Metamyelocyte';
-    lastClass.value = 'Myelocyte';
-    previousFirstClass.value = 'Metamyelocyte';
-    previousLastClass.value = 'Myelocyte';
+  if (wbcInfoArrChild.value?.some((el: any) => el.title === 'NE')) {
+    firstClass.value = previousFirstClass.value = 'Metamyelocyte';
+    lastClass.value = previousLastClass.value = 'Myelocyte';
   }
   await classImgChange('first', null);
   await classImgChange('last', null);
