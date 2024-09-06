@@ -533,9 +533,9 @@ async function socketData(data: any) {
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
         let wbcInfoAfter: any = [];
-        console.log('matchedWbcInfo', matchedWbcInfo);
+        let ww: any = [];
         if (siteCd.value === '0011') {
-          newWbcInfo.wbcInfo = [await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0])];
+          ww = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0])
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
           if (barcodeNum.value !== completeSlot.barcodeNo) {
             // 인하대 일 경우 바로 LIS 최종보고를 함 불가피하게 이벤트 버스 사용 함
@@ -543,6 +543,7 @@ async function socketData(data: any) {
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {
+          ww = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0];
         }
 
@@ -563,7 +564,7 @@ async function socketData(data: any) {
           tactTime: completeSlot.tactTime,
           maxWbcCount: completeSlot.maxWbcCount,
           bf_lowPowerPath: completeSlot.bf_lowPowerPath,
-          wbcInfo: Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo,
+          wbcInfo: ww,
           wbcInfoAfter: wbcInfoAfter,
           rbcInfo: !projectBm.value ? {
             pltCount: completeSlot.pltCount,
