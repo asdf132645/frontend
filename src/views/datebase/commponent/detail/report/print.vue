@@ -256,8 +256,7 @@ const wbcInfo = ref([]);
 
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-// const siteCd = computed(() => store.state.commonModule.siteCd);
-const siteCd = ref('0002');
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectItems = ref<any>(null);
 const orderClass = ref<any>({});
 

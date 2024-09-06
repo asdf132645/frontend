@@ -65,13 +65,12 @@ import {useStore} from "vuex";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
-import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
+import { inhaPercentChange, seoulStMaryPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-// const siteCd = ref('0011');
 
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
@@ -119,7 +118,7 @@ const sortClassOrder = async () => {
   if (isInhaHospitalSiteCd) {
     wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
   } else if (isSeoulStMaryHospitalSiteCd) {
-
+    wbcInfoAfter.value = seoulStMaryPercentChange(wbcInfoAfter.value, wbcInfoAfter.value);
   }
 
 }

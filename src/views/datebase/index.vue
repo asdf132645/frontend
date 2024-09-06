@@ -382,6 +382,7 @@ const initDbData = async () => {
 
 const selectItem = (item: any) => {
   selectedItem.value = item;
+  console.log('selectedItem.value', selectedItem.value);
 };
 
 const saveLastSearchParams = () => {

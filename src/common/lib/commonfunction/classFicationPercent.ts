@@ -82,6 +82,7 @@ export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
             }
         });
 
+        console.log('Inha wbcInfo', wbcInfo);
         return wbcInfo;
     }
 }
@@ -91,6 +92,7 @@ export const seoulStMaryPercentChange = (originWbcInfo: any, changingWbcInfo: an
     const totalPercent = originWbcInfo.filter((item: any) => item.name !== "Neutrophil")
         .map((item: any) => Math.round(parseFloat(item.percent)))
         .reduce((sum: any, percent: any) => sum + percent, 0);
+
     return changingWbcInfo.map((item: any) => item.name === "Neutrophil"
             ? {...item, percent: 100 - totalPercent}
             : {...item, percent: Math.round(parseFloat(item.percent))}

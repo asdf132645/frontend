@@ -234,7 +234,7 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
@@ -257,8 +257,7 @@ const selectItems = ref<any>([]);
 const wbcInfo = ref<any>(null);
 const printOnOff = ref(false);
 const rbcInfo = ref<any>([]);
-// const siteCd = computed(() => store.state.commonModule.siteCd);
-const siteCd = ref('0002');
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
@@ -266,7 +265,6 @@ const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterDat
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const instance = getCurrentInstance();
 const projectBm = ref(false);
-const wbcArr = ref<any>([]);
 const orderClass = ref<any>([]);
 const isLoading = ref(true);
 const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
@@ -326,15 +324,16 @@ const getDetailRunningInfo = async () => {
   }
 }
 
-const percentChangeBySiteCd = async (siteCd: string, wbcInfo: any) => {
-  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd;
-  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd;
+const percentChangeBySiteCd = () => {
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   if (isSeoulStMaryHospitalSiteCd) {
-    wbcInfo.value = seoulStMaryPercentChange(wbcInfo, wbcInfo);
-
+    console.log(12);
+    wbcInfo.value =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, wbcInfo.value);
   } else if (isInhaHospitalSiteCd) {
-    wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo);
+    wbcInfo.value = inhaPercentChange(selectItems.value, wbcInfo.value);
   }
+  console.log('wbcInfo', wbcInfo.value);
 }
 
 const calcShapeOthersCount = async () => {
@@ -580,7 +579,6 @@ async function initData(data?: any) {
       const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
       nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
       // wbcInfo.value = sortedWbcInfo;
-
     }
   } else {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
@@ -589,7 +587,7 @@ async function initData(data?: any) {
     wbcInfo.value = sortedWbcInfo;
   }
 
-  percentChangeBySiteCd(siteCd.value, wbcInfo.value);
+  await percentChangeBySiteCd();
 
   rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcClass;
 }
