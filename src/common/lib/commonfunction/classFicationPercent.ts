@@ -26,6 +26,8 @@ export const calculateWbcPercentages = (
     return total;
 };
 
+
+// 인하대
 export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
     if (runningInfoData.testType !== '04') {
         const excludedTitles = ['NR', 'AR', 'GP', 'PA', 'MC', 'MA'];
@@ -82,4 +84,15 @@ export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
 
         return wbcInfo;
     }
+}
+
+// 서울성모
+export const seoulStMaryPercentChange = (originWbcInfo: any, changingWbcInfo: any) => {
+    const totalPercent = originWbcInfo.filter((item: any) => item.name !== "Neutrophil")
+        .map((item: any) => Math.round(parseFloat(item.percent)))
+        .reduce((sum: any, percent: any) => sum + percent, 0);
+    return changingWbcInfo.map((item: any) => item.name === "Neutrophil"
+            ? {...item, percent: 100 - totalPercent}
+            : {...item, percent: Math.round(parseFloat(item.percent))}
+    );
 }

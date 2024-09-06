@@ -59,9 +59,8 @@
 
         <div style="margin-top: 20px; border-top: 2px dotted #696969"></div>
         <!-- RBC Classification -->
-        <div v-if="['01', '04'].includes(selectItems?.testType)" style="margin-top: 20px;">
-          <h3 style="margin: 10px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification
-            result</h3>
+        <div v-if="'04' === selectItems?.testType" style="margin-top: 20px;">
+          <h3 style="margin: 10px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification result</h3>
           <table style="width: 100%; font-size: 0.8rem;">
             <colgroup>
               <col style="width: 20%;"/>
@@ -234,7 +233,7 @@
 
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, onMounted, ref, watchEffect} from "vue";
+import {computed, defineEmits, onMounted, ref, watchEffect} from "vue";
 import {getTestTypeText, getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
@@ -244,8 +243,9 @@ import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
+import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import {inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
 
-const props = defineProps(['printOnOff', 'selectItemWbc']);
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
@@ -256,6 +256,8 @@ const wbcInfo = ref([]);
 
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+// const siteCd = computed(() => store.state.commonModule.siteCd);
+const siteCd = ref('0002');
 const selectItems = ref<any>(null);
 const orderClass = ref<any>({});
 
@@ -277,6 +279,7 @@ const shapeOthersCount = ref(0);
 const printReady = ref(false);
 
 onMounted(async () => {
+  console.log(1);
   await getDetailRunningInfo();
   await getOrderClass();
   await getImagePrintData();
@@ -559,20 +562,7 @@ const getImagePrintData = async () => {
       const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
       const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
       wbcInfo.value = sortedWbcInfoData;
-      // if (!data || (data instanceof Array && data.length === 0)) {
-      //   console.log(null);
-      // } else {
-      //   imagePrintAndWbcArr.value = data.filter((item) => item.checked).map(item => item.classId);
-      //
-      //   // count가 없는 경우 print에서 보여줄 wbcInfo에서 제거
-      //   wbcInfo.value = wbcInfo.value.filter((item: any) => item.count !== '0');
-      //
-      //   // wbcClassification Order 적용
-      //   const oArr = orderClass.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
-      //   const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
-      //   const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
-      //   wbcInfo.value = sortedWbcInfoData;
-      // }
+      percentChangeBySiteCd(siteCd.value, wbcInfo.value);
     }
   } catch (e) {
     console.error(e);
@@ -596,6 +586,18 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   // 정렬된 배열을 wbcInfo에 할당
   return wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
 };
+
+const percentChangeBySiteCd = async (siteCd: string, wbcInfo: any) => {
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd;
+  if (isSeoulStMaryHospitalSiteCd) {
+    wbcInfo.value = seoulStMaryPercentChange(wbcInfo, wbcInfo);
+  } else if (isInhaHospitalSiteCd) {
+    wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo);
+  }
+
+  console.log('제발', wbcInfo.value);
+}
 
 const closePrint = () => {
   emit('printClose');

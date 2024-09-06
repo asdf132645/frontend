@@ -70,8 +70,8 @@ import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPerc
 const store = useStore();
 const props = defineProps(['selectedItem']);
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
-// const siteCd = computed(() => store.state.commonModule.siteCd);
-const siteCd = ref('0011');
+const siteCd = computed(() => store.state.commonModule.siteCd);
+// const siteCd = ref('0011');
 
 const pilePath = ref('');
 const barCodeImageShowError = ref(false);
@@ -114,9 +114,12 @@ const sortClassOrder = async () => {
   const sortedWbcInfoData = sortWbcInfo(props.selectedItem.wbcInfoAfter, sortArr);
   wbcInfoAfter.value = sortedWbcInfoData;
 
-  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원').siteCd === siteCd.value;
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   if (isInhaHospitalSiteCd) {
     wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
+  } else if (isSeoulStMaryHospitalSiteCd) {
+
   }
 
 }
@@ -163,13 +166,15 @@ const setWbcTotalAndPercent = () => {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-      const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원').siteCd === siteCd.value;
-      if (!isInhaHospitalSiteCd) {
-        const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
-        if (!targetArray.includes(item.title)) {
-          const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-          item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-        }
+
+      // 인하대일 경우 Percent 로직이 다르므로 계산 X
+      const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
+      if (isInhaHospitalSiteCd) return;
+
+      const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
+      if (!targetArray.includes(item.title)) {
+        const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     }
   }

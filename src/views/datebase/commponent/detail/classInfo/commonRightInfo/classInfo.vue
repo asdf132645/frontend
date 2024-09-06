@@ -192,13 +192,15 @@ import {createH17, readH7Message} from "@/common/api/service/fileReader/fileRead
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import EventBus from "@/eventBus/eventBus";
-import {tcpReq} from "@/common/tcpRequest/tcpReq";
+import { inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import { hospitalSiteCd } from "@/common/siteCd/siteCd";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
-const siteCd = computed(() => store.state.commonModule.siteCd);
+// const siteCd = computed(() => store.state.commonModule.siteCd);
+const siteCd = ref('0002');
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const barcodeImg = ref('');
 const userId = ref('');
@@ -230,7 +232,6 @@ const customClassArr = ref<any>([]);
 const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const lisBtnColor = ref(false);
-const totalPercentRounded0002 = ref(0);
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -382,7 +383,7 @@ const uploadLis = () => {
 
 const uimdTestCbcLisDataGet = () => {
   const codeList = CbcWbcTestCdList_0002;
-  const {wbcInfoAfter} = props.selectItems ?? {};
+  const { wbcInfoAfter } = props.selectItems ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/liveTest`, {   // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
@@ -1315,27 +1316,13 @@ const beforeAfterChange = async (newItem: any) => {
     createPercent(item, totalAfterCount.value)
   }
 
-  // 서울 성모
-  if (siteCd.value === '0002') {
-    totalPercentRounded0002.value = wbcInfoBeforeValForTotalCount.filter((item: any) => item.name !== "Neutrophil")
-        .map((item: any) => Math.round(parseFloat(item.percent)))
-        .reduce((sum: any, percent: any) => sum + percent, 0);
-
-    wbcInfoBeforeVal.value = wbcInfoBeforeVal.value.map((item: any) =>
-        item.name === "Neutrophil"
-            ? {...item, percent: 100 - totalPercentRounded0002.value}
-            : {...item, percent: Math.round(parseFloat(item.percent))}
-    );
-
-    totalPercentRounded0002.value = wbcInfoAfterValForTotalCount.filter((item: any) => item.name !== "Neutrophil")
-        .map((item: any) => Math.round(parseFloat(item.percent)))
-        .reduce((sum: any, percent: any) => sum + percent, 0);
-
-    wbcInfoAfterVal.value = wbcInfoAfterVal.value.map((item: any) =>
-        item.name === "Neutrophil"
-            ? {...item, percent: 100 - totalPercentRounded0002.value}
-            : {...item, percent: Math.round(parseFloat(item.percent))}
-    );
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
+  if (isSeoulStMaryHospitalSiteCd) {
+    wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
+    wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
+  } else if (isInhaHospitalSiteCd) {
+    wbcInfoAfterVal.value = await inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
   }
 
   wbcInfoVal.value = [];
@@ -1409,12 +1396,14 @@ const createPercent = (item: any, totalCount: any) => {
     const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);  // 소수점 0인경우 정수 표현
     item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
   } else {
-    if (siteCd.value !== '0011') {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
-      if (!targetArray.includes(item.title)) {
-        const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-        item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-      }
+    // 인하대일 경우 percent 재계산 X
+    const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
+    if (isInhaHospitalSiteCd) return;
+
+    const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+    if (!targetArray.includes(item.title)) {
+      const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+      item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
     }
   }
 }
@@ -1498,16 +1487,9 @@ async function updateOriginalDb() {
     createPercent(item, totalCount);
 
     // 서울 성모
-    if (siteCd.value === '0002') {
-      totalPercentRounded0002.value = clonedWbcInfo.filter((item: any) => item.name !== "Neutrophil")
-          .map((item: any) => Math.round(parseFloat(item.percent)))
-          .reduce((sum: any, percent: any) => sum + percent, 0);
-
-      wbcInfoAfterVal.value = wbcInfoAfterVal.value.map((item: any) =>
-          item.name === "Neutrophil"
-              ? {...item, percent: 100 - totalPercentRounded0002.value}
-              : {...item, percent: Math.round(parseFloat(item.percent))}
-      );
+    const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
+    if (isSeoulStMaryHospitalSiteCd) {
+      wbcInfoAfterVal.value = seoulStMaryPercentChange(clonedWbcInfo, wbcInfoAfterVal.value);
     }
   });
 

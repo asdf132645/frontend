@@ -67,8 +67,8 @@ export const stitchCountList = [
 
 export const edgeShotTypeList = [
     { value: '0', text: 'None' },
-    { value: '0', text: 'Smear Top' },
-    { value: '1', text: 'Smear Top + Side' },
+    { value: '1', text: 'Smear Top' },
+    { value: '2', text: 'Smear Top + Side' },
 ]
 
 export const PositionMarginList = [

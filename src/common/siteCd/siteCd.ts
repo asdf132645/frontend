@@ -1,4 +1,9 @@
-export const hospitalSiteCd = [
+interface hospitalSideCdState {
+    siteCd: string;
+    hospitalNm: string;
+}
+
+export const hospitalSiteCd: hospitalSideCdState[] = [
     {
         siteCd: '0002',
         hospitalNm: '서울성모병원',

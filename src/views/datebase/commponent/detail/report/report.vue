@@ -82,7 +82,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item) in wbcArr" :key="item.id" class="wbcClassDbDiv">
+              <tr v-for="(item) in wbcInfo" :key="item.id" class="wbcClassDbDiv">
                 <template v-if="shouldRenderCategory(item.title)">
                   <td>{{ item?.name }}</td>
                   <td>{{ item?.count }}</td>
@@ -224,8 +224,9 @@
     </div>
   </div>
   <div ref="printContent">
-    <Print v-if="printOnOff" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]"
-           @printClose="printClose"/>
+    <Print v-if="printOnOff" @printClose="printClose"/>
+<!--    <Print v-if="printOnOff" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]"-->
+<!--           @printClose="printClose"/>-->
   </div>
 </template>
 
@@ -246,6 +247,8 @@ import {getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/se
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import {inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -254,7 +257,8 @@ const selectItems = ref<any>([]);
 const wbcInfo = ref<any>(null);
 const printOnOff = ref(false);
 const rbcInfo = ref<any>([]);
-const siteCd = computed(() => store.state.commonModule.siteCd);
+// const siteCd = computed(() => store.state.commonModule.siteCd);
+const siteCd = ref('0002');
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
@@ -317,9 +321,19 @@ const getDetailRunningInfo = async () => {
     selectItems.value = result.data;
     rbcInfo.value = result.data;
 
-
   } catch (e) {
     console.log(e);
+  }
+}
+
+const percentChangeBySiteCd = async (siteCd: string, wbcInfo: any) => {
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd;
+  if (isSeoulStMaryHospitalSiteCd) {
+    wbcInfo.value = seoulStMaryPercentChange(wbcInfo, wbcInfo);
+
+  } else if (isInhaHospitalSiteCd) {
+    wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo);
   }
 }
 
@@ -483,6 +497,7 @@ const percentageChange = (count: any): any => {
 const classOrderChanged = async () => {
   await getOrderClass();
   await initData();
+
 }
 
 const shouldRenderCategory = (title: string) => {
@@ -558,14 +573,13 @@ async function initData(data?: any) {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfoAfter, wbcArrs);
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
+
     wbcInfo.value = sortedWbcInfo;
-    wbcArr.value = sortedWbcInfo;
 
     if (!nonWbcClassList.value || nonWbcClassList.value.length === 0) {
       const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
       nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
       // wbcInfo.value = sortedWbcInfo;
-      // wbcArr.value = sortedWbcInfo;
 
     }
   } else {
@@ -573,8 +587,9 @@ async function initData(data?: any) {
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     wbcInfo.value = sortedWbcInfo;
-    wbcArr.value = sortedWbcInfo;
   }
+
+  percentChangeBySiteCd(siteCd.value, wbcInfo.value);
 
   rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcClass;
 }
