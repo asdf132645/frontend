@@ -369,11 +369,10 @@ const handleOkConfirm = () => {
 const uploadLis = () => {
   if (siteCd.value === '0002') {
     cmcseoulLisAndCbcDataGet();
-  } else if (siteCd.value === '' || siteCd.value === '0000') {
+  } else if (siteCd.value === '' || siteCd.value === '0000') { // uimd LIS 테스트 하는 곳
     // 서울 성모
     // uimdTestCbcLisDataGet();
     // 인하대
-    console.log(props.selectItems)
     inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
   } else {
     lisLastStep();
@@ -798,42 +797,44 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
   const generateInhaTestCode = (codesList: string[]): string => {
     return processCodes(codesList).join(',');
   };
+  
   const testCodeList: string[] = inhaTestCode.value.split(',');
   inhaTestCode.value = generateInhaTestCode(testCodeList);
+  // 기존에 있는 inhaTestCode 값을 resultStr에 추가
   resultStr += inhaTestCode.value;
-
   let rbcTmp = '';
-  //wbc
-  lisCodeWbcArr.value.forEach(function (lisCode: any, index: any) {
-    wbcInfoAfter.forEach(function (wbcItem: any) {
-      if (lisCode.IA_CD === wbcItem.id) {
-        if (lisCode.LIS_CD === 'H9600' || lisCode.LIS_CD === 'H9365' ||
-            lisCode.LIS_CD === 'H9366') {
-          if (Number(wbcItem.count) > 0) {
-            resultStr += lisCode.LIS_CD + '|' + '1' + '|' + ','
-          } else {
-            resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
-          }
-        } else {
-          // GP, PA
-          if (lisCode.IA_CD === '13' || lisCode.IA_CD === '14') {
-            if (Number(wbcItem.count) > Number(lisCode.MIN_COUNT)) {
-              resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-            } else {
-              resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
-            }
-          } else {
-            if (Number(wbcItem.percent) > 0) {
-              resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-            } else {
-              resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
-            }
-          }
+  // WBC 항목을 처리하는 함수 정의
+  const processWbcItem = (lisCode: any, wbcItem: any) => {
+    const lisCodeLIS_CD = lisCode.LIS_CD;
+    const count = Number(wbcItem.count);
+    const percent = wbcItem.percent;
 
-        }
+    // 특정 LIS_CD 값들에 대해 count가 0보다 큰 경우 '1'을, 그렇지 않으면 ' '를 추가
+    if (['H9600', 'H9365', 'H9366'].includes(lisCodeLIS_CD)) {
+      resultStr += lisCodeLIS_CD + '|' + (count > 0 ? '1' : ' ') + '|' + ',';
+    }
+    //  GP, PA IA_CD가 '13' 또는 '14'인 경우 count가 MIN_COUNT보다 큰지 확인
+    else if (['13', '14'].includes(lisCode.IA_CD)) {
+      resultStr += lisCodeLIS_CD + '|' + (count > Number(lisCode.MIN_COUNT) ? percent : ' ') + '|' + ',';
+    }
+    // 나머지 경우에는 percent가 0보다 큰지 확인
+    else {
+      resultStr += lisCodeLIS_CD + '|' + (percent > 0 ? percent : ' ') + '|' + ',';
+    }
+  };
+
+// lisCodeWbcArr의 각 항목에 대해
+  lisCodeWbcArr.value.forEach((lisCode: any) => {
+    // wbcInfoAfter의 각 항목을 확인
+    wbcInfoAfter.forEach((wbcItem: any) => {
+      // lisCode의 IA_CD가 wbcItem의 id와 같다면
+      if (lisCode.IA_CD === wbcItem.id) {
+        // WBC 항목을 처리
+        processWbcItem(lisCode, wbcItem);
       }
-    })
-  })
+    });
+  });
+
   // RBC
   const specialCodes = ['H9531', 'H9535', 'H9594', 'H9571', 'H9574', 'H9595'];
 

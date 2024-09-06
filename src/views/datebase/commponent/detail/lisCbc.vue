@@ -190,10 +190,8 @@ const commonCbc = async () => {
     })
   } else { // 파일
     const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}.hl7`);
-    // const readFileTxtRes: any = await readFileTxt(`path=D:\\cbc&filename=1240459652.txt`);
     if (readFileTxtRes.data.success) {
       const msg: any = await readH7File(readFileTxtRes.data.data);
-
       cbcWorkList.value = [];
       msg?.data?.segments.forEach((cbcSegment: any) => {
         if (cbcSegment.name.trim() === 'OBX') {
