@@ -58,6 +58,7 @@ import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningIn
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 import EventBus from "@/eventBus/eventBus";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -77,6 +78,9 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const cbcCodeList = ref<any>([]);
 const selectItemsVal = ref<any>([]);
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
@@ -222,60 +226,81 @@ const commonCbc = async () => {
 
 const inhaCbc = async () => {
   if (cbcFilePathSetArr.value.includes("http")) { // url 설정인 경우
-    const params = {
-      url: cbcFilePathSetArr.value,
-      machine: 'ADUIMD',
-      episode: props.selectItems.barcodeNo
-    }
-    console.log(params.url, params.machine, params.episode);
-    await axios.post(params.url + '/api/MifMain/Order', {
-      machine: params.machine,
-      episode: params.episode
-    }).then(function (result) {
+    try {
+      let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+
+      const body = {
+        machine: 'ADUIMD',
+        episode: props.selectItems.barcodeNo,
+        baseUrl: cbcFilePathSetArr.value + '/api/MifMain/File',
+        // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
+      };
+      const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
+      // 상태 초기화
       cbcWorkList.value = [];
-      const res = result.data[0];
+      // 응답 데이터 가져오기
+      const res: any = response.data[0];
+
+      // 응답 코드가 '0'일 때만 처리
       if (res?.returnCode === '0') {
+        // 환자 정보 설정
         cbcPatientNo.value = res?.regNo;
-        cbcPatientNm.value = res.name;
-        cbcSex.value = res.sex;
-        cbcAge.value = res.age;
-        inhaTestCode.value = res.testCode;
-        store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res.testCode}); // lis 에서 사용함
+        cbcPatientNm.value = res?.name;
+        cbcSex.value = res?.sex;
+        cbcAge.value = res?.age;
+        inhaTestCode.value = res?.testCode;
 
+        // 공통 정보 설정
+        await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
+
+        // 테스트 코드 리스트 처리
         const testCodeList = res.testCode.split(',');
-        testCodeList.forEach(function (codes: any) {
-          const codeArray = codes.split('|');
-          const code = codeArray[0];
-          const value = codeArray[1];
-          const unit = codeArray[2];
-          cbcCodeList.value.forEach(function (cbcCode: any) {
-            if (cbcCode.cd === code) {
-              const obj = {
-                classNm: cbcCode.classCd,
-                count: value,
-                unit: unit
-              }
-              cbcWorkList.value.push(obj);
-            }
-          })
+        testCodeList.forEach((codes: any) => {
+          const [code, value, unit] = codes.split('|');
 
-        })
-
+          // cbcCodeList에서 매칭되는 코드 찾기
+          const cbcCode = cbcCodeList.value.find((cbcCode: any) => cbcCode.cd === code);
+          if (cbcCode) {
+            // 작업 리스트에 추가
+            const obj = {
+              classNm: cbcCode.classCd,
+              count: value,
+              unit: unit || '' // unit이 없으면 빈 문자열로 설정
+            };
+            cbcWorkList.value.push(obj);
+          }
+        });
+      }else{
+        showErrorAlert(res?.returnCode);
       }
+
       const parms = {
         filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
         data: cbcWorkList.value,
       };
-      createCbcFile(parms);
+      await createCbcFile(parms);
       loading.value = false;
-    }).catch(function (err) {
-      console.log(err.message + ' : no CBC result');
+      console.log('Response:', response.data);
+    } catch (error: any) {
+      console.log(error.message + ' : no CBC result');
       loading.value = false;
-    })
+      showErrorAlert(error.message);
+    }
   }
+
 }
 
+const showErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'error';
+  alertMessage.value = message;
+};
 
+const showSuccessAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+};
 const cmcSeoulCbc = async (newVal: any) => {
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 

@@ -25,7 +25,7 @@
         </p>
       </div>
       <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver" @drop="() => $emit('onDrop', itemIndex)"
-          v-if="item?.count !== '0' && item?.count !== 0">
+          v-if="item?.count !== '0' && item?.count !== 0 && item.images">
         <template v-for="(image, imageIndex) in item.images" :key="image.uniqueKey">
           <li
               :class="{
@@ -71,6 +71,7 @@
   <!--  클래스 단일 비교 부분 -->
   <div v-else class="divCompare">
     <div class="divCompareChild">
+<!--      ssss-->
       <select v-model="firstClass" @change="classImgChange('first' , $event)">
         <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
       </select>
@@ -289,10 +290,14 @@ const debouncedUpdate = debounce(async (newVal) => {
     images: item.images.map((image: any, imgIndex: number) => ({
       ...image,
       uniqueKey: `image_${index}_${imgIndex}_${timestamp}`
-    }))
+    })) || []
   }));
-  classImgChange('first', null);
-  classImgChange('last', null);
+  if (wbcInfoArrChild.value?.some((el: any) => el.title === 'NE')) {
+    firstClass.value = previousFirstClass.value = 'Metamyelocyte';
+    lastClass.value = previousLastClass.value = 'Myelocyte';
+  }
+  await classImgChange('first', null);
+  await classImgChange('last', null);
 }, 10); //디바운스 적용
 
 watch(wbcInfo, debouncedUpdate, { deep: true });
@@ -314,7 +319,7 @@ watch(
           images: item.images.map((image, imgIndex) => ({
             ...image,
             uniqueKey: `image_${index}_${imgIndex}_${Date.now()}`
-          }))
+          })) || []
         }));
 
         await nextTick(); // 상태 업데이트 후 강제 렌더링
@@ -367,7 +372,7 @@ const setRef = (itemId: any) => {
   };
 };
 
-const classImgChange = (type: string, event: any) => {
+const classImgChange = async (type: string, event: any) => {
   const updateClassValue = (currentClass: any, previousClass: any, classObj: any, itemIndex: any) => {
     if (firstClass.value === lastClass.value) {
       currentClass.value = previousClass.value;

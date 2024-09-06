@@ -239,12 +239,10 @@ const isIpMatching = (url: any, ip: any) => {
   // URL에서 IP 주소 추출
   const urlPattern = /http:\/\/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+):/;
   const match = url.match(urlPattern);
-
   if (match && match[1]) {
     // 추출된 IP 주소와 주어진 IP 주소 비교
     return match[1] === ip;
   }
-
   return false;
 };
 
@@ -539,7 +537,8 @@ async function socketData(data: any) {
           newWbcInfo.wbcInfo = [await inhaPercentChange(completeSlot, matchedWbcInfo?.wbcInfo[0])];
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            EventBus.publish('appVueSlideDataSaveLisSave', newWbcInfo.wbcInfo, rbcArrElements[0].rbcInfo, completeSlot.barcodeNo);
+            // 인하대 일 경우 바로 LIS 최종보고를 함 불가피하게 이벤트 버스 사용 함
+            EventBus.publish('appVueSlideDataSaveLisSave', newWbcInfo.wbcInfo[0], rbcArrElements[0].rbcInfo, completeSlot.barcodeNo);
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {
