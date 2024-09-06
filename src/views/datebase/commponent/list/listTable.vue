@@ -42,7 +42,13 @@
     <tbody v-if="dbData.length !== 0">
     <template v-for="(item, idx) in dbData"
               :key="item.id">
-      <tr :class="{ selectedTr: selectedItemId === item.id, submittedTr: item.submitState === 'Submit' || item.submitState === 'lis', rock: item.lock_status && item.pcIp !== myIp, checkFirst: item.submitState === 'checkFirst' }"
+      <tr
+          :class="{
+            selectedTr: selectedItemId === item.id,
+            submittedTr: item.submitState === 'Submit' || item.submitState === 'lis',
+            rock: item.lock_status && item.pcIp !== myIp,
+            checkFirst: item.submitState === 'checkFirst',
+          }"
           @click="selectItem(item)"
           @dblclick='rowDbClick(item)'
           ref="firstRow"
@@ -51,7 +57,7 @@
           @contextmenu.prevent="rowRightClick(item, $event)"
           title="Double click the row"
       >
-        <td> {{ idx + 1 }}</td>
+        <td><font-awesome-icon class="red" :icon="['fas', 'triangle-exclamation']" v-if="item.isNormal === 'N'" /> {{ idx + 1 }}</td>
         <td @click="handleCheckboxChange(item)">
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
@@ -472,8 +478,8 @@ const getIpAddress = async (item) => {
   try {
     const result = await getDeviceIpApi();
     const ipAddress = result.data;
-            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
 
@@ -548,7 +554,7 @@ const dbDataEditSet = async () => {
       localDbData[indexToUpdate] = {...localDbData[indexToUpdate], ...updatedRuningInfo};
     }
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
@@ -596,9 +602,9 @@ const deleteRow = async () => {
       const idsToDelete = selectedItems
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = `${path}/${selectedItems.slotId}`;
-              const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-      const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+      const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+      const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+      const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
       const req = {
         ids: [idsToDelete.id],
         img_drive_root_path: [rootArr],
@@ -622,9 +628,9 @@ const deleteRow = async () => {
       }
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
       const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
-              const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-      const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+      const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+      const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+      const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
       const req = {
         ids: idsToDelete,
         img_drive_root_path: rootArr,
