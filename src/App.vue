@@ -535,7 +535,8 @@ async function socketData(data: any) {
         let wbcInfoAfter: any = [];
         let ww: any = [];
         if (siteCd.value === '0011') {
-          ww = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0])
+          newWbcInfo.wbcInfo[0] = await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
+          ww = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo;
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
           if (barcodeNum.value !== completeSlot.barcodeNo) {
             // 인하대 일 경우 바로 LIS 최종보고를 함 불가피하게 이벤트 버스 사용 함
