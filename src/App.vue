@@ -533,8 +533,8 @@ async function socketData(data: any) {
         }
         let wbcInfoAfter: any = [];
         console.log('matchedWbcInfo', matchedWbcInfo);
-        if (siteCd.value === '0011') {
-          newWbcInfo.wbcInfo = [await inhaPercentChange(completeSlot, matchedWbcInfo?.wbcInfo[0])];
+        if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') {
+          newWbcInfo.wbcInfo = await inhaPercentChange(completeSlot, matchedWbcInfo?.wbcInfo);
           wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
           if (barcodeNum.value !== completeSlot.barcodeNo) {
             // 인하대 일 경우 바로 LIS 최종보고를 함 불가피하게 이벤트 버스 사용 함
