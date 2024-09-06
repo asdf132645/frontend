@@ -2108,7 +2108,9 @@ ul.cellImgBox {
     padding-left: 20px;
     background: var(--main-bg-2-color);
 }
-
+.red {
+    color: #b00505;
+}
 .wbcClassScroll {
     max-height: 63vh;
     overflow-x: auto;
