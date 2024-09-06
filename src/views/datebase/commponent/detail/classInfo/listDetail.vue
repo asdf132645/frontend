@@ -635,33 +635,45 @@ const getWbcHotKeyClasses = async () => {
 }
 
 
-const isBorderChanged = (image: any, selectItems: any = {}) => {
+function isBorderChanged(image: any) {
   const prefix = image.fileName.split('_')[0];
-  const isNsNbIntegration = selectItems?.value?.wbcInfoAfter?.find((el: any) => el.title === 'NE');
-  const replacements: any = isNsNbIntegration
-      ? { 'NES': 'NE', 'NEB': 'NB' }
-      : { 'NES': 'NS', 'NEB': 'NB' };
+  const isNsNbIntegration = selectItems.value.wbcInfoAfter.find((el: any) => {
+    return el.title === 'NE'
+  })
+
+  const replacements: any = {
+    'NES': isNsNbIntegration ? 'NE' : 'NS',
+    'NEB': 'NB'
+  };
 
   const modifiedPrefix = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
 
   return image.title !== modifiedPrefix;
-};
+}
 
 
 
-const replaceFileNamePrefix = (fileName: string, selectItems: any = {}) => {
+function replaceFileNamePrefix(fileName: string) {
+  const isNsNbIntegration = selectItems.value.wbcInfoAfter.find((el: any) => {
+    return el.title === 'NE'
+  })
+
+  const replacements: any = {
+    'NES': isNsNbIntegration ? 'NE' : 'NS',
+    'NEB': 'NB'
+  };
+
   const prefix = fileName.split('_')[0];
-  const isNsNbIntegration = selectItems?.value?.wbcInfoAfter?.find((el: any) => el.title === 'NE');
-  const replacements: any = isNsNbIntegration
-      ? { 'NES': 'NE', 'NEB': 'NB' }
-      : { 'NES': 'NS', 'NEB': 'NB' };
 
-  return Object.keys(replacements).reduce((acc, key) => {
+  // 대체 규칙에 따라 prefix를 변경
+  const modifiedPrefix: any = Object.keys(replacements).reduce((acc, key) => {
     return acc.replace(key, replacements[key]);
   }, prefix);
-};
+  // 변경된 prefix 반환
+  return modifiedPrefix;
+}
 
 
 const openModal = (image: any, item: any) => {

@@ -198,6 +198,7 @@ import { hospitalSiteCd } from "@/common/siteCd/siteCd";
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
+const inhaTestSendCode: any = ref<any>([]);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
@@ -792,12 +793,14 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
     }
   });
   // `inhaTestCode.value`를 빈 문자열로 초기화
-  inhaTestCode.value = '';
+  inhaTestSendCode.value = '';
   // `tmpList`의 항목을 콤마로 연결하여 `inhaTestCode.value`에 저장
-  inhaTestCode.value = tmpList.join(',');
+  inhaTestSendCode.value = tmpList.join(','); // tmpList.join(',') 결과는 'a,b,c' 이런식으로 만드려고 join 사용 함
   // `resultStr`에 `inhaTestCode.value`를 추가
-  resultStr += inhaTestCode.value;
-
+  resultStr += inhaTestSendCode.value;
+  console.log('tmpList 가공 매칭 후', tmpList)
+  console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열',inhaTestSendCode.value)
+  console.log('inhaTestSendCode.value',inhaTestSendCode.value)
   let rbcTmp = '';
   // WBC 항목을 처리하는 함수 정의
   const processWbcItem = (lisCode: any, wbcItem: any) => {
@@ -851,7 +854,7 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
 
     }
   })
-
+  console.log('rbc wbc 중간 resultStr 값', resultStr);
   const replacements: any = {
     'H9531': 'H9571',
     'H9532': 'H9572',
@@ -880,6 +883,7 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
 
   resultStr += rbcTmp;
   resultStr += rbcTmp2;
+  console.log('rbc wbc 최종 resultStr 값', resultStr);
 
   try {
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
