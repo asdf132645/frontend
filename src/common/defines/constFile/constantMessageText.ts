@@ -406,6 +406,8 @@ export  const messages: Messages = {
     IDS_MSG_DATA_BACKUP: 'Data from that period will be deleted. Would you like to proceed?',
     IDS_MSG_DATA_RESTORE: 'Do you want to recover your data?',
     IDS_MSG_SIZE_CHROMIA_LINKED_LIS: 'Size and Chromia categories are linked with LIS data.',
+    UPLOAD_PLEASE_LIS: 'To upload the LIS, please enter the content in the LIS File Path field under the LIS(CBC) Hot Key & File Path tab in the settings page and save it.',
+    UPLOAD_PLEASE_CBC: 'To load CBC, please enter the content in the CBC File Path field under the LIS(CBC) Hot Key & File Path tab in the settings page and save it.',
 
     UPDATE_SUCCESSFULLY : 'Update Successfully',
     TCP_DiSCONNECTED: 'The TCP connection was disconnected.',
