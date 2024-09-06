@@ -533,20 +533,29 @@ async function socketData(data: any) {
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
         }
         let wbcInfoAfter: any = [];
-        let ww: any = [];
+        let wbcInfoNewVal: any = [];
+        const getDefaultWbcInfo = () => !projectBm.value ? { wbcInfo: [basicWbcArr] } : { wbcInfo: [basicBmClassList] };
+        const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
+        const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
+        const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
+
         if (siteCd.value === '0011') {
+          // 인하대 WBC 정보를 저장
           newWbcInfo.wbcInfo[0] = await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
-          ww = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo;
-          wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo.wbcInfo[0];
+          // WBC 정보 업데이트
+          wbcInfoNewVal = updateWbcInfo();
+          wbcInfoAfter = updateWbcInfoAfter();
+          // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            // 인하대 일 경우 바로 LIS 최종보고를 함 불가피하게 이벤트 버스 사용 함
             EventBus.publish('appVueSlideDataSaveLisSave', newWbcInfo.wbcInfo[0], rbcArrElements[0].rbcInfo, completeSlot.barcodeNo);
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {
-          ww = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]} : newWbcInfo
-          wbcInfoAfter = Object.keys(newWbcInfo).length === 0 ? !projectBm.value ? [basicWbcArr] : [basicBmClassList] : newWbcInfo?.wbcInfo[0];
+          // 기본 WBC 정보로 업데이트
+          wbcInfoNewVal = updateWbcInfo();
+          wbcInfoAfter = updateWbcInfoAfter();
         }
+
 
         const newObj = {
           slotNo: completeSlot.slotNo,
@@ -565,7 +574,7 @@ async function socketData(data: any) {
           tactTime: completeSlot.tactTime,
           maxWbcCount: completeSlot.maxWbcCount,
           bf_lowPowerPath: completeSlot.bf_lowPowerPath,
-          wbcInfo: ww,
+          wbcInfo: wbcInfoNewVal,
           wbcInfoAfter: wbcInfoAfter,
           rbcInfo: !projectBm.value ? {
             pltCount: completeSlot.pltCount,
