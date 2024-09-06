@@ -66,7 +66,6 @@ const cbcWorkList = ref<any>([]);
 const cbcPatientNo = ref('');
 const cbcPatientNm = ref('');
 const cbcSex = ref('');
-const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const loading = ref(false);
 
 const cbcAge = ref('');
@@ -148,6 +147,10 @@ const initCbcData = async (newVal: any) => {
 }
 
 const commonCbc = async () => {
+  if(cbcFilePathSetArr.value === ''){
+    showErrorAlert(messages.UPLOAD_PLEASE_CBC);
+    return;
+  }
   if (cbcFilePathSetArr.value.includes("http")) { // url
     const params = {
       url: cbcFilePathSetArr.value,
@@ -223,6 +226,10 @@ const commonCbc = async () => {
 }
 
 const inhaCbc = async () => {
+  if(cbcFilePathSetArr.value === ''){
+    showErrorAlert(messages.UPLOAD_PLEASE_CBC);
+    return;
+  }
   if (cbcFilePathSetArr.value.includes("http")) { // url 설정인 경우
     try {
       let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';

@@ -693,7 +693,7 @@ const lisLastStep = () => {
     // 파일 URL 생성 함수 호출
     lisFileUrlCreate(data);
   } else if (siteCd.value === '0006') { // 고대 안암
-    const data = godae();
+    const data = goDae();
     lisFileUrlCreate(data);
   } else if (siteCd.value === '0011') { // 인하대
     inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
@@ -747,6 +747,10 @@ const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: 
 }
 
 const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
+  if(lisFilePathSetArr.value === ''){
+    showErrorAlert(messages.UPLOAD_PLEASE_LIS);
+    return;
+  }
   let resultStr = '';
   // `inhaTestCode.value`를 콤마로 분리하여 배열 생성 inhaTestCode는 인하대 lis 업로드 하면 cbc 코드에서 받은 응답 값을 담는 부분
   const testCodeList = inhaTestCode.value.split(',');
@@ -889,10 +893,10 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
     };
     const response = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
     const res = response.data[0];
-    if (res.returnCode === '0') {
+    if (res?.returnCode === '0') {
       showSuccessAlert(messages.IDS_MSG_SUCCESS);
     } else {
-      showSuccessAlert('return code : ' + res.returnCode);
+      showSuccessAlert('return code : ' + res?.returnCode);
     }
     // 성공적인 응답 처리
     console.log('Response:', response.data);
@@ -902,7 +906,7 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
   }
 }
 
-const godae = (): string => {
+const goDae = (): string => {
   let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
   let seq = 0;
   let kumcMergePercent = 0;
