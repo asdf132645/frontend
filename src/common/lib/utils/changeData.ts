@@ -38,17 +38,12 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                     if (wbcItem.id === range.classId) {
                         if (range.unit === 'Count') {
                             if (Number(wbcItem.count) < range.min || Number(wbcItem.count) > range.max) {
-                                // console.log(`SET Abnormal : ${wbcItem.title}`);
                                 resultObj.isNormal = 'N';
                                 resultObj.class.push(`${wbcItem.title} : [${wbcItem.count}]Count`);
-                            } else {
-                                // console.log(`SET NORMAL : ${wbcItem.title}`);
                             }
                         } else {
                             let percent = 0;
-
                             percent = (Number(wbcItem.count) / totalCount) * 100;
-
                             if (percent < range.min || percent > range.max) {
                                 console.log(`SET Abnormal : ${wbcItem.title}`);
                                 resultObj.isNormal = 'N';

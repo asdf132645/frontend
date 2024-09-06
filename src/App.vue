@@ -512,14 +512,11 @@ async function socketData(data: any) {
 
         completeSlot.userId = userId.value;
         completeSlot.cassetId = params.cassetId;
-        // PB 비정상 클래스 체크
-        completeSlot.isNormal = 'Y'
+        completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
 
         if (completeSlot.analysisType === '01') {
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
-
-        isNsNbIntegrationLocal.value
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
@@ -540,7 +537,10 @@ async function socketData(data: any) {
 
         if (siteCd.value === '0011') {
           // 인하대 WBC 정보를 저장
-          newWbcInfo.wbcInfo[0] = await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo[0]);
+          if(completeSlot.testType !== '04'){
+            newWbcInfo.wbcInfo[0] = await inhaDataChangeSave(completeSlot, matchedWbcInfo?.wbcInfo);
+          }
+
           // WBC 정보 업데이트
           wbcInfoNewVal = updateWbcInfo();
           wbcInfoAfter = updateWbcInfoAfter();
