@@ -10,7 +10,7 @@
             <span class="mb1">Order ID:</span>
             <span class="mb2">{{ selectedItem?.slotId }}</span>
           </li>
-          <li>NS, NB Integration: {{ selectedItem?.isNsNbIntegration === '' ? 'N' : 'Y' }}</li>
+          <li>NS, NB Integration: {{integrationFindNe(selectedItem.wbcInfoAfter)}}</li>
         </ul>
         <div>
           <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath"
@@ -102,6 +102,20 @@ watch(() => props.selectedItem, (newSelectedItem) => {
     pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
 });
+
+const integrationFindNe = (wbcInfoAfter) => {
+  let returnText = '';
+  const neFindItem = wbcInfoAfter.find((el) => {
+    return el.title === 'NE'
+  });
+
+  if(neFindItem){
+    returnText = 'Y' ;
+  }else{
+    returnText = 'N';
+  }
+  return returnText;
+}
 
 const sortClassOrder = async () => {
   if (!orderClass.value || orderClass.value.length === 0 || !Array.isArray(orderClass.value)) {
