@@ -192,8 +192,8 @@ import {createH17, readH7Message} from "@/common/api/service/fileReader/fileRead
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import EventBus from "@/eventBus/eventBus";
-import { inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
-import { hospitalSiteCd } from "@/common/siteCd/siteCd";
+import {inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -372,9 +372,9 @@ const uploadLis = () => {
     cmcSeoulLisAndCbcDataGet();
   } else if (siteCd.value === '' || siteCd.value === '0000') { // uimd LIS 테스트 하는 곳
     // 서울 성모
-    // uimdTestCbcLisDataGet();
+    uimdTestCbcLisDataGet();
     // 인하대
-    inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
+    // inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
   } else {
     lisLastStep();
   }
@@ -383,12 +383,13 @@ const uploadLis = () => {
 const uimdTestCbcLisDataGet = () => {
   // 서울 성모 테스트 코드
   const codeList = CbcWbcTestCdList_0002;
-  const { wbcInfoAfter } = props.selectItems ?? {};
+  const {wbcInfoAfter} = props.selectItems ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/liveTest`, {   // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
     params: {
-      baseUrl: 'http://emr012.cmcnu.or.kr/cmcnu/.live', submit_id: 'TRLII00124',
+      baseUrl: 'http://emr012.cmcnu.or.kr/cmcnu/.live',
+      submit_id: 'TRLII00124',
       business_id: 'li',
       instcd: '012', // 병원 코드
     },
@@ -737,7 +738,7 @@ const otherDataSend = async () => {
           showErrorAlert(error.response.data.message);
         }
       } else { // url
-       await sendLisMessage(res);
+        await sendLisMessage(res);
       }
     }
   }
@@ -748,7 +749,7 @@ const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: 
 }
 
 const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
-  if(lisFilePathSetArr.value === ''){
+  if (lisFilePathSetArr.value === '') {
     showErrorAlert(messages.UPLOAD_PLEASE_LIS);
     return;
   }
@@ -763,7 +764,6 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
       // 코드 데이터를 '|'로 분리하여 배열 생성
       const [code, value, unit, type] = codes.split('|');
       let tmpStr = '';
-      // 코드에 따라 적절한 변환 작업 수행
       if (code === 'L0210') {
         // 'L0210' 코드는 값에 '5'를 추가
         tmpStr = `${code}|${value}5|`;
@@ -799,8 +799,8 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
   // `resultStr`에 `inhaTestCode.value`를 추가
   resultStr += inhaTestSendCode.value;
   console.log('tmpList 가공 매칭 후', tmpList)
-  console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열',inhaTestSendCode.value)
-  console.log('inhaTestSendCode.value',inhaTestSendCode.value)
+  console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열', inhaTestSendCode.value)
+  console.log('inhaTestSendCode.value', inhaTestSendCode.value)
   let rbcTmp = '';
   // WBC 항목을 처리하는 함수 정의
   const processWbcItem = (lisCode: any, wbcItem: any) => {
@@ -892,18 +892,22 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
       machine: 'ADUIMD',
       episode: barcodeNo,
       result: resultStr,
-      baseUrl: lisFilePathSetArr.value + '/api/MifMain/File',
+      baseUrl: `${lisFilePathSetArr.value}/api/MifMain/File`,
       // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
     };
     const response = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
     const res = response.data[0];
+    console.log('res 최종값', response)
     if (res?.returnCode === '0') {
+      const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`;
+      const parmsLisCopy = { filePath, res };
+
+      // CBC 파일 생성
+      await createCbcFile(parmsLisCopy);
       showSuccessAlert(messages.IDS_MSG_SUCCESS);
     } else {
       showSuccessAlert('return code : ' + res?.returnCode);
     }
-    // 성공적인 응답 처리
-    console.log('Response:', response.data);
   } catch (error: any) {
     // 오류 처리;
     showSuccessAlert(error.message);
@@ -963,7 +967,7 @@ const goDae = (): string => {
 const lisFileUrlCreate = async (data: any) => {
   // 파일 경로와 파라미터 설정
   const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`;
-  const parmsLisCopy = { filePath, data };
+  const parmsLisCopy = {filePath, data};
 
   // CBC 파일 생성
   await createCbcFile(parmsLisCopy);
@@ -986,8 +990,8 @@ const lisFileUrlCreate = async (data: any) => {
       if (fileRes) {
         // 실행 정보 업데이트
         const result: any = await detailRunningApi(String(props.selectItems?.id));
-        const updatedItem = { submitState: 'lis' };
-        const updatedRunningInfo = { ...result.data, ...updatedItem };
+        const updatedItem = {submitState: 'lis'};
+        const updatedRunningInfo = {...result.data, ...updatedItem};
 
         await resRunningItem(updatedRunningInfo, true);
         showSuccessAlert(messages.IDS_MSG_SUCCESS);
