@@ -226,6 +226,7 @@ const commonCbc = async () => {
 }
 
 const inhaCbc = async () => {
+  console.log('inhaCbc cbcFilePathSetArr', cbcFilePathSetArr)
   if(cbcFilePathSetArr.value === ''){
     showErrorAlert(messages.UPLOAD_PLEASE_CBC);
     return;
@@ -237,7 +238,7 @@ const inhaCbc = async () => {
       const body = {
         machine: 'ADUIMD',
         episode: props.selectItems.barcodeNo,
-        baseUrl: cbcFilePathSetArr.value + '/api/MifMain/File',
+        baseUrl: `${cbcFilePathSetArr.value}/api/MifMain/File`,
         // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
       };
       const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);

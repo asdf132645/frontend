@@ -749,6 +749,9 @@ const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: 
 }
 
 const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
+  console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
+  console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter)
+  console.log('인하대 테스트 barcodeNo', barcodeNo)
   if (lisFilePathSetArr.value === '') {
     showErrorAlert(messages.UPLOAD_PLEASE_LIS);
     return;
