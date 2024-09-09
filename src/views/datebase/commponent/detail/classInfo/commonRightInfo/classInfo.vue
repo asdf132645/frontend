@@ -902,8 +902,15 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
       const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`;
       const parmsLisCopy = { filePath, res };
 
-      // CBC 파일 생성
+      // LIS 파일 생성
       await createCbcFile(parmsLisCopy);
+      const result: any = await detailRunningApi(String(props.selectItems?.id));
+      const updatedItem = {
+        submitState: 'lis',
+      };
+      lisBtnColor.value = true;
+      const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+      await resRunningItem(updatedRuningInfo, true);
       showSuccessAlert(messages.IDS_MSG_SUCCESS);
     } else {
       showSuccessAlert('return code : ' + res?.returnCode);
