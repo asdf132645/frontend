@@ -1286,15 +1286,13 @@ const beforeAfterChange = async (newItem: any) => {
   }
 
   const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-  console.log('isSeoulStMaryHospitalSiteCd', isSeoulStMaryHospitalSiteCd);
   const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   if (isSeoulStMaryHospitalSiteCd) {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
   } else if (isInhaHospitalSiteCd) {
-    console.log('before', wbcInfoAfterVal.value)
     wbcInfoAfterVal.value = await inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
-    console.log('after', wbcInfoAfterVal.value)
+    wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
   }
 
   wbcInfoVal.value = [];

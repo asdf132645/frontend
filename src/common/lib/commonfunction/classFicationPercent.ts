@@ -26,6 +26,12 @@ export const calculateWbcPercentages = (
     return total;
 };
 
+export const percentWithNoError = (percent: number) => {
+    if (isNaN(percent)) {
+        return 0;
+    }
+    return percent;
+}
 
 // 인하대
 export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
@@ -45,7 +51,7 @@ export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
         let percentTotal = 0;
 
         // 퍼센트 계산 및 maxItem 결정
-        wbcInfo.forEach((wbcItem: any, index: number) => {
+        wbcInfo.forEach((wbcItem: any, index: any) => {
             let percent = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(0));
             const percentN2 = Number(((Number(wbcItem.count) / wbcTotal) * 100).toFixed(2));
 
@@ -82,16 +88,17 @@ export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
             }
         });
 
-        console.log('Inha wbcInfo', wbcInfo);
         return wbcInfo;
     }
+    return wbcInfo;
 }
 
 // 서울성모
 export const seoulStMaryPercentChange = (originWbcInfo: any, changingWbcInfo: any) => {
+    // Neutrophil 빼고 totalCount 계산
     const totalPercent = originWbcInfo.filter((item: any) => item.name !== "Neutrophil")
-        .map((item: any) => Math.round(parseFloat(item.percent)))
-        .reduce((sum: any, percent: any) => sum + percent, 0);
+        .map((item: any) => Math.round(parseFloat(item.percent)) || 0)
+        .reduce((sum: any, percent: any) => sum + Number(percent), 0);
 
     return changingWbcInfo.map((item: any) => item.name === "Neutrophil"
             ? {...item, percent: 100 - totalPercent}

@@ -82,7 +82,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item) in wbcInfo" :key="item.id" class="wbcClassDbDiv">
+              <tr v-for="(item) in selectItems.wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
                 <template v-if="shouldRenderCategory(item.title)">
                   <td>{{ item?.name }}</td>
                   <td>{{ item?.count }}</td>
@@ -224,9 +224,7 @@
     </div>
   </div>
   <div ref="printContent">
-    <Print v-if="printOnOff" @printClose="printClose"/>
-<!--    <Print v-if="printOnOff" :printOnOff="printOnOff" :selectItemWbc="selectItems.wbcInfo.wbcInfo[0]"-->
-<!--           @printClose="printClose"/>-->
+    <Print v-if="printOnOff" @printClose="printClose" />
   </div>
 </template>
 
@@ -328,12 +326,12 @@ const percentChangeBySiteCd = () => {
   const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
   const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   if (isSeoulStMaryHospitalSiteCd) {
-    console.log(12);
-    wbcInfo.value =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, wbcInfo.value);
+    selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
   } else if (isInhaHospitalSiteCd) {
-    wbcInfo.value = inhaPercentChange(selectItems.value, wbcInfo.value);
+    selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
   }
-  console.log('wbcInfo', wbcInfo.value);
+
+  wbcInfo.value = selectItems.value.wbcInfoAfter;
 }
 
 const calcShapeOthersCount = async () => {
@@ -573,6 +571,7 @@ async function initData(data?: any) {
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfoAfter, wbcArrs);
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
 
+    selectItems.value.wbcInfoAfter = sortedWbcInfo;
     wbcInfo.value = sortedWbcInfo;
 
     if (!nonWbcClassList.value || nonWbcClassList.value.length === 0) {
@@ -584,6 +583,7 @@ async function initData(data?: any) {
     let wbcArrs = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
     const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
+    selectItems.value.wbcInfoAfter = sortedWbcInfo;
     wbcInfo.value = sortedWbcInfo;
   }
 

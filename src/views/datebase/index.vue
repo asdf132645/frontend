@@ -382,7 +382,6 @@ const initDbData = async () => {
 
 const selectItem = (item: any) => {
   selectedItem.value = item;
-  console.log('selectedItem.value', selectedItem.value);
 };
 
 const saveLastSearchParams = () => {
@@ -568,7 +567,7 @@ const exportToExcel = async () => {
   }
   isPrintingExcel.value = true;
 
-  /** RBC Excel Print */
+  // RBC Print
   await convertRbcData(checkedSelectedItems.value);
 
   // WBC Print
@@ -611,11 +610,6 @@ const convertRbcData = async (dataList: any) => {
       continue;
     }
 
-
-    /** TODO
-     * RBC Degree Modify needed
-     * Count & Percent is Correct
-     * */
     const result: any = await detailRunningApi(String(item.id));
     await getRbcDegreeData();
     const data = result.data;

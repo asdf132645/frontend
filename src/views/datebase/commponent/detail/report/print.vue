@@ -57,9 +57,10 @@
           </tbody>
         </table>
 
-        <div style="margin-top: 20px; border-top: 2px dotted #696969"></div>
+        <div v-if="selectItems?.testType === '04'" style="margin-top: 20px; border-top: 2px dotted #696969"></div>
+
         <!-- RBC Classification -->
-        <div v-if="'04' === selectItems?.testType" style="margin-top: 20px;">
+        <div v-if="selectItems?.testType === '04'" style="margin-top: 20px;">
           <h3 style="margin: 10px 0; font-size: 1.2rem; font-weight: 600; text-align: center;">RBC classification result</h3>
           <table style="width: 100%; font-size: 0.8rem;">
             <colgroup>
@@ -233,7 +234,7 @@
 
 
 <script setup lang="ts">
-import {computed, defineEmits, onMounted, ref, watchEffect} from "vue";
+import { computed, defineEmits, onMounted, ref } from "vue";
 import {getTestTypeText, getBmTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
@@ -278,7 +279,6 @@ const shapeOthersCount = ref(0);
 const printReady = ref(false);
 
 onMounted(async () => {
-  console.log(1);
   await getDetailRunningInfo();
   await getOrderClass();
   await getImagePrintData();
@@ -473,7 +473,7 @@ const getDetailRunningInfo = async () => {
   }
 }
 
-const filteredWbcInfo = (wbcInfoArr, type: 'wbc' | 'nonWbc') => {
+const filteredWbcInfo = (wbcInfoArr: any, type: 'wbc' | 'nonWbc') => {
   if (type === 'nonWbc') {
     return wbcInfoArr.filter((item: any) => nonWbcIdList.includes(item.id) && item.count > 0);
   }
@@ -505,6 +505,8 @@ const noImageList = (wbcArr: any) => {
 const printPage = async () => {
   printReady.value = true;
   disableScroll();
+
+  percentChangeBySiteCd();
   try {
     // 프린트할 컨텐츠를 가져옴
     const content = printContent.value;
@@ -561,7 +563,7 @@ const getImagePrintData = async () => {
       const sortArr = orderClass.value.length !== 0 ? oArr : projectType === 'bm' ? basicBmClassList : basicWbcArr;
       const sortedWbcInfoData = await sortWbcInfo(wbcInfo.value, sortArr);
       wbcInfo.value = sortedWbcInfoData;
-      percentChangeBySiteCd(siteCd.value, wbcInfo.value);
+      percentChangeBySiteCd();
     }
   } catch (e) {
     console.error(e);
@@ -586,16 +588,14 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   return wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
 };
 
-const percentChangeBySiteCd = async (siteCd: string, wbcInfo: any) => {
-  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd;
-  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd;
+const percentChangeBySiteCd = async () => {
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   if (isSeoulStMaryHospitalSiteCd) {
-    wbcInfo.value = seoulStMaryPercentChange(wbcInfo, wbcInfo);
+    wbcInfo.value = seoulStMaryPercentChange(wbcInfo.value, wbcInfo.value);
   } else if (isInhaHospitalSiteCd) {
-    wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo);
+    wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
   }
-
-  console.log('제발', wbcInfo.value);
 }
 
 const closePrint = () => {
