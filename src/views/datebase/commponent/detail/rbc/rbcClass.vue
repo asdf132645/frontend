@@ -343,7 +343,7 @@ const submitState = ref('');
 const projectType = ref(window.PROJECT_TYPE);
 const countArtifact = ref(0);
 const countDoubleNormal = ref(0);
-const rbcResponseOldArr = ref([]);
+const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
 
 onMounted(async () => {
