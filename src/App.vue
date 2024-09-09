@@ -534,7 +534,7 @@ async function socketData(data: any) {
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
-
+        const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
         if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') {
           // 인하대 WBC 정보를 저장
           if(completeSlot.testType !== '04'){
@@ -546,7 +546,7 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            EventBus.publish('appVueSlideDataSaveLisSave', newWbcInfo.wbcInfo[0], rbcArrElements[0].rbcInfo, completeSlot.barcodeNo);
+            EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {
@@ -581,7 +581,7 @@ async function socketData(data: any) {
             maxRbcCount: completeSlot.maxRbcCount,
             rbcClass: rbcArrElements[0].rbcInfo,
           } : [],
-          rbcInfoAfter: !projectBm.value ? rbcArrElements[0].rbcInfo : [],
+          rbcInfoAfter: rbcInfoAfter,
           bminfo: completeSlot.bminfo,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
