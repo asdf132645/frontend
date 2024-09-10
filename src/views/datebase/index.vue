@@ -218,6 +218,7 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  await store.dispatch('commonModule/setCommonInfo', { siteCd: '0011' });
   if (!eventTriggered.value) {
     await initDbData();
     // loadingDelayParents.value = true;
