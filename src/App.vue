@@ -539,6 +539,7 @@ async function socketData(data: any) {
           // 인하대 WBC 정보를 저장
           if(completeSlot.testType !== '04'){
             newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
+            console.log('newWbcInfo.wbcInfo[0]', newWbcInfo.wbcInfo[0])
           }
 
           // WBC 정보 업데이트
