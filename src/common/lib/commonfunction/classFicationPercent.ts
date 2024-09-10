@@ -105,3 +105,18 @@ export const seoulStMaryPercentChange = (originWbcInfo: any, changingWbcInfo: an
             : {...item, percent: Math.round(parseFloat(item.percent))}
     );
 }
+
+/** 인천성모병원
+ * BM에서 정수값은 .0 붙여서 보여주기
+ * ex. 8% => 8.0% */
+export const incheonStMaryPercentChange = (projectType: string, wbcInfo: any) => {
+    if (projectType === 'bm') {
+        return wbcInfo.map((item: any) => {
+            if (0 < parseFloat(item.percent) && parseFloat(item.percent) < 100 && parseFloat(item.percent) % 1 !== 0) {
+                return {...item, percent: item.percent.toFixed(1) };
+            }
+            return item;
+        })
+    }
+    return wbcInfo;
+}

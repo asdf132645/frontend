@@ -192,7 +192,7 @@ import {createH17, readH7Message} from "@/common/api/service/fileReader/fileRead
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import EventBus from "@/eventBus/eventBus";
-import { inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import { inhaPercentChange, seoulStMaryPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
 import { hospitalSiteCd } from "@/common/siteCd/siteCd";
 
 const selectItems = ref(props.selectItems);
