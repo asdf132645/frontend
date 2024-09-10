@@ -246,7 +246,11 @@ import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
-import {inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import {
+  incheonStMaryPercentChange,
+  inhaPercentChange,
+  seoulStMaryPercentChange
+} from "@/common/lib/commonfunction/classFicationPercent";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -325,10 +329,15 @@ const getDetailRunningInfo = async () => {
 const percentChangeBySiteCd = () => {
   const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
   const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
+  const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
+  const projectType = projectBm.value ? 'bm' : 'pb';
+
   if (isSeoulStMaryHospitalSiteCd) {
     selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
   } else if (isInhaHospitalSiteCd) {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
+  } else if (isIncheonStMaryHospitalSiteCd) {
+    selectItems.value.wbcInfoAfter = incheonStMaryPercentChange(projectType, selectItems.value?.wbcInfoAfter);
   }
 
   wbcInfo.value = selectItems.value.wbcInfoAfter;

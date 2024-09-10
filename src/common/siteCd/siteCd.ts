@@ -33,8 +33,20 @@ export const hospitalSiteCd: hospitalSideCdState[] = [
         hospitalNm: '인천길병원',
     },
     {
+        siteCd: '0021',
+        hospitalNm: '인천성모병원',
+    },
+    {
         siteCd: '0026',
         hospitalNm: '건국대학교병원',
+    },
+    {
+        siteCd: '0034',
+        hospitalNm: '고대구로병원',
+    },
+    {
+        siteCd: '0035',
+        hospitalNm: '국립암센터',
     },
     {
         siteCd: '0000',

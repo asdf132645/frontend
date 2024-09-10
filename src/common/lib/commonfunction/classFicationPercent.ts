@@ -112,8 +112,8 @@ export const seoulStMaryPercentChange = (originWbcInfo: any, changingWbcInfo: an
 export const incheonStMaryPercentChange = (projectType: string, wbcInfo: any) => {
     if (projectType === 'bm') {
         return wbcInfo.map((item: any) => {
-            if (0 < parseFloat(item.percent) && parseFloat(item.percent) < 100 && parseFloat(item.percent) % 1 !== 0) {
-                return {...item, percent: item.percent.toFixed(1) };
+            if (0 < parseFloat(item.percent) && parseFloat(item.percent) < 100 && parseFloat(item.percent) % 1 === 0) {
+                return {...item, percent: Number(item.percent).toFixed(1) };
             }
             return item;
         })

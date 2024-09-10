@@ -245,7 +245,11 @@ import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassif
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
-import {inhaPercentChange, seoulStMaryPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import {
+  incheonStMaryPercentChange,
+  inhaPercentChange,
+  seoulStMaryPercentChange
+} from "@/common/lib/commonfunction/classFicationPercent";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
@@ -591,10 +595,14 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
 const percentChangeBySiteCd = async () => {
   const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
   const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
+  const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
+
   if (isSeoulStMaryHospitalSiteCd) {
     wbcInfo.value = seoulStMaryPercentChange(wbcInfo.value, wbcInfo.value);
   } else if (isInhaHospitalSiteCd) {
     wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
+  } else if (isIncheonStMaryHospitalSiteCd) {
+    wbcInfo.value = incheonStMaryPercentChange(projectType, wbcInfo.value);
   }
 }
 

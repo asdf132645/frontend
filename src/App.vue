@@ -535,7 +535,7 @@ async function socketData(data: any) {
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
-        if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') {
+        if (siteCd.value === '0011') {
           // 인하대 WBC 정보를 저장
           if(completeSlot.testType !== '04'){
             newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());

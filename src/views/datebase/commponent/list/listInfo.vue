@@ -66,6 +66,7 @@ import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {
+  incheonStMaryPercentChange,
   inhaPercentChange,
   percentWithNoError,
   seoulStMaryPercentChange
@@ -176,20 +177,27 @@ const setWbcTotalAndPercent = async () => {
       }
     } else {
 
-      // 인하대일 경우 Percent 로직이 다르므로 계산 X
-      const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-      const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-      if (isInhaHospitalSiteCd && props.selectedItem?.testType !== '04') {
-        wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
-      } else if (isSeoulStMaryHospitalSiteCd) {
-        wbcInfoAfter.value = seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter);
-      } else {
-        const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
-        if (!targetArray.includes(item.title)) {
-          const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
-          item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
-        }
-      }
+      await percentChange();
+    }
+  }
+}
+
+const percentChange = async () => {
+  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
+  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
+  const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
+
+  if (isInhaHospitalSiteCd && props.selectedItem?.testType !== '04') {
+    wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
+  } else if (isSeoulStMaryHospitalSiteCd) {
+    wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter);
+  } else if (isIncheonStMaryHospitalSiteCd) {
+    wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
+  } else {
+    const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
+    if (!targetArray.includes(item.title)) {
+      const percentage = ((Number(item.count) / Number(wbcTotal.value)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
+      item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
     }
   }
 }
