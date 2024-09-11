@@ -196,7 +196,6 @@ const rbcInfoBeforeVal = ref<any>([]);
 const inputTimeout = ref<any>(null);
 const bufferDelay = 100; // 입력 완료 감지 지연 시간 (ms)
 const inputBuffer = ref('');
-const barcodePattern = /^[0-9A-Z]{8,}$/; // 바코드 패턴 (예: 8자리 이상의 숫자 및 대문자)
 const router = useRouter();
 
 
@@ -204,9 +203,7 @@ async function handleStateVal(data: any) {
   eventTriggered.value = true;
   notStartLoading.value = false;
   await removePageAllDataApi();
-  await initDbData().then(() => {
-    // loadingDelayParents.value = false;
-  });
+  await initDbData();
 }
 
 onBeforeMount(async () => {
@@ -287,7 +284,7 @@ const handleInput = (event: any) => {
   }, bufferDelay);
 };
 
-const handleGlobalKeydown = (event) => {
+const handleGlobalKeydown = (event: any) => {
   if (router.currentRoute.value.path === '/dataBase') {
     if (event.key === 'Enter' || event.key === 'Tab') {
       setTimeout(() => {

@@ -11,7 +11,6 @@
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
-                :stataasdasd="stataasdasd"
       />
     </main>
     <Alert
@@ -58,7 +57,6 @@ import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
-import {formatDate} from "@/common/lib/utils/dateUtils";
 import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
 import axios from "axios";
 
@@ -96,7 +94,6 @@ const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
 let intervalId: any;
-const stataasdasd = ref(false);
 const ipMatches = ref(false);
 const barcodeNum = ref('');
 
@@ -236,7 +233,7 @@ onBeforeMount(() => {
   pbVersion.value = window.PB_VERSION;
 })
 const isIpMatching = (url: any, ip: any) => {
-  // URL에서 IP 주소 추출
+  // URL 에서 IP 주소 추출
   const urlPattern = /http:\/\/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+):/;
   const match = url.match(urlPattern);
   if (match && match[1]) {
@@ -514,7 +511,7 @@ async function socketData(data: any) {
         completeSlot.cassetId = params.cassetId;
         completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
 
-        if (completeSlot.analysisType === '01') {
+        if (completeSlot.testType === '01') {
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
@@ -539,7 +536,6 @@ async function socketData(data: any) {
           // 인하대 WBC 정보를 저장
           if(completeSlot.testType !== '04'){
             newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
-            console.log('newWbcInfo.wbcInfo[0]', newWbcInfo.wbcInfo[0])
           }
 
           // WBC 정보 업데이트
