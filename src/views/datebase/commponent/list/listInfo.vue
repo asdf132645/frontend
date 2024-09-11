@@ -169,6 +169,7 @@ const setWbcTotalAndPercent = async () => {
     if (!nonWbcTitles.includes(item.title)) return acc + Number(item.count)
     return acc
   }, 0)
+  console.log('제발', props.selectedItem.wbcInfoAfter);
   for (const item of props.selectedItem.wbcInfoAfter) {
     if (window.PROJECT_TYPE === 'bm') {
       if (item.title !== 'OT') {
@@ -176,18 +177,9 @@ const setWbcTotalAndPercent = async () => {
         item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
       }
     } else {
-
-      // 병원병 퍼센트 계산 로직
-      const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-      const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-      const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
-
-      if (isInhaHospitalSiteCd && props.selectedItem?.testType !== '04') {
-        wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
-      } else if (isSeoulStMaryHospitalSiteCd) {
-        wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter);
-      } else if (isIncheonStMaryHospitalSiteCd) {
-        wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
+      const hospital = hospitalSiteCd.find(item => item.siteCd === siteCd.value);
+      if (hospital && hospitalActionMap[hospital.hospitalNm]) {
+        wbcInfoAfter.value = await hospitalActionMap[hospital.hospitalNm]();
       } else {
         const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
         if (!targetArray.includes(item.title)) {
@@ -197,6 +189,16 @@ const setWbcTotalAndPercent = async () => {
     }
   }
 }
+
+const hospitalActionMap = {
+  '서울성모병원': async () => await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter),
+  '인하대병원': async () => {
+    if (props.selectedItem?.testType !== '04') {
+      return await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
+    }
+  },
+  '인천성모병원': async () => await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter),
+};
 
 const calculatePercentage = (count, total) => {
   const percentage = ((Number(count) / Number(total)) * 100).toFixed(1);
