@@ -141,7 +141,7 @@ import {useStore} from "vuex";
 import pako from "pako";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
-import router from "@/router";
+import {useRouter} from "vue-router";
 
 
 const store = useStore();
@@ -197,10 +197,7 @@ const inputTimeout = ref<any>(null);
 const bufferDelay = 100; // 입력 완료 감지 지연 시간 (ms)
 const inputBuffer = ref('');
 const barcodePattern = /^[0-9A-Z]{8,}$/; // 바코드 패턴 (예: 8자리 이상의 숫자 및 대문자)
-
-const isBarcodeInput = (value: any) => {
-  return barcodePattern.test(value);
-};
+const router = useRouter();
 
 
 async function handleStateVal(data: any) {
@@ -509,8 +506,12 @@ const getDbData = async (type: string, pageNum?: number) => {
       }
     }
     if (dbGetData.value.length > 0) {
-      await store.dispatch('commonModule/setCommonInfo', {dbListDataFirstNum: Number(dbGetData.value[0].id)})
-      await store.dispatch('commonModule/setCommonInfo', {dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
+      const {path} = router.currentRoute.value;
+
+      if(path === '/dataBase'){
+        await store.dispatch('commonModule/setCommonInfo', {dbListDataFirstNum: Number(dbGetData.value[0].id)})
+        await store.dispatch('commonModule/setCommonInfo', {dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
+      }
     }
 
 
