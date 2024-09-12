@@ -181,7 +181,7 @@ const setWbcTotalAndPercent = async () => {
       const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
       const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
 
-      if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+      if (isInhaHospitalSiteCd) {
         if (props.selectedItem?.testType !== '04') {
           wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
         } else {
