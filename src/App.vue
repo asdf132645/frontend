@@ -543,8 +543,8 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            EventBus.publish('classInfoCbcDataGet', true);
-            EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
+            await EventBus.publish('classInfoCbcDataGet', true);
+            await EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {
