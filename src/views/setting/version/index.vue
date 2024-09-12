@@ -47,9 +47,7 @@ const getEngineVersion = () => {
   projectVersionArr.value = [
     { key: 'Core Version', name: coreVersion.value },
     { key: 'DeepNet Version', name: deepNetVersion.value },
-    { key: 'Web Frontend Version', name: window.WEB_FRONTEND_VERSION as string},
-    { key: 'Web Backend Version', name: window.WEB_BACKEND_VERSION as string},
-    { key: 'PB Version', name: window.PB_VERSION as string}
+    { key: 'Web Version', name: window.PROJECT_VERSION },
   ];
 
   console.log(isProjectBm.value)
