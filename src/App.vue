@@ -512,6 +512,7 @@ async function socketData(data: any) {
         completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
 
         if (completeSlot.testType === '01') {
+          console.log('normalItems.value', normalItems.value)
           completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
         }
 
@@ -533,6 +534,7 @@ async function socketData(data: any) {
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
         if (siteCd.value === '0011') {
+          console.log(siteCd.value);
           // 인하대 WBC 정보를 저장
           if(completeSlot.testType !== '04'){
             newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
@@ -543,8 +545,8 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            await EventBus.publish('classInfoCbcDataGet', true);
-            await EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
+            EventBus.publish('classInfoCbcDataGet', true);
+            EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {

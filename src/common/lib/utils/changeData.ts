@@ -27,11 +27,10 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                     if (['01', '71'].includes(wbcItem.id)) {
                         percent = (neutrophilCount / totalCount) * 100;
                         if (percent < range.min || percent > range.max) {
-                            console.log(`SET [NE] Abnormal : ${wbcItem.title}`);
                             resultObj.isNormal = 'N';
                             resultObj.class.push(`[NE] : [${percent.toFixed(2)}]%`);
                         } else {
-                            console.log(`SET [NE] NORMAL : ${wbcItem.title}`);
+                            // console.log(`SET [NE] NORMAL : ${wbcItem.title}`);
                         }
                     }
                 } else {
@@ -45,11 +44,11 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                             let percent = 0;
                             percent = (Number(wbcItem.count) / totalCount) * 100;
                             if (percent < range.min || percent > range.max) {
-                                console.log(`SET Abnormal : ${wbcItem.title}`);
+                                // console.log(`SET Abnormal : ${wbcItem.title}`);
                                 resultObj.isNormal = 'N';
                                 resultObj.class.push(`${wbcItem.title} : [${percent.toFixed(2)}]%`);
                             } else {
-                                console.log(`SET NORMAL : ${wbcItem.title}`);
+                                // console.log(`SET NORMAL : ${wbcItem.title}`);
                             }
                         }
                     }
