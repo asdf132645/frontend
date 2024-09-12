@@ -246,6 +246,7 @@ const isIpMatching = (url: any, ip: any) => {
 onMounted(async () => {
   await nextTick();
   await cellImgGet();
+  await getNormalRange();
   startChecking();
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
@@ -258,9 +259,6 @@ onMounted(async () => {
   }
 
   if (!commonDataGet.value.isRunningState) {
-    if (userId.value && userId.value !== '') {
-      await getNormalRange();
-    }
     if (!commonDataGet.value.firstLoading && ipMatches.value && window.FORCE_VIEWER === 'main') {
       countingInterStartval = setInterval(async () => {
         await startSysPostWebSocket();
@@ -547,8 +545,8 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            await EventBus.publish('classInfoCbcDataGet', true);
-            await EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
+            await EventBus.publish('classInfoCbcDataGet', false);
+            await EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, 'EventBus');
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {

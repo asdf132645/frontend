@@ -747,12 +747,12 @@ const otherDataSend = async () => {
     }
   }
 }
-const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
+const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, EventBus?: string) => {
   await getLisWbcRbcData();
-  await inhaDataSend(wbcInfoAfter, rbcInfoAfter, barcodeNo);
+  await inhaDataSend(wbcInfoAfter, rbcInfoAfter, barcodeNo, EventBus);
 }
 
-const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any) => {
+const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, EventBus?: string) => {
   console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
   console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter)
   console.log('인하대 테스트 barcodeNo', barcodeNo)
@@ -918,9 +918,16 @@ const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any
       lisBtnColor.value = true;
       const updatedRuningInfo = {id: result.data.id, ...updatedItem}
       await resRunningItem(updatedRuningInfo, true);
-      showSuccessAlert(messages.IDS_MSG_SUCCESS);
+      if(EventBus !== 'EventBus'){
+        showSuccessAlert(messages.IDS_MSG_SUCCESS);
+      }
     } else {
-      showSuccessAlert('return code : ' + res?.returnCode);
+      if(EventBus !== 'EventBus'){
+        showSuccessAlert('return code : ' + res?.returnCode);
+      }else{
+        showSuccessAlert('report upload : ' + res?.message )
+      }
+
     }
   } catch (error: any) {
     // 오류 처리;
