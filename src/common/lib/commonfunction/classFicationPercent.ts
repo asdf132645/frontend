@@ -61,7 +61,8 @@ export const inhaPercentChange = (runningInfoData: any, wbcInfo: any) => {
             if ((wbcItem.title === 'BL' || ['LA', 'IM', 'MB', 'AM'].includes(wbcItem.title)) &&
                 Number(wbcItem.count) > 0 &&
                 percentN2 >= 0 &&
-                percentN2 <= 1) {
+                percentN2 <= 1)
+            {
                 percent = 1;
             }
 
