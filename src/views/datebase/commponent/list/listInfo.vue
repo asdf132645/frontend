@@ -184,6 +184,11 @@ const setWbcTotalAndPercent = async () => {
       if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
         if (props.selectedItem?.testType !== '04') {
           wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
+        } else {
+          const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
+          if (!targetArray.includes(item.title)) {
+            item.percent = calculatePercentage(item.count, wbcTotal.value);
+          }
         }
       } else if (isSeoulStMaryHospitalSiteCd) {
         wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter)
