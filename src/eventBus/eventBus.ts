@@ -1,6 +1,4 @@
-// EventBus.ts
-
-type EventHandler = (...args: any[]) => void;
+type EventHandler = (...args: any[]) => void | Promise<void>;
 
 class EventBus {
     private events: Record<string, EventHandler[]> = {};
@@ -13,11 +11,13 @@ class EventBus {
         this.events[eventName].push(handler);
     }
 
-    // 이벤트를 발행하는 메서드
-     public publish(eventName: string, ...args: any[]): void {
+    // 이벤트를 비동기적으로 발행하는 메서드 (Promise 반환)
+    public async publish(eventName: string, ...args: any[]): Promise<void> {
         const handlers = this.events[eventName];
         if (handlers) {
-            handlers.forEach(handler => handler(...args));
+            for (const handler of handlers) {
+                await handler(...args);  // 각 핸들러가 프로미스를 반환하면 대기
+            }
         }
     }
 

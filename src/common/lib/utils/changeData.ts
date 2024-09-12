@@ -4,7 +4,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
     let neutrophilCount = 0;
     const resultObj: any = {
         'isNormal': 'Y',
-        'class': []
+        'classInfo': []
     };
 
     if (wbcInfo) {
@@ -28,7 +28,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                         percent = (neutrophilCount / totalCount) * 100;
                         if (percent < range.min || percent > range.max) {
                             resultObj.isNormal = 'N';
-                            resultObj.class.push(`[NE] : [${percent.toFixed(2)}]%`);
+                            resultObj.classInfo.push(`[NE] : [${percent.toFixed(2)}]%`);
                         } else {
                             // console.log(`SET [NE] NORMAL : ${wbcItem.title}`);
                         }
@@ -38,7 +38,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                         if (range.unit === 'Count') {
                             if (Number(wbcItem.count) < range.min || Number(wbcItem.count) > range.max) {
                                 resultObj.isNormal = 'N';
-                                resultObj.class.push(`${wbcItem.title} : [${wbcItem.count}]Count`);
+                                resultObj.classInfo.push(`${wbcItem.title} : [${wbcItem.count}]Count`);
                             }
                         } else {
                             let percent = 0;
@@ -46,7 +46,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                             if (percent < range.min || percent > range.max) {
                                 // console.log(`SET Abnormal : ${wbcItem.title}`);
                                 resultObj.isNormal = 'N';
-                                resultObj.class.push(`${wbcItem.title} : [${percent.toFixed(2)}]%`);
+                                resultObj.classInfo.push(`${wbcItem.title} : [${percent.toFixed(2)}]%`);
                             } else {
                                 // console.log(`SET NORMAL : ${wbcItem.title}`);
                             }

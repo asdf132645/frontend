@@ -232,7 +232,7 @@ const handleOkConfirm = async () => {
   await logoutApi({userId: userId.value});
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
-      EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
+      await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
     } else {
       const result = await getDeviceIpApi();
       const ipAddress = `ip=${result.data}`

@@ -512,8 +512,10 @@ async function socketData(data: any) {
         completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
 
         if (completeSlot.testType === '01') {
-          console.log('normalItems.value', normalItems.value)
-          completeSlot.isNormal = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value).isNormal;
+          console.log('normalItems.value', normalItems.value);
+          const { isNormal, classInfo } = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
+          completeSlot.isNormal = isNormal;
+          console.log('isNomal classInfo', classInfo)
         }
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
@@ -545,8 +547,8 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            EventBus.publish('classInfoCbcDataGet', true);
-            EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
+            await EventBus.publish('classInfoCbcDataGet', true);
+            await EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo);
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {

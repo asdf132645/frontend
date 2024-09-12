@@ -197,7 +197,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: any) => {
-  EventBus.publish('childEmitSocketData', payload);
+  await EventBus.publish('childEmitSocketData', payload);
 };
 
 const sendSearchCardCount = () => {
