@@ -133,7 +133,7 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
@@ -258,9 +258,11 @@ const fullScreen = () => {
   }
 }
 
-onMounted(async () => {
-  // 현재 프로젝트가 bm인지 확인하고 클래스 부여
+onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
+})
+
+onMounted(async () => {
 
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신

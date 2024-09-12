@@ -281,7 +281,7 @@ const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
 const instance = getCurrentInstance();
-const projectType = ref<any>('bm');
+const projectType = ref<any>('');
 const opacity = ref('0.9');
 const zoomValue = ref(200);
 

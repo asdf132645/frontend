@@ -175,7 +175,7 @@ import {
   computed,
   nextTick,
   onUnmounted,
-  getCurrentInstance, watch
+  getCurrentInstance, watch, onBeforeMount
 } from 'vue';
 import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
@@ -236,10 +236,12 @@ let socketTimeoutId = undefined; // 타이머 ID 저장
 const scrollableDiv = ref(null);
 const barCodeImageShowError = ref(false);
 
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
+})
 
 onMounted(async () => {
   myIp.value = JSON.parse(sessionStorage.getItem('pcIp'));
-  projectType.value = window.PROJECT_TYPE;
   try {
 
     userId.value = getStoredUser.id;

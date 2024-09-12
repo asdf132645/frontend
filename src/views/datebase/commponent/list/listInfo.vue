@@ -182,16 +182,9 @@ const setWbcTotalAndPercent = async () => {
       const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
 
       if (isInhaHospitalSiteCd) {
-        if (props.selectedItem?.testType !== '04') {
-          wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
-        } else {
-          const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
-          if (!targetArray.includes(item.title)) {
-            item.percent = calculatePercentage(item.count, wbcTotal.value);
-          }
-        }
+        wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
       } else if (isSeoulStMaryHospitalSiteCd) {
-        wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter)
+        wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter)
       } else if (isIncheonStMaryHospitalSiteCd) {
         wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
       } else {
