@@ -59,6 +59,13 @@ import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
 import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
 import axios from "axios";
+import {
+  getCbcCodeList,
+  getCbcPathData, getLisPathData,
+  getLisWbcRbcData,
+  inhaCbc,
+  inhaDataSend
+} from "@/common/lib/commonfunction/inhaCbcLis";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -79,6 +86,7 @@ const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isDownloadOrUploading = computed(() => store.state.commonModule.isDownloadOrUploading);
+const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 
 const isNsNbIntegrationLocal = ref('N');
 const runningArr: any = ref<any>([]);
@@ -96,6 +104,12 @@ const isFullscreen = ref<boolean>(false);
 let intervalId: any;
 const ipMatches = ref(false);
 const barcodeNum = ref('');
+const cbcFilePathSetArr = ref('');
+const cbcCodeList = ref<any>([]);
+const lisCodeWbcArrApp = ref<any>([]);
+const lisCodeRbcArrApp = ref<any>([]);
+const lisFilePath = ref('');
+
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   console.log('isTcpConnected', isTcpConnected);
@@ -250,7 +264,16 @@ onMounted(async () => {
   startChecking();
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
+  cbcFilePathSetArr.value = await getCbcPathData();
+  cbcCodeList.value = await getCbcCodeList();
   siteCdDvBarCode.value = false;
+
+  const { lisCodeWbcArr , lisCodeRbcArr } = await getLisWbcRbcData();
+  lisCodeWbcArrApp.value = lisCodeWbcArr;
+  lisCodeRbcArrApp.value = lisCodeRbcArr;
+
+  lisFilePath.value = await getLisPathData();
+
   window.addEventListener('beforeunload', leave);
 
   if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
@@ -513,7 +536,6 @@ async function socketData(data: any) {
           console.log('normalItems.value', normalItems.value);
           const { isNormal, classInfo } = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
           completeSlot.isNormal = isNormal;
-          console.log('isNomal classInfo', classInfo)
         }
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
@@ -543,8 +565,8 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            await EventBus.publish('classInfoCbcDataGet', false);
-            await EventBus.publish('appVueSlideDataSaveLisSave', wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, 'EventBus');
+            await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
+            await inhaDataSend(wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, lisFilePath.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, completeSlot, userModuleDataGet.value.id)
             barcodeNum.value = completeSlot?.barcodeNo;
           }
         } else {

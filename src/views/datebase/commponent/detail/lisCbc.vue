@@ -52,14 +52,12 @@ import {xml2json} from 'xml-js';
 import {computed, defineProps, onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
-import {getCbcCodeRbcApi, getFilePathSetApi} from "@/common/api/service/setting/settingApi";
 import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
-import EventBus from "@/eventBus/eventBus";
+import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/lib/commonfunction/inhaCbcLis";
 import {messages} from "@/common/defines/constFile/constantMessageText";
-import {inhaCbcTestCode} from "@/common/defines/constFile/inhaCbcTestCode";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -70,7 +68,6 @@ const cbcSex = ref('');
 const loading = ref(false);
 
 const cbcAge = ref('');
-const inhaTestCode = ref('');
 const cbcFilePathSetArr: any = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
@@ -84,24 +81,18 @@ const alertMessage = ref('');
 
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
-  await getCbcPathData();
-  await getCbcCodeList();
+  cbcFilePathSetArr.value = await getCbcPathData();
+  cbcCodeList.value = await getCbcCodeList();
   await initCbcData(selectItemsVal.value);
 }, {deep: true});
 
 onMounted(async () => {
   selectItemsVal.value = props.selectItems;
-  await getCbcPathData();
-  await getCbcCodeList();
+  cbcFilePathSetArr.value = await getCbcPathData();
+  cbcCodeList.value = await getCbcCodeList();
   await initCbcData(selectItemsVal.value);
-  EventBus.subscribe('classInfoCbcDataGet', inhaCbcAll);
 });
 
-const inhaCbcAll = async () => {
-  await getCbcPathData();
-  await getCbcCodeList();
-  await inhaCbc();
-}
 
 const initCbcData = async (newVal: any) => {
   loading.value = true;
@@ -121,13 +112,13 @@ const initCbcData = async (newVal: any) => {
       await kuahGilHosCbc();
       break;
     case '0000':
-      await inhaCbc();
+      // await inhaCbcLoad();
       break;
     case '삼광의료재단':
       /** Todo 작업 필요 */
       break;
     case '인하대병원':
-      await inhaCbc();
+      await inhaCbcLoad();
       break;
       // CBC 공통
     default:
@@ -153,8 +144,29 @@ const initCbcData = async (newVal: any) => {
 
 }
 
+const inhaCbcLoad = async () => {
+  const {
+    cbcWorkList: cbcWorkListVal,
+    errMessage,
+    cbcPatientNo: cbcPatientNoVal,
+    cbcPatientNm: cbcPatientNmVal,
+    cbcSex: cbcSexVal,
+    cbcAge: cbcAgeVal,
+    loading: loadingVal,
+  } = await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'cbcRead');
+  if(errMessage !== ''){
+    showSuccessAlert(errMessage);
+  }
+  cbcWorkList.value = cbcWorkListVal;
+  cbcPatientNo.value = cbcPatientNoVal;
+  cbcPatientNm.value = cbcPatientNmVal;
+  cbcSex.value = cbcSexVal;
+  cbcAge.value = cbcAgeVal;
+  loading.value = loadingVal;
+}
+
 const commonCbc = async () => {
-  if(cbcFilePathSetArr.value === ''){
+  if (cbcFilePathSetArr.value === '') {
     showErrorAlert(messages.UPLOAD_PLEASE_CBC);
     return;
   }
@@ -199,7 +211,7 @@ const commonCbc = async () => {
       loading.value = false;
     })
   } else { // 파일
-    const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}.hl7`);
+    const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
     if (readFileTxtRes.data.success) {
       const msg: any = await readH7File(readFileTxtRes.data.data);
       cbcWorkList.value = [];
@@ -232,83 +244,6 @@ const commonCbc = async () => {
   await createCbcFile(parms);
 }
 
-const inhaCbc = async () => {
-  console.log('인하대 CBC 데이터 받기');
-  console.log('inhaCbc cbcFilePathSetArr', cbcFilePathSetArr)
-  if(cbcFilePathSetArr.value === ''){
-    showErrorAlert(messages.UPLOAD_PLEASE_CBC);
-    return;
-  }
-  if (cbcFilePathSetArr.value.includes("http")) { // url 설정인 경우
-    try {
-      let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
-      const body = {
-        machine: 'ADUIMD',
-        episode: props.selectItems.barcodeNo,
-        baseUrl: `${cbcFilePathSetArr.value}/api/MifMain/Order`,
-        // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
-      };
-      // const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
-      // 상태 초기화
-      cbcWorkList.value = [];
-      // 응답 데이터 가져오기
-      // const res: any = response.data[0];
-      const res: any = inhaCbcTestCode[0];
-
-      // 응답 코드가 '0'일 때만 처리
-      // if (res?.returnCode === '0') {
-        // 환자 정보 설정
-        cbcPatientNo.value = res?.regNo;
-        cbcPatientNm.value = res?.name;
-        cbcSex.value = res?.sex;
-        cbcAge.value = res?.age;
-        inhaTestCode.value = res?.testCode;
-
-        // 공통 정보 설정
-        await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
-
-        // 테스트 코드 리스트 처리
-        const testCodeList = res.testCode.split(',');
-        testCodeList.forEach((codes: any) => {
-          const codeArray = codes.split('|');
-          const code = codeArray[0];
-          const value = codeArray[1];
-          const unit = codeArray[2];
-
-          // cbcCodeList에서 매칭되는 코드 찾기
-          const cbcCode = cbcCodeList.value.find((cbcCode: any) => cbcCode.classCd === code);
-          if (cbcCode) {
-            // 작업 리스트에 추가
-            const obj = {
-              classNm: cbcCode.fullNm,
-              count: value,
-              unit: unit || '' // unit이 없으면 빈 문자열로 설정
-            };
-            cbcWorkList.value.push(obj);
-          }
-        });
-      // }
-      // else{
-      //   showErrorAlert(res?.returnCode);
-      // }
-
-      const parms = {
-        filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-        data: cbcWorkList.value,
-      };
-      await createCbcFile(parms);
-      loading.value = false;
-      // console.log('Response:', response.data);
-    } catch (error: any) {
-      console.log(error.message + ' : no CBC result');
-      loading.value = false;
-      showErrorAlert(error.message);
-    }
-  }
-
-}
-
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
@@ -320,6 +255,7 @@ const showSuccessAlert = (message: string) => {
   alertType.value = 'success';
   alertMessage.value = message;
 };
+
 const cmcSeoulCbc = async (newVal: any) => {
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
@@ -357,8 +293,7 @@ const kuahGilHosCbc = async () => {
     readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
   }
   if (readFileTxtRes.data.success) {
-    const cbcData = readFileTxtRes.data.data.toString();
-    const cbcDataArray = cbcData.split('\n');
+    const cbcDataArray = JSON.parse(readFileTxtRes.data.data.toString());
     // 검체번호, 검사일시, 환자번호, 환자명, 성별, 나이, 그래프 데이터 제외
     const excludedTitles = [
       'SPC_NO', 'BLCL_DT', 'PT_NO', 'PT_NM', 'SEX', 'AGE',
@@ -393,34 +328,11 @@ const kuahGilHosCbc = async () => {
   loading.value = false;
 }
 
-const getCbcPathData = async () => {
-  try {
-    const result = await getFilePathSetApi();
-
-    if (result && result.data) {
-      const data = result.data;
-      cbcFilePathSetArr.value = data[0].cbcFilePath;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const getCbcCodeList = async () => {
-  try {
-    const result = await getCbcCodeRbcApi();
-    if (result && result.data) {
-      cbcCodeList.value = result.data;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 async function updateRunningApiPost(originalDb: any) {
   try {
-            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
