@@ -599,7 +599,7 @@ const percentChangeBySiteCd = async () => {
 
   if (isSeoulStMaryHospitalSiteCd) {
     wbcInfo.value = seoulStMaryPercentChange(wbcInfo.value, wbcInfo.value);
-  } else if (isInhaHospitalSiteCd) {
+  } else if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
     wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
   } else if (isIncheonStMaryHospitalSiteCd) {
     wbcInfo.value = incheonStMaryPercentChange(projectType, wbcInfo.value);

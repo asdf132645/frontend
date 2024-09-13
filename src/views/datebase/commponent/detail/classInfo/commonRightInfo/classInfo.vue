@@ -280,7 +280,7 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 const mountedMethod = async () => {
-  if (inhaTestCode.value === '' && siteCd.value === '0011') { // 인하대 cbc 데이터를 먼저 로드 시키기 위해서 이벤트 버스 사용
+  if ((inhaTestCode.value === '' && siteCd.value === '0011') || siteCd.value === '' || siteCd.value === '0000') { // 인하대 cbc 데이터를 먼저 로드 시키기 위해서 이벤트 버스 사용
     EventBus.publish('classInfoCbcDataGet', true);
   }
   EventBus.subscribe('appVueSlideDataSaveLisSave', lisInhaDataSend); // 인하대는 슬라이드를 검사 하고 나서 바로 최종보고를 함 그래서 사용하는 함수임
@@ -701,7 +701,7 @@ const lisLastStep = () => {
   } else if (siteCd.value === '0006') { // 고대 안암
     const data = goDae();
     lisFileUrlCreate(data);
-  } else if (siteCd.value === '0011') { // 인하대
+  } else if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') { // 인하대
     inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
   } else {
     otherDataSend();
@@ -1319,7 +1319,7 @@ const beforeAfterChange = async (newItem: any) => {
   if (isSeoulStMaryHospitalSiteCd) {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
-  } else if (isInhaHospitalSiteCd) {
+  } else if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
     wbcInfoAfterVal.value = await inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = await inhaPercentChange(selectItems.value, wbcInfoBeforeVal.value);
   } else if (isIncheonStMaryHospitalSiteCd) {
@@ -1495,7 +1495,7 @@ async function updateOriginalDb() {
 
     if (isSeoulStMaryHospitalSiteCd) {
       wbcInfoAfterVal.value = seoulStMaryPercentChange(clonedWbcInfo, wbcInfoAfterVal.value);
-    } else if (isInhaHospitalSiteCd) {
+    } else if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
       wbcInfoAfterVal.value = inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     } else if (isIncheonStMaryHospitalSiteCd) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);

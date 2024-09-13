@@ -334,7 +334,7 @@ const percentChangeBySiteCd = () => {
 
   if (isSeoulStMaryHospitalSiteCd) {
     selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
-  } else if (isInhaHospitalSiteCd) {
+  } else if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
   } else if (isIncheonStMaryHospitalSiteCd) {
     selectItems.value.wbcInfoAfter = incheonStMaryPercentChange(projectType, selectItems.value?.wbcInfoAfter);
