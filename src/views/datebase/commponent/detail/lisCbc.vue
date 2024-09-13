@@ -19,6 +19,10 @@
     </div>
     <div v-else-if="siteCd ==='0007' && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
+        <colgroup>
+          <col width="50%"/>
+          <col width="50%"/>
+        </colgroup>
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
           <td>
@@ -33,6 +37,10 @@
     </div>
     <div v-else-if="cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
+        <colgroup>
+          <col width="50%"/>
+          <col width="50%"/>
+        </colgroup>
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
           <td>
@@ -112,7 +120,7 @@ const initCbcData = async (newVal: any) => {
       await kuahGilHosCbc();
       break;
     case '0000':
-      // await inhaCbcLoad();
+      await inhaCbcLoad();
       break;
     case '삼광의료재단':
       /** Todo 작업 필요 */

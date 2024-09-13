@@ -24,19 +24,12 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
     let cbcAge = '';
     let inhaTestCode = '';
     let cbcDataArray = [];
+
     if (cbcFilePathSetArr === '') {
         errMessage = messages.UPLOAD_PLEASE_CBC;
         return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading}
     }
-    const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
-    const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
-    if (readFileTxtRes?.data?.success && funcType !== 'lisUpload') {
-        cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
-        const [ { cbcPatientNo, cbcPatientNm, cbcSex, cbcAge } ] = cbcDataArray;
-        cbcWorkList = cbcDataArray;
-        return { cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading };
 
-    }
     if (cbcFilePathSetArr.includes("http")) { // url 설정인 경우
         try {
             const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
@@ -52,45 +45,52 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             // 응답 데이터 가져오기
             const res: any = response.data[0];
             // const res: any = inhaCbcTestCode[0];
+            const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
+            const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
+            if (readFileTxtRes?.data?.success && (res?.testCode === '' || !res?.testCode)) {
+                cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
+                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge}] = cbcDataArray;
+                cbcWorkList = cbcDataArray;
+                return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
 
+            }
             // 응답 코드가 '0'일 때만 처리
             if (res?.returnCode === '0') {
-            // 환자 정보 설정
-            cbcPatientNo = res?.regNo;
-            cbcPatientNm = res?.name;
-            cbcSex = res?.sex;
-            cbcAge = res?.age;
-            inhaTestCode = res?.testCode;
+                // 환자 정보 설정
+                cbcPatientNo = res?.regNo;
+                cbcPatientNm = res?.name;
+                cbcSex = res?.sex;
+                cbcAge = res?.age;
+                inhaTestCode = res?.testCode;
 
-            // 공통 정보 설정
-            await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
+                // 공통 정보 설정
+                await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
 
-            // 테스트 코드 리스트 처리
-            const testCodeList = res.testCode.split(',');
-            testCodeList.forEach((codes: any) => {
-                const codeArray = codes.split('|');
-                const code = codeArray[0];
-                const value = codeArray[1];
-                const unit = codeArray[2];
+                // 테스트 코드 리스트 처리
+                const testCodeList = res.testCode.split(',');
+                testCodeList.forEach((codes: any) => {
+                    const codeArray = codes.split('|');
+                    const code = codeArray[0];
+                    const value = codeArray[1];
+                    const unit = codeArray[2];
 
-                // cbcCodeList에서 매칭되는 코드 찾기
-                const cbcCode = cbcCodeList.find((cbcCode: any) => cbcCode.classCd === code);
-                if (cbcCode) {
-                    // 작업 리스트에 추가
-                    const obj = {
-                        classNm: cbcCode.fullNm,
-                        count: value || 0,
-                        unit: unit || '', // unit이 없으면 빈 문자열로 설정
-                        cbcPatientNo :res?.regNo,
-                        cbcPatientNm :res?.name,
-                        cbcSex :res?.sex,
-                        cbcAge :res?.age,
-                    };
-                    cbcWorkList.push(obj);
-                }
-            });
-            }
-            else{
+                    // cbcCodeList에서 매칭되는 코드 찾기
+                    const cbcCode = cbcCodeList.find((cbcCode: any) => cbcCode.classCd === code);
+                    if (cbcCode) {
+                        // 작업 리스트에 추가
+                        const obj = {
+                            classNm: cbcCode.fullNm,
+                            count: value || 0,
+                            unit: unit || '', // unit이 없으면 빈 문자열로 설정
+                            cbcPatientNo: res?.regNo,
+                            cbcPatientNm: res?.name,
+                            cbcSex: res?.sex,
+                            cbcAge: res?.age,
+                        };
+                        cbcWorkList.push(obj);
+                    }
+                });
+            } else {
                 errMessage = res?.returnCode;
                 loading = false;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
@@ -326,7 +326,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     return {errMessage, lisBtnColor}
 }
 
-const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean, id?: any, ) => {
+const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean, id?: any,) => {
     let wbcMemo = '';
     let message = '';
     try {
@@ -351,12 +351,12 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean, id?: an
         console.error('Error:', error);
     }
 
-    return { wbcMemo , message }
+    return {wbcMemo, message}
 }
 
 
 export const getLisWbcRbcData = async () => {
-    let lisCodeWbcArr:any = [];
+    let lisCodeWbcArr: any = [];
     let lisCodeRbcArr: any = [];
     try {
         const wbcResult = await getLisCodeApi();
@@ -394,7 +394,7 @@ export const getLisWbcRbcData = async () => {
     } catch (e) {
         console.error(e);
     }
-    return { lisCodeWbcArr , lisCodeRbcArr }
+    return {lisCodeWbcArr, lisCodeRbcArr}
 };
 
 export const getLisPathData = async () => {
