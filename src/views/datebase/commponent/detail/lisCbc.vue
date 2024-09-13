@@ -94,8 +94,14 @@ onMounted(async () => {
   await getCbcPathData();
   await getCbcCodeList();
   await initCbcData(selectItemsVal.value);
-  EventBus.subscribe('classInfoCbcDataGet', inhaCbc);
+  EventBus.subscribe('classInfoCbcDataGet', inhaCbcAll);
 });
+
+const inhaCbcAll = async () => {
+  await getCbcPathData();
+  await getCbcCodeList();
+  await inhaCbc();
+}
 
 const initCbcData = async (newVal: any) => {
   loading.value = true;
@@ -115,7 +121,7 @@ const initCbcData = async (newVal: any) => {
       await kuahGilHosCbc();
       break;
     case '0000':
-      await kuahGilHosCbc();
+      await inhaCbc();
       break;
     case '삼광의료재단':
       /** Todo 작업 필요 */
@@ -251,7 +257,7 @@ const inhaCbc = async () => {
       const res: any = inhaCbcTestCode[0];
 
       // 응답 코드가 '0'일 때만 처리
-      if (res?.returnCode === '0') {
+      // if (res?.returnCode === '0') {
         // 환자 정보 설정
         cbcPatientNo.value = res?.regNo;
         cbcPatientNm.value = res?.name;
@@ -265,23 +271,27 @@ const inhaCbc = async () => {
         // 테스트 코드 리스트 처리
         const testCodeList = res.testCode.split(',');
         testCodeList.forEach((codes: any) => {
-          const [code, value, unit] = codes.split('|');
+          const codeArray = codes.split('|');
+          const code = codeArray[0];
+          const value = codeArray[1];
+          const unit = codeArray[2];
 
           // cbcCodeList에서 매칭되는 코드 찾기
-          const cbcCode = cbcCodeList.value.find((cbcCode: any) => cbcCode.cd === code);
+          const cbcCode = cbcCodeList.value.find((cbcCode: any) => cbcCode.classCd === code);
           if (cbcCode) {
             // 작업 리스트에 추가
             const obj = {
-              classNm: cbcCode.classCd,
+              classNm: cbcCode.fullNm,
               count: value,
               unit: unit || '' // unit이 없으면 빈 문자열로 설정
             };
             cbcWorkList.value.push(obj);
           }
         });
-      }else{
-        showErrorAlert(res?.returnCode);
-      }
+      // }
+      // else{
+      //   showErrorAlert(res?.returnCode);
+      // }
 
       const parms = {
         filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
