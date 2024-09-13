@@ -59,6 +59,7 @@ import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 import EventBus from "@/eventBus/eventBus";
 import {messages} from "@/common/defines/constFile/constantMessageText";
+import {inhaCbcTestCode} from "@/common/defines/constFile/inhaCbcTestCode";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -226,6 +227,7 @@ const commonCbc = async () => {
 }
 
 const inhaCbc = async () => {
+  console.log('인하대 CBC 데이터 받기');
   console.log('inhaCbc cbcFilePathSetArr', cbcFilePathSetArr)
   if(cbcFilePathSetArr.value === ''){
     showErrorAlert(messages.UPLOAD_PLEASE_CBC);
@@ -238,14 +240,15 @@ const inhaCbc = async () => {
       const body = {
         machine: 'ADUIMD',
         episode: props.selectItems.barcodeNo,
-        baseUrl: `${cbcFilePathSetArr.value}/api/MifMain/File`,
+        baseUrl: `${cbcFilePathSetArr.value}/api/MifMain/Order`,
         // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
       };
-      const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
+      // const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
       // 상태 초기화
       cbcWorkList.value = [];
       // 응답 데이터 가져오기
-      const res: any = response.data[0];
+      // const res: any = response.data[0];
+      const res: any = inhaCbcTestCode[0];
 
       // 응답 코드가 '0'일 때만 처리
       if (res?.returnCode === '0') {
@@ -286,7 +289,7 @@ const inhaCbc = async () => {
       };
       await createCbcFile(parms);
       loading.value = false;
-      console.log('Response:', response.data);
+      // console.log('Response:', response.data);
     } catch (error: any) {
       console.log(error.message + ' : no CBC result');
       loading.value = false;

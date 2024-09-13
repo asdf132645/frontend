@@ -753,6 +753,7 @@ const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: 
 }
 
 const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, EventBus?: string) => {
+  console.log('Lis 업로드 로직 시작');
   console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
   console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter)
   console.log('인하대 테스트 barcodeNo', barcodeNo)
