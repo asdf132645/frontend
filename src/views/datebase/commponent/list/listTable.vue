@@ -204,7 +204,8 @@ const alertMessage = ref('');
 const myIp = ref('');
 const loadingDelay = ref(false);
 const formatDateString = (dateString) => {
-  const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
+  console.log(dateString)
+  const momentObj = moment(dateString, 'YYYYMMDDHHmmss');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
 }
 
