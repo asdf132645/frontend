@@ -16,7 +16,7 @@
           <td>{{ slot?.patientName }}</td>
           <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
           <td>{{
-              siteCd !== '0019' ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
+              siteCd === '0019' ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
             }}
           </td>
           <td>{{ getCommonCode('14', slot?.state) }}</td>
@@ -99,13 +99,8 @@ const runningInfoGet = async (data: any) => {
           state: currentSlot.stateCd,
         });
       } else {
-        dspOrderList.value[existingItemIndex] = {
-          barcodeId: barcodeNo,
-          patientName: currentSlot.patientNm,
-          orderDate: dspOrderList.value[existingItemIndex].orderDttm,
-          analyzedDttm: dspOrderList.value[existingItemIndex].analyzedDttm,
-          state: currentSlot.stateCd,
-        }
+        dspOrderList.value[existingItemIndex].state = currentSlot.stateCd;
+
       }
     }
   }
