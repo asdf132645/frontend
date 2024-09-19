@@ -21,6 +21,7 @@ export interface CreateLisCodeRbcDto {
 
 
 export interface LisCodeRbcItem {
+    id: any;
     categoryId: string;
     categoryNm: string;
     classId: string;

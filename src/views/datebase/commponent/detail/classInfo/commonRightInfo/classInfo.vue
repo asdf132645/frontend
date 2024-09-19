@@ -236,6 +236,18 @@ const customClassArr = ref<any>([]);
 const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const lisBtnColor = ref(false);
+const cbcFilePathSetArr = ref('');
+const cbcCodeList = ref<any>([]);
+const lisCodeWbcArrApp = ref<any>([]);
+const lisCodeRbcArrApp = ref<any>([]);
+const lisFilePath = ref('');
+import {
+  getCbcCodeList,
+  getCbcPathData, getLisPathData,
+  getLisWbcRbcData,
+  inhaCbc,
+  inhaDataSend,
+} from "@/common/lib/commonfunction/inhaCbcLis";
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -248,8 +260,12 @@ onMounted(async () => {
   await getOrderClass();
   await getCustomClass();
   await mountedMethod();
-  await getLisWbcRbcData();
-  await getLisPathData();
+  const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
+  lisCodeWbcArrApp.value = lisCodeWbcArr;
+  lisCodeRbcArrApp.value = lisCodeRbcArr;
+  lisFilePathSetArr.value = await getLisPathData();
+  cbcFilePathSetArr.value = await getCbcPathData();
+  cbcCodeList.value = await getCbcCodeList();
   barCodeImageShowError.value = false;
 })
 
@@ -280,10 +296,9 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 const mountedMethod = async () => {
-  if ((inhaTestCode.value === '' && siteCd.value === '0011') || siteCd.value === '' || siteCd.value === '0000') { // 인하대 cbc 데이터를 먼저 로드 시키기 위해서 이벤트 버스 사용
-    EventBus.publish('classInfoCbcDataGet', true);
+  if ((inhaTestCode.value === '' && siteCd.value === '0011')) {
+    await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   }
-  EventBus.subscribe('appVueSlideDataSaveLisSave', lisInhaDataSend); // 인하대는 슬라이드를 검사 하고 나서 바로 최종보고를 함 그래서 사용하는 함수임
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
@@ -376,9 +391,9 @@ const uploadLis = () => {
     cmcSeoulLisAndCbcDataGet();
   } else if (siteCd.value === '' || siteCd.value === '0000') { // uimd LIS 테스트 하는 곳
     // 서울 성모
-    uimdTestCbcLisDataGet();
+    // uimdTestCbcLisDataGet();
     // 인하대
-    // inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
+    // inhaDataSendLoad();
   } else {
     lisLastStep();
   }
@@ -701,11 +716,23 @@ const lisLastStep = () => {
   } else if (siteCd.value === '0006') { // 고대 안암
     const data = goDae();
     lisFileUrlCreate(data);
-  } else if (siteCd.value === '0011' || siteCd.value === '' || siteCd.value === '0000') { // 인하대
-    inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo);
+  } else if (siteCd.value === '0011') { // 인하대
+    inhaDataSendLoad();
   } else {
     otherDataSend();
   }
+}
+
+const inhaDataSendLoad = async () => {
+  await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+  const {
+    errMessage,
+    lisBtnColor: lisBtnColorVal
+  } = await inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, props.selectItems, userModuleDataGet.value.id)
+  if (errMessage !== '') {
+    showSuccessAlert(errMessage);
+  }
+  lisBtnColor.value = lisBtnColorVal || false;
 }
 
 const otherDataSend = async () => {
@@ -747,194 +774,7 @@ const otherDataSend = async () => {
     }
   }
 }
-const lisInhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, EventBus?: string) => {
-  await getLisWbcRbcData();
-  await inhaDataSend(wbcInfoAfter, rbcInfoAfter, barcodeNo, EventBus);
-}
 
-const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, EventBus?: string) => {
-  console.log('Lis 업로드 로직 시작');
-  console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
-  console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter)
-  console.log('인하대 테스트 barcodeNo', barcodeNo)
-  if (lisFilePathSetArr.value === '') {
-    showErrorAlert(messages.UPLOAD_PLEASE_LIS);
-    return;
-  }
-  let resultStr = '';
-  // `inhaTestCode.value`를 콤마로 분리하여 배열 생성 inhaTestCode는 인하대 lis 업로드 하면 cbc 코드에서 받은 응답 값을 담는 부분
-  const testCodeList = inhaTestCode.value.split(',');
-  // 변환된 데이터를 저장할 리스트 초기화
-  const tmpList: string[] = [];
-  // `testCodeList` 배열을 순회하면서 각 코드에 대해 처리
-  testCodeList.forEach((codes: any) => {
-    if (codes.length > 0) {
-      // 코드 데이터를 '|'로 분리하여 배열 생성
-      const [code, value, unit, type] = codes.split('|');
-      let tmpStr = '';
-      if (code === 'L0210') {
-        // 'L0210' 코드는 값에 '5'를 추가
-        tmpStr = `${code}|${value}5|`;
-      } else if (code === 'H1151') {
-        tmpStr = `H9511|${value}|`;
-      } else if (code === 'H1152') {
-        tmpStr = `H9512|${value}|`;
-      } else if (code === 'H1153') {
-        tmpStr = `H9513|${value}|`;
-      } else if (code === 'H1154') {
-        tmpStr = `H9514|${value}|`;
-      } else if (code === 'H1155') {
-        tmpStr = `H9515|${value}|`;
-      } else if (code === 'H1165') {
-        tmpStr = `H9510|${value}|`;
-      } else if (code === 'H1162') {
-        tmpStr = `H9570|${value}|`;
-      } else if (
-          ['H1101', 'H1102', 'H1103', 'H1104', 'H1105', 'H1106', 'H1121', 'H1122', 'H1123'].includes(code)
-      ) {
-        tmpStr = `${code}|${value}|`;
-      }
-      // 변환된 문자열을 `tmpList`에 추가
-      if (tmpStr) {
-        tmpList.push(tmpStr);
-      }
-    }
-  });
-  // `inhaTestCode.value`를 빈 문자열로 초기화
-  inhaTestSendCode.value = '';
-  // `tmpList`의 항목을 콤마로 연결하여 `inhaTestCode.value`에 저장
-  inhaTestSendCode.value = tmpList.join(','); // tmpList.join(',') 결과는 'a,b,c' 이런식으로 만드려고 join 사용 함
-  // `resultStr`에 `inhaTestCode.value`를 추가
-  resultStr += inhaTestSendCode.value;
-  console.log('tmpList 가공 매칭 후', tmpList)
-  console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열', inhaTestSendCode.value)
-  console.log('inhaTestSendCode.value', inhaTestSendCode.value)
-  let rbcTmp = '';
-  // WBC 항목을 처리하는 함수 정의
-  const processWbcItem = (lisCode: any, wbcItem: any) => {
-    const lisCodeLIS_CD = lisCode.LIS_CD;
-    const count = Number(wbcItem.count);
-    const percent = wbcItem.percent;
-
-    // 특정 LIS_CD 값들에 대해 count가 0보다 큰 경우 '1'을, 그렇지 않으면 ' '를 추가
-    if (['H9600', 'H9365', 'H9366'].includes(lisCodeLIS_CD)) {
-      resultStr += lisCodeLIS_CD + '|' + (count > 0 ? '1' : ' ') + '|' + ',';
-    }
-    //  GP, PA IA_CD가 '13' 또는 '14'인 경우 count가 MIN_COUNT보다 큰지 확인
-    else if (['13', '14'].includes(lisCode.IA_CD)) {
-      resultStr += lisCodeLIS_CD + '|' + (count > Number(lisCode.MIN_COUNT) ? percent : ' ') + '|' + ',';
-    }
-    // 나머지 경우에는 percent가 0보다 큰지 확인
-    else {
-      resultStr += lisCodeLIS_CD + '|' + (percent > 0 ? percent : ' ') + '|' + ',';
-    }
-  };
-
-  // lisCodeWbcArr의 각 항목에 대해
-  lisCodeWbcArr.value.forEach((lisCode: any) => {
-    // wbcInfoAfter의 각 항목을 확인
-    wbcInfoAfter.forEach((wbcItem: any) => {
-      // lisCode의 IA_CD가 wbcItem의 id와 같다면
-      if (lisCode.IA_CD === wbcItem.id) {
-        // WBC 항목을 처리
-        processWbcItem(lisCode, wbcItem);
-      }
-    });
-  });
-
-  // RBC
-  const specialCodes = ['H9531', 'H9535', 'H9594', 'H9571', 'H9574', 'H9595'];
-
-  lisCodeRbcArr.value.forEach(function (lisCode: any) {
-    if (lisCode.LIS_CD !== '') {
-      rbcInfoAfter.forEach(function (rbcItem: any) {
-        if (lisCode.IA_CATEGORY_CD === rbcItem.IA_CATEGORY_CD) {
-          for (const rbcItemElement of rbcItem.classInfo) {
-            if (lisCode.IA_CLASS_CD === rbcItemElement.IA_CLASS_CD) {
-              const degree = Number(rbcItemElement.degree) === 0 ? ' ' : specialCodes.includes(lisCode.LIS_CD) ? '0' : rbcItemElement.degree;
-              rbcTmp += `${lisCode.LIS_CD}|${degree}|,`;
-              resultStr += `${lisCode.LIS_CD}|${degree}|,`;
-            }
-          }
-
-        }
-      })
-
-    }
-  })
-  console.log('rbc wbc 중간 resultStr 값', resultStr);
-  const replacements: any = {
-    'H9531': 'H9571',
-    'H9532': 'H9572',
-    'H9533': 'H9573',
-    'H9535': 'H9574',
-    'H9536': 'H9575',
-    'H9537': 'H9576',
-    'H9534': 'H9577',
-    'H9538': 'H9578',
-    'H9542': 'H9518',
-    'H9544': 'H9520',
-    'H9546': 'H9517',
-    'H9548': 'H9519',
-    'H9550': 'H9522',
-    'H9552': 'H9521',
-    'H9554': 'H9525',
-    'H9556': 'H9524',
-    'H9558': 'H9526',
-    'H9560': 'H9523',
-    'H9562': 'H9528',
-    'H9564': 'H9530',
-    'H9594': 'H9595'
-  };
-  // 위에서 담은 rbcTmp 정규 표현식을 사용해서 문자열 코드 대체
-  let rbcTmp2: any = rbcTmp.replace(/H9531|H9532|H9533|H9535|H9536|H9537|H9534|H9538|H9542|H9544|H9546|H9548|H9550|H9552|H9554|H9556|H9558|H9560|H9562|H9564|H9594/g, match => replacements[match]);
-
-  resultStr += rbcTmp;
-  resultStr += rbcTmp2;
-  console.log('rbc wbc 최종 resultStr 값', resultStr);
-
-  try {
-    let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
-    const body = {
-      machine: 'ADUIMD',
-      episode: barcodeNo,
-      result: resultStr,
-      baseUrl: `${lisFilePathSetArr.value}/api/MifMain/File`,
-      // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
-    };
-    const response = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
-    const res = response.data[0];
-    console.log('res 최종값', response)
-    if (res?.returnCode === '0') {
-      const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`;
-      const parmsLisCopy = { filePath, res };
-
-      // LIS 파일 생성
-      await createCbcFile(parmsLisCopy);
-      const result: any = await detailRunningApi(String(props.selectItems?.id));
-      const updatedItem = {
-        submitState: 'lis',
-      };
-      lisBtnColor.value = true;
-      const updatedRuningInfo = {id: result.data.id, ...updatedItem}
-      await resRunningItem(updatedRuningInfo, true);
-      if(EventBus !== 'EventBus'){
-        showSuccessAlert(messages.IDS_MSG_SUCCESS);
-      }
-    } else {
-      if(EventBus !== 'EventBus'){
-        showSuccessAlert('return code : ' + res?.returnCode);
-      }else{
-        showSuccessAlert('report upload : ' + res?.message )
-      }
-
-    }
-  } catch (error: any) {
-    // 오류 처리;
-    showSuccessAlert(error.message);
-  }
-}
 
 const goDae = (): string => {
   let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
@@ -1054,55 +894,6 @@ const sendLisMessage = async (data: any) => {
   }
 };
 
-
-const getLisWbcRbcData = async () => {
-  try {
-    const wbcResult = await getLisCodeApi();
-    const rbcResult = await getLisCodeRbcApi();
-    if (wbcResult && wbcResult.data && rbcResult && rbcResult.data) {
-      const wbcData = wbcResult.data;
-      const rbcData = rbcResult.data;
-
-      if (wbcData) {
-        let newWbcDataArr = [];
-        for (const wbcDataItem of wbcData) {
-          newWbcDataArr.push({
-            CD_NM: wbcDataItem.fullNm,
-            IA_CD: wbcDataItem?.id,
-            LIS_CD: wbcDataItem?.key,
-            MIN_COUNT: 0,
-          })
-        }
-        lisCodeWbcArr.value = newWbcDataArr;
-      }
-      if (rbcData) {
-        let newRbcDataArr = [];
-        for (const rbcDataItem of rbcData) {
-          newRbcDataArr.push({
-            CATEGORY_NM: rbcDataItem.categoryNm,
-            CLASS_NM: rbcDataItem?.fullNm,
-            IA_CATEGORY_CD: rbcDataItem?.categoryId,
-            IA_CLASS_CD: rbcDataItem?.id,
-            LIS_CD: rbcDataItem?.key,
-          })
-        }
-        lisCodeRbcArr.value = newRbcDataArr;
-      }
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-const getLisPathData = async () => {
-  try {
-    const result = await getFilePathSetApi();
-    if (result && result.data && result.data.length !== 0) {
-      lisFilePathSetArr.value = result.data[0].lisFilePath;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 const checkUserAuth = async (empNo: any) => {
   return new Promise((succ, fail) => {
@@ -1319,7 +1110,7 @@ const beforeAfterChange = async (newItem: any) => {
   if (isSeoulStMaryHospitalSiteCd) {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
-  } else if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+  } else if (isInhaHospitalSiteCd) {
     wbcInfoAfterVal.value = await inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = await inhaPercentChange(selectItems.value, wbcInfoBeforeVal.value);
   } else if (isIncheonStMaryHospitalSiteCd) {
@@ -1495,7 +1286,7 @@ async function updateOriginalDb() {
 
     if (isSeoulStMaryHospitalSiteCd) {
       wbcInfoAfterVal.value = seoulStMaryPercentChange(clonedWbcInfo, wbcInfoAfterVal.value);
-    } else if (isInhaHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+    } else if (isInhaHospitalSiteCd) {
       wbcInfoAfterVal.value = inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     } else if (isIncheonStMaryHospitalSiteCd) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);

@@ -16,7 +16,7 @@
           <td>{{ slot?.patientName }}</td>
           <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
           <td>{{
-              slot?.analyzedDttm ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
+              siteCd === '0019' ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
             }}
           </td>
           <td>{{ getCommonCode('14', slot?.state) }}</td>
@@ -32,9 +32,13 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref, watch} from "vue";
+import {computed, defineProps, ref, watch} from "vue";
 import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import {formatDateString} from "@/common/lib/utils/dateUtils";
+import {useStore} from "vuex";
+const store = useStore();
+
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 // 스토어
 const props = defineProps(['parsedData', 'startStatus', 'pb100aCassette']);
@@ -78,30 +82,25 @@ const runningInfoGet = async (data: any) => {
     if (currentSlot) {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+      console.log(existingItemIndex)
+      console.log(barcodeNo)
       if (existingItemIndex === -1 && barcodeNo !== '') {
-
         /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
         // Start
         if (dspOrderList.value.length > 10) {
           dspOrderList.value = [];
         }
         // End
-
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
-          orderDate: stringToDateTime(currentSlot.orderDttm),
-          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
+          orderDate: stringToDateTime(currentSlot.orderDttm) || 0,
+          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm) || 0,
           state: currentSlot.stateCd,
         });
       } else {
-        dspOrderList.value[existingItemIndex] = {
-          barcodeId: barcodeNo,
-          patientName: currentSlot.patientNm,
-          orderDate: stringToDateTime(currentSlot.orderDttm),
-          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm),
-          state: currentSlot.stateCd,
-        }
+        dspOrderList.value[existingItemIndex].state = currentSlot.stateCd;
+
       }
     }
   }
