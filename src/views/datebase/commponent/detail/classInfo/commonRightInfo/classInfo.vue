@@ -393,7 +393,7 @@ const uploadLis = () => {
     // 서울 성모
     // uimdTestCbcLisDataGet();
     // 인하대
-    // inhaDataSendLoad();
+    inhaDataSendLoad();
   } else {
     lisLastStep();
   }

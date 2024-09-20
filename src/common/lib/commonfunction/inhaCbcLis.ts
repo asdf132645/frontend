@@ -6,7 +6,7 @@ import {
     getCbcCodeRbcApi,
     getFilePathSetApi,
     getLisCodeApi,
-    getLisCodeRbcApi
+    getLisCodeRbcApi, getMinCountApi
 } from "@/common/api/service/setting/settingApi";
 import axios from "axios";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
@@ -62,7 +62,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 cbcSex = res?.sex;
                 cbcAge = res?.age;
                 inhaTestCode = res?.testCode;
-
+                console.log(res?.testCode);
                 // 공통 정보 설정
                 await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
 
@@ -90,7 +90,8 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                         cbcWorkList.push(obj);
                     }
                 });
-            } else {
+            }
+            else {
                 errMessage = res?.returnCode;
                 loading = false;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
@@ -230,7 +231,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
         // wbcInfoAfter의 각 항목을 확인
         wbcInfoAfter.forEach((wbcItem: any) => {
             // lisCode의 IA_CD가 wbcItem의 id와 같다면
-            if (lisCode.IA_CD === wbcItem.id) {
+            if (Number(lisCode.IA_CD) === Number(wbcItem.id)) {
                 // WBC 항목을 처리
                 processWbcItem(lisCode, wbcItem);
             }
@@ -364,16 +365,28 @@ export const getLisWbcRbcData = async () => {
         if (wbcResult && wbcResult.data && rbcResult && rbcResult.data) {
             const wbcData = wbcResult.data;
             const rbcData = rbcResult.data;
+            const minCountResult: any = await getMinCountApi();
 
             if (wbcData) {
                 const newWbcDataArr = [];
-                for (const wbcDataItem of wbcData) {
+                for (const { classId, fullNm, id, key } of wbcData) {
+                    const minCount = (() => {
+                        switch (classId) {
+                            case '13':
+                                return minCountResult.data[0].minGPCount;
+                            case '14':
+                                return minCountResult.data[0].minPACount;
+                            default:
+                                return 0;
+                        }
+                    })();
+
                     newWbcDataArr.push({
-                        CD_NM: wbcDataItem.fullNm,
-                        IA_CD: wbcDataItem?.id,
-                        LIS_CD: wbcDataItem?.key,
-                        MIN_COUNT: 0,
-                    })
+                        CD_NM: fullNm,
+                        IA_CD: id,
+                        LIS_CD: key,
+                        MIN_COUNT: minCount,
+                    });
                 }
                 lisCodeWbcArr = newWbcDataArr;
             }
