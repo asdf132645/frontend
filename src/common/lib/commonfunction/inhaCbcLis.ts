@@ -47,12 +47,12 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             // const res: any = inhaCbcTestCode[0];
             const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
             const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
-            if (readFileTxtRes?.data?.success && (res?.testCode === '' || !res?.testCode)) {
+            if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
+                console.log(readFileTxtRes?.data?.data)
                 cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
                 const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge}] = cbcDataArray;
                 cbcWorkList = cbcDataArray;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
-
             }
             // 응답 코드가 '0'일 때만 처리
             if (res?.returnCode === '0') {
