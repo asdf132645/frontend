@@ -74,6 +74,7 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const userModuleDataGet = computed(() => store.state.userModule);
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const projectType = ref('pb');
 const countType = ref<any>([]);
 
@@ -214,6 +215,8 @@ const sendSearchCardCount = () => {
 }
 
 const toggleStartStop = (action: 'start' | 'stop') => {
+  if (viewerCheck.value !== 'main') return;
+
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
 
@@ -325,6 +328,7 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
+  if (viewerCheck.value !== 'main') return;
   // if (isInitializing.value) {
   //   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
   //     showSuccessAlert(messages.alreadyInitialized);
