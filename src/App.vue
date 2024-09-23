@@ -157,12 +157,12 @@ function checkFullscreenStatus() {
 function startChecking() {
   // 화면 상태를 즉시 업데이트
   checkFullscreenStatus();
-  // 1분(60000ms)마다 체크를 수행
+  // 1분(60000ms)마다 체크
   intervalId = setInterval(checkFullscreenStatus, 60000);
 }
 
 
-watch(reqArr.value, async (newVal, oldVal) => {
+watch(reqArr.value, async (newVal) => {
   if (!newVal.reqArr) return;
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
   const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
@@ -199,7 +199,7 @@ watch(reqArr.value, async (newVal, oldVal) => {
 });
 
 
-watch(userModuleDataGet.value, (newUserId, oldUserId) => {
+watch(userModuleDataGet.value, (newUserId) => {
   if (newUserId.id === '') {
     return;
   }
@@ -264,15 +264,17 @@ onMounted(async () => {
   startChecking();
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
-  cbcFilePathSetArr.value = await getCbcPathData();
-  cbcCodeList.value = await getCbcCodeList();
+
   siteCdDvBarCode.value = false;
 
-  const { lisCodeWbcArr , lisCodeRbcArr } = await getLisWbcRbcData();
-  lisCodeWbcArrApp.value = lisCodeWbcArr;
-  lisCodeRbcArrApp.value = lisCodeRbcArr;
-
-  lisFilePath.value = await getLisPathData();
+  if(!projectBm.value){
+    cbcFilePathSetArr.value = await getCbcPathData();
+    cbcCodeList.value = await getCbcCodeList();
+    const { lisCodeWbcArr , lisCodeRbcArr } = await getLisWbcRbcData();
+    lisCodeWbcArrApp.value = lisCodeWbcArr;
+    lisCodeRbcArrApp.value = lisCodeRbcArr;
+    lisFilePath.value = await getLisPathData();
+  }
 
   window.addEventListener('beforeunload', leave);
 
