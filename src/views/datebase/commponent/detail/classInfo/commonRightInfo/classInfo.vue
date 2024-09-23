@@ -260,12 +260,14 @@ onMounted(async () => {
   await getOrderClass();
   await getCustomClass();
   await mountedMethod();
-  const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
-  lisCodeWbcArrApp.value = lisCodeWbcArr;
-  lisCodeRbcArrApp.value = lisCodeRbcArr;
-  lisFilePathSetArr.value = await getLisPathData();
-  cbcFilePathSetArr.value = await getCbcPathData();
-  cbcCodeList.value = await getCbcCodeList();
+  if(!projectBm.value){
+    const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
+    lisCodeWbcArrApp.value = lisCodeWbcArr;
+    lisCodeRbcArrApp.value = lisCodeRbcArr;
+    lisFilePathSetArr.value = await getLisPathData();
+    cbcFilePathSetArr.value = await getCbcPathData();
+    cbcCodeList.value = await getCbcCodeList();
+  }
   barCodeImageShowError.value = false;
 })
 
