@@ -167,11 +167,6 @@ watch(reqArr.value, async (newVal) => {
   const uniqueReqArr = removeDuplicateJobCmd(newVal.reqArr);
   const notSysRunInfo = uniqueReqArr.filter((item: any) => !['SYSINFO', 'RUNNING_INFO'].includes(item.jobCmd));
 
-  if (isDownloadOrUploading.value) {
-    await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});
-    return;
-  }
-
   if (notSysRunInfo.length > 0) {
     await sendMessage(notSysRunInfo[0]);
     await store.dispatch('commonModule/setCommonInfo', {reqArrPaste: []});

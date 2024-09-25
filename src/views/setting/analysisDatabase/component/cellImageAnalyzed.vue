@@ -254,7 +254,7 @@
     </div>
     <div class="uploadModalBtnContainer">
       <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ messages.COPY }}</button>
-<!--      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>-->
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>
       <button class="memoModalBtn" @click="uploadCancel">{{ impossibleUploadCount === 0 ? messages.CANCEL : messages.CLOSE }}</button>
     </div>
   </div>
@@ -301,17 +301,17 @@
       @hide="handleDownloadClose"
       @okConfirm="handleDownload('copy')"
   />
-<!--  <ConfirmThreeBtn-->
-<!--      v-if="showDownloadConfirm"-->
-<!--      :is-visible="showDownloadConfirm"-->
-<!--      :message="downloadConfirmMessage"-->
-<!--      :confirmText="messages.MOVE"-->
-<!--      :confirmText2="messages.COPY"-->
-<!--      :closeText="messages.CLOSE"-->
-<!--      @hide="handleDownloadClose"-->
-<!--      @okConfirm="handleDownload('move')"-->
-<!--      @okConfirm2="handleDownload('copy')"-->
-<!--  />-->
+  <ConfirmThreeBtn
+      v-if="showDownloadConfirm"
+      :is-visible="showDownloadConfirm"
+      :message="downloadConfirmMessage"
+      :confirmText="messages.MOVE"
+      :confirmText2="messages.COPY"
+      :closeText="messages.CLOSE"
+      @hide="handleDownloadClose"
+      @okConfirm="handleDownload('move')"
+      @okConfirm2="handleDownload('copy')"
+  />
 
   <Alert
       v-if="showAlert"
@@ -822,23 +822,21 @@ const createBackup = async () => {
   try {
     await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
-    isDownloading.value = true;
     const isPossibleToBackup = await downloadPossibleApi(downloadDto.value);
     if (isPossibleToBackup.data.success) {
       totalFileCount.value = Number(isPossibleToBackup.data.message.split(' ')[1]);
       showDownloadConfirm.value = true;
       downloadConfirmMessage.value = 'Would you like to copy files?';
-      // downloadConfirmMessage.value = `Would you move or copy files`;
     } else {
       showErrorAlert(isPossibleToBackup.data.message);
     }
   } catch (e) {
     console.log(e);
   } finally {
-    isDownloading.value = false;
     downloadUploadStopWebSocket(false);
     await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
+
 }
 
 const handleSelectUploadFile = async () => {
