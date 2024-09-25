@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import socketPlugin from '@/plugins/socketPlugin';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { faHalfCircleUp, faHalfCircleDown } from './icons/customIcons'; // 커스텀 아이콘 불러오기
-/// <reference path="../types/webapi.d.ts" />
+import { useProvideApolloClient } from '@/graphql/apollo';
 
 library.add(fas);
 library.add(faCircle);
@@ -33,5 +33,6 @@ app.use(store);
 app.use(socketPlugin);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
+useProvideApolloClient();
 
 app.mount('#app');

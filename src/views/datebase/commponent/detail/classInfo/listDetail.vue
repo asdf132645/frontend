@@ -236,6 +236,7 @@ import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGallery.vue';
 import Alert from "@/components/commonUi/Alert.vue";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
+import {useGetRunningInfoByIdQuery} from "@/gql";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -250,7 +251,7 @@ const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const selectedSampleId: any = computed(() => store.state.commonModule.selectedSampleId);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
@@ -304,6 +305,9 @@ const alertMessage = ref('');
 const wbcReset = ref(false);
 const showImageGallery = ref(true);
 
+
+
+
 onBeforeMount(async () => {
   isLoading.value = false;
   projectType.value = window.PROJECT_TYPE;
@@ -312,6 +316,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   await getDetailRunningInfo();
   wbcInfo.value = [];
+
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
@@ -324,6 +329,22 @@ onMounted(async () => {
   cellMarkerIcon.value = false;
   await drawCellMarker(true);
   // end
+  if(selectedSampleId.value){
+    const { result, loading, error, refetch } = useGetRunningInfoByIdQuery(
+        {
+          id: Number(selectedSampleId.value), // ID를 변수로 전달
+        },
+        {
+          fetchPolicy: 'no-cache', // 필요한 경우 fetchPolicy 설정
+        }
+    );
+
+    if (result) {
+      console.log(result)
+      // runningInfo를 이용한 UI 렌더링
+    }
+  }
+
 });
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);

@@ -1,0 +1,11 @@
+overwrite: true
+schema: "http://192.168.0.131:3002/api/graphql" # GraphQL API URL
+documents: "src/**/*.vue"
+generates:
+  src/gql/index.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-vue-apollo
+    config:
+      gqlImport: graphql-tag#gql
