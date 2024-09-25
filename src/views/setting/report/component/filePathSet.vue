@@ -3,8 +3,10 @@
     <ul>
       <li>
         <p class="mb2">LIS Hot Key</p>
-        <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
-               @input="updateHotKey($event, 0)">
+        <input
+            @keydown="handleKeyDown($event, 0)"
+            type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
+            @input="updateHotKey($event, 0)">
       </li>
       <li>
         <p class="mb2 mt2">LIS File Path</p>
@@ -46,7 +48,7 @@
 import {ref, onMounted, computed, watch} from 'vue';
 import {lisHotKeyAndLisFilePathAndUrl, settingName} from "@/common/defines/constFile/settings";
 import {ApiResponse} from "@/common/api/httpClient";
-import { createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi } from "@/common/api/service/setting/settingApi";
+import {createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
@@ -69,15 +71,15 @@ const settingType = computed(() => store.state.commonModule.settingType);
 
 onMounted(async () => {
   await getFilePathSetData();
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.filePathSet });
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.filePathSet});
 });
 
 watch(() => filePathSetArr.value, async (filePathSetArr) => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(filePathSetArr)});
   if (settingType.value !== settingName.filePathSet) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.filePathSet });
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.filePathSet});
   }
-}, { deep: true });
+}, {deep: true});
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -87,15 +89,40 @@ const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
 }
+const handleKeyDown = (event: KeyboardEvent, index: number) => {
+  const allowedKeys = /^[a-zA-Z0-9]$|F[1-9]|F1[0-2]/; // 알파벳 대소문자, 숫자 및 F1~F12 키 패턴
+
+  // 특수 키(F1~F12)와 알파벳, 숫자만 허용
+  if (!allowedKeys.test(event.key) && !isSpecialKey(event.key)) {
+    event.preventDefault(); // 기본 동작 방지
+  }
+
+  // 1글자 이상 입력 시 지우기
+  const currentValue = filePathSetArr.value[index].lisHotKey;
+  if (currentValue.length > 1 && !isSpecialKey(event.key)) {
+    showErrorAlert('You cannot enter less than one character.');
+    filePathSetArr.value[index].lisHotKey = '';
+  }
+
+  // 특수 키를 눌렀을 때
+  if (isSpecialKey(event.key)) {
+    event.preventDefault(); // 기본 동작 방지
+    filePathSetArr.value[index].lisHotKey = event.key; // lisHotKey에 저장
+  }
+};
+
+const isSpecialKey = (key: string) => {
+  return ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'].includes(key);
+};
 
 const saveFilePathSet = async () => {
   try {
     let result: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value });
+      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value});
     } else {
-      const updateResult = await updateFilePathSetApi({ filePathSetItems: filePathSetArr.value });
+      const updateResult = await updateFilePathSetApi({filePathSetItems: filePathSetArr.value});
 
       if (updateResult.data) {
         showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
@@ -103,8 +130,8 @@ const saveFilePathSet = async () => {
       } else {
         showErrorAlert(messages.settingUpdateFailure);
       }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
       return;
     }
 
@@ -112,8 +139,8 @@ const saveFilePathSet = async () => {
       showSuccessAlert(messages.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getFilePathSetData();
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
     }
   } catch (e) {
     console.error(e);
@@ -134,8 +161,8 @@ const getFilePathSetData = async () => {
         saveHttpType.value = 'put';
         filePathSetArr.value = data;
       }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(filePathSetArr.value) });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(filePathSetArr.value) });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(filePathSetArr.value)});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(filePathSetArr.value)});
     }
   } catch (e) {
     console.error(e);
@@ -172,8 +199,8 @@ const hideAlert = () => {
 };
 
 const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
 }

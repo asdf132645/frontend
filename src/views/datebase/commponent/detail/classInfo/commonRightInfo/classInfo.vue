@@ -234,6 +234,7 @@ const cbcFilePathSetArr = ref('');
 const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
+const lisHotKey = ref('');
 import {
   getCbcCodeList,
   getCbcPathData, getLisPathData,
@@ -257,13 +258,24 @@ onMounted(async () => {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
     lisCodeWbcArrApp.value = lisCodeWbcArr;
     lisCodeRbcArrApp.value = lisCodeRbcArr;
-    lisFilePathSetArr.value = await getLisPathData();
+    const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
+    lisFilePathSetArr.value = lisFilePathSetArrVar;
+    lisHotKey.value = lisHotKeyVal;
     cbcFilePathSetArr.value = await getCbcPathData();
     cbcCodeList.value = await getCbcCodeList();
   }
   barCodeImageShowError.value = false;
+  console.log(lisHotKey.value);
 })
+window.addEventListener('keydown', (event: KeyboardEvent) => {
+  // F1, F2 등 특수 키를 포함한 키 비교
+  const keyName = event.key; // 사용자 입력 키를 가져옴
 
+  // lisHotKey.value와 비교
+  if (keyName === lisHotKey.value) {
+    uploadLis();
+  }
+});
 watch(() => props.isCommitChanged, () => {
   selectItems.value.submitState = 'Submit';
 })
@@ -388,7 +400,7 @@ const uploadLis = () => {
     // 서울 성모
     // uimdTestCbcLisDataGet();
     // 인하대
-    // inhaDataSendLoad();
+    inhaDataSendLoad();
   } else {
     lisLastStep();
   }

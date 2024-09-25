@@ -340,7 +340,7 @@ onMounted(async () => {
     );
 
     if (result) {
-      console.log(result)
+      // console.log(result)
       // runningInfo를 이용한 UI 렌더링
     }
   }

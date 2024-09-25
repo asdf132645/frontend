@@ -57,7 +57,7 @@ import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
-import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
+import {inhaPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
 import axios from "axios";
 import {
   getCbcCodeList,
@@ -262,13 +262,14 @@ onMounted(async () => {
 
   siteCdDvBarCode.value = false;
 
-  if(!projectBm.value){
+  if (!projectBm.value) {
     cbcFilePathSetArr.value = await getCbcPathData();
     cbcCodeList.value = await getCbcCodeList();
-    const { lisCodeWbcArr , lisCodeRbcArr } = await getLisWbcRbcData();
+    const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
     lisCodeWbcArrApp.value = lisCodeWbcArr;
     lisCodeRbcArrApp.value = lisCodeRbcArr;
-    lisFilePath.value = await getLisPathData();
+    const {lisFilePathSetArr} = await getLisPathData();
+    lisFilePath.value = lisFilePathSetArr;
   }
 
   window.addEventListener('beforeunload', leave);
@@ -531,7 +532,7 @@ async function socketData(data: any) {
 
         if (completeSlot.testType === '01') {
           console.log('normalItems.value', normalItems.value);
-          const { isNormal, classInfo } = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
+          const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
           completeSlot.isNormal = isNormal;
         }
 
@@ -547,7 +548,7 @@ async function socketData(data: any) {
         }
         let wbcInfoAfter: any = [];
         let wbcInfoNewVal: any = [];
-        const getDefaultWbcInfo = () => !projectBm.value ? { wbcInfo: [basicWbcArr] } : { wbcInfo: [basicBmClassList] };
+        const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];

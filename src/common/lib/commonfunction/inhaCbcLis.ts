@@ -412,14 +412,16 @@ export const getLisWbcRbcData = async () => {
 
 export const getLisPathData = async () => {
     let lisFilePathSetArr = '';
+    let lisHotKey = '';
     try {
         const result = await getFilePathSetApi();
         if (result && result.data && result.data.length !== 0) {
             lisFilePathSetArr = result.data[0].lisFilePath;
+            lisHotKey = result.data[0].lisHotKey;
         }
     } catch (e) {
         console.error(e);
     }
 
-    return lisFilePathSetArr;
+    return {lisFilePathSetArr, lisHotKey};
 };
