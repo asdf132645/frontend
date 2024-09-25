@@ -21,7 +21,8 @@
     "types": [
       "webpack-env",
       "webapi",
-      "node"
+      "node",
+//      "@types/graphql"
     ],
     "paths": {
       "@/*": ["src/*"]

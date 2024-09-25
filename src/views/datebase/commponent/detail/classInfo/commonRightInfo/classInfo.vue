@@ -172,9 +172,6 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {
-  getFilePathSetApi,
-  getLisCodeApi,
-  getLisCodeRbcApi,
   getOrderClassApi,
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
@@ -191,7 +188,6 @@ import {createCbcFile, createDirectory, createFile} from "@/common/api/service/f
 import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
-import EventBus from "@/eventBus/eventBus";
 import {
   incheonStMaryPercentChange,
   inhaPercentChange,
@@ -202,7 +198,6 @@ import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
-const inhaTestSendCode: any = ref<any>([]);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
@@ -230,7 +225,6 @@ const totalBeforeCount = ref(0);
 const totalAfterCount = ref(0);
 const okMessageType = ref('');
 const lisCodeWbcArr = ref<any>([]);
-const lisCodeRbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
 const barCodeImageShowError = ref(false);
@@ -240,7 +234,6 @@ const cbcFilePathSetArr = ref('');
 const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
-const lisFilePath = ref('');
 import {
   getCbcCodeList,
   getCbcPathData, getLisPathData,
