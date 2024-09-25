@@ -161,48 +161,54 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     // `testCodeList` 배열을 순회하면서 각 코드에 대해 처리
     testCodeList.forEach((codes: any) => {
         if (codes.length > 0) {
-            // 코드 데이터를 '|'로 분리하여 배열 생성
             const codeArray = codes.split('|')
             const code = codeArray[0]
-            const value = codeArray[1]
+            let value = codeArray[1]
             const unit = codeArray[2]
             const type = codeArray[3]
             let tmpStr = ''
+
             if (code === 'L0210') {
-                // 'L0210' 코드는 값에 '5'를 추가
-                tmpStr = `${value}5|`;
-            } else if (code === 'H1151') {
-                tmpStr = `H9511|${value}|`;
-            } else if (code === 'H1152') {
-                tmpStr = `H9512|${value}|`;
-            } else if (code === 'H1153') {
-                tmpStr = `H9513|${value}|`;
-            } else if (code === 'H1154') {
-                tmpStr = `H9514|${value}|`;
-            } else if (code === 'H1155') {
-                tmpStr = `H9515|${value}|`;
-            } else if (code === 'H1165') {
-                tmpStr = `H9510|${value}|`;
-            } else if (code === 'H1162') {
-                tmpStr = `H9570|${value}|`;
-            } else if (
-                ['H1101', 'H1102', 'H1103', 'H1104', 'H1105', 'H1106', 'H1121', 'H1122', 'H1123'].includes(code)
-            ) {
-                tmpStr = `${code}|${value}|`;
+                value = value + '5'
             }
-            // 변환된 문자열을 `tmpList`에 추가
-            if (tmpStr) {
-                tmpList.push(tmpStr);
+
+            if (code === 'H1151') {
+                tmpStr += 'H9511' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1152') {
+                tmpStr += 'H9512' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1153') {
+                tmpStr += 'H9513' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1154') {
+                tmpStr += 'H9514' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1155') {
+                tmpStr += 'H9515' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1165') {
+                tmpStr += 'H9510' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1162') {
+                tmpStr += 'H9570' + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
+            } else if (code === 'H1101' || code === 'H1102' || code === 'H1103' ||
+                code === 'H1104' || code === 'H1105' || code === 'H1106' ||
+                code === 'H1121' || code === 'H1122' || code === 'H1123') {
+                tmpStr += code + '|' + value + '|' //+ unit // + '\\' + type
+                tmpList.push(tmpStr)
             }
         }
     });
     // `inhaTestCode.value`를 빈 문자열로 초기화
     let inhaTestSendCode = '';
-    // `tmpList`의 항목을 콤마로 연결하여 `inhaTestCode.value`에 저장
-    inhaTestSendCode = tmpList.join(','); // tmpList.join(',') 결과는 'a,b,c' 이런식으로 만드려고 join 사용 함
+    tmpList.forEach(function(item) {
+        inhaTestSendCode += item + ','
+    })
     // `resultStr`에 `inhaTestCode.value`를 추가
     resultStr += inhaTestSendCode;
-    console.log('tmpList 가공 매칭 후', tmpList)
+    console.log('tmpList 가공 매칭 후', JSON.stringify(tmpList))
     console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열', inhaTestSendCode)
     console.log('inhaTestSendCode.value', inhaTestSendCode)
     let rbcTmp = '';
