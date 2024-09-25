@@ -82,8 +82,6 @@ const runningInfoGet = async (data: any) => {
     if (currentSlot) {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
-      console.log(existingItemIndex)
-      console.log(barcodeNo)
       if (existingItemIndex === -1 && barcodeNo !== '') {
         /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
         // Start
