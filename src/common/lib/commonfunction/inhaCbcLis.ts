@@ -40,11 +40,11 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 baseUrl: `${cbcFilePathSetArr}/api/MifMain/Order`,
                 // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
             };
-            // const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
+            const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
             // 상태 초기화
             // 응답 데이터 가져오기
-            // const res: any = response.data[0];
-            const res: any = inhaCbcTestCode[0];
+            const res: any = response.data[0];
+            // const res: any = inhaCbcTestCode[0];
             const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
             const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
             if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
