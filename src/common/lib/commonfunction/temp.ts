@@ -143,163 +143,130 @@ export const getCbcCodeList = async () => {
 
 export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, lisFilePathSetArr: any, inhaTestCode: any, lisCodeWbcArr: any, lisCodeRbcArr: any, selectItems: any, id: any) => {
     console.log('Lis 업로드 로직 시작');
-    console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
-    console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter)
-    console.log('인하대 테스트 barcodeNo', barcodeNo)
+    console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter);
+    console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter);
+    console.log('인하대 테스트 barcodeNo', barcodeNo);
+
     let errMessage = '';
     let lisBtnColor = false;
-    if (lisFilePathSetArr === '') {
+
+    if (!lisFilePathSetArr) {
         errMessage = messages.UPLOAD_PLEASE_LIS;
-        return {errMessage};
+        return { errMessage };
     }
+
     let resultStr = '';
-    // `inhaTestCode.value`를 콤마로 분리하여 배열 생성 inhaTestCode는 인하대 lis 업로드 하면 cbc 코드에서 받은 응답 값을 담는 부분
     const testCodeList = inhaTestCode.split(',');
-    // 변환된 데이터를 저장할 리스트 초기화
-    const tmpList: string[] = [];
-    // `testCodeList` 배열을 순회하면서 각 코드에 대해 처리
-    testCodeList.forEach((codes: any) => {
-        if (codes.length > 0) {
-            const codeArray = codes.split('|')
-            const code = codeArray[0]
-            let value = codeArray[1]
+    const tmpList = testCodeList
+        .filter((codes: any) => codes.length > 0)
+        .map((codes: any) => {
+            const [code, value, unit, type] = codes.split('|');
+            let newValue = value;
+            let tmpStr = '';
 
-            let tmpStr = ''
+            if (code === 'L0210') newValue = `${value}5`;
 
-            if (code === 'L0210') {
-                value = value + '5'
+            const codeMap: any = {
+                'H1151': 'H9511',
+                'H1152': 'H9512',
+                'H1153': 'H9513',
+                'H1154': 'H9514',
+                'H1155': 'H9515',
+                'H1165': 'H9510',
+                'H1162': 'H9570',
+            };
+
+            if (codeMap[code]) {
+                tmpStr = `${codeMap[code]}|${newValue}|`;
+            } else if (
+                ['H1101', 'H1102', 'H1103', 'H1104', 'H1105', 'H1106', 'H1121', 'H1122', 'H1123'].includes(code)
+            ) {
+                tmpStr = `${code}|${newValue}|`;
             }
 
-            if (code === 'H1151') {
-                tmpStr += 'H9511' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1152') {
-                tmpStr += 'H9512' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1153') {
-                tmpStr += 'H9513' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1154') {
-                tmpStr += 'H9514' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1155') {
-                tmpStr += 'H9515' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1165') {
-                tmpStr += 'H9510' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1162') {
-                tmpStr += 'H9570' + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            } else if (code === 'H1101' || code === 'H1102' || code === 'H1103' ||
-                code === 'H1104' || code === 'H1105' || code === 'H1106' ||
-                code === 'H1121' || code === 'H1122' || code === 'H1123') {
-                tmpStr += code + '|' + value + '|' //+ unit // + '\\' + type
-                tmpList.push(tmpStr)
-            }
-        }
-    });
-    // `inhaTestCode.value`를 빈 문자열로 초기화
-    let inhaTestSendCode = '';
-    tmpList.forEach(function (item) {
-        inhaTestSendCode += item + ','
-    })
-    // `resultStr`에 `inhaTestCode.value`를 추가
+            return tmpStr;
+        }).filter((tmpStr: any) => tmpStr);  // 빈 문자열 제거
+
+    const inhaTestSendCode = tmpList.join(',');
     resultStr += inhaTestSendCode;
-    console.log('tmpList 가공 매칭 후', JSON.stringify(tmpList))
-    console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열', inhaTestSendCode)
-    console.log('inhaTestSendCode.value', inhaTestSendCode)
-    // WBC 항목을 처리하는 함수 정의
-    lisCodeWbcArr.forEach(function (lisCode: any, index: any) {
-        if (lisCode.LIS_CD !== '') {
-            wbcInfoAfter.forEach(function (wbcItem: any) {
-                if (Number(lisCode.IA_CD) === Number(wbcItem.id)) {
-                    if (lisCode.LIS_CD === 'H9600' || lisCode.LIS_CD === 'H9365' ||
-                        lisCode.LIS_CD === 'H9366') {
-                        if (Number(wbcItem.count > 0)) {
-                            resultStr += lisCode.LIS_CD + '|' + '1' + '|' + ','
-                        } else {
-                            resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
-                            // resultStr += lisCode.LIS_CD + '|' + '0' + '|' + ','
-                        }
+
+    console.log('tmpList 가공 매칭 후', JSON.stringify(tmpList));
+    console.log('inhaTestSendCode.value cbc 값 얻어와서 매칭 시킨 후 변경된 배열', inhaTestSendCode);
+    console.log('inhaTestSendCode.value', inhaTestSendCode);
+
+// WBC 처리 로직
+    lisCodeWbcArr.forEach((lisCode: any) => {
+        if (!lisCode.LIS_CD) return;
+
+        wbcInfoAfter.forEach((wbcItem: any) => {
+            if (lisCode.IA_CD === Number(wbcItem.id)) {
+                const lisCodeCondition = ['H9600', 'H9365', 'H9366'].includes(lisCode.LIS_CD);
+
+                if (lisCodeCondition) {
+                    resultStr += `${lisCode.LIS_CD}|${Number(wbcItem.count) > 0 ? '1' : ' '}|,`;
+                } else if (Number(wbcItem.percent) > 0) {
+                    if (['13', '14'].includes(String(lisCode.IA_CD))) {
+                        resultStr += Number(wbcItem.count) > Number(lisCode.MIN_COUNT)
+                            ? `${lisCode.LIS_CD}|${wbcItem.percent}|,`
+                            : `${lisCode.LIS_CD}| |,`;
                     } else {
-                        if (Number(wbcItem.percent) > 0) {
-                            // GP, PA
-                            if (lisCode.IA_CD === '13' || lisCode.IA_CD === '14') {
-                                if (Number(wbcItem.count) > Number(lisCode.MIN_COUNT)) {
-                                    resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-                                } else {
-                                    resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
-                                    // resultStr += lisCode.LIS_CD + '|' + '0' + '|' + ','
-                                }
-                            } else {
-                                resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-                            }
-                        }
+                        resultStr += `${lisCode.LIS_CD}|${wbcItem.percent}|,`;
                     }
                 }
-            })
-        }
-    })
+            }
+        });
+    });
 
-    // RBC
-    let rbcTmp: any = ''
-    lisCodeRbcArr.forEach(function (lisCode: any) {
-        if (lisCode.LIS_CD !== '') {
-            rbcInfoAfter.forEach(function (rbcItem: any) {
-                if (lisCode.IA_CATEGORY_CD === rbcItem.categoryId &&
-                    lisCode.IA_CLASS_CD === rbcItem.classId) {
-                    if (lisCode.LIS_CD === 'H9531' || lisCode.LIS_CD === 'H9535' ||
-                        lisCode.LIS_CD === 'H9594' || lisCode.LIS_CD === 'H9571' ||
-                        lisCode.LIS_CD === 'H9574' || lisCode.LIS_CD === 'H9595') {
-                        if (Number(rbcItem.degree) === 0) {
-                            rbcItem.degree = ' '
-                        } else {
-                            rbcItem.degree = '0'
-                        }
+    // RBC 처리 로직
+    let rbcTmp = '';
+    lisCodeRbcArr.forEach((lisCode: any) => {
+        if (!lisCode.LIS_CD) return;
 
-                        rbcTmp += lisCode.LIS_CD + '|' + rbcItem.degree + '|' + ','
-                        resultStr += lisCode.LIS_CD + '|' + rbcItem.degree + '|' + ','
+        rbcInfoAfter.forEach((rbcItem: any) => {
+            if (lisCode.IA_CATEGORY_CD === rbcItem.categoryId && lisCode.IA_CLASS_CD === rbcItem.classId) {
+                const lisCodeCondition = ['H9531', 'H9535', 'H9594', 'H9571', 'H9574', 'H9595'].includes(lisCode.LIS_CD);
 
-                    } else {
-                        if (Number(rbcItem.degree) === 0) {
-                            rbcItem.degree = ' '
-                        }
-                        rbcTmp += lisCode.LIS_CD + '|' + rbcItem.degree + '|' + ','
-                        resultStr += lisCode.LIS_CD + '|' + rbcItem.degree + '|' + ','
-
-                    }
+                if (lisCodeCondition) {
+                    rbcItem.degree = Number(rbcItem.degree) === 0 ? ' ' : '0';
+                } else if (Number(rbcItem.degree) === 0) {
+                    rbcItem.degree = ' ';
                 }
-            })
-        }
-    })
 
-    let rbcTmp2 = rbcTmp
-    rbcTmp2 = rbcTmp2.replace('H9531', 'H9571')
-    rbcTmp2 = rbcTmp2.replace('H9532', 'H9572')
-    rbcTmp2 = rbcTmp2.replace('H9533', 'H9573')
-    rbcTmp2 = rbcTmp2.replace('H9535', 'H9574')
-    rbcTmp2 = rbcTmp2.replace('H9536', 'H9575')
-    rbcTmp2 = rbcTmp2.replace('H9537', 'H9576')
-    rbcTmp2 = rbcTmp2.replace('H9534', 'H9577')
-    rbcTmp2 = rbcTmp2.replace('H9538', 'H9578')
-    rbcTmp2 = rbcTmp2.replace('H9542', 'H9518')
-    rbcTmp2 = rbcTmp2.replace('H9544', 'H9520')
-    rbcTmp2 = rbcTmp2.replace('H9546', 'H9517')
-    rbcTmp2 = rbcTmp2.replace('H9548', 'H9519')
-    rbcTmp2 = rbcTmp2.replace('H9550', 'H9522')
-    rbcTmp2 = rbcTmp2.replace('H9552', 'H9521')
-    rbcTmp2 = rbcTmp2.replace('H9554', 'H9525')
-    rbcTmp2 = rbcTmp2.replace('H9556', 'H9524')
-    rbcTmp2 = rbcTmp2.replace('H9558', 'H9526')
-    rbcTmp2 = rbcTmp2.replace('H9560', 'H9523')
-    rbcTmp2 = rbcTmp2.replace('H9562', 'H9528')
-    rbcTmp2 = rbcTmp2.replace('H9564', 'H9530')
-    rbcTmp2 = rbcTmp2.replace('H9594', 'H9595')
+                rbcTmp += `${lisCode.LIS_CD}|${rbcItem.degree}|,`;
+                resultStr += `${lisCode.LIS_CD}|${rbcItem.degree}|,`;
+            }
+        });
+    });
 
-    resultStr += rbcTmp
-    resultStr += rbcTmp2
+// RBC 코드 치환 로직
+    const rbcTmp2 = rbcTmp
+        .replace(/H9531/g, 'H9571')
+        .replace(/H9532/g, 'H9572')
+        .replace(/H9533/g, 'H9573')
+        .replace(/H9535/g, 'H9574')
+        .replace(/H9536/g, 'H9575')
+        .replace(/H9537/g, 'H9576')
+        .replace(/H9534/g, 'H9577')
+        .replace(/H9538/g, 'H9578')
+        .replace(/H9542/g, 'H9518')
+        .replace(/H9544/g, 'H9520')
+        .replace(/H9546/g, 'H9517')
+        .replace(/H9548/g, 'H9519')
+        .replace(/H9550/g, 'H9522')
+        .replace(/H9552/g, 'H9521')
+        .replace(/H9554/g, 'H9525')
+        .replace(/H9556/g, 'H9524')
+        .replace(/H9558/g, 'H9526')
+        .replace(/H9560/g, 'H9523')
+        .replace(/H9562/g, 'H9528')
+        .replace(/H9564/g, 'H9530')
+        .replace(/H9594/g, 'H9595');
+
+    resultStr += rbcTmp;
+    resultStr += rbcTmp2;
+
     console.log('rbc wbc 최종 resultStr 값', resultStr);
+
 
     try {
         const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
