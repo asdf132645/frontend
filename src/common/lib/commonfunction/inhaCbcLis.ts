@@ -402,7 +402,7 @@ export const getLisWbcRbcData = async () => {
 
                     newWbcDataArr.push({
                         CD_NM: fullNm,
-                        IA_CD: id,
+                        IA_CD: classId,
                         LIS_CD: key,
                         MIN_COUNT: minCount,
                     });
@@ -416,7 +416,7 @@ export const getLisWbcRbcData = async () => {
                         CATEGORY_NM: rbcDataItem.categoryNm,
                         CLASS_NM: rbcDataItem?.fullNm,
                         IA_CATEGORY_CD: rbcDataItem?.categoryId,
-                        IA_CLASS_CD: rbcDataItem?.id,
+                        IA_CLASS_CD: rbcDataItem?.classId,
                         LIS_CD: rbcDataItem?.key,
                     })
                 }
