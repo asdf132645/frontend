@@ -43,7 +43,11 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             const response: any = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
             // 상태 초기화
             // 응답 데이터 가져오기
-            const res: any = response.data[0];
+            const correctedString = response.data.replace(/\\"/g, '"'); // 이스케이프된 따옴표 제거
+            const jsonObject = JSON.parse(correctedString); // JSON 객체로 변환
+
+            console.log(jsonObject[0]); // 파싱된 JSON 객체 출력
+            const res: any = jsonObject[0];
             // const res: any = inhaCbcTestCode[0];
             const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
             const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
@@ -305,14 +309,17 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
         const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
         const body = {
+            baseUrl: `${lisFilePathSetArr}/api/MifMain/File`,
             machine: 'ADUIMD',
             episode: barcodeNo,
             result: resultStr,
-            baseUrl: `${lisFilePathSetArr}/api/MifMain/File`,
             // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
         };
         const response = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
-        const res = response.data[0];
+        const correctedString = response.data.replace(/\\"/g, '"'); // 이스케이프된 따옴표 제거
+        const jsonObject = JSON.parse(correctedString); // JSON 객체로 변환
+        console.log(jsonObject[0]); // 파싱된 JSON 객체 출력
+        const res: any = jsonObject[0];
         console.log('res 최종값', response)
         if (res?.returnCode === '0') {
             const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems?.barcodeNo}.txt`;
