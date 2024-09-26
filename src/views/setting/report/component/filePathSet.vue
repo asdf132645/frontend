@@ -99,8 +99,7 @@ const handleKeyDown = (event: KeyboardEvent, index: number) => {
 
   // 1글자 이상 입력 시 지우기
   const currentValue = filePathSetArr.value[index].lisHotKey;
-  if (currentValue.length > 1 && !isSpecialKey(event.key)) {
-    showErrorAlert('You cannot enter less than one character.');
+  if (currentValue.length >= 1 && !isSpecialKey(event.key)) {
     filePathSetArr.value[index].lisHotKey = '';
   }
 
