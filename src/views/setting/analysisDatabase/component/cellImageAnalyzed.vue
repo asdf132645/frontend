@@ -727,7 +727,7 @@ const handlePolling = async () => {
     if (successFileCount.value === totalFileCount.value - 1) {
       clearInterval(intervalId.value);
     }
-  }, duration * 1500);
+  }, duration * 4000);
 }
 
 const downloadUploadStopWebSocket = (state: boolean) => {
