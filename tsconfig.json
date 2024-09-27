@@ -11,7 +11,7 @@
     "jsx": "preserve",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -22,7 +22,9 @@
       "webpack-env",
       "webapi",
       "node",
-//      "@types/graphql"
+      "graphql",
+      "jest",
+      "@apollo/client"
     ],
     "paths": {
       "@/*": ["src/*"]

@@ -1,7 +1,7 @@
 <template>
 
   <ClassInfoMenu @refreshClass="refreshClass"/>
-  <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
+  <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')" v-if="siteCd !== '0007'">
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div class="reportDiv">
       <div class="wbcDiv shadowBox">
@@ -223,6 +223,7 @@
       </div>
     </div>
   </div>
+  <Crc v-else/>
   <div ref="printContent">
     <Print v-if="printOnOff" @printClose="printClose" />
   </div>
@@ -251,6 +252,7 @@ import {
   inhaPercentChange,
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
+import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();

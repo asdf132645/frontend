@@ -465,10 +465,7 @@ const onReset = () => {
     userId: '',
     isNsNbIntegration: isNsNbIntegration.value || '',
   });
-  instance?.appContext.config.globalProperties.$socket.emit('message', {
-    type: 'SEND_DATA',
-    payload: settings
-  });
+  EventBus.publish('childEmitSocketData', settings);
 
   showSuccessAlert(messages.IDS_MSG_SUCCESS);
 }
