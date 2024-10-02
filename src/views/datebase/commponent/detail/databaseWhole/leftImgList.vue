@@ -2,35 +2,36 @@
   <div class="closeViewer" @click="closeViewer" v-if="buttonOfen">x</div>
   <div id="viewerSmall"></div>
   <div class="leftImgList">
+    <p>Partical Image</p>
     <ul class="leftImgUl">
-      <p>Partical Image</p>
       <li v-for="(image, index) in paImages" :key="index" class="leftImgLi">
         <img :src="particleImageUrls[index]" alt="Partical Image"
              @dblclick="openInViewer(particleImageUrls[index], '02_Particle_Image', bmOldDataDivision('02_Particle_Image'), index)">
       </li>
     </ul>
+
+    <p>Ideal Zone</p>
     <ul class="leftImgUl">
-      <p>Ideal Zone</p>
       <li v-for="(image, index) in idealZoneImages" :key="index" class="leftImgLi" style="width:100px">
         <img :src="idealZoneImageUrls[index]"
              @dblclick="openInViewer(idealZoneImageUrls[index], '03_Cell_Ideal_Image',bmOldDataDivision('03_Cell_Ideal_Image'), index)">
       </li>
     </ul>
+
+    <p>Ideal Stitch</p>
     <ul class="leftImgUl">
-      <div>
-        <p>Ideal Stitch</p>
-        <li v-for="(image, index) in idealStitchImages" :key="index" class="leftImgLi">
-          <img :src="idealStitchImageUrls[index]"
-               @dblclick="openInViewer(idealStitchImageUrls[index], '04_Cell_Ideal_Stitch_Image',bmOldDataDivision('04_Cell_Ideal_Stitch_Image'), index)">
-        </li>
-      </div>
-      <div>
-        <p>Megakaryocyte</p>
+      <li v-for="(image, index) in idealStitchImages" :key="index" class="leftImgLi">
+        <img :src="idealStitchImageUrls[index]"
+             @dblclick="openInViewer(idealStitchImageUrls[index], '04_Cell_Ideal_Stitch_Image',bmOldDataDivision('04_Cell_Ideal_Stitch_Image'), index)">
+      </li>
+      </ul>
+
+    <p>Megakaryocyte</p>
+    <ul class="leftImgUl">
         <li v-for="(image, index) in megaImages" :key="index" class="leftImgLi">
           <img :src="megaImageUrls[index]"
                @dblclick="openInViewer(megaImageUrls[index], '05_Mega_Image',bmOldDataDivision('05_Mega_Image'), index)">
         </li>
-      </div>
     </ul>
   </div>
 </template>
@@ -161,6 +162,7 @@ const openInViewer = async (imageUrl: string, type: string, bmOldData: any, inde
   if (viewerSmall) {
     viewerSmall.destroy();
   }
+
   let urlTileSources: any = {};
   if (type === '03_Cell_Ideal_Image' || !await bmOldData) {
     urlTileSources = {
@@ -237,6 +239,7 @@ const closeViewer = () => {
     buttonOfen.value = false;
   }
 };
+
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
   const response = await fetch(url);

@@ -1,7 +1,7 @@
 <template>
   <div class="loadingBackground" v-show="isLoadingProgressBar">
     <div class="progressContainer">
-      <p class="loadingProgressBarText">{{ successFileCount }} / {{ totalFileCount  }} files {{ loadingState }}...</p>
+      <p class="loadingProgressBarText">{{ ((successFileCount / totalFileCount) * 100).toFixed(0) }}%</p>
       <div
           class="progressBar"
           :style="{ width: (successFileCount / totalFileCount) * 100 + '%' }"
@@ -426,6 +426,16 @@ const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
 
+instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
+  if (downloadUploadObj?.isFinished) {
+    clearInterval(intervalId.value);
+    successFileCount.value = totalFileCount.value;
+    downloadUploadStopWebSocket(false);
+    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
+    await updateFileCounts(downloadUploadObj.type);
+  }
+})
+
 onMounted(async () => {
   await nextTick();
   testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
@@ -675,13 +685,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     }
   } catch (e) {
     console.log(e);
-  } finally {
-    successFileCount.value = totalFileCount.value;
-    clearInterval(intervalId.value);
-    downloadUploadStopWebSocket(false);
-    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
-  await updateFileCounts('Upload');
 }
 
 const uploadCancel = async () => {
@@ -727,7 +731,7 @@ const handlePolling = async () => {
     if (successFileCount.value === totalFileCount.value - 1) {
       clearInterval(intervalId.value);
     }
-  }, duration * 4000);
+  }, duration * 3000);
 }
 
 const downloadUploadStopWebSocket = (state: boolean) => {
@@ -756,17 +760,10 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
     await backUpDateApi(downloadDto);
   } catch (e) {
     console.log(e);
-  } finally {
-    clearInterval(intervalId.value);
-    successFileCount.value = totalFileCount.value;
-    downloadUploadStopWebSocket(false);
-    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
   }
-
-  await updateFileCounts('Download');
 }
 
-const updateFileCounts = async (downloadUploadType: 'Download' | 'Upload') => {
+const updateFileCounts = async (downloadUploadType: 'download' | 'upload') => {
   successFileCount.value = totalFileCount.value;
   setTimeout(async () => {
     totalFileCount.value = 0;

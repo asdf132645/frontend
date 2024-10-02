@@ -119,9 +119,6 @@ const initCbcData = async (newVal: any) => {
     case '인천길병원':
       await kuahGilHosCbc();
       break;
-    case '0000':
-      await inhaCbcLoad();
-      break;
     case '삼광의료재단':
       /** Todo 작업 필요 */
       break;
@@ -226,10 +223,9 @@ const commonCbc = async () => {
       msg?.data?.segments.forEach((cbcSegment: any) => {
         if (cbcSegment.name.trim() === 'OBX') {
           cbcCodeList.value.forEach((cbcCode: any) => {
-            //CBC_CD = > cbcCode.cd, CD_NM => cbcCode.testCd
-            if (cbcCode.cd === cbcSegment.fields[3].value[0][0].value[0]) {
+            if (cbcCode.classCd === cbcSegment.fields[3].value[0][0].value[0]) {
               const obj = {
-                classNm: cbcCode.cd,
+                classNm: cbcCode.fullNm,
                 count: cbcSegment.fields[5].value[0][0].value[0],
                 unit: cbcSegment.fields[6].value[0][0].value[0]
               }
@@ -237,7 +233,6 @@ const commonCbc = async () => {
             }
           })
         }
-
       })
       loading.value = false;
     } else {

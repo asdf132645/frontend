@@ -398,7 +398,7 @@ export const getLisWbcRbcData = async () => {
                             default:
                                 return 0;
                         }
-                    })();
+                    });
 
                     newWbcDataArr.push({
                         CD_NM: fullNm,

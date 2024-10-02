@@ -265,7 +265,6 @@ onMounted(async () => {
     cbcCodeList.value = await getCbcCodeList();
   }
   barCodeImageShowError.value = false;
-  console.log(lisHotKey.value);
 })
 window.addEventListener('keydown', (event: KeyboardEvent) => {
   // F1, F2 등 특수 키를 포함한 키 비교
@@ -396,12 +395,10 @@ const handleOkConfirm = () => {
 const uploadLis = () => {
   if (siteCd.value === '0002') {
     cmcSeoulLisAndCbcDataGet();
-  } else if (siteCd.value === '' || siteCd.value === '0000') { // uimd LIS 테스트 하는 곳
-    // 서울 성모
-    // uimdTestCbcLisDataGet();
-    // 인하대
+  } else if (siteCd.value === '0011') {
     inhaDataSendLoad();
-  } else {
+  }
+  else {
     lisLastStep();
   }
 }
@@ -698,7 +695,8 @@ const cmcSeoulLisAndCbcDataGet = () => {
   });
 }
 const lisLastStep = () => {
-  if (siteCd.value === '0019') { // 인천길병원
+  // 인천길병원
+  if (siteCd.value === '0019') {
     // 데이터 초기화
     let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
     let seq = 0;
@@ -760,7 +758,7 @@ const otherDataSend = async () => {
       hl7VersionId: '2.5',
       selectedItem: { /* selectedItem 데이터 */},
       wbcInfo: props.selectItems?.wbcInfoAfter,
-      result: lisCodeWbcArr.value,
+      result: lisCodeWbcArrApp.value,
     };
     const res = await readH7Message(data);
     if (res) {

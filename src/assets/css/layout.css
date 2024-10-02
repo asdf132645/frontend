@@ -3020,7 +3020,7 @@ ul.normalItems li div span:last-child {
     height: 100%;
 }
 
-.leftWhole ul p {
+.leftWhole p {
     text-align: left;
     border-bottom: 1px solid var(--white-color);
     padding-bottom: 5px;
