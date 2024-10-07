@@ -85,7 +85,6 @@ let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const isDownloadOrUploading = computed(() => store.state.commonModule.isDownloadOrUploading);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 
 const isNsNbIntegrationLocal = ref('N');
@@ -112,7 +111,6 @@ const lisFilePath = ref('');
 
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
-  console.log('isTcpConnected', isTcpConnected);
   if (isTcpConnected) {
     setTimeout(async () => {
       await store.dispatch('commonModule/setCommonInfo', {isTcpConnected: true});
@@ -586,7 +584,7 @@ async function socketData(data: any) {
           slotId: completeSlot.slotId,
           orderDttm: completeSlot.orderDttm,
           testType: completeSlot.testType,
-          analyzedDttm: tcpReq().embedStatus.settings.reqDttm,
+          analyzedDttm: tcpReq().embedStatus.settings.saveReqDttm,
           tactTime: completeSlot.tactTime,
           maxWbcCount: completeSlot.maxWbcCount,
           bf_lowPowerPath: completeSlot.bf_lowPowerPath,
