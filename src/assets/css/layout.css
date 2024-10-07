@@ -323,8 +323,8 @@ main.bmComponent {
 
 ul.userSetOutUl > li {
     color: var(--white-color);
-    padding: 9px 4px;
-    padding-bottom: 5px;
+    padding: 5px;
+    font-size: 0.8rem;
     cursor: pointer;
 }
 
@@ -347,8 +347,9 @@ ul.userSetOutUl {
     left: 0;
     top: 30px;
     border-radius: 5px;
+    font-size: 0.8rem;
     border: 1px solid var(--white-color);
-    padding: 5px 10px 10px 10px;
+    padding: 5px;
     margin-top: 10px;
     color: var(--white-color);
     z-index: 999;
@@ -369,6 +370,7 @@ ul.userSetOutUl {
     border-radius: 4px;
     cursor: pointer;
     background-color: inherit;
+    font-size: 0.8rem;
 }
 
 .logOutBox:hover {
@@ -3303,6 +3305,7 @@ button.rollbackButton {
     border: 1px solid #fff;
     border-radius: 5px;
     padding: 5px;
+    font-size: 0.8rem;
 }
 
 

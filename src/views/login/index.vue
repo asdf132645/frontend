@@ -1,5 +1,5 @@
 <template>
-  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected">
+  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected && uimdOpenIp !== 'http://192.168.0.131:3002'">
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, ref, onMounted, computed } from "vue";
+import {getCurrentInstance, ref, onMounted, computed, onBeforeMount} from "vue";
 import { login } from "@/common/api/service/user/userApi";
 import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
@@ -57,10 +57,14 @@ const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
+const uimdOpenIp = ref('');
 
-//
-onMounted(async () => {
+onBeforeMount(async  () => {
+  uimdOpenIp.value = window.MAIN_WEBSOCKET_IP;
   forceViewer.value = window.FORCE_VIEWER;
+})
+
+onMounted(async () => {
   await checkIsViewer()
   isAutoLogginable();
 })

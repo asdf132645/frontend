@@ -6,6 +6,7 @@
         <button @click="selectTab('LisCode')" :class="{ 'active': activeTab === 'LisCode' }">LIS Code</button>
         <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">CBC Code</button>
         <button @click="selectTab('filePathSet')" :class="{ 'active': activeTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
+        <button v-if="masterId === 'uimd'" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
       </div>
     </div>
 
@@ -38,6 +39,7 @@
 import ImagePrint from "@/views/setting/report/component/ImagePrint.vue";
 import LisCode from "@/views/setting/report/component/lisCode.vue";
 import cbcCode from "@/views/setting/report/component/cbcCode.vue";
+import CRC from "@/views/setting/report/component/crc.vue"
 import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
 import { computed, ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
@@ -58,6 +60,7 @@ const confirmMessage = ref('');
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const masterId = computed(() => store.state.userModule.userId);
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
@@ -84,12 +87,14 @@ const selectedTabComponent = computed(() => {
       return cbcCode;
     case 'filePathSet':
       return FilePathSet;
+    case 'CRC':
+      return CRC;
     default:
       return null;
   }
 });
 
-const showSuccessAlert = (message: string) => {
+const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
