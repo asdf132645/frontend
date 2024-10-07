@@ -1,12 +1,15 @@
 import moment from 'moment';
 import 'moment-timezone';
 
-
 export function getDateTimeStr(): string {
     const now = moment();
+    const formattedTime = now.format('YYYYMMDDHHmm');
+    return formattedTime;
+}
 
+export function getDateTimeStrForUI(): string {
+    const now = moment();
     const formattedTime = now.format('YYYYMMDDHHmmssSSSSS');
-
     return formattedTime;
 }
 

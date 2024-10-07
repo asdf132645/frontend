@@ -1,7 +1,8 @@
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {getDateTimeStr, getDateTimeStrForUI} from "@/common/lib/utils/dateUtils";
 
 export const tcpReq:any = () => {
     const reqDttm = getDateTimeStr(); // 현재 날짜와 시간을 가져오는 함수
+    const saveReqDttm = getDateTimeStrForUI();
 
     return {
         embedStatus: {
@@ -78,6 +79,7 @@ export const tcpReq:any = () => {
                 jobCmd: 'SETTINGS',
                 reqUserId: '',
                 reqDttm: reqDttm,
+                saveReqDttm: saveReqDttm,
                 pbiaRootDir: 'D:/IA_Proc',
                 oilCount: '',
                 isOilReset: '',
