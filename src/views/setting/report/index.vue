@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <div class="tab-content">
+    <div :class="{'tab-content crc':activeTab === 'CRC', 'tab-content':activeTab !== 'CRC'}">
       <component :is="selectedTabComponent"/>
     </div>
   </div>

@@ -82,7 +82,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item) in selectItems.wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
+              <tr v-for="(item) in wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
                 <template v-if="shouldRenderCategory(item.title)">
                   <td>{{ item?.name }}</td>
                   <td>{{ item?.count }}</td>
@@ -253,6 +253,7 @@ import {
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
 import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
+import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -286,7 +287,7 @@ const maxRbcCount = ref(0);
 const pltCount = ref(0);
 const rbcDegreeStandard = ref<any>([]);
 const isCommitChanged = ref(false);
-
+const wbcInfoAfter = ref<any>([]);
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
@@ -321,11 +322,33 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    if(siteCd.value === '0002' || siteCd.value === '' || siteCd.value === '0000'){
+      let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || []);
+      const wbcInfoAfterValForTotalCount = filterByTitle(wbcAfterInfo, 'wbc');
+
+      wbcAfterInfo = removeDuplicatesById(wbcAfterInfo);
+      if(projectBm.value){
+        wbcInfoAfter.value = selectItems.value?.wbcInfoAfter || [];
+      }else {
+        wbcInfoAfter.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcAfterInfo);
+
+      }
+    }else{
+      wbcInfoAfter.value = selectItems.value?.wbcInfoAfter || [];
+    }
     rbcInfo.value = result.data;
 
   } catch (e) {
     console.log(e);
   }
+}
+const filterByTitle = (wbcInfoArr: any, isNonWbc: 'wbc' | 'nonWbc') => {
+  const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
+  if (isNonWbc === 'nonWbc') {
+    return wbcInfoArr.filter((item: any) => titleArr.includes(item.title));
+  }
+
+  return wbcInfoArr.filter((item: any) => !titleArr.includes(item.title));
 }
 
 const percentChangeBySiteCd = () => {

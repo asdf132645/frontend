@@ -1,52 +1,62 @@
 <template>
-  <div>
+  <div class="crcDivTitle">
     {{ moTypeTextChange(moType) }}
   </div>
-  <div class="grid-container">
-    <div v-for="(item, idx) in arrData" :key="idx" class="grid-item">
-      <p>
-        <input
-            type="text"
-            v-model="item.crcTitle"
-            :disabled="editIndex !== idx"
-        />
-      </p>
-      <div v-if="idx === editIndex">
-        <select v-model="item.crcType">
-          <option value="select">select</option>
-          <option value="text">text</option>
-          <option value="percent">percent</option>
-        </select>
-      </div>
-      <div v-else>
-        <div v-html="returnCrcTypeComponent(item?.crcType)"></div>
-      </div>
-      <div v-if="item.crcType === 'percent'">
-        <input
-            type="text"
-            v-model="item.crcPercentText"
-            :disabled="editIndex !== idx"
-        />
-      </div>
-      <div>
-        <button type="button" @click="delCrcArr(idx, item.id)">del</button>
-      </div>
-      <div>
-        <button type="button" @click="editCrcArr(idx)">edit</button>
-        <button
-            type="button"
-            v-if="editIndex === idx"
-            @click="updateCrcArr(idx)"
-        >
-          OK
-        </button>
-      </div>
-    </div>
+  <div>
+    <ul>
+      <li v-for="(row, rowIndex) in groupedData" :key="rowIndex" class="crcRow">
+        <div v-for="(item, idx) in row" :key="idx" class="grid-item crcItemDiv">
+          <p class="smallBox">
+            <input
+                type="text"
+                v-model="item.crcTitle"
+                v-if="editIndex === item.id"
+            />
+            <span v-else>{{ item.crcTitle }}</span>
+          </p>
+          <div>
+            <select v-model="item.crcType" v-if="editIndex === item.id">
+              <option value="select">select</option>
+              <option value="text">text</option>
+              <option value="percent">percent</option>
+            </select>
+            <div v-else>{{ item?.crcType }}</div>
+          </div>
+          <div>
+            <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
+            <div v-else>{{ item?.crcContent }}</div>
+          </div>
+          <div v-if="item.crcType === 'percent'" class="smallBox">
+            <input
+                type="text"
+                v-model="item.crcPercentText"
+                v-if="editIndex === item.id"
+            />
+            <span v-else>
+              {{ item?.crcPercentText }}
+            </span>
+          </div>
+          <div>
+            <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
+          </div>
+          <div>
+            <button type="button" @click="editCrcArr(item.id)">EDIT</button>
+            <button
+                type="button"
+                v-if="editIndex === item.id"
+                @click="updateCrcArr(item.id)"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 
 // Props
 const props = defineProps({
@@ -77,6 +87,9 @@ const groupedData = computed(() => {
 onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);
 });
+watch(props.items, (newArr) => {
+  arrData.value = newArr?.filter((item) => item?.morphologyType === props.moType);
+});
 
 const editCrcArr = (id: number) => {
   editIndex.value = id;
@@ -99,7 +112,7 @@ const returnCrcTypeComponent = (type: string) => {
     case 'text':
       return `<input disabled type="text" placeholder="text"/>`;
     case 'percent':
-      return `<input disabled type="text" placeholder="percent" />`;
+      return `<input class="smallInput" disabled type="text" placeholder="percent" />`;
     default:
       return;
   }

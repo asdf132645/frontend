@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import {getCurrentInstance, ref, onMounted, computed, onBeforeMount} from "vue";
 import { login } from "@/common/api/service/user/userApi";
-import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
+import {getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
@@ -143,6 +143,10 @@ const getIpAddress = async (userId: string) => {
       await updateAccount('viewer');
       sessionStorage.setItem('viewerCheck', 'viewer');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
+      const aa =  await getDeviceInfoApi();
+      await store.dispatch('commonModule/setCommonInfo', {siteCd: aa.data[0].siteCd})
+      localStorage.setItem('siteCd', aa.data[0].siteCd);
+      console.log('?!@!@', aa.data[0].siteCd);
     }
   } catch (e) {
     console.log(e);

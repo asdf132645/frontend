@@ -285,6 +285,7 @@ watch(userModuleDataGet.value, (newUserId) => {
 
 watch(() => props.wbcInfo, (newItem) => {
   if (Object.keys(newItem).length !== 0) {
+    console.log('s?')
     beforeAfterChange(newItem)
     wbcMemo.value = props.selectItems?.wbcMemo;
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
@@ -1106,13 +1107,12 @@ const beforeAfterChange = async (newItem: any) => {
   for (const item of wbcInfoAfterValForTotalCount) {
     createPercent(item, totalAfterCount.value)
   }
-
   const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
   const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
   const projectType = projectBm.value ? 'bm' : 'pb';
 
-  if (isSeoulStMaryHospitalSiteCd) {
+  if (isSeoulStMaryHospitalSiteCd || siteCd.value === '0000') {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
   } else if (isInhaHospitalSiteCd) {
@@ -1283,7 +1283,7 @@ async function updateOriginalDb() {
     });
 
     createPercent(item, totalCount);
-
+    console.log(siteCd.value);
     const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
     const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
     const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;

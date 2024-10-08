@@ -227,7 +227,8 @@ main.bmComponent {
 }
 
 .openDriveIcon {
-    width: 50px; cursor: pointer;
+    width: 50px;
+    cursor: pointer;
 }
 
 .openDriveIcon:hover {
@@ -2110,9 +2111,11 @@ ul.cellImgBox {
     padding-left: 20px;
     background: var(--main-bg-2-color);
 }
+
 .red {
     color: #b00505;
 }
+
 .wbcClassScroll {
     max-height: 63vh;
     overflow-x: auto;
@@ -3141,7 +3144,9 @@ ul.normalItems li div span:last-child {
     width: 700px;
     margin: 30px auto;
 }
-
+.tab-content.crc {
+    width: 1050px;
+}
 button.rollbackButton {
     position: absolute;
     right: -20px;
@@ -3354,15 +3359,18 @@ button.rollbackButton {
     margin-right: 4px;
     position: relative;
 }
+
 .loaderBackground.cbc .loader {
     width: 50px;
     height: 50px;
     left: 36%;
 }
+
 .loaderBackground.cbc p.loadingText {
     top: 57%;
     left: 38%;
 }
+
 .databaseWbcRight.cbcLayer {
     width: 24%;
 }
@@ -3530,16 +3538,86 @@ table.cbcTable td {
 }
 
 .row {
-    display: flex; /* 행을 flex 컨테이너로 설정 */
-    flex-wrap: wrap; /* 아이템들이 다음 행으로 넘치게 설정 */
-    margin-bottom: 10px; /* 행 간 간격 */
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
 .grid-item {
-    flex: 1 1 48%; /* 2개의 열을 형성하기 위해 각 아이템을 48%의 너비로 설정 (여백 포함) */
-    box-sizing: border-box; /* padding, border가 width에 포함되게 설정 */
-    border: 1px solid #ccc; /* 각 그리드 아이템의 테두리 */
-    padding: 10px; /* 내부 여백 */
+    flex: 1 1 48%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ccc;
+    padding: 5px;
+}
+
+.crcWrap ul li {
+    display: inline-block;
+    width: 20%;
+}
+
+.crcWrap ul li span input {
+    width: 80%;
+}
+
+.crcWrap ul li p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.crcWrap > button {
+    background: none;
+    color: #fff;
+    font-size: 0.9rem;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.grid-item.crcItemDiv {
+    display: flex;
+    justify-content: space-between;
+    min-height: 40px;
+}
+
+li.crcRow {
+    display: inline-block;
+    width: 49%;
+    vertical-align: top;
+    margin-right: 5px;
+}
+
+.moDivBox {
+    display: flex;
+    justify-content: space-between;
+}
+
+.smallBox {
+    width: 16%;
+}
+
+.moDivBox li.crcRow {
+    min-width: 519px;
+}
+
+.grid-item.crcItemDiv input {
+    width: 92%;
+}
+
+.crcItemDiv button {
+    background: none;
+    color: #fff;
+    border: 1px solid #dedede;
+    padding: 5px;
+    width: 45px;
+}
+
+.crcDivTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 10px 0px 5px 0px;
 }
 
 @media screen and (max-width: 1900px) {
