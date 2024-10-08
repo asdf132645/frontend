@@ -325,6 +325,24 @@ export const apiConstants = {
                 endpoint: 'qualityCheck/execute',
                 requiresToken: false,
             }
+        },
+        crc:{
+            crcSettingCreate:{
+                endpoint: 'crc-setting',
+                requiresToken: false,
+            },
+            crcGet:{
+                endpoint: 'crc-setting/crc-get',
+                requiresToken: false,
+            },
+            crcPut:{
+                endpoint: 'crc-setting/crc-put',
+                requiresToken: false,
+            },
+            crcDel: {
+                endpoint: 'crc-setting/crcDel',
+                requiresToken: false,
+            }
         }
     },
     images:{
@@ -470,5 +488,5 @@ export const apiConstants = {
             endpoint: 'images/checkImageExists',
             requiresToken: false,
         }
-    }
+    },
 };

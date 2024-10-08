@@ -218,3 +218,21 @@ export const remainingCount = async (): Promise<ApiResponse<any>> => {
 export const qualityCheck = async (): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.settings.qualityCheck.get);
 };
+
+export const createCrcApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.settings.crc.crcSettingCreate, request);
+};
+
+export const updateCrcApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.settings.crc.crcPut, request);
+};
+
+export const crcGet = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.settings.crc.crcGet);
+};
+
+
+export const deleteCrcApi = async (req: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpDelete(apiConstants.settings.crc.crcDel, req, true);
+};
+
