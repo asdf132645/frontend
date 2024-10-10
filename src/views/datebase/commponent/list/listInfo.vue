@@ -183,10 +183,9 @@ const setWbcTotalAndPercent = async () => {
 
       if (isInhaHospitalSiteCd) {
         wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
-      } else if (isSeoulStMaryHospitalSiteCd) {
+      } else if (isSeoulStMaryHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
         wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter)
       } else if (isIncheonStMaryHospitalSiteCd) {
-        wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
       } else {
         const targetArray = getStringArrayBySiteCd(siteCd.value, props.selectedItem?.testType);
         if (!targetArray.includes(item.title)) {

@@ -597,7 +597,7 @@ const percentChangeBySiteCd = async () => {
   const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
   const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
 
-  if (isSeoulStMaryHospitalSiteCd) {
+  if (isSeoulStMaryHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
     wbcInfo.value = seoulStMaryPercentChange(wbcInfo.value, wbcInfo.value);
   } else if (isInhaHospitalSiteCd) {
     wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
