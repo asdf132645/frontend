@@ -87,7 +87,7 @@ const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 
-const isNsNbIntegrationLocal = ref('N');
+const isNsNbIntegrationLocal = computed(() => store.state.commonModule.isNsNbIntegration);
 const runningArr: any = ref<any>([]);
 const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
@@ -758,7 +758,6 @@ const cellImgGet = async () => {
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
           isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
         });
-        isNsNbIntegrationLocal.value = data?.isNsNbIntegration ? 'Y' : 'N';
         await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'});
         sessionStorage.setItem('isNsNbIntegration', data?.isNsNbIntegration ? 'Y' : 'N');
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
