@@ -167,50 +167,52 @@
           <col width="10">
         </colgroup>
         <tbody>
-        <tr>
-          <th>
-            Download Save Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />
-          </th>
+<!--        <tr>-->
+<!--          <th>-->
+<!--            Download Save Path-->
+<!--            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />-->
+<!--          </th>-->
 
-          <td>
-            <div class="downloadSavePathContainer">
-              <select v-model='downloadRootPath' class="downloadPath">
-                <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
-              </select>
-              <font-awesome-icon :icon="['fas', 'folder-open']" @click="openSourceDrive" class="openDriveIcon" />
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th title="Download data from start to end date">
-            Download
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_KO" />
-          </th>
-          <td>
-            <div class="backupDatePickers">
-              <Datepicker v-model="backupStartDate"></Datepicker>
-              <Datepicker v-model="backupEndDate"></Datepicker>
-              <button class="backupBtn" @click="createBackup">Download</button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Upload
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_UPLOAD_KO" />
-          </th>
-          <td colspan="2">
-            <div class="settingUploadContainer">
-              <select v-model='uploadRootPath' class="uploadSavePath">
-                <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-              </select>
+<!--          <td>-->
+<!--            <div class="downloadSavePathContainer">-->
+<!--              <select v-model='downloadRootPath' class="downloadPath">-->
+<!--                <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>-->
+<!--              </select>-->
+<!--              <font-awesome-icon :icon="['fas', 'folder-open']" @click="openSourceDrive" class="openDriveIcon" />-->
+<!--            </div>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <th title="Download data from start to end date">-->
+<!--            Download-->
+<!--            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_KO" />-->
+<!--          </th>-->
+<!--          <td>-->
+<!--            <div class="backupDatePickers">-->
+<!--              <Datepicker v-model="backupStartDate"></Datepicker>-->
+<!--              <Datepicker v-model="backupEndDate"></Datepicker>-->
+<!--              <button class="backupBtn" @click="createBackup">Download</button>-->
+<!--            </div>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--          <th>-->
+<!--            Upload-->
+<!--            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_UPLOAD_KO" />-->
+<!--          </th>-->
+<!--          <td colspan="2">-->
+<!--            <div class="settingUploadContainer">-->
+<!--              <select v-model='uploadRootPath' class="uploadSavePath">-->
+<!--                <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>-->
+<!--              </select>-->
 
-<!--              <input type="file" ref="uploadFileInput" @change="handleUploadFileChange" style="display: none;" accept=".sql" />-->
-              <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>
-            </div>
-          </td>
-        </tr>
+<!--&lt;!&ndash;              <input type="file" ref="uploadFileInput" @change="handleUploadFileChange" style="display: none;" accept=".sql" />&ndash;&gt;-->
+<!--              <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>-->
+<!--            </div>-->
+<!--          </td>-->
+<!--        </tr>-->
+
+
         <!--      나중에 기능 추가 할 부분 자동 백업-->
         <!--      <tr>-->
         <!--        <th>Auto Backup</th>-->
@@ -425,16 +427,6 @@ const loadingState = ref('');
 const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
-
-instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
-  if (downloadUploadObj?.isFinished) {
-    clearInterval(intervalId.value);
-    successFileCount.value = totalFileCount.value;
-    downloadUploadStopWebSocket(false);
-    await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: false });
-    await updateFileCounts(downloadUploadObj.type);
-  }
-})
 
 onMounted(async () => {
   await nextTick();
@@ -735,10 +727,10 @@ const handlePolling = async () => {
 }
 
 const downloadUploadStopWebSocket = (state: boolean) => {
-  instance?.appContext.config.globalProperties.$socket.emit('isDownloadUploading', {
-    type: 'SEND_DATA',
-    payload: state
-  });
+  // instance?.appContext.config.globalProperties.$socket.emit('isDownloadUploading', {
+  //   type: 'SEND_DATA',
+  //   payload: state
+  // });
 }
 
 const handleDownload = async (downloadType: 'move' | 'copy') => {
@@ -763,14 +755,14 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
   }
 }
 
-const updateFileCounts = async (downloadUploadType: 'download' | 'upload') => {
+const updateFileCounts = async () => {
   successFileCount.value = totalFileCount.value;
   setTimeout(async () => {
     totalFileCount.value = 0;
     successFileCount.value = 0;
     isLoadingProgressBar.value = false;
   }, 2000)
-  await showSuccessAlert(`${downloadUploadType} Success`);
+  await showSuccessAlert('Success');
 }
 
 const downloadDtoObj = (downloadType: 'move' | 'copy') => {
