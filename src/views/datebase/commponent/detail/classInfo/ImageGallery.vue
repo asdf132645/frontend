@@ -264,17 +264,25 @@ const props = defineProps<{
   apiBaseUrl: any;
   wbcInfoRefresh: any;
   imageSize: number;
-  isNsNbIntegrationTrue: boolean;
+  isLocalNsNbIntegration: boolean;
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
 const {wbcInfo, wbcReset} = toRefs(props);
-const firstClass = ref(props.isNsNbIntegrationTrue ? 'Metamyelocyte' : 'Neutrophil-Segmented');
-const lastClass = ref(props.isNsNbIntegrationTrue ? 'Myelocyte' : 'Neutrophil-Band');
-const previousFirstClass = ref(props.isNsNbIntegrationTrue ? 'Metamyelocyte' : 'Neutrophil-Segmented');
-const previousLastClass = ref(props.isNsNbIntegrationTrue ? 'Myelocyte' : 'Neutrophil-Band');
+const firstClass = ref('Metamyelocyte');
+const lastClass = ref('Myelocyte');
+const previousFirstClass = ref('Metamyelocyte');
+const previousLastClass = ref('Myelocyte');
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
+
+onMounted(() => {
+  updateFirstLastClass(props.isLocalNsNbIntegration);
+})
+
+watch(() => props.isLocalNsNbIntegration, (newVal) => {
+  updateFirstLastClass(newVal);
+})
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
@@ -282,7 +290,6 @@ watch(props.hiddenImages, (newVal) => {
 });
 
 const debouncedUpdate = debounce(async (newVal) => {
-  console.log('newVal', newVal);
   const timestamp = Date.now();
   loading.value = false;
   wbcInfoArrChild.value = [];
@@ -294,17 +301,11 @@ const debouncedUpdate = debounce(async (newVal) => {
       uniqueKey: `image_${index}_${imgIndex}_${timestamp}`
     })) || []
   }));
-  // if (wbcInfoArrChild.value?.some((el: any) => el.title === 'NE')) {
-  //   firstClass.value = previousFirstClass.value = 'Metamyelocyte';
-  //   lastClass.value = previousLastClass.value = 'Myelocyte';
-  // }
   await classImgChange('first', null);
   await classImgChange('last', null);
 }, 10); //디바운스 적용
 
 watch(wbcInfo, debouncedUpdate, { deep: true });
-
-
 
 watch(
     () => props.wbcReset,
@@ -330,6 +331,13 @@ watch(
       }
     }
 );
+
+const updateFirstLastClass = (isIntegration: boolean) => {
+  firstClass.value = isIntegration ? 'Metamyelocyte' : 'Neutrophil-Segmented';
+  lastClass.value = isIntegration ? 'Myelocyte' : 'Neutrophil-Band';
+  previousFirstClass.value = isIntegration ? 'Metamyelocyte' : 'Neutrophil-Segmented';
+  previousLastClass.value = isIntegration ? 'Myelocyte' : 'Neutrophil-Band';
+}
 
 const handleImageLoad = (itemIndex: any) => {
   emits('update:cellRef', cellRef);
