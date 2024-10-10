@@ -1111,7 +1111,7 @@ const beforeAfterChange = async (newItem: any) => {
   const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
   const projectType = projectBm.value ? 'bm' : 'pb';
 
-  if (isSeoulStMaryHospitalSiteCd || siteCd.value === '0000') {
+  if (isSeoulStMaryHospitalSiteCd) {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
   } else if (isInhaHospitalSiteCd) {
@@ -1288,7 +1288,7 @@ async function updateOriginalDb() {
     const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
     const projectType = projectBm.value ? 'bm' : 'pb';
 
-    if (isSeoulStMaryHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+    if (isSeoulStMaryHospitalSiteCd) {
       wbcInfoAfterVal.value = seoulStMaryPercentChange(clonedWbcInfo, wbcInfoAfterVal.value);
     } else if (isInhaHospitalSiteCd) {
       wbcInfoAfterVal.value = inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);

@@ -357,7 +357,7 @@ const percentChangeBySiteCd = () => {
   const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
   const projectType = projectBm.value ? 'bm' : 'pb';
 
-  if (isSeoulStMaryHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+  if (isSeoulStMaryHospitalSiteCd) {
     selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
   } else if (isInhaHospitalSiteCd) {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
