@@ -17,9 +17,12 @@
 
 
 <script setup lang="ts">
-import {ref, watch, defineProps} from 'vue';
+import {ref, watch, defineProps, computed} from 'vue';
+import {useStore} from "vuex";
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const props = defineProps([ 'parsedData', 'pb100aCassette']);
+const store = useStore();
+const changeSlide = computed(() => store.state.runningInfoModule.changeSlideState);
 
 const images = ref<RunningPathItem[]>([]);
 
@@ -43,6 +46,10 @@ watch(
     () => props.parsedData,
     (newVal, oldVal) => {
       const slotInfo = newVal?.slotInfo;
+      // console.log(changeSlide.value.changeSlide.value);
+      if(changeSlide.value.changeSlide.value === 'afterChange'){
+        images.value = [];
+      }
       if (slotInfo && slotInfo.stateCd === '03' && slotInfo.runningPath && slotInfo.runningPath.length > 0) {
         const runningPath: RunningPathItem[] = slotInfo.runningPath.map((pathItem: any) => ({
           ...pathItem,
@@ -50,7 +57,6 @@ watch(
           path: pathItem.path,
           id: generateUniqueId()
         }));
-
         for (const image of runningPath) {
           images.value.unshift(image);
         }
