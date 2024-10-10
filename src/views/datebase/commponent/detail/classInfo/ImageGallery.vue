@@ -202,22 +202,18 @@
 import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'vue';
 import {useStore} from "vuex";
 import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
-import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
-import {debounce} from "lodash";
+import { removeDuplicatesById } from "@/common/lib/utils/removeDuplicateIds";
+import { debounce } from "lodash";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cellRef = ref<HTMLElement | null>(null);
-const firstClass = ref('Neutrophil-Segmented');
 const firstClassObj = ref<any>({});
-const lastClass = ref('Neutrophil-Band');
 const firstItemIndex = ref(0);
 const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
-const previousFirstClass = ref('Neutrophil-Segmented');
-const previousLastClass = ref('Neutrophil-Band');
 const loading = ref(true);
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
@@ -268,10 +264,15 @@ const props = defineProps<{
   apiBaseUrl: any;
   wbcInfoRefresh: any;
   imageSize: number;
+  isNsNbIntegrationTrue: boolean;
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
 const {wbcInfo, wbcReset} = toRefs(props);
+const firstClass = ref(props.isNsNbIntegrationTrue ? 'Metamyelocyte' : 'Neutrophil-Segmented');
+const lastClass = ref(props.isNsNbIntegrationTrue ? 'Myelocyte' : 'Neutrophil-Band');
+const previousFirstClass = ref(props.isNsNbIntegrationTrue ? 'Metamyelocyte' : 'Neutrophil-Segmented');
+const previousLastClass = ref(props.isNsNbIntegrationTrue ? 'Myelocyte' : 'Neutrophil-Band');
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 
@@ -281,6 +282,7 @@ watch(props.hiddenImages, (newVal) => {
 });
 
 const debouncedUpdate = debounce(async (newVal) => {
+  console.log('newVal', newVal);
   const timestamp = Date.now();
   loading.value = false;
   wbcInfoArrChild.value = [];
@@ -292,10 +294,10 @@ const debouncedUpdate = debounce(async (newVal) => {
       uniqueKey: `image_${index}_${imgIndex}_${timestamp}`
     })) || []
   }));
-  if (wbcInfoArrChild.value?.some((el: any) => el.title === 'NE')) {
-    firstClass.value = previousFirstClass.value = 'Metamyelocyte';
-    lastClass.value = previousLastClass.value = 'Myelocyte';
-  }
+  // if (wbcInfoArrChild.value?.some((el: any) => el.title === 'NE')) {
+  //   firstClass.value = previousFirstClass.value = 'Metamyelocyte';
+  //   lastClass.value = previousLastClass.value = 'Myelocyte';
+  // }
   await classImgChange('first', null);
   await classImgChange('last', null);
 }, 10); //디바운스 적용

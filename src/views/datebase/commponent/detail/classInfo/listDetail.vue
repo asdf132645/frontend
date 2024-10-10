@@ -153,6 +153,7 @@
             :replaceFileNamePrefix="replaceFileNamePrefix"
             :onDragOver="onDragOver"
             :isBorderChanged="isBorderChanged"
+            :isNsNbIntegrationTrue="isNsNbIntegrationTrue"
             :isSelected="isSelected"
             :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
@@ -382,6 +383,7 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await classInfoDetailApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    console.log('selectItems', selectItems.value)
 
     const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
     iaRootPath.value = path;
@@ -672,6 +674,10 @@ function isBorderChanged(image: any) {
   }, prefix);
 
   return image.title !== modifiedPrefix;
+}
+
+const isNsNbIntegrationTrue = () => {
+  return selectItems.value.wbcInfoAfter.find((el: any) => el.title === 'NE');
 }
 
 
