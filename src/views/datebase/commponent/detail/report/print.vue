@@ -244,12 +244,12 @@ import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi"
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
-import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
@@ -593,15 +593,11 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
 };
 
 const percentChangeBySiteCd = async () => {
-  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-  const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
-
-  if (isSeoulStMaryHospitalSiteCd) {
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     wbcInfo.value = seoulStMaryPercentChange(wbcInfo.value, wbcInfo.value);
-  } else if (isInhaHospitalSiteCd) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
-  } else if (isIncheonStMaryHospitalSiteCd) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     wbcInfo.value = incheonStMaryPercentChange(projectType, wbcInfo.value);
   }
 }

@@ -143,10 +143,10 @@ const getIpAddress = async (userId: string) => {
       await updateAccount('viewer');
       sessionStorage.setItem('viewerCheck', 'viewer');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
-      const aa =  await getDeviceInfoApi();
-      await store.dispatch('commonModule/setCommonInfo', {siteCd: aa.data[0].siteCd})
-      localStorage.setItem('siteCd', aa.data[0].siteCd);
-      console.log('?!@!@', aa.data[0].siteCd);
+      const deviceInfo =  await getDeviceInfoApi();
+      const siteCd = deviceInfo.data[0].siteCd;
+      await store.dispatch('commonModule/setCommonInfo', { siteCd: siteCd })
+      localStorage.setItem('siteCd', siteCd);
     }
   } catch (e) {
     console.log(e);

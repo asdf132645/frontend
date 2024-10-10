@@ -64,13 +64,13 @@ import moment from "moment/moment";
 import {useStore} from "vuex";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
-import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   percentWithNoError,
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);
@@ -182,15 +182,11 @@ const setWbcTotalAndPercent = async () => {
         item.percent = calculatePercentage(item.count, wbcTotal.value);
       }
 
-      const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-      const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-      const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
-
-      if (isInhaHospitalSiteCd) {
+      if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
+        wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter);
+      } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
         wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
-      } else if (isSeoulStMaryHospitalSiteCd) {
-        wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter)
-      } else if (isIncheonStMaryHospitalSiteCd) {
+      } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
         wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
       }
     }
