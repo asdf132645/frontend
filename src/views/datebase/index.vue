@@ -452,7 +452,6 @@ const getDbData = async (type: string, pageNum?: number) => {
         if (type === 'search') {
           dbGetData.value = newData;
         } else {
-          // dbGetData.value = [...dbGetData.value, ...newData];
           newData.forEach((item: any) => {
             const index = dbGetData.value.findIndex(data => data.id === item.id);
             if (index !== -1) {
