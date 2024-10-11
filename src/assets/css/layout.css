@@ -2998,7 +2998,7 @@ ul.normalItems li div span:last-child {
 
 .dbImageContainer {
     overflow-y: auto;
-    max-height: 160px;
+    max-height: 27vh;
 }
 
 .dbRightImages {
