@@ -71,8 +71,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next)  => {
-    // 페이지 이동 전에 setInterval 정리
-    // clearIntervalIfExists();
     // 세션 스토리지에서 사용자 정보 확인
     const storedUser = sessionStorage.getItem('user');
     const getStoredUser = JSON.parse(storedUser || '{}');
@@ -85,27 +83,39 @@ router.beforeEach(async (to, from, next)  => {
     if (from.path === '/setting') {
         const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
         const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
-        if (beforeSettingFormattedString.value === afterSettingFormattedString.value) {
+
+        const beforeSetting = beforeSettingFormattedString.value;
+        const afterSetting = afterSettingFormattedString.value;
+
+        // 설정 변경 여부 확인
+        if (beforeSetting === afterSetting) {
+            // 설정 변경이 없을 경우 초기화 후 페이지 이동 허용
             await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
             await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
             await store.dispatch('commonModule/setCommonInfo', { enteringRouterPath: '' });
             await store.dispatch('commonModule/setCommonInfo', { settingType: '' });
             next();
         } else {
+            // 설정이 변경되었을 경우 확인 처리
             await store.dispatch('commonModule/setCommonInfo', { settingChangedChecker: !settingChangedChecker.value });
             await store.dispatch('commonModule/setCommonInfo', { enteringRouterPath: to.path });
-            next(false);
+            next(false);  // 페이지 이동 취소
+            return;       // 이후 코드 실행 방지
         }
     }
 
-    if ((to.name !== 'login' && to.name !== 'join') && (!getStoredUser.userId && !currentUser.userId)) {
-        // 로그인이 필요한 페이지에 접근하려고 할 때 로그인 페이지로 리다이렉트
+    // 로그인이 필요한 페이지에 접근할 때 세션 및 스토어에서 사용자 정보 확인
+    if (to.name !== 'login' && to.name !== 'join' && (!getStoredUser.userId && !currentUser.value)) {
+        // 로그인 페이지로 리다이렉트
         next('/user/login');
     }
-    else if (to.name === "database") {
-        store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: true});
-        next();
-    } else {
+    // 'database' 페이지에 접근할 때
+    else if (to.name === 'database') {
+        await store.dispatch('commonModule/setCommonInfo', { dataBasePageReset: true });
+        next();  // 데이터베이스 페이지로 이동 허용
+    }
+    // 그 외의 페이지 이동 허용
+    else {
         next();
     }
 });
