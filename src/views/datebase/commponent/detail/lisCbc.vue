@@ -56,16 +56,16 @@
 </template>
 
 <script setup lang="ts">
-import {xml2json} from 'xml-js';
-import {computed, defineProps, onMounted, ref, watch} from "vue";
+import { xml2json } from 'xml-js';
+import { computed, defineProps, onMounted, ref, watch } from "vue";
 import axios from "axios";
-import {readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
-import {useStore} from "vuex";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {hospitalSiteCd} from "@/common/siteCd/siteCd";
-import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
-import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/lib/commonfunction/inhaCbcLis";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import { readFileTxt, readH7File } from "@/common/api/service/fileReader/fileReaderApi";
+import { useStore } from "vuex";
+import { detailRunningApi, updateRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
+import { createCbcFile } from "@/common/api/service/fileSys/fileSysApi";
+import { getCbcCodeList, getCbcPathData, inhaCbc } from "@/common/lib/commonfunction/inhaCbcLis";
+import { messages } from "@/common/defines/constFile/constantMessageText";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -104,33 +104,29 @@ onMounted(async () => {
 
 const initCbcData = async (newVal: any) => {
   loading.value = true;
-  let hospitalName = hospitalSiteCd.find(hospital => hospital.siteCd === siteCd.value)?.hospitalNm;
-  if (siteCd.value === '') {
-    hospitalName = '0000';
-  }
-  switch (hospitalName) {
-      // 서울 성모 cbc - 외부 url 진행 - 파일 없음
-    case '서울성모병원':
+  switch (siteCd.value) {
+    // 서울 성모 cbc - 외부 url 진행 - 파일 없음
+    case HOSPITAL_SITE_CD_BY_NAME['서울성모병원']:
       await cmcSeoulCbc(newVal);
       break;
-    case '고대안암병원':
+    case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
       await kuahGilHosCbc();
       break;
-    case '인천길병원':
+    case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
       await kuahGilHosCbc();
       break;
-    case '삼광의료재단':
+    case HOSPITAL_SITE_CD_BY_NAME['삼광의료재단']:
       /** Todo 작업 필요 */
       break;
-    case '인하대병원':
+    case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
       await inhaCbcLoad();
       break;
-      // CBC 공통
+
+    // CBC 공통
     default:
       await commonCbc();
       break;
   }
-
 
   selectItemsVal.value.cbcPatientNo = cbcPatientNo.value;
   selectItemsVal.value.cbcPatientNm = cbcPatientNm.value;
@@ -290,7 +286,8 @@ const cmcSeoulCbc = async (newVal: any) => {
 
 const kuahGilHosCbc = async () => {
   let readFileTxtRes: any;
-  if (siteCd.value === '0000' || siteCd.value === '') {
+
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD'] || siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']) {
     readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
   } else {
     readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);

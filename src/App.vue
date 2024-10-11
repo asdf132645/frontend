@@ -57,7 +57,7 @@ import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
-import {inhaPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
 import axios from "axios";
 import {
   getCbcCodeList,
@@ -66,6 +66,7 @@ import {
   inhaCbc,
   inhaDataSend
 } from "@/common/lib/commonfunction/inhaCbcLis";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -551,7 +552,8 @@ async function socketData(data: any) {
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
-        if (siteCd.value === '0011') {
+
+        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
           // 인하대 WBC 정보를 저장
           newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
 

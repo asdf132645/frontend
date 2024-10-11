@@ -8,10 +8,10 @@
 
 <script setup lang="ts">
 
-import {defineProps, onMounted, ref, watch, computed, nextTick} from 'vue';
+import { defineProps, onMounted, ref, watch, computed, nextTick } from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { useStore } from "vuex";
-import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import { readDziFile } from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['selectItems']);
 const store = useStore();

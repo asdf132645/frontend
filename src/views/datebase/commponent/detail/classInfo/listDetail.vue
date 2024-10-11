@@ -153,7 +153,7 @@
             :replaceFileNamePrefix="replaceFileNamePrefix"
             :onDragOver="onDragOver"
             :isBorderChanged="isBorderChanged"
-            :isNsNbIntegrationTrue="isNsNbIntegrationTrue"
+            :isLocalNsNbIntegration="isLocalNsNbIntegration"
             :isSelected="isSelected"
             :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
@@ -305,7 +305,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
 const showImageGallery = ref(true);
-
+const isLocalNsNbIntegration = ref(false);
 
 
 
@@ -383,6 +383,8 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await classInfoDetailApi(String(selectedSampleId.value));
     selectItems.value = result.data;
+    setLocalNsNbIntegration();
+
     const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
     iaRootPath.value = path;
 
@@ -674,11 +676,11 @@ function isBorderChanged(image: any) {
   return image.title !== modifiedPrefix;
 }
 
-const isNsNbIntegrationTrue = () => {
-  return selectItems.value.wbcInfoAfter.find((el: any) => el.title === 'NE');
+const setLocalNsNbIntegration = () => {
+  console.log('selectItems', selectItems);
+  isLocalNsNbIntegration.value = !!selectItems.value.wbcInfo.wbcInfo[0].find((el: any) => el.title === 'NE') ? true : false
+  console.log('isLocalNsNbIntegration.value', isLocalNsNbIntegration.value);
 }
-
-
 
 function replaceFileNamePrefix(fileName: string) {
   const isNsNbIntegration = selectItems.value.wbcInfoAfter.find((el: any) => {
@@ -769,6 +771,7 @@ const refreshClass = async (data: any) => {
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
+  setLocalNsNbIntegration();
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
 

@@ -233,27 +233,27 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
-import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
-import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
+import { computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref } from "vue";
+import { getBmTestTypeText, getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
+import { defaultBmClassList, defaultWbcClassList, WbcInfo } from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
-import {useStore} from "vuex";
-import {formatDateString} from "@/common/lib/utils/dateUtils";
+import { useStore } from "vuex";
+import { formatDateString } from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import {getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import { getOrderClassApi, getRbcDegreeApi } from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
-import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
+import { readJsonFile } from "@/common/api/service/fileReader/fileReaderApi";
 import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
 import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
-import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
+import { removeDuplicatesById } from "@/common/lib/utils/removeDuplicateIds";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -322,20 +322,26 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
-    if(siteCd.value === '0002' || siteCd.value === '' || siteCd.value === '0000'){
+
+    if (
+        siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] ||
+        siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD'] ||
+        siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']
+    ) {
       let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || []);
       const wbcInfoAfterValForTotalCount = filterByTitle(wbcAfterInfo, 'wbc');
 
       wbcAfterInfo = removeDuplicatesById(wbcAfterInfo);
-      if(projectBm.value){
+      if (projectBm.value) {
         wbcInfoAfter.value = selectItems.value?.wbcInfoAfter || [];
-      }else {
+      } else {
         wbcInfoAfter.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcAfterInfo);
-
       }
-    }else{
+
+    } else {
       wbcInfoAfter.value = selectItems.value?.wbcInfoAfter || [];
     }
+
     rbcInfo.value = result.data;
 
   } catch (e) {
@@ -352,19 +358,15 @@ const filterByTitle = (wbcInfoArr: any, isNonWbc: 'wbc' | 'nonWbc') => {
 }
 
 const percentChangeBySiteCd = () => {
-  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-  const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
   const projectType = projectBm.value ? 'bm' : 'pb';
 
-  if (isSeoulStMaryHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
-  } else if (isInhaHospitalSiteCd) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
-  } else if (isIncheonStMaryHospitalSiteCd) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     selectItems.value.wbcInfoAfter = incheonStMaryPercentChange(projectType, selectItems.value?.wbcInfoAfter);
   }
-
   wbcInfo.value = selectItems.value.wbcInfoAfter;
 }
 

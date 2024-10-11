@@ -181,7 +181,7 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
-import {business_id, CbcWbcTestCdList_0002, eqmtcd, instcd} from "@/common/defines/constFile/lis";
+import {BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD} from "@/common/defines/constFile/lis";
 import axios from "axios";
 import {xml2json} from "xml-js";
 import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
@@ -193,7 +193,14 @@ import {
   inhaPercentChange,
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
-import {hospitalSiteCd} from "@/common/siteCd/siteCd";
+import {
+  getCbcCodeList,
+  getCbcPathData, getLisPathData,
+  getLisWbcRbcData,
+  inhaCbc,
+  inhaDataSend,
+} from "@/common/lib/commonfunction/inhaCbcLis";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -235,19 +242,11 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisHotKey = ref('');
-import {
-  getCbcCodeList,
-  getCbcPathData, getLisPathData,
-  getLisWbcRbcData,
-  inhaCbc,
-  inhaDataSend,
-} from "@/common/lib/commonfunction/inhaCbcLis";
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
-
 
 onMounted(async () => {
   await nextTick();
@@ -302,7 +301,8 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 const mountedMethod = async () => {
-  if ((inhaTestCode.value === '' && siteCd.value === '0011')) {
+
+  if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
     await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   }
   wbcMemo.value = props.selectItems?.wbcMemo;
@@ -393,9 +393,10 @@ const handleOkConfirm = () => {
 }
 
 const uploadLis = () => {
-  if (siteCd.value === '0002') {
+
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     cmcSeoulLisAndCbcDataGet();
-  } else if (siteCd.value === '0011') {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     inhaDataSendLoad();
   }
   else {
@@ -625,11 +626,11 @@ const cmcSeoulLisAndCbcDataGet = () => {
         // LIS 최종 업로드 Report
         const newparams = {
           submit_id: 'TXLII00101',
-          business_id: business_id,
-          ex_interface: `${params.empNo}|${instcd}`,
-          instcd: instcd,
+          business_id: BUSINESS_ID,
+          ex_interface: `${params.empNo}|${INST_CD}`,
+          instcd: INST_CD,
           userid: params.empNo,
-          eqmtcd: eqmtcd,
+          eqmtcd: EQMT_CD,
           bcno: params.barcodeNo,
           result: paramsResult,
           testcont: 'MANUAL DIFFERENTIAL COUNT RESULT',
@@ -695,8 +696,7 @@ const cmcSeoulLisAndCbcDataGet = () => {
   });
 }
 const lisLastStep = () => {
-  // 인천길병원
-  if (siteCd.value === '0019') {
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
     // 데이터 초기화
     let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
     let seq = 0;
@@ -718,12 +718,15 @@ const lisLastStep = () => {
     data += 'L|1|N';
     // 파일 URL 생성 함수 호출
     lisFileUrlCreate(data);
-  } else if (siteCd.value === '0006') { // 고대 안암
+  }
+  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) {
     const data = goDae();
     lisFileUrlCreate(data);
-  } else if (siteCd.value === '0011') { // 인하대
+  }
+  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     inhaDataSendLoad();
-  } else {
+  }
+  else {
     otherDataSend();
   }
 }
@@ -902,7 +905,7 @@ const sendLisMessage = async (data: any) => {
 
 const checkUserAuth = async (empNo: any) => {
   return new Promise((succ, fail) => {
-    if (siteCd.value === '0002') {
+    if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
       let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
       axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
         params: {
@@ -976,7 +979,7 @@ const memoCancel = () => {
 }
 
 const getStringValue = (title: string): string => {
-  if (title === 'Artifact(Smudge)' && siteCd.value === '0006') {
+  if (title === 'Artifact(Smudge)' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) {
     return "Artifact";
   } else {
     return title;
@@ -1106,18 +1109,16 @@ const beforeAfterChange = async (newItem: any) => {
   for (const item of wbcInfoAfterValForTotalCount) {
     createPercent(item, totalAfterCount.value)
   }
-  const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-  const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-  const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
+
   const projectType = projectBm.value ? 'bm' : 'pb';
 
-  if (isSeoulStMaryHospitalSiteCd || siteCd.value === '0000') {
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
-  } else if (isInhaHospitalSiteCd) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     wbcInfoAfterVal.value = await inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = await inhaPercentChange(selectItems.value, wbcInfoBeforeVal.value);
-  } else if (isIncheonStMaryHospitalSiteCd) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = incheonStMaryPercentChange(selectItems.value, wbcInfoBeforeVal.value);
   }
@@ -1194,8 +1195,9 @@ const createPercent = (item: any, totalCount: any) => {
     item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
   } else {
     // 인하대일 경우 percent 재계산 X
-    const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-    if (isInhaHospitalSiteCd) return;
+    if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+      return;
+    }
 
     const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
     if (!targetArray.includes(item.title)) {
@@ -1282,20 +1284,15 @@ async function updateOriginalDb() {
     });
 
     createPercent(item, totalCount);
-    console.log(siteCd.value);
-    const isSeoulStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '서울성모병원')?.siteCd === siteCd.value;
-    const isInhaHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인하대병원')?.siteCd === siteCd.value;
-    const isIncheonStMaryHospitalSiteCd = hospitalSiteCd.find((item) => item.hospitalNm === '인천성모병원')?.siteCd === siteCd.value;
     const projectType = projectBm.value ? 'bm' : 'pb';
 
-    if (isSeoulStMaryHospitalSiteCd || siteCd.value === '' || siteCd.value === '0000') {
+    if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
       wbcInfoAfterVal.value = seoulStMaryPercentChange(clonedWbcInfo, wbcInfoAfterVal.value);
-    } else if (isInhaHospitalSiteCd) {
+    } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
       wbcInfoAfterVal.value = inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
-    } else if (isIncheonStMaryHospitalSiteCd) {
+    } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     }
-
   });
 
   // wbcInfoAfter 업데이트 및 sessionStorage에 저장

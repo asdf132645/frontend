@@ -38,10 +38,10 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import {messages} from '@/common/defines/constFile/constantMessageText';
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
-import {hospitalSiteCd} from "@/common/siteCd/siteCd";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 const store = useStore();
 const router = useRouter();
@@ -121,8 +121,7 @@ const getImagePrintData = async () => {
       if (!data || (data instanceof Array && data.length === 0)) {
         saveHttpType.value = 'post';
 
-        const hospitalName = hospitalSiteCd.filter(hospitalObj => hospitalObj.siteCd === siteCd.value)[0].hospitalNm;
-        if (hospitalName === '인하대병원') {
+        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
           cbcCodeArr.value = defaultCbcList_0011;
         } else {
           cbcCodeArr.value = defaultCbcList;
