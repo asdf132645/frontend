@@ -282,7 +282,6 @@ watch(props.hiddenImages, (newVal) => {
 });
 
 const debouncedUpdate = debounce(async (newVal) => {
-  console.log('newVal', newVal);
   const timestamp = Date.now();
   loading.value = false;
   wbcInfoArrChild.value = [];

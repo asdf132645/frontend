@@ -285,7 +285,6 @@ watch(userModuleDataGet.value, (newUserId) => {
 
 watch(() => props.wbcInfo, (newItem) => {
   if (Object.keys(newItem).length !== 0) {
-    console.log('s?')
     beforeAfterChange(newItem)
     wbcMemo.value = props.selectItems?.wbcMemo;
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
