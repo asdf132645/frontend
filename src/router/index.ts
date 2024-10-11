@@ -6,7 +6,6 @@ import loginView from '@/views/login/index.vue';
 import setting from '@/views/setting/index.vue'
 import Database from '@/views/datebase/index.vue';
 import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listDetailRbc.vue';
-import DatabaseWbc from '@/views/datebase/commponent/detail/wbc/listDetailWbc.vue';
 import Report from '@/views/datebase/commponent/detail/report/report.vue';
 import databaseDetail from '@/views/datebase/commponent/detail/classInfo/listDetail.vue';
 import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
@@ -74,7 +73,7 @@ router.beforeEach(async (to, from, next)  => {
     // 세션 스토리지에서 사용자 정보 확인
     const storedUser = sessionStorage.getItem('user');
     const getStoredUser = JSON.parse(storedUser || '{}');
-// 스토어
+    // 스토어
     const store = useStore();
     // 스토어에서 사용자 정보 확인
     const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
