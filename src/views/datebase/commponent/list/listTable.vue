@@ -285,57 +285,54 @@ onUnmounted(() => {
 watch(
     () => props.loadingDelayParents,
     (newVal) => {
-      if (newVal) {
-        loadingDelay.value = true;
-      } else {
-        loadingDelay.value = false;
-      }
-    },
-    {deep: true}
+      loadingDelay.value = !!newVal;
+    }
 );
 
+
 watchEffect(async () => {
-  if (props.dbData.length > 0) {
-    await nextTick();
+  try {
+    if (props.dbData.length > 0) {
+      await nextTick();
 
-    if (props.selectedItemIdFalse) {
-      // selectedItemId.value = '0';
-      // const filteredItems = props.dbData[0].id
-      // const selectedRow = document.querySelector(`[data-row-id="${filteredItems}"]`);
-      // selectedRow.scrollIntoView({behavior: 'smooth', block: 'center'});
-    }
-    const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+      const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
 
-    // 첫 번째 행을 클릭
-    const observer = new IntersectionObserver(handleIntersection, {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    });
-    if (loadMoreRef.value) {
-      observer.observe(loadMoreRef.value);
-    }
+      // IntersectionObserver 설정
+      const observer = new IntersectionObserver(handleIntersection, {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5,
+      });
+      if (loadMoreRef.value) {
+        observer.observe(loadMoreRef.value);
+      }
 
-    if (selectedItemId.value === '0' || !selectedItemId.value) {
-      loadingDelay.value = false;
-    }
-
-    if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
-      // loadingDelay.value = true;
-      await selectItem(filteredItems[0]);
-      await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
-      await removeCheckBox();
-      // 선택된 행이 화면에 보이도록 스크롤 조정
-      const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
-      if (selectedRow && selectedItemId.value !== '0') {
-        // selectedRow.scrollIntoView({ behavior: 'auto', block: 'center' });
+      if (selectedItemId.value === '0' || !selectedItemId.value) {
         loadingDelay.value = false;
       }
-      return;
-    }
 
+      // 데이터베이스 페이지 리셋 상태 확인
+      if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
+        // loadingDelay.value = true;
+        await selectItem(filteredItems[0]);
+        await store.dispatch('commonModule/setCommonInfo', { dataBasePageReset: false });
+        await removeCheckBox();
+
+        // 선택된 행이 화면에 보이도록 스크롤 조정
+        const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
+        if (selectedRow && selectedItemId.value !== '0') {
+          // selectedRow.scrollIntoView({ behavior: 'auto', block: 'center' });
+          loadingDelay.value = false;
+        }
+        return;
+      }
+    }
+  } catch (error) {
+    console.error('Error during watchEffect execution:', error);
+    loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
   }
 });
+
 
 
 const printClose = () => {
