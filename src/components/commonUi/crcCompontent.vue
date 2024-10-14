@@ -2,7 +2,7 @@
   <div class="crcDivTitle">
     {{ moTypeTextChange(moType) }}
   </div>
-  <div>
+  <div :class="{ rbcCrcDiv: moType === 'RBC' }">
     <ul>
       <li v-for="(row, rowIndex) in groupedData" :key="rowIndex" class="crcRow">
         <div v-for="(item, idx) in row" :key="idx" class="grid-item crcItemDiv">

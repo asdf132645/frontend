@@ -116,35 +116,6 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
     return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading}
 }
 
-export const getCbcPathData = async () => {
-    let cbcFilePathSetArr = '';
-    try {
-        const result = await getFilePathSetApi();
-
-        if (result && result.data) {
-            const data = result.data;
-            cbcFilePathSetArr = data[0].cbcFilePath;
-        }
-    } catch (e) {
-        console.error(e);
-    }
-    return cbcFilePathSetArr;
-};
-
-export const getCbcCodeList = async () => {
-    let cbcCodeList: any = [];
-    try {
-        const result = await getCbcCodeRbcApi();
-        if (result && result.data) {
-            cbcCodeList = result.data;
-        }
-    } catch (e) {
-        console.error(e);
-    }
-    return cbcCodeList;
-};
-
-
 export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, lisFilePathSetArr: any, inhaTestCode: any, lisCodeWbcArr: any, lisCodeRbcArr: any, selectItems: any, id: any) => {
     console.log('Lis 업로드 로직 시작');
     console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
@@ -227,17 +198,19 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
                             // resultStr += lisCode.LIS_CD + '|' + '0' + '|' + ','
                         }
                     } else {
-                        if (Number(wbcItem.percent) > 0) {
-                            // GP, PA
-                            if (lisCode.IA_CD === '13' || lisCode.IA_CD === '14') {
-                                if (Number(wbcItem.count) > Number(lisCode.MIN_COUNT)) {
-                                    resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-                                } else {
-                                    resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
-                                    // resultStr += lisCode.LIS_CD + '|' + '0' + '|' + ','
-                                }
-                            } else {
+                        // GP, PA
+                        if (lisCode.IA_CD === '13' || lisCode.IA_CD === '14') {
+                            if (Number(wbcItem.count) > Number(lisCode.MIN_COUNT)) {
                                 resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
+                            } else {
+                                resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
+                                // resultStr += lisCode.LIS_CD + '|' + '0' + '|' + ','
+                            }
+                        } else {
+                            if (Number(wbcItem.percent) > 0) {
+                                resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
+                            } else{
+                                resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
                             }
                         }
                     }
@@ -323,7 +296,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
         console.log('res 최종값', response)
         if (res?.returnCode === '0') {
             const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems?.barcodeNo}.txt`;
-            const parmsLisCopy = {filePath, res};
+            const parmsLisCopy = {filePath, data: jsonObject};
 
             // LIS 파일 생성
             await createCbcFile(parmsLisCopy);
@@ -443,4 +416,31 @@ export const getLisPathData = async () => {
     }
 
     return {lisFilePathSetArr, lisHotKey};
+};
+export const getCbcPathData = async () => {
+    let cbcFilePathSetArr = '';
+    try {
+        const result = await getFilePathSetApi();
+
+        if (result && result.data) {
+            const data = result.data;
+            cbcFilePathSetArr = data[0].cbcFilePath;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    return cbcFilePathSetArr;
+};
+
+export const getCbcCodeList = async () => {
+    let cbcCodeList: any = [];
+    try {
+        const result = await getCbcCodeRbcApi();
+        if (result && result.data) {
+            cbcCodeList = result.data;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    return cbcCodeList;
 };
