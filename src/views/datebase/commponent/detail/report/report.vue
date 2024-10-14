@@ -267,8 +267,6 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterData);
-const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
-const instance = getCurrentInstance();
 const projectBm = ref(false);
 const orderClass = ref<any>([]);
 const isLoading = ref(true);

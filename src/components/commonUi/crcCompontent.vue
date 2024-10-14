@@ -22,10 +22,10 @@
             </select>
             <div v-else-if="pageName === 'set'">{{ item?.crcType }}</div>
           </div>
-          <div>
+          <div class="crcSel">
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
             <div v-else>
-              <div v-if="item?.crcType === 'select'">
+              <div v-if="item?.crcType === 'select'" >
                 <select>
                   <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
                 </select>
