@@ -45,6 +45,7 @@
           @updateCrc="onUpdateCrc"
           @deleteCrc="onDeleteCrc"
           moType="RBC"
+          pageName="set"
       ></crc-compontent>
 
       <div class="moDivBox mt2">
@@ -54,6 +55,7 @@
              @updateCrc="onUpdateCrc"
              @deleteCrc="onDeleteCrc"
              moType="WBC"
+             pageName="set"
          ></crc-compontent>
        </div>
 
@@ -63,6 +65,7 @@
               @updateCrc="onUpdateCrc"
               @deleteCrc="onDeleteCrc"
               moType="PLT"
+              pageName="set"
           ></crc-compontent>
         </div>
       </div>
@@ -71,12 +74,21 @@
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveCrcData">Save</button>
   </div>
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
+  />
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
 import {crcGet, createCrcApi, deleteCrcApi, updateCrcApi} from "@/common/api/service/setting/settingApi";
-import CrcCompontent from "@/components/commonUi/crcCompontent.vue";  // 자식 컴포넌트 경로
+import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
+import Alert from "@/components/commonUi/Alert.vue";  // 자식 컴포넌트 경로
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -86,6 +98,9 @@ const crcContent = ref('');
 const crcArr = ref<any>([]);
 const morphologyType = ref('');
 const crcData = ref<any>([]);
+const showAlert = ref(false);
+const alertType = ref('');
+const alertMessage = ref('');
 
 onMounted(async () => {
   crcData.value = await crcGet();
@@ -94,7 +109,15 @@ onMounted(async () => {
     crcArr.value = crcData.value.data;
   }
 });
-
+const hideAlert = () => {
+  showAlert.value = false;
+};
+const showSuccessAlert  = async (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'success';
+  alertMessage.value = message;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+};
 const addCrcArr = () => {
   if (crcTitle.value === '' || crcType.value === '') {
     return;
@@ -116,7 +139,7 @@ const onUpdateCrc = async ({index, updatedItem}: { index: number, updatedItem: a
 
 // 삭제 이벤트 처리 함수
 const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
-  const findId = crcArr.value.findIndex((item) => item.id === id);
+  const findId = crcArr.value.findIndex((item: any) => item.id === id);
   crcArr.value.splice(findId, 1); // 배열에서 제거
   await deleteCrcApi({id}); // 서버에 삭제 요청
 };
@@ -124,5 +147,6 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 // 데이터 저장 함수
 const saveCrcData = async () => {
   await createCrcApi(crcArr.value);
+  await showSuccessAlert('Success');
 };
 </script>

@@ -20,11 +20,23 @@
               <option value="text">text</option>
               <option value="percent">percent</option>
             </select>
-            <div v-else>{{ item?.crcType }}</div>
+            <div v-else-if="pageName === 'set'">{{ item?.crcType }}</div>
           </div>
           <div>
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
-            <div v-else>{{ item?.crcContent }}</div>
+            <div v-else>
+              <div v-if="item?.crcType === 'select'">
+                <select>
+                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
+                </select>
+              </div>
+              <div v-else-if="item?.crcType === 'text'">
+                <input disabled type="text" placeholder="Enter text" />
+              </div>
+              <div v-else>
+                <input class="smallInput" disabled :value="item?.crcContent" type="text" placeholder="Enter percentage" />
+              </div>
+            </div>
           </div>
           <div v-if="item.crcType === 'percent'" class="smallBox">
             <input
@@ -36,10 +48,10 @@
               {{ item?.crcPercentText }}
             </span>
           </div>
-          <div>
+          <div v-if="pageName === 'set'">
             <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
           </div>
-          <div>
+          <div v-if="pageName === 'set'">
             <button type="button" @click="editCrcArr(item.id)">EDIT</button>
             <button
                 type="button"
@@ -68,7 +80,12 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  pageName: {
+    type: String,
+    required: true,
+  },
 });
+
 
 const emit = defineEmits(['updateCrc', 'deleteCrc']);
 const arrData = ref<any>([]);
@@ -96,26 +113,13 @@ const editCrcArr = (id: number) => {
 };
 
 const updateCrcArr = (id: number) => {
-  const updatedItem = { ...arrData.value.find(item => item.id === id) };
-  emit('updateCrc', { id, updatedItem });
+  const updatedItem = {...arrData.value.find(item => item.id === id)};
+  emit('updateCrc', {id, updatedItem});
   editIndex.value = null;
 };
 
 const delCrcArr = (idx: number, id: any) => {
-  emit('deleteCrc', { index: idx, id });
-};
-
-const returnCrcTypeComponent = (type: string) => {
-  switch (type) {
-    case 'select':
-      return `<select disabled><option>Select</option></select>`;
-    case 'text':
-      return `<input disabled type="text" placeholder="text"/>`;
-    case 'percent':
-      return `<input class="smallInput" disabled type="text" placeholder="percent" />`;
-    default:
-      return;
-  }
+  emit('deleteCrc', {index: idx, id});
 };
 
 const moTypeTextChange = (txt: string) => {
@@ -128,4 +132,8 @@ const moTypeTextChange = (txt: string) => {
       return 'Platelet Morphology';
   }
 };
+
+const contentArr = (content: any) => {
+  return content.split(',').map((item: any) => item.trim());
+}
 </script>

@@ -723,7 +723,7 @@ const lisLastStep = () => {
     const data = goDae();
     lisFileUrlCreate(data);
   }
-  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '0000' || siteCd.value === '') {
     inhaDataSendLoad();
   }
   else {
