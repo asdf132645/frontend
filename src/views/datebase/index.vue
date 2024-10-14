@@ -502,12 +502,14 @@ const getDbData = async (type: string, pageNum?: number) => {
 const search = () => {
   dbGetData.value = [];
   sessionStorage.removeItem('lastSearchParams');
+  // 전시회 갈 때 주석처리할 코드 START
   const diffInMs = endDate.value.getTime() - startDate.value.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
   if (diffInDays > 30) {
     showSuccessAlert("You cannot select a period of more than 30 days.");
     return;
   }
+  // 전시회 갈 때 주석처리할 코드 END
   getDbData('search');
 };
 

@@ -298,8 +298,9 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   oilCountData.value = oilCountChangeVal();
   storagePercentData.value = storagePercentChangeVal();
 
+  // 2번 보내는지 확인
   if (!isStartCountUpdated.value) {
-    searchCardCount();
+    await searchCardCount();
   }
 
 });
