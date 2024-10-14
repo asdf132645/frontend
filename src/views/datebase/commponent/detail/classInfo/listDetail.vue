@@ -677,9 +677,7 @@ function isBorderChanged(image: any) {
 }
 
 const setLocalNsNbIntegration = () => {
-  console.log('selectItems', selectItems);
   isLocalNsNbIntegration.value = !!selectItems.value.wbcInfo.wbcInfo[0].find((el: any) => el.title === 'NE') ? true : false
-  console.log('isLocalNsNbIntegration.value', isLocalNsNbIntegration.value);
 }
 
 function replaceFileNamePrefix(fileName: string) {

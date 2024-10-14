@@ -366,7 +366,7 @@ const percentChangeBySiteCd = () => {
 
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
-  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     selectItems.value.wbcInfoAfter = incheonStMaryPercentChange(projectType, selectItems.value?.wbcInfoAfter);
@@ -534,7 +534,6 @@ const percentageChange = (count: any): any => {
 const classOrderChanged = async () => {
   await getOrderClass();
   await initData();
-
 }
 
 const shouldRenderCategory = (title: string) => {
@@ -613,6 +612,7 @@ async function initData(data?: any) {
 
     selectItems.value.wbcInfoAfter = sortedWbcInfo;
     wbcInfo.value = sortedWbcInfo;
+    wbcInfoAfter.value = sortedWbcInfo;
 
     if (!nonWbcClassList.value || nonWbcClassList.value.length === 0) {
       const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
@@ -625,6 +625,7 @@ async function initData(data?: any) {
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     selectItems.value.wbcInfoAfter = sortedWbcInfo;
     wbcInfo.value = sortedWbcInfo;
+    wbcInfoAfter.value = sortedWbcInfo;
   }
 
   await percentChangeBySiteCd();
@@ -634,7 +635,6 @@ async function initData(data?: any) {
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
-
   newSortArr.sort((a: any, b: any) => {
     const nameA = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (a.title || a.abbreviation));
     const nameB = basicWbcArr.findIndex((item: any) => (item.title || item.abbreviation) === (b.title || b.abbreviation));

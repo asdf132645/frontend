@@ -119,6 +119,8 @@ const initCbcData = async (newVal: any) => {
       /** Todo 작업 필요 */
       break;
     case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
+    case '0000':
+    case '':
       await inhaCbcLoad();
       break;
 
