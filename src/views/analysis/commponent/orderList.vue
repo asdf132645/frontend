@@ -94,10 +94,10 @@ const runningInfoGet = async (data: any) => {
           patientName: currentSlot.patientNm,
           orderDate: stringToDateTime(currentSlot.orderDttm) || 0,
           analyzedDttm: stringToDateTime(currentSlot.analyzedDttm) || 0,
-          state: currentSlot.stateCd,
+          state: currentSlot.state,
         });
       } else {
-        dspOrderList.value[existingItemIndex].state = currentSlot.stateCd;
+        dspOrderList.value[existingItemIndex].state = currentSlot.state;
 
       }
     }
