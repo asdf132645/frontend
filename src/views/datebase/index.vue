@@ -182,6 +182,8 @@ const notStartLoading = ref(false);
 const barcodeInput = ref<HTMLInputElement | null>(null);
 const isPrintingExcel = ref(false);
 const rbcInfoPathAfter = ref<any>([]);
+const countArtifact = ref(0);
+const countDoubleNormal = ref(0);
 
 const maxRbcCount = ref(0);
 const pltCount = ref(0);

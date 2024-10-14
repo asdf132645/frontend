@@ -1073,8 +1073,7 @@ const beforeAfterChange = async (newItem: any) => {
         wbcAfterInfo.push(customItem);
       }
     }
-  }
-  if (availableCustomClassArr.length > 0 && customClassItems.length > 0) {
+  } else if (availableCustomClassArr.length > 0 && customClassItems.length > 0) {
     for (const customClassItem of customClassItems) {
       if (wbcAfterInfo.find((item: any) => item.id != customClassItem.id)) {
         const customItem = {
@@ -1084,11 +1083,26 @@ const beforeAfterChange = async (newItem: any) => {
           title: customClassItem.title,
           images: [],
         }
+
         wbcBeforeInfo.push(customItem)
         wbcAfterInfo.push(customClassItem)
       }
     }
   }
+
+  wbcBeforeInfo = wbcBeforeInfo.reduce((acc: any, current: any) => {
+    if (!acc.some((item: any) => item.id === current.id)) {
+      acc.push(current);
+    }
+    return acc;
+  }, []);
+
+  wbcAfterInfo = wbcAfterInfo.reduce((acc: any, current: any) => {
+    if (!acc.some((item: any) => item.id === current.id)) {
+      acc.push(current);
+    }
+    return acc;
+  }, []);
 
   const wbcBeforeArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const wbcAfterArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;

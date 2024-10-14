@@ -35,15 +35,16 @@
 </template>
 
 <script setup lang="ts">
-import {getCurrentInstance, ref, onMounted, computed, onBeforeMount} from "vue";
+import { getCurrentInstance, ref, onMounted, computed, onBeforeMount } from "vue";
 import { login } from "@/common/api/service/user/userApi";
-import {getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import { getDeviceInfoApi, getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import router from "@/router";
 import { UserResponse  } from '@/common/api/service/user/dto/userDto'
-import {ApiResponse} from "@/common/api/httpClient";
-import {useStore} from "vuex";
+import { ApiResponse } from "@/common/api/httpClient";
+import { useStore } from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import { initializeAllSettings } from "@/common/lib/commonfunction/settingFunctions";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 
 // 스토어
 const store = useStore();
@@ -144,7 +145,7 @@ const getIpAddress = async (userId: string) => {
       sessionStorage.setItem('viewerCheck', 'viewer');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
       const deviceInfo =  await getDeviceInfoApi();
-      const siteCd = deviceInfo.data[0].siteCd;
+      const siteCd = deviceInfo.data[0]?.siteCd ? deviceInfo.data[0]?.siteCd : HOSPITAL_SITE_CD_BY_NAME['UIMD'];
       await store.dispatch('commonModule/setCommonInfo', { siteCd: siteCd })
       localStorage.setItem('siteCd', siteCd);
     }

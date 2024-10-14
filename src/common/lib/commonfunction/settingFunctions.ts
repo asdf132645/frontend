@@ -103,8 +103,7 @@ const firstGetSettings = async (initializeType: string) => {
     const getRequest = settingsConstant.value[initializeType].getRequest;
     try {
         const { data } = await getRequest() || {};
-
-        if (!data || data.length === 0) {
+        if (!data || data.length === 0 || Object.keys(data).length === 0) {
             const sendingFormStr = settingsConstant.value[initializeType]?.sendingForm;
             const defaultItem = settingsConstant.value[initializeType].defaultItem;
             const createRequest = settingsConstant.value[initializeType].createRequest;
