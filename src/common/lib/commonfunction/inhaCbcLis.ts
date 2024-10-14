@@ -209,7 +209,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
                         } else {
                             if (Number(wbcItem.percent) > 0) {
                                 resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-                            }else{
+                            } else{
                                 resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
                             }
                         }
