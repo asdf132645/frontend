@@ -44,7 +44,7 @@ import {computed, onMounted, ref, watch} from "vue";
 import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import {
   createOrderClassApi,
-  getOrderClassApi, putOrderClassApi,
+  getOrderClassApi, getWbcCustomClassApi, putOrderClassApi,
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from '@/common/defines/constFile/constantMessageText';
@@ -68,11 +68,13 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const wbcCustomItems = ref<any>([]);
 
 onMounted(async () => {
   wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.classOrder });
   await getOrderClass();
+  await getWbcCustomClasses();
 })
 
 watch(() => wbcInfoChangeVal.value, async (classOrderAfterSettingObj) => {
@@ -108,6 +110,31 @@ const getOrderClass = async () => {
     }
   } catch (e) {
     console.log(e)
+  }
+}
+
+const getWbcCustomClasses = async () => {
+  try {
+    const result: any = await getWbcCustomClassApi();
+    if (result) {
+      wbcCustomItems.value = result.data.filter((item: { id: number, abbreviation: string, fullNm: string, customNum: number }) => item.abbreviation !== '' && item.fullNm !== '');
+      const classIds = wbcInfoChangeVal.value.map((item: any) => item.classId);
+      let maxOrderIdx = Math.max(...wbcInfoChangeVal.value.map((item: any) => item.orderIdx));
+
+      for (const item of wbcCustomItems.value) {
+        if (!classIds.includes(String(item.customNum))) {
+          const updateItem = {
+            abbreviation: item.abbreviation,
+            classId: String(item.customNum),
+            fullNm: item.fullNm,
+            orderIdx: maxOrderIdx++
+          }
+          wbcInfoChangeVal.value = [...wbcInfoChangeVal.value, updateItem];
+        }
+      }
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 

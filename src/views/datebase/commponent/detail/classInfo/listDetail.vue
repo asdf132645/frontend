@@ -1337,6 +1337,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     destinationFolders,
     fileNames
   };
+
   try {
 
     const res = await moveClassImagePost(data);
