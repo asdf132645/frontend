@@ -11,7 +11,13 @@
         <span>code</span>
       </li>
       <li class="crcListContent">
-        <span><input type="checkbox"/><span>1</span>   <font-awesome-icon :icon="['fas', 'sort-down']" class="sortDownBig"/></span>
+        <span>
+          <button>Del</button>
+          <button>Edit</button>
+          <input type="checkbox"/>
+          <span>1</span>
+          <font-awesome-icon :icon="['fas', 'sort-down']" class="sortDownBig"/>
+        </span>
         <div>
           <div>
             <span class="smCrcTitle">RBC Morphology</span>
@@ -43,5 +49,4 @@
 </template>
 <script setup lang="ts">
 
-import Button from "@/components/commonUi/Button.vue";
 </script>

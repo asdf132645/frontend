@@ -3671,7 +3671,11 @@ li.crcListContent > span {
     border-radius: 4px;
     margin-left: 10px;
 }
-
+.remarkDiv {
+    position: absolute;
+    background: #fff;
+    left: 50%;
+}
 .crcReport .moDivBox li.crcRow {
     min-width: auto;
     width: 100%;

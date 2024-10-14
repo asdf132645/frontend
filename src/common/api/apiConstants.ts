@@ -489,4 +489,22 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
+    report:{
+        crcRemarkCreate: {
+            endpoint: 'crc-remark-setting/crcRemarkCreate',
+            requiresToken: false,
+        },
+        crcRemarkFindAll: {
+            endpoint: 'crc-remark-setting/crcRemarkFindAll',
+            requiresToken: false,
+        },
+        crcRemarkRemove: {
+            endpoint: 'crc-remark-setting/crcRemarkRemove',
+            requiresToken: false,
+        },
+        crcRemarkUpdate: {
+            endpoint: 'crc-remark-setting/crcRemarkUpdate',
+            requiresToken: false,
+        }
+    }
 };
