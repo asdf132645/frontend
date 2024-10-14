@@ -175,6 +175,17 @@ const getWbcCustomClasses = async () => {
           }
 
           lisCodeWbcArr.value = [...lisCodeWbcArr.value, updateItem];
+        } else {
+          lisCodeWbcArr.value = lisCodeWbcArr.value.map((obj: any) => {
+            if (String(obj.classId) === String(item.customNum) && obj.fullNm !== item.fullNm) {
+              return {
+                ...obj,
+                fullNm: item.fullNm,
+                key: '',
+              };
+            }
+            return obj;
+          });
         }
       }
     }

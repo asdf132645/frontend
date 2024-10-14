@@ -138,6 +138,17 @@ const getWbcCustomClasses = async () => {
             orderIdx: maxOrderIdx++
           }
           wbcInfoChangeVal.value = [...wbcInfoChangeVal.value, updateItem];
+        } else {
+          wbcInfoChangeVal.value = wbcInfoChangeVal.value.map((obj: any) => {
+            if (String(obj.classId) === String(item.customNum) && obj.fullNm !== item.fullNm) {
+              return {
+                ...obj,
+                fullNm: item.fullNm,
+                abbreviation: item.abbreviation
+              };
+            }
+            return obj;
+          });
         }
       }
     }
