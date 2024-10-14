@@ -156,8 +156,16 @@ const getWbcCustomClasses = async () => {
     const result: any = await getWbcCustomClassApi();
     if (result) {
       wbcCustomItems.value = result.data.filter((item: { id: number, abbreviation: string, fullNm: string, customNum: number }) => item.abbreviation !== '' && item.fullNm !== '');
+      const wbcCustomItemClassIds = wbcCustomItems.value.map((item: any) => Number(item.customNum));
       const lisCodeWbcClassIds = lisCodeWbcArr.value.map((item: any) => item.classId);
 
+      // lisCodeWbc에서 없는 Custom Class 삭제
+      lisCodeWbcArr.value = lisCodeWbcArr.value.filter((wbcInfo: any) => {
+        if (90 <= Number(wbcInfo.classId) && Number(wbcInfo.classId) <= 94 && !wbcCustomItemClassIds.includes(Number(wbcInfo.classId))) return false;
+        return true;
+      })
+
+      // lisCodeWbc에 Custom Class 추가
       for (const item of wbcCustomItems.value) {
         if (!lisCodeWbcClassIds.includes(String(item.customNum))) {
           const updateItem = {

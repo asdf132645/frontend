@@ -118,9 +118,17 @@ const getWbcCustomClasses = async () => {
     const result: any = await getWbcCustomClassApi();
     if (result) {
       wbcCustomItems.value = result.data.filter((item: { id: number, abbreviation: string, fullNm: string, customNum: number }) => item.abbreviation !== '' && item.fullNm !== '');
+      const wbcCustomItemClassIds = wbcCustomItems.value.map((item: any) => Number(item.customNum));
+
+      // Class Order에서 없는 Custom Class 제거
+      wbcInfoChangeVal.value = wbcInfoChangeVal.value.filter((wbcInfo: any) => {
+        if (90 <= Number(wbcInfo.classId) && Number(wbcInfo.classId) <= 94 && !wbcCustomItemClassIds.includes(Number(wbcInfo.classId))) return false;
+        return true;
+      })
+
+      // Custom Class => Class Order 추가
       const classIds = wbcInfoChangeVal.value.map((item: any) => item.classId);
       let maxOrderIdx = Math.max(...wbcInfoChangeVal.value.map((item: any) => item.orderIdx));
-
       for (const item of wbcCustomItems.value) {
         if (!classIds.includes(String(item.customNum))) {
           const updateItem = {
