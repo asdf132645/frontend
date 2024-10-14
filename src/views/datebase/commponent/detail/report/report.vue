@@ -13,7 +13,7 @@
         <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
                   @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
       </div>
-      <div class="reportDetail shadowBox">
+      <div class="reportDetail shadowBox" v-if="crcData.length === 0">
         <div class="reportTitle">
           <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
           <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>
@@ -221,9 +221,9 @@
           </div>
         </div>
       </div>
+      <Crc v-else :crcDataVal="crcData"/>
     </div>
   </div>
-  <Crc v-else/>
   <div ref="printContent">
     <Print v-if="printOnOff" @printClose="printClose" />
   </div>
@@ -233,7 +233,7 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import { computed, getCurrentInstance, onBeforeMount, onMounted, onUnmounted, ref } from "vue";
+import {computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
 import { getBmTestTypeText, getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
 import { defaultBmClassList, defaultWbcClassList, WbcInfo } from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
@@ -242,7 +242,7 @@ import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import { useStore } from "vuex";
 import { formatDateString } from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import { getOrderClassApi, getRbcDegreeApi } from "@/common/api/service/setting/settingApi";
+import {crcGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
 import { readJsonFile } from "@/common/api/service/fileReader/fileReaderApi";
@@ -288,6 +288,8 @@ const pltCount = ref(0);
 const rbcDegreeStandard = ref<any>([]);
 const isCommitChanged = ref(false);
 const wbcInfoAfter = ref<any>([]);
+const crcData = ref<any>([]);
+
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
@@ -298,6 +300,9 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
+onBeforeMount(async () => {
+  crcData.value = (await crcGet()).data;
+})
 
 onMounted(async () => {
   await getDetailRunningInfo();
@@ -348,6 +353,7 @@ const getDetailRunningInfo = async () => {
     console.log(e);
   }
 }
+
 const filterByTitle = (wbcInfoArr: any, isNonWbc: 'wbc' | 'nonWbc') => {
   const titleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
   if (isNonWbc === 'nonWbc') {

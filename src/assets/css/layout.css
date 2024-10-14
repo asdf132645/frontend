@@ -3144,9 +3144,11 @@ ul.normalItems li div span:last-child {
     width: 700px;
     margin: 30px auto;
 }
+
 .tab-content.crc {
     width: 1050px;
 }
+
 button.rollbackButton {
     position: absolute;
     right: -20px;
@@ -3618,6 +3620,10 @@ li.crcRow {
     font-size: 0.9rem;
     font-weight: 600;
     margin: 10px 0px 5px 0px;
+}
+
+.rbcCrcDiv li.crcRow {
+    width: 100%;
 }
 
 @media screen and (max-width: 1900px) {

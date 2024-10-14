@@ -553,7 +553,7 @@ async function socketData(data: any) {
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
 
-        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value ===  '0000' || siteCd.value ===  '') {
           // 인하대 WBC 정보를 저장
           newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
 
