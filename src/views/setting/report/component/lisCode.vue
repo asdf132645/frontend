@@ -70,8 +70,8 @@ import {useRouter} from "vue-router";
 
 const store = useStore();
 const router = useRouter();
-const lisCodeWbcArr = ref<LisCodeWbcItem[] | any>([]);
-const lisCodeRbcArr = ref<LisCodeRbcItem[] | any>([]);
+const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
+const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
 const minCountArr = ref<minCountItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
@@ -82,11 +82,9 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
-const wbcCustomItems = ref<any>([]);
 
 onMounted(async () => {
   await getImagePrintData();
-  await getWbcCustomClasses();
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.lisCode });
 });
 
@@ -150,49 +148,6 @@ const saveLisCode = async () => {
     console.error(e);
   }
 };
-
-const getWbcCustomClasses = async () => {
-  try {
-    const result: any = await getWbcCustomClassApi();
-    if (result) {
-      wbcCustomItems.value = result.data.filter((item: { id: number, abbreviation: string, fullNm: string, customNum: number }) => item.abbreviation !== '' && item.fullNm !== '');
-      const wbcCustomItemClassIds = wbcCustomItems.value.map((item: any) => Number(item.customNum));
-      const lisCodeWbcClassIds = lisCodeWbcArr.value.map((item: any) => item.classId);
-
-      // lisCodeWbc에서 없는 Custom Class 삭제
-      lisCodeWbcArr.value = lisCodeWbcArr.value.filter((wbcInfo: any) => {
-        if (90 <= Number(wbcInfo.classId) && Number(wbcInfo.classId) <= 94 && !wbcCustomItemClassIds.includes(Number(wbcInfo.classId))) return false;
-        return true;
-      })
-
-      // lisCodeWbc에 Custom Class 추가
-      for (const item of wbcCustomItems.value) {
-        if (!lisCodeWbcClassIds.includes(String(item.customNum))) {
-          const updateItem = {
-            fullNm: item.fullNm,
-            classId: String(item.customNum),
-            key: '',
-          }
-
-          lisCodeWbcArr.value = [...lisCodeWbcArr.value, updateItem];
-        } else {
-          lisCodeWbcArr.value = lisCodeWbcArr.value.map((obj: any) => {
-            if (String(obj.classId) === String(item.customNum) && obj.fullNm !== item.fullNm) {
-              return {
-                ...obj,
-                fullNm: item.fullNm,
-                key: '',
-              };
-            }
-            return obj;
-          });
-        }
-      }
-    }
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 const filterNumbersOnly = (event: Event, is: boolean) => {
   const input = event.target as HTMLInputElement;

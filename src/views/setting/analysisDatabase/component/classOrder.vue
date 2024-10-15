@@ -68,13 +68,11 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
-const wbcCustomItems = ref<any>([]);
 
 onMounted(async () => {
   wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.classOrder });
   await getOrderClass();
-  await getWbcCustomClasses();
 })
 
 watch(() => wbcInfoChangeVal.value, async (classOrderAfterSettingObj) => {
@@ -110,50 +108,6 @@ const getOrderClass = async () => {
     }
   } catch (e) {
     console.log(e)
-  }
-}
-
-const getWbcCustomClasses = async () => {
-  try {
-    const result: any = await getWbcCustomClassApi();
-    if (result) {
-      wbcCustomItems.value = result.data.filter((item: { id: number, abbreviation: string, fullNm: string, customNum: number }) => item.abbreviation !== '' && item.fullNm !== '');
-      const wbcCustomItemClassIds = wbcCustomItems.value.map((item: any) => Number(item.customNum));
-
-      // Class Order에서 없는 Custom Class 제거
-      wbcInfoChangeVal.value = wbcInfoChangeVal.value.filter((wbcInfo: any) => {
-        if (90 <= Number(wbcInfo.classId) && Number(wbcInfo.classId) <= 94 && !wbcCustomItemClassIds.includes(Number(wbcInfo.classId))) return false;
-        return true;
-      })
-
-      // Custom Class => Class Order 추가
-      const classIds = wbcInfoChangeVal.value.map((item: any) => item.classId);
-      let maxOrderIdx = Math.max(...wbcInfoChangeVal.value.map((item: any) => item.orderIdx));
-      for (const item of wbcCustomItems.value) {
-        if (!classIds.includes(String(item.customNum))) {
-          const updateItem = {
-            abbreviation: item.abbreviation,
-            classId: String(item.customNum),
-            fullNm: item.fullNm,
-            orderIdx: maxOrderIdx++
-          }
-          wbcInfoChangeVal.value = [...wbcInfoChangeVal.value, updateItem];
-        } else {
-          wbcInfoChangeVal.value = wbcInfoChangeVal.value.map((obj: any) => {
-            if (String(obj.classId) === String(item.customNum) && obj.fullNm !== item.fullNm) {
-              return {
-                ...obj,
-                fullNm: item.fullNm,
-                abbreviation: item.abbreviation
-              };
-            }
-            return obj;
-          });
-        }
-      }
-    }
-  } catch (e) {
-    console.log(e);
   }
 }
 

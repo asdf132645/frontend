@@ -612,7 +612,6 @@ async function initData(data?: any) {
 
     selectItems.value.wbcInfoAfter = sortedWbcInfo;
     wbcInfo.value = sortedWbcInfo;
-    wbcInfoAfter.value = sortedWbcInfo;
 
     if (!nonWbcClassList.value || nonWbcClassList.value.length === 0) {
       const sortedWbcInfo = sortWbcInfo(selectItems.value?.wbcInfo.wbcInfo[0], wbcArrs);
@@ -625,7 +624,6 @@ async function initData(data?: any) {
     nonWbcClassList.value = sortedWbcInfo.filter((item: any) => nonWbcTitleArr.includes(item.title));
     selectItems.value.wbcInfoAfter = sortedWbcInfo;
     wbcInfo.value = sortedWbcInfo;
-    wbcInfoAfter.value = sortedWbcInfo;
   }
 
   await percentChangeBySiteCd();
