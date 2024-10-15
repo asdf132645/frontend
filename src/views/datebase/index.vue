@@ -97,6 +97,7 @@
             @selectItem="selectItem"
             @refresh="refresh"
             @checkListItem="checkListItem"
+            @disableSelectItem="disableSelectItem"
             :selectedItemIdFalse="selectedItemIdFalse"
             :notStartLoading='notStartLoading'
         />
@@ -108,6 +109,7 @@
       <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
   </div>
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -145,6 +147,7 @@ import {useRouter} from "vue-router";
 
 
 const store = useStore();
+const router = useRouter();
 const dbGetData = ref<any[]>([]);
 const showAlert = ref(false);
 const alertMessage = ref('');
@@ -198,8 +201,6 @@ const rbcInfoBeforeVal = ref<any>([]);
 const inputTimeout = ref<any>(null);
 const bufferDelay = 100; // 입력 완료 감지 지연 시간 (ms)
 const inputBuffer = ref('');
-const router = useRouter();
-
 
 async function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -430,8 +431,10 @@ const getDbData = async (type: string, pageNum?: number) => {
   try {
     const result = await getRunningApi(requestData);
     saveLastSearchParams();
+
     if (page.value === 1 && result.data.data.length === 0) {
       loadingDelayParents.value = false;
+      dbGetData.value = [];
       return;
     }
     if (result && result.data) {
@@ -493,7 +496,6 @@ const getDbData = async (type: string, pageNum?: number) => {
       }
     }
 
-
   } catch (e) {
     console.error(e);
   }
@@ -502,6 +504,7 @@ const getDbData = async (type: string, pageNum?: number) => {
 const search = () => {
   dbGetData.value = [];
   sessionStorage.removeItem('lastSearchParams');
+
   // 전시회 갈 때 주석처리할 코드 START
   const diffInMs = endDate.value.getTime() - startDate.value.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
@@ -510,11 +513,16 @@ const search = () => {
     return;
   }
   // 전시회 갈 때 주석처리할 코드 END
+
   getDbData('search');
 };
 
 const refresh = () => {
   getDbData('search');
+}
+
+const disableSelectItem = () => {
+  selectedItem.value = {};
 }
 
 const loadMoreData = async () => {
