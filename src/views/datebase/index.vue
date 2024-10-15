@@ -610,11 +610,21 @@ const convertRbcData = async (dataList: any) => {
     // Before
     for (const classItem of rbcInfoBeforeVal.value) {
       let beforeItem = {}
+
+      const beforeCategoryId = classItem.categoryId;
+
+      const rbcInfoItem = rbcInfoAfterVal.value.filter((item: any) => item.categoryId === beforeCategoryId)[0];
+
+
       for (const classInfoItem of classItem.classInfo) {
+        const beforeClassId = classInfoItem.classId;
+
+        const rbcDetailItem = rbcInfoItem.classInfo.filter((item: any) => item.classId === beforeClassId)[0];
+
         const classInfoDetailItem = {
           [classInfoItem.classNm]: {
             degree: classInfoItem.degree,
-            count: Number(classInfoItem.originalDegree)
+            count: Number(rbcDetailItem.originalDegree)
           }
         }
         beforeItem = {...beforeItem, ...classInfoDetailItem}
