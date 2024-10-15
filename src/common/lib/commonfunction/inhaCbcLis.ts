@@ -302,13 +302,16 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
 
             // LIS 파일 생성
             await createCbcFile(parmsLisCopy);
-            const result: any = await detailRunningApi(String(selectItems?.id));
-            const updatedItem = {
-                submitState: 'lis',
-            };
+            if(selectItems?.id){
+                const result: any = await detailRunningApi(String(selectItems?.id));
+                const updatedItem = {
+                    submitState: 'lis',
+                };
+                const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+                await resRunningItem(updatedRuningInfo, true, id);
+            }
+
             lisBtnColor = true;
-            const updatedRuningInfo = {id: result.data.id, ...updatedItem}
-            await resRunningItem(updatedRuningInfo, true, id);
             errMessage = messages.IDS_MSG_SUCCESS;
         } else {
             errMessage = res?.message

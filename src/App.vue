@@ -552,7 +552,7 @@ async function socketData(data: any) {
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
-
+        let submitState = '';
         if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] && completeSlot.testType !== '04' ) {
           // 인하대 WBC 정보를 저장
           newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
@@ -565,11 +565,13 @@ async function socketData(data: any) {
             await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
             await inhaDataSend(wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, lisFilePath.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, completeSlot, userModuleDataGet.value.id)
             barcodeNum.value = completeSlot?.barcodeNo;
+            submitState = 'lis';
           }
         } else {
           // 기본 WBC 정보로 업데이트
           wbcInfoNewVal = updateWbcInfo();
           wbcInfoAfter = updateWbcInfoAfter();
+          submitState = 'lis';
         }
 
 
@@ -602,7 +604,7 @@ async function socketData(data: any) {
           bminfo: completeSlot.bminfo,
           cassetId: completeSlot.cassetId,
           isNormal: completeSlot.isNormal,
-          submitState: '',
+          submitState: submitState,
           submitOfDate: '',
           submitUserId: '',
           isNsNbIntegration: isNsNbIntegrationLocal.value || '',
