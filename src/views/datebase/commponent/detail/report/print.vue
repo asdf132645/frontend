@@ -595,7 +595,7 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
 const percentChangeBySiteCd = async () => {
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     wbcInfo.value = seoulStMaryPercentChange(wbcInfo.value, wbcInfo.value);
-  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     wbcInfo.value = incheonStMaryPercentChange(projectType, wbcInfo.value);

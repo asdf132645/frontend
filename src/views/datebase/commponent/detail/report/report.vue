@@ -366,7 +366,7 @@ const percentChangeBySiteCd = () => {
 
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
-  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     selectItems.value.wbcInfoAfter = incheonStMaryPercentChange(projectType, selectItems.value?.wbcInfoAfter);
@@ -384,10 +384,12 @@ const getShapeOthers = async () => {
   const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
   const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  const otherCount = {artifact: 0, doubleNormal: 0};
+  const otherCount = { artifact: 0, doubleNormal: 0 };
+
   if (!rbcInfoPathAfter) {
     return;
   }
+
   rbcInfoPathAfter.forEach((item: any) => {
     if (item.categoryId === '03') {
       for (const classItem of item.classInfo) {

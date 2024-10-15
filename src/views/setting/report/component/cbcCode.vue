@@ -121,7 +121,7 @@ const getImagePrintData = async () => {
       if (!data || (data instanceof Array && data.length === 0)) {
         saveHttpType.value = 'post';
 
-        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
+        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
           cbcCodeArr.value = defaultCbcList_0011;
         } else {
           cbcCodeArr.value = defaultCbcList;

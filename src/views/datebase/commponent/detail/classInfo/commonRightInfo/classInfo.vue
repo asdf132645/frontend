@@ -302,7 +302,7 @@ watch(() => props.wbcInfo, (newItem) => {
 
 const mountedMethod = async () => {
 
-  if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) || siteCd.value === '' || siteCd.value === '0000') {
+  if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
     await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   }
   wbcMemo.value = props.selectItems?.wbcMemo;
@@ -396,7 +396,7 @@ const uploadLis = () => {
 
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     cmcSeoulLisAndCbcDataGet();
-  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '0000' || siteCd.value === '') {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     inhaDataSendLoad();
   }
   else {
@@ -723,7 +723,7 @@ const lisLastStep = () => {
     const data = goDae();
     lisFileUrlCreate(data);
   }
-  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '0000' || siteCd.value === '') {
+  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     inhaDataSendLoad();
   }
   else {
@@ -1129,7 +1129,7 @@ const beforeAfterChange = async (newItem: any) => {
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     wbcInfoBeforeVal.value = seoulStMaryPercentChange(wbcInfoBeforeValForTotalCount, wbcInfoBeforeVal.value);
     wbcInfoAfterVal.value = seoulStMaryPercentChange(wbcInfoAfterValForTotalCount, wbcInfoAfterVal.value);
-  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     wbcInfoAfterVal.value = await inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = await inhaPercentChange(selectItems.value, wbcInfoBeforeVal.value);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
@@ -1209,7 +1209,7 @@ const createPercent = (item: any, totalCount: any) => {
     item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
   } else {
     // 인하대일 경우 percent 재계산 X
-    if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
+    if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
       return;
     }
 
@@ -1302,7 +1302,7 @@ async function updateOriginalDb() {
 
     if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
       wbcInfoAfterVal.value = seoulStMaryPercentChange(clonedWbcInfo, wbcInfoAfterVal.value);
-    } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] || siteCd.value === '' || siteCd.value === '0000') {
+    } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
       wbcInfoAfterVal.value = inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
