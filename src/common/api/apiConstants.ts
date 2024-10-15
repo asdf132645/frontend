@@ -505,6 +505,23 @@ export const apiConstants = {
         crcRemarkUpdate: {
             endpoint: 'crc-remark-setting/crcRemarkUpdate',
             requiresToken: false,
+        },
+        crcDataCreate: {
+            endpoint: 'crc-data-setting/crcDataCreate',
+            requiresToken: false,
+        },
+        crcDataFindAll: {
+            endpoint: 'crc-data-setting/crcDataDFindAll',
+            requiresToken: false,
+        },
+        crcDataRemove: {
+            endpoint: 'crc-data-setting/crcDataRemove',
+            requiresToken: false,
+        },
+        crcDataUpdate: {
+            endpoint: 'crc-data-setting/crcRemarkUpdate',
+            requiresToken: false,
         }
+
     }
 };

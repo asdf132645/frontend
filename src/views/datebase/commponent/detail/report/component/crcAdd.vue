@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-if="isToggle">
+  <div class="crcPopUpDiv crcAdd">
+    <div>
       <div class="crcWrap">
         <ul>
           <li>
@@ -49,15 +49,15 @@
       ></crc-compontent>
 
       <div class="moDivBox mt2">
-       <div>
-         <crc-compontent
-             :items="crcArr"
-             @updateCrc="onUpdateCrc"
-             @deleteCrc="onDeleteCrc"
-             moType="WBC"
-             pageName="set"
-         ></crc-compontent>
-       </div>
+        <div>
+          <crc-compontent
+              :items="crcArr"
+              @updateCrc="onUpdateCrc"
+              @deleteCrc="onDeleteCrc"
+              moType="WBC"
+              pageName="set"
+          ></crc-compontent>
+        </div>
 
         <div>
           <crc-compontent
@@ -83,14 +83,19 @@
       @update:hideAlert="hideAlert"
   />
 </template>
-
 <script setup lang="ts">
-import {ref, onMounted} from "vue";
-import {crcGet, createCrcApi, deleteCrcApi, updateCrcApi} from "@/common/api/service/setting/settingApi";
+
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 
-const isToggle = ref(false);
+import {onMounted, ref} from "vue";
+import {
+  crcDataGet,
+  createCrcDataApi,
+  deleteCrcDataApi,
+  updateCrcDataApi
+} from "@/common/api/service/setting/settingApi";
+
 const crcTitle = ref('');
 const crcType = ref('');
 const crcPercentText = ref('');
@@ -103,16 +108,13 @@ const alertType = ref('');
 const alertMessage = ref('');
 
 onMounted(async () => {
-  crcData.value = await crcGet();
-  isToggle.value = true;
-  if (isToggle.value) {
-    crcArr.value = crcData.value.data;
-  }
+  crcData.value = await crcDataGet();
+  crcArr.value = crcData.value.data;
 });
 const hideAlert = () => {
   showAlert.value = false;
 };
-const showSuccessAlert  = async (message: string) => {
+const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
@@ -134,19 +136,19 @@ const addCrcArr = () => {
 // 업데이트 이벤트 처리 함수
 const onUpdateCrc = async ({index, updatedItem}: { index: number, updatedItem: any }) => {
   crcArr.value[index] = updatedItem;
-  await updateCrcApi(crcArr.value); // 서버로 업데이트 요청
+  await updateCrcDataApi(crcArr.value); // 서버로 업데이트 요청
 };
 
 // 삭제 이벤트 처리 함수
 const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
   const findId = crcArr.value.findIndex((item: any) => item.id === id);
   crcArr.value.splice(findId, 1); // 배열에서 제거
-  await deleteCrcApi({id}); // 서버에 삭제 요청
+  await deleteCrcDataApi({id}); // 서버에 삭제 요청
 };
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
-  await createCrcApi(crcArr.value);
+  await createCrcDataApi(crcArr.value);
   await showSuccessAlert('Success');
 };
 </script>

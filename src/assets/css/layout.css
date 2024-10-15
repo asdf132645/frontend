@@ -3671,7 +3671,7 @@ li.crcListContent > span {
     border-radius: 4px;
     margin-left: 10px;
 }
-.remarkDiv {
+.crcPopUpDiv {
     position: absolute;
     background: #fff;
     left: 50%;

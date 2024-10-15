@@ -249,3 +249,19 @@ export const updateCrcRemarkApi = async (request: any): Promise<ApiResponse<void
 export const deleteCrcRemarkApi = async (req: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.report.crcRemarkRemove, req, true);
 };
+
+
+export const createCrcDataApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.report.crcDataCreate, request);
+};
+export const crcDataGet = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.report.crcDataFindAll);
+};
+
+export const updateCrcDataApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.report.crcDataUpdate, request);
+};
+
+export const deleteCrcDataApi = async (req: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpDelete(apiConstants.report.crcDataRemove, req, true);
+};

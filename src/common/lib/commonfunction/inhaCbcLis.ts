@@ -54,7 +54,8 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
                 console.log(readFileTxtRes?.data?.data)
                 cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
-                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge}] = cbcDataArray;
+                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, testCode}] = cbcDataArray;
+                await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: testCode});
                 cbcWorkList = cbcDataArray;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
             }
@@ -90,6 +91,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                             cbcPatientNm: res?.name,
                             cbcSex: res?.sex,
                             cbcAge: res?.age,
+                            testCode: res.testCode
                         };
                         cbcWorkList.push(obj);
                     }

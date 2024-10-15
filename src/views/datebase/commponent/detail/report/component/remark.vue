@@ -1,5 +1,5 @@
 <template>
-  <div class="remarkDiv">
+  <div class="crcPopUpDiv">
     <div>
       <span>Search Type</span>
       <select v-model="searchType">
