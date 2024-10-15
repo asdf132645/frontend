@@ -195,9 +195,12 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
                         lisCode.LIS_CD === 'H9366') {
                         if (Number(wbcItem.count > 0)) {
                             resultStr += lisCode.LIS_CD + '|' + '1' + '|' + ','
-                        } else {
+                        } else if (wbcItem.title !== 'NS' || wbcItem.title !== 'LY' || wbcItem.title !== 'EO' || wbcItem.title !== 'BA' || wbcItem.title !== 'MO') {
                             resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
                             // resultStr += lisCode.LIS_CD + '|' + '0' + '|' + ','
+                        } else {
+                            // resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
+                            resultStr += lisCode.LIS_CD + '|' + '0.0' + '|' + ','
                         }
                     } else {
                         // GP, PA
@@ -211,8 +214,11 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
                         } else {
                             if (Number(wbcItem.percent) > 0) {
                                 resultStr += lisCode.LIS_CD + '|' + wbcItem.percent + '|' + ','
-                            } else{
+                            } else if (wbcItem.title !== 'NS' || wbcItem.title !== 'LY' || wbcItem.title !== 'EO' || wbcItem.title !== 'BA' || wbcItem.title !== 'MO') {
                                 resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
+                            } else {
+                                // resultStr += lisCode.LIS_CD + '|' + ' ' + '|' + ','
+                                resultStr += lisCode.LIS_CD + '|' + '0.0' + '|' + ','
                             }
                         }
                     }
@@ -302,7 +308,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
 
             // LIS 파일 생성
             await createCbcFile(parmsLisCopy);
-            if(selectItems?.id){
+            if (selectItems?.id) {
                 const result: any = await detailRunningApi(String(selectItems?.id));
                 const updatedItem = {
                     submitState: 'lis',
