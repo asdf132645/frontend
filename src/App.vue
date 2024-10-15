@@ -571,7 +571,7 @@ async function socketData(data: any) {
           // 기본 WBC 정보로 업데이트
           wbcInfoNewVal = updateWbcInfo();
           wbcInfoAfter = updateWbcInfoAfter();
-          submitState = 'lis';
+          submitState = '';
         }
 
 
