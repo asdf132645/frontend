@@ -19,7 +19,7 @@
               siteCd === '0019' ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
             }}
           </td>
-          <td>{{ getCommonCode('14', slot?.state) }}</td>
+          <td>{{ getCommonCode('14', slot?.stateCd) }}</td>
         </tr>
       </tbody>
       <tbody v-else>
@@ -94,10 +94,10 @@ const runningInfoGet = async (data: any) => {
           patientName: currentSlot.patientNm,
           orderDate: stringToDateTime(currentSlot.orderDttm) || 0,
           analyzedDttm: stringToDateTime(currentSlot.analyzedDttm) || 0,
-          state: currentSlot.state,
+          stateCd: currentSlot.stateCd,
         });
       } else {
-        dspOrderList.value[existingItemIndex].state = currentSlot.state;
+        dspOrderList.value[existingItemIndex].stateCd = currentSlot.stateCd;
 
       }
     }
