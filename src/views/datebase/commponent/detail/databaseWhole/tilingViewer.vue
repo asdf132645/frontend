@@ -73,6 +73,19 @@ const initElement = async (imageHeight: any, bool: boolean) => {
     });
 
     viewer.addHandler("open", function() {
+      const fullPageButton = viewer.buttons.buttons.find((button: any) => button.tooltip === 'Toggle full page');
+
+      if (fullPageButton) {
+        fullPageButton.element.addEventListener('click', async () => {
+          if (viewer.isFullPage()) {
+            await document.exitFullscreen();
+            viewer.setFullPage(false);
+          } else {
+            viewer.setFullPage(true);
+          }
+        });
+      }
+
       // 타일링 뷰어에 height 동적 조정
       const imageWidth = viewer.source.dimensions.x;
       const imageHeight = viewer.source.dimensions.y;
@@ -98,6 +111,15 @@ const initElement = async (imageHeight: any, bool: boolean) => {
         tilingViewerElement && (tilingViewerElement.style.height = '80vh');
       }
     })
+
+    viewer.addHandler('full-page', async function(event: any) {
+      if (!event.fullPage) {
+        viewer.element.style.backgroundColor = '';
+        await document.documentElement.requestFullscreen();
+      } else {
+        viewer.element.style.backgroundColor = 'black';
+      }
+    });
 
 
   } catch (err) {

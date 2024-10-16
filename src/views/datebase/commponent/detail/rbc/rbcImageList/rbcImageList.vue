@@ -688,10 +688,32 @@ const initElement = async () => {
       canvasOverlay.value = canvas;
 
       viewer.value.addHandler('open', function (event: any) {
+        const fullPageButton = viewer.value.buttons.buttons.find((button: any) => button.tooltip === 'Toggle full page');
+
+        if (fullPageButton) {
+          fullPageButton.element.addEventListener('click', async () => {
+            if (viewer.value.isFullPage()) {
+              await document.exitFullscreen();
+              viewer.value.setFullPage(false);
+            } else {
+              viewer.value.setFullPage(true);
+            }
+          });
+        }
+
         // 캔버스 크기를 조정
         canvas.width = event.source.Image.Size.Width;
         canvas.height = event.source.Image.Size.Height;
       });
+
+      viewer.value.addHandler('full-page', async (event: any) => {
+        if (!event.fullPage) {
+          viewer.value.element.style.backgroundColor = '';
+          await document.documentElement.requestFullscreen();
+        } else {
+          viewer.value.element.style.backgroundColor = 'black';
+        }
+      })
 
       viewer.value.addHandler('page', function (event: any) {
         const notCanvasClick = !fileNameResultArr.value[event.page].includes('RBC_Image');
