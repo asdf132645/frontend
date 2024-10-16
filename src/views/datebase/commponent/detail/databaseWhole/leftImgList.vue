@@ -1,5 +1,4 @@
 <template>
-  <div class="closeViewer" @click="closeViewer" v-if="buttonOfen">x</div>
   <div id="viewerSmall"></div>
   <div class="leftImgList">
     <p>Partical Image</p>
@@ -184,15 +183,39 @@ const openInViewer = async (imageUrl: string, type: string, bmOldData: any, inde
     tileSources: urlTileSources,
     defaultZoomLevel: 0.2,
     navigator: false,
+    prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
     minZoomLevel: 0.2,
     maxZoomLevel: 2,
-    showZoomControl: false, // 줌 컨트롤 숨기기
-    showHomeControl: false, // 홈 컨트롤 숨기기
-    showFullScreenControl: false, // 전체 화면 컨트롤 숨기기
-    showRotationControl: false, // 회전 컨트롤 숨기기
+    showZoomControl: false,
+    showHomeControl: false,
+    showFullScreenControl: false,
+    showRotationControl: false,
     showFullPageControl: false,
   });
   buttonOfen.value = true;
+
+// 새로운 버튼 생성
+  const customButton = document.createElement('img');
+  customButton.alt = 'Close Viewer'; // 버튼 텍스트 설정
+  customButton.style.position = 'absolute';
+  customButton.style.transform = 'rotate(45deg)'; // 45도 기울이기
+  customButton.style.cursor = 'pointer';
+  customButton.style.padding = '10px';
+  customButton.style.color = 'white';
+  customButton.src = `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/zoomin_grouphover.png`;
+
+// 클릭 이벤트 핸들러 추가
+  customButton.addEventListener('click', () => {
+    closeViewer();
+  });
+
+
+// OpenSeadragon 컨트롤로 추가
+  viewerSmall.addControl(customButton, {
+    anchor: OpenSeadragon.ControlAnchor.ABSOLUTE,
+    top: 100,
+    left: '49%'
+  });
 
   viewerSmall.addHandler("open", function () {
     // 타일링 뷰어에 height 동적 조정

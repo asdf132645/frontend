@@ -253,6 +253,8 @@ const hideConfirm = () => {
 const fullScreen = () => {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
   }
 }
 

@@ -70,6 +70,12 @@
     justify-content: space-between;
 }
 
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .flexColumn {
     display: flex;
     flex-direction: column;
@@ -191,7 +197,6 @@
 
 .logoProjectTitle {
     position: absolute;
-    z-index: 3;
     color: #162E73;
     font-size: 1.0rem;
     font-weight: bold;
@@ -1145,6 +1150,10 @@ div#viewerSmall {
     transform: translate(-50%, -50%);
     top: 80px;
     cursor: pointer;
+}
+
+.image-close-button:hover {
+    transform: scale(1.1);
 }
 
 .blinkGripper {
