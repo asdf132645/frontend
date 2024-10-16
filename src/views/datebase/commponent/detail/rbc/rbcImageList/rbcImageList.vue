@@ -254,7 +254,6 @@ const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
   return {fileName, width: Number(width), height: Number(height), tileSize: Number(tileSize)}
 }
 
-
 const moveRbcClassEvent = async (categoryId: string, classId: string, classNm: string) => {
   const existingOverlays = document.getElementsByClassName('overlayElement');
   if (existingOverlays.length === 0) {
@@ -716,6 +715,7 @@ const initElement = async () => {
           return;
         }
         drawRuler(activeRuler.value);
+
       });
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
@@ -1120,6 +1120,9 @@ const drawRuler = (ruler: any) => {
     } else {
       element.style.top = (rulerPos.value.top / zoom) + 'px';
     }
+    console.log(element.style);
+    if (rulerPos.value.left < 0) rulerPos.value.left = 0;
+    if (rulerPos.value.top < 0) rulerPos.value.top = 0;
 
     refreshRuler(element, rulerSize, ruler);
     divtilingViewer.appendChild(element);
@@ -1157,15 +1160,11 @@ const drawRuler = (ruler: any) => {
       }
     };
 
-    const parent = document.getElementById('tilingViewer');
+    const parent = document.getElementById('tiling-viewer_img_list');
 
     if (parent instanceof HTMLElement) {
       parent.onmousemove = function (e) {
         if (!isPress) {
-          return;
-        }
-
-        if (rulerPos.value.left <= 30 || rulerPos.value.top <= 80) {
           return;
         }
 
@@ -1178,8 +1177,8 @@ const drawRuler = (ruler: any) => {
         element.style.left = (element.offsetLeft - rulerPos.value.posX) + 'px';
         element.style.top = (element.offsetTop - rulerPos.value.posY) + 'px';
 
-        rulerPos.value.left = element.offsetLeft;
-        rulerPos.value.top = element.offsetTop;
+        rulerPos.value.left = element.offsetLeft - rulerPos.value.posX;
+        rulerPos.value.top = element.offsetTop - rulerPos.value.posY;
       };
     }
   }
@@ -1256,12 +1255,12 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     element.appendChild(titleElement);
 
   } else if (ruler.id === 'circle' || ruler === 'Circle') {
-    const cx = viewBoxWH.value / 2
-    const cy = viewBoxWH.value / 2
+    const cx = 400
+    const cy = 400
     const radius = rulerWidth.value * 0.5
 
     titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
-        '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
+        '<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" stroke="black" stroke-width="2" fill="transparent" opacity="0.6" />' +
         '</svg>';
 
@@ -1269,7 +1268,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   } else {
     const rulerOverlay = document.getElementById('rulerOverlay')
     if (rulerOverlay !== null) {
-      const divtilingViewer = document.getElementById('tilingViewer')
+      const divtilingViewer = document.getElementById('tiling-viewer_img_list')
       divtilingViewer?.removeChild(rulerOverlay)
     }
   }
