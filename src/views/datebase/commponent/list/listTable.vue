@@ -98,7 +98,7 @@
       <li @click="printStart">Print</li>
       <li @click="classificationRowDbClick">Classification</li>
       <li @click="editOrderData">Edit order data</li>
-      <li @click="deleteRow">Delete</li>
+      <li @click="showDeleteConfirm">Delete</li>
     </ul>
   </div>
 
@@ -162,6 +162,16 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      :confirmText="messages.DELETE"
+      :closeText="messages.LEAVE"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
 </template>
 
 <script setup>
@@ -188,6 +198,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import Confirm from "@/components/commonUi/Confirm.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -207,6 +218,8 @@ const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmss');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
 }
+const showConfirm = ref(false);
+const confirmMessage = ref('');
 
 
 const contextMenu = ref({
@@ -235,6 +248,8 @@ const lastShiftKeyStr = ref('');
 let socketTimeoutId = undefined; // 타이머 ID 저장
 const scrollableDiv = ref(null);
 const barCodeImageShowError = ref(false);
+const selectedItemsUsedInDelete = ref([]);
+const dbDataFindByIdUsedInDelete = ref([]);
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -587,13 +602,12 @@ const openLayer = () => {
   visible.value = true;
 };
 
-const deleteRow = async () => {
+const deleteRow = async (selectedItems, dbDataFindById) => {
   try {
-    let selectedItems = props.dbData.filter(item => item.checked);
     if (selectedItems.length === 0 && selectedItemId.value === '') {
       showErrorAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
     } else if (selectedItems.length === 0 && selectedItemId.value !== '') {
-      selectedItems = props.dbData.find(item => item.id === selectedItemId.value);
+      selectedItems = dbDataFindById;
       if (selectedItems.lock_status) {
         showErrorAlert(messages.lockRow);
         return;
@@ -607,17 +621,21 @@ const deleteRow = async () => {
       const req = {
         ids: [idsToDelete.id],
         img_drive_root_path: [rootArr],
-        dayQuery: dayQuery
+        dayQuery: dayQuery,
       }
+
+      loadingDelay.value = true;
       const response = await deleteRunningApi(req);
 
       if (response.success) {
         showSuccessAlert('Items deleted successfully');
         emits('refresh'); // 데이터 다시 불러오기
-        resetContextMenu();
+
       } else {
         console.error('Failed to delete items');
       }
+
+      loadingDelay.value = false;
     } else {
       const idsToDelete = selectedItems.map(item => item.id);
       const idsToDeleteLock = selectedItems.map(item => item.lock_status);
@@ -635,21 +653,26 @@ const deleteRow = async () => {
         img_drive_root_path: rootArr,
         dayQuery: dayQuery,
       }
+
+      loadingDelay.value = true;
       const response = await deleteRunningApi(req);
 
       if (response.success) {
         showSuccessAlert('Items deleted successfully');
         emits('refresh'); // 데이터 다시 불러오기
-        resetContextMenu();
       } else {
         console.error('Failed to delete items');
       }
+
+      loadingDelay.value = false;
     }
 
 
   } catch (error) {
     console.error('Error:', error);
   }
+
+  loadingDelay.value = false;
 }
 
 const submitStateChangeText = (text, submitUserId) => {
@@ -665,6 +688,24 @@ const submitStateChangeText = (text, submitUserId) => {
 
 const onImageError = () => {
   barCodeImageShowError.value = true;
+}
+
+const hideConfirm = () => {
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = async () => {
+  showConfirm.value = false;
+  await deleteRow(selectedItemsUsedInDelete.value, dbDataFindByIdUsedInDelete.value);
+}
+
+const showDeleteConfirm = () => {
+  showConfirm.value = true;
+  confirmMessage.value = 'Would you want delete?';
+  selectedItemsUsedInDelete.value = props.dbData.filter(item => item.checked);
+  dbDataFindByIdUsedInDelete.value = props.dbData.find(item => item.id === selectedItemId.value);
+  resetContextMenu();
+  emits('disableSelectItem');
 }
 
 </script>

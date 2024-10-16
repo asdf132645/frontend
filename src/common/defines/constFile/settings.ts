@@ -850,3 +850,11 @@ export const settingName = {
     cbcCode: 'cbcCode',
     filePathSet: 'filePathSet',
 }
+
+export const WBC_CUSTOM_CLASS = [
+    { customNum: 90, abbreviation: '', fullNm: '' },
+    { customNum: 91, abbreviation: '', fullNm: '' },
+    { customNum: 92, abbreviation: '', fullNm: '' },
+    { customNum: 93, abbreviation: '', fullNm: '' },
+    { customNum: 94, abbreviation: '', fullNm: '' }
+]

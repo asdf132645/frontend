@@ -99,6 +99,7 @@ onMounted(async () => {
 });
 
 watch(() => props.selectedItem, (newSelectedItem) => {
+  if (Object.keys(newSelectedItem).length === 0) return;
   barCodeImageShowError.value = false;
   setWbcTotalAndPercent();
   sortClassOrder();

@@ -61,18 +61,12 @@ import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclass
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {settingName} from "@/common/defines/constFile/settings";
+import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constFile/settings";
 
 const store = useStore();
 const router = useRouter();
 const saveHttpType = ref('');
-const wbcCustomParm = [
-  { customNum: 90, abbreviation: '', fullNm: '' },
-  { customNum: 91, abbreviation: '', fullNm: '' },
-  { customNum: 92, abbreviation: '', fullNm: '' },
-  { customNum: 93, abbreviation: '', fullNm: '' },
-  { customNum: 94, abbreviation: '', fullNm: '' }
-];
+const wbcCustomParm = WBC_CUSTOM_CLASS;
 
 const wbcCustomItems = ref<any>([]);
 const showAlert = ref(false);
