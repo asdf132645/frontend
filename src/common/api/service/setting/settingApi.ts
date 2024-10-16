@@ -242,6 +242,10 @@ export const crcRemarkGet = async (): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.report.crcRemarkFindAll);
 };
 
+export const crcSearchGet = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.report.crcSearch);
+};
+
 export const updateCrcRemarkApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPut(apiConstants.report.crcRemarkUpdate, request);
 };

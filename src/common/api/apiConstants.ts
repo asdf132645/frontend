@@ -506,6 +506,10 @@ export const apiConstants = {
             endpoint: 'crc-remark-setting/crcRemarkUpdate',
             requiresToken: false,
         },
+        crcSearch: {
+            endpoint: 'crc-remark-setting/crcSearch',
+            requiresToken: false,
+        },
         crcDataCreate: {
             endpoint: 'crc-data-setting/crcDataCreate',
             requiresToken: false,
@@ -519,7 +523,7 @@ export const apiConstants = {
             requiresToken: false,
         },
         crcDataUpdate: {
-            endpoint: 'crc-data-setting/crcRemarkUpdate',
+            endpoint: 'crc-data-setting/crcDataUpdate',
             requiresToken: false,
         }
 

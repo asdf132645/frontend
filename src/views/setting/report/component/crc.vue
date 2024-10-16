@@ -106,6 +106,7 @@ onMounted(async () => {
   crcData.value = await crcGet();
   isToggle.value = true;
   if (isToggle.value) {
+    crcArr.value = [];
     crcArr.value = crcData.value.data;
   }
 });

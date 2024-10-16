@@ -6,11 +6,12 @@
         <option>Code</option>
         <option>Content</option>
       </select>
+      <input type="text" v-model="searchRemark" />
     </div>
     <table>
       <thead>
       <tr>
-        <th>선택</th>
+        <th></th>
         <th>Code</th>
         <th>Content</th>
         <th>Action</th>
@@ -60,6 +61,12 @@
       <button @click="cancelSelect">CANCEL</button>
     </div>
   </div>
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :duration="1500"
+      position="bottom-right"
+  />
 </template>
 
 <script setup lang="ts">
@@ -70,10 +77,11 @@ import {
   deleteCrcRemarkApi,
   updateCrcRemarkApi,
 } from "@/common/api/service/setting/settingApi";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 // 이벤트 정의 (부모에게 이벤트를 전달)
-const emit = defineEmits(["cancel"]);
-
+const emit = defineEmits(["cancel", "listUpdated"]);
+const toastMessage = ref('');
 const remarkArr = ref<any>([]);
 const selectedItems = ref<number[]>([]);
 const newRemarkCode = ref("");
@@ -84,6 +92,7 @@ const searchType = ref("Code");
 const editIndex = ref<number | null>(null); // 편집 중인 항목의 인덱스
 const editedCode = ref(""); // 편집 중인 Remark 코드
 const editedContent = ref(""); // 편집 중인 Remark 내용
+const searchRemark = ref('');
 
 onMounted(async () => {
   await nextTick();
@@ -98,7 +107,7 @@ const loadRemarks = async () => {
 // Remark 추가
 const addRemark = async () => {
   if (!newRemarkCode.value || !newRemarkContent.value) {
-    alert("Remark code와 content를 입력해주세요.");
+    showToast("Remark code와 content를 입력해주세요.");
     return;
   }
 
@@ -111,7 +120,7 @@ const addRemark = async () => {
     newRemarkContent.value = "";
     await loadRemarks();
   } catch (error) {
-    console.error("Failed to add remark:", error);
+    showToast('Failed to add remark')
   }
 };
 
@@ -119,6 +128,7 @@ const addRemark = async () => {
 const deleteRemark = async (id: number) => {
   try {
     await deleteCrcRemarkApi({id});
+    showToast('delete Success')
     await loadRemarks();
   } catch (error) {
     console.error("Failed to delete remark:", error);
@@ -135,7 +145,7 @@ const startEdit = (index: number, item: any) => {
 // 편집 저장 (수정된 내용 서버에 전송)
 const saveEdit = async (id: number) => {
   if (!editedCode.value || !editedContent.value) {
-    alert("코드와 내용을 입력해주세요.");
+    showToast("코드와 내용을 입력해주세요.");
     return;
   }
 
@@ -149,6 +159,7 @@ const saveEdit = async (id: number) => {
     ]);
     editIndex.value = null; // 편집 모드 해제
     await loadRemarks(); // 수정 후 목록 새로고침
+    showToast('save Success')
   } catch (error) {
     console.error("Failed to update remark:", error);
   }
@@ -159,13 +170,25 @@ const cancelEdit = () => {
   editIndex.value = null; // 편집 모드 해제
 };
 
-// OK 버튼 클릭 시 처리
-const okSelect = async () => {
-  emit("listUpdated", remarkArr.value); // 현재 remarkArr를 부모에게 전달
+// OK 버튼 클릭 시 처리 (선택된 항목만 필터링)
+const okSelect = () => {
+  // 선택된 항목만 필터링
+  const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
+  showToast('Remark Add Success');
+  // 선택된 항목만 부모 컴포넌트에 전달
+  emit("listUpdated", selectedRemarks);
 };
 
 // CANCEL 버튼 클릭 시 부모에게 cancel 이벤트 emit
 const cancelSelect = () => {
   emit("cancel");
 };
+
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
+
 </script>

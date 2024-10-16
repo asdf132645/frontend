@@ -35,6 +35,10 @@
     margin-bottom: 40px;
 }
 
+.ml1 {
+    margin-left: 10px;
+}
+
 .pl0 {
     padding-left: 0 !important;
 }
@@ -3591,9 +3595,10 @@ table.cbcTable td {
 
 li.crcRow {
     display: inline-block;
-    width: 49%;
+    width: 48%;
     vertical-align: top;
     margin-right: 5px;
+    font-size: 0.8rem;
 }
 
 .moDivBox {
@@ -3630,6 +3635,7 @@ li.crcRow {
     padding-bottom: 10px;
     text-align: left;
 }
+
 button.reSelect {
     position: absolute;
     right: 0;
@@ -3637,6 +3643,11 @@ button.reSelect {
     border: 1px solid #007bff;
     padding: 5px 10px;
     top: -8px;
+    cursor: pointer;
+}
+
+.crcPopUpDiv.crcAdd {
+    top: 22%;
 }
 
 ul.crcListContentUl {
@@ -3661,6 +3672,7 @@ li.crcListContent > span {
     margin-bottom: 10px;
     vertical-align: sub;
 }
+
 .crcReport {
     width: 43%;
     background: var(--white-color);
@@ -3671,14 +3683,17 @@ li.crcListContent > span {
     border-radius: 4px;
     margin-left: 10px;
 }
+
 .crcPopUpDiv {
     position: absolute;
     background: #fff;
     left: 50%;
 }
+
 .crcReport .moDivBox li.crcRow {
     min-width: auto;
     width: 100%;
+
 }
 
 .reportDiv .moDivBox div {
@@ -3745,6 +3760,7 @@ button.crcBtn {
 .rbcCrcDiv {
     text-align: left;
 }
+
 .sortDownBig {
     font-size: 1.3rem;
     vertical-align: baseline;
@@ -3765,6 +3781,44 @@ span.smCrcTitle {
     display: block;
     padding-bottom: 3px;
     font-weight: 600;
+}
+
+.crcReport .tab-content {
+    margin: 10px;
+}
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    animation: fadeInOut 4s ease forwards;
+}
+
+/* 페이드 인-아웃 애니메이션 */
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    10% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    90% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
 }
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {

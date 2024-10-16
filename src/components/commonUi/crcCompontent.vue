@@ -6,13 +6,14 @@
     <ul>
       <li v-for="(row, rowIndex) in groupedData" :key="rowIndex" class="crcRow">
         <div v-for="(item, idx) in row" :key="idx" class="grid-item crcItemDiv">
-          <p class="smallBox">
+          <p>
             <input
+                class="smallBox"
                 type="text"
                 v-model="item.crcTitle"
                 v-if="editIndex === item.id"
             />
-            <span v-else>{{ item.crcTitle }}</span>
+            <span class="spanTitle" v-else>{{ item.crcTitle }}</span>
           </p>
           <div>
             <select v-model="item.crcType" v-if="editIndex === item.id">
@@ -26,15 +27,20 @@
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
             <div v-else>
               <div v-if="item?.crcType === 'select'" >
-                <select>
-                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
+                <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)">
+                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{ opItem }}</option>
                 </select>
+                <div v-else>
+                  <select @change="changeSelect($event, item.id)">
+                    <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
+                  </select>
+                </div>
               </div>
               <div v-else-if="item?.crcType === 'text'">
-                <input disabled type="text" placeholder="Enter text" />
+                <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text" placeholder="Enter text" />
               </div>
               <div v-else>
-                <input class="smallInput" disabled :value="item?.crcContent" type="text" placeholder="Enter percentage" />
+                <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text" placeholder="Enter percentage" />
               </div>
             </div>
           </div>
@@ -68,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 // Props
 const props = defineProps({
@@ -86,8 +92,7 @@ const props = defineProps({
   },
 });
 
-
-const emit = defineEmits(['updateCrc', 'deleteCrc']);
+const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect']);
 const arrData = ref<any>([]);
 // 로컬 상태
 const editIndex = ref<number | null>(null);
@@ -104,6 +109,7 @@ const groupedData = computed(() => {
 onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);
 });
+
 watch(props.items, (newArr) => {
   arrData.value = newArr?.filter((item) => item?.morphologyType === props.moType);
 });
@@ -113,13 +119,13 @@ const editCrcArr = (id: number) => {
 };
 
 const updateCrcArr = (id: number) => {
-  const updatedItem = {...arrData.value.find(item => item.id === id)};
-  emit('updateCrc', {id, updatedItem});
+  const updatedItem = { ...arrData.value.find(item => item.id === id) };
+  emit('updateCrc', { id, updatedItem });
   editIndex.value = null;
 };
 
 const delCrcArr = (idx: number, id: any) => {
-  emit('deleteCrc', {index: idx, id});
+  emit('deleteCrc', { index: idx, id });
 };
 
 const moTypeTextChange = (txt: string) => {
@@ -135,5 +141,12 @@ const moTypeTextChange = (txt: string) => {
 
 const contentArr = (content: any) => {
   return content.split(',').map((item: any) => item.trim());
+}
+
+const changeSelect = (eve: Event, id: string | number) => {
+  if (props.pageName === 'report') {
+    console.log(eve.target?.value);
+    emit('updateSelect', { val: eve.target?.value, id });
+  }
 }
 </script>
