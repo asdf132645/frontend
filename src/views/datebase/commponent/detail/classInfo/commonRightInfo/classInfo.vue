@@ -725,9 +725,6 @@ const lisLastStep = () => {
     const data = goDae();
     lisFileUrlCreate(data);
   }
-  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
-    inhaDataSendLoad();
-  }
   else {
     otherDataSend();
   }
