@@ -57,9 +57,8 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="setting"
       :message="confirmMessage"
-      :confirmText="messages.SAVE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -76,7 +75,7 @@
 
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch, watchEffect} from 'vue';
+import {computed, onMounted, reactive, ref, watch} from 'vue';
 import {rbcClassList, defaultRbcDegree, settingName} from '@/common/defines/constFile/settings';
 import {createRbcDegreeApi, getRbcDegreeApi, putRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";

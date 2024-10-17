@@ -8,6 +8,7 @@ export interface CreateWbcCustomClassDto {
 export interface classArr {
     abbreviation?: string;
     fullNm?: string;
+    customNum: string;
 }
 
 export interface UpdateWbcCustomClassDto {

@@ -1,3 +1,9 @@
+interface WbcCustomClassInterface {
+    customNum: number;
+    abbreviation: string;
+    fullNm: string;
+}
+
 export const testTypeList = [
     {value: '01', text: 'WBC Diff(Standard)'},
     {value: '04', text: 'PBS(Premium)'},
@@ -851,7 +857,7 @@ export const settingName = {
     filePathSet: 'filePathSet',
 }
 
-export const WBC_CUSTOM_CLASS = [
+export const WBC_CUSTOM_CLASS: WbcCustomClassInterface[] = [
     { customNum: 90, abbreviation: '', fullNm: '' },
     { customNum: 91, abbreviation: '', fullNm: '' },
     { customNum: 92, abbreviation: '', fullNm: '' },

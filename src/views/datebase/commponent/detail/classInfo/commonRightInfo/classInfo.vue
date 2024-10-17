@@ -133,6 +133,7 @@
       </template>
     </div>
   </div>
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -141,6 +142,7 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
@@ -998,7 +1000,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     })
     if (response) {
       if (!noAlert) {
-        showSuccessAlert('success');
+        showSuccessAlert('Success');
       }
       const filteredItems = updatedRuningInfo;
       wbcMemo.value = filteredItems.wbcMemo;

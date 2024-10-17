@@ -154,6 +154,7 @@
   </Modal>
   <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
          :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -166,9 +167,8 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="delete"
       :message="confirmMessage"
-      :confirmText="messages.DELETE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -576,7 +576,7 @@ const dbDataEditSet = async () => {
       dayQuery: dayQuery,
     })
     if (response) {
-      showSuccessAlert('success');
+      showSuccessAlert('Success');
       emits('initData');
       closeLayer();
     } else {

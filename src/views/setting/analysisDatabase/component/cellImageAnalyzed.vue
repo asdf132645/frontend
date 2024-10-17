@@ -287,28 +287,18 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="setting"
       :message="confirmMessage"
-      :confirmText="messages.SAVE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
 
-  <Confirm
-      v-if="showDownloadConfirm"
-      :is-visible="showDownloadConfirm"
-      :message="downloadConfirmMessage"
-      :confirmText="messages.COPY"
-      :closeText="messages.CLOSE"
-      @hide="handleDownloadClose"
-      @okConfirm="handleDownload('copy')"
-  />
   <ConfirmThreeBtn
       v-if="showDownloadConfirm"
       :is-visible="showDownloadConfirm"
       :message="downloadConfirmMessage"
-      :confirmText="messages.MOVE"
-      :confirmText2="messages.COPY"
+      :confirmFirstText="messages.MOVE"
+      :confirmSecondText="messages.COPY"
       :closeText="messages.CLOSE"
       @hide="handleDownloadClose"
       @okConfirm="handleDownload('move')"

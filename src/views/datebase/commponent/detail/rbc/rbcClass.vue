@@ -934,7 +934,7 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
         // allCheckType.value = true;
       }
       if (alertShow) {
-        showSuccessAlert('success');
+        showSuccessAlert('Success');
       }
       const filteredItems = updatedRuningInfo;
       memo.value = filteredItems.rbcMemo;

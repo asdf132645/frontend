@@ -14,9 +14,8 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="setting"
       :message="confirmMessage"
-      :confirmText="messages.SAVE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
