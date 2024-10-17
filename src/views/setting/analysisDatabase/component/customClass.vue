@@ -29,9 +29,8 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="setting"
       :message="confirmMessage"
-      :confirmText="messages.SAVE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -52,7 +51,7 @@ import {ref, onMounted, onBeforeMount, computed, watch} from 'vue';
 import {
   createWbcCustomClassApi,
   updateWbcCustomClassApi,
-  getWbcCustomClassApi,
+  getWbcCustomClassApi, getOrderClassApi,
 } from "@/common/api/service/setting/settingApi";
 import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -66,8 +65,6 @@ import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constFile/settings
 const store = useStore();
 const router = useRouter();
 const saveHttpType = ref('');
-const wbcCustomParm = WBC_CUSTOM_CLASS;
-
 const wbcCustomItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
@@ -78,6 +75,7 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const wbcClassOrder = ref<any>([]);
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm'
@@ -89,9 +87,6 @@ onMounted(async () => {
 });
 
 watch(() => wbcCustomItems.value, async (wbcCustomItemsAfterSettingObj) => {
-  if (validateCustomClass()) {
-    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcCustomItemsAfterSettingObj) });
-  }
   if (settingType.value !== settingName.wbcCustomClass) {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcCustomClass });
   }
@@ -104,6 +99,23 @@ watch(() => settingChangedChecker.value, () => {
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
+
+const getOrderClass = async () => {
+  try {
+    const result = await getOrderClassApi();
+    if (result) {
+      if (result?.data.length > 0) {
+        wbcClassOrder.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+      }
+
+      const classOrderBeforeSettingObj = wbcClassOrder.value;
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
+    }
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const saveWbcCustomClass = async () => {
@@ -151,7 +163,7 @@ const getWbcCustomClasses = async () => {
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         saveHttpType.value = 'post';
-        wbcCustomItems.value = wbcCustomParm;
+        wbcCustomItems.value = WBC_CUSTOM_CLASS;
       } else {
         saveHttpType.value = 'put';
         wbcCustomItems.value = result.data;

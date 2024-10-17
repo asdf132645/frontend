@@ -21,9 +21,8 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="setting"
       :message="confirmMessage"
-      :confirmText="messages.SAVE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -51,7 +50,7 @@ import {messages} from '@/common/defines/constFile/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import {settingName} from "@/common/defines/constFile/settings";
+import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constFile/settings";
 
 const store = useStore();
 const router = useRouter();
@@ -68,11 +67,13 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const wbcCustomItems = ref<any>([]);
 
 onMounted(async () => {
   wbcInfoChangeVal.value = window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.classOrder });
   await getOrderClass();
+  await getWbcCustomClasses();
 })
 
 watch(() => wbcInfoChangeVal.value, async (classOrderAfterSettingObj) => {
@@ -89,6 +90,49 @@ watch(() => settingChangedChecker.value, () => {
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
+
+const getWbcCustomClasses = async () => {
+  try {
+    const result: any = await getWbcCustomClassApi();
+    if (result?.data) {
+      wbcCustomItems.value = result.data.filter((item: any) => item.abbreviation && item.fullNm);
+
+      const wbcCustomItemClassIds = new Set(wbcCustomItems.value.map((item: any) => String(item.customNum)));
+      const wbcCustomClassDefaultIds = new Set(WBC_CUSTOM_CLASS.map(item => String(item.customNum)));
+
+      // ClassOrder에서 없는 Custom Class 제거
+      wbcInfoChangeVal.value = wbcInfoChangeVal.value.filter((wbcInfo: any) =>
+          !(wbcCustomClassDefaultIds.has(String(wbcInfo.classId)) && !wbcCustomItemClassIds.has(String(wbcInfo.classId)))
+      );
+
+      // Custom Class => Class Order 추가 또는 업데이트
+      const classIds = new Set(wbcInfoChangeVal.value.map((item: any) => item.classId));
+      let maxOrderIdx = Math.max(...wbcInfoChangeVal.value.map((item: any) => item.orderIdx), 0);
+
+
+      for (const wbcCustomItem of wbcCustomItems.value) {
+        if (!classIds.has(String(wbcCustomItem.customNum))) {
+          wbcInfoChangeVal.value.push({
+            abbreviation: wbcCustomItem.abbreviation,
+            classId: wbcCustomItem.customNum,
+            fullNm: wbcCustomItem.fullNm,
+            orderIdx: ++maxOrderIdx
+          });
+        } else {
+          wbcInfoChangeVal.value = wbcInfoChangeVal.value.map((obj: any) =>
+              String(obj.classId) === String(wbcCustomItem.customNum)
+                  ? { ...obj, fullNm: wbcCustomItem.fullNm, abbreviation: wbcCustomItem.abbreviation }
+                  : obj
+          );
+        }
+      }
+    }
+
+    wbcInfoChangeVal.value = wbcInfoChangeVal.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+  } catch (e) {
+    console.error('Error fetching WBC custom classes:', e);
+  }
 }
 
 const getOrderClass = async () => {

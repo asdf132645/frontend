@@ -34,9 +34,8 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
+      type="setting"
       :message="confirmMessage"
-      :confirmText="messages.SAVE"
-      :closeText="messages.LEAVE"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -53,7 +52,13 @@
 
 <script setup lang="ts">
 import {ref, onMounted, computed, watch} from 'vue';
-import {lisCodeWbcOption, lisCodeRbcOption, minRunCount, settingName} from "@/common/defines/constFile/settings";
+import {
+  lisCodeWbcOption,
+  lisCodeRbcOption,
+  minRunCount,
+  settingName,
+  WBC_CUSTOM_CLASS
+} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
   createLisCodeWbcApi, createLisCodeRbcApi, createMinCountApi,
@@ -67,11 +72,12 @@ import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import {classArr} from "@/common/api/service/setting/dto/wbcCustomClassDto";
 
 const store = useStore();
 const router = useRouter();
-const lisCodeWbcArr = ref<LisCodeWbcItem[]>([]);
-const lisCodeRbcArr = ref<LisCodeRbcItem[]>([]);
+const lisCodeWbcArr = ref<LisCodeWbcItem[] | any>([]);
+const lisCodeRbcArr = ref<LisCodeRbcItem[] | any>([]);
 const minCountArr = ref<minCountItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
@@ -82,9 +88,11 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const wbcCustomItems = ref<any>([]);
 
 onMounted(async () => {
   await getImagePrintData();
+  await getWbcCustomClasses();
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.lisCode });
 });
 
@@ -108,6 +116,39 @@ watch(() => settingChangedChecker.value, () => {
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+}
+
+const getWbcCustomClasses = async () => {
+  try {
+    const result: any = await getWbcCustomClassApi();
+    if (result?.data) {
+      wbcCustomItems.value = result.data.filter((item: any) => item.abbreviation && item.fullNm);
+      setLisCodeWbcByCustomClass();
+    }
+  } catch (e) {
+    console.error('Error fetching WBC custom classes:', e);
+  }
+}
+
+const setLisCodeWbcByCustomClass = () => {
+  const wbcCustomItemClassIds = new Set(wbcCustomItems.value.map((item: any) => item.customNum));
+  const lisCodeWbcClassIds = new Set(lisCodeWbcArr.value.map((item: any) => item.classId));
+  const wbcCustomClassDefaultIds = new Set(WBC_CUSTOM_CLASS.map(item => String(item.customNum)));
+
+  // lisCodeWbc에서 없는 Custom Class 삭제 및 Custom Class 추가
+  lisCodeWbcArr.value = lisCodeWbcArr.value.filter((wbcInfo: LisCodeWbcItem) =>
+      !(wbcCustomClassDefaultIds.has(wbcInfo.classId) && !wbcCustomItemClassIds.has(wbcInfo.classId))
+  );
+
+  const newItems = wbcCustomItems.value
+      .filter((item: any) => !lisCodeWbcClassIds.has(item.customNum))
+      .map((item: any) => ({
+        fullNm: item.fullNm,
+        classId: item.customNum,
+        key: '',
+      }));
+
+  lisCodeWbcArr.value = [...lisCodeWbcArr.value, ...newItems];
 }
 
 const saveLisCode = async () => {
