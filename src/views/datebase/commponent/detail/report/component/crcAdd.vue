@@ -1,6 +1,6 @@
 <template>
   <div class="crcPopUpDiv crcAdd">
-    <div>
+    <div class="codeDiv">
       <span>Code</span>
       <input type="text" class="codeInput" v-model="codeVal"/>
     </div>
@@ -43,15 +43,22 @@
           <li v-for="(item, index) in remarkList" :key="index">{{ item.code }} - {{ item.remarkAllContent }}</li>
         </ul>
       </div>
+      <div class="mt2">
+        <button type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
+        <button type="button" @click="saveEdit" v-else>Edit</button>
+        <button type="button" @click="closeIsCrcAddChild">Close</button>
+      </div>
     </div>
+    <ToastNotification
+        v-if="toastMessage"
+        :message="toastMessage"
+        :duration="1500"
+        position="bottom-right"
+    />
   </div>
   <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList"/>
 
-  <div class="mt1">
-    <button type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
-    <button type="button" @click="saveEdit" v-else>Edit</button>
-    <button type="button" @click="closeIsCrcAddChild">Close</button>
-  </div>
+
 
   <Alert
       v-if="showAlert"
@@ -61,6 +68,8 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+
 </template>
 <script setup lang="ts">
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -86,6 +95,7 @@ import {
   crcDataGet,
   createCrcDataApi, updateCrcDataApi,
 } from "@/common/api/service/setting/settingApi";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const emit = defineEmits(['closeIsCrcAdd', 'refresh']);
 
@@ -98,6 +108,8 @@ const crcDataArr = ref<any>({
   },
   crcRemark: [],
 });
+
+const toastMessage = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -174,6 +186,10 @@ const pushCrcData = (dataArray, type, title, content, percentText = null, id: an
 };
 
 const saveCrcData = async () => {
+  if(codeVal.value === ''){
+    await showToast('Please enter the code.');
+    return;
+  }
   for (const argument of crcSetArr.value) {
     const {morphologyType, crcType, crcTitle, crcContent, crcPercentText, val, id} = argument;
     const targetArray = crcDataArr.value.crcContent[morphologyType.toLowerCase()] || [];
@@ -189,8 +205,8 @@ const saveCrcData = async () => {
   }
   crcDataArr.value.code = codeVal.value;
   crcDataArr.value.crcRemark = remarkList.value;
+  await showToast('Success');
   await createCrcDataApi(crcDataArr.value);
-  await showSuccessAlert('Success');
   emit('refresh');
   emit('closeIsCrcAdd');
 };
@@ -239,10 +255,19 @@ const saveEdit = async () => {
       crcContent: crcDataArr.value.crcContent,
       code: codeVal.value
     }]); // 수정된 데이터 서버로 전송
+    await showToast('Edit completed.');
     emit('refresh');
     emit('closeIsCrcAdd');
   } catch (error) {
-    console.error("Failed to update item:", error);
+    await showToast('Failed to update item');
+    // console.error("Failed to update item:", error);
   }
+};
+
+const showToast = async (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 </script>

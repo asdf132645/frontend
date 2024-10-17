@@ -49,8 +49,9 @@
                 type="text"
                 v-model="item.crcPercentText"
                 v-if="editIndex === item.id"
+                class="crcPercentInput"
             />
-            <span v-else>
+            <span v-else class="crcPercentText">
               {{ item?.crcPercentText }}
             </span>
           </div>

@@ -3656,7 +3656,13 @@ button.reSelect {
 }
 
 .crcPopUpDiv.crcAdd {
-    top: 22%;
+    top: 4%;
+    background: #f7fafc;
+    border: 1px solid #3498db;
+    padding: 20px;
+    width: 36%;
+    left: 35%;
+    z-index: 99;
 }
 
 ul.crcListContentUl {
@@ -3669,22 +3675,36 @@ ul.crcListContentUl li.crcListContentHeader {
     padding-bottom: 5px;
     margin-bottom: 5px;
     font-weight: 600;
+    padding-left: 7px;
 }
-
+.sortDownBig {
+    color: #3498db;
+}
+.sortDownBig.caret-up {
+    padding-top: 10px;
+}
 li.crcListContent > span {
-    color: #007bff;
+    color: #333333;
     position: relative;
-    display: inline-block;
+    display: flex;
+    justify-content: space-between;
     width: 100%;
     border-bottom: 1px solid #b8b8b8;
     padding-bottom: 5px;
     margin-bottom: 10px;
     vertical-align: sub;
+    text-align: left;
+    align-items: center;
 }
-
+.crcListDiv {
+    width: 85%;
+    text-align: right;
+    padding-right: 26px;
+    vertical-align: middle;
+}
 .crcReport {
     width: 43%;
-    background: var(--white-color);
+    background: #f4f9ff;
     color: var(--gray-bg-3-color);
     font-size: 0.8rem;
     overflow-y: auto;
@@ -3692,7 +3712,38 @@ li.crcListContent > span {
     border-radius: 4px;
     margin-left: 10px;
 }
+.crcListBottomLine {
+    border-bottom: 1px solid #000;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+}
+.crcListDiv {
+    width: 85%;
+    text-align: right;
+    padding-right: 26px;
+    vertical-align: middle;
+}
 
+.crcListRow {
+    font-size: 0.9rem;
+    border-bottom: 1px dashed #b6b6b6;
+    padding-bottom: 10px;
+}
+.sortDownBig {
+    padding-top: 6px;
+    cursor: pointer;
+}
+span.crcListSpan button {
+    background: none;
+    border: none;
+    color: #484848;
+    cursor: pointer;
+}
+span.crcListSpan input {
+    width: 4%;
+    vertical-align: middle;
+}
 .crcPopUpDiv {
     position: absolute;
     background: #fff;
@@ -3711,6 +3762,8 @@ li.crcListContent > span {
 
 .crcReport .crcSel {
     width: 45%;
+    max-width: 150px;
+    text-align: right;
 }
 
 .tabs {
@@ -3809,7 +3862,26 @@ span.smCrcTitle {
     opacity: 0;
     animation: fadeInOut 4s ease forwards;
 }
+.reportDiv .moDivBox div p {
+    min-width: 120px;
+    text-align: left;
+}
 
+
+.reportDiv .moDivBox div p {
+    min-width: 120px;
+    text-align: left;
+}
+
+.grid-item.crcItemDiv input.smallInput {
+    width: 49%;
+}
+
+span.crcPercentText {
+    font-size: 0.7rem;
+    min-width: 71px;
+    display: inline-block;
+}
 /* 페이드 인-아웃 애니메이션 */
 @keyframes fadeInOut {
     0% {

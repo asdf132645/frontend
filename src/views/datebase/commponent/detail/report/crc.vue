@@ -166,7 +166,6 @@ const tempSaveLocalStorage = () => {
   localStorage.setItem('crcDataArr',JSON.stringify(crcDataArr.value));
   localStorage.setItem('crcSetData', JSON.stringify(crcArr.value));
   localStorage.setItem('remarkList', JSON.stringify(remarkList.value));
-  console.log('Data saved to localStorage');
   showToast('Data saved to temporary storage')
 };
 

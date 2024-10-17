@@ -4,7 +4,7 @@
       <button class="crcBtn" @click="openCrcAdd">
         Add
       </button>
-      <button class="crcBtn ml1" @click="deleteSelectedItems">
+      <button class="crcBtn ml1" @click="deleteRow('check')">
         Check Delete
       </button>
     </div>
@@ -15,23 +15,25 @@
 
       <!-- 각 crcDataArr의 항목을 출력 -->
       <li v-for="(item, index) in crcDataArr" :key="index" class="crcListContent">
-        <span>
-          <button @click="deleteCrcItem(item.id)">Del</button>
-          <button @click="startEdit(item)">Edit</button>
+        <span class="crcListSpan">
           <input type="checkbox" v-model="selectedItems" :value="item.id"/>
           <span>{{ item.code }}</span>
+          <div class="crcListDiv">
+            <button @click="deleteRow('', item.id)"><font-awesome-icon :icon="['fas', 'trash']"/></button>
+            <button @click="startEdit(item)"><font-awesome-icon :icon="['fas', 'pen-to-square']"/></button>
+          </div>
           <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
           <font-awesome-icon
               :icon="isOpen[index] ? ['fas', 'caret-up'] : ['fas', 'sort-down']"
-              class="sortDownBig"
+              :class="isOpen[index] ? ['sortDownBig', 'caret-up'] : ['sortDownBig', 'sort-down']"
               @click="toggleOpen(index)"
           />
         </span>
 
         <!-- 아래로 열림/닫힘 부분 -->
-        <div v-if="isOpen[index]">
+        <div v-if="isOpen[index]" class="crcListBottomLine">
           <!-- RBC Morphology 출력 -->
-          <div v-if="item.crcContent.rbc && item.crcContent.rbc.length > 0">
+          <div v-if="item.crcContent.rbc && item.crcContent.rbc.length > 0" class="crcListRow">
             <span class="smCrcTitle">RBC Morphology</span>
             <p v-for="rbc in item.crcContent.rbc" :key="rbc.crcTitle">
               {{ rbc.crcTitle }}: {{ rbc.crcContent }}
@@ -39,7 +41,7 @@
           </div>
 
           <!-- WBC Morphology 출력 -->
-          <div v-if="item.crcContent.wbc && item.crcContent.wbc.length > 0">
+          <div v-if="item.crcContent.wbc && item.crcContent.wbc.length > 0" class="crcListRow">
             <span class="smCrcTitle">WBC Morphology</span>
             <p v-for="wbc in item.crcContent.wbc" :key="wbc.crcTitle">
               {{ wbc.crcTitle }}: {{ wbc.crcContent }}
@@ -47,7 +49,7 @@
           </div>
 
           <!-- PLT Morphology 출력 -->
-          <div v-if="item.crcContent.plt && item.crcContent.plt.length > 0">
+          <div v-if="item.crcContent.plt && item.crcContent.plt.length > 0" class="crcListRow">
             <span class="smCrcTitle">PLT Morphology</span>
             <p v-for="plt in item.crcContent.plt" :key="plt.crcTitle">
               {{ plt.crcTitle }}: {{ plt.crcContent }}
@@ -67,14 +69,31 @@
   </div>
 
   <!-- CrcAdd 컴포넌트 -->
-  <CrcAdd v-if="isCrcAdd" :crcSetArrP="crcArr" @closeIsCrcAdd="close" @refresh="pageRefresh"  :addEditType="addEditType" :editItem="editItem"/>
+  <CrcAdd v-if="isCrcAdd" :crcSetArrP="crcArr" @closeIsCrcAdd="close" @refresh="pageRefresh" :addEditType="addEditType"
+          :editItem="editItem"/>
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :message="confirmMessage"
+      type=""
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
+
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :duration="1500"
+      position="bottom-right"
+  />
 </template>
 
 <script setup lang="ts">
 import {crcDataGet, updateCrcDataApi, deleteCrcDataApi} from "@/common/api/service/setting/settingApi";
 import {ref, onMounted, nextTick} from "vue";
 import CrcAdd from "@/views/datebase/commponent/detail/report/component/crcAdd.vue";
-const emit = defineEmits(['refresh']);
+import Confirm from "@/components/commonUi/Confirm.vue";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 // Props 받기
 const props = defineProps({
@@ -83,6 +102,13 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(['refresh']);
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const delType = ref('');
+const itemId = ref(0);
+const toastMessage = ref('');
 
 // CrcAdd 열기/닫기 상태
 const isCrcAdd = ref(false);
@@ -101,6 +127,18 @@ onMounted(async () => {
   await nextTick();
   await loadCrcData();
 });
+const hideConfirm = async () => {
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = async () => {
+  if (delType.value === 'check') {
+    await deleteSelectedItems();
+  } else {
+    await deleteCrcItem(itemId.value);
+  }
+  showConfirm.value = false;
+}
 
 // CRC 데이터를 로드하는 함수
 const loadCrcData = async () => {
@@ -133,11 +171,28 @@ const startEdit = (item: any) => {
 const deleteCrcItem = async (id: number) => {
   try {
     await deleteCrcDataApi({id}); // 서버로 삭제 요청
+    showToast('It s been deleted.')
     await loadCrcData(); // 데이터 새로고침
   } catch (error) {
     console.error("Failed to delete item:", error);
   }
 };
+
+const deleteRow = (type: string, id?: string | number) => {
+  console.log(type)
+  if (type === 'check') {
+    if (selectedItems.value.length === 0) {
+      showToast('Please select the item to delete.')
+      return;
+    }
+    delType.value = 'check';
+  } else {
+    itemId.value = id;
+    delType.value = '';
+  }
+  showConfirm.value = true;
+  confirmMessage.value = 'are you sure you want to delete it?';
+}
 
 // 체크된 항목 삭제
 const deleteSelectedItems = async () => {
@@ -146,8 +201,10 @@ const deleteSelectedItems = async () => {
     await Promise.all(selectedItems.value.map(id => deleteCrcDataApi({id})));
     await loadCrcData(); // 데이터 새로고침
     selectedItems.value = []; // 선택된 항목 초기화
+    showToast('It s been deleted.')
   } catch (error) {
-    console.error("Failed to delete selected items:", error);
+    showToast('Failed to delete selected items')
+    // console.error("Failed to delete selected items:", error);
   }
 };
 
@@ -170,4 +227,12 @@ const pageRefresh = () => {
   emit('refresh');
   loadCrcData();
 }
+
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
+
 </script>
