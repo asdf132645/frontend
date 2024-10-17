@@ -242,8 +242,14 @@ export const crcRemarkGet = async (): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.report.crcRemarkFindAll);
 };
 
-export const crcSearchGet = async (): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.report.crcSearch);
+export const crcSearchGet = async (request: { code?: string; remarkAllContent?: string }): Promise<ApiResponse<any>> => {
+    const queryString = Object.entries(request)
+        .filter(([key, value]) => value !== undefined)  // undefined 값은 제외
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .join('&');
+
+
+    return httpClient.httpGet(apiConstants.report.crcSearch, `${queryString}`, true);
 };
 
 export const updateCrcRemarkApi = async (request: any): Promise<ApiResponse<void>> => {

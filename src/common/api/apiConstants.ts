@@ -507,7 +507,7 @@ export const apiConstants = {
             requiresToken: false,
         },
         crcSearch: {
-            endpoint: 'crc-remark-setting/crcSearch',
+            endpoint: 'crc-remark-setting/crcRemark',
             requiresToken: false,
         },
         crcDataCreate: {

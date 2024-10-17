@@ -35,7 +35,7 @@
       <crc-compontent :items="crcArr" moType="RBC" pageName="report"></crc-compontent>
 
       <!-- WBC, PLT 결과 -->
-      <div class="moDivBox mt2">
+      <div class="moDivBox mt1">
         <div>
           <crc-compontent :items="crcArr" moType="WBC" pageName="report"></crc-compontent>
         </div>
@@ -45,16 +45,16 @@
       </div>
 
       <!-- Remark 관련 -->
-      <div class="mt4">
+      <div class="mt2">
         <div class="crcDivTitle">
           <span>Remark</span>
           <button class="reSelect" @click="remarkSelect">Remark Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-        <ul class="remarkUlList">
-          <li v-for="(item, index) in remarkList" :key="index">{{ item.code }} - {{ item.remarkAllContent }}</li>
-        </ul>
+        <div class="remarkUlList">
+          <input v-for="(item, index) in remarkList" :key="index" v-model="item.remarkAllContent">
+        </div>
       </div>
     </div>
 

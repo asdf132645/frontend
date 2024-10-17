@@ -3598,8 +3598,11 @@ table.cbcTable td {
 .grid-item.crcItemDiv {
     display: flex;
     justify-content: space-between;
-    min-height: 40px;
     align-items: center;
+}
+
+li.crcRow input, li.crcRow select {
+    padding: 3px;
 }
 
 li.crcRow {
@@ -3639,9 +3642,9 @@ li.crcRow {
     position: relative;
     font-size: 0.9rem;
     font-weight: 600;
-    margin: 10px 0px 5px 0px;
+    margin: 5px 0px 5px 0px;
     border-bottom: 1.5px solid #004691;
-    padding-bottom: 10px;
+    padding-bottom: 5px;
     text-align: left;
 }
 
@@ -3651,7 +3654,7 @@ button.reSelect {
     background: none;
     border: 1px solid #007bff;
     padding: 5px 10px;
-    top: -8px;
+    top: -12px;
     cursor: pointer;
 }
 
@@ -3677,12 +3680,23 @@ ul.crcListContentUl li.crcListContentHeader {
     font-weight: 600;
     padding-left: 7px;
 }
+
 .sortDownBig {
     color: #3498db;
 }
+
+span.crcListSpan span {
+    min-width: 50px;
+}
+
+.crcListSpan {
+    cursor: pointer;
+}
+
 .sortDownBig.caret-up {
     padding-top: 10px;
 }
+
 li.crcListContent > span {
     color: #333333;
     position: relative;
@@ -3696,12 +3710,14 @@ li.crcListContent > span {
     text-align: left;
     align-items: center;
 }
+
 .crcListDiv {
     width: 85%;
     text-align: right;
     padding-right: 26px;
     vertical-align: middle;
 }
+
 .crcReport {
     width: 43%;
     background: #f4f9ff;
@@ -3712,12 +3728,14 @@ li.crcListContent > span {
     border-radius: 4px;
     margin-left: 10px;
 }
+
 .crcListBottomLine {
     border-bottom: 1px solid #000;
     margin-bottom: 10px;
     padding-bottom: 5px;
     padding-left: 10px;
 }
+
 .crcListDiv {
     width: 85%;
     text-align: right;
@@ -3730,20 +3748,24 @@ li.crcListContent > span {
     border-bottom: 1px dashed #b6b6b6;
     padding-bottom: 10px;
 }
+
 .sortDownBig {
     padding-top: 6px;
     cursor: pointer;
 }
+
 span.crcListSpan button {
     background: none;
     border: none;
     color: #484848;
     cursor: pointer;
 }
+
 span.crcListSpan input {
     width: 4%;
     vertical-align: middle;
 }
+
 .crcPopUpDiv {
     position: absolute;
     background: #fff;
@@ -3848,6 +3870,7 @@ span.smCrcTitle {
 .crcReport .tab-content {
     margin: 10px;
 }
+
 .toast-notification {
     position: fixed;
     bottom: 20px;
@@ -3862,6 +3885,7 @@ span.smCrcTitle {
     opacity: 0;
     animation: fadeInOut 4s ease forwards;
 }
+
 .reportDiv .moDivBox div p {
     min-width: 120px;
     text-align: left;
@@ -3882,6 +3906,123 @@ span.crcPercentText {
     min-width: 71px;
     display: inline-block;
 }
+
+.headerRemark.topLine span, .headerRemark.topLine select, .headerRemark.topLine input, .headerRemark.topLine button {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.headerRemark.topLine select {
+    width: 16%;
+}
+
+.headerRemark.topLine span {
+    width: 11%;
+}
+
+.headerRemark.topLine input {
+    width: 40%;
+    height: 18px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.headerRemark.topLine {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+table.remarkDefaultTable tr {
+    border-bottom: 1px solid #9c9c9c;
+}
+
+table.remarkDefaultTable {
+    width: 100%;
+
+}
+
+table.remarkDefaultTable tr th {
+    padding: 10px;
+    font-weight: 600;
+    background: #185354;
+    color: #fff;
+}
+
+table.remarkDefaultTable tr td {
+    padding: 3px;
+}
+
+.headerRemark.topLine button, .remarkDefaultTable button {
+    border: 1px solid #3498db;
+    background: #fff;
+    border-radius: 5px;
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.remarkBottomBtnGroup input, .remarkBottomBtnGroup button {
+    display: inline-block;
+}
+
+.remarkBottomBtnGroup input {
+    width: 60%;
+}
+
+.remarkBottomBtnGroup {
+    text-align: left;
+    border-top: 1px solid #3498db;
+    border-bottom: 1px solid #3498db;
+    padding: 10px 0px;
+}
+
+input.firstInput {
+    width: 15%;
+    margin-right: 5px;
+}
+
+.crcDefaultBtn {
+    border: 1px solid #3498db;
+    background: #fff;
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+table.remarkDefaultTable input {
+    width: 90%;
+}
+
+.crcPopUpDiv.remark {
+    top: 3%;
+    background: #f8f8f8;
+    border: 1px solid #000000;
+    padding: 20px;
+    width: 50%;
+    left: 30%;
+    z-index: 99;
+    color: #333333;
+    font-size: 0.8rem;
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+.codeDiv {
+    text-align: left;
+}
+
+.remarkUlList input {
+    width: 98%;
+    margin-bottom: 4px;
+}
+
+input.codeInput {
+    display: inline-block;
+    width: 23%;
+    margin-left: 10px;
+}
+
 /* 페이드 인-아웃 애니메이션 */
 @keyframes fadeInOut {
     0% {
@@ -3901,6 +4042,7 @@ span.crcPercentText {
         transform: translateX(-50%) translateY(20px);
     }
 }
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;

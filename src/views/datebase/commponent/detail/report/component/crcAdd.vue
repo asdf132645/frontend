@@ -39,14 +39,14 @@
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-        <ul class="remarkUlList">
-          <li v-for="(item, index) in remarkList" :key="index">{{ item.code }} - {{ item.remarkAllContent }}</li>
-        </ul>
+        <div class="remarkUlList">
+          <input v-for="(item, index) in remarkList" :key="index" v-model="item.remarkAllContent">
+        </div>
       </div>
       <div class="mt2">
-        <button type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
-        <button type="button" @click="saveEdit" v-else>Edit</button>
-        <button type="button" @click="closeIsCrcAddChild">Close</button>
+        <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
+        <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
+        <button class="crcDefaultBtn ml1" type="button" @click="closeIsCrcAddChild">Close</button>
       </div>
     </div>
     <ToastNotification
@@ -92,7 +92,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 
 import {nextTick, onBeforeMount, onMounted, ref} from "vue";
 import {
-  crcDataGet,
+  crcDataGet, crcGet,
   createCrcDataApi, updateCrcDataApi,
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -119,7 +119,7 @@ const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const remarkList = ref<any[]>([]); // Remark 리스트 상태
 
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   // crcSetArr 초기화
   crcSetArr.value = JSON.parse(JSON.stringify(props.crcSetArrP));
 
@@ -147,7 +147,8 @@ onBeforeMount(() => {
     // 리마크 초기화
     remarkList.value = props.editItem.crcRemark || [];
   } else {
-    crcSetArr.value = JSON.parse(JSON.stringify(props.crcSetArrP));
+    crcSetArr.value = (await crcGet()).data;
+    console.log(crcSetArr.value)
     for (const argument of crcSetArr.value) {
       if (argument.crcType === 'select') {
         if (!argument?.val) {
@@ -155,6 +156,8 @@ onBeforeMount(() => {
         }
       }
     }
+
+
   }
 });
 

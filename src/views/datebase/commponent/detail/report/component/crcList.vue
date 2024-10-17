@@ -15,20 +15,24 @@
 
       <!-- 각 crcDataArr의 항목을 출력 -->
       <li v-for="(item, index) in crcDataArr" :key="index" class="crcListContent">
-        <span class="crcListSpan">
-          <input type="checkbox" v-model="selectedItems" :value="item.id"/>
-          <span>{{ item.code }}</span>
-          <div class="crcListDiv">
-            <button @click="deleteRow('', item.id)"><font-awesome-icon :icon="['fas', 'trash']"/></button>
-            <button @click="startEdit(item)"><font-awesome-icon :icon="['fas', 'pen-to-square']"/></button>
-          </div>
-          <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
-          <font-awesome-icon
-              :icon="isOpen[index] ? ['fas', 'caret-up'] : ['fas', 'sort-down']"
-              :class="isOpen[index] ? ['sortDownBig', 'caret-up'] : ['sortDownBig', 'sort-down']"
-              @click="toggleOpen(index)"
-          />
+        <span class="crcListSpan" @click="toggleOpen(index)">
+            <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/> <!-- 클릭 이벤트 전파 중단 -->
+            <span>{{ item.code }}</span>
+            <div class="crcListDiv">
+                <button @click.stop="startEdit(item)"> <!-- 클릭 이벤트 전파 중단 -->
+                    <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
+                </button>
+                <button @click.stop="deleteRow('', item.id)"> <!-- 클릭 이벤트 전파 중단 -->
+                    <font-awesome-icon :icon="['fas', 'trash']"/>
+                </button>
+            </div>
+                  <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
+            <font-awesome-icon
+                :icon="isOpen[index] ? ['fas', 'caret-up'] : ['fas', 'sort-down']"
+                :class="isOpen[index] ? ['sortDownBig', 'caret-up'] : ['sortDownBig', 'sort-down']"
+            />
         </span>
+
 
         <!-- 아래로 열림/닫힘 부분 -->
         <div v-if="isOpen[index]" class="crcListBottomLine">
