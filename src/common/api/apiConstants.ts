@@ -421,6 +421,12 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
+    H7MessageCustom:{
+        post: {
+            endpoint: 'hl7/customMessage',
+            requiresToken: false,
+        }
+    },
     Hl7Create:{
         post: {
             endpoint: 'hl7/hl7Create',
