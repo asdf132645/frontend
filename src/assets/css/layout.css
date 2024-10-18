@@ -15,6 +15,10 @@
     margin-top: 30px;
 }
 
+.mt30 {
+    margin-top: 30px;
+}
+
 .mt4 {
     margin-top: 40px;
 }
@@ -63,14 +67,18 @@
     cursor: move;
 }
 
-.alignItemsCenter {
+.flex-align-center {
     display: flex;
     align-items: center;
 }
 
-.alignItemsCenterSpaceBetween {
+.flex-justify-center {
     display: flex;
-    align-items: center;
+    justify-content: center;
+}
+
+.flex-justify-between {
+    display: flex;
     justify-content: space-between;
 }
 
@@ -80,17 +88,24 @@
     align-items: center;
 }
 
-.flexColumn {
+.flex-align-center-justify-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-column {
     display: flex;
     flex-direction: column;
 }
 
-.flexSpaceBetween {
+.flex-column-align-center {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
 }
 
-.flexColumnAlignEnd {
+.flex-column-align-end {
     display: flex;
     flex-direction: column;
     align-items: end;
@@ -123,6 +138,14 @@
 
 .w140 {
     width: 140px;
+}
+
+.w200 {
+    width: 200px;
+}
+
+.w420 {
+    width: 420px;
 }
 
 .w50 {
@@ -2147,7 +2170,7 @@ ul.cellImgBox input {
 }
 
 .reportSection.cbcLayer .reportDiv {
-    width: 82.5%;
+    width: 84%;
     padding-left: 8px;
 }
 
@@ -3370,8 +3393,7 @@ button.rollbackButton {
 
 .cbcDiv {
     display: inline-block;
-    width: 15%;
-    margin-left: 8px;
+    width: 13%;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
     height: 94%;
@@ -3580,11 +3602,11 @@ table.cbcTable td {
 
 .crcWrap ul li p {
     margin-bottom: 10px;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 400;
 }
 
-.crcWrap > button {
+.crcWrapBtn {
     background: none;
     color: #fff;
     font-size: 0.9rem;
@@ -3721,7 +3743,7 @@ li.crcListContent > span {
 }
 
 .crcReport {
-    width: 43%;
+    width: 54%;
     background: #f4f9ff;
     color: var(--gray-bg-3-color);
     font-size: 0.8rem;
@@ -3729,6 +3751,7 @@ li.crcListContent > span {
     max-height: 87vh;
     border-radius: 4px;
     margin-left: 10px;
+    margin-right: 10px;
 }
 
 .crcListBottomLine {

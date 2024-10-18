@@ -1,24 +1,30 @@
 <template>
   <div>
     <div v-if="isToggle">
-      <div class="crcWrap">
-        <div>
-          <span>crcDefaultMode</span>
-          <font-awesome-icon
-              :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              class="iconSize"
-              @click="crcDefaultModeOn"
-          />
+      <div class="crcWrap flex-column-align-center">
+
+        <div class="w420 flex-justify-between">
+          <div class="w200 flex-align-center-justify-between">
+            <span>CRC Default Mode</span>
+            <font-awesome-icon
+                :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="crcDefaultModeOn"
+            />
+          </div>
+
+          <div class="w200 flex-align-center-justify-between">
+            <span>CRC Connect</span>
+            <font-awesome-icon
+                :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="crcConnectOn"
+            />
+          </div>
         </div>
-        <div>
-          <span>crcConnect</span>
-          <font-awesome-icon
-              :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              class="iconSize"
-              @click="crcConnectOn"
-          />
-        </div>
-        <ul>
+
+
+        <ul class="mt30">
           <li>
             <p>crcTitle</p>
             <span><input type="text" placeholder="crcTitle" v-model="crcTitle"></span>
@@ -34,15 +40,15 @@
             </span>
           </li>
           <li>
-            <p>crcContent</p>
+            <p>CRC Content</p>
             <span><input type="text" placeholder="crcContent" v-model="crcContent"></span>
           </li>
           <li v-if="crcType === 'percent'">
-            <p>crcPercentText</p>
+            <p>CRC PercentText</p>
             <span><input type="text" placeholder="crcPercentText" v-model="crcPercentText"></span>
           </li>
           <li>
-            <p>morphologyType</p>
+            <p>Morphology Type</p>
             <span>
               <select v-model="morphologyType">
                 <option value="RBC">RBC</option>
@@ -51,8 +57,11 @@
               </select>
             </span>
           </li>
+          <li>
+            <button class="crcWrapBtn" @click="addCrcArr">Add</button>
+          </li>
         </ul>
-        <button @click="addCrcArr">Add</button>
+
       </div>
 
 

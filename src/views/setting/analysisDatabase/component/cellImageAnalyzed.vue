@@ -267,7 +267,7 @@
     <div v-show="possibleUploadFileNames.length > 0" class="downloadDeleteContainer">
       <p class="downloadDeleteSemiTitle">Select upload file</p>
       <ul class="downloadDeleteWrapper">
-        <li class="userSelectText flexSpaceBetween" v-for="folderName in possibleUploadFileNames" :key="folderName">
+        <li class="userSelectText flex-justify-between" v-for="folderName in possibleUploadFileNames" :key="folderName">
           <p style="font-size: 0.8rem;">{{ folderName }}</p>
           <input style="margin: 0;" v-model="selectedUploadFile" type="radio" :value="folderName" />
         </li>

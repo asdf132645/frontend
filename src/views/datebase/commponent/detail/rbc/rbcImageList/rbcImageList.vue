@@ -33,7 +33,7 @@
           <div>
             <font-awesome-icon :icon="['fas', 'palette']"/>
             <span>RGB [ {{ `${imageRgb[0]} , ${imageRgb[1]}, ${imageRgb[2]}` }} ]</span>
-            <div class="alignItemsCenter">
+            <div class="flex-align-center">
               <label>R</label>
               <input
                   type="range"
@@ -43,7 +43,7 @@
                   @input="changeImageRgb"
               />
             </div>
-            <div class="alignItemsCenter">
+            <div class="flex-align-center">
               <label>G</label>
               <input
                   type="range"
@@ -53,7 +53,7 @@
                   @input="changeImageRgb"
               />
             </div>
-            <div class="alignItemsCenter">
+            <div class="flex-align-center">
               <label>B</label>
               <input
                   type="range"
@@ -154,6 +154,7 @@
 
     </template>
   </div>
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -550,7 +551,9 @@ const drawRbcMarker = async (classInfoArr: any) => {
   classInfoArr.forEach((info: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
-        if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
+        // 기존 비교 항목
+        // if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
+        if (classItem.classId === info.classId && category.categoryId === info.categoryId) {
 
           ctx.lineWidth = 3;
           ctx.strokeStyle = `${colors[info.classNm] || 'black'}`;

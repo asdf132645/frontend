@@ -112,32 +112,32 @@
     <template #content>
       <div>
         <ul class="editOrder">
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="testType">PB/BF</label>
             <input id="testType" class="inputDisabled" type="text" v-model="itemObj.testType" readonly disabled/>
           </li>
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="traySlot">Tray Slot</label>
             <input id="traySlot" class="inputDisabled" type="text" v-model="itemObj.traySlot" readonly disabled/>
           </li>
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="barcode">BARCODE ID</label>
             <input id="barcode" type="text" v-model="itemObj.barcodeNo" placeholder="BARCODE ID"/>
           </li>
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="patientId">PATIENT ID</label>
             <input id="patientId" type="text" v-model="itemObj.patientId" placeholder="PATIENT ID"/>
           </li>
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="patientName">PATIENT NAME</label>
             <input id="patientName" type="text" v-model="itemObj.patientNm" placeholder="PATIENT NAME"/>
           </li>
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="analyzedDate">Analyzed date</label>
             <input id="analyzedDate" class="inputDisabled" type="text" v-model="itemObj.analyzedDttm" readonly
                    disabled/>
           </li>
-          <li class="flexColumn">
+          <li class="flex-column">
             <label for="signedState">Signed state</label>
             <input id="signedState" class="inputDisabled" type="text" v-model="itemObj.submitState" readonly disabled/>
           </li>
