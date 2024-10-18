@@ -525,7 +525,39 @@ export const apiConstants = {
         crcDataUpdate: {
             endpoint: 'crc-data-setting/crcDataUpdate',
             requiresToken: false,
-        }
+        },
+        crcOptionGet:{
+            endpoint: 'crc-option/crcOptionGet',
+            requiresToken: false,
+        },
+        crcOptionCreate:{
+            endpoint: 'crc-option/crcOptionCreate',
+            requiresToken: false,
+        },
+        crcOptionUpdate:{
+            endpoint: 'crc-option/crcOptionUpdate',
+            requiresToken: false,
+        },
+        crcRecoCreate: {
+            endpoint: 'crc-recommendation-setting/crcRecommendationCreate',
+            requiresToken: false,
+        },
+        crcRecoFindAll: {
+            endpoint: 'crc-recommendation-setting/crcRecommendationFindAll',
+            requiresToken: false,
+        },
+        crcRecoRemove: {
+            endpoint: 'crc-recommendation-setting/crcRecommendationRemove',
+            requiresToken: false,
+        },
+        crcRecoUpdate: {
+            endpoint: 'crc-recommendation-setting/crcRecommendationUpdate',
+            requiresToken: false,
+        },
+        crcRecoSearch: {
+            endpoint: 'crc-recommendation-setting/crcRSearch',
+            requiresToken: false,
+        },
 
     }
 };

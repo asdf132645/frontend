@@ -13,7 +13,7 @@
         <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
                   @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
       </div>
-      <div class="reportDetail shadowBox" v-if="crcData.length === 0">
+      <div class="reportDetail shadowBox" v-if="!crcConnect">
         <div class="reportTitle">
           <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
           <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>
@@ -242,7 +242,7 @@ import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import { useStore } from "vuex";
 import { formatDateString } from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import {crcGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
 import { readJsonFile } from "@/common/api/service/fileReader/fileReaderApi";
@@ -287,9 +287,14 @@ const rbcDegreeStandard = ref<any>([]);
 const isCommitChanged = ref(false);
 const wbcInfoAfter = ref<any>([]);
 const crcData = ref<any>([]);
+const crcConnect = ref(false);
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
+  const crcOptionApi = await crcOptionGet();
+  if (crcOptionApi.data.length !== 0) {
+    crcConnect.value = crcOptionApi.data[0].crcConnect;
+  }
 })
 
 const handleClickOutside = (event: MouseEvent) => {

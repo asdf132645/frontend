@@ -2,6 +2,22 @@
   <div>
     <div v-if="isToggle">
       <div class="crcWrap">
+        <div>
+          <span>crcDefaultMode</span>
+          <font-awesome-icon
+              :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              class="iconSize"
+              @click="crcDefaultModeOn"
+          />
+        </div>
+        <div>
+          <span>crcConnect</span>
+          <font-awesome-icon
+              :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+              class="iconSize"
+              @click="crcConnectOn"
+          />
+        </div>
         <ul>
           <li>
             <p>crcTitle</p>
@@ -86,7 +102,13 @@
 
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
-import {crcGet, createCrcApi, deleteCrcApi, updateCrcApi} from "@/common/api/service/setting/settingApi";
+import {
+  crcGet, crcOptionGet,
+  createCrcApi,
+  createCrcOptionApi,
+  deleteCrcApi,
+  updateCrcApi, updateCrcOptionApi
+} from "@/common/api/service/setting/settingApi";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 
@@ -101,9 +123,21 @@ const crcData = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-
+const crcDefaultMode = ref(false);
+const crcConnect = ref(false);
+const crcOptionPutWhether = ref(false);
+const crcOptionId = ref(0);
 onMounted(async () => {
   crcData.value = await crcGet();
+  const crcOptionApi = await crcOptionGet();
+
+  if(crcOptionApi.data.length !== 0){
+    crcDefaultMode.value = crcOptionApi.data[0].crcMode;
+    crcConnect.value = crcOptionApi.data[0].crcConnect;
+    crcOptionId.value = crcOptionApi.data[0].id;
+    crcOptionPutWhether.value = true;
+  }
+
   isToggle.value = true;
   if (isToggle.value) {
     crcArr.value = [];
@@ -147,7 +181,22 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
-  await createCrcApi(crcArr.value);
+  if (crcOptionPutWhether.value) {
+    await updateCrcApi(crcArr.value);
+    await updateCrcOptionApi({id: crcOptionId.value,crcMode: crcDefaultMode.value, crcConnect: crcConnect.value});
+  }else{
+    await createCrcApi(crcArr.value);
+    await createCrcOptionApi({crcMode: crcDefaultMode.value, crcConnect: crcConnect.value});
+
+  }
   await showSuccessAlert('Success');
 };
+
+const crcDefaultModeOn = () => {
+  crcDefaultMode.value = !crcDefaultMode.value;
+}
+
+const crcConnectOn = () => {
+  crcConnect.value = !crcConnect.value;
+}
 </script>

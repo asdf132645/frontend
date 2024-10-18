@@ -142,7 +142,12 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :duration="1500"
+      position="bottom-right"
+  />
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
@@ -203,6 +208,7 @@ import {
   inhaDataSend,
 } from "@/common/lib/commonfunction/inhaCbcLis";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -217,6 +223,7 @@ const memoModal = ref(false);
 const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
+const toastMessage = ref('');
 
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
@@ -267,15 +274,16 @@ onMounted(async () => {
   }
   barCodeImageShowError.value = false;
 })
-window.addEventListener('keydown', (event: KeyboardEvent) => {
-  // F1, F2 등 특수 키를 포함한 키 비교
-  const keyName = event.key; // 사용자 입력 키를 가져옴
-
-  // lisHotKey.value와 비교
-  if (keyName === lisHotKey.value) {
+const handleKeyDown = (event: KeyboardEvent) => {
+  const keyName = event.key;
+  if (keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+    event.preventDefault(); // 기본 동작 방지
     uploadLis();
   }
-});
+};
+
+window.addEventListener('keydown', handleKeyDown);
+
 watch(() => props.isCommitChanged, () => {
   selectItems.value.submitState = 'Submit';
 })
@@ -372,7 +380,7 @@ const barcodeCopy = async () => {
   textarea.select();
   document.execCommand('copy');
   document.body.removeChild(textarea);
-  showSuccessAlert(messages.IDS_MSG_SUCCESS);
+  showToast(messages.IDS_MSG_SUCCESS);
 }
 
 const commitConfirmed = () => {
@@ -395,11 +403,13 @@ const handleOkConfirm = () => {
 }
 
 const uploadLis = () => {
-
+  console.log('uploadLis');
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     cmcSeoulLisAndCbcDataGet();
+    return;
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     inhaDataSendLoad();
+    return;
   }
   else {
     lisLastStep();
@@ -678,7 +688,7 @@ const cmcSeoulLisAndCbcDataGet = () => {
             lisBtnColor.value = true;
             const updatedRuningInfo = {...result.data, ...updatedItem}
             await resRunningItem(updatedRuningInfo, true);
-            showSuccessAlert(messages.IDS_MSG_SUCCESS);
+            showToast(messages.IDS_MSG_SUCCESS);
           } else {
             const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
             const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
@@ -740,7 +750,7 @@ const inhaDataSendLoad = async () => {
     lisBtnColor: lisBtnColorVal
   } = await inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, props.selectItems, userModuleDataGet.value.id)
   if (errMessage !== '') {
-    showSuccessAlert(errMessage);
+    showToast(errMessage);
   }
   lisBtnColor.value = lisBtnColorVal || false;
 }
@@ -774,7 +784,7 @@ const otherDataSend = async () => {
         }
         try {
           await createH17(data);
-          showSuccessAlert(messages.IDS_MSG_SUCCESS);
+          showToast(messages.IDS_MSG_SUCCESS);
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
         }
@@ -866,7 +876,7 @@ const lisFileUrlCreate = async (data: any) => {
         const updatedRunningInfo = {...result.data, ...updatedItem};
 
         await resRunningItem(updatedRunningInfo, true);
-        showSuccessAlert(messages.IDS_MSG_SUCCESS);
+        showToast(messages.IDS_MSG_SUCCESS);
 
         // 알림이 없을 경우 다음 페이지로 이동
         if (!showAlert.value) {
@@ -895,7 +905,7 @@ const sendLisMessage = async (data: any) => {
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
     const result = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
     if (result.data.errorCode === 'E000') {
-      showSuccessAlert(messages.IDS_MSG_SUCCESS);
+      showToast(messages.IDS_MSG_SUCCESS);
     } else {
       showErrorAlert(result.data.errorMessage);
     }
@@ -1000,7 +1010,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     })
     if (response) {
       if (!noAlert) {
-        showSuccessAlert('Success');
+        showToast('Success');
       }
       const filteredItems = updatedRuningInfo;
       wbcMemo.value = filteredItems.wbcMemo;
@@ -1385,5 +1395,10 @@ const hideAlert = () => {
 const onImageError = () => {
   barCodeImageShowError.value = true;
 }
-
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
 </script>

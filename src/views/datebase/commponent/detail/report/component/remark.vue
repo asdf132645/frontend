@@ -11,7 +11,7 @@
       <button type="button" @click="searchRemarkData">Search</button>
     </div>
     <div class="remarkBottomBtnGroup mb1">
-      <input v-model="newRemarkCode" type="text" placeholder="remark code" class="firstInput"/>
+      <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
       <input v-model="newRemarkContent" type="text" placeholder="content"/>
       <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
     </div>
@@ -61,7 +61,7 @@
 
     <div class="mt2">
       <button class="crcDefaultBtn" @click="okSelect">OK</button>
-      <button  @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
+      <button @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
     </div>
   </div>
   <ToastNotification
@@ -74,40 +74,56 @@
 
 
 <script setup lang="ts">
-import {nextTick, onMounted, ref, defineEmits} from "vue";
+import {nextTick, onMounted, ref, defineEmits, onBeforeMount} from "vue";
 import {
   crcRemarkGet,
   createCrcRemarkApi,
   deleteCrcRemarkApi,
   updateCrcRemarkApi,
-  crcSearchGet // 서치 API 추가
+  crcSearchGet, crcOptionGet, crcRecoGet, crcRecoSearchGet, createCrcRecoApi, deleteCrcRecoApi, updateCrcRecoApi // 서치 API 추가
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
-const emit = defineEmits(["cancel", "listUpdated"]);
+const props = defineProps({
+  crcDefaultMode: {
+    type: Boolean,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+});
+
+const emit = defineEmits(['cancel', 'listUpdated']);
 const toastMessage = ref('');
 const remarkArr = ref<any>([]);
 const selectedItems = ref<number[]>([]);
 const newRemarkCode = ref("");
 const newRemarkContent = ref("");
 const searchType = ref("Code");
-
-// 편집 상태 관리용 변수
 const editIndex = ref<number | null>(null);
 const editedCode = ref("");
 const editedContent = ref("");
 const searchRemark = ref(''); // 검색 필드
-
-onMounted(async () => {
-  await nextTick();
-  await loadRemarks();
-});
-
+const crcDefaultModeVal = ref(false);
+onBeforeMount(async () => {
+  crcDefaultModeVal.value = props.crcDefaultMode;
+  await loadRemarks('mounted');
+})
 // 서버로부터 Remark 데이터 로드
-const loadRemarks = async () => {
-  const response = await crcRemarkGet();
+const loadRemarks = async (type?: string) => {
+  let response: any = [];
+  if (props.type === 'remark') {
+    response = await crcRemarkGet();
+  } else {
+    response = await crcRecoGet();
+  }
+
   remarkArr.value = response?.data || [];
-  showToast("Search completed.");
+  if(type !== 'mounted'){
+    showToast("Search completed.");
+  }
 };
 
 // 검색 기능
@@ -124,7 +140,13 @@ const searchRemarkData = async () => {
       searchParam.remarkAllContent = searchRemark.value;
     }
 
-    const response = await crcSearchGet(searchParam);
+    // const response = await crcSearchGet(searchParam);
+    let response: any = [];
+    if (props.type === 'remark') {
+      response = await crcSearchGet(searchParam);
+    } else {
+      response = await crcRecoSearchGet(searchParam);
+    }
     remarkArr.value = response?.data || [];
 
     if (remarkArr.value.length === 0) {
@@ -141,15 +163,23 @@ const searchRemarkData = async () => {
 // Remark 추가
 const addRemark = async () => {
   if (!newRemarkCode.value || !newRemarkContent.value) {
-    showToast("Remark code와 content를 입력해주세요.");
+    showToast("code와 content를 입력해주세요.");
     return;
   }
 
   try {
-    await createCrcRemarkApi({
-      code: newRemarkCode.value,
-      remarkAllContent: newRemarkContent.value,
-    });
+    if (props.type === 'remark') {
+      await createCrcRemarkApi({
+        code: newRemarkCode.value,
+        remarkAllContent: newRemarkContent.value,
+      });
+    } else {
+      await createCrcRecoApi({
+        code: newRemarkCode.value,
+        remarkAllContent: newRemarkContent.value,
+      });
+    }
+
     newRemarkCode.value = "";
     newRemarkContent.value = "";
     await loadRemarks();
@@ -161,7 +191,11 @@ const addRemark = async () => {
 // Remark 삭제
 const deleteRemark = async (id: number) => {
   try {
-    await deleteCrcRemarkApi({id});
+    if (props.type === 'remark') {
+      await deleteCrcRemarkApi({id});
+    } else {
+      await deleteCrcRecoApi({id});
+    }
     showToast('delete Success')
     await loadRemarks();
   } catch (error) {
@@ -184,13 +218,24 @@ const saveEdit = async (id: number) => {
   }
 
   try {
-    await updateCrcRemarkApi([
-      {
-        id: id,
-        code: editedCode.value,
-        remarkAllContent: editedContent.value,
-      },
-    ]);
+
+    if (props.type === 'remark') {
+      await updateCrcRemarkApi([
+        {
+          id: id,
+          code: editedCode.value,
+          remarkAllContent: editedContent.value,
+        },
+      ]);
+    } else {
+      await updateCrcRecoApi([
+        {
+          id: id,
+          code: editedCode.value,
+          remarkAllContent: editedContent.value,
+        },
+      ]);
+    }
     editIndex.value = null;
     await loadRemarks();
     showToast('save Success')
