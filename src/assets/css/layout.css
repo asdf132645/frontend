@@ -3666,6 +3666,8 @@ button.reSelect {
     width: 36%;
     left: 35%;
     z-index: 99;
+    max-height: 976px;
+    overflow: auto;
 }
 
 ul.crcListContentUl {

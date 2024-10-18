@@ -32,10 +32,10 @@
         </div>
       </div>
       <!-- Remark 관련 -->
-      <div class="mt4">
+      <div class="mt2">
         <div class="crcDivTitle">
-          <span>Remark</span>
-          <button class="reSelect" @click="remarkSelect">Remark Select</button>
+          <span>{{ crcDefaultModeChangeText(crcDefaultMode) }} </span>
+          <button class="reSelect" @click="remarkSelect">{{ crcDefaultModeChangeText(crcDefaultMode) }} Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -43,6 +43,19 @@
           <input v-for="(item, index) in remarkList" :key="index" v-model="item.remarkAllContent">
         </div>
       </div>
+
+      <div class="mt2" v-if="!crcDefaultMode">
+        <div class="crcDivTitle">
+          <span> Recommendation </span>
+          <button class="reSelect" @click="recommendationSelect">Recommendation Select</button>
+        </div>
+
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <input v-for="(item, index) in recoList" :key="index" v-model="item.remarkAllContent">
+        </div>
+      </div>
+
       <div class="mt2">
         <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
         <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
@@ -56,8 +69,8 @@
         position="bottom-right"
     />
   </div>
-  <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList"/>
-
+  <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList" type="remark" :crcDefaultMode="crcDefaultMode"/>
+  <Remark v-if="isRecommendation" @cancel="closeReco" @listUpdated="updateRecoList" type="reco" :crcDefaultMode="crcDefaultMode"/>
 
 
   <Alert
@@ -92,7 +105,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 
 import {nextTick, onBeforeMount, onMounted, ref} from "vue";
 import {
-  crcDataGet, crcGet,
+  crcDataGet, crcGet, crcOptionGet,
   createCrcDataApi, updateCrcDataApi,
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -107,6 +120,7 @@ const crcDataArr = ref<any>({
     plt: [],
   },
   crcRemark: [],
+  crcRecommendation: [],
 });
 
 const toastMessage = ref('');
@@ -117,7 +131,9 @@ const codeVal = ref('');
 const crcSetArr = ref<any>([]);
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const remarkList = ref<any[]>([]); // Remark 리스트 상태
-
+const recoList = ref<any[]>([]);
+const crcDefaultMode = ref(false);
+const isRecommendation = ref(false);
 
 onBeforeMount(async () => {
   // crcSetArr 초기화
@@ -146,6 +162,7 @@ onBeforeMount(async () => {
 
     // 리마크 초기화
     remarkList.value = props.editItem.crcRemark || [];
+    recoList.value = props.editItem.crcRecommendation || [];
   } else {
     crcSetArr.value = (await crcGet()).data;
     console.log(crcSetArr.value)
@@ -156,8 +173,10 @@ onBeforeMount(async () => {
         }
       }
     }
-
-
+  }
+  const crcOptionApi = await crcOptionGet();
+  if (crcOptionApi.data.length !== 0) {
+    crcDefaultMode.value = crcOptionApi.data[0].crcMode;
   }
 });
 
@@ -170,15 +189,9 @@ onMounted(async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-const showSuccessAlert = async (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-  window.scrollTo({top: 0, behavior: 'smooth'});
-};
 
 // 데이터 저장 함수
-const pushCrcData = (dataArray, type, title, content, percentText = null, id: any) => {
+const pushCrcData = (dataArray: any, type: any, title: any, content: any, percentText = null, id: any) => {
   const data = {crcTitle: title, crcContent: content, crcType: type, id: id};
 
   if (type === 'percent') {
@@ -208,6 +221,7 @@ const saveCrcData = async () => {
   }
   crcDataArr.value.code = codeVal.value;
   crcDataArr.value.crcRemark = remarkList.value;
+  crcDataArr.value.crcRecommendation = recoList.value;
   await showToast('Success');
   await createCrcDataApi(crcDataArr.value);
   emit('refresh');
@@ -227,15 +241,26 @@ const closeIsCrcAddChild = () => {
 const closeRemark = () => {
   isRemark.value = false;
 };
+const closeReco = () => {
+  isRecommendation.value = false;
+}
+
 const remarkSelect = () => {
   isRemark.value = true;
 };
+
+const recommendationSelect = () => {
+  isRecommendation.value = true;
+}
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
 const updateRemarkList = (newList: any[]) => {
   remarkList.value = newList; // 리스트를 부모 상태에 저장
   closeRemark();
 };
-
+const updateRecoList = (newList: any[]) => {
+  recoList.value = newList; // 리스트를 부모 상태에 저장
+  closeReco();
+};
 // 항목 수정 저장
 const saveEdit = async () => {
   for (const argument of crcSetArr.value) {
@@ -255,6 +280,7 @@ const saveEdit = async () => {
     await updateCrcDataApi([{
       id: props.editItem.id,
       crcRemark: remarkList.value,
+      crcRecommendation: recoList.value,
       crcContent: crcDataArr.value.crcContent,
       code: codeVal.value
     }]); // 수정된 데이터 서버로 전송
@@ -273,4 +299,13 @@ const showToast = async (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+
+
+const crcDefaultModeChangeText = (crcDefaultModeType: boolean) => {
+  if (crcDefaultModeType) {
+    return 'Remark';
+  } else {
+    return 'Comment';
+  }
+}
 </script>

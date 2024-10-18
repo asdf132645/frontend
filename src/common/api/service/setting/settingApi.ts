@@ -275,3 +275,40 @@ export const updateCrcDataApi = async (request: any): Promise<ApiResponse<void>>
 export const deleteCrcDataApi = async (req: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.report.crcDataRemove, req, true);
 };
+
+
+export const createCrcOptionApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.report.crcOptionCreate, request);
+};
+export const crcOptionGet = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.report.crcOptionGet);
+};
+
+export const updateCrcOptionApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.report.crcOptionUpdate, request);
+};
+
+export const createCrcRecoApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.report.crcRecoCreate, request);
+};
+export const crcRecoGet = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.report.crcRecoFindAll);
+};
+
+export const crcRecoSearchGet = async (request: { code?: string; remarkAllContent?: string }): Promise<ApiResponse<any>> => {
+    const queryString = Object.entries(request)
+        .filter(([key, value]) => value !== undefined)  // undefined 값은 제외
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .join('&');
+
+
+    return httpClient.httpGet(apiConstants.report.crcRecoSearch, `${queryString}`, true);
+};
+
+export const updateCrcRecoApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.report.crcRecoUpdate, request);
+};
+
+export const deleteCrcRecoApi = async (req: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpDelete(apiConstants.report.crcRecoRemove, req, true);
+};
