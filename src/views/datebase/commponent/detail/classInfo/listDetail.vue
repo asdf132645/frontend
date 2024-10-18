@@ -90,7 +90,7 @@
                 <input type="number" v-model="imageRgb[2]" @input="changeImageRgb('')"/>
                 ]
               </div>
-              <div class="alignItemsCenter">
+              <div class="flex-align-center">
                 <label>R</label>
                 <input
                     type="range"
@@ -100,7 +100,7 @@
                     @input="changeImageRgb('')"
                 />
               </div>
-              <div class="alignItemsCenter">
+              <div class="flex-align-center">
                 <label>G</label>
                 <input
                     type="range"
@@ -110,7 +110,7 @@
                     @input="changeImageRgb('')"
                 />
               </div>
-              <div class="alignItemsCenter">
+              <div class="flex-align-center">
                 <label>B</label>
                 <input
                     type="range"

@@ -82,12 +82,12 @@
       <div class="immersionOilContainer">
         <h5 class="modalTitle mb1">Immersion Oil count Reset</h5>
         <span class="grayText">Reset Immersion Oil count after changing Oil pack</span>
-        <div class="flexSpaceBetween alignItemsCenter mt1">
+        <div class="flex-justify-between flex-align-center mt1">
           <span>Estimated number of slides left</span>
           <span class="f18">{{ oilCount }}</span>
         </div>
 
-        <div class="flexColumnAlignEnd">
+        <div class="flex-column-align-end">
           <div ref="statusBarWrapper" class="statusBarWrapper">
             <div ref="statusBar" class="statusBar"></div>
           </div>
@@ -100,7 +100,7 @@
       <div class='mt2'>
         <h5 class="modalTitle mb1">Prime Immersion Oil</h5>
         <span class="grayText mt1">Prime oil to remove air from the oil hose</span>
-        <div class="flexColumnAlignEnd">
+        <div class="flex-column-align-end">
           <div class="statusBarWrapper">
           </div>
           <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">Prime

@@ -6,7 +6,7 @@
       <h3 class="orderTitle hh3title">Order Information</h3>
       <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
-          <li class="flexColumn">
+          <li class="flex-column">
             <span class="mb1">Order ID:</span>
             <span class="mb2">{{ selectedItem?.slotId }}</span>
           </li>

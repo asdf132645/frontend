@@ -1,7 +1,7 @@
 <template>
   <img class="mt1" v-if="type !== 'report' && !barCodeImageShowError" @error="onImageError" :src="barcodeImg"/>
   <div class="mt1" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
-  <div class="mt1 mb2 flexSpaceBetween">
+  <div class="mt1 mb2 flex-justify-between">
     <h3 class="wbcClassInfoLeft">
       {{ wbcClassTileChange() }}
     </h3>
