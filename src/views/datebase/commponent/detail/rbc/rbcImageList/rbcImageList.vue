@@ -874,7 +874,6 @@ const initElement = async () => {
           // 선택된 아이템의 classNm에 해당하는 모든 아이템 처리
           for (const item of drawPath.value) {
             if (item.classNm !== "Normal" && selectItm === item.classNm) {
-              console.log(item.classNm);
               moveRbcClass.value.push(item);
 
               const element = document.createElement('ol');
@@ -1145,7 +1144,6 @@ const drawRuler = (ruler: any) => {
     } else {
       element.style.top = (rulerPos.value.top / zoom) + 'px';
     }
-    console.log(element.style);
     if (rulerPos.value.left < 0) rulerPos.value.left = 0;
     if (rulerPos.value.top < 0) rulerPos.value.top = 0;
 

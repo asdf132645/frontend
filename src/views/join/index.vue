@@ -25,7 +25,7 @@
         </li>
         <li>
           <span class="loginTitle">user Type</span>
-          <select v-model="userType">
+          <select v-model="userType" disabled>
             <option value="admin">Admin</option>
             <option value="normal">Normal</option>
           </select>
@@ -58,7 +58,7 @@ const idVal = ref('');
 const nameVal = ref('');
 const passwordRepeat = ref('');
 const password = ref('');
-const userType = ref('admin');
+const userType = ref('normal');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');

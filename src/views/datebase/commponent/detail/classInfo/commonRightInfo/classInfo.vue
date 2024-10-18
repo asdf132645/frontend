@@ -112,7 +112,7 @@
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
             <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
-            <li class="wFit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
+            <li class="w-fit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul style="width: 29%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>

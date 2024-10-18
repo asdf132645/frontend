@@ -55,7 +55,7 @@
       <div class="editModalContainer">
         <div class="userInputWrapper">
           <label class="userLabel" for="userType" style="line-height: 0">User Type</label>
-          <select id="userType" v-model="selectedUserData.userType" class="searchSelect inputMiddleWrapper" style="width: 132px !important;">
+          <select id="userType" v-model="selectedUserData.userType" class="searchSelect inputMiddleWrapper" style="width: 132px !important;" :disabled="!isAdmin(currentUserId)">
             <option v-for="option in userTypeOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
@@ -152,6 +152,8 @@ const filterUsers = (users: any[], searchText: any, searchOption: string) => {
     return searchField.toLowerCase().includes(searchQuery);
   });
 };
+
+const isAdmin = (userId: string) => 'UIMD' === userId.toUpperCase() || 'uimd' === userId.toLowerCase();
 
 const onSearch = async () => {
   try {
