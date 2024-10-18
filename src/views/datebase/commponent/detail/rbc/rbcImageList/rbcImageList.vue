@@ -154,6 +154,7 @@
 
     </template>
   </div>
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -550,7 +551,9 @@ const drawRbcMarker = async (classInfoArr: any) => {
   classInfoArr.forEach((info: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
-        if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
+        // 기존 비교 항목
+        // if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
+        if (classItem.classId === info.classId && category.categoryId === info.categoryId) {
 
           ctx.lineWidth = 3;
           ctx.strokeStyle = `${colors[info.classNm] || 'black'}`;

@@ -294,6 +294,7 @@ import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
+import { RBC_CODE_CLASS_ID } from "@/common/defines/constFile/dataBase";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -380,6 +381,7 @@ watch(() => props.selectItems, async (newItem) => {
   memo.value = props.selectItems?.rbcMemo;
   submitState.value = props.selectItems?.submitState;
   await afterChange(newItem);
+  await rbcTotalAndReCount(rbcImagePageNumber.value);
   rightClickItemSet();
   allCheckType.value = true;
 });
@@ -491,7 +493,6 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
   rbcResponseOldArr.value = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
-    console.log('rbcResponseOldArr.value', rbcResponseOldArr.value);
     for (const rbcItem of rbcResponseOldArr.value.data[pageNumber].rbcClassList) {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
@@ -540,16 +541,16 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
       }
     }
     switch (el.categoryId) {
-      case '01':
+      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
         total = el.classInfo.length;
         break;
-      case '02':
+      case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
         chromiaTotalval = el.classInfo.length;
         break;
-      case '03':
+      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
         shapeTotalVal = el.classInfo.length;
         break;
-      case '05':
+      case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
         inclusionBody = el.classInfo.length;
         break;
       default:
@@ -671,7 +672,6 @@ const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
   return true;
 };
 
-
 const afterChange = async (newItem?: any) => {
 
   if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
@@ -680,7 +680,7 @@ const afterChange = async (newItem?: any) => {
       submitState: 'checkFirst',
     };
 
-    const updatedRuningInfo = {...result.data, ...updatedItem}
+    const updatedRuningInfo = {...result.data, ...updatedItem }
     await resRunningItem(updatedRuningInfo, false);
   }
 
@@ -711,6 +711,7 @@ const afterChange = async (newItem?: any) => {
   }
   await classChange();
 }
+
 const countReAdd = async () => {
   // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
   if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
@@ -725,10 +726,11 @@ const countReAdd = async () => {
   for (const category of rbcInfoBeforeVal.value) {
     for (const classItem of category.classInfo) {
       let count = 0;
-
       for (const afterCategory of rbcInfoPathAfter.value) {
         for (const afterClassItem of afterCategory.classInfo) {
-          if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
+          // 기존 비교
+          // if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
+          if (afterClassItem.classId === classItem.classId && afterCategory.categoryId === category.categoryId) {
             count++;
           }
         }
@@ -759,10 +761,9 @@ const countReAdd = async () => {
       }
     }
   }
-  //
 
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
-  malariaCount.value = malariaTotal
+  malariaCount.value = malariaTotal;
 };
 
 
@@ -831,6 +832,7 @@ const toggleAll = (check: boolean, category?: any) => {
   allCheckboxes.forEach(checkbox => {
     updateClassInfoArr(checkbox.classNm, check, checkbox.categoryId, checkbox.classId);
   });
+
   allCheckType.value = !allCheckType.value;
 }
 
@@ -917,8 +919,8 @@ const memoChange = async () => {
 
 const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: any) => {
   try {
-            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-        const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
     const response: any = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
@@ -926,7 +928,7 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
       dayQuery: dayQuery,
     })
     if (response) {
-      if(degree === 'degree'){
+      if(degree === 'degree') {
         await rbcTotalAndReCount(rbcImagePageNumber.value);
         await countReAdd();
         await getRbcDegreeData();
