@@ -108,7 +108,7 @@ import {createFile} from "@/common/api/service/fileSys/fileSysApi";
 import {getLisPathData, getLisWbcRbcData} from "@/common/lib/commonfunction/inhaCbcLis";
 import {useStore} from "vuex";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
-import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
+import {createH17, readCustomH7Message, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const crcArr = ref<any>([]);
@@ -170,7 +170,7 @@ onBeforeMount(async () => {
   }
 });
 const lisClick = async () => {
-  console.log(props.selectItems);
+  // console.log(JSON.stringify(crcDataArr.value));
   const {lisFilePathSetArr} = await getLisPathData();
   const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
   const data = {
@@ -187,8 +187,9 @@ const lisClick = async () => {
     selectedItem: { /* selectedItem 데이터 */},
     wbcInfo: props.selectItems?.wbcInfoAfter,
     result: lisCodeWbcArr,
+    customData: crcDataArr.value,
   };
-  const res = await readH7Message(data);
+  const res = await readCustomH7Message(data);
   if (res) {
     const data = {
       filepath: `${lisFilePathSetArr}\\${props.selectItems?.barcodeNo}.hl7`,
