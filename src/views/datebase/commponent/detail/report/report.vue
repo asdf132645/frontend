@@ -166,7 +166,8 @@
 
                     <li class="printTotalText" v-show="category.categoryNm !== 'Shape'"
                         style="cursor: default;"
-                    >Total</li>
+                    >Total
+                    </li>
                   </ul>
                   <ul class="printRbcCount">
                     <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
@@ -188,10 +189,13 @@
                       </li>
                     </template>
 
-                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'" style="cursor: default;">
+                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'"
+                        style="cursor: default;">
                       {{ Number(sizeChromiaTotal) || 0 }}
                     </li>
-                    <li v-show="category?.categoryNm === 'Inclusion Body'" style="cursor: default;">{{ Number(shapeBodyTotal) || 0 }}</li>
+                    <li v-show="category?.categoryNm === 'Inclusion Body'" style="cursor: default;">
+                      {{ Number(shapeBodyTotal) || 0 }}
+                    </li>
                   </ul>
                   <ul class="printRbcPercent">
                     <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Percent</li>
@@ -221,11 +225,11 @@
           </div>
         </div>
       </div>
-      <Crc v-else :crcDataVal="crcData"/>
+      <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems"/>
     </div>
   </div>
   <div ref="printContent">
-    <Print v-if="printOnOff" @printClose="printClose" />
+    <Print v-if="printOnOff" @printClose="printClose"/>
   </div>
 </template>
 
@@ -234,26 +238,26 @@
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import {computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
-import { getBmTestTypeText, getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
-import { defaultBmClassList, defaultWbcClassList, WbcInfo } from "@/store/modules/analysis/wbcclassification";
+import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
-import { useStore } from "vuex";
-import { formatDateString } from "@/common/lib/utils/dateUtils";
+import {useStore} from "vuex";
+import {formatDateString} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
-import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
-import { readJsonFile } from "@/common/api/service/fileReader/fileReaderApi";
+import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
 import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
-import { removeDuplicatesById } from "@/common/lib/utils/removeDuplicateIds";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -288,13 +292,19 @@ const isCommitChanged = ref(false);
 const wbcInfoAfter = ref<any>([]);
 const crcData = ref<any>([]);
 const crcConnect = ref(false);
-
+const isContent = ref(false);
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   const crcOptionApi = await crcOptionGet();
   if (crcOptionApi.data.length !== 0) {
     crcConnect.value = crcOptionApi.data[0].crcConnect;
   }
+  const ss = (await crcGet());
+  if(ss.code === 200){
+    isContent.value = true;
+    crcData.value = (await crcGet()).data;
+  }
+
 })
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -303,9 +313,6 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-onBeforeMount(async () => {
-  crcData.value = (await crcGet()).data;
-})
 
 onMounted(async () => {
   await getDetailRunningInfo();
@@ -370,7 +377,7 @@ const percentChangeBySiteCd = () => {
   const projectType = projectBm.value ? 'bm' : 'pb';
 
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
-    selectItems.value.wbcInfoAfter =  seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
+    selectItems.value.wbcInfoAfter = seoulStMaryPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfoAfter);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
@@ -389,7 +396,7 @@ const getShapeOthers = async () => {
   const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
   const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  const otherCount = { artifact: 0, doubleNormal: 0 };
+  const otherCount = {artifact: 0, doubleNormal: 0};
 
   if (!rbcInfoPathAfter) {
     return;

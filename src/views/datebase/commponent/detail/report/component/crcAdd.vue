@@ -40,7 +40,10 @@
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
-          <input v-for="(item, index) in remarkList" :key="index" v-model="item.remarkAllContent">
+          <div v-for="(item, index) in remarkList" :key="index" >
+            <input v-model="item.remarkAllContent">
+            <button @click="listDel(index, 'remark')">Del</button>
+          </div>
         </div>
       </div>
 
@@ -52,9 +55,13 @@
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
-          <input v-for="(item, index) in recoList" :key="index" v-model="item.remarkAllContent">
+          <div v-for="(item, index) in recoList" :key="index">
+            <input v-model="item.remarkAllContent">
+            <button @click="listDel(index, 'reco')">Del</button>
+          </div>
         </div>
       </div>
+    </div>
 
       <div class="mt2">
         <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
@@ -68,7 +75,6 @@
         :duration="1500"
         position="bottom-right"
     />
-  </div>
   <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList" type="remark" :crcDefaultMode="crcDefaultMode"/>
   <Remark v-if="isRecommendation" @cancel="closeReco" @listUpdated="updateRecoList" type="reco" :crcDefaultMode="crcDefaultMode"/>
 
@@ -109,6 +115,7 @@ import {
   createCrcDataApi, updateCrcDataApi,
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import Button from "@/components/commonUi/Button.vue";
 
 const emit = defineEmits(['closeIsCrcAdd', 'refresh']);
 
@@ -254,13 +261,15 @@ const recommendationSelect = () => {
 }
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
 const updateRemarkList = (newList: any[]) => {
-  remarkList.value = newList; // 리스트를 부모 상태에 저장
+  remarkList.value = [...remarkList.value, ...newList];
   closeRemark();
 };
+
 const updateRecoList = (newList: any[]) => {
-  recoList.value = newList; // 리스트를 부모 상태에 저장
+  recoList.value = [...recoList.value, ...newList];
   closeReco();
 };
+
 // 항목 수정 저장
 const saveEdit = async () => {
   for (const argument of crcSetArr.value) {
@@ -308,4 +317,13 @@ const crcDefaultModeChangeText = (crcDefaultModeType: boolean) => {
     return 'Comment';
   }
 }
+
+const listDel = (idx: any, type: string) => {
+  if(type === 'remark'){
+    remarkList.value.splice(idx, 1);
+  } else if(type === 'reco'){
+    recoList.value.splice(idx, 1);
+  }
+}
+
 </script>
