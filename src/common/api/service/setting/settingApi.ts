@@ -291,6 +291,7 @@ export const updateCrcOptionApi = async (request: any): Promise<ApiResponse<void
 export const createCrcRecoApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.report.crcRecoCreate, request);
 };
+
 export const crcRecoGet = async (): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.report.crcRecoFindAll);
 };
@@ -311,4 +312,29 @@ export const updateCrcRecoApi = async (request: any): Promise<ApiResponse<void>>
 
 export const deleteCrcRecoApi = async (req: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.report.crcRecoRemove, req, true);
+};
+
+export const createCrcCommentApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.report.crcCommentCreate, request);
+}
+
+export const crcCommentGet = async (): Promise<ApiResponse<any>> => {
+    return httpClient.httpGet(apiConstants.report.crcCommentFindAll);
+};
+
+export const crcCommentSearchGet = async (request: { code?: string; remarkAllContent?: string }): Promise<ApiResponse<any>> => {
+    const queryString = Object.entries(request)
+        .filter(([key, value]) => value !== undefined)  // undefined 값은 제외
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .join('&');
+
+    return httpClient.httpGet(apiConstants.report.crcCommentSearch, `${queryString}`, true);
+};
+
+export const updateCrcCommentApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.report.crcCommentUpdate, request);
+};
+
+export const deleteCrcCommentApi = async (req: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpDelete(apiConstants.report.crcCommentRemove, req, true);
 };
