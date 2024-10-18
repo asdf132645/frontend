@@ -55,7 +55,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
-            <input v-model="item.remarkAllContent">
+            <textarea v-model="item.remarkAllContent"></textarea>
             <button @click="listDel(index, 'remark')">Del</button>
           </div>
         </div>
@@ -70,7 +70,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
-            <input v-model="item.remarkAllContent">
+            <textarea v-model="item.remarkAllContent"></textarea>
             <button @click="listDel(index, 'reco')">Del</button>
           </div>
         </div>
@@ -170,7 +170,9 @@ onBeforeMount(async () => {
   }
 });
 const lisClick = async () => {
-  // console.log(JSON.stringify(crcDataArr.value));
+  const nowCrcData = crcDataArr.value.find((item) => { return item.code === code.value})
+  nowCrcData.crcRemark = remarkList.value;
+  nowCrcData.crcRecommendation = recoList.value;
   const {lisFilePathSetArr} = await getLisPathData();
   const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
   const data = {
@@ -187,7 +189,7 @@ const lisClick = async () => {
     selectedItem: { /* selectedItem 데이터 */},
     wbcInfo: props.selectItems?.wbcInfoAfter,
     result: lisCodeWbcArr,
-    customData: crcDataArr.value,
+    customData: nowCrcData,
   };
   const res = await readCustomH7Message(data);
   if (res) {

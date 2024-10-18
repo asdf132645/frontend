@@ -41,7 +41,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index" >
-            <input v-model="item.remarkAllContent">
+            <textarea v-model="item.remarkAllContent"></textarea>
             <button @click="listDel(index, 'remark')">Del</button>
           </div>
         </div>
@@ -56,7 +56,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
-            <input v-model="item.remarkAllContent">
+            <textarea v-model="item.remarkAllContent"></textarea>
             <button @click="listDel(index, 'reco')">Del</button>
           </div>
         </div>
