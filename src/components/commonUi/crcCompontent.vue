@@ -111,8 +111,9 @@ onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);
 });
 
-watch(props.items, (newArr) => {
-  arrData.value = newArr?.filter((item) => item?.morphologyType === props.moType);
+watch(props, (newArr) => {
+  console.log("?")
+  arrData.value = newArr?.items.filter((item) => item?.morphologyType === props.moType);
 });
 
 const editCrcArr = (id: number) => {

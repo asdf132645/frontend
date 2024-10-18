@@ -1372,13 +1372,6 @@ const getCustomClass = async () => {
     console.log(e);
   }
 }
-
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-  window.scrollTo({top: 0, behavior: 'smooth'});
-};
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';

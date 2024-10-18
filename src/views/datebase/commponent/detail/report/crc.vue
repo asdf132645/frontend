@@ -16,12 +16,10 @@
         종합결과코드 LIST
       </button>
     </div>
-
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content" v-if="activeTab === 1">
       <div class="textLeft crcMenu">
-        <button class="crcBtn">Lis</button>
-        <button class="crcBtn tempSave ml1" @click="tempSaveLocalStorage">tempSave</button>
+        <button class="crcBtn" @click="lisClick">LIS</button>
         <span class="crcSpanMenu">List</span>
         <select class="crcSelect" @change="changeCode" v-model="code">
           <option>select</option>
@@ -29,18 +27,21 @@
             {{ item.code }}
           </option>
         </select>
+        <button class="crcBtn tempSave ml1" @click="tempSaveLocalStorage">SAVE</button>
+        <button class="crcBtn tempSave ml1" @click="tempSaveDataEmpty">SAVE DATA EMPTY</button>
+
       </div>
 
       <!-- RBC 결과 -->
-      <crc-compontent :items="crcArr" moType="RBC" pageName="report"></crc-compontent>
+      <crc-compontent v-if="trrur" :items="crcArr" moType="RBC" pageName="report"></crc-compontent>
 
       <!-- WBC, PLT 결과 -->
       <div class="moDivBox mt1">
         <div>
-          <crc-compontent :items="crcArr" moType="WBC" pageName="report"></crc-compontent>
+          <crc-compontent v-if="trrur" :items="crcArr" moType="WBC" pageName="report"></crc-compontent>
         </div>
         <div>
-          <crc-compontent :items="crcArr" moType="PLT" pageName="report"></crc-compontent>
+          <crc-compontent v-if="trrur" :items="crcArr" moType="PLT" pageName="report"></crc-compontent>
         </div>
       </div>
 
@@ -53,7 +54,10 @@
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
-          <input v-for="(item, index) in remarkList" :key="index" v-model="item.remarkAllContent">
+          <div v-for="(item, index) in remarkList" :key="index">
+            <input v-model="item.remarkAllContent">
+            <button @click="listDel(index, 'remark')">Del</button>
+          </div>
         </div>
       </div>
 
@@ -65,7 +69,10 @@
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
-          <input v-for="(item, index) in recoList" :key="index" v-model="item.remarkAllContent">
+          <div v-for="(item, index) in recoList" :key="index">
+            <input v-model="item.remarkAllContent">
+            <button @click="listDel(index, 'reco')">Del</button>
+          </div>
         </div>
       </div>
     </div>
@@ -77,8 +84,10 @@
   </div>
 
   <!-- 자식 컴포넌트 Remark -->
-  <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList" type="remark" :crcDefaultMode="crcDefaultMode"/>
-  <Remark v-if="isRecommendation" @cancel="closeReco" @listUpdated="updateRecoList" type="reco" :crcDefaultMode="crcDefaultMode"/>
+  <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList" type="remark"
+          :crcDefaultMode="crcDefaultMode"/>
+  <Remark v-if="isRecommendation" @cancel="closeReco" @listUpdated="updateRecoList" type="reco"
+          :crcDefaultMode="crcDefaultMode"/>
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
@@ -88,12 +97,19 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, onBeforeMount, ref} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
-import {crcDataGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
+import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import Button from "@/components/commonUi/Button.vue";
+import {createFile} from "@/common/api/service/fileSys/fileSysApi";
+import {getLisPathData, getLisWbcRbcData} from "@/common/lib/commonfunction/inhaCbcLis";
+import {useStore} from "vuex";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -101,6 +117,9 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  selectItems: {
+    type: Array
+  }
 });
 const toastMessage = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
@@ -112,6 +131,9 @@ const isContent = ref(false);
 const crcDataArr = ref<any[]>([]);
 const code = ref('');
 const crcDefaultMode = ref(false);
+const trrur = ref(false);
+const store = useStore();
+const userModuleDataGet = computed(() => store.state.userModule);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -124,15 +146,20 @@ onBeforeMount(async () => {
     if (savedData) {
       crcArr.value = JSON.parse(savedData);
       code.value = JSON.parse(codeVal);
+
       if (typeof remarkListVal === "string") {
         remarkList.value = JSON.parse(remarkListVal);
       }
-      if(typeof recoListVal === 'string'){
+
+      if (typeof recoListVal === 'string') {
         recoList.value = JSON.parse(recoListVal);
       }
+      trrur.value = true;
     } else {
-      crcArr.value = props.crcDataVal;
+      crcArr.value = (await crcGet()).data;
+      trrur.value = true;
     }
+
     const data = (await crcDataGet()).data;
     crcDataArr.value = data;
   }
@@ -142,7 +169,46 @@ onBeforeMount(async () => {
 
   }
 });
-
+const lisClick = async () => {
+  console.log(props.selectItems);
+  const {lisFilePathSetArr} = await getLisPathData();
+  const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
+  const data = {
+    sendingApp: 'PBIA',
+    sendingFacility: 'PBIA',
+    receivingApp: 'LIS',
+    receivingFacility: 'LIS',
+    dateTime: getDateTimeStr(),
+    security: '',
+    messageType: ['ADT', 'R02'],
+    messageControlId: props.selectItems?.barcodeNo,
+    processingId: 'P',
+    hl7VersionId: '2.5',
+    selectedItem: { /* selectedItem 데이터 */},
+    wbcInfo: props.selectItems?.wbcInfoAfter,
+    result: lisCodeWbcArr,
+  };
+  const res = await readH7Message(data);
+  if (res) {
+    const data = {
+      filepath: `${lisFilePathSetArr}\\${props.selectItems?.barcodeNo}.hl7`,
+      msg: res,
+    }
+    try {
+      await createH17(data);
+      showToast(messages.IDS_MSG_SUCCESS);
+    } catch (error: any) {
+      showToast(error.response.data.message);
+    }
+  }
+}
+const listDel = (idx: any, type: string) => {
+  if (type === 'remark') {
+    remarkList.value.splice(idx, 1);
+  } else if (type === 'reco') {
+    recoList.value.splice(idx, 1);
+  }
+}
 
 const remarkSelect = () => {
   isRemark.value = true;
@@ -162,12 +228,12 @@ const closeReco = () => {
 
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
 const updateRemarkList = (newList: any[]) => {
-  remarkList.value = newList; // 리스트를 부모 상태에 저장
+  remarkList.value = [...remarkList.value, ...newList];
   closeRemark();
 };
 
 const updateRecoList = (newList: any[]) => {
-  recoList.value = newList; // 리스트를 부모 상태에 저장
+  recoList.value = [...recoList.value, ...newList];
   closeReco();
 };
 
@@ -207,6 +273,21 @@ const tempSaveLocalStorage = () => {
   localStorage.setItem('recoList', JSON.stringify(recoList.value));
   showToast('Data saved to temporary storage')
 };
+
+const tempSaveDataEmpty = async () => {
+  localStorage.removeItem('code')
+  localStorage.removeItem('crcDataArr');
+  localStorage.removeItem('crcSetData');
+  localStorage.removeItem('remarkList');
+  localStorage.removeItem('recoList');
+
+  crcArr.value = [];
+  crcArr.value = (await crcGet()).data;
+  recoList.value = [];
+  remarkList.value = [];
+  code.value = '';
+  showToast('Data empty to storage')
+}
 
 // 페이지 새로고침
 const pageRefresh = async () => {
