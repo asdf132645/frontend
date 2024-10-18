@@ -294,12 +294,14 @@ const kuahGilHosCbc = async () => {
     readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
   }
   if (readFileTxtRes.data.success) {
-    const cbcDataArray = JSON.parse(readFileTxtRes.data.data.toString());
+    let cbcDataArray = JSON.parse(JSON.stringify(readFileTxtRes.data.data));
     // 검체번호, 검사일시, 환자번호, 환자명, 성별, 나이, 그래프 데이터 제외
     const excludedTitles = [
       'SPC_NO', 'BLCL_DT', 'PT_NO', 'PT_NM', 'SEX', 'AGE',
       'SCAT_WDF', 'SCAT_WNR', 'DIST_RBC', 'DIST_WDF(FSC)', 'DIST_PLT'
     ];
+    cbcDataArray = cbcDataArray.split('\n');
+
     cbcDataArray.forEach((cbcData: any) => {
       const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
 

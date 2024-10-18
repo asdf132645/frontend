@@ -372,7 +372,8 @@ watch(() => props.allCheckClear, (newItem) => {
 
 watch(() => props.currentRbcPageNumber, async (newRbcPageNumber) => {
   rbcImagePageNumber.value = newRbcPageNumber;
-  await rbcTotalAndReCount(newRbcPageNumber)
+  await rbcTotalAndReCount(newRbcPageNumber);
+  await countReAdd();
 })
 
 watch(() => props.selectItems, async (newItem) => {

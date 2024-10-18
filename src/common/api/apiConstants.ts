@@ -558,6 +558,26 @@ export const apiConstants = {
             endpoint: 'crc-recommendation-setting/crcRSearch',
             requiresToken: false,
         },
+        crcCommentCreate: {
+            endpoint: 'crc-comment-setting/crcCommentCreate',
+            requiresToken: false,
+        },
+        crcCommentFindAll: {
+            endpoint: 'crc-comment-setting/crcCommentFindAll',
+            requiresToken: false,
+        },
+        crcCommentRemove: {
+            endpoint: 'crc-comment-setting/crcCommentRemove',
+            requiresToken: false,
+        },
+        crcCommentUpdate: {
+            endpoint: 'crc-comment-setting/crcCommentUpdate',
+            requiresToken: false,
+        },
+        crcCommentSearch: {
+            endpoint: 'crc-comment-setting/crcCommentSearch',
+            requiresToken: false,
+        },
 
     }
 };
