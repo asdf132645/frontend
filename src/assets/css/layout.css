@@ -2147,7 +2147,7 @@ ul.cellImgBox input {
 }
 
 .reportSection.cbcLayer .reportDiv {
-    width: 82.5%;
+    width: 84%;
     padding-left: 8px;
 }
 
@@ -3370,8 +3370,7 @@ button.rollbackButton {
 
 .cbcDiv {
     display: inline-block;
-    width: 15%;
-    margin-left: 8px;
+    width: 13%;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
     height: 94%;
@@ -3721,7 +3720,7 @@ li.crcListContent > span {
 }
 
 .crcReport {
-    width: 43%;
+    width: 54%;
     background: #f4f9ff;
     color: var(--gray-bg-3-color);
     font-size: 0.8rem;

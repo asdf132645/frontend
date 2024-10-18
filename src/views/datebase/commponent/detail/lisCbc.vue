@@ -4,6 +4,7 @@
       <div class="loader"></div>
       <p class="loadingText">Loading...</p>
     </div>
+
     <h1 class="titleCbc">CBC + DIFF</h1>
     <div v-if="siteCd ==='0002' && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
