@@ -2,7 +2,7 @@
   <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
-    <div class="mt1 flexSpaceBetween">
+    <div class="mt1 flex-justify-between">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
         <li style="position: relative">
@@ -541,7 +541,7 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
       }
     }
     switch (el.categoryId) {
-      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
+      case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
         total = el.classInfo.length;
         break;
       case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
