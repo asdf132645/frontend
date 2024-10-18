@@ -697,7 +697,9 @@ const afterChange = async (newItem?: any) => {
   rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
   rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter ? props.selectItems.rbcInfoAfter : rbcInfoBeforeVal.value;
 
-  // rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
+  // degree가 Before 값과 After 값이 다를 경우
+  // 감도 조절 기능 추가 시 수정 필요
+  rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
 
 
   // Report 화면에서 RBC Classification 동기화 문제로 추가
