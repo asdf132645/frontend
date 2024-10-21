@@ -21,6 +21,12 @@
                 @click="crcConnectOn"
             />
           </div>
+          <div class="w200 flex-align-center-justify-between">
+            <span>CRC Remark Select Count</span>
+            <input type="checkbox"  value="0"/>
+            <input type="checkbox"  value="1"/>
+            <input type="checkbox"  value="2"/>
+          </div>
         </div>
 
 
@@ -136,6 +142,8 @@ const crcDefaultMode = ref(false);
 const crcConnect = ref(false);
 const crcOptionPutWhether = ref(false);
 const crcOptionId = ref(0);
+const crcRemarkCountArr = ref<number[]>([]);
+
 onMounted(async () => {
   crcData.value = await crcGet();
   const crcOptionApi = await crcOptionGet();
