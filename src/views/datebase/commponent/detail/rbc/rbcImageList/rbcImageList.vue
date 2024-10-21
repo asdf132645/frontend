@@ -179,7 +179,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore', 'currentRbcPageNumber']);
 const activeTab = ref('lowMag');
 
 let viewer: any = ref<any>(null);
@@ -236,6 +236,10 @@ onMounted(async () => {
   document.addEventListener('click', closeSelectBox);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
+
+watch(() => props.currentRbcPageNumber, (newPageNumber) => {
+  rbcImagePageNumber.value = newPageNumber;
+})
 
 const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -396,14 +400,14 @@ watch(() => props.classInfoArr, (newData) => {
 }, {deep: true});
 
 
-watch(classInfoArrNewReData, async (nenenen, oldItem) => {
+watch(classInfoArrNewReData, async (newItem, oldItem) => {
   if (rbcReData.value) {
-    if (nenenen.length === 0) {
+    if (newItem.length === 0) {
       removeDiv();
       removeRbcMarker();
       return;
     }
-    await rbcMarker(nenenen, rbcImagePageNumber.value);
+    await rbcMarker(newItem, rbcImagePageNumber.value);
     await store.dispatch('commonModule/setCommonInfo', {rbcReData: false});
     await store.dispatch('commonModule/setCommonInfo', {classInfoArr: []});
     return;

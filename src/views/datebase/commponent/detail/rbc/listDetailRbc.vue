@@ -26,7 +26,7 @@
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" @changeCurrentRbcImagePageNumber="changeCurrentRbcImagePageNumber"
-                    :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
+                    :currentRbcPageNumber="currentRbcPageNumber" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
 </template>
