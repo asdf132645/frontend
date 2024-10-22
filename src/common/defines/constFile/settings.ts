@@ -864,3 +864,9 @@ export const WBC_CUSTOM_CLASS: WbcCustomClassInterface[] = [
     { customNum: 93, abbreviation: '', fullNm: '' },
     { customNum: 94, abbreviation: '', fullNm: '' }
 ]
+
+export const DEFAULT_CRC_REMARK_COUNT_ARR = [
+    { "checked": false, "name": "remark"},
+    { "checked": false, "name": "Comment"},
+    { "checked": false, "name": "Recommendation" }
+];

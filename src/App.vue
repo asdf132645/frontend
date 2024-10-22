@@ -710,6 +710,11 @@ const emitSocketData = async (payload: any) => {
 };
 
 const sendSettingInfo = () => {
+  let autoStart: string | number = sessionStorage.getItem('autoStart') || 1;
+  if (autoStart === 'true') autoStart = 1;
+  else if (autoStart === 'false') autoStart = 0;
+
+
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
@@ -721,6 +726,11 @@ const sendSettingInfo = () => {
     // uiVersion: 'uimd-pb-comm_v2.0.102',
     isNsNbIntegration: isNsNbIntegrationLocal.value,
   };
+
+  if (window.PB_VERSION === '100a') {
+    Object.assign(req, { autoStart: Number(autoStart) });
+  }
+
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }
 

@@ -179,6 +179,10 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     isInit: newIsInit,
   } = newEmbeddedStatusJobCmd || {};
 
+  if (window.PB_VERSION === '100a' && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
+    toggleStartStop('start');
+  }
+
   isPause.value = newIsPause;
   userStop.value = newUserStop;
   isRecoveryRun.value = newIsRecoveryRun;
