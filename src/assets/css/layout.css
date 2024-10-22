@@ -188,6 +188,14 @@
     font-size: 1.2rem;
 }
 
+.fw-bold {
+    font-weight: bold;
+}
+
+.fw-normal {
+    font-weight: normal;
+}
+
 /* header-menu */
 .header {
     width: 100%;
@@ -2876,7 +2884,7 @@ table.tableClass {
     min-width: 300px;
     background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
-    z-index: 9999999;
+    z-index: 999;
 }
 
 .memoModal textarea {
@@ -3691,13 +3699,17 @@ li.crcRow {
     margin-bottom: 1px;
 }
 .remarkBottomFix {
+    border: 1px solid #ddd;
     position: sticky;
-    bottom: 18.4%;
-    background: #fff;
-    width: 52%;
-    /*left: 30.1%;*/
-    border-top: 1px solid #000;
+    bottom: -14px;
+    background: #f9f9f9;
+    width: 98%;
+    padding: 16px;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1); /* 상단 그림자 추가 */
+    border-radius: 8px; /* 둥근 모서리 */
+    margin: 10px auto 0; /* 상하 여백 추가 */
 }
+
 .autocomplete-container {
     position: relative;
     width: 300px;
@@ -3770,12 +3782,15 @@ span.smallName {
 }
 
 textarea.remarkTextArea {
-    vertical-align: middle;
-    height: 64px;
-    width: 52%;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    resize: none;
-    border: 1px solid #3498db;
+    width: 100%;
+    height: 80px; /* 높이 조정 */
+    box-sizing: border-box;
+    max-width: 100%;
+    max-height: 140px;
+    min-height: 60px;
 }
 
 textarea.remarkTextArea.table {
@@ -3845,7 +3860,7 @@ button.reSelect {
     padding: 20px;
     width: 36%;
     left: 35%;
-    z-index: 99;
+    z-index: 1000;
     max-height: 976px;
     overflow: auto;
     color: #333333;
@@ -3963,8 +3978,11 @@ span.crcListSpan input {
 
 .crcPopUpDiv {
     position: absolute;
-    background: #fff;
+    top: 50%;
     left: 50%;
+    transform: translate(0%, 20%);
+    background: #fff;
+    z-index: 1000;
 }
 
 .crcReport .moDivBox li.crcRow {
@@ -4133,8 +4151,16 @@ span.crcPercentText {
 }
 
 .headerRemark.topLine {
+    position: sticky;
     text-align: left;
     margin-bottom: 20px;
+    width: 98%;
+    top: 0;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 8px;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1); /* 상단 그림자 추가 */
+    border-radius: 8px; /* 둥근 모서리 */
 }
 
 table.remarkDefaultTable tr {
@@ -4143,7 +4169,6 @@ table.remarkDefaultTable tr {
 
 table.remarkDefaultTable {
     width: 100%;
-
 }
 
 table.remarkDefaultTable tr th {
@@ -4176,15 +4201,18 @@ table.remarkDefaultTable tr td {
 }
 
 .remarkBottomBtnGroup {
-    text-align: left;
-    border-top: 1px solid #3498db;
-    border-bottom: 1px solid #3498db;
-    padding: 10px 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 input.firstInput {
-    width: 15%;
-    margin-right: 5px;
+    padding: 10px;
+    border: 1px solid #ccc; /* 부드러운 테두리 */
+    border-radius: 5px;
+    width: 100%; /* 가로로 꽉 채움 */
+    box-sizing: border-box;
 }
 
 .crcDefaultBtn {
@@ -4207,7 +4235,7 @@ table.remarkDefaultTable input {
     padding: 20px;
     width: 50%;
     left: 30%;
-    z-index: 99;
+    z-index: 1000;
     color: #333333;
     font-size: 0.8rem;
     max-height: 700px;
