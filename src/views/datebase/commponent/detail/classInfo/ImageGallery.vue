@@ -7,7 +7,7 @@
     <template v-for="(item) in wbcInfoArrChild" :key="item.id">
       <li @click="scrollToElement(item.id)" v-if="siteCd !== '0006' && item?.title !== 'SM'"
           @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
-        <div class="circle">
+        <div class="circle" :title="item.name">
           <p>{{ item?.title }}</p>
           <p>{{ item?.count }}</p>
         </div>
@@ -82,7 +82,7 @@
               <input type="checkbox" @input="$emit('allCheckChange', $event, firstClassObj?.title)"
                      :checked="selectedTitle === firstClassObj?.title">
               <label>
-                {{ firstClassObj?.title }}
+                {{ firstClassObj?.title }} <span class="smallName">({{ firstClassObj.name }})</span>
                 ({{ firstClassObj?.count }})
               </label>
 
@@ -144,7 +144,7 @@
             <p class="mt1">
               <input type="checkbox" @input="$emit('allCheckChange', $event, lastClassObj?.title)"
                      :checked="selectedTitle === lastClassObj?.title">
-              {{ lastClassObj?.title }}
+              {{ lastClassObj?.title }} <span class="smallName">({{ lastClassObj.name }})</span>
               ({{ lastClassObj?.count }})
             </p>
           </div>

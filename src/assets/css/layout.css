@@ -3601,7 +3601,7 @@ table.cbcTable td {
 .grid-item {
     flex: 1 1 48%;
     box-sizing: border-box;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px dotted #ccc;
     padding: 5px;
 }
 
