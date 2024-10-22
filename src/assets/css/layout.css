@@ -3609,7 +3609,15 @@ table.cbcTable td {
     font-size: 0.8rem;
     font-weight: 400;
 }
+.moDivBox > div {
+    /*border: 1px solid #fff;*/
+    margin-right: 5px;
+    padding: 2px;
+}
 
+.tab-content.crcDiv {
+    width: 97%;
+}
 .crcWrapBtn {
     background: none;
     color: #fff;
@@ -3751,7 +3759,7 @@ li.crcRow {
 
 textarea.remarkTextArea {
     vertical-align: middle;
-    height: 21px;
+    height: 64px;
     width: 52%;
     border-radius: 5px;
     resize: none;
@@ -3804,6 +3812,7 @@ p.adminText {
     border-bottom: 1.5px solid #ffffff;
     padding-bottom: 5px;
     text-align: left;
+    color: #29c7ca;
 }
 
 button.reSelect {
