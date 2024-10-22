@@ -11,6 +11,7 @@
     <ul class="crcListContentUl">
       <li class="crcListContentHeader">
         <input type="checkbox" @change="selectAll($event)"/>
+        <span>All Check</span>
       </li>
 
       <!-- 각 crcDataArr의 항목을 출력 -->

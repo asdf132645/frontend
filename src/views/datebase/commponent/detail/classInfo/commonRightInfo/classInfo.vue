@@ -132,6 +132,10 @@
         </div>
       </template>
     </div>
+    <div class="memoModal bottom textLeft" v-if="router.currentRoute.value.path === '/report'">
+      <textarea v-model="wbcMemo"></textarea>
+      <button class="memoModalBtn" @click="memoChange">Save</button>
+    </div>
   </div>
 
   <Alert
@@ -209,6 +213,8 @@ import {
 } from "@/common/lib/commonfunction/inhaCbcLis";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useRouter} from "vue-router";
+const router = useRouter();
 
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);

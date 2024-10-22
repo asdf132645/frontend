@@ -300,7 +300,7 @@ main.bmComponent {
 .topClintInfo ul {
     text-align: left;
     margin-left: 31px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     border-bottom: 1px solid var(--white-color);
     padding-bottom: 10px;
     padding-top: 10px;
@@ -867,7 +867,7 @@ button.degreeAllCheckBtn {
     color: var(--coral-bg-0-color);
     margin-top: 5px;
     border-top: 0.01px solid var(--gray-bg-2-color);
-    padding: 5px 0 10px 0;
+    padding: 5px 0 0px 0;
 }
 
 .rbc-container.imgList span {
@@ -879,7 +879,17 @@ button.degreeAllCheckBtn {
     overflow: hidden;
     position: relative; /* 수정 */
 }
-
+.memoModal.bottom {
+    position: relative;
+}
+.reportSection .wbcClassScroll {
+    max-height: 78vh;
+}
+.memoModal.bottom .memoModalBtn {
+    margin: 0;
+    width: 100%;
+}
+.memoModal.bottom textarea {min-height: 160px;height: 100px;}
 .tab-btn_img_list {
     padding: 10px 20px;
     cursor: pointer;
@@ -1232,7 +1242,7 @@ ul.nth1Child > :nth-child(3) {
 }
 
 .categories > ul > li {
-    padding-top: 5px;
+    padding-top: 3px;
     font-size: 0.8rem;
     height: 17px;
     /*margin-bottom: 2px;*/
@@ -1381,7 +1391,7 @@ ul.slideContent.pb100a {
 
 li.mb1.liTitle {
     font-weight: 600;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .reportWbcclassificationSmallTitle {
