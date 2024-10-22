@@ -19,16 +19,17 @@
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content" v-if="activeTab === 1">
       <div class="textLeft crcMenu">
-        <button class="crcBtn" @click="lisClick">LIS</button>
+        <button class="crcBtn" @click="lisClick">
+          <font-awesome-icon :icon="['fas', 'upload']"/>
+        </button>
         <span class="crcSpanMenu">List</span>
         <select class="crcSelect" @change="changeCode" v-model="code">
-          <option>select</option>
           <option v-for="(item, idx) in crcDataArr" :key="idx" :value="item.code">
             {{ item.code }}
           </option>
         </select>
-        <button class="crcBtn tempSave ml1" @click="tempSaveLocalStorage">SAVE</button>
-        <button class="crcBtn tempSave ml1" @click="tempSaveDataEmpty">SAVE DATA EMPTY</button>
+        <button class="crcBtn tempSave ml1" @click="tempSaveLocalStorage">Save</button>
+        <button class="crcBtn tempSave ml1" @click="tempSaveDataEmpty">Clear</button>
 
       </div>
 
@@ -117,7 +118,8 @@
       :duration="1500"
       position="bottom-right"
   />
-  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
+  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
+                 @passWordClose="passWordClose"/>
 
 </template>
 
@@ -185,13 +187,33 @@ onBeforeMount(async () => {
         remarkList.value = JSON.parse(remarkListVal);
       }
 
-      if (typeof commentListVal === "string"){
+      if (typeof commentListVal === "string") {
         commentList.value = JSON.parse(commentListVal);
       }
 
       if (typeof recoListVal === 'string') {
         recoList.value = JSON.parse(recoListVal);
       }
+      remarkList.value = remarkList.value.map(item => {
+        return {
+          ...item,
+          remarkAllContent: convertToNewlines(item.remarkAllContent),
+        };
+      });
+
+      commentList.value = commentList.value.map(item => {
+        return {
+          ...item,
+          remarkAllContent: convertToNewlines(item.remarkAllContent),
+        };
+      });
+
+      recoList.value = recoList.value.map(item => {
+        return {
+          ...item,
+          remarkAllContent: convertToNewlines(item.remarkAllContent),
+        };
+      });
       trrur.value = true;
     } else {
       crcArr.value = (await crcGet()).data;
@@ -208,9 +230,12 @@ onBeforeMount(async () => {
     crcPassWordVal.value = crcOptionApi.data[0].crcPassWord;
   }
 });
+const convertToNewlines = (content: string) => {
+  return content.replaceAll('<br>', '\r\n');
+};
 
 const remarkCountReturnCode = (idx: any) => {
-  if(crcRemarkCount.value.length === 0){
+  if (crcRemarkCount.value.length === 0) {
     return;
   }
   return crcRemarkCount.value[idx].checked;
@@ -295,7 +320,7 @@ const listDel = (idx: any, type: string) => {
     remarkList.value.splice(idx, 1);
   } else if (type === 'reco') {
     recoList.value.splice(idx, 1);
-  } else if(type === 'comment'){
+  } else if (type === 'comment') {
     commentList.value.splice(idx, 1);
   }
 }
@@ -340,7 +365,7 @@ const updateList = (newList: any[], type: string) => {
       commentList.value = [...commentList.value, ...newList];
       closeSelect('comment');
       break;
-    case 'recommendation':
+    case 'reco':
       recoList.value = [...recoList.value, ...newList];
       closeSelect('recommendation');
       break;
@@ -350,7 +375,7 @@ const adminPassword = () => {
   if (!passWordPass.value) {
     passLayout.value = true;
     return
-  }else {
+  } else {
     activeTab.value = 2;
   }
 }
@@ -370,7 +395,7 @@ const returnPassWordCheck = (val: boolean) => {
   }
 }
 
-const passWordClose= () => {
+const passWordClose = () => {
   passLayout.value = false;
 }
 // 코드 변경 시 로직 처리
@@ -399,6 +424,27 @@ const changeCode = async (event: Event) => {
   remarkList.value = filterArr[0].crcRemark || [];
   commentList.value = filterArr[0].crcComment || [];
   recoList.value = filterArr[0].crcRecommendation || [];
+
+  remarkList.value = remarkList.value.map(item => {
+    return {
+      ...item,
+      remarkAllContent: convertToNewlines(item.remarkAllContent),
+    };
+  });
+
+  commentList.value = commentList.value.map(item => {
+    return {
+      ...item,
+      remarkAllContent: convertToNewlines(item.remarkAllContent),
+    };
+  });
+
+  recoList.value = recoList.value.map(item => {
+    return {
+      ...item,
+      remarkAllContent: convertToNewlines(item.remarkAllContent),
+    };
+  });
 };
 
 // tempSave를 클릭 시 로컬 스토리지에 데이터 저장

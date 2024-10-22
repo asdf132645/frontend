@@ -39,7 +39,7 @@
         <td v-if="editIndex === idx">
           <textarea class="remarkTextArea table" v-model="editedContent"/>
         </td>
-        <td v-else>{{ item?.remarkAllContent }}</td>
+        <td v-else v-html="item?.remarkAllContent"></td>
 
         <td v-if="editIndex === idx">
           <!-- Save 버튼 -->
@@ -210,17 +210,17 @@ const addRemark = async () => {
     if (props.type === 'remark') {
       await createCrcRemarkApi({
         code: newRemarkCode.value,
-        remarkAllContent: newRemarkContent.value,
+        remarkAllContent: newRemarkContent.value.replace(/(?:\r\n|\r|\n)/g, '<br>'),
       });
     } else if (props.type === 'comment') {
       await createCrcCommentApi({
         code: newRemarkCode.value,
-        remarkAllContent: newRemarkContent.value,
+        remarkAllContent: newRemarkContent.value.replace(/(?:\r\n|\r|\n)/g, '<br>'),
       });
     } else {
       await createCrcRecoApi({
         code: newRemarkCode.value,
-        remarkAllContent: newRemarkContent.value,
+        remarkAllContent: newRemarkContent.value.replace(/(?:\r\n|\r|\n)/g, '<br>'),
       });
     }
 
@@ -254,7 +254,7 @@ const deleteRemark = async (id: number) => {
 const startEdit = (index: number, item: any) => {
   editIndex.value = index;
   editedCode.value = item.code;
-  editedContent.value = item.remarkAllContent;
+  editedContent.value = item.remarkAllContent.replaceAll('<br>', '\r\n');
 };
 
 // 편집 저장
@@ -271,7 +271,7 @@ const saveEdit = async (id: number) => {
         {
           id: id,
           code: editedCode.value,
-          remarkAllContent: editedContent.value,
+          remarkAllContent: editedContent.value.replace(/(?:\r\n|\r|\n)/g, '<br>'),
         },
       ]);
     } else if (props.type === 'comment') {
@@ -279,7 +279,7 @@ const saveEdit = async (id: number) => {
         {
           id: id,
           code: editedCode.value,
-          remarkAllContent: editedContent.value,
+          remarkAllContent: editedContent.value.replace(/(?:\r\n|\r|\n)/g, '<br>'),
         },
       ]);
     } else {
@@ -287,7 +287,7 @@ const saveEdit = async (id: number) => {
         {
           id: id,
           code: editedCode.value,
-          remarkAllContent: editedContent.value,
+          remarkAllContent: editedContent.value.replace(/(?:\r\n|\r|\n)/g, '<br>'),
         },
       ]);
     }
@@ -306,6 +306,7 @@ const cancelEdit = () => {
 
 // OK 버튼 클릭 시 처리
 const okSelect = () => {
+  // console.log(props.type)
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
   showToast('Remark Add Success');
   emit("listUpdated", selectedRemarks, props.type);

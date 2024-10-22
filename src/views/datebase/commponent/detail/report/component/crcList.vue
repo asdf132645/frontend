@@ -63,9 +63,15 @@
           <!-- Remark 출력 -->
           <div class="mt1" v-if="item.crcRemark && item.crcRemark.length > 0">
             <span class="smCrcTitle">Remark</span>
-            <p v-for="remark in item.crcRemark" :key="remark.id">
-              {{ remark.remarkAllContent }}
-            </p>
+            <p v-for="remark in item.crcRemark" :key="remark.id" v-html="remark?.remarkAllContent"></p>
+          </div>
+          <div class="mt1" v-if="item.crcComment && item.crcComment.length > 0">
+            <span class="smCrcTitle">Comment</span>
+            <p v-for="remark in item.crcComment" :key="remark.id" v-html="remark?.remarkAllContent"></p>
+          </div>
+          <div class="mt1" v-if="item.crcRecommendation && item.crcRecommendation.length > 0">
+            <span class="smCrcTitle">Recommendation</span>
+            <p v-for="remark in item.crcRecommendation" :key="remark.id" v-html="remark?.remarkAllContent"></p>
           </div>
         </div>
       </li>

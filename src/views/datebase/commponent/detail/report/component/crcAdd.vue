@@ -134,7 +134,7 @@ const props = defineProps({
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 
-import {nextTick, onBeforeMount, onMounted, ref} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
 import {
   crcDataGet, crcGet, crcOptionGet,
   createCrcDataApi, updateCrcDataApi,
@@ -199,6 +199,8 @@ onBeforeMount(async () => {
     // 리마크 초기화
     remarkList.value = props.editItem.crcRemark || [];
     recoList.value = props.editItem.crcRecommendation || [];
+    commentList.value = props.editItem.crcComment || [];
+
   } else {
     crcSetArr.value = (await crcGet()).data;
     console.log(crcSetArr.value)
@@ -219,11 +221,6 @@ onBeforeMount(async () => {
 });
 
 
-onMounted(async () => {
-  await nextTick();
-
-  // crcDataArr.value = (await crcDataGet()).data;
-});
 const hideAlert = () => {
   showAlert.value = false;
 };
@@ -238,6 +235,10 @@ const pushCrcData = (dataArray: any, type: any, title: any, content: any, percen
 
   dataArray.push(data);
 };
+const convertToNewlines = (content: string) => {
+  return content.replaceAll('<br>', '\r\n');
+};
+
 
 const saveCrcData = async () => {
   if(codeVal.value === ''){
@@ -259,6 +260,7 @@ const saveCrcData = async () => {
   }
   crcDataArr.value.code = codeVal.value;
   crcDataArr.value.crcRemark = remarkList.value;
+  crcDataArr.value.crcComment = commentList.value;
   crcDataArr.value.crcRecommendation = recoList.value;
   await showToast('Success');
   await createCrcDataApi(crcDataArr.value);
@@ -296,6 +298,7 @@ const saveEdit = async () => {
       id: props.editItem.id,
       crcRemark: remarkList.value,
       crcRecommendation: recoList.value,
+      crcComment: commentList.value,
       crcContent: crcDataArr.value.crcContent,
       code: codeVal.value
     }]); // 수정된 데이터 서버로 전송
@@ -363,11 +366,32 @@ const updateList = (newList: any[], type: string) => {
       commentList.value = [...commentList.value, ...newList];
       closeSelect('comment');
       break;
-    case 'recommendation':
+    case 'reco':
       recoList.value = [...recoList.value, ...newList];
       closeSelect('recommendation');
       break;
   }
+
+  remarkList.value = remarkList.value.map(item => {
+    return {
+      ...item,
+      remarkAllContent: convertToNewlines(item.remarkAllContent),
+    };
+  });
+
+  commentList.value = commentList.value.map(item => {
+    return {
+      ...item,
+      remarkAllContent: convertToNewlines(item.remarkAllContent),
+    };
+  });
+
+  recoList.value = recoList.value.map(item => {
+    return {
+      ...item,
+      remarkAllContent: convertToNewlines(item.remarkAllContent),
+    };
+  });
 }
 
 const remarkCountReturnCode = (idx: any) => {
