@@ -238,6 +238,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
+    const autoStart = sessionStorage.getItem('autoStart') || 1;
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
@@ -250,6 +251,13 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       pltPositionMargin: pltPositionMargin || '0',
       edgeShotType:  edgeShotType || '0',
     });
+
+    if (window.PB_VERSION === '100a') {
+      Object.assign(startAction, {
+        autoStart: Number(autoStart),
+      })
+    }
+
     if (window.PROJECT_TYPE === 'bm') {
       startAction = {
         "jobCmd": "START",
