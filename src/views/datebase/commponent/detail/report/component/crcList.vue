@@ -182,10 +182,6 @@ const passWordClose= () => {
 }
 // CrcAdd 열기 함수
 const openCrcAdd = () => {
-  if (!passWordPass.value) {
-    passLayout.value = true;
-    return
-  }
   isCrcAdd.value = true;
   addEditType.value = 'add';
 };
@@ -197,10 +193,6 @@ const close = () => {
 
 // 항목 수정 시작
 const startEdit = (item: any) => {
-  if (!passWordPass.value) {
-    passLayout.value = true;
-    return
-  }
   isCrcAdd.value = true;
   addEditType.value = 'edit';
   editItem.value = {...item}; // 수정할 항목의 데이터를 editItem에 저장
@@ -219,10 +211,6 @@ const deleteCrcItem = async (id: number) => {
 };
 
 const deleteRow = (type: string, id?: string | number) => {
-  if (!passWordPass.value) {
-    passLayout.value = true;
-    return
-  }
   if (type === 'check') {
     if (selectedItems.value.length === 0) {
       showToast('Please select the item to delete.')

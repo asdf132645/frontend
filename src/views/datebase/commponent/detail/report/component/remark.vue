@@ -201,10 +201,6 @@ const searchRemarkData = async () => {
 
 // Remark 추가
 const addRemark = async () => {
-  if (!passWordPass.value) {
-    passLayout.value = true;
-    return
-  }
   if (!newRemarkCode.value || !newRemarkContent.value) {
     showToast("code와 content를 입력해주세요.");
     return;
@@ -238,10 +234,7 @@ const addRemark = async () => {
 
 // Remark 삭제
 const deleteRemark = async (id: number) => {
-  if (!passWordPass.value) {
-    passLayout.value = true;
-    return
-  }
+
   try {
     if (props.type === 'remark') {
       await deleteCrcRemarkApi({id});
@@ -259,10 +252,6 @@ const deleteRemark = async (id: number) => {
 
 // 편집 시작
 const startEdit = (index: number, item: any) => {
-  if (!passWordPass.value) {
-    passLayout.value = true;
-    return
-  }
   editIndex.value = index;
   editedCode.value = item.code;
   editedContent.value = item.remarkAllContent;

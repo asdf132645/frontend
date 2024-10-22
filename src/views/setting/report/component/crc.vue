@@ -167,7 +167,8 @@ onMounted(async () => {
   isToggle.value = true;
   if (isToggle.value) {
     crcArr.value = [];
-    crcArr.value = crcData.value.data;
+    crcArr.value = JSON.parse(JSON.stringify(crcData.value.data));
+
   }
 });
 const nameChange = (name: string) => {
@@ -226,7 +227,7 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
-  if (crcOptionPutWhether.value) {
+  if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
     await updateCrcApi(crcArr.value);
     await updateCrcOptionApi({
       id: crcOptionId.value,

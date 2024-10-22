@@ -11,7 +11,7 @@
       <button
           class="tab"
           :class="{ active: activeTab === 2 }"
-          @click="activeTab = 2"
+          @click="adminPassword()"
       >
         종합결과코드 LIST
       </button>
@@ -117,10 +117,12 @@
       :duration="1500"
       position="bottom-right"
   />
+  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
+
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -131,6 +133,9 @@ import {getLisPathData, getLisWbcRbcData} from "@/common/lib/commonfunction/inha
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {createH17, readCustomH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {messages} from "@/common/defines/constFile/constantMessageText";
+import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
+import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {useStore} from "vuex";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -142,6 +147,7 @@ const props = defineProps({
     type: Array
   }
 });
+const store = useStore();
 const toastMessage = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const isComment = ref(false);
@@ -157,6 +163,10 @@ const crcDefaultMode = ref(false);
 const crcPassWord = ref('');
 const trrur = ref(false);
 const crcRemarkCount = ref<any>([]);
+const passWordPass = ref(false);
+const passLayout = ref(false);
+const crcPassWordVal = ref('');
+const userModuleDataGet = computed(() => store.state.userModule);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -165,6 +175,7 @@ onBeforeMount(async () => {
     const savedData = localStorage.getItem('crcSetData');
     const codeVal = localStorage.getItem('code') || '';
     const remarkListVal = localStorage.getItem('remarkList') || [];
+    const commentListVal = localStorage.getItem('commentList') || [];
     const recoListVal = localStorage.getItem('recoList') || [];
     if (savedData) {
       crcArr.value = JSON.parse(savedData);
@@ -172,6 +183,10 @@ onBeforeMount(async () => {
 
       if (typeof remarkListVal === "string") {
         remarkList.value = JSON.parse(remarkListVal);
+      }
+
+      if (typeof commentListVal === "string"){
+        commentList.value = JSON.parse(commentListVal);
       }
 
       if (typeof recoListVal === 'string') {
@@ -190,6 +205,7 @@ onBeforeMount(async () => {
     crcDefaultMode.value = crcOptionApi.data[0].crcMode;
     crcRemarkCount.value = crcOptionApi.data[0].crcRemarkCount;
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
+    crcPassWordVal.value = crcOptionApi.data[0].crcPassWord;
   }
 });
 
@@ -201,10 +217,14 @@ const remarkCountReturnCode = (idx: any) => {
 }
 
 const lisClick = async () => {
+  // if(props.selectItems.submitState === 'lis'){
+  //   alert('?')
+  // }
   const nowCrcData = crcDataArr.value.find((item) => {
     return item.code === code.value
   })
   nowCrcData.crcRemark = remarkList.value;
+  nowCrcData.crcComment = commentList.value;
   nowCrcData.crcRecommendation = recoList.value;
   const {lisFilePathSetArr} = await getLisPathData();
   const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
@@ -232,12 +252,44 @@ const lisClick = async () => {
     }
     try {
       await createH17(data);
+      console.log(props.selectItems?.id)
+      if (props.selectItems?.id) {
+        const result: any = await detailRunningApi(String(props.selectItems?.id));
+        const updatedItem = {
+          submitState: 'lis',
+        };
+        const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+        await resRunningItem(updatedRuningInfo, true);
+      }
       showToast(messages.IDS_MSG_SUCCESS);
     } catch (error: any) {
-      showToast(error.response.data.message);
+      showToast(error);
     }
   }
 }
+
+const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
+  try {
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+    const response = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: [updatedRuningInfo],
+      dayQuery: dayQuery,
+    })
+    if (response) {
+      if (!noAlert) {
+        showToast('Success');
+      }
+    } else {
+      console.error('백엔드가 디비에 저장 실패함');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 const listDel = (idx: any, type: string) => {
   if (type === 'remark') {
     remarkList.value.splice(idx, 1);
@@ -294,7 +346,33 @@ const updateList = (newList: any[], type: string) => {
       break;
   }
 }
+const adminPassword = () => {
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }else {
+    activeTab.value = 2;
+  }
+}
 
+const returnPassWordCheck = (val: boolean) => {
+  if (val) {
+    passWordPass.value = true;
+    // 패스 체크 모달 닫기
+    passLayout.value = false;
+    // showToast("Admin verification is complete. Please click the button again.");
+    activeTab.value = 2;
+  } else {
+    passWordPass.value = false;
+    // 패스 체크 모달 닫기
+    passLayout.value = false;
+    showToast("The administrator password is incorrect.");
+  }
+}
+
+const passWordClose= () => {
+  passLayout.value = false;
+}
 // 코드 변경 시 로직 처리
 const changeCode = async (event: Event) => {
   if (event.target?.value === 'select') {
@@ -307,7 +385,7 @@ const changeCode = async (event: Event) => {
 
   types.forEach(type => {
     filterArr[0].crcContent[type].forEach((content: any) => {
-      const match = crcArr.value.find((item: any) => item.crcTitle === content.crcTitle && item.crcType === content.crcType);
+      const match = crcArr.value.find((item: any) => item.id === content.id);
       if (match) {
         if (match.crcType === 'select') {
           match.val = content.crcContent;
@@ -319,6 +397,7 @@ const changeCode = async (event: Event) => {
   });
 
   remarkList.value = filterArr[0].crcRemark || [];
+  commentList.value = filterArr[0].crcComment || [];
   recoList.value = filterArr[0].crcRecommendation || [];
 };
 
@@ -328,6 +407,7 @@ const tempSaveLocalStorage = () => {
   localStorage.setItem('crcDataArr', JSON.stringify(crcDataArr.value));
   localStorage.setItem('crcSetData', JSON.stringify(crcArr.value));
   localStorage.setItem('remarkList', JSON.stringify(remarkList.value));
+  localStorage.setItem('commentList', JSON.stringify(commentList.value));
   localStorage.setItem('recoList', JSON.stringify(recoList.value));
   showToast('Data saved to temporary storage')
 };
@@ -337,12 +417,14 @@ const tempSaveDataEmpty = async () => {
   localStorage.removeItem('crcDataArr');
   localStorage.removeItem('crcSetData');
   localStorage.removeItem('remarkList');
+  localStorage.removeItem('commentList');
   localStorage.removeItem('recoList');
 
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
   recoList.value = [];
   remarkList.value = [];
+  commentList.value = [];
   code.value = '';
   showToast('Data empty to storage')
 }

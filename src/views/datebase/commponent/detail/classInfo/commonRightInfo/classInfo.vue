@@ -1010,8 +1010,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
       if (!noAlert) {
         showToast('Success');
       }
-      const filteredItems = updatedRuningInfo;
-      wbcMemo.value = filteredItems.wbcMemo;
+      wbcMemo.value = updatedRuningInfo.wbcMemo;
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }

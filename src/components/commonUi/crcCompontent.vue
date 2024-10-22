@@ -119,9 +119,8 @@ onMounted(async () => {
 });
 
 watch(props, (newArr) => {
-  console.log("?")
   arrData.value = newArr?.items.filter((item) => item?.morphologyType === props.moType);
-});
+},{deep: true});
 
 const editCrcArr = (id: number) => {
   editIndex.value = id;
@@ -154,7 +153,6 @@ const contentArr = (content: any) => {
 
 const changeSelect = (eve: Event, id: string | number) => {
   if (props.pageName === 'report') {
-    console.log(eve.target?.value);
     emit('updateSelect', {val: eve.target?.value, id});
   }
 }

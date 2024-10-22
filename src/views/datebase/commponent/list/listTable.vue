@@ -681,6 +681,8 @@ const submitStateChangeText = (text, submitUserId) => {
       return 'Ready';
     case 'Submit':
       return `Submit (${submitUserId})`;
+    case 'lis':
+      return `Submit (${submitUserId})`;
     default:
       return 'Ready';
   }
