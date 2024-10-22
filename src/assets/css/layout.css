@@ -3742,7 +3742,7 @@ li.crcRow {
     position: absolute;
     background: #ffffff;
     color: #000;
-    left: 45%;
+    left: 40%;
     top: 35%;
     z-index: 99;
     border: 1px solid #000;
@@ -3750,7 +3750,9 @@ li.crcRow {
     width: 20%;
     min-height: 200px;
 }
-
+span.smallName {
+    font-size: 0.8rem;
+}
 .lockInput {
     width: 96%;
     border: 1px solid #000;
@@ -3787,7 +3789,7 @@ textarea.remarkTextArea.table {
     top: 0;
     height: 100%;
     background: #000000a8;
-    z-index: 99;
+    z-index: 999999999;
 }
 
 p.adminText {
