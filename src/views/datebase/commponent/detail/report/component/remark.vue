@@ -1,6 +1,6 @@
 <template>
   <div class="crcPopUpDiv remark">
-    <div style="position: relative;height: 873px;width: 100%">
+    <div style="position: relative; height: 100%; width: 100%">
       <div class="headerRemark topLine">
         <span>Search Type</span>
         <select v-model="searchType">
@@ -37,7 +37,7 @@
           <td v-if="editIndex === idx">
             <input v-model="editedCode" type="text"/>
           </td>
-          <td v-else>{{ item?.code }}</td>
+          <td v-else class="textLeft">{{ item?.code }}</td>
 
           <td v-if="editIndex === idx">
             <textarea class="remarkTextArea table" v-model="editedContent"/>
@@ -63,14 +63,19 @@
       </table>
 
       <div class="mt2 remarkBottomFix">
-        <p class="textLeft">Add Row</p>
+        <p class="textLeft fs10 fw-bold mb1">Add New {{ typeToText(type) }}</p>
         <div class="remarkBottomBtnGroup mb1">
-          <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
+          <div class="flex-justify-between">
+            <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
+            <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
+          </div>
           <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"></textarea>
-          <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
         </div>
-        <button class="crcDefaultBtn" @click="okSelect">OK</button>
-        <button @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
+        <div>
+          <button class="crcDefaultBtn" @click="okSelect">OK</button>
+          <button @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -85,7 +90,7 @@
 
 
 <script setup lang="ts">
-import {ref, defineEmits, onBeforeMount} from "vue";
+import {ref, defineEmits, onBeforeMount, nextTick} from "vue";
 import {
   crcRemarkGet,
   createCrcRemarkApi,
@@ -237,6 +242,7 @@ const addRemark = async () => {
     newRemarkCode.value = "";
     newRemarkContent.value = "";
     await loadRemarks();
+    await scrollToBottom();
   } catch (error) {
     showToast('Failed to add remark')
   }
@@ -259,6 +265,14 @@ const deleteRemark = async (id: number) => {
     console.error("Failed to delete remark:", error);
   }
 };
+
+const scrollToBottom = async () => {
+  await nextTick();
+  const scrollContainer = document.querySelector('.crcPopUpDiv.remark');
+  if (scrollContainer) {
+    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+  }
+}
 
 // 편집 시작
 const startEdit = (index: number, item: any) => {
@@ -313,6 +327,17 @@ const saveEdit = async (id: number) => {
 const cancelEdit = () => {
   editIndex.value = null;
 };
+
+const typeToText = (type: string) => {
+  switch (type) {
+    case 'reco':
+      return 'Recommendation';
+    case 'comment':
+      return 'Comment';
+    case 'remark':
+      return 'Remark';
+  }
+}
 
 // OK 버튼 클릭 시 처리
 const okSelect = () => {
