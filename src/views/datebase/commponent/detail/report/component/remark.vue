@@ -1,67 +1,77 @@
 <template>
   <div class="crcPopUpDiv remark">
-    <div class="headerRemark topLine">
-      <span>Search Type</span>
-      <select v-model="searchType">
-        <option value="Code">Code</option>
-        <option value="Content">Content</option>
-      </select>
-      <input type="text" v-model="searchRemark"/>
-      <!-- Search 버튼에 searchRemark 함수 연결 -->
-      <button type="button" @click="searchRemarkData">Search</button>
-    </div>
-    <div class="remarkBottomBtnGroup mb1">
-      <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
-      <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"></textarea>
-      <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
-    </div>
-    <table class="remarkDefaultTable">
-      <thead>
-      <tr>
-        <th></th>
-        <th>Code</th>
-        <th>Content</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(item, idx) in remarkArr" :key="idx">
-        <td>
-          <input type="checkbox" v-model="selectedItems" :value="item.id"/>
-        </td>
+    <div style="position: relative;height: 873px;width: 100%">
+      <div class="headerRemark topLine">
+        <span>Search Type</span>
+        <select v-model="searchType">
+          <option value="Code">Code</option>
+          <option value="Content">Content</option>
+        </select>
+        <input type="text" v-model="searchRemark"/>
+        <!-- Search 버튼에 searchRemark 함수 연결 -->
+        <button type="button" @click="searchRemarkData">Search</button>
+      </div>
 
-        <!-- 편집 모드인지 확인 -->
-        <td v-if="editIndex === idx">
-          <input v-model="editedCode" type="text"/>
-        </td>
-        <td v-else>{{ item?.code }}</td>
+      <table class="remarkDefaultTable">
+        <colgroup>
+          <col width="5%"/>
+          <col width="20%"/>
+          <col width="*"/>
+          <col width="20%"/>
+        </colgroup>
+        <thead>
+        <tr>
+          <th></th>
+          <th>Code</th>
+          <th>Content</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, idx) in remarkArr" :key="idx">
+          <td>
+            <input type="checkbox" v-model="selectedItems" :value="item.id"/>
+          </td>
 
-        <td v-if="editIndex === idx">
-          <textarea class="remarkTextArea table" v-model="editedContent"/>
-        </td>
-        <td v-else v-html="item?.remarkAllContent"></td>
+          <!-- 편집 모드인지 확인 -->
+          <td v-if="editIndex === idx">
+            <input v-model="editedCode" type="text"/>
+          </td>
+          <td v-else>{{ item?.code }}</td>
 
-        <td v-if="editIndex === idx">
-          <!-- Save 버튼 -->
-          <button class="crcDefaultBtn" @click="saveEdit(item.id)">Save</button>
-          <button class="crcDefaultBtn ml1" @click="cancelEdit">Cancel</button>
-        </td>
-        <td v-else>
-          <!-- Edit 버튼 -->
-          <button @click="startEdit(idx, item)">
-            <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
-          </button>
-          <button @click="deleteRemark(item.id)" class="ml1">
-            <font-awesome-icon :icon="['fas', 'trash']"/>
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          <td v-if="editIndex === idx">
+            <textarea class="remarkTextArea table" v-model="editedContent"/>
+          </td>
+          <td v-else class="textLeft" v-html="item?.remarkAllContent"></td>
 
-    <div class="mt2">
-      <button class="crcDefaultBtn" @click="okSelect">OK</button>
-      <button @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
+          <td v-if="editIndex === idx">
+            <!-- Save 버튼 -->
+            <button class="crcDefaultBtn" @click="saveEdit(item.id)">Save</button>
+            <button class="crcDefaultBtn ml1" @click="cancelEdit">Cancel</button>
+          </td>
+          <td v-else>
+            <!-- Edit 버튼 -->
+            <button @click="startEdit(idx, item)">
+              <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
+            </button>
+            <button @click="deleteRemark(item.id)" class="ml1">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="mt2 remarkBottomFix">
+        <p class="textLeft">Add Row</p>
+        <div class="remarkBottomBtnGroup mb1">
+          <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
+          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"></textarea>
+          <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
+        </div>
+        <button class="crcDefaultBtn" @click="okSelect">OK</button>
+        <button @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
+      </div>
     </div>
   </div>
   <ToastNotification

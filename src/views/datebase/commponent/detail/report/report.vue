@@ -2,16 +2,29 @@
 
   <ClassInfoMenu @refreshClass="refreshClass"/>
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')" v-if="siteCd !== '0007'">
+    <div class="topClintInfo">
+      <ul>
+        <li>
+          {{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}
+        </li>
+        <li>{{ selectItems?.barcodeNo }}</li>
+        <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
+        <li>{{ selectItems?.cbcPatientNo }}</li>
+        <li>{{ selectItems?.patientName }}</li>
+        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
+        <li>{{ selectItems?.analyzedDttm }}</li>
+      </ul>
+    </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div class="reportDiv">
+      <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
+        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
+                  @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
+      </div>
       <div class="wbcDiv shadowBox">
         <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
                   @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged"
                   :isCommitChanged="isCommitChanged"/>
-      </div>
-      <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
-        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
-                  @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
       </div>
       <div class="reportDetail shadowBox" v-if="!crcConnect">
         <div class="reportTitle">
@@ -237,7 +250,7 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
+import {computed, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";

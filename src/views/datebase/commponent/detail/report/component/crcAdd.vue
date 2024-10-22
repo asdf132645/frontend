@@ -42,9 +42,9 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'remark')">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
+<!--            <button @click="listDel(index, 'remark')">-->
+<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--            </button>-->
           </div>
         </div>
       </div>
@@ -59,9 +59,9 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'comment')">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
+<!--            <button @click="listDel(index, 'comment')">-->
+<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--            </button>-->
           </div>
         </div>
       </div>
@@ -76,9 +76,9 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'reco')">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
+<!--            <button @click="listDel(index, 'reco')">-->
+<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--            </button>-->
           </div>
         </div>
       </div>
@@ -200,6 +200,27 @@ onBeforeMount(async () => {
     remarkList.value = props.editItem.crcRemark || [];
     recoList.value = props.editItem.crcRecommendation || [];
     commentList.value = props.editItem.crcComment || [];
+    remarkList.value = remarkList.value.map(item => {
+      return {
+        ...item,
+        remarkAllContent: convertToNewlines(item.remarkAllContent),
+      };
+    });
+
+    commentList.value = commentList.value.map(item => {
+      return {
+        ...item,
+        remarkAllContent: convertToNewlines(item.remarkAllContent),
+      };
+    });
+
+    recoList.value = recoList.value.map(item => {
+      return {
+        ...item,
+        remarkAllContent: convertToNewlines(item.remarkAllContent),
+      };
+    });
+
 
   } else {
     crcSetArr.value = (await crcGet()).data;
@@ -359,15 +380,15 @@ const closeSelect = (type: string) => {
 const updateList = (newList: any[], type: string) => {
   switch (type) {
     case 'remark':
-      remarkList.value = [...remarkList.value, ...newList];
+      remarkList.value = newList;
       closeSelect('remark');
       break;
     case 'comment':
-      commentList.value = [...commentList.value, ...newList];
+      commentList.value = newList;
       closeSelect('comment');
       break;
     case 'reco':
-      recoList.value = [...recoList.value, ...newList];
+      recoList.value = newList;
       closeSelect('recommendation');
       break;
   }

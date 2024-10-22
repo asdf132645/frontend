@@ -23,11 +23,28 @@
           <font-awesome-icon :icon="['fas', 'upload']"/>
         </button>
         <span class="crcSpanMenu">List</span>
-        <select class="crcSelect" @change="changeCode" v-model="code">
-          <option v-for="(item, idx) in crcDataArr" :key="idx" :value="item.code">
-            {{ item.code }}
-          </option>
-        </select>
+        <div class="autocomplete-container ml1">
+          <!-- 검색 입력 필드 -->
+          <input
+              v-model="searchText"
+              placeholder="코드 검색"
+              class="autocomplete-input"
+              @focus="showDropdown = true"
+              @blur="hideDropdownWithDelay"
+          />
+
+          <!-- 검색어에 따라 필터링된 드롭다운 목록 -->
+          <ul v-if="showDropdown && filteredOptions.length" class="autocomplete-list">
+            <li
+                v-for="(item, idx) in filteredOptions"
+                :key="idx"
+                @click="selectOption(item.code)"
+                class="autocomplete-item"
+            >
+              {{ item.code }}
+            </li>
+          </ul>
+        </div>
         <button class="crcBtn tempSave ml1" @click="tempSaveLocalStorage">Save</button>
         <button class="crcBtn tempSave ml1" @click="tempSaveDataEmpty">Clear</button>
 
@@ -49,7 +66,7 @@
       <!-- Remark 관련 -->
       <div class="mt2" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
-          <span>Remark</span>
+          <span><font-awesome-icon :icon="['fas', 'message']" /> Remark</span>
           <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
@@ -57,16 +74,16 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'remark')">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
+<!--            <button @click="listDel(index, 'remark')">-->
+<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--            </button>-->
           </div>
         </div>
       </div>
 
       <div class="mt2" v-if="remarkCountReturnCode(1)">
         <div class="crcDivTitle">
-          <span> Comment </span>
+          <span><font-awesome-icon :icon="['fas', 'message']" /> Comment </span>
           <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
         </div>
 
@@ -74,16 +91,16 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'comment')">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
+<!--            <button @click="listDel(index, 'comment')">-->
+<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--            </button>-->
           </div>
         </div>
       </div>
 
       <div class="mt2" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
-          <span> Recommendation </span>
+          <span><font-awesome-icon :icon="['fas', 'message']" /> Recommendation </span>
           <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
         </div>
 
@@ -91,9 +108,9 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'reco')">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
+<!--            <button @click="listDel(index, 'reco')">-->
+<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--            </button>-->
           </div>
         </div>
       </div>
@@ -169,6 +186,8 @@ const passWordPass = ref(false);
 const passLayout = ref(false);
 const crcPassWordVal = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const searchText = ref('');
+const showDropdown = ref(false);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -229,6 +248,31 @@ onBeforeMount(async () => {
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcPassWordVal.value = crcOptionApi.data[0].crcPassWord;
   }
+});
+// 옵션 선택 시 호출되는 함수
+const selectOption = (selectedCode: string) => {
+  code.value = selectedCode;   // 선택한 코드를 저장
+  searchText.value = selectedCode;  // 검색창에 선택된 코드 표시
+  showDropdown.value = false;  // 드롭다운 닫기
+  changeCode(selectedCode);
+};
+
+// 입력 필드가 포커스를 잃을 때 드롭다운을 닫는 함수 (딜레이로 클릭을 허용)
+const hideDropdownWithDelay = () => {
+  setTimeout(() => {
+    showDropdown.value = false;
+  }, 200); // 작은 딜레이 추가
+};
+// 검색어에 따라 필터링된 옵션을 계산하는 computed
+const filteredOptions = computed(() => {
+  if (!searchText.value) {
+    return crcDataArr.value; // 검색어가 없을 경우 전체 목록 표시
+  }
+
+  // 검색어와 일치하는 코드를 필터링
+  return crcDataArr.value.filter(item =>
+      item.code.toLowerCase().includes(searchText.value.toLowerCase())
+  );
 });
 const convertToNewlines = (content: string) => {
   return content.replaceAll('<br>', '\r\n');
@@ -358,15 +402,15 @@ const closeSelect = (type: string) => {
 const updateList = (newList: any[], type: string) => {
   switch (type) {
     case 'remark':
-      remarkList.value = [...remarkList.value, ...newList];
+      remarkList.value = newList;
       closeSelect('remark');
       break;
     case 'comment':
-      commentList.value = [...commentList.value, ...newList];
+      commentList.value = newList;
       closeSelect('comment');
       break;
     case 'reco':
-      recoList.value = [...recoList.value, ...newList];
+      recoList.value = newList;
       closeSelect('recommendation');
       break;
   }
@@ -399,12 +443,9 @@ const passWordClose = () => {
   passLayout.value = false;
 }
 // 코드 변경 시 로직 처리
-const changeCode = async (event: Event) => {
-  if (event.target?.value === 'select') {
-    return;
-  }
-  code.value = event.target?.value;
-  const filterArr = crcDataArr.value.filter((item) => item.code === event.target?.value);
+const changeCode = async (codeVal: string) => {
+  code.value = codeVal;
+  const filterArr = crcDataArr.value.filter((item) => item.code === codeVal);
 
   const types = ['plt', 'rbc', 'wbc'];
 

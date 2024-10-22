@@ -108,8 +108,8 @@ const editIndex = ref<number | null>(null);
 // 8개씩 그룹화된 데이터를 계산하는 computed property
 const groupedData = computed(() => {
   const rows: any[] = [];
-  for (let i = 0; i < arrData.value.length; i += 8) {
-    rows.push(arrData.value.slice(i, i + 8));
+  for (let i = 0; i < arrData.value.length; i += 4) {
+    rows.push(arrData.value.slice(i, i + 4));
   }
   return rows;
 });
