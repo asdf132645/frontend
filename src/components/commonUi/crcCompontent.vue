@@ -26,9 +26,12 @@
           <div class="crcSel">
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
             <div v-else>
-              <div v-if="item?.crcType === 'select'" >
+              <div v-if="item?.crcType === 'select'">
                 <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)">
-                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{ opItem }}</option>
+                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{
+                      opItem
+                    }}
+                  </option>
                 </select>
                 <div v-else>
                   <select @change="changeSelect($event, item.id)">
@@ -37,10 +40,12 @@
                 </div>
               </div>
               <div v-else-if="item?.crcType === 'text'">
-                <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text" placeholder="Enter text" />
+                <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
+                       placeholder="Enter text"/>
               </div>
               <div v-else>
-                <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text" placeholder="Enter percentage" />
+                <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text"
+                       placeholder="Enter percentage"/>
               </div>
             </div>
           </div>
@@ -55,9 +60,7 @@
               {{ item?.crcPercentText }}
             </span>
           </div>
-          <div v-if="pageName === 'set'">
-            <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
-          </div>
+
           <div v-if="pageName === 'set'">
             <button type="button" @click="editCrcArr(item.id)">EDIT</button>
             <button
@@ -68,6 +71,10 @@
               OK
             </button>
           </div>
+          <div v-if="pageName === 'set'">
+            <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
+          </div>
+          
         </div>
       </li>
     </ul>
@@ -75,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 
 // Props
 const props = defineProps({
@@ -121,13 +128,13 @@ const editCrcArr = (id: number) => {
 };
 
 const updateCrcArr = (id: number) => {
-  const updatedItem = { ...arrData.value.find(item => item.id === id) };
-  emit('updateCrc', { id, updatedItem });
+  const updatedItem = {...arrData.value.find(item => item.id === id)};
+  emit('updateCrc', {id, updatedItem});
   editIndex.value = null;
 };
 
 const delCrcArr = (idx: number, id: any) => {
-  emit('deleteCrc', { index: idx, id });
+  emit('deleteCrc', {index: idx, id});
 };
 
 const moTypeTextChange = (txt: string) => {
@@ -148,7 +155,7 @@ const contentArr = (content: any) => {
 const changeSelect = (eve: Event, id: string | number) => {
   if (props.pageName === 'report') {
     console.log(eve.target?.value);
-    emit('updateSelect', { val: eve.target?.value, id });
+    emit('updateSelect', {val: eve.target?.value, id});
   }
 }
 </script>

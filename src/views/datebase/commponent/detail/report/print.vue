@@ -519,26 +519,40 @@ const printPage = async () => {
     }
 
     // HTML 컨텐츠를 Gzip으로 압축
-    const compressedContent = pako.gzip(content.innerHTML, {level: 9});
+    const compressedContent = pako.gzip(content.innerHTML, { level: 9 });
 
     // HTML 컨텐츠를 PDF로 변환하는 요청을 보냄
     const response = await fetch(`${apiBaseUrl}/pdf/convert`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/octet-stream',
-        'Content-Encoding': 'gzip'
+        'Content-Encoding': 'gzip',
       },
-      body: compressedContent
+      body: compressedContent,
     });
 
     if (!response.ok) {
       throw new Error('HTML을 PDF로 변환하는데 실패했습니다.');
     }
 
-    // 받은 PDF 파일을 브라우저의 PDF 뷰어로 열기
+    // 받은 PDF 파일을 blob으로 변환
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    window.open(url, '_blank', 'width=800,height=500,noopener,noreferrer');
+
+    // Edge 브라우저에서 PDF 다운로드를 위한 처리
+    const isEdge = /Edg/.test(navigator.userAgent);
+    if (isEdge) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${selectItems.value.barcodeNo}-report`; // 다운로드할 파일명 설정
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // 다른 브라우저에서 새 창에 PDF 열기
+      window.open(url, '_blank', 'width=800,height=500,noopener,noreferrer');
+    }
+
     window.URL.revokeObjectURL(url);
     printReady.value = false;
   } catch (error) {
@@ -548,6 +562,7 @@ const printPage = async () => {
     enableScroll();
   }
 };
+
 
 
 const getImagePrintData = async () => {

@@ -46,32 +46,53 @@
       </div>
 
       <!-- Remark 관련 -->
-      <div class="mt2">
+      <div class="mt2" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
-          <span>{{ crcDefaultModeChangeText(crcDefaultMode) }} </span>
-          <button class="reSelect" @click="remarkSelect">{{ crcDefaultModeChangeText(crcDefaultMode) }} Select</button>
+          <span>Remark</span>
+          <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'remark')">Del</button>
+            <button @click="listDel(index, 'remark')">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="mt2" v-if="!crcDefaultMode">
+      <div class="mt2" v-if="remarkCountReturnCode(1)">
+        <div class="crcDivTitle">
+          <span> Comment </span>
+          <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
+        </div>
+
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <div v-for="(item, index) in commentList" :key="index">
+            <textarea v-model="item.remarkAllContent"></textarea>
+            <button @click="listDel(index, 'comment')">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt2" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
           <span> Recommendation </span>
-          <button class="reSelect" @click="recommendationSelect">Recommendation Select</button>
+          <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'reco')">Del</button>
+            <button @click="listDel(index, 'reco')">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
           </div>
         </div>
       </div>
@@ -79,15 +100,17 @@
 
     <!-- 두 번째 탭 콘텐츠 -->
     <div class="tab-content" v-if="activeTab === 2">
-      <CrcList :crcArr="crcArr" @refresh="pageRefresh"/>
+      <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh"/>
     </div>
   </div>
 
   <!-- 자식 컴포넌트 Remark -->
-  <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList" type="remark"
-          :crcDefaultMode="crcDefaultMode"/>
-  <Remark v-if="isRecommendation" @cancel="closeReco" @listUpdated="updateRecoList" type="reco"
-          :crcDefaultMode="crcDefaultMode"/>
+  <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
+          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+  <Remark v-if="isComment" @cancel="closeSelect('comment')" @listUpdated="updateList" type="comment"
+          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+  <Remark v-if="isRecommendation" @cancel="closeSelect('recommendation')" @listUpdated="updateList" type="reco"
+          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
@@ -97,18 +120,16 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
+import { nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
 import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {createFile} from "@/common/api/service/fileSys/fileSysApi";
 import {getLisPathData, getLisWbcRbcData} from "@/common/lib/commonfunction/inhaCbcLis";
-import {useStore} from "vuex";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
-import {createH17, readCustomH7Message, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
+import {createH17, readCustomH7Message} from "@/common/api/service/fileReader/fileReaderApi";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const crcArr = ref<any>([]);
@@ -123,17 +144,19 @@ const props = defineProps({
 });
 const toastMessage = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
+const isComment = ref(false);
 const isRecommendation = ref(false);
 const activeTab = ref(1); // 현재 탭 상태
 const remarkList = ref<any[]>([]); // Remark 리스트 상태
+const commentList = ref<any[]>([]);
 const recoList = ref<any[]>([]);
 const isContent = ref(false);
 const crcDataArr = ref<any[]>([]);
 const code = ref('');
 const crcDefaultMode = ref(false);
+const crcPassWord = ref('');
 const trrur = ref(false);
-const store = useStore();
-const userModuleDataGet = computed(() => store.state.userModule);
+const crcRemarkCount = ref<any>([]);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -160,17 +183,27 @@ onBeforeMount(async () => {
       trrur.value = true;
     }
 
-    const data = (await crcDataGet()).data;
-    crcDataArr.value = data;
+    crcDataArr.value = (await crcDataGet()).data;
   }
   const crcOptionApi = await crcOptionGet();
   if (crcOptionApi.data.length !== 0) {
     crcDefaultMode.value = crcOptionApi.data[0].crcMode;
-
+    crcRemarkCount.value = crcOptionApi.data[0].crcRemarkCount;
+    crcPassWord.value = crcOptionApi.data[0].crcPassWord;
   }
 });
+
+const remarkCountReturnCode = (idx: any) => {
+  if(crcRemarkCount.value.length === 0){
+    return;
+  }
+  return crcRemarkCount.value[idx].checked;
+}
+
 const lisClick = async () => {
-  const nowCrcData = crcDataArr.value.find((item) => { return item.code === code.value})
+  const nowCrcData = crcDataArr.value.find((item) => {
+    return item.code === code.value
+  })
   nowCrcData.crcRemark = remarkList.value;
   nowCrcData.crcRecommendation = recoList.value;
   const {lisFilePathSetArr} = await getLisPathData();
@@ -210,35 +243,57 @@ const listDel = (idx: any, type: string) => {
     remarkList.value.splice(idx, 1);
   } else if (type === 'reco') {
     recoList.value.splice(idx, 1);
+  } else if(type === 'comment'){
+    commentList.value.splice(idx, 1);
   }
 }
 
-const remarkSelect = () => {
-  isRemark.value = true;
-};
-
-const recommendationSelect = () => {
-  isRecommendation.value = true;
+const openSelect = (type: string) => {
+  switch (type) {
+    case 'remark':
+      isRemark.value = true;
+      break;
+    case 'comment':
+      isComment.value = true;
+      break;
+    case 'recommendation':
+      isRecommendation.value = true;
+      break;
+  }
 }
 
-const closeRemark = () => {
-  isRemark.value = false;
-};
-
-const closeReco = () => {
-  isRecommendation.value = false;
+const closeSelect = (type: string) => {
+  switch (type) {
+    case 'remark':
+      isRemark.value = false;
+      break;
+    case 'comment':
+      isComment.value = false;
+      break;
+    case 'recommendation':
+      isRecommendation.value = false;
+      break;
+  }
 }
 
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
-const updateRemarkList = (newList: any[]) => {
-  remarkList.value = [...remarkList.value, ...newList];
-  closeRemark();
-};
 
-const updateRecoList = (newList: any[]) => {
-  recoList.value = [...recoList.value, ...newList];
-  closeReco();
-};
+const updateList = (newList: any[], type: string) => {
+  switch (type) {
+    case 'remark':
+      remarkList.value = [...remarkList.value, ...newList];
+      closeSelect('remark');
+      break;
+    case 'comment':
+      commentList.value = [...commentList.value, ...newList];
+      closeSelect('comment');
+      break;
+    case 'recommendation':
+      recoList.value = [...recoList.value, ...newList];
+      closeSelect('recommendation');
+      break;
+  }
+}
 
 // 코드 변경 시 로직 처리
 const changeCode = async (event: Event) => {
@@ -251,8 +306,8 @@ const changeCode = async (event: Event) => {
   const types = ['plt', 'rbc', 'wbc'];
 
   types.forEach(type => {
-    filterArr[0].crcContent[type].forEach(content => {
-      const match = crcArr.value.find(item => item.crcTitle === content.crcTitle && item.crcType === content.crcType);
+    filterArr[0].crcContent[type].forEach((content: any) => {
+      const match = crcArr.value.find((item: any) => item.crcTitle === content.crcTitle && item.crcType === content.crcType);
       if (match) {
         if (match.crcType === 'select') {
           match.val = content.crcContent;
@@ -306,11 +361,4 @@ const showToast = (message: string) => {
 };
 
 
-const crcDefaultModeChangeText = (crcDefaultModeType: boolean) => {
-  if (crcDefaultModeType) {
-    return 'Remark';
-  } else {
-    return 'Comment';
-  }
-}
 </script>

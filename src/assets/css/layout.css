@@ -3664,13 +3664,97 @@ li.crcRow {
     width: 45px;
 }
 
+.remarkUlList > div textarea {
+    width: 94%;
+    border-radius: 5px;
+    height: 30px;
+    resize: none;
+    vertical-align: middle;
+    margin-bottom: 1px;
+}
+
+.passWordCheck {
+    position: absolute;
+    background: #ffffff;
+    color: #000;
+    left: 45%;
+    top: 35%;
+    z-index: 99;
+    border: 1px solid #000;
+    padding: 30px;
+    width: 20%;
+    min-height: 200px;
+}
+
+.lockInput {
+    width: 96%;
+    border: 1px solid #000;
+    padding: 7px;
+    border-radius: 0;
+}
+
+.noLockBtn {
+    background: #fff;
+    width: 100%;
+    border: 1px solid #000;
+    padding: 10px;
+    color: #000;
+    font-size: 1rem;
+}
+
+textarea.remarkTextArea {
+    vertical-align: middle;
+    height: 21px;
+    width: 52%;
+    border-radius: 5px;
+    resize: none;
+    border: 1px solid #3498db;
+}
+
+textarea.remarkTextArea.table {
+    width: 100%;
+}
+
+.passWordCheckBack {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #000000a8;
+    z-index: 99;
+}
+
+p.adminText {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.lockBtn {
+    background: #000;
+    width: 100%;
+    border: none;
+    padding: 10px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.remarkUlList > div button {
+    padding: 8px;
+    margin-left: 4px;
+    background: none;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    border-radius: 3px;
+}
+
 .crcDivTitle {
     position: relative;
     width: 100%;
     font-size: 0.9rem;
     font-weight: 600;
     margin: 5px 0px 5px 0px;
-    border-bottom: 1.5px solid #004691;
+    border-bottom: 1.5px solid #ffffff;
     padding-bottom: 5px;
     text-align: left;
 }
@@ -3679,7 +3763,8 @@ button.reSelect {
     position: absolute;
     right: 0;
     background: none;
-    border: 1px solid #007bff;
+    border: 1px solid #ffffff;
+    color: #ffffff;
     padding: 5px 10px;
     top: -12px;
     cursor: pointer;
@@ -3695,6 +3780,7 @@ button.reSelect {
     z-index: 99;
     max-height: 976px;
     overflow: auto;
+    color: #333333;
 }
 
 ul.crcListContentUl {
@@ -3703,7 +3789,7 @@ ul.crcListContentUl {
 
 ul.crcListContentUl li.crcListContentHeader {
     font-size: 0.9rem;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #ffffff;
     padding-bottom: 5px;
     margin-bottom: 5px;
     font-weight: 600;
@@ -3711,7 +3797,21 @@ ul.crcListContentUl li.crcListContentHeader {
 }
 
 .sortDownBig {
-    color: #3498db;
+    color: #ffffff;
+}
+
+.crcPopUpDiv.crcAdd button.reSelect {
+    color: #333;
+    border: 1px solid #333;
+}
+
+.crcPopUpDiv.crcAdd .crcDivTitle {
+    border-bottom: 1px solid #333;
+}
+
+.crcPopUpDiv.crcAdd .remarkUlList > div button {
+    color: #333;
+    border: 1px solid #333;
 }
 
 span.crcListSpan span {
@@ -3727,12 +3827,12 @@ span.crcListSpan span {
 }
 
 li.crcListContent > span {
-    color: #333333;
+    color: #ffffff;
     position: relative;
     display: flex;
     justify-content: space-between;
     width: 100%;
-    border-bottom: 1px solid #b8b8b8;
+    border-bottom: 1px solid #ffffff;
     padding-bottom: 5px;
     margin-bottom: 10px;
     vertical-align: sub;
@@ -3749,8 +3849,8 @@ li.crcListContent > span {
 
 .crcReport {
     width: 54%;
-    background: #f4f9ff;
-    color: var(--gray-bg-3-color);
+    background: #252629;
+    color: #fff;
     font-size: 0.8rem;
     overflow-y: auto;
     max-height: 87vh;
@@ -3787,7 +3887,7 @@ li.crcListContent > span {
 span.crcListSpan button {
     background: none;
     border: none;
-    color: #484848;
+    color: #ffffff;
     cursor: pointer;
 }
 
@@ -3828,6 +3928,7 @@ span.crcListSpan input {
     padding: 10px 20px;
     cursor: pointer;
     background: none;
+    color: #ffffff;
     border: none;
     outline: none;
     border-bottom: 2px solid transparent;
@@ -3835,9 +3936,16 @@ span.crcListSpan input {
 }
 
 .tab:hover {
-    background-color: #f5f5f5;
+    background-color: #333333;
 }
 
+.settingWrapDiv .grid-item.crcItemDiv div,.settingWrapDiv .grid-item.crcItemDiv p {
+    width: 19%;
+}
+
+.settingWrapDiv .grid-item.crcItemDiv div input, .settingWrapDiv .grid-item.crcItemDiv div select {
+    min-width: 96px;
+}
 .tab.active {
     border-bottom: 2px solid #007bff;
     font-weight: bold;
@@ -3865,10 +3973,11 @@ select.crcSelect {
 
 button.crcBtn {
     background: none;
-    border: 1px solid #007bff;
+    border: 1px solid #ffffff;
     padding: 5px 17px;
     cursor: pointer;
     border-radius: 3px;
+    color: #ffffff;
 }
 
 .rbcCrcDiv {
@@ -3993,6 +4102,7 @@ table.remarkDefaultTable tr td {
 
 .remarkBottomBtnGroup input, .remarkBottomBtnGroup button {
     display: inline-block;
+    vertical-align: middle;
 }
 
 .remarkBottomBtnGroup input {

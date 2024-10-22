@@ -32,32 +32,53 @@
         </div>
       </div>
       <!-- Remark 관련 -->
-      <div class="mt2">
+      <div class="mt2" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
-          <span>{{ crcDefaultModeChangeText(crcDefaultMode) }} </span>
-          <button class="reSelect" @click="remarkSelect">{{ crcDefaultModeChangeText(crcDefaultMode) }} Select</button>
+          <span>Remark</span>
+          <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
-          <div v-for="(item, index) in remarkList" :key="index" >
+          <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'remark')">Del</button>
+            <button @click="listDel(index, 'remark')">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="mt2" v-if="!crcDefaultMode">
+      <div class="mt2" v-if="remarkCountReturnCode(1)">
+        <div class="crcDivTitle">
+          <span> Comment </span>
+          <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
+        </div>
+
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <div v-for="(item, index) in commentList" :key="index">
+            <textarea v-model="item.remarkAllContent"></textarea>
+            <button @click="listDel(index, 'comment')">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt2" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
           <span> Recommendation </span>
-          <button class="reSelect" @click="recommendationSelect">Recommendation Select</button>
+          <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <button @click="listDel(index, 'reco')">Del</button>
+            <button @click="listDel(index, 'reco')">
+              <font-awesome-icon :icon="['fas', 'trash']"/>
+            </button>
           </div>
         </div>
       </div>
@@ -75,8 +96,12 @@
         :duration="1500"
         position="bottom-right"
     />
-  <Remark v-if="isRemark" @cancel="closeRemark" @listUpdated="updateRemarkList" type="remark" :crcDefaultMode="crcDefaultMode"/>
-  <Remark v-if="isRecommendation" @cancel="closeReco" @listUpdated="updateRecoList" type="reco" :crcDefaultMode="crcDefaultMode"/>
+  <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
+          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+  <Remark v-if="isComment" @cancel="closeSelect('comment')" @listUpdated="updateList" type="comment"
+          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+  <Remark v-if="isRecommendation" @cancel="closeSelect('recommendation')" @listUpdated="updateList" type="reco"
+          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
 
 
   <Alert
@@ -141,6 +166,10 @@ const remarkList = ref<any[]>([]); // Remark 리스트 상태
 const recoList = ref<any[]>([]);
 const crcDefaultMode = ref(false);
 const isRecommendation = ref(false);
+const commentList = ref<any[]>([]);
+const crcRemarkCount = ref<any>([]);
+const crcPassWord = ref('');
+const isComment = ref(false);
 
 onBeforeMount(async () => {
   // crcSetArr 초기화
@@ -184,6 +213,8 @@ onBeforeMount(async () => {
   const crcOptionApi = await crcOptionGet();
   if (crcOptionApi.data.length !== 0) {
     crcDefaultMode.value = crcOptionApi.data[0].crcMode;
+    crcRemarkCount.value = crcOptionApi.data[0].crcRemarkCount;
+    crcPassWord.value = crcOptionApi.data[0].crcPassWord;
   }
 });
 
@@ -245,31 +276,6 @@ const closeIsCrcAddChild = () => {
   emit('closeIsCrcAdd')
 }
 
-const closeRemark = () => {
-  isRemark.value = false;
-};
-const closeReco = () => {
-  isRecommendation.value = false;
-}
-
-const remarkSelect = () => {
-  isRemark.value = true;
-};
-
-const recommendationSelect = () => {
-  isRecommendation.value = true;
-}
-// 자식 컴포넌트로부터 업데이트된 리스트를 받음
-const updateRemarkList = (newList: any[]) => {
-  remarkList.value = [...remarkList.value, ...newList];
-  closeRemark();
-};
-
-const updateRecoList = (newList: any[]) => {
-  recoList.value = [...recoList.value, ...newList];
-  closeReco();
-};
-
 // 항목 수정 저장
 const saveEdit = async () => {
   for (const argument of crcSetArr.value) {
@@ -310,20 +316,65 @@ const showToast = async (message: string) => {
 };
 
 
-const crcDefaultModeChangeText = (crcDefaultModeType: boolean) => {
-  if (crcDefaultModeType) {
-    return 'Remark';
-  } else {
-    return 'Comment';
+const listDel = (idx: any, type: string) => {
+  if (type === 'remark') {
+    remarkList.value.splice(idx, 1);
+  } else if (type === 'reco') {
+    recoList.value.splice(idx, 1);
+  } else if(type === 'comment'){
+    commentList.value.splice(idx, 1);
   }
 }
 
-const listDel = (idx: any, type: string) => {
-  if(type === 'remark'){
-    remarkList.value.splice(idx, 1);
-  } else if(type === 'reco'){
-    recoList.value.splice(idx, 1);
+const openSelect = (type: string) => {
+  switch (type) {
+    case 'remark':
+      isRemark.value = true;
+      break;
+    case 'comment':
+      isComment.value = true;
+      break;
+    case 'recommendation':
+      isRecommendation.value = true;
+      break;
   }
+}
+
+const closeSelect = (type: string) => {
+  switch (type) {
+    case 'remark':
+      isRemark.value = false;
+      break;
+    case 'comment':
+      isComment.value = false;
+      break;
+    case 'recommendation':
+      isRecommendation.value = false;
+      break;
+  }
+}
+const updateList = (newList: any[], type: string) => {
+  switch (type) {
+    case 'remark':
+      remarkList.value = [...remarkList.value, ...newList];
+      closeSelect('remark');
+      break;
+    case 'comment':
+      commentList.value = [...commentList.value, ...newList];
+      closeSelect('comment');
+      break;
+    case 'recommendation':
+      recoList.value = [...recoList.value, ...newList];
+      closeSelect('recommendation');
+      break;
+  }
+}
+
+const remarkCountReturnCode = (idx: any) => {
+  if(crcRemarkCount.value.length === 0){
+    return;
+  }
+  return crcRemarkCount.value[idx].checked;
 }
 
 </script>

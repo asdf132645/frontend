@@ -12,7 +12,7 @@
     </div>
     <div class="remarkBottomBtnGroup mb1">
       <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
-      <input v-model="newRemarkContent" type="text" placeholder="content"/>
+      <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"></textarea>
       <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
     </div>
     <table class="remarkDefaultTable">
@@ -37,7 +37,7 @@
         <td v-else>{{ item?.code }}</td>
 
         <td v-if="editIndex === idx">
-          <input v-model="editedContent" type="text"/>
+          <textarea class="remarkTextArea table" v-model="editedContent"/>
         </td>
         <td v-else>{{ item?.remarkAllContent }}</td>
 
@@ -70,19 +70,27 @@
       :duration="1500"
       position="bottom-right"
   />
+  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
 </template>
 
 
 <script setup lang="ts">
-import {nextTick, onMounted, ref, defineEmits, onBeforeMount} from "vue";
+import {ref, defineEmits, onBeforeMount} from "vue";
 import {
   crcRemarkGet,
   createCrcRemarkApi,
   deleteCrcRemarkApi,
   updateCrcRemarkApi,
-  crcSearchGet, crcOptionGet, crcRecoGet, crcRecoSearchGet, createCrcRecoApi, deleteCrcRecoApi, updateCrcRecoApi // 서치 API 추가
+  crcSearchGet,
+  crcRecoGet,
+  crcRecoSearchGet,
+  createCrcRecoApi,
+  deleteCrcRecoApi,
+  updateCrcRecoApi,
+  crcCommentGet, crcCommentSearchGet, createCrcCommentApi, deleteCrcCommentApi, updateCrcCommentApi // 서치 API 추가
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 
 const props = defineProps({
   crcDefaultMode: {
@@ -93,6 +101,9 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  crcPassWord: {
+    type: String,
+  }
 });
 
 const emit = defineEmits(['cancel', 'listUpdated']);
@@ -107,8 +118,14 @@ const editedCode = ref("");
 const editedContent = ref("");
 const searchRemark = ref(''); // 검색 필드
 const crcDefaultModeVal = ref(false);
+const crcPassWordVal = ref('');
+const passWordPass = ref(false);
+const passLayout = ref(false);
+
 onBeforeMount(async () => {
   crcDefaultModeVal.value = props.crcDefaultMode;
+  crcPassWordVal.value = props.crcPassWord || '';
+  passWordPass.value = false;
   await loadRemarks('mounted');
 })
 // 서버로부터 Remark 데이터 로드
@@ -116,15 +133,34 @@ const loadRemarks = async (type?: string) => {
   let response: any = [];
   if (props.type === 'remark') {
     response = await crcRemarkGet();
+  } else if (props.type === 'comment') {
+    response = await crcCommentGet();
   } else {
     response = await crcRecoGet();
   }
 
   remarkArr.value = response?.data || [];
-  if(type !== 'mounted'){
+  if (type !== 'mounted') {
     showToast("Search completed.");
   }
 };
+const passWordClose= () => {
+  passLayout.value = false;
+}
+
+const returnPassWordCheck = (val: boolean) => {
+  if (val) {
+    passWordPass.value = true;
+    // 패스 체크 모달 닫기
+    passLayout.value = false;
+    showToast("Admin verification is complete. Please click the button again.");
+  } else {
+    passWordPass.value = false;
+    // 패스 체크 모달 닫기
+    passLayout.value = false;
+    showToast("The administrator password is incorrect.");
+  }
+}
 
 // 검색 기능
 const searchRemarkData = async () => {
@@ -144,6 +180,8 @@ const searchRemarkData = async () => {
     let response: any = [];
     if (props.type === 'remark') {
       response = await crcSearchGet(searchParam);
+    } else if (props.type === 'comment') {
+      response = await crcCommentSearchGet(searchParam);
     } else {
       response = await crcRecoSearchGet(searchParam);
     }
@@ -160,8 +198,13 @@ const searchRemarkData = async () => {
   }
 };
 
+
 // Remark 추가
 const addRemark = async () => {
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
   if (!newRemarkCode.value || !newRemarkContent.value) {
     showToast("code와 content를 입력해주세요.");
     return;
@@ -170,6 +213,11 @@ const addRemark = async () => {
   try {
     if (props.type === 'remark') {
       await createCrcRemarkApi({
+        code: newRemarkCode.value,
+        remarkAllContent: newRemarkContent.value,
+      });
+    } else if (props.type === 'comment') {
+      await createCrcCommentApi({
         code: newRemarkCode.value,
         remarkAllContent: newRemarkContent.value,
       });
@@ -190,9 +238,15 @@ const addRemark = async () => {
 
 // Remark 삭제
 const deleteRemark = async (id: number) => {
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
   try {
     if (props.type === 'remark') {
       await deleteCrcRemarkApi({id});
+    } else if (props.type === 'comment') {
+      await deleteCrcCommentApi({id});
     } else {
       await deleteCrcRecoApi({id});
     }
@@ -205,6 +259,10 @@ const deleteRemark = async (id: number) => {
 
 // 편집 시작
 const startEdit = (index: number, item: any) => {
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
   editIndex.value = index;
   editedCode.value = item.code;
   editedContent.value = item.remarkAllContent;
@@ -221,6 +279,14 @@ const saveEdit = async (id: number) => {
 
     if (props.type === 'remark') {
       await updateCrcRemarkApi([
+        {
+          id: id,
+          code: editedCode.value,
+          remarkAllContent: editedContent.value,
+        },
+      ]);
+    } else if (props.type === 'comment') {
+      await updateCrcCommentApi([
         {
           id: id,
           code: editedCode.value,
@@ -253,7 +319,7 @@ const cancelEdit = () => {
 const okSelect = () => {
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
   showToast('Remark Add Success');
-  emit("listUpdated", selectedRemarks);
+  emit("listUpdated", selectedRemarks, props.type);
 };
 
 // CANCEL 버튼 클릭 시 처리
@@ -266,7 +332,7 @@ const showToast = (message: string) => {
   toastMessage.value = message;
   setTimeout(() => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500);
+  }, 2000);
 };
 </script>
 

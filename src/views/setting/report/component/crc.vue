@@ -3,7 +3,7 @@
     <div v-if="isToggle">
       <div class="crcWrap flex-column-align-center">
 
-        <div class="w420 flex-justify-between">
+        <div class="flex-justify-between">
           <div class="w200 flex-align-center-justify-between">
             <span>CRC Default Mode</span>
             <font-awesome-icon
@@ -13,19 +13,22 @@
             />
           </div>
 
-          <div class="w200 flex-align-center-justify-between">
+          <div class="w200 flex-align-center-justify-between" @click="crcConnectOn">
             <span>CRC Connect</span>
             <font-awesome-icon
                 :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
-                @click="crcConnectOn"
             />
           </div>
           <div class="w200 flex-align-center-justify-between">
             <span>CRC Remark Select Count</span>
-            <input type="checkbox"  value="0"/>
-            <input type="checkbox"  value="1"/>
-            <input type="checkbox"  value="2"/>
+            <input type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
+            <input type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
+            <input type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
+          </div>
+          <div class="w200 flex-align-center-justify-between">
+            <span>CRC PassWord</span>
+            <input type="text" placeholder="password" v-model="crcPassWord"/>
           </div>
         </div>
 
@@ -80,15 +83,15 @@
       ></crc-compontent>
 
       <div class="moDivBox mt2">
-       <div>
-         <crc-compontent
-             :items="crcArr"
-             @updateCrc="onUpdateCrc"
-             @deleteCrc="onDeleteCrc"
-             moType="WBC"
-             pageName="set"
-         ></crc-compontent>
-       </div>
+        <div>
+          <crc-compontent
+              :items="crcArr"
+              @updateCrc="onUpdateCrc"
+              @deleteCrc="onDeleteCrc"
+              moType="WBC"
+              pageName="set"
+          ></crc-compontent>
+        </div>
 
         <div>
           <crc-compontent
@@ -142,16 +145,22 @@ const crcDefaultMode = ref(false);
 const crcConnect = ref(false);
 const crcOptionPutWhether = ref(false);
 const crcOptionId = ref(0);
-const crcRemarkCountArr = ref<number[]>([]);
+const crcRemarkCountArr = ref<any[]>([{"checked": false, "name": "remark"}, {
+  "checked": false,
+  "name": "Comment"
+}, {"checked": false, "name": "Recommendation"}]);
+const crcPassWord = ref('');
 
 onMounted(async () => {
   crcData.value = await crcGet();
   const crcOptionApi = await crcOptionGet();
 
-  if(crcOptionApi.data.length !== 0){
+  if (crcOptionApi.data.length !== 0) {
     crcDefaultMode.value = crcOptionApi.data[0].crcMode;
     crcConnect.value = crcOptionApi.data[0].crcConnect;
     crcOptionId.value = crcOptionApi.data[0].id;
+    crcRemarkCountArr.value = crcOptionApi.data[0].crcRemarkCount;
+    crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcOptionPutWhether.value = true;
   }
 
@@ -161,10 +170,29 @@ onMounted(async () => {
     crcArr.value = crcData.value.data;
   }
 });
+const nameChange = (name: string) => {
+  switch (name) {
+    case '0' :
+      return 'remark';
+    case '1':
+      return 'Comment';
+    case '2':
+      return 'Recommendation';
+  }
+}
+
+const changeCrcRemarkCount = (eve: Event) => {
+  const countId = crcRemarkCountArr.value.findIndex((item) => {
+    return item.name === nameChange(eve.target?.value)
+  })
+  crcRemarkCountArr.value[countId].checked = eve.target?.checked;
+  // console.log(JSON.stringify(crcRemarkCountArr.value))
+}
+
 const hideAlert = () => {
   showAlert.value = false;
 };
-const showSuccessAlert  = async (message: string) => {
+const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
@@ -200,10 +228,21 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 const saveCrcData = async () => {
   if (crcOptionPutWhether.value) {
     await updateCrcApi(crcArr.value);
-    await updateCrcOptionApi({id: crcOptionId.value,crcMode: crcDefaultMode.value, crcConnect: crcConnect.value});
-  }else{
+    await updateCrcOptionApi({
+      id: crcOptionId.value,
+      crcMode: crcDefaultMode.value,
+      crcConnect: crcConnect.value,
+      crcRemarkCount: crcRemarkCountArr.value,
+      crcPassWord: crcPassWord.value,
+    });
+  } else {
     await createCrcApi(crcArr.value);
-    await createCrcOptionApi({crcMode: crcDefaultMode.value, crcConnect: crcConnect.value});
+    await createCrcOptionApi({
+      crcMode: crcDefaultMode.value,
+      crcConnect: crcConnect.value,
+      crcRemarkCount: crcRemarkCountArr.value,
+      crcPassWord: crcPassWord.value,
+    });
 
   }
   await showSuccessAlert('Success');

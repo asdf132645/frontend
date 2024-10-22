@@ -979,6 +979,7 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
+  console.log(props.selectItems?.wbcMemo)
   // wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
   memoModal.value = !memoModal.value;
 }

@@ -90,14 +90,17 @@
       :duration="1500"
       position="bottom-right"
   />
+  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
+
 </template>
 
 <script setup lang="ts">
 import {crcDataGet, updateCrcDataApi, deleteCrcDataApi} from "@/common/api/service/setting/settingApi";
-import {ref, onMounted, nextTick} from "vue";
+import {ref, onMounted, nextTick, onBeforeMount} from "vue";
 import CrcAdd from "@/views/datebase/commponent/detail/report/component/crcAdd.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 
 // Props 받기
 const props = defineProps({
@@ -105,6 +108,9 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  crcPassWord: {
+    type: String,
+  }
 });
 
 const emit = defineEmits(['refresh']);
@@ -125,6 +131,13 @@ const isOpen = ref<boolean[]>([]);
 // 편집 상태 관리
 const editItem = ref<any>(null); // 현재 편집 중인 항목
 const addEditType = ref('');
+const crcPassWordVal = ref('');
+const passWordPass = ref(false);
+const passLayout = ref(false);
+
+onBeforeMount(async () => {
+  crcPassWordVal.value = props.crcPassWord || '';
+})
 
 // 컴포넌트가 마운트될 때 API 호출 후 데이터 설정
 onMounted(async () => {
@@ -151,9 +164,28 @@ const loadCrcData = async () => {
   // 항목 개수만큼 열림/닫힘 상태 초기화
   isOpen.value = new Array(data.length).fill(false);
 };
-
+const returnPassWordCheck = (val: boolean) => {
+  if (val) {
+    passWordPass.value = true;
+    // 패스 체크 모달 닫기
+    passLayout.value = false;
+    showToast("Admin verification is complete. Please click the button again.");
+  } else {
+    passWordPass.value = false;
+    // 패스 체크 모달 닫기
+    passLayout.value = false;
+    showToast("The administrator password is incorrect.");
+  }
+}
+const passWordClose= () => {
+  passLayout.value = false;
+}
 // CrcAdd 열기 함수
 const openCrcAdd = () => {
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
   isCrcAdd.value = true;
   addEditType.value = 'add';
 };
@@ -165,6 +197,10 @@ const close = () => {
 
 // 항목 수정 시작
 const startEdit = (item: any) => {
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
   isCrcAdd.value = true;
   addEditType.value = 'edit';
   editItem.value = {...item}; // 수정할 항목의 데이터를 editItem에 저장
@@ -183,7 +219,10 @@ const deleteCrcItem = async (id: number) => {
 };
 
 const deleteRow = (type: string, id?: string | number) => {
-  console.log(type)
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
   if (type === 'check') {
     if (selectedItems.value.length === 0) {
       showToast('Please select the item to delete.')
