@@ -10,6 +10,10 @@ export const getDeviceInfoApi = async (): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.device.getDeviceInfo.get);
 }
 
+export const putDeviceInfoApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.device.updateDeviceInfo, request);
+}
+
 export const getDeviceIpApi = async (): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.device.getDeviceInfo.ip);
 }

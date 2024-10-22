@@ -15,6 +15,14 @@
         <p class="mb1">Charge Remaining Count</p>
         <button type="button" class="defaultBtn" @click="onScan">Scan</button>
       </li>
+      <li class="mt22">
+        <p class="mb1">Auto Start</p>
+        <font-awesome-icon
+            :icon="autoStart ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            class="iconSize"
+            @click="toggleAutoStart"
+        />
+      </li>
     </ul>
   </div>
   <Alert
@@ -31,11 +39,11 @@
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from "@/common/defines/constFile/constantMessageText";
 import {onCameraResetWebSocket, onGripperOpenWebSocket} from "@/common/lib/sendWebSocket/common";
 import EventBus from "@/eventBus/eventBus";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import {remainingCount} from "@/common/api/service/setting/settingApi";
+import {getDeviceInfoApi, putDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -50,11 +58,13 @@ const isBlinkingGripper = ref(false);
 const isBlinkCameraReset = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
 let cameraResetTimeOut: ReturnType<typeof setTimeout> | null = null;
+const autoStart = ref(false);
 
 
 onMounted(async () => {
   const newUserId = JSON.parse(JSON.stringify(userModuleDataGet.value));
   userId.value = newUserId.userId;
+  await getDeviceInfo();
 });
 
 watch([runInfo.value], async (newVals) => {
@@ -99,6 +109,30 @@ const onCameraReset = () => {
     isBlinkCameraReset.value = false;
     cameraResetTimeOut = null;
   }, 500);
+}
+
+const getDeviceInfo = async () => {
+  try {
+    const result = await getDeviceInfoApi()
+    autoStart.value = !!result.data[0]?.autoStart;
+  } catch (e) {
+    autoStart.value = true;
+  }
+  sessionStorage.setItem('autoStart', JSON.stringify(autoStart.value));
+}
+
+const updateDeviceInfo = async () => {
+  try {
+    await putDeviceInfoApi({ autoStart: autoStart.value })
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const toggleAutoStart = async () => {
+  autoStart.value = !autoStart.value;
+  sessionStorage.setItem('autoStart', JSON.stringify(autoStart.value));
+  await updateDeviceInfo();
 }
 
 const showSuccessAlert = (message: string) => {

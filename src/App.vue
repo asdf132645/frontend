@@ -619,6 +619,7 @@ async function socketData(data: any) {
     async function saveDeviceInfo(deviceInfo: any) {
       try {
         const deviceData = await getDeviceInfoApi();
+        sessionStorage.setItem('autoStart', deviceData.data[0].autoStart);
         if (deviceData.data.length === 0 || !deviceData.data) {
           await createDeviceInfoApi({deviceItem: deviceInfo});
           siteCdDvBarCode.value = true;

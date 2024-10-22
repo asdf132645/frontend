@@ -447,6 +447,10 @@ export const apiConstants = {
                 endpoint: 'ip',
                 requiresToken: false,
             }
+        },
+        updateDeviceInfo: {
+            endpoint: 'device/put',
+            requiresToken: false,
         }
     },
     download:{
