@@ -20,7 +20,7 @@
         <p class="mt1">
           <input type="checkbox" @input="$emit('allCheckChange', $event, item.title)"
                  :checked="selectedTitle === item.title">
-          {{ item?.title }}
+          {{ item?.title }} <span class="smallName">({{ item.name }})</span>
           ({{ item?.count }})
         </p>
       </div>
