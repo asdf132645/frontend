@@ -280,15 +280,28 @@ onMounted(async () => {
   }
   barCodeImageShowError.value = false;
 })
+let isHotKeyPressed = false;
+
 const handleKeyDown = (event: KeyboardEvent) => {
   const keyName = event.key;
-  if (keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+
+  if (!isHotKeyPressed && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
     event.preventDefault(); // 기본 동작 방지
+    isHotKeyPressed = true; // 한 번만 실행되도록 설정
     uploadLis();
   }
 };
 
+const handleKeyUp = (event: KeyboardEvent) => {
+  const keyName = event.key;
+
+  if (keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+    isHotKeyPressed = false; // 키를 떼면 다시 실행 가능
+  }
+};
+
 window.addEventListener('keydown', handleKeyDown);
+window.addEventListener('keyup', handleKeyUp);
 
 watch(() => props.isCommitChanged, () => {
   selectItems.value.submitState = 'Submit';
@@ -410,6 +423,7 @@ const handleOkConfirm = () => {
 
 const uploadLis = () => {
   console.log('uploadLis');
+  console.log(props.selectItems.barcodeNo)
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     cmcSeoulLisAndCbcDataGet();
     return;
