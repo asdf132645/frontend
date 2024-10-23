@@ -217,22 +217,41 @@ const commonCbc = async () => {
     if (readFileTxtRes.data.success) {
       const msg: any = await readH7File(readFileTxtRes.data.data);
       cbcWorkList.value = [];
-      msg?.data?.segments.forEach((cbcSegment: any) => {
+
+      msg?.data?.segments?.forEach((cbcSegment: any) => {
         if (cbcSegment.name.trim() === 'OBX') {
+          // console.log(cbcSegment?.fields?.[4])
           cbcCodeList.value.forEach((cbcCode: any) => {
-            if (cbcCode.classCd === cbcSegment.fields[3].value[0][0].value[0]) {
-              const obj = {
-                classNm: cbcCode.fullNm,
-                count: cbcSegment.fields[5].value[0][0].value[0],
-                unit: cbcSegment.fields[6].value[0][0].value[0]
+            const classCd = cbcSegment?.fields?.[3]?.value?.[0]?.[0]?.value?.[0];
+            const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+            const unit = cbcSegment?.fields?.[6]?.value?.[0]?.[0]?.value?.[0] || "";
+
+            // 클래스 코드가 일치하는 경우
+            if (cbcCode.classCd === classCd) {
+              // 중복 확인: 이미 동일한 classNm이 있는지 확인
+              const isDuplicate = cbcWorkList.value.some(
+                  (item: any) => item.classNm === cbcCode.fullNm
+              );
+
+              // 중복이 아닐 경우에만 추가
+              if (!isDuplicate) {
+                const obj = {
+                  classNm: cbcCode.fullNm,
+                  count: count,
+                  unit
+                };
+                console.log(cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0])
+                cbcWorkList.value.push(obj);
               }
-              cbcWorkList.value.push(obj);
             }
-          })
+          });
         }
-      })
-      loading.value = false;
-    } else {
+      });
+
+      loading.value = false;  // 로딩 상태 종료
+    }
+
+    else {
       console.error(readFileTxtRes.data.message);
       loading.value = false;
     }
