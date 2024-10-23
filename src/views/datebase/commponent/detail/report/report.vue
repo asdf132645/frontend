@@ -15,231 +15,234 @@
         <li>{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
-    <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
-    <div class="reportDiv">
-      <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
-        <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
-                  @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
-      </div>
-      <div class="wbcDiv shadowBox">
-        <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
-                  @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged"
-                  :isCommitChanged="isCommitChanged"/>
-      </div>
-      <div class="reportDetail shadowBox" v-if="!crcConnect">
-        <div class="reportTitle">
-          <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
-          <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>
+    <div style="display:flex;">
+      <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
+      <div class="reportDiv">
+        <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
+          <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
+                    @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
         </div>
-        <div class="reportDivTop">
-          <h3 class="reportH3" v-if="!projectBm">Analysis Report from UIMD PB system</h3>
-          <h3 class="reportH3" v-if="projectBm">Analysis Report from UIMD BM system</h3>
-          <table class="reportTable">
-            <tbody>
-            <tr>
-              <th>Slot ID</th>
-              <td>{{ selectItems?.slotId }}</td>
-            </tr>
-            <tr>
-              <th>Ordered date</th>
-              <td>{{ formatDateString(selectItems?.orderDttm) }}</td>
-            </tr>
-            <tr>
-              <th>Signed by ID</th>
-              <td>{{ selectItems?.submitUserId }}</td>
-            </tr>
-            <tr>
-              <th>Signed date</th>
-              <td>{{ selectItems?.submitOfDate }}</td>
-            </tr>
-            <tr>
-              <th>Patient ID</th>
-              <td>{{ selectItems?.patientId }}</td>
-            </tr>
-            <tr>
-              <th>Ordered Classification</th>
-              <td>{{
-                  projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)
-                }}
-              </td>
-            </tr>
-            <tr>
-              <th>Name</th>
-              <td>{{ selectItems?.patientName }}</td>
-            </tr>
-            <tr>
-              <th>Birth</th>
-              <td>{{ selectItems?.birthDay }}</td>
-            </tr>
-            <tr>
-              <th>Gender</th>
-              <td>{{ selectItems?.gender === '' ? '' : selectItems?.gender === '01' ? 'Male' : 'Female' }}</td>
-            </tr>
-            </tbody>
-          </table>
+        <div class="wbcDiv shadowBox">
+          <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
+                    @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged"
+                    :isCommitChanged="isCommitChanged"/>
         </div>
-        <div :class="['reportDivBottom', selectItems.testType !== '04' && 'reportDiff']">
-          <div :class="['wbcLeft', projectBm && 'wbcLeftBm']">
-            <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
-            <table class="tableClass mt22">
-              <colgroup>
-                <col width="40%">
-                <col width="20%">
-                <col width="20%">
-              </colgroup>
-              <thead>
-              <tr class="reportWbcclassificationSmallTitle">
-                <th>Class</th>
-                <th>Count</th>
-                <th>Percent</th>
-              </tr>
-              </thead>
+        <div class="reportDetail shadowBox" v-if="!crcConnect">
+          <div class="reportTitle">
+            <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
+            <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>
+          </div>
+          <div class="reportDivTop">
+            <h3 class="reportH3" v-if="!projectBm">Analysis Report from UIMD PB system</h3>
+            <h3 class="reportH3" v-if="projectBm">Analysis Report from UIMD BM system</h3>
+            <table class="reportTable">
               <tbody>
-              <tr v-for="(item) in wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
-                <template v-if="shouldRenderCategory(item.title)">
-                  <td>{{ item?.name }}</td>
-                  <td>{{ item?.count }}</td>
-                  <td> {{ Number(item?.percent) || '0' }}</td>
-                </template>
+              <tr>
+                <th>Slot ID</th>
+                <td>{{ selectItems?.slotId }}</td>
               </tr>
               <tr>
-                <td>Total</td>
-                <td>{{ selectItems?.wbcInfo?.totalCount || 0 }}</td>
-                <td>100.00</td>
+                <th>Ordered date</th>
+                <td>{{ formatDateString(selectItems?.orderDttm) }}</td>
+              </tr>
+              <tr>
+                <th>Signed by ID</th>
+                <td>{{ selectItems?.submitUserId }}</td>
+              </tr>
+              <tr>
+                <th>Signed date</th>
+                <td>{{ selectItems?.submitOfDate }}</td>
+              </tr>
+              <tr>
+                <th>Patient ID</th>
+                <td>{{ selectItems?.patientId }}</td>
+              </tr>
+              <tr>
+                <th>Ordered Classification</th>
+                <td>{{
+                    projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)
+                  }}
+                </td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td>{{ selectItems?.patientName }}</td>
+              </tr>
+              <tr>
+                <th>Birth</th>
+                <td>{{ selectItems?.birthDay }}</td>
+              </tr>
+              <tr>
+                <th>Gender</th>
+                <td>{{ selectItems?.gender === '' ? '' : selectItems?.gender === '01' ? 'Male' : 'Female' }}</td>
               </tr>
               </tbody>
             </table>
-
-            <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList && !projectBm" class="reportH3 mb1 pl0">non-WBC</h3>
-            <table class="tableClass" v-if="!projectBm">
-              <colgroup>
-                <col width="40%">
-                <col width="20%">
-                <col width="20%">
-              </colgroup>
-              <tbody>
-              <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
-                <tr v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'">
-                  <td>{{ getCategoryName(nWbcItem) }}</td>
-                  <td>
-                    {{ Number(nWbcItem?.count) || 0 }}
-                    <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
-                        selectItems?.wbcInfo?.maxWbcCount
-                      }} WBC</span>
-                  </td>
-                  <td>-</td>
-                </tr>
-              </template>
-              </tbody>
-            </table>
-
           </div>
-          <div class="rbcRight" v-if="!projectBm && selectItems.testType === '04'">
-            <h3 class="reportH3 pl0">RBC classification result</h3>
-            <template v-for="(classList, outerIndex) in [rbcInfoAfterData]" :key="outerIndex">
-              <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-                <div class="categories">
-                  <ul class="printRbcCategory">
-                    {{ type }}
-                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Category</li>
-                    <li style="cursor: default;">{{ category?.categoryNm }}</li>
-                  </ul>
-                  <ul class="printRbcClass">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
-                    <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li style="cursor: default;">{{ classInfo?.classNm }}</li>
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+          <div :class="['reportDivBottom', selectItems.testType !== '04' && 'reportDiff']">
+            <div :class="['wbcLeft', projectBm && 'wbcLeftBm']">
+              <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
+              <table class="tableClass mt22">
+                <colgroup>
+                  <col width="40%">
+                  <col width="20%">
+                  <col width="20%">
+                </colgroup>
+                <thead>
+                <tr class="reportWbcclassificationSmallTitle">
+                  <th>Class</th>
+                  <th>Count</th>
+                  <th>Percent</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item) in wbcInfoAfter" :key="item.id" class="wbcClassDbDiv">
+                  <template v-if="shouldRenderCategory(item.title)">
+                    <td>{{ item?.name }}</td>
+                    <td>{{ item?.count }}</td>
+                    <td> {{ Number(item?.percent) || '0' }}</td>
+                  </template>
+                </tr>
+                <tr>
+                  <td>Total</td>
+                  <td>{{ selectItems?.wbcInfo?.totalCount || 0 }}</td>
+                  <td>100.00</td>
+                </tr>
+                </tbody>
+              </table>
+
+              <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList && !projectBm" class="reportH3 mb1 pl0">non-WBC</h3>
+              <table class="tableClass" v-if="!projectBm">
+                <colgroup>
+                  <col width="40%">
+                  <col width="20%">
+                  <col width="20%">
+                </colgroup>
+                <tbody>
+                <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
+                  <tr v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+                    <td>{{ getCategoryName(nWbcItem) }}</td>
+                    <td>
+                      {{ Number(nWbcItem?.count) || 0 }}
+                      <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'"> /{{
+                          selectItems?.wbcInfo?.maxWbcCount
+                        }} WBC</span>
+                    </td>
+                    <td>-</td>
+                  </tr>
+                </template>
+                </tbody>
+              </table>
+
+            </div>
+            <div class="rbcRight" v-if="!projectBm && selectItems.testType === '04'">
+              <h3 class="reportH3 pl0">RBC classification result</h3>
+              <template v-for="(classList, outerIndex) in [rbcInfoAfterData]" :key="outerIndex">
+                <template v-for="(category, innerIndex) in classList" :key="innerIndex">
+                  <div class="categories">
+                    <ul class="printRbcCategory">
+                      {{ type }}
+                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Category</li>
+                      <li style="cursor: default;">{{ category?.categoryNm }}</li>
+                    </ul>
+                    <ul class="printRbcClass">
+                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
+                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                        <li style="cursor: default;">{{ classInfo?.classNm }}</li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                            style="cursor: default;"
+                        >
+                          Others
+                        </li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
+                            style="cursor: default;"
+                        >
+                          Malaria
+                        </li>
+                      </template>
+                    </ul>
+                    <ul class="printRbcDegree">
+                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Degree</li>
+                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                        <li style="cursor: default;">
+                          {{ Number(classInfo?.degree) || 0 }}
+                        </li>
+
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                            style="cursor: default;"
+                        >
+                          -
+                        </li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                          -
+                        </li>
+                      </template>
+
+                      <li class="printTotalText" v-show="category.categoryNm !== 'Shape'"
                           style="cursor: default;"
-                      >
-                        Others
+                      >Total
                       </li>
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
-                          style="cursor: default;"
-                      >
-                        Malaria
-                      </li>
-                    </template>
-                  </ul>
-                  <ul class="printRbcDegree">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Degree</li>
-                    <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li style="cursor: default;">
-                        {{ Number(classInfo?.degree) || 0 }}
-                      </li>
+                    </ul>
+                    <ul class="printRbcCount">
+                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
+                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                        <li style="cursor: default;">
+                          {{ Number(classInfo?.originalDegree) || 0 }}
+                        </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
-                          style="cursor: default;"
-                      >
-                        -
-                      </li>
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
-                        -
-                      </li>
-                    </template>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                            style="cursor: default;"
+                        >
+                          {{ Number(shapeOthersCount) || 0 }}
+                        </li>
 
-                    <li class="printTotalText" v-show="category.categoryNm !== 'Shape'"
-                        style="cursor: default;"
-                    >Total
-                    </li>
-                  </ul>
-                  <ul class="printRbcCount">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
-                    <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li style="cursor: default;">
-                        {{ Number(classInfo?.originalDegree) || 0 }}
-                      </li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
+                            style="cursor: default;"
+                        >
+                          {{ Number(malariaCount) || 0 }}
+                        </li>
+                      </template>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
-                          style="cursor: default;"
-                      >
-                        {{ Number(shapeOthersCount) || 0 }}
+                      <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'"
+                          style="cursor: default;">
+                        {{ Number(sizeChromiaTotal) || 0 }}
                       </li>
-
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
-                          style="cursor: default;"
-                      >
-                        {{ Number(malariaCount) || 0 }}
+                      <li v-show="category?.categoryNm === 'Inclusion Body'" style="cursor: default;">
+                        {{ Number(shapeBodyTotal) || 0 }}
                       </li>
-                    </template>
+                    </ul>
+                    <ul class="printRbcPercent">
+                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Percent</li>
+                      <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
+                        <li style="cursor: default;">
+                          {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
+                        </li>
 
-                    <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'"
-                        style="cursor: default;">
-                      {{ Number(sizeChromiaTotal) || 0 }}
-                    </li>
-                    <li v-show="category?.categoryNm === 'Inclusion Body'" style="cursor: default;">
-                      {{ Number(shapeBodyTotal) || 0 }}
-                    </li>
-                  </ul>
-                  <ul class="printRbcPercent">
-                    <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Percent</li>
-                    <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
-                      <li style="cursor: default;">
-                        {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
-                      </li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                            style="cursor: default;"
+                        >
+                          {{ percentageChange(shapeOthersCount) || 0 }}
+                        </li>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
-                          style="cursor: default;"
-                      >
-                        {{ percentageChange(shapeOthersCount) || 0 }}
-                      </li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
+                            style="cursor: default;"
+                        >
+                          {{ percentageChange(malariaCount) || 0 }}
+                        </li>
+                      </template>
 
-                      <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
-                          style="cursor: default;"
-                      >
-                        {{ percentageChange(malariaCount) || 0 }}
-                      </li>
-                    </template>
-
-                    <li v-show="category.categoryNm !== 'Shape'" style="cursor: default;">100%</li>
-                  </ul>
-                </div>
+                      <li v-show="category.categoryNm !== 'Shape'" style="cursor: default;">100%</li>
+                    </ul>
+                  </div>
+                </template>
               </template>
-            </template>
+            </div>
           </div>
         </div>
+        <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems"/>
       </div>
-      <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems"/>
     </div>
+
   </div>
   <div ref="printContent">
     <Print v-if="printOnOff" @printClose="printClose"/>

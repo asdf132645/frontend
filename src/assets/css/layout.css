@@ -152,6 +152,10 @@
     width: 420px;
 }
 
+.w-800 {
+    width: 800px;
+}
+
 .w50 {
     width: 50px;
 }
@@ -2235,13 +2239,8 @@ ul.cellImgBox input {
     width: 13px;
 }
 
-.reportSection.cbcLayer {
-    display: inline-flex;
-}
-
 .reportSection.cbcLayer .reportDiv {
-    width: 84%;
-    padding-left: 8px;
+    width: 100%;
 }
 
 .reportSection.cbcLayer .cbcDiv {
@@ -2379,7 +2378,7 @@ button.searchClass:hover {
 }
 
 .wbcDiv {
-    width: 25%;
+    width: 28%;
     margin-left: 10px;
     border-radius: 4px;
     padding: 10px;
@@ -2662,6 +2661,7 @@ select.selectSizeTitle {
 }
 
 .reportDiv {
+    width: 100%;
     padding-left: 1.7%;
     display: flex;
     padding-top: 10px;
@@ -2992,7 +2992,7 @@ ul.wbcHotKeysItems {
 }
 
 .rbcDiv {
-    width: 28%;
+    width: 30%;
     padding: 10px;
     border-radius: 4px;
 }
@@ -3994,7 +3994,7 @@ span.crcListSpan > span {
 }
 
 .crcReport {
-    width: 54%;
+    width: 42%;
     background: #252629;
     color: #fff;
     font-size: 0.8rem;
