@@ -7,7 +7,8 @@ export interface CommonState {
     isRunningState: boolean;
     totalCount: string;
     embeddedNumber: string;
-    isAlarm: boolean;
+    isCompleteAlarm: boolean;
+    isErrorAlarm: boolean;
     bfSelectFiles: any[];
     slideProceeding: string;
     totalSlideTime: string;
@@ -60,6 +61,7 @@ export interface CommonState {
     enteringRouterPath: string;
     settingType: string;
     isDownloadOrUploading: boolean;
+    isRewindingBelt: boolean;
 }
 
 interface CommonModule {
@@ -71,7 +73,8 @@ interface CommonModule {
         setIsRunningState: (state: CommonState, value: boolean) => void;
         setTotalCount: (state: CommonState, value: string) => void;
         setEmbeddedNumber: (state: CommonState, value: string) => void;
-        setIsAlarm: (state: CommonState, value: boolean) => void;
+        setIsCompleteAlarm: (state: CommonState, value: boolean) => void;
+        setIsErrorAlarm: (state: CommonState, value: boolean) => void;
         setBfSelectFiles: (state: CommonState, value: []) => void;
         setSlideProceeding: (state: CommonState, value: string) => void;
         setTotalSlideTime: (state: CommonState, value: string) => void;
@@ -126,6 +129,7 @@ interface CommonModule {
         setEnteringRouterPath: (state: CommonState, value: string) => void;
         setSettingType: (state: CommonState, value: string) => void;
         setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
+        setIsRewindingBelt: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -140,7 +144,8 @@ export const commonModule: CommonModule = {
         isRunningState: false,
         totalCount: '',
         embeddedNumber: '',
-        isAlarm: false,
+        isCompleteAlarm: false,
+        isErrorAlarm: false,
         bfSelectFiles: [],
         slideProceeding: '',
         totalSlideTime: '00:00:00',
@@ -193,6 +198,7 @@ export const commonModule: CommonModule = {
         enteringRouterPath: '',
         settingType: '',
         isDownloadOrUploading: false,
+        isRewindingBelt: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -210,8 +216,11 @@ export const commonModule: CommonModule = {
         setEmbeddedNumber(state: CommonState, value: string): void {
             state.embeddedNumber = value;
         },
-        setIsAlarm(state: CommonState, value: boolean): void {
-            state.isAlarm = value;
+        setIsCompleteAlarm(state: CommonState, value: boolean): void {
+            state.isCompleteAlarm = value;
+        },
+        setIsErrorAlarm(state: CommonState, value: boolean): void {
+            state.isErrorAlarm = value;
         },
         setBfSelectFiles(state: CommonState, value: any[]): void {
             state.bfSelectFiles = value;
@@ -378,6 +387,9 @@ export const commonModule: CommonModule = {
         },
         setIsDownloadOrUploading(state: CommonState, value: boolean): void {
             state.isDownloadOrUploading = value;
+        },
+        setIsRewindingBelt(state: CommonState, value: boolean): void {
+            state.isRewindingBelt = value;
         }
     },
     actions: {
@@ -400,8 +412,11 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('embeddedNumber')) {
                 commit('setEmbeddedNumber', payload.embeddedNumber);
             }
-            if (payload.hasOwnProperty('isAlarm')) {
-                commit('setIsAlarm', payload.isAlarm);
+            if (payload.hasOwnProperty('isCompleteAlarm')) {
+                commit('setIsCompleteAlarm', payload.isCompleteAlarm);
+            }
+            if (payload.hasOwnProperty('isErrorAlarm')) {
+                commit('setIsErrorAlarm', payload.isErrorAlarm);
             }
             if (payload.hasOwnProperty('bfSelectFiles')) {
                 commit('setBfSelectFiles', payload.bfSelectFiles);
@@ -565,6 +580,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isDownloadOrUploading')) {
                 commit('setIsDownloadOrUploading', payload.isDownloadOrUploading);
+            }
+            if (payload.hasOwnProperty('isRewindingBelt')) {
+                commit('setIsRewindingBelt', payload.isRewindingBelt);
             }
         },
     },

@@ -87,6 +87,7 @@ const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slotIndex = computed(() => store.state.commonModule.slotIndex);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
+const isRewindingBelt = computed(() => store.state.commonModule.isRewindingBelt);
 
 const isNsNbIntegrationLocal = computed(() => store.state.commonModule.isNsNbIntegration);
 const runningArr: any = ref<any>([]);
@@ -344,6 +345,10 @@ async function socketData(data: any) {
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           showErrorAlert(res);
+          const isAlarm = sessionStorage.getItem('isAlarm');
+          if (isAlarm === 'true') {
+            await store.dispatch('commonModule/setCommonInfo', { isErrorAlarm: true }); // 오류 알람을 킨다.
+          }
         }
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
@@ -430,7 +435,7 @@ async function socketData(data: any) {
       await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false});
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
-      await store.dispatch('commonModule/setCommonInfo', {isAlarm: true}); // 알람을 킨다.
+      await store.dispatch('commonModule/setCommonInfo', {isCompleteAlarm: true}); // 알람을 킨다.
       await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
       await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
       await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
@@ -692,6 +697,11 @@ const removeDuplicateJobCmd = (reqArr: any) => {
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
+
+  if (window.PB_VERSION === '100a') {
+    Object.assign(req, { isRewindingBelt: isRewindingBelt.value} );
+  }
+
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 };
 
@@ -778,6 +788,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
+        sessionStorage.setItem('isAlarm', String(data?.isAlarm));
         const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));

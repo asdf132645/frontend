@@ -24,12 +24,20 @@
           {{ option.text }}
         </option>
       </select>
-      <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y'}">
-        <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
-                           :class="{ 'disabled': isInit !== 'N' }"
-        />
-        <span> INITIALIZING </span>
+
+      <div class="flex-justify-between">
+        <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }">
+          <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
+                             :class="{ 'disabled': isInit !== 'N' }"
+          />
+          <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
+        </div>
+        <div v-if="is100A" class="rewindBtn" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
+          <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;" />
+          <span>Rewind</span>
+        </div>
       </div>
+
     </div>
   </div>
   <Alert
@@ -51,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick, defineEmits } from "vue";
+import {ref, computed, watch, onMounted, nextTick, defineEmits, onBeforeMount} from "vue";
 
 import {useStore} from "vuex";
 import {
@@ -104,6 +112,7 @@ const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
 const isInitializing = ref(false);
+const is100A = ref(false);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -112,6 +121,10 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   userId.value = newUserId.id;
   await initDataExecute();
 });
+
+onBeforeMount(() => {
+  is100A.value = window.PB_VERSION === '100a';
+})
 
 onMounted(async () => {
   await initDataExecute();
@@ -179,7 +192,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     isInit: newIsInit,
   } = newEmbeddedStatusJobCmd || {};
 
-  if (window.PB_VERSION === '100a' && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
+  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
     toggleStartStop('start');
   }
 
@@ -256,7 +269,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       edgeShotType:  edgeShotType || '0',
     });
 
-    if (window.PB_VERSION === '100a') {
+    if (is100A.value) {
       Object.assign(startAction, {
         autoStart: Number(autoStart),
       })
@@ -357,6 +370,10 @@ const sendInit = () => { // 장비 초기화 진행
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
   emits('initDataChangeText', true);
   // isInitializing.value = true;
+}
+
+const sendRewindBelt = async (isRewindingBelt: boolean) => {
+  await store.dispatch('commonModule/setCommonInfo', { isRewindingBelt: isRewindingBelt });
 }
 
 const initData = async () => {

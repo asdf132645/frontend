@@ -558,6 +558,7 @@ const cellImgGet = async () => {
           keepPage: data?.keepPage,
         }
 
+        sessionStorage.setItem('isAlarm', String(data?.isAlarm));
         await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
         await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
@@ -616,6 +617,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
       sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
+      sessionStorage.setItem('isAlarm', String(data?.isAlarm));
       const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
       sessionStorage.setItem(keepPageType, String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});

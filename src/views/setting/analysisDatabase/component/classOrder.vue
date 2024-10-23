@@ -130,6 +130,9 @@ const getWbcCustomClasses = async () => {
     }
 
     wbcInfoChangeVal.value = wbcInfoChangeVal.value.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
+
+    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(wbcInfoChangeVal.value)});
+    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcInfoChangeVal.value)});
   } catch (e) {
     console.error('Error fetching WBC custom classes:', e);
   }
@@ -145,10 +148,6 @@ const getOrderClass = async () => {
         saveHttpType.value = 'put';
         wbcInfoChangeVal.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
       }
-
-      const classOrderBeforeSettingObj = wbcInfoChangeVal.value;
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
     }
   } catch (e) {
     console.log(e)

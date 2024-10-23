@@ -49,7 +49,7 @@
           <div class="iconHeaderMenu">
             <ul>
               <li class="alarm">
-                <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking': isAlarm }"/>
+                <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
               </li>
               <li>
                 <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
@@ -147,6 +147,7 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {logoutApi} from "@/common/api/service/user/userApi";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import axios from "axios";
+import {SOUND_COMPLETE_ALARM, SOUND_ERROR_ALARM} from "@/common/lib/utils/assetUtils";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -175,7 +176,8 @@ const eqStatCdData = ref({
 });
 const oilCountData = ref('');
 const storagePercentData = ref('');
-const isAlarm = ref(false);
+const isCompleteAlarm = ref(false);
+const isErrorAlarm = ref(false);
 const oilVisible = ref(false);
 const maxOilCount = ref(1000);
 const statusBarWrapper = ref<HTMLDivElement | null>(null);
@@ -188,7 +190,11 @@ const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
-let isAralrmInterver = null;
+let isAlarmInterval = null;
+let isCompleteAlarmInterval = null;
+let isErrorAlarmInterval = null;
+const isPlayingCompleteAlarm = ref(false);
+const isPlayingErrorAlarm = ref(false);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -266,6 +272,7 @@ onMounted(async () => {
 
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
+
   // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
   onBeforeUnmount(() => {
     clearInterval(timerId);
@@ -336,14 +343,41 @@ watch([commonDataGet.value], async (newVals: any) => {
 });
 
 watch([runInfo.value], async (newVals: any) => {
+  isCompleteAlarm.value = newVals[0].isCompleteAlarm;
+  isErrorAlarm.value = newVals[0].isErrorAlarm;
 
-  isAlarm.value = newVals[0].isAlarm;
-  if (newVals[0].isAlarm) {
-    isAralrmInterver = setTimeout(() => {
-      store.dispatch('commonModule/setCommonInfo', {isAlarm: false});
+  if (isErrorAlarm.value) {
+    if (!isPlayingErrorAlarm.value) {
+      isPlayingErrorAlarm.value = true;
+      try {
+        await SOUND_ERROR_ALARM.play();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        isPlayingErrorAlarm.value = false;
+      }
+    }
+
+    isErrorAlarmInterval = setTimeout(() => {
+      store.dispatch('commonModule/setCommonInfo', { isErrorAlarm: false });
+    }, alarmCount.value);
+  } else if (isCompleteAlarm.value) {
+
+    if (!isPlayingCompleteAlarm.value) {
+      isPlayingCompleteAlarm.value = true;
+      try {
+        await SOUND_COMPLETE_ALARM.play();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        isPlayingCompleteAlarm.value = false;
+      }
+    }
+
+    isCompleteAlarmInterval = setTimeout(() => {
+      store.dispatch('commonModule/setCommonInfo', { isCompleteAlarm: false });
     }, alarmCount.value);
   }
-
 });
 
 const closeUserSetBox = (event: any) => {
@@ -506,10 +540,10 @@ const onModalOpen = () => {
 const cellImgGet = async () => {
   try {
     const result = await getCellImgApi();
+    console.log(';result', result);
     if (result) {
       if (result?.data) {
         const data = result.data;
-
         await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data.isNsNbIntegration ? 'Y' : 'N'});
         alarmCount.value = data?.isAlarm ? Number(data.alarmCount) * 1000 : 5000;
         await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {

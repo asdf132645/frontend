@@ -130,7 +130,7 @@ const getWbcCustomClasses = async () => {
   }
 }
 
-const setLisCodeWbcByCustomClass = () => {
+const setLisCodeWbcByCustomClass = async () => {
   const wbcCustomItemClassIds = new Set(wbcCustomItems.value.map((item: any) => item.customNum));
   const lisCodeWbcClassIds = new Set(lisCodeWbcArr.value.map((item: any) => item.classId));
   const wbcCustomClassDefaultIds = new Set(WBC_CUSTOM_CLASS.map(item => String(item.customNum)));
@@ -149,6 +149,14 @@ const setLisCodeWbcByCustomClass = () => {
       }));
 
   lisCodeWbcArr.value = [...lisCodeWbcArr.value, ...newItems];
+
+  const settingObj = {
+    lisCodeWbcArr: lisCodeWbcArr.value,
+    lisCodeRbcArr: lisCodeRbcArr.value,
+    minCountArr: minCountArr.value
+  }
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: settingObj });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: settingObj });
 }
 
 const saveLisCode = async () => {
@@ -234,14 +242,6 @@ const getImagePrintData = async () => {
         saveHttpType.value = 'put';
         minCountArr.value = minCountData;
       }
-
-      const settingObj = {
-        lisCodeWbcArr: lisCodeWbcArr.value,
-        lisCodeRbcArr: lisCodeRbcArr.value,
-        minCountArr: minCountArr.value
-      }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: settingObj });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: settingObj });
     }
   } catch (e) {
     console.error(e);

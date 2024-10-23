@@ -557,9 +557,31 @@ h3.titleText {
     font-size: 0.9rem;
     cursor: pointer;
     border: 1px solid;
+    width: 100%;
 }
 
 .initBtn:hover {
+    background: var(--white-color);
+    color: var(--main-bg-8-color);
+}
+
+.initBtn-is100a {
+    width: 124px;
+}
+
+.rewindBtn {
+    width: 60px;
+    background: var(--main-bg-8-color);
+    color: var(--white-color);
+    border-radius: 5px;
+    padding: 8px;
+    margin: 12px 0 0 2px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 1px solid;
+}
+
+.rewindBtn:hover {
     background: var(--white-color);
     color: var(--main-bg-8-color);
 }
@@ -1705,6 +1727,32 @@ input.loginInput {
 
 .runBlue {
     color: var(--blue-bg-1-color);
+}
+
+.blinking-red {
+    animation: blink-red 0.5s infinite alternate;
+}
+
+.blinking-blue {
+    animation: blink-blue 0.5s infinite alternate;
+}
+
+@keyframes blink-red {
+    0% {
+        color: var(--white-color);
+    }
+    100% {
+        color: red;
+    }
+}
+
+@keyframes blink-blue {
+    0% {
+        color: var(--white-color);
+    }
+    100% {
+        color: var(--coral-bg-0-color);
+    }
 }
 
 .blinking {
