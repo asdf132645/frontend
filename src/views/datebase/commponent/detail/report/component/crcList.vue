@@ -17,13 +17,13 @@
       <!-- 각 crcDataArr의 항목을 출력 -->
       <li v-for="(item, index) in crcDataArr" :key="index" class="crcListContent">
         <span class="crcListSpan" @click="toggleOpen(index)">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/> <!-- 클릭 이벤트 전파 중단 -->
+            <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/>
             <span>{{ item.code }}</span>
             <div class="crcListDiv">
-                <button @click.stop="startEdit(item)"> <!-- 클릭 이벤트 전파 중단 -->
+                <button @click.stop="startEdit(item)">
                     <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
                 </button>
-                <button @click.stop="deleteRow('', item.id)"> <!-- 클릭 이벤트 전파 중단 -->
+                <button @click.stop="deleteRow('', item.id)">
                     <font-awesome-icon :icon="['fas', 'trash']"/>
                 </button>
             </div>

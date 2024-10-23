@@ -27,6 +27,7 @@
       <li
           @click="lisModalOpen"
           :class="{'submitted': selectItems?.submitState === 'lis' || lisBtnColor,}"
+          v-if="!crcConnect"
       >
         <font-awesome-icon :icon="['fas', 'upload']"/>
       </li>
@@ -165,7 +166,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import {getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
+import {crcOptionGet, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
 import {barcodeImgDir} from "@/common/defines/constFile/settings";
 import {
   basicBmClassList,
@@ -257,10 +258,15 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisHotKey = ref('');
+const crcConnect = ref(false);
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
+  const crcOptionApi = await crcOptionGet();
+  if (crcOptionApi.data.length !== 0) {
+    crcConnect.value = crcOptionApi.data[0].crcConnect;
+  }
 })
 
 onMounted(async () => {
@@ -283,6 +289,9 @@ onMounted(async () => {
 let isHotKeyPressed = false;
 
 const handleKeyDown = (event: KeyboardEvent) => {
+  if(router.currentRoute.value.path === '/report'){
+    return;
+  }
   const keyName = event.key;
 
   if (!isHotKeyPressed && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
@@ -293,6 +302,9 @@ const handleKeyDown = (event: KeyboardEvent) => {
 };
 
 const handleKeyUp = (event: KeyboardEvent) => {
+  if(router.currentRoute.value.path === '/report'){
+    return;
+  }
   const keyName = event.key;
 
   if (keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {

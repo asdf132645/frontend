@@ -18,7 +18,7 @@
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content crcDiv" v-if="activeTab === 1">
-      <div class="textLeft crcMenu">
+      <div class="textLeft crcMenu mb1">
         <button class="crcBtn" @click="lisClick">
           <font-awesome-icon :icon="['fas', 'upload']"/>
         </button>
@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onBeforeMount , ref } from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -188,6 +188,7 @@ const crcPassWordVal = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const searchText = ref('');
 const showDropdown = ref(false);
+const lisHotKey = ref('');
 
 onBeforeMount(async () => {
   await nextTick();
@@ -248,6 +249,9 @@ onBeforeMount(async () => {
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcPassWordVal.value = crcOptionApi.data[0].crcPassWord;
   }
+  const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
+  lisHotKey.value = lisHotKeyVal;
+
 });
 // 옵션 선택 시 호출되는 함수
 const selectOption = (selectedCode: string) => {
@@ -285,6 +289,28 @@ const remarkCountReturnCode = (idx: any) => {
   return crcRemarkCount.value[idx].checked;
 }
 
+let isHotKeyPressed = false;
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  const keyName = event.key;
+
+  if (!isHotKeyPressed && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+    event.preventDefault(); // 기본 동작 방지
+    isHotKeyPressed = true; // 한 번만 실행되도록 설정
+    lisClick();
+  }
+};
+
+const handleKeyUp = (event: KeyboardEvent) => {
+  const keyName = event.key;
+
+  if (keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+    isHotKeyPressed = false; // 키를 떼면 다시 실행 가능
+  }
+};
+window.addEventListener('keydown', handleKeyDown);
+window.addEventListener('keyup', handleKeyUp);
+
 const lisClick = async () => {
   // if(props.selectItems.submitState === 'lis'){
   //   alert('?')
@@ -321,7 +347,6 @@ const lisClick = async () => {
     }
     try {
       await createH17(data);
-      console.log(props.selectItems?.id)
       if (props.selectItems?.id) {
         const result: any = await detailRunningApi(String(props.selectItems?.id));
         const updatedItem = {

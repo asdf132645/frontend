@@ -315,7 +315,7 @@ onBeforeMount(async () => {
   const ss = (await crcGet());
   if(ss.code === 200){
     isContent.value = true;
-    crcData.value = (await crcGet()).data;
+    crcData.value = ss.data;
   }
 
 })

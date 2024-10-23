@@ -65,7 +65,7 @@
             </template>
           </ul>
           <ul class="degree analysis">
-            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Degree</li>
+            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Degree<p>0 1+ 2+ 3+</p></li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')"
