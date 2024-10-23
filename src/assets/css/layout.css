@@ -3612,7 +3612,9 @@ table.cbcTable td {
     border-bottom: 1px dotted #ccc;
     padding: 5px;
 }
-
+.wbcContent .topClintInfo {
+    margin-bottom: 5px;
+}
 .crcWrap ul li {
     display: inline-block;
     width: 20%;
