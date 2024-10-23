@@ -6,7 +6,7 @@
         <button @click="selectTab('LisCode')" :class="{ 'active': activeTab === 'LisCode' }">LIS Code</button>
         <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">CBC Code</button>
         <button @click="selectTab('filePathSet')" :class="{ 'active': activeTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
-        <button v-if="masterId === 'uimd'" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
+        <button @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
       </div>
     </div>
 
@@ -59,7 +59,6 @@ const confirmMessage = ref('');
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
-const masterId = computed(() => store.state.userModule.userId);
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;

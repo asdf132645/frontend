@@ -334,7 +334,6 @@ const lisClick = async () => {
     messageControlId: props.selectItems?.barcodeNo,
     processingId: 'P',
     hl7VersionId: '2.5',
-    selectedItem: { /* selectedItem 데이터 */},
     wbcInfo: props.selectItems?.wbcInfoAfter,
     result: lisCodeWbcArr,
     customData: nowCrcData,

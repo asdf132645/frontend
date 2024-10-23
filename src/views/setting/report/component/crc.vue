@@ -4,7 +4,7 @@
       <div class="crcWrap flex-column-align-center">
 
         <div class="flex-justify-between">
-          <div class="w200 flex-align-center-justify-between">
+          <div class="w200 flex-align-center-justify-between" v-if="masterId === 'uimd'">
             <span>CRC Default Mode</span>
             <font-awesome-icon
                 :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -13,27 +13,27 @@
             />
           </div>
 
-          <div class="w200 flex-align-center-justify-between" @click="crcConnectOn">
+          <div class="w200 flex-align-center-justify-between" @click="crcConnectOn" v-if="masterId === 'uimd'">
             <span>CRC Connect</span>
             <font-awesome-icon
                 :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
             />
           </div>
-          <div class="w200 flex-align-center-justify-between">
+          <div class="w200 flex-align-center-justify-between" v-if="masterId === 'uimd'">
             <span>CRC Remark Select Count</span>
             <input type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
             <input type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
             <input type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
           </div>
-          <div class="w200 flex-align-center-justify-between">
+          <div class="w200 flex-align-center-justify-between" v-if="userType === 'admin'">
             <span>CRC PassWord</span>
             <input type="text" placeholder="password" v-model="crcPassWord"/>
           </div>
         </div>
 
 
-        <ul class="mt30">
+        <ul class="mt30" v-if="masterId === 'uimd'">
           <li>
             <p>crcTitle</p>
             <span><input type="text" placeholder="crcTitle" v-model="crcTitle"></span>
@@ -80,6 +80,7 @@
           @deleteCrc="onDeleteCrc"
           moType="RBC"
           pageName="set"
+          :masterId="masterId"
       ></crc-compontent>
 
       <div class="moDivBox mt2">
@@ -90,6 +91,7 @@
               @deleteCrc="onDeleteCrc"
               moType="WBC"
               pageName="set"
+              :masterId="masterId"
           ></crc-compontent>
         </div>
 
@@ -100,6 +102,7 @@
               @deleteCrc="onDeleteCrc"
               moType="PLT"
               pageName="set"
+              :masterId="masterId"
           ></crc-compontent>
         </div>
       </div>
@@ -119,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from "vue";
+import {ref, onMounted, computed} from "vue";
 import {
   crcGet, crcOptionGet,
   createCrcApi,
@@ -129,6 +132,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
+import {useStore} from "vuex";
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -150,6 +154,9 @@ const crcRemarkCountArr = ref<any[]>([{"checked": false, "name": "remark"}, {
   "name": "Comment"
 }, {"checked": false, "name": "Recommendation"}]);
 const crcPassWord = ref('');
+const store = useStore();
+const masterId = computed(() => store.state.userModule.userId);
+const userType = computed(() => store.state.userModule.userType);
 
 onMounted(async () => {
   crcData.value = await crcGet();
@@ -227,25 +234,36 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
-  if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
-    await updateCrcApi(crcArr.value);
-    await updateCrcOptionApi({
-      id: crcOptionId.value,
-      crcMode: crcDefaultMode.value,
-      crcConnect: crcConnect.value,
-      crcRemarkCount: crcRemarkCountArr.value,
-      crcPassWord: crcPassWord.value,
-    });
-  } else {
-    await createCrcApi(crcArr.value);
-    await createCrcOptionApi({
-      crcMode: crcDefaultMode.value,
-      crcConnect: crcConnect.value,
-      crcRemarkCount: crcRemarkCountArr.value,
-      crcPassWord: crcPassWord.value,
-    });
+  if(masterId.value === 'uimd'){
+    if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
+      await updateCrcApi(crcArr.value);
+      await updateCrcOptionApi({
+        id: crcOptionId.value,
+        crcMode: crcDefaultMode.value,
+        crcConnect: crcConnect.value,
+        crcRemarkCount: crcRemarkCountArr.value,
+        crcPassWord: crcPassWord.value,
+      });
+    } else {
+      await createCrcApi(crcArr.value);
+      await createCrcOptionApi({
+        crcMode: crcDefaultMode.value,
+        crcConnect: crcConnect.value,
+        crcRemarkCount: crcRemarkCountArr.value,
+        crcPassWord: crcPassWord.value,
+      });
 
+    }
+  }else{
+    if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
+      await updateCrcApi(crcArr.value);
+      await updateCrcOptionApi({
+        id: crcOptionId.value,
+        crcPassWord: crcPassWord.value,
+      });
+    }
   }
+
   await showSuccessAlert('Success');
 };
 

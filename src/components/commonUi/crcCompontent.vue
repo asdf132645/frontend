@@ -21,7 +21,7 @@
               <option value="text">text</option>
               <option value="percent">percent</option>
             </select>
-            <div v-else-if="pageName === 'set'">{{ item?.crcType }}</div>
+            <div v-else-if="pageName === 'set' && masterId === 'uimd'">{{ item?.crcType }}</div>
           </div>
           <div class="crcSel">
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
@@ -33,7 +33,7 @@
                     }}
                   </option>
                 </select>
-                <div v-else>
+                <div v-else-if="masterId === 'uimd'">
                   <select @change="changeSelect($event, item.id)">
                     <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
                   </select>
@@ -41,10 +41,18 @@
               </div>
               <div v-else-if="item?.crcType === 'text'">
                 <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
+                       placeholder="Enter text" v-if="pageName !== 'set'"/>
+                <input v-model="item.crcContent" :disabled="pageName === 'set'"
+                       v-else-if=" pageName ==='set' && masterId === 'uimd'"
+                       type="text"
                        placeholder="Enter text"/>
               </div>
               <div v-else>
                 <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text"
+                       placeholder="Enter percentage" v-if="pageName !== 'set'"/>
+                <input class="smallInput" :disabled="pageName === 'set'"
+                       v-else-if=" pageName ==='set' && masterId === 'uimd'"
+                       v-model="item.crcContent" type="text"
                        placeholder="Enter percentage"/>
               </div>
             </div>
@@ -61,7 +69,7 @@
             </span>
           </div>
 
-          <div v-if="pageName === 'set'">
+          <div v-if="pageName === 'set' && masterId === 'uimd'">
             <button type="button" @click="editCrcArr(item.id)">EDIT</button>
             <button
                 type="button"
@@ -71,10 +79,10 @@
               OK
             </button>
           </div>
-          <div v-if="pageName === 'set'">
+          <div v-if="pageName === 'set' && masterId === 'uimd'">
             <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
           </div>
-          
+
         </div>
       </li>
     </ul>
@@ -84,7 +92,6 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue';
 
-// Props
 const props = defineProps({
   items: {
     type: Array,
@@ -98,6 +105,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  masterId: {
+    type: String,
+    required: true,
+  }
 });
 
 const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect']);
@@ -120,7 +131,7 @@ onMounted(async () => {
 
 watch(props, (newArr) => {
   arrData.value = newArr?.items.filter((item) => item?.morphologyType === props.moType);
-},{deep: true});
+}, {deep: true});
 
 const editCrcArr = (id: number) => {
   editIndex.value = id;
