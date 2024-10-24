@@ -285,12 +285,8 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     resultStr += rbcTmp
     resultStr += rbcTmp2
     console.log('rbc wbc 최종 resultStr 값', resultStr);
-
     try {
         const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
-        // < 들어가는 문제 해결
-        resultStr = resultStr.replace(/[^a-zA-Z0-9,.%| ]/g, '');
 
         const body = {
             baseUrl: `${lisFilePathSetArr}/api/MifMain/File`,

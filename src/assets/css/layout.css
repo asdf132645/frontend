@@ -574,7 +574,7 @@ h3.titleText {
 }
 
 .rewindBtn {
-    width: 60px;
+    width: 56px;
     background: var(--main-bg-8-color);
     color: var(--white-color);
     border-radius: 5px;
@@ -588,6 +588,10 @@ h3.titleText {
 .rewindBtn:hover {
     background: var(--white-color);
     color: var(--main-bg-8-color);
+}
+
+.rewindBtn:active {
+    background: #DEDEDE;
 }
 
 p.startStopP {
