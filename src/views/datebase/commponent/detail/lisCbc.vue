@@ -5,7 +5,7 @@
       <p class="loadingText">Loading...</p>
     </div>
     <h1 class="titleCbc"><span>CBC + DIFF</span>
-      <span class="ml1" @click="cbcListOpen">
+      <span class="ml1" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']" @click="cbcListOpen">
         <font-awesome-icon :icon="['fas', 'rectangle-list']"/>
       </span>
       <div v-if="cbcPopup">
@@ -113,7 +113,8 @@ onMounted(async () => {
   selectItemsVal.value = props.selectItems;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-  if (props.selectItems) {
+
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] && props.selectItems) {
     await cbcDataProcess();
     const latestFile = cbcDataList.value.reduce((latest: any, currentFile: any) => {
       const currentDate: any = parseDateString(currentFile);
@@ -125,6 +126,7 @@ onMounted(async () => {
     // console.log(latestFile.split('.')[0])
     firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
   }
+
   await initCbcData(selectItemsVal.value);
 });
 
