@@ -26,15 +26,15 @@
       </select>
 
       <div class="flex-justify-between">
+        <div v-if="is100A" class="rewindBtn" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
+          <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;" />
+          <span>REWIND</span>
+        </div>
         <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }">
           <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;"
                              :class="{ 'disabled': isInit !== 'N' }"
           />
           <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
-        </div>
-        <div v-if="is100A" class="rewindBtn" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
-          <font-awesome-icon :icon="['fas', 'rotate-right']" style="font-size: 0.9rem;" />
-          <span>Rewind</span>
         </div>
       </div>
 

@@ -285,7 +285,6 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     resultStr += rbcTmp
     resultStr += rbcTmp2
     console.log('rbc wbc 최종 resultStr 값', resultStr);
-
     try {
         const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
@@ -296,6 +295,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
             result: resultStr,
             // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
         };
+
         const response = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
         const correctedString = response.data.replace(/\\"/g, '"'); // 이스케이프된 따옴표 제거
         const jsonObject = JSON.parse(correctedString); // JSON 객체로 변환
