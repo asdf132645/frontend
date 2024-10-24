@@ -217,12 +217,12 @@ const commonCbc = async () => {
     if (readFileTxtRes.data.success) {
       const msg: any = await readH7File(readFileTxtRes.data.data);
       cbcWorkList.value = [];
-
+      console.log(cbcCodeList.value)
       msg?.data?.segments?.forEach((cbcSegment: any) => {
         if (cbcSegment.name.trim() === 'OBX') {
           // console.log(cbcSegment?.fields?.[4])
           cbcCodeList.value.forEach((cbcCode: any) => {
-            const classCd = cbcSegment?.fields?.[3]?.value?.[0]?.[0]?.value?.[0];
+            const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
             const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
             const unit = cbcSegment?.fields?.[6]?.value?.[0]?.[0]?.value?.[0] || "";
 
@@ -240,7 +240,6 @@ const commonCbc = async () => {
                   count: count,
                   unit
                 };
-                console.log(cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0])
                 cbcWorkList.value.push(obj);
               }
             }
