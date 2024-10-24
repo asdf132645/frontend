@@ -289,6 +289,9 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     try {
         const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 
+        // < 들어가는 문제 해결
+        resultStr = resultStr.replace(/[^a-zA-Z0-9,.%| ]/g, '');
+
         const body = {
             baseUrl: `${lisFilePathSetArr}/api/MifMain/File`,
             machine: 'ADUIMD',
@@ -296,6 +299,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
             result: resultStr,
             // baseUrl: `${apiBaseUrl}/cbc/executePostCurltest`,
         };
+
         const response = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
         const correctedString = response.data.replace(/\\"/g, '"'); // 이스케이프된 따옴표 제거
         const jsonObject = JSON.parse(correctedString); // JSON 객체로 변환
