@@ -27,7 +27,7 @@
           <!-- 검색 입력 필드 -->
           <input
               v-model="searchText"
-              placeholder="코드 검색"
+              placeholder="code Search"
               class="autocomplete-input"
               @focus="showDropdown = true"
               @blur="hideDropdownWithDelay"
@@ -135,7 +135,7 @@
       :duration="1500"
       position="bottom-right"
   />
-  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
+  <PassWordCheck :type="passWordType" v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
                  @passWordClose="passWordClose"/>
 
 </template>
@@ -168,6 +168,7 @@ const props = defineProps({
 });
 const store = useStore();
 const toastMessage = ref('');
+const passWordType = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const isComment = ref(false);
 const isRecommendation = ref(false);
@@ -202,6 +203,7 @@ onBeforeMount(async () => {
     if (savedData) {
       crcArr.value = JSON.parse(savedData);
       code.value = JSON.parse(codeVal);
+      searchText.value = JSON.parse(codeVal);
 
       if (typeof remarkListVal === "string") {
         remarkList.value = JSON.parse(remarkListVal);
@@ -308,10 +310,24 @@ const handleKeyUp = (event: KeyboardEvent) => {
     isHotKeyPressed = false; // 키를 떼면 다시 실행 가능
   }
 };
+
 window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
+  passWordType.value = 'lis'
+  if (!passWordPass.value) {
+    passLayout.value = true;
+    return
+  }
+
+}
+const lisStart = async () => {
+  if(searchText.value === ''){
+    showToast('Please enter the code.');
+    passWordPass.value = false;
+    return;
+  }
   const nowCrcData = crcDataArr.value.find((item) => {
     return item.code === code.value
   })
@@ -319,7 +335,7 @@ const lisClick = async () => {
   nowCrcData.crcComment = commentList.value;
   nowCrcData.crcRecommendation = recoList.value;
   const {lisFilePathSetArr} = await getLisPathData();
-  const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
+  const {lisCodeWbcArr} = await getLisWbcRbcData();
   const data = {
     sendingApp: 'PBIA',
     sendingFacility: 'PBIA',
@@ -357,7 +373,6 @@ const lisClick = async () => {
     }
   }
 }
-
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
@@ -380,15 +395,15 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   }
 }
 
-const listDel = (idx: any, type: string) => {
-  if (type === 'remark') {
-    remarkList.value.splice(idx, 1);
-  } else if (type === 'reco') {
-    recoList.value.splice(idx, 1);
-  } else if (type === 'comment') {
-    commentList.value.splice(idx, 1);
-  }
-}
+// const listDel = (idx: any, type: string) => {
+//   if (type === 'remark') {
+//     remarkList.value.splice(idx, 1);
+//   } else if (type === 'reco') {
+//     recoList.value.splice(idx, 1);
+//   } else if (type === 'comment') {
+//     commentList.value.splice(idx, 1);
+//   }
+// }
 
 const openSelect = (type: string) => {
   switch (type) {
@@ -438,6 +453,7 @@ const updateList = (newList: any[], type: string) => {
   }
 }
 const adminPassword = () => {
+  passWordType.value = ''
   if (!passWordPass.value) {
     passLayout.value = true;
     return
@@ -451,8 +467,12 @@ const returnPassWordCheck = (val: boolean) => {
     passWordPass.value = true;
     // 패스 체크 모달 닫기
     passLayout.value = false;
-    // showToast("Admin verification is complete. Please click the button again.");
-    activeTab.value = 2;
+    if(passWordType.value === ''){
+      activeTab.value = 2;
+    }else{
+      lisStart();
+      passWordPass.value = false;
+    }
   } else {
     passWordPass.value = false;
     // 패스 체크 모달 닫기
@@ -467,6 +487,7 @@ const passWordClose = () => {
 // 코드 변경 시 로직 처리
 const changeCode = async (codeVal: string) => {
   code.value = codeVal;
+  searchText.value = codeVal;
   const filterArr = crcDataArr.value.filter((item) => item.code === codeVal);
 
   const types = ['plt', 'rbc', 'wbc'];
@@ -535,6 +556,7 @@ const tempSaveDataEmpty = async () => {
   remarkList.value = [];
   commentList.value = [];
   code.value = '';
+  searchText.value = '';
   showToast('Data empty to storage')
 }
 

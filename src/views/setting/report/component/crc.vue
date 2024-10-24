@@ -81,6 +81,7 @@
           moType="RBC"
           pageName="set"
           :masterId="masterId"
+          :userType="userType"
       ></crc-compontent>
 
       <div class="moDivBox mt2">
@@ -92,6 +93,7 @@
               moType="WBC"
               pageName="set"
               :masterId="masterId"
+              :userType="userType"
           ></crc-compontent>
         </div>
 
@@ -103,6 +105,7 @@
               moType="PLT"
               pageName="set"
               :masterId="masterId"
+              :userType="userType"
           ></crc-compontent>
         </div>
       </div>

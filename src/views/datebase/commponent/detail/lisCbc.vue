@@ -134,6 +134,9 @@ onMounted(async () => {
 });
 const crcCbcDataLoad = async () => {
   await cbcDataProcess();
+  if (cbcDataList.value.length === 0) {
+    return;
+  }
   const latestFile = cbcDataList.value.reduce((latest: any, currentFile: any) => {
     const currentDate: any = parseDateString(currentFile);
     const latestDate: any = parseDateString(latest);
@@ -157,6 +160,9 @@ const cbcDataListClose = () => {
   cbcPopup.value = false;
 }
 const cbcDataProcess = async () => {
+  if(!props.selectItems){
+    return
+  }
   const foldersPath = `folderPath=${cbcFilePathSetArr.value}`;
   const cbcDataArr = await getFolders(foldersPath);
   let filterCbcDataArr: any = [];
