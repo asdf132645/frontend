@@ -113,17 +113,18 @@ onMounted(async () => {
   selectItemsVal.value = props.selectItems;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-  await cbcDataProcess();
-  const latestFile = cbcDataList.value.reduce((latest: any, currentFile: any) => {
-    const currentDate: any = parseDateString(currentFile);
-    const latestDate: any = parseDateString(latest);
+  if (props.selectItems) {
+    await cbcDataProcess();
+    const latestFile = cbcDataList.value.reduce((latest: any, currentFile: any) => {
+      const currentDate: any = parseDateString(currentFile);
+      const latestDate: any = parseDateString(latest);
 
-    // 현재 파일의 날짜가 더 최신이면 그 파일을 선택
-    return currentDate > latestDate ? currentFile : latest;
-  });
-  // console.log(latestFile.split('.')[0])
-  firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
-
+      // 현재 파일의 날짜가 더 최신이면 그 파일을 선택
+      return currentDate > latestDate ? currentFile : latest;
+    });
+    // console.log(latestFile.split('.')[0])
+    firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
+  }
   await initCbcData(selectItemsVal.value);
 });
 
@@ -298,48 +299,47 @@ const fileData = async () => {
     console.log(cbcCodeList.value)
     msg?.data?.segments?.forEach((cbcSegment: any) => {
       if (cbcSegment.name.trim() === 'OBX') {
-
-        const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-        const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-        const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
-
-        // 중복 확인: 이미 동일한 classNm이 있는지 확인
-        const isDuplicate = cbcWorkList.value.some(
-            (item: any) => item.classNm === classCd
-        );
-
-        // 중복이 아닐 경우에만 추가
-        if (!isDuplicate) {
-          const obj = {
-            classNm: classCd,
-            count: count,
-            unit
-          };
-          cbcWorkList.value.push(obj);
-        }
-        // cbcCodeList.value.forEach((cbcCode: any) => {
-        //   const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-        //   const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+        // const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+        // const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
         // const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
         //
-        //   // 클래스 코드가 일치하는 경우
-        //   if (cbcCode.classCd === classCd) {
-        //     // 중복 확인: 이미 동일한 classNm이 있는지 확인
-        //     const isDuplicate = cbcWorkList.value.some(
-        //         (item: any) => item.classNm === cbcCode.fullNm
-        //     );
+        // // 중복 확인: 이미 동일한 classNm이 있는지 확인
+        // const isDuplicate = cbcWorkList.value.some(
+        //     (item: any) => item.classNm === classCd
+        // );
         //
-        //     // 중복이 아닐 경우에만 추가
-        //     if (!isDuplicate) {
-        //       const obj = {
-        //         classNm: cbcCode.fullNm,
-        //         count: count,
-        //         unit
-        //       };
-        //       cbcWorkList.value.push(obj);
-        //     }
-        //   }
-        // });
+        // // 중복이 아닐 경우에만 추가
+        // if (!isDuplicate) {
+        //   const obj = {
+        //     classNm: classCd,
+        //     count: count,
+        //     unit
+        //   };
+        //   cbcWorkList.value.push(obj);
+        // }
+        cbcCodeList.value.forEach((cbcCode: any) => {
+          const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+          const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+          const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
+
+          // 클래스 코드가 일치하는 경우
+          if (cbcCode.classCd === classCd) {
+            // 중복 확인: 이미 동일한 classNm이 있는지 확인
+            const isDuplicate = cbcWorkList.value.some(
+                (item: any) => item.classNm === cbcCode.fullNm
+            );
+
+            // 중복이 아닐 경우에만 추가
+            if (!isDuplicate) {
+              const obj = {
+                classNm: cbcCode.fullNm,
+                count: count,
+                unit
+              };
+              cbcWorkList.value.push(obj);
+            }
+          }
+        });
       } else if (cbcSegment.name.trim() === 'PID') {
         cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
         cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
