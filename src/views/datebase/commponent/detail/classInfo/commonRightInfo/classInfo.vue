@@ -133,8 +133,8 @@
         </div>
       </template>
     </div>
-    <div class="memoModal bottom textLeft" v-if="router.currentRoute.value.path === '/report'">
-      <textarea v-model="wbcMemo"></textarea>
+    <div class="memoModal bottom textLeft" style="position: absolute; bottom:10px; left: 0; width: 91%; margin-left: 10px;" v-if="router.currentRoute.value.path === '/report'">
+      <textarea class="staticTextArea" v-model="wbcMemo"></textarea>
       <button class="memoModalBtn" @click="memoChange">Save</button>
     </div>
   </div>

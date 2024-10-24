@@ -259,8 +259,8 @@
     <!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
     <!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
     <!--    </div>-->
-    <div class="memoModal bottom textLeft " v-if="router.currentRoute.value.path === '/report'">
-      <textarea v-model="memo"></textarea>
+    <div class="memoModal bottom textLeft" v-if="router.currentRoute.value.path === '/report'">
+      <textarea class="staticTextArea" v-model="memo"></textarea>
       <button class="memoModalBtn" @click="memoChange">Save</button>
     </div>
   </div>

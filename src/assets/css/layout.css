@@ -2383,6 +2383,7 @@ button.searchClass:hover {
 }
 
 .wbcDiv {
+    position: relative;
     width: 28%;
     margin-left: 10px;
     border-radius: 4px;
@@ -2949,6 +2950,10 @@ table.tableClass {
     height: 150px;
 }
 
+.staticTextArea {
+    resize: none;
+}
+
 ul.editOrder li {
     margin-bottom: 10px;
 }
@@ -3471,9 +3476,75 @@ button.rollbackButton {
     width: 13%;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
+    margin-left: -14px;
     height: 94%;
     margin-right: 4px;
     position: relative;
+}
+
+.cbcPopUpContainer {
+    position: absolute;
+    top: 0;
+    left: 210px;
+    background-color: #252629;
+    border: 1px solid white;
+    border-radius: 4px;
+    width: 340px;
+    z-index: 100;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 1);
+
+}
+
+.cbcPopUpWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: 4px;
+}
+
+/* WebKit 기반 브라우저에서 스크롤바 스타일링 */
+.cbcPopUpWrapper::-webkit-scrollbar {
+    width: 8px; /* 스크롤바 너비 */
+}
+
+.cbcPopUpWrapper::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바 핸들 색상 */
+}
+
+.cbcPopUpWrapper::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* 호버 시 스크롤바 핸들 색상 */
+}
+
+.cbcPopUpItem {
+    width: 100%;
+    text-align: left;
+    padding: 4px;
+    font-size: 1rem;
+    color: #f0f0f0;
+    background-color: #3c3d41;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.cbcPopUpItem:hover {
+    background-color: #4a4b4f;
+    transform: translateY(2px);
+}
+
+.cbcDataListCloseBtn {
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.cbcDataListCloseBtn:hover {
+    transform: scale(1.1);
 }
 
 .loaderBackground.cbc .loader {

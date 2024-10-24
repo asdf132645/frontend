@@ -6,15 +6,24 @@
     </div>
     <h1 class="titleCbc"><span>CBC + DIFF</span>
       <span class="ml1" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']" @click="cbcListOpen">
-        <font-awesome-icon :icon="['fas', 'rectangle-list']"/>
+        <font-awesome-icon :icon="['fas', 'rectangle-list']" class="cursorPointer" />
       </span>
-      <div v-if="cbcPopup">
-        <ul>
-          <li v-for="(item, idx) in cbcDataList" :key="idx" @click="cbcDataChoice(item)">
+      <div v-if="cbcPopup" class="cbcPopUpContainer">
+
+        <div class="flex-justify-between">
+          <p></p>
+          <h3>List</h3>
+<!--          <button type="button" >-->
+            <font-awesome-icon :icon="['fas', 'xmark']" style="color: #ffffff;" @click="cbcDataListClose" class="cbcDataListCloseBtn" />
+<!--          </button>-->
+        </div>
+
+        <ul class="cbcPopUpWrapper">
+          <li v-for="(item, idx) in cbcDataList" :key="idx" @click="cbcDataChoice(item)" class="cbcPopUpItem">
             {{ item }}
           </li>
         </ul>
-        <button type="button" @click="cbcDataListClose">Close</button>
+
       </div>
     </h1>
     <div v-if="siteCd ==='0002' && cbcWorkList.length !== 0" class="cbcDivWarp">
