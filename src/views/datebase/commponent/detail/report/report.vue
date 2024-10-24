@@ -7,12 +7,11 @@
         <li>
           {{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}
         </li>
-        <li>{{ selectItems?.barcodeNo }}</li>
-        <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
-        <li>{{ selectItems?.cbcPatientNo }}</li>
-        <li>{{ selectItems?.patientName }}</li>
-        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
-        <li>{{ selectItems?.analyzedDttm }}</li>
+        <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
+        <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
+        <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
+        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge "> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
+        <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
     <div style="display:flex;">

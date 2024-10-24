@@ -6,12 +6,11 @@
     <div class="topClintInfo">
       <ul>
         <li>{{ getTestTypeText(selectItems?.testType) }}</li>
-        <li>{{ selectItems?.barcodeNo }}</li>
-        <li>{{ selectItems?.patientId || 'patientId No Data' }}</li>
-        <li>{{ selectItems?.cbcPatientNo }}</li>
-        <li>{{ selectItems?.patientName }}</li>
-        <li> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
-        <li>{{ selectItems?.analyzedDttm }}</li>
+        <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
+        <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
+        <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
+        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge "> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
+        <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
@@ -36,7 +35,7 @@ import {computed, onMounted, ref} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
-import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
