@@ -106,6 +106,9 @@ watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] && props.selectItems || siteCd.value === '') {
+    await crcCbcDataLoad();
+  }
   await initCbcData(selectItemsVal.value);
 }, {deep: true});
 
@@ -114,22 +117,24 @@ onMounted(async () => {
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
 
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] && props.selectItems) {
-    await cbcDataProcess();
-    const latestFile = cbcDataList.value.reduce((latest: any, currentFile: any) => {
-      const currentDate: any = parseDateString(currentFile);
-      const latestDate: any = parseDateString(latest);
-
-      // 현재 파일의 날짜가 더 최신이면 그 파일을 선택
-      return currentDate > latestDate ? currentFile : latest;
-    });
-    // console.log(latestFile.split('.')[0])
-    firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] && props.selectItems || siteCd.value === '') {
+    await crcCbcDataLoad();
   }
 
   await initCbcData(selectItemsVal.value);
 });
+const crcCbcDataLoad = async () => {
+  await cbcDataProcess();
+  const latestFile = cbcDataList.value.reduce((latest: any, currentFile: any) => {
+    const currentDate: any = parseDateString(currentFile);
+    const latestDate: any = parseDateString(latest);
 
+    // 현재 파일의 날짜가 더 최신이면 그 파일을 선택
+    return currentDate > latestDate ? currentFile : latest;
+  });
+  // console.log(latestFile.split('.')[0])
+  firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
+}
 const cbcListOpen = async () => {
   cbcPopup.value = !cbcPopup.value;
   await cbcDataProcess();

@@ -421,17 +421,18 @@ const closeSelect = (type: string) => {
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
 
 const updateList = (newList: any[], type: string) => {
+  console.log(newList)
   switch (type) {
     case 'remark':
-      remarkList.value = newList;
+      remarkList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
       closeSelect('remark');
       break;
     case 'comment':
-      commentList.value = newList;
+      commentList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
       closeSelect('comment');
       break;
     case 'reco':
-      recoList.value = newList;
+      recoList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
       closeSelect('recommendation');
       break;
   }
