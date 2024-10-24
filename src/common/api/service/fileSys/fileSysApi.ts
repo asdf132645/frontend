@@ -25,3 +25,7 @@ export const createFile = async (request: any): Promise<ApiResponse<any | undefi
 export const createCbcFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
     return httpClient.httpPost(apiConstants.filesystem.cbcSaveData, request, '');
 };
+
+export const getFolders = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.settings.folders.get, `${request}`, true);
+};

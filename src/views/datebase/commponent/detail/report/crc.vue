@@ -312,9 +312,6 @@ window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
-  // if(props.selectItems.submitState === 'lis'){
-  //   alert('?')
-  // }
   const nowCrcData = crcDataArr.value.find((item) => {
     return item.code === code.value
   })
