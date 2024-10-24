@@ -56,6 +56,10 @@
                        placeholder="Enter percentage"/>
               </div>
             </div>
+            <div v-if="pageName==='set'">
+              <input class="smallInput" type="text"
+                     placeholder="code" v-model="item.crcCode"/>
+            </div>
           </div>
           <div v-if="item.crcType === 'percent'" class="smallBox">
             <input
@@ -106,6 +110,10 @@ const props = defineProps({
     required: true,
   },
   masterId: {
+    type: String,
+    required: true,
+  },
+  userType: {
     type: String,
     required: true,
   }
