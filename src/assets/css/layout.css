@@ -51,6 +51,10 @@
     font-size: 18px;
 }
 
+.pos-relative {
+    position: relative;
+}
+
 .cursorNotAllowed {
     cursor: not-allowed;
 }
@@ -921,9 +925,7 @@ button.degreeAllCheckBtn {
     overflow: hidden;
     position: relative; /* 수정 */
 }
-.memoModal.bottom {
-    position: relative;
-}
+
 .reportSection .wbcClassScroll {
     max-height: 78vh;
 }
@@ -931,7 +933,10 @@ button.degreeAllCheckBtn {
     margin: 0;
     width: 100%;
 }
-.memoModal.bottom textarea {min-height: 160px;height: 100px;}
+.memoModal.bottom textarea {
+    min-height: 100px;
+}
+
 .tab-btn_img_list {
     padding: 10px 20px;
     cursor: pointer;
@@ -2225,7 +2230,7 @@ ul.wbcImgWrap > li {
 }
 
 ul.cellImgBox {
-    height: 76vh;
+    height: 75vh;
     /*max-height: 76.9vh;*/
     overflow-y: scroll;
     overflow-x: hidden;
@@ -2254,7 +2259,7 @@ ul.cellImgBox input {
 
 .reportSection.cbcLayer .cbcDiv {
     margin-top: 10px;
-    height: 88vh;
+    height: 87vh;
     margin-left: 30px;
 }
 
@@ -2943,6 +2948,7 @@ table.tableClass {
     background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
     z-index: 999;
+
 }
 
 .memoModal textarea {
@@ -2951,10 +2957,18 @@ table.tableClass {
     max-width: 600px;
     min-height: 200px;
     max-height: 400px;
-    height: 150px;
+}
+
+.staticMemoModal {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 170px;
+    width: -webkit-fill-available;
 }
 
 .staticTextArea {
+    height: 140px;
     resize: none;
 }
 
