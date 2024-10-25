@@ -367,7 +367,7 @@ const fileData = async (firstCbcDatafilename: string) => {
         cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
         cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
         cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
-        hosName.value = cbcSegment.fields[10].value[0][0].value[0];
+        hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
       }
     });
 
