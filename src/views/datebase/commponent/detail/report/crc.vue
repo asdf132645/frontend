@@ -66,7 +66,7 @@
       <!-- Remark 관련 -->
       <div class="mt2" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']" /> Remark</span>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> Remark</span>
           <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
@@ -74,16 +74,16 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-<!--            <button @click="listDel(index, 'remark')">-->
-<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-<!--            </button>-->
+            <!--            <button @click="listDel(index, 'remark')">-->
+            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+            <!--            </button>-->
           </div>
         </div>
       </div>
 
       <div class="mt2" v-if="remarkCountReturnCode(1)">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']" /> Comment </span>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> Comment </span>
           <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
         </div>
 
@@ -91,16 +91,16 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-<!--            <button @click="listDel(index, 'comment')">-->
-<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-<!--            </button>-->
+            <!--            <button @click="listDel(index, 'comment')">-->
+            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+            <!--            </button>-->
           </div>
         </div>
       </div>
 
       <div class="mt2" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']" /> Recommendation </span>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> Recommendation </span>
           <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
         </div>
 
@@ -108,9 +108,9 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-<!--            <button @click="listDel(index, 'reco')">-->
-<!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-<!--            </button>-->
+            <!--            <button @click="listDel(index, 'reco')">-->
+            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -135,13 +135,14 @@
       :duration="1500"
       position="bottom-right"
   />
-  <PassWordCheck :type="passWordType" v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
+  <PassWordCheck :type="passWordType" v-if="passLayout" :crcPassWord="crcPassWordVal"
+                 @returnPassWordCheck="returnPassWordCheck"
                  @passWordClose="passWordClose"/>
 
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount , ref } from "vue";
+import {computed, nextTick, onBeforeMount, ref} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -184,6 +185,7 @@ const crcPassWord = ref('');
 const trrur = ref(false);
 const crcRemarkCount = ref<any>([]);
 const passWordPass = ref(false);
+const passWordPassLis = ref(false);
 const passLayout = ref(false);
 const crcPassWordVal = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
@@ -316,26 +318,87 @@ window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
   passWordType.value = 'lis'
-  if (!passWordPass.value) {
+  if (!passWordPassLis.value) {
     passLayout.value = true;
     return
   }
 
 }
+const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
+  ['plt', 'rbc', 'wbc'].forEach(category => {
+    nowCrcData.crcContent[category].forEach((nowItem: any) => {
+      const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
+      if (matchingItem && matchingItem.crcCode) {
+        nowItem.crcTitle = matchingItem.crcCode;
+      }
+    });
+  });
+
+  return nowCrcData;
+};
+const morphologyMapping: any = {
+  RBC: {
+    RBC_SIZE: { Normocytic: "2", Microcytic: "1", Macrocytic: "3" },
+    RBC_CHRO: { Normochromic: "2", Hypochromic: "1", Hyperchromic: "3" },
+    RBC_ANIS: { "-": "1", "±": "2", "+": "3", "++": "4", "+++": "5" },
+    RBC_POIK: { "-": "1", Spherocyte: "2", Elliptocyte: "3", "Tear drop cell": "4", Schistocyte: "5", Acanthocyte: "6", "Target cell": "7" },
+    RBC_POLY: { "-": "1", "±": "2", "+": "3", "++": "4", "+++": "5" },
+  },
+  WBC: {
+    WBC_NUMBER: { Decrease: "1", Normal: "2", Increase: "3" },
+    WBC_SEG: { "-": "1", "+": "2" },
+    "Toxic vacuole": { "-": "1", "+": "2" },
+    Segmentation: { Hyper: "1", Normal: "2", Hypo: "3" },
+    "Other findings": { None: "01", Neutrophilia: "02", "Atypical lymphocytes": "03", Lymphocytosis: "04", "Shift to the left": "05", Eosinophilia: "06" },
+  },
+  PLT: {
+    Number: { Decrease: "1", Normal: "2", Increase: "3" },
+    Size: { Normal: "01", Giant: "02", Clumping: "03" },
+  },
+};
+
+// crcContent 업데이트 함수
+const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
+  ['plt', 'rbc', 'wbc'].forEach(category => {
+    nowCrcData.crcContent[category].forEach((nowItem: any) => {
+      // text 타입은 변경하지 않고 유지
+      if (nowItem.crcType === 'text') return;
+
+      // id 기준으로 crcSetData에서 매칭 항목 찾기
+      const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
+      if (matchingItem && matchingItem.crcCode) {
+        const categoryMapping = morphologyMapping[matchingItem.morphologyType];
+
+        // 매핑이 존재하고 crcContent의 값이 매핑에 있으면 crcContent 값으로 변경
+        if (categoryMapping && categoryMapping[matchingItem.crcCode]) {
+          nowItem.crcContent = categoryMapping[matchingItem.crcCode][nowItem.crcContent] || nowItem.crcContent;
+        }
+      }
+    });
+  });
+
+  return nowCrcData;
+};
+
+
 const lisStart = async () => {
-  if(searchText.value === ''){
+  if (searchText.value === '') {
     showToast('Please enter the code.');
-    passWordPass.value = false;
+    passWordPassLis.value = false;
     return;
   }
-  const nowCrcData = crcDataArr.value.find((item) => {
+  const crcSetData = (await crcGet()).data;
+  let nowCrcData: any = crcDataArr.value.find((item) => {
     return item.code === code.value
-  })
+  });
   nowCrcData.crcRemark = remarkList.value;
   nowCrcData.crcComment = commentList.value;
   nowCrcData.crcRecommendation = recoList.value;
+  nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+  nowCrcData = updateCrcContent(crcSetData, nowCrcData);
+  // nowCrcData.crcContent = updateCrcContentWithMapping(crcSetData, morphologyMapping);
+  // console.log(nowCrcData);
   const {lisFilePathSetArr} = await getLisPathData();
-  const {lisCodeWbcArr} = await getLisWbcRbcData();
   const data = {
     sendingApp: 'PBIA',
     sendingFacility: 'PBIA',
@@ -347,8 +410,6 @@ const lisStart = async () => {
     messageControlId: props.selectItems?.barcodeNo,
     processingId: 'P',
     hl7VersionId: '2.5',
-    wbcInfo: props.selectItems?.wbcInfoAfter,
-    result: lisCodeWbcArr,
     customData: nowCrcData,
   };
   const res = await readCustomH7Message(data);
@@ -436,7 +497,6 @@ const closeSelect = (type: string) => {
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
 
 const updateList = (newList: any[], type: string) => {
-  console.log(newList)
   switch (type) {
     case 'remark':
       remarkList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
@@ -463,23 +523,28 @@ const adminPassword = () => {
 }
 
 const returnPassWordCheck = (val: boolean) => {
-  if (val) {
-    passWordPass.value = true;
-    // 패스 체크 모달 닫기
+  const isDefaultPassword = passWordType.value === '';
+
+  const closePassModal = () => {
     passLayout.value = false;
-    if(passWordType.value === ''){
-      activeTab.value = 2;
-    }else{
-      lisStart();
-      passWordPass.value = false;
-    }
-  } else {
-    passWordPass.value = false;
-    // 패스 체크 모달 닫기
-    passLayout.value = false;
+  };
+
+  const handleSuccess = () => {
+    isDefaultPassword ? (passWordPass.value = true) : (passWordPassLis.value = true);
+    closePassModal();
+
+    isDefaultPassword ? (activeTab.value = 2) : (lisStart(), passWordPassLis.value = false);
+  };
+
+  const handleFailure = () => {
+    isDefaultPassword ? (passWordPass.value = false) : (passWordPassLis.value = false);
+    closePassModal();
     showToast("The administrator password is incorrect.");
-  }
-}
+  };
+
+  val ? handleSuccess() : handleFailure();
+};
+
 
 const passWordClose = () => {
   passLayout.value = false;

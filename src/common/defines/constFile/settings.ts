@@ -239,7 +239,8 @@ export const defaultCbcList = [
     {cd: '36', classCd: '', fullNm: 'PCT', isSelected: true},
     {cd: '37', classCd: '', fullNm: 'MPV', isSelected: true},
     {cd: '38', classCd: '', fullNm: 'PDW', isSelected: true},
-    {cd: '39', classCd: '', fullNm: 'ESR', isSelected: true}
+    {cd: '39', classCd: '', fullNm: 'ESR', isSelected: true},
+    {cd: '40', classCd: '', fullNm: 'RETI', isSelected: true}
 ];
 
 export const rbcClassList = {

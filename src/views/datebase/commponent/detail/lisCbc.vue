@@ -5,17 +5,18 @@
       <p class="loadingText">Loading...</p>
     </div>
     <h1 class="titleCbc"><span>CBC + DIFF</span>
-      <span class="ml1" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']" @click="cbcListOpen">
-        <font-awesome-icon :icon="['fas', 'rectangle-list']" class="cursorPointer" />
+      <span class="ml1" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
+        <font-awesome-icon :icon="['fas', 'rectangle-list']" class="cursorPointer"/>
       </span>
       <div v-if="cbcPopup" class="cbcPopUpContainer">
 
         <div class="flex-justify-between">
           <p></p>
           <h3>List</h3>
-<!--          <button type="button" >-->
-            <font-awesome-icon :icon="['fas', 'xmark']" style="color: #ffffff;" @click="cbcDataListClose" class="cbcDataListCloseBtn" />
-<!--          </button>-->
+          <!--          <button type="button" >-->
+          <font-awesome-icon :icon="['fas', 'xmark']" style="color: #ffffff;" @click="cbcDataListClose"
+                             class="cbcDataListCloseBtn"/>
+          <!--          </button>-->
         </div>
 
         <ul class="cbcPopUpWrapper">
@@ -110,25 +111,27 @@ const alertMessage = ref('');
 const cbcPopup = ref(false);
 const cbcDataList = ref<any>([]);
 const firstCbcDatafilename = ref('');
+const datachoice = ref(false);
 
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] && props.selectItems || siteCd.value === '') {
-    await crcCbcDataLoad();
+  console.log(datachoice.value)
+  if (datachoice.value){
+    return
   }
   await initCbcData(selectItemsVal.value);
 }, {deep: true});
 
 onMounted(async () => {
+  if(props.selectItems){
+    firstCbcDatafilename.value = props.selectItems.barcodeNo;
+  }
+  datachoice.value = false;
   selectItemsVal.value = props.selectItems;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] && props.selectItems || siteCd.value === '') {
-    await crcCbcDataLoad();
-  }
 
   await initCbcData(selectItemsVal.value);
 });
@@ -152,15 +155,18 @@ const cbcListOpen = async () => {
   await cbcDataProcess();
 }
 const cbcDataChoice = async (item: string) => {
+  datachoice.value = true;
   firstCbcDatafilename.value = `${item.split('.')[0]}`;
-  await initCbcData(selectItemsVal.value);
+  await crcCbcDataLoad();
+  await commonCbc(`${item.split('.')[0]}`);
+  await updateCbcData();
   cbcPopup.value = false;
 }
 const cbcDataListClose = () => {
   cbcPopup.value = false;
 }
 const cbcDataProcess = async () => {
-  if(!props.selectItems){
+  if (!props.selectItems) {
     return
   }
   const foldersPath = `folderPath=${cbcFilePathSetArr.value}`;
@@ -168,7 +174,7 @@ const cbcDataProcess = async () => {
   let filterCbcDataArr: any = [];
   if (Array.isArray(cbcDataArr)) {
     filterCbcDataArr = cbcDataArr.filter((item) => {
-      return item.includes(props.selectItems.barcodeNo)
+      return item.split('_')[0] === props.selectItems.barcodeNo
     });
   }
   cbcDataList.value = filterCbcDataArr;
@@ -212,12 +218,23 @@ const initCbcData = async (newVal: any) => {
     case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
       await inhaCbcLoad();
       break;
-
+    case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
+      await crcCbcDataLoad();
+      await commonCbc(firstCbcDatafilename.value);
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['NONE']:
+      await crcCbcDataLoad();
+      await commonCbc(firstCbcDatafilename.value);
+      break;
       // CBC 공통
     default:
-      await commonCbc();
+      await commonCbc(firstCbcDatafilename.value);
       break;
   }
+  await updateCbcData();
+}
+
+const updateCbcData = async () => {
   if (selectItemsVal.value) {
     selectItemsVal.value.cbcPatientNo = cbcPatientNo.value;
     selectItemsVal.value.cbcPatientNm = cbcPatientNm.value;
@@ -234,7 +251,6 @@ const initCbcData = async (newVal: any) => {
     const updatedRuningInfo = {...result.data, ...req}
     await updateRunningApiPost([updatedRuningInfo]);
   }
-
 }
 
 const inhaCbcLoad = async () => {
@@ -258,7 +274,7 @@ const inhaCbcLoad = async () => {
   loading.value = loadingVal;
 }
 
-const commonCbc = async () => {
+const commonCbc = async (firstCbcDatafilename: string) => {
   if (cbcFilePathSetArr.value === '') {
     showErrorAlert(messages.UPLOAD_PLEASE_CBC);
     return;
@@ -304,7 +320,7 @@ const commonCbc = async () => {
       loading.value = false;
     })
   } else { // 파일
-    await fileData();
+    await fileData(firstCbcDatafilename);
   }
   const parms = {
     filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
@@ -313,32 +329,14 @@ const commonCbc = async () => {
   await createCbcFile(parms);
 }
 
-const fileData = async () => {
-  const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${firstCbcDatafilename.value}`);
+const fileData = async (firstCbcDatafilename: string) => {
+  const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${firstCbcDatafilename}`);
   if (readFileTxtRes.data.success) {
     const msg: any = await readH7File(readFileTxtRes.data.data);
     cbcWorkList.value = [];
     console.log(cbcCodeList.value)
     msg?.data?.segments?.forEach((cbcSegment: any) => {
       if (cbcSegment.name.trim() === 'OBX') {
-        // const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-        // const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-        // const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
-        //
-        // // 중복 확인: 이미 동일한 classNm이 있는지 확인
-        // const isDuplicate = cbcWorkList.value.some(
-        //     (item: any) => item.classNm === classCd
-        // );
-        //
-        // // 중복이 아닐 경우에만 추가
-        // if (!isDuplicate) {
-        //   const obj = {
-        //     classNm: classCd,
-        //     count: count,
-        //     unit
-        //   };
-        //   cbcWorkList.value.push(obj);
-        // }
         cbcCodeList.value.forEach((cbcCode: any) => {
           const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
           const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
