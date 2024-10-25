@@ -17,7 +17,7 @@
     <div style="display:flex;">
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
       <div class="reportDiv">
-        <div class="rbcDiv shadowBox" v-if="!projectBm && selectItems.testType === '04'">
+        <div class="rbcDiv shadowBox pos-relative" v-if="!projectBm && selectItems.testType === '04'">
           <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
                     @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
         </div>
