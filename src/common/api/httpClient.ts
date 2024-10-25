@@ -25,7 +25,7 @@ export function useHttpClient() {
     const httpGetAct = async <T>(url: string, parameters?: string, type?: boolean, callImg?: string): Promise<ApiResponse<T>> => {
         const options: AxiosRequestConfig = {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=UTF-8',
                 'Cache-Control': 'public, max-age=3600' // 응답을 1시간 동안 캐싱하도록 지정
             },
         };
@@ -53,7 +53,7 @@ export function useHttpClient() {
 
         const options: AxiosRequestConfig = {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=UTF-8',
             },
         };
         if (contentType === 'blob') {
@@ -89,7 +89,7 @@ export function useHttpClient() {
     const httpPutAct = async <T>(url: string, payload: GenericObject, parameters?: string, type?: boolean): Promise<ApiResponse<T>> => {
         const options: AxiosRequestConfig = {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=UTF-8',
                 'Cache-Control': 'no-cache', // 캐시 무효화
             },
         };
@@ -113,7 +113,7 @@ export function useHttpClient() {
     const httpDeleteAct = async <T>(url: string, payload: GenericObject, type?: boolean): Promise<ApiResponse<T>> => {
         const options: AxiosRequestConfig = {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=UTF-8',
                 'Cache-Control': 'no-cache', // 캐시 무효화
             },
         };
