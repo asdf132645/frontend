@@ -10,7 +10,9 @@
         <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
         <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
         <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
-        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge "> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
+        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
+          {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
+        </li>
         <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
@@ -315,7 +317,7 @@ onBeforeMount(async () => {
     crcConnect.value = crcOptionApi.data[0].crcConnect;
   }
   const ss = (await crcGet());
-  if(ss.code === 200){
+  if (ss.code === 200) {
     isContent.value = true;
     crcData.value = ss.data;
   }

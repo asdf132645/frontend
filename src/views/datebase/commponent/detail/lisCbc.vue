@@ -98,6 +98,7 @@ const cbcSex = ref('');
 const loading = ref(false);
 
 const cbcAge = ref('');
+const hosName = ref('');
 const cbcFilePathSetArr: any = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
@@ -240,13 +241,14 @@ const updateCbcData = async () => {
     selectItemsVal.value.cbcPatientNm = cbcPatientNm.value;
     selectItemsVal.value.cbcSex = cbcSex.value;
     selectItemsVal.value.cbcAge = cbcAge.value;
+    selectItemsVal.value.hosName = hosName.value;
     const req = {
       cbcPatientNo: cbcPatientNo.value,
       cbcPatientNm: cbcPatientNm.value,
       cbcSex: cbcSex.value,
       cbcAge: cbcAge.value,
+      hosName: hosName.value
     };
-
     const result: any = await detailRunningApi(String(selectedSampleId.value));
     const updatedRuningInfo = {...result.data, ...req}
     await updateRunningApiPost([updatedRuningInfo]);
@@ -311,7 +313,7 @@ const commonCbc = async (firstCbcDatafilename: string) => {
           cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
           cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
           cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
-          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0]
+          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
         }
       })
       loading.value = false;
@@ -364,7 +366,8 @@ const fileData = async (firstCbcDatafilename: string) => {
         cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
         cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
         cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
-        cbcAge.value = cbcSegment.fields[7].value[0][0].value[0]
+        cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
+        hosName.value = cbcSegment.fields[10].value[0][0].value[0];
       }
     });
 

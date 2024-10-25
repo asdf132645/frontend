@@ -11,7 +11,9 @@
         <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
         <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
         <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
-        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge "> {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }}</li>
+        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
+          {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
+        </li>
         <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
       </ul>
     </div>
@@ -307,7 +309,6 @@ const showImageGallery = ref(true);
 const isLocalNsNbIntegration = ref(false);
 
 
-
 onBeforeMount(async () => {
   isLoading.value = false;
   projectType.value = window.PROJECT_TYPE;
@@ -329,8 +330,8 @@ onMounted(async () => {
   cellMarkerIcon.value = false;
   await drawCellMarker(true);
   // end
-  if(selectedSampleId.value){
-    const { result, loading, error, refetch } = useGetRunningInfoByIdQuery(
+  if (selectedSampleId.value) {
+    const {result, loading, error, refetch} = useGetRunningInfoByIdQuery(
         {
           id: Number(selectedSampleId.value), // ID를 변수로 전달
         },
@@ -1597,10 +1598,14 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
-            const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-        const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response: any = await updateRunningApi({userId: Number(userId.value), runingInfoDtoItems: originalDb, dayQuery:dayQuery})
+    const response: any = await updateRunningApi({
+      userId: Number(userId.value),
+      runingInfoDtoItems: originalDb,
+      dayQuery: dayQuery
+    })
     if (response && response?.data.length !== 0) {
 
       // getWbcCustomClasses(false, null);
