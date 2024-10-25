@@ -407,6 +407,10 @@ export const apiConstants = {
         get:{
             endpoint: 'file/read',
             requiresToken: false,
+        },
+        readFileEUCKR:{
+            endpoint: 'file/readFileEUCKR',
+            requiresToken: false,
         }
     },
     H7Read: {

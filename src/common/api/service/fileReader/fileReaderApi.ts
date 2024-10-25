@@ -18,6 +18,10 @@ export const readFileTxt = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.fileTxtRead.get, `${request}`, true);
 };
 
+export const readFileEUCKR = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.fileTxtRead.readFileEUCKR, `${request}`, true);
+};
+
 export const readH7File = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.H7Read.post, request, 'text/plain', false, sessionStorage.getItem('viewerCheck') || 'viewer');
 };

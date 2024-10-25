@@ -81,7 +81,7 @@
 import {xml2json} from 'xml-js';
 import {computed, defineProps, onMounted, ref, watch} from "vue";
 import axios from "axios";
-import {readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
+import {readFileEUCKR, readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {createCbcFile, getFolders} from "@/common/api/service/fileSys/fileSysApi";
@@ -332,7 +332,7 @@ const commonCbc = async (firstCbcDatafilename: string) => {
 }
 
 const fileData = async (firstCbcDatafilename: string) => {
-  const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${firstCbcDatafilename}`);
+  const readFileTxtRes: any = await readFileEUCKR(`path=${cbcFilePathSetArr.value}&filename=${firstCbcDatafilename}`);
   if (readFileTxtRes.data.success) {
     const msg: any = await readH7File(readFileTxtRes.data.data);
     cbcWorkList.value = [];
