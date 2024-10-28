@@ -108,6 +108,10 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     fixEqStatCd.value = false;
   }
 
+  if (pbVersion.value === '100a') {
+    dashoffset.value = circumference.value * (1 - ((sysInfo.autoStartTimer / 5) * 100) / 100);
+  }
+
   if (!fixEqStatCd.value) {
     eqStatCd.value = newData.sysInfo.eqStatCd;
   }
