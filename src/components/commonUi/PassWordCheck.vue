@@ -9,8 +9,8 @@
         Please enter the administrator password.
       </p>
       <input type="password" v-model="passWord" class="mt4 lockInput"/>
-      <button @click="passWordCheck" class="mt1 lockBtn">OK</button>
-      <button @click="passWordClose" class="mt1 noLockBtn">Close</button>
+      <button @click="passWordCheck" class="mt1 lockBtn cursorPointer">OK</button>
+      <button @click="passWordClose" class="mt1 noLockBtn cursorPointer">Close</button>
     </div>
   </div>
 </template>
