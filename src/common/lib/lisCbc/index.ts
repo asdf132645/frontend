@@ -106,7 +106,7 @@ const lisHttpSendSD = async (resultStr: any, barcodeNo: string, lisFilePathSetAr
     const body = {
         apiKey: 'M0ZGODgyREY4NzUxMkY4RTM0MERDRkMyRkQ1MDM3OEU=',
         interfaceId: '01',
-        dataText: resultStr,
+        dataText: resultStr.data,
     };
 
     await axios.post(`${lisFilePathSetArr}`, body, {
