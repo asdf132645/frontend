@@ -101,6 +101,7 @@ const fixEqStatCd = ref(false);
 const pbVersion = ref<any>('');
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
+const autoStartTimer = ref(0);
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
@@ -108,9 +109,7 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     fixEqStatCd.value = false;
   }
 
-  if (pbVersion.value === '100a') {
-    dashoffset.value = circumference.value * (1 - ((Number(sysInfo.autoStartTimer) / 5) * 100) / 100);
-  }
+  if (sysInfo?.autoStartTimer) autoStartTimer.value = sysInfo?.autoStartTimer;
 
   if (!fixEqStatCd.value) {
     eqStatCd.value = newData.sysInfo.eqStatCd;
@@ -185,8 +184,17 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
         wbcCount.value = maxWbcCount.value;
       }
 
-      const percentage = (wbcCount.value / maxWbcCount.value) * 100;
-      dashoffset.value = circumference.value * (1 - percentage / 100);
+      if (pbVersion.value === '100a') {
+        if (Number(autoStartTimer.value) !== 0) {
+          dashoffset.value = calculateDashOffset((Number(autoStartTimer.value)) / 5 * 100);
+        } else {
+          const percentage = (wbcCount.value / maxWbcCount.value) * 100;
+          dashoffset.value = calculateDashOffset(percentage);
+        }
+      }  else {
+        const percentage = (wbcCount.value / maxWbcCount.value) * 100;
+        dashoffset.value = calculateDashOffset(percentage);
+      }
     }
   }
 });
@@ -241,6 +249,7 @@ onMounted(() => {
   isBm.value = window.PROJECT_TYPE === 'bm';
 });
 
+const calculateDashOffset = (percentage: number) => circumference.value * (1 - percentage / 100);
 
 const updateInputState = (source: string, target: any[]): void => {
   // 2는 진행중, 1은 있다. 3은 완료 iCasStat 기준

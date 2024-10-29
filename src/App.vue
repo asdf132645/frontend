@@ -645,7 +645,6 @@ async function socketData(data: any) {
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
         let result: ApiResponse<void>;
-        console.log('저장 전 runingInfoDtoItems', runningInfo);
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
 
         if (result) {
