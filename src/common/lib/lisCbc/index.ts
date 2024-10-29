@@ -30,14 +30,18 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
 }
 
 export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathSetArr: string) => {
-    const readFileTxtRes: any = await readFileEUCKR(`path=${await getCbcPathData()}&filename=${await cbcFileNameExtract(barcodeNo)}`);
+    const fileNm = await cbcFileNameExtract(barcodeNo);
+    const path = await getCbcPathData();
+    console.log('path', path)
+    console.log('fileNm', fileNm);
+    const readFileTxtRes: any = await readFileEUCKR(`path=${path}&filename=${fileNm}`);
     let patientId = '';
     let patientName = '';
     if (readFileTxtRes.data.success) {
         const msg: any = await readH7File(readFileTxtRes.data.data);
         msg?.data?.segments?.forEach((cbcSegment: any) => {
             if (cbcSegment.name.trim() === 'PID') {
-                patientId = cbcSegment.fields[1].value[0][0].value[0]
+                patientId = cbcSegment.fields[2].value[0][0].value[0]
                 patientName = cbcSegment.fields[4].value[0][0].value[0]
             }
         })
