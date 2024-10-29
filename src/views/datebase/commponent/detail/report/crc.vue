@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount, ref} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -151,6 +151,7 @@ import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningIn
 import {useStore} from "vuex";
 import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+import {ywmcCbcCheckApi} from "@/common/api/service/lisSend/lisSend";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -253,12 +254,16 @@ onBeforeMount(async () => {
   const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
   lisHotKey.value = lisHotKeyVal;
   lisFilePathSetArr.value = lisFilePathSetArrVar;
+
+});
+
+onMounted(async () => {
   const cbcCodeList = await getCbcCodeList();
 
   const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList);
   const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
   console.log(autoNomarlCheck)
-});
+})
 // 옵션 선택 시 호출되는 함수
 const selectOption = (selectedCode: string) => {
   code.value = selectedCode;   // 선택한 코드를 저장
@@ -422,15 +427,17 @@ const lisStart = async () => {
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      const req = `smp_no=${props.selectItems?.barcodeNo}`
+      const cbcData: any = (await ywmcCbcCheckApi(req)).data;
       const data = {
         ttext_rslt: '',
         tnumeric_rslt: '',
         tequp_cd: 'UIMD', // 장비명
         tequp_typ: '1', //장비구분번호
-        tequp_rslt: '', // 장비결과값
-        tsmp_no: props.selectItems?.barcodeNo,
-        texam_cd: '',
-        tspc: '',
+        tequp_rslt: nowCrcData, // 장비결과값
+        tsmp_no: props.selectItems?.barcodeNo, //검체 바코드 넘버
+        texam_cd: cbcData.exam_cd, // 검사코드
+        tspc: cbcData.spc,
         trslt_srno: '',
         tsmp_no2: '',
       }
