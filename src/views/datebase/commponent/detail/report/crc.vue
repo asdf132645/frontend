@@ -74,9 +74,6 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <!--            <button @click="listDel(index, 'remark')">-->
-            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -91,9 +88,6 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <!--            <button @click="listDel(index, 'comment')">-->
-            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -149,15 +143,13 @@ import Remark from "@/views/datebase/commponent/detail/report/component/remark.v
 import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {getLisPathData, getLisWbcRbcData} from "@/common/lib/commonfunction/inhaCbcLis";
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
-import {createH17, readCustomH7Message} from "@/common/api/service/fileReader/fileReaderApi";
+import {getCbcCodeList, getLisPathData} from "@/common/lib/commonfunction/inhaCbcLis";
+import {createH17} from "@/common/api/service/fileReader/fileReaderApi";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import axios from "axios";
-import {lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
+import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 
 const crcArr = ref<any>([]);
@@ -261,6 +253,11 @@ onBeforeMount(async () => {
   const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
   lisHotKey.value = lisHotKeyVal;
   lisFilePathSetArr.value = lisFilePathSetArrVar;
+  const cbcCodeList = await getCbcCodeList();
+
+  const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList);
+  const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
+  console.log(autoNomarlCheck)
 });
 // 옵션 선택 시 호출되는 함수
 const selectOption = (selectedCode: string) => {

@@ -206,6 +206,7 @@ const initCbcData = async (newVal: any) => {
       await inhaCbcLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
+      await crcCbcDataLoad();
       await commonCbc(firstCbcDatafilename.value);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
@@ -297,7 +298,7 @@ const commonCbc = async (firstCbcDatafilename: string) => {
       msg.data?.segments.forEach(function (cbcSegment: any) {
         if (cbcSegment.name.trim() === 'OBX') {
           cbcCodeList.value.forEach(function (cbcCode: any) {
-            if (cbcCode.CBC_CD === cbcSegment.fields[3].value[0][0].value[0]) {
+            if (cbcCode.classCd === cbcSegment.fields[3].value[0][0].value[0]) {
               var obj = {
                 classNm: cbcCode.cd,
                 count: cbcSegment.fields[5].value[0][0].value[0],
