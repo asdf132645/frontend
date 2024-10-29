@@ -45,7 +45,7 @@
       <tr
           :class="{
             selectedTr: selectedItemId === item.id,
-            submittedTr: item.submitState === 'Submit' || item.submitState === 'lis',
+            submittedTr: item.submitState === 'Submit' || item.submitState === 'lisCbc',
             rock: item.lock_status && item.pcIp !== myIp,
             checkFirst: item.submitState === 'checkFirst',
           }"
@@ -681,7 +681,7 @@ const submitStateChangeText = (text, submitUserId) => {
       return 'Ready';
     case 'Submit':
       return `Submit (${submitUserId})`;
-    case 'lis':
+    case 'lisCbc':
       return `Submit (${submitUserId})`;
     default:
       return 'Ready';

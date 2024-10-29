@@ -570,7 +570,7 @@ async function socketData(data: any) {
             await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
             await inhaDataSend(wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, lisFilePath.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, completeSlot, userModuleDataGet.value.id)
             barcodeNum.value = completeSlot?.barcodeNo;
-            submitState = 'lis';
+            submitState = 'lisCbc';
           }
         } else {
           // 기본 WBC 정보로 업데이트

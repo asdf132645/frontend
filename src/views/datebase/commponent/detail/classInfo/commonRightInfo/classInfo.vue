@@ -26,7 +26,7 @@
       </li>
       <li
           @click="lisModalOpen"
-          :class="{'submitted': selectItems?.submitState === 'lis' || lisBtnColor,}"
+          :class="{'submitted': selectItems?.submitState === 'lisCbc' || lisBtnColor,}"
           v-if="!crcConnect"
       >
         <font-awesome-icon :icon="['fas', 'upload']"/>
@@ -350,7 +350,7 @@ const mountedMethod = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
   if (props.selectItems?.submitState) {
-    lisBtnColor.value = props.selectItems.submitState === 'lis';
+    lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }
   // 첫 진입시
   if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
@@ -366,7 +366,7 @@ const mountedMethod = async () => {
 const lisModalOpen = () => {
   showConfirm.value = true;
   confirmMessage.value = messages.IDS_MSG_UPLOAD_LIS;
-  okMessageType.value = 'lis';
+  okMessageType.value = 'lisCbc';
 }
 
 const goClass = (id: any) => {
@@ -536,7 +536,7 @@ const uimdTestCbcLisDataGet = () => {
 
     const result: any = await detailRunningApi(String(props.selectItems?.id));
     const updatedItem = {
-      submitState: 'lis',
+      submitState: 'lisCbc',
     };
     lisBtnColor.value = true;
     const updatedRuningInfo = {id: result.data.id, ...updatedItem}
@@ -712,10 +712,10 @@ const cmcSeoulLisAndCbcDataGet = () => {
           };
           await createCbcFile(paramsLisCopyLogData);
           if (resultFlag === 'Y') {
-            // lis 등록 후 list 테이블에서 로우 색상 변경 코드
+            // lisCbc 등록 후 list 테이블에서 로우 색상 변경 코드
             const result: any = await detailRunningApi(String(props.selectItems?.id));
             const updatedItem = {
-              submitState: 'lis',
+              submitState: 'lisCbc',
             };
             lisBtnColor.value = true;
             const updatedRuningInfo = {...result.data, ...updatedItem}
@@ -901,7 +901,7 @@ const lisFileUrlCreate = async (data: any) => {
       if (fileRes) {
         // 실행 정보 업데이트
         const result: any = await detailRunningApi(String(props.selectItems?.id));
-        const updatedItem = {submitState: 'lis'};
+        const updatedItem = {submitState: 'lisCbc'};
         const updatedRunningInfo = {...result.data, ...updatedItem};
 
         await resRunningItem(updatedRunningInfo, true);
@@ -913,7 +913,7 @@ const lisFileUrlCreate = async (data: any) => {
         }
       } else {
         // 파일 생성 오류 시 알림 표시
-        showErrorAlert('lis file err');
+        showErrorAlert('lisCbc file err');
       }
     }
   } else {

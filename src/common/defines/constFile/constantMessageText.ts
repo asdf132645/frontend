@@ -134,7 +134,7 @@ export  const messages: Messages = {
     GET_DSP_LIST: 'getDspList',
 
     // Common
-    // lis 단축키 추가
+    // lisCbc 단축키 추가
     SET_LIS_HOT_KEY: 'setLisHotKey',
     UPDATE_NEW_TEST_SET: 'updateNewTestSet',
     UPDATE_EXEC_TEST_TYPE: 'updateExecTestType',
