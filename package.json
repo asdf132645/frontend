@@ -76,8 +76,7 @@
     "jest-transform-stub": "^2.0.0",
     "purgecss-webpack-plugin": "^5.0.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.1.6",
-    "vue-jest": "^3.0.7"
+    "typescript": "^5.1.6"
   },
   "eslintConfig": {
     "root": true,
