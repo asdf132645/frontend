@@ -580,10 +580,12 @@ async function socketData(data: any) {
         }
 
 
+        const traySlotFirstNumber = pbVersion.value === '100a' ? `${params.traySlot}` : '1'
+
         const newObj = {
           slotNo: completeSlot.slotNo,
           lock_status: false,
-          traySlot: '1-' + idx,
+          traySlot: traySlotFirstNumber + '-' + idx,
           barcodeNo: completeSlot.barcodeNo,
           patientId: completeSlot.patientId,
           patientNm: completeSlot.patientNm,
@@ -697,9 +699,13 @@ const removeDuplicateJobCmd = (reqArr: any) => {
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
+  let autoStart: string | number = sessionStorage.getItem('autoStart') || 1;
+  if (autoStart === 'true') autoStart = 1;
+  else if (autoStart === 'false') autoStart = 0;
 
   if (window.PB_VERSION === '100a') {
     Object.assign(req, { isRewindingBelt: isRewindingBelt.value} );
+    Object.assign(req, { autoStart: autoStart });
   }
 
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
@@ -720,11 +726,6 @@ const emitSocketData = async (payload: any) => {
 };
 
 const sendSettingInfo = () => {
-  let autoStart: string | number = sessionStorage.getItem('autoStart') || 1;
-  if (autoStart === 'true') autoStart = 1;
-  else if (autoStart === 'false') autoStart = 0;
-
-
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
@@ -736,10 +737,6 @@ const sendSettingInfo = () => {
     // uiVersion: 'uimd-pb-comm_v2.0.102',
     isNsNbIntegration: isNsNbIntegrationLocal.value,
   };
-
-  if (window.PB_VERSION === '100a') {
-    Object.assign(req, { autoStart: Number(autoStart) });
-  }
 
   store.dispatch('commonModule/setCommonInfo', {reqArr: req});
 }

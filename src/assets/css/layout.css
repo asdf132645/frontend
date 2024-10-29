@@ -2680,6 +2680,7 @@ select.selectSizeTitle {
     padding-left: 1.7%;
     display: flex;
     padding-top: 10px;
+    height: 87vh;
 }
 
 .reportContent {
@@ -3936,6 +3937,10 @@ span.smallName {
     font-size: 1rem;
 }
 
+.noLockBtn:hover {
+    transform: scale(1.02);
+}
+
 textarea.remarkTextArea {
     padding: 10px;
     border: 1px solid #ccc;
@@ -3974,6 +3979,10 @@ p.adminText {
     padding: 10px;
     color: #fff;
     font-size: 1rem;
+}
+
+.lockBtn:hover {
+    transform: scale(1.02);
 }
 
 .remarkUlList > div button {
@@ -4154,6 +4163,13 @@ span.crcListSpan input {
     width: 45%;
     max-width: 150px;
     text-align: right;
+}
+
+.crcReport .tabs {
+    position: sticky;
+    top: 0;
+    background: var(--main-bg-2-color);
+    z-index: 2;
 }
 
 .tabs {

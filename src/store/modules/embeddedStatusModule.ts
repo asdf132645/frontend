@@ -13,6 +13,8 @@ export interface SystemInfo {
     storageSize: string;
     currentCardCount: string;
     currentCardName: string;
+    autoStartTimer: number;
+    autoStart: boolean;
 }
 
 export interface EmbeddedStatusState {
@@ -57,6 +59,8 @@ export const embeddedStatusModule: EmbeddedStatusModule = {
             storageSize: '',
             currentCardCount: '',
             currentCardName: '',
+            autoStartTimer: 0,
+            autoStart: false,
         },
         isInit: '',
     }),
