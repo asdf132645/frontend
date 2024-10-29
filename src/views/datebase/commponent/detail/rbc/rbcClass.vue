@@ -193,7 +193,7 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
-                {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
+                {{ Number(classInfo?.percent) || 0 }}
               </li>
               <li v-else :style="type === 'report' && 'cursor: default;'">-</li>
               <li class="defaultText"
@@ -378,6 +378,7 @@ watch(() => props.currentRbcPageNumber, async (newRbcPageNumber) => {
   rbcImagePageNumber.value = newRbcPageNumber;
   await rbcTotalAndReCount(newRbcPageNumber);
   await countReAdd();
+  await updateRbcInfo();
 })
 
 watch(() => props.selectItems, async (newItem) => {
@@ -389,6 +390,7 @@ watch(() => props.selectItems, async (newItem) => {
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   rightClickItemSet();
   allCheckType.value = true;
+  await updateRbcInfo();
 });
 
 const rightClickItemSet = () => {
@@ -424,6 +426,7 @@ watch(() => props.rbcInfo, async (newItem) => {
   if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
     await reDegree(rbcInfoAfterVal.value);
   }
+  await updateRbcInfo();
 });
 
 watch(() => resetRbcArr, async (newItem) => {
@@ -431,6 +434,7 @@ watch(() => resetRbcArr, async (newItem) => {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
     await rbcTotalAndReCount(rbcImagePageNumber.value);
     await countReAdd();
+    await updateRbcInfo();
   }
 }, {deep: true})
 
@@ -454,6 +458,7 @@ watch(() => rbcReData, async (newItem) => {
       if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
         await reDegree(rbcInfoAfterVal.value);
       }
+      await updateRbcInfo();
     }, 1000);
   }
 
@@ -599,6 +604,7 @@ const classChange = async () => {
   }
   sliderValue.value = 50;
 };
+
 const resetTimer = () => {
   if (rbcSendtimerId.value !== null) {
     clearTimeout(rbcSendtimerId.value);
@@ -742,6 +748,7 @@ const countReAdd = async () => {
       }
 
       classItem.originalDegree = count;
+      classItem.percent = percentageChange(count);
     }
   }
 
@@ -798,6 +805,16 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   const updatedRuningInfo = {...result.data, ...updatedItem};
   await resRunningItem(updatedRuningInfo, false);
   return;
+}
+
+const updateRbcInfo = async () => {
+  const result: any = await detailRunningApi(String(selectedSampleId.value));
+  const updatedItem = {
+    rbcInfoAfter: rbcInfoBeforeVal.value,
+  };
+
+  const updatedRuningInfo = {...result.data, ...updatedItem};
+  await resRunningItem(updatedRuningInfo, false);
 }
 
 const toggleAll = (check: boolean, category?: any) => {
@@ -954,7 +971,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
     console.error('Error:', error);
   }
 }
-
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
