@@ -156,6 +156,9 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
+import axios from "axios";
+import {lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -192,6 +195,8 @@ const userModuleDataGet = computed(() => store.state.userModule);
 const searchText = ref('');
 const showDropdown = ref(false);
 const lisHotKey = ref('');
+const lisFilePathSetArr = ref<any>([]);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -255,7 +260,7 @@ onBeforeMount(async () => {
   }
   const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
   lisHotKey.value = lisHotKeyVal;
-
+  lisFilePathSetArr.value = lisFilePathSetArrVar;
 });
 // 옵션 선택 시 호출되는 함수
 const selectOption = (selectedCode: string) => {
@@ -317,7 +322,7 @@ window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
-  passWordType.value = 'lis'
+  passWordType.value = 'lisCbc'
   if (!passWordPassLis.value) {
     passLayout.value = true;
     return
@@ -336,24 +341,40 @@ const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
 
   return nowCrcData;
 };
+
 const morphologyMapping: any = {
   RBC: {
-    RBC_SIZE: { Normocytic: "2", Microcytic: "1", Macrocytic: "3" },
-    RBC_CHRO: { Normochromic: "2", Hypochromic: "1", Hyperchromic: "3" },
-    RBC_ANIS: { "-": "1", "±": "2", "+": "3", "++": "4", "+++": "5" },
-    RBC_POIK: { "-": "1", Spherocyte: "2", Elliptocyte: "3", "Tear drop cell": "4", Schistocyte: "5", Acanthocyte: "6", "Target cell": "7" },
-    RBC_POLY: { "-": "1", "±": "2", "+": "3", "++": "4", "+++": "5" },
+    RBC_SIZE: {Normocytic: "2", Microcytic: "1", Macrocytic: "3"},
+    RBC_CHRO: {Normochromic: "2", Hypochromic: "1", Hyperchromic: "3"},
+    RBC_ANIS: {"-": "1", "±": "2", "+": "3", "++": "4", "+++": "5"},
+    RBC_POIK: {
+      "-": "1",
+      Spherocyte: "2",
+      Elliptocyte: "3",
+      "Tear drop cell": "4",
+      Schistocyte: "5",
+      Acanthocyte: "6",
+      "Target cell": "7"
+    },
+    RBC_POLY: {"-": "1", "±": "2", "+": "3", "++": "4", "+++": "5"},
   },
   WBC: {
-    WBC_NUMBER: { Decrease: "1", Normal: "2", Increase: "3" },
-    WBC_SEG: { "-": "1", "+": "2" },
-    "Toxic vacuole": { "-": "1", "+": "2" },
-    Segmentation: { Hyper: "1", Normal: "2", Hypo: "3" },
-    "Other findings": { None: "01", Neutrophilia: "02", "Atypical lymphocytes": "03", Lymphocytosis: "04", "Shift to the left": "05", Eosinophilia: "06" },
+    WBC_NUMBER: {Decrease: "1", Normal: "2", Increase: "3"},
+    WBC_SEG: {"-": "1", "+": "2"},
+    "Toxic vacuole": {"-": "1", "+": "2"},
+    Segmentation: {Hyper: "1", Normal: "2", Hypo: "3"},
+    "Other findings": {
+      None: "01",
+      Neutrophilia: "02",
+      "Atypical lymphocytes": "03",
+      Lymphocytosis: "04",
+      "Shift to the left": "05",
+      Eosinophilia: "06"
+    },
   },
   PLT: {
-    Number: { Decrease: "1", Normal: "2", Increase: "3" },
-    Size: { Normal: "01", Giant: "02", Clumping: "03" },
+    Number: {Decrease: "1", Normal: "2", Increase: "3"},
+    Size: {Normal: "01", Giant: "02", Clumping: "03"},
   },
 };
 
@@ -396,44 +417,61 @@ const lisStart = async () => {
   nowCrcData.crcRecommendation = recoList.value;
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
-  // nowCrcData.crcContent = updateCrcContentWithMapping(crcSetData, morphologyMapping);
-  // console.log(nowCrcData);
-  const {lisFilePathSetArr} = await getLisPathData();
-  const data = {
-    sendingApp: 'PBIA',
-    sendingFacility: 'PBIA',
-    receivingApp: 'LIS',
-    receivingFacility: 'LIS',
-    dateTime: getDateTimeStr(),
-    security: '',
-    messageType: ['ADT', 'R02'],
-    messageControlId: props.selectItems?.barcodeNo,
-    processingId: 'P',
-    hl7VersionId: '2.5',
-    customData: nowCrcData,
-  };
-  const res = await readCustomH7Message(data);
-  if (res) {
-    const data = {
-      filepath: `${lisFilePathSetArr}\\${props.selectItems?.barcodeNo}.hl7`,
-      msg: res,
-    }
-    try {
-      await createH17(data);
-      if (props.selectItems?.id) {
-        const result: any = await detailRunningApi(String(props.selectItems?.id));
-        const updatedItem = {
-          submitState: 'lis',
-        };
-        const updatedRuningInfo = {id: result.data.id, ...updatedItem}
-        await resRunningItem(updatedRuningInfo, true);
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['NONE']:
+      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
+      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      const data = {
+        ttext_rslt: '',
+        tnumeric_rslt: '',
+        tequp_cd: 'UIMD', // 장비명
+        tequp_typ: '1', //장비구분번호
+        tequp_rslt: '', // 장비결과값
+        tsmp_no: props.selectItems?.barcodeNo,
+        texam_cd: '',
+        tspc: '',
+        trslt_srno: '',
+        tsmp_no2: '',
       }
-      showToast(messages.IDS_MSG_SUCCESS);
-    } catch (error: any) {
-      showToast(error);
-    }
+      await lisCommonDataWhether(lisSendYwmc(data));
+      break;
   }
 }
+
+const lisCommonDataWhether = async (lisFunc: any) => {
+  const resText = await lisFunc;
+  if(resText === 'Success'){
+    await commonSucessLis();
+  }else{
+    showToast('Lis Send Fail');
+  }
+}
+
+const commonSucessLis = async () => {
+  const data = {
+    filepath: `${lisFilePathSetArr.value}\\${props.selectItems?.barcodeNo}.hl7`,
+    msg: res,
+  }
+  try {
+    await createH17(data);
+    if (props.selectItems?.id) {
+      const result: any = await detailRunningApi(String(props.selectItems?.id));
+      const updatedItem = {
+        submitState: 'lisCbc',
+      };
+      const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+      await resRunningItem(updatedRuningInfo, true);
+    }
+    showToast(messages.IDS_MSG_SUCCESS);
+  } catch (error: any) {
+    showToast(error);
+  }
+}
+
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';

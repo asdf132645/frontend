@@ -112,7 +112,7 @@ export const getImagePrintApi = async (): Promise<ApiResponse<ImagePrintItem[] |
     return httpClient.httpGet(apiConstants.settings.imagePrint.get);
 };
 
-// lis code wbc
+// lisCbc code wbc
 export const createLisCodeWbcApi = async (request: CreateLisCodeDto): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.lisCode.create, request);
 };

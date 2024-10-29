@@ -1,6 +1,16 @@
 import {remainingCount} from "@/common/api/service/setting/settingApi";
 
 export const apiConstants = {
+    lisSend: {
+        ywmcCbcCheck: {
+            endpoint: 'sybase/cbc-results',
+            requiresToken: false,
+        },
+        ywmcLisPostSend: {
+            endpoint: 'sybase/save-uimd-result',
+            requiresToken: false,
+        }
+    },
     auth: {
         refresh: {
             endpoint: '/auth/refresh',

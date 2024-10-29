@@ -130,7 +130,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
         return {errMessage};
     }
     let resultStr = '';
-    // `inhaTestCode.value`를 콤마로 분리하여 배열 생성 inhaTestCode는 인하대 lis 업로드 하면 cbc 코드에서 받은 응답 값을 담는 부분
+    // `inhaTestCode.value`를 콤마로 분리하여 배열 생성 inhaTestCode는 인하대 lisCbc 업로드 하면 cbc 코드에서 받은 응답 값을 담는 부분
     const testCodeList = inhaTestCode.split(',');
     // 변환된 데이터를 저장할 리스트 초기화
     const tmpList: string[] = [];
@@ -311,7 +311,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
             if (selectItems?.id) {
                 const result: any = await detailRunningApi(String(selectItems?.id));
                 const updatedItem = {
-                    submitState: 'lis',
+                    submitState: 'lisCbc',
                 };
                 const updatedRuningInfo = {id: result.data.id, ...updatedItem}
                 await resRunningItem(updatedRuningInfo, true, id);

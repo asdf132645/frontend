@@ -3024,6 +3024,7 @@ ul.wbcHotKeysItems {
     width: 30%;
     padding: 10px;
     border-radius: 4px;
+    height: 85vh;
 }
 
 ul.normalItems {
@@ -4103,7 +4104,7 @@ span.crcListSpan > span {
     color: #fff;
     font-size: 0.8rem;
     overflow-y: auto;
-    max-height: 88vh;
+    max-height: 87vh;
     border-radius: 4px;
     margin-left: 10px;
     margin-right: 10px;

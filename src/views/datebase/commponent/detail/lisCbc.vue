@@ -88,6 +88,7 @@ import {createCbcFile, getFolders} from "@/common/api/service/fileSys/fileSysApi
 import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/lib/commonfunction/inhaCbcLis";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+import {parseDateString, ywmcCbcDataLoad} from "@/common/lib/lisCbc";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -119,14 +120,14 @@ watch(props.selectItems, async (newVal) => {
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
   console.log(datachoice.value)
-  if (datachoice.value){
+  if (datachoice.value) {
     return
   }
   await initCbcData(selectItemsVal.value);
 }, {deep: true});
 
 onMounted(async () => {
-  if(props.selectItems){
+  if (props.selectItems) {
     firstCbcDatafilename.value = props.selectItems.barcodeNo;
   }
   datachoice.value = false;
@@ -182,22 +183,7 @@ const cbcDataProcess = async () => {
 }
 
 // 다양한 날짜 형식을 처리하는 함수
-const parseDateString = (dateString: any) => {
-  // 날짜 문자열에서 날짜 부분 추출 (예: 20241024)
-  // 파일명에서 언더바 뒤에 오는 날짜 추출 (YYYY-MM-DD 또는 YYYYMMDD 형식)
-  const dateMatch = dateString.match(/_(\d{4}-\d{2}-\d{2}|\d{8})/);
-  if (!dateMatch) return null;
 
-  let rawDate = dateMatch[1];  // 매칭된 날짜 문자열
-
-  // YYYYMMDD 형식을 YYYY-MM-DD로 변환
-  if (!rawDate.includes('-')) {
-    rawDate = `${rawDate.substring(0, 4)}-${rawDate.substring(4, 6)}-${rawDate.substring(6, 8)}`;
-  }
-
-  // 변환된 날짜를 Date 객체로 반환
-  return new Date(rawDate);
-}
 
 
 const initCbcData = async (newVal: any) => {
@@ -220,8 +206,10 @@ const initCbcData = async (newVal: any) => {
       await inhaCbcLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-      await crcCbcDataLoad();
       await commonCbc(firstCbcDatafilename.value);
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      await cbcYwmcDataMatching()
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
       await crcCbcDataLoad();
@@ -255,6 +243,15 @@ const updateCbcData = async () => {
   }
 }
 
+const cbcYwmcDataMatching = async () => {
+  const {data, cbcDataVal} = await ywmcCbcDataLoad(props?.selectItems?.barcodeNo, cbcCodeList.value);
+  cbcWorkList.value = data;
+  cbcPatientNo.value = cbcDataVal?.pt_no;
+  cbcPatientNm.value = cbcDataVal?.pt_nm;
+  cbcSex.value = cbcDataVal?.sex;
+  cbcAge.value = cbcDataVal?.age;
+}
+
 const inhaCbcLoad = async () => {
   const {
     cbcWorkList: cbcWorkListVal,
@@ -275,6 +272,7 @@ const inhaCbcLoad = async () => {
   cbcAge.value = cbcAgeVal;
   loading.value = loadingVal;
 }
+
 
 const commonCbc = async (firstCbcDatafilename: string) => {
   if (cbcFilePathSetArr.value === '') {
@@ -336,7 +334,6 @@ const fileData = async (firstCbcDatafilename: string) => {
   if (readFileTxtRes.data.success) {
     const msg: any = await readH7File(readFileTxtRes.data.data);
     cbcWorkList.value = [];
-    console.log(cbcCodeList.value)
     msg?.data?.segments?.forEach((cbcSegment: any) => {
       if (cbcSegment.name.trim() === 'OBX') {
         cbcCodeList.value.forEach((cbcCode: any) => {
