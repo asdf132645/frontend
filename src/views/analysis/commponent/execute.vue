@@ -190,7 +190,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   } = newEmbeddedStatusJobCmd || {};
 
   if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
-    toggleStartStop('start');
+    toggleStartStop('start', 'autoStart');
   }
 
   isPause.value = newIsPause;
@@ -228,7 +228,7 @@ const sendSearchCardCount = () => {
   EventBus.publish('childEmitSocketData', req);
 }
 
-const toggleStartStop = (action: 'start' | 'stop') => {
+const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
   if (viewerCheck.value !== 'main') return;
 
   if (action === 'start') {
@@ -240,7 +240,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       return;
     }
     // 실행 여부 체크
-    if (isRunningState.value) {
+    if (isRunningState.value && autoStart !== 'autoStart') {
       showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {

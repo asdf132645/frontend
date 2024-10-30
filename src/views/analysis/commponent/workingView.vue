@@ -109,7 +109,12 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     fixEqStatCd.value = false;
   }
 
-  if (sysInfo?.autoStartTimer) autoStartTimer.value = sysInfo?.autoStartTimer;
+  if (pbVersion.value === '100a' && sysInfo?.autoStartTimer) {
+    autoStartTimer.value = sysInfo?.autoStartTimer;
+    if (Number(autoStartTimer.value) !== 0) {
+      dashoffset.value = calculateDashOffset((Number(autoStartTimer.value)) / 5 * 100);
+    }
+  }
 
   if (!fixEqStatCd.value) {
     eqStatCd.value = newData.sysInfo.eqStatCd;
@@ -184,17 +189,8 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
         wbcCount.value = maxWbcCount.value;
       }
 
-      if (pbVersion.value === '100a') {
-        if (Number(autoStartTimer.value) !== 0) {
-          dashoffset.value = calculateDashOffset((Number(autoStartTimer.value)) / 5 * 100);
-        } else {
-          const percentage = (wbcCount.value / maxWbcCount.value) * 100;
-          dashoffset.value = calculateDashOffset(percentage);
-        }
-      }  else {
-        const percentage = (wbcCount.value / maxWbcCount.value) * 100;
-        dashoffset.value = calculateDashOffset(percentage);
-      }
+      const percentage = (wbcCount.value / maxWbcCount.value) * 100;
+      dashoffset.value = calculateDashOffset(percentage);
     }
   }
 });
@@ -266,7 +262,7 @@ const startCounting = (): void => {
         elapsedTimeCount.value += 1;
         timeNum.value = elapsedTimeCount.value % 60;
         sessionStorage.setItem('elapsedTimeCount', String(elapsedTimeCount.value));
-        store.dispatch('timeModule/setTimeInfo', {slideTime: getCountToTime(elapsedTimeCount.value)});
+        store.dispatch('timeModule/setTimeInfo', { slideTime: getCountToTime(elapsedTimeCount.value) });
       }
     }, 1000);
   }
