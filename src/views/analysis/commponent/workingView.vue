@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount, watch, computed, defineProps, onBeforeMount} from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch, computed, defineProps, onBeforeMount } from 'vue';
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
@@ -152,7 +152,13 @@ watch([commonDataGet.value], async (newVals: any) => {
   if (!newValsObj[0].isRunningState) {
     stopTotalCounting();
     stopCounting();
-    dashoffset.value = circumference.value;
+
+    if (pbVersion.value === '100a' && Number(autoStartTimer.value) === 0) {
+      dashoffset.value = circumference.value;
+    } else if (pbVersion.value === '12a') {
+      dashoffset.value = circumference.value;
+    }
+
   }
 });
 
@@ -170,7 +176,6 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
       countingInterval = null;
     }
   }
-  // afterChange
   if (slotArray[0].changeSlideState?.changeSlide.value === 'afterChange') {
     stopCounting();
     startCounting();

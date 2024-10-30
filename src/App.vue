@@ -470,7 +470,8 @@ async function socketData(data: any) {
         const iCasStatArr: any = [...str];
         const lastCompleteIndex = iCasStatArr.lastIndexOf("3") === -1 ? 0 : iCasStatArr.lastIndexOf("3") + 1;
 
-        if (iCasStatArr.lastIndexOf("2") === 0) {
+        // if (iCasStatArr.lastIndexOf("2") === 0) {
+        if (iCasStatArr.lastIndexOf("2") !== -1) {
           await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
         }
         if (data?.iCasStat.indexOf("2") !== -1) {
