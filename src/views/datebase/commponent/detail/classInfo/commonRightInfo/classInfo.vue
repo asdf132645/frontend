@@ -117,18 +117,11 @@
           </ul>
           <ul style="width: 29%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li class="grayText" style="cursor: default; padding-left: -20px;">
-              {{ Number(nWbcItem?.count.before) || 0 }}
-              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
-                / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span>
-            </li>
+            <li class="grayText" style="cursor: default; padding-left: -20px;">{{ Number(nWbcItem?.count.before) || 0 }}</li>
           </ul>
           <ul class="degree" style="width: 27%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">
-              {{ Number(nWbcItem?.count.after) || 0 }}
-              <span v-if="nWbcItem?.title === 'NR' || nWbcItem?.title === 'GP'">
-                / {{ Number(selectItems?.wbcInfo?.maxWbcCount) || 0 }} WBC</span></li>
+            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">{{ Number(nWbcItem?.count.after) || 0 }}</li>
           </ul>
         </div>
       </template>
