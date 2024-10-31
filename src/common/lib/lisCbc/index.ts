@@ -74,7 +74,6 @@ export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathS
     let patientName = '';
     if (readFileTxtRes.data.success) {
         const msg: any = await readH7File(readFileTxtRes.data.data);
-        console.log(msg)
         msg?.data?.segments?.forEach((cbcSegment: any) => {
             if (cbcSegment.name.trim() === 'PID') {
                 patientId = cbcSegment.fields[2].value[0][0].value[0]
@@ -269,6 +268,5 @@ export const cbcDataGet = async (barcodeNo: string, cbcCodeList: any) => {
             }
         })
     }
-    console.log(cbcData);
     return cbcData;
 }

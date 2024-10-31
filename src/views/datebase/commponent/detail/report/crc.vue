@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -190,9 +190,11 @@ const showDropdown = ref(false);
 const lisHotKey = ref('');
 const lisFilePathSetArr = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const submitState = ref(false);
 
 onBeforeMount(async () => {
   await nextTick();
+
   isContent.value = true;
   if (isContent.value) {
     const savedData = localStorage.getItem('crcSetData');
@@ -240,6 +242,24 @@ onBeforeMount(async () => {
     } else {
       crcArr.value = (await crcGet()).data;
       trrur.value = true;
+      remarkList.value.push({
+        code: '',
+        id: 0,
+        remarkAllContent: '',
+        remarkContent: '',
+      })
+      commentList.value.push({
+        code: '',
+        id: 0,
+        remarkAllContent: '',
+        remarkContent: '',
+      })
+      recoList.value.push({
+        code: '',
+        id: 0,
+        remarkAllContent: '',
+        remarkContent: '',
+      })
     }
 
     crcDataArr.value = (await crcDataGet()).data;
@@ -262,7 +282,8 @@ onMounted(async () => {
 
   const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList);
   const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
-  console.log(autoNomarlCheck)
+  // console.log(autoNomarlCheck);
+  submitState.value = props.selectItems?.submitState === 'lisCbc';
 })
 // 옵션 선택 시 호출되는 함수
 const selectOption = (selectedCode: string) => {
@@ -325,10 +346,10 @@ window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
   passWordType.value = 'lisCbc'
-  if (!passWordPassLis.value && props.selectItems?.submitState === 'lisCbc') {
+  if (!passWordPassLis.value && submitState) {
     passLayout.value = true;
     return
-  }else {
+  } else {
     await lisStart();
   }
 
@@ -364,9 +385,9 @@ const morphologyMapping: any = {
   },
   WBC: {
     WBC_NUMBER: {Decrease: "1", Normal: "2", Increase: "3"},
-    WBC_SEG: {"-": "1", "+": "2"},
-    "Toxic vacuole": {"-": "1", "+": "2"},
-    Segmentation: {Hyper: "1", Normal: "2", Hypo: "3"},
+    WBC_SEG: {Hyper: "1", Normal: "2", Hypo: "3"},
+    WBC_TOXICG: {"-": "1", "+": "2"},
+    WBC_TOXICV: {"-": "1", "+": "2"},
     WBC_OTHER: {
       None: "01",
       Neutrophilia: "02",
@@ -412,14 +433,30 @@ const lisStart = async () => {
     passWordPassLis.value = false;
     return;
   }
-  const crcSetData = (await crcGet()).data;
+  const crcSetData = crcArr.value;
+
   let nowCrcData: any = crcDataArr.value.find((item) => {
     return item.code === code.value
   });
+  ['plt', 'rbc', 'wbc'].forEach(category => {
+    nowCrcData.crcContent[category].forEach((nowItem: any) => {
+      for (const el of crcSetData) {
+        if (nowItem.id === el.id) {
+          if (el.crcType === 'select') {
+            nowItem.crcContent = el.val;
+          } else {
+            nowItem.crcContent = el.crcContent;
+          }
+        }
+      }
+    });
+  });
+  console.log(nowCrcData)
   nowCrcData.crcRemark = remarkList.value;
   nowCrcData.crcComment = commentList.value;
   nowCrcData.crcRecommendation = recoList.value;
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+  console.log('nowCrcData', nowCrcData)
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
@@ -450,32 +487,24 @@ const lisStart = async () => {
 
 const lisCommonDataWhether = async (lisFunc: any) => {
   const resText = await lisFunc;
-  if(resText === 'Success'){
+  if (resText === 'Success') {
     await commonSucessLis();
-  }else{
+  } else {
     showToast('Lis Send Fail');
   }
 }
 
 const commonSucessLis = async () => {
-  const data = {
-    filepath: `${lisFilePathSetArr.value}\\${props.selectItems?.barcodeNo}.hl7`,
-    msg: res,
+  if (props.selectItems?.id) {
+    const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const updatedItem = {
+      submitState: 'lisCbc',
+    };
+    const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+    await resRunningItem(updatedRuningInfo, true);
+    submitState.value = true;
   }
-  try {
-    await createH17(data);
-    if (props.selectItems?.id) {
-      const result: any = await detailRunningApi(String(props.selectItems?.id));
-      const updatedItem = {
-        submitState: 'lisCbc',
-      };
-      const updatedRuningInfo = {id: result.data.id, ...updatedItem}
-      await resRunningItem(updatedRuningInfo, true);
-    }
-    showToast(messages.IDS_MSG_SUCCESS);
-  } catch (error: any) {
-    showToast(error);
-  }
+  showToast(messages.IDS_MSG_SUCCESS);
 }
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
@@ -511,6 +540,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
 // }
 
 const openSelect = (type: string) => {
+  console.log(type)
   switch (type) {
     case 'remark':
       isRemark.value = true;
