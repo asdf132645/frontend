@@ -73,7 +73,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
-            <textarea v-model="item.remarkAllContent"></textarea>
+            <textarea maxlength="1000" v-model="item.remarkAllContent"></textarea>
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
-            <textarea v-model="item.remarkAllContent"></textarea>
+            <textarea maxlength="1000" v-model="item.remarkAllContent"></textarea>
           </div>
         </div>
       </div>

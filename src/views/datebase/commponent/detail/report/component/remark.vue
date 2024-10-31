@@ -40,7 +40,7 @@
           <td v-else class="textLeft">{{ item?.code }}</td>
 
           <td v-if="editIndex === idx">
-            <textarea class="remarkTextArea table" v-model="editedContent"/>
+            <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000"/>
           </td>
           <td v-else class="textLeft" v-html="item?.remarkAllContent"></td>
 
@@ -69,7 +69,7 @@
             <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
             <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
           </div>
-          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"></textarea>
+          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>
         </div>
         <div>
           <button class="crcDefaultBtn" @click="okSelect">OK</button>
