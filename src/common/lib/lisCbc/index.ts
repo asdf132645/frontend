@@ -109,15 +109,16 @@ const lisHttpSendSD = async (resultStr: any, barcodeNo: string, lisFilePathSetAr
         dataText: resultStr.data,
     };
 
-    await axios.post(`${lisFilePathSetArr}`, body, {
+    const res = await axios.post(`${lisFilePathSetArr}`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).then(response => {
-        return 'Success';
-    }).catch(error => {
-        return 'Lis Send Fail';
-    });
+    })
+        if(res?.data.code === 200){
+            return 'Success';
+        }else{
+            return 'Lis Send Fail';
+        }
 }
 
 export const lisSendYwmc = async (data: any) => {

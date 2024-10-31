@@ -328,6 +328,8 @@ const lisClick = async () => {
   if (!passWordPassLis.value && props.selectItems?.submitState !== 'lisCbc') {
     passLayout.value = true;
     return
+  }else {
+    await lisStart();
   }
 
 }
