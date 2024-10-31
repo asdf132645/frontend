@@ -325,7 +325,7 @@ window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
   passWordType.value = 'lisCbc'
-  if (!passWordPassLis.value && props.selectItems?.submitState !== 'lisCbc') {
+  if (!passWordPassLis.value && props.selectItems?.submitState === 'lisCbc') {
     passLayout.value = true;
     return
   }else {
