@@ -57,8 +57,9 @@
               </div>
             </div>
             <div v-if="pageName==='set'">
+              {{ item.crcCode }}
               <input class="smallInput" type="text"
-                     placeholder="code" v-model="item.crcCode"/>
+                     placeholder="code" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
             </div>
           </div>
           <div v-if="item.crcType === 'percent'" class="smallBox">

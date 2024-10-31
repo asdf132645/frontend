@@ -367,7 +367,7 @@ const morphologyMapping: any = {
     WBC_SEG: {"-": "1", "+": "2"},
     "Toxic vacuole": {"-": "1", "+": "2"},
     Segmentation: {Hyper: "1", Normal: "2", Hypo: "3"},
-    "Other findings": {
+    WBC_OTHER: {
       None: "01",
       Neutrophilia: "02",
       "Atypical lymphocytes": "03",
@@ -377,8 +377,8 @@ const morphologyMapping: any = {
     },
   },
   PLT: {
-    Number: {Decrease: "1", Normal: "2", Increase: "3"},
-    Size: {Normal: "01", Giant: "02", Clumping: "03"},
+    PLATE_NUMBER: {Decrease: "1", Normal: "2", Increase: "3"},
+    PLATE_SIZE: {Normal: "01", Giant: "02", Clumping: "03"},
   },
 };
 
