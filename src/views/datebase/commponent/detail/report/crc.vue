@@ -442,7 +442,6 @@ const lisStart = async () => {
   nowCrcData.crcComment = commentList.value;
   nowCrcData.crcRecommendation = recoList.value;
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-  console.log('nowCrcData', nowCrcData)
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:

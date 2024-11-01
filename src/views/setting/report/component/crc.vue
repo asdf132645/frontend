@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from "vue";
+import {ref, onMounted, computed, nextTick} from "vue";
 import {
   crcGet, crcOptionGet,
   createCrcApi,
@@ -162,6 +162,7 @@ const masterId = computed(() => store.state.userModule.userId);
 const userType = computed(() => store.state.userModule.userType);
 
 onMounted(async () => {
+  await nextTick()
   crcData.value = await crcGet();
   const crcOptionApi = await crcOptionGet();
 
@@ -172,6 +173,11 @@ onMounted(async () => {
     crcRemarkCountArr.value = crcOptionApi.data[0].crcRemarkCount;
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcOptionPutWhether.value = true;
+  }else{
+    crcRemarkCountArr.value = [{"checked": false, "name": "remark"}, {
+      "checked": false,
+      "name": "Comment"
+    }, {"checked": false, "name": "Recommendation"}]
   }
 
   isToggle.value = true;

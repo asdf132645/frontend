@@ -59,6 +59,8 @@
             <div v-if="pageName==='set'">
               <input class="smallInput" type="text"
                      placeholder="code" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
+              <input class="smallInput" type="text"
+                     placeholder="code" v-model="item.crcCodeMatching" @change="updateCrcArr(item.id)"/>
             </div>
           </div>
           <div v-if="item.crcType === 'percent'" class="smallBox">
@@ -132,6 +134,7 @@ const groupedData = computed(() => {
   }
   return rows;
 });
+const crcCodeMatching = ref<any>([]);
 
 onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);
