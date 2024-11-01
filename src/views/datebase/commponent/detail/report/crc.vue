@@ -242,24 +242,9 @@ onBeforeMount(async () => {
     } else {
       crcArr.value = (await crcGet()).data;
       trrur.value = true;
-      remarkList.value.push({
-        code: '',
-        id: 0,
-        remarkAllContent: '',
-        remarkContent: '',
-      })
-      commentList.value.push({
-        code: '',
-        id: 0,
-        remarkAllContent: '',
-        remarkContent: '',
-      })
-      recoList.value.push({
-        code: '',
-        id: 0,
-        remarkAllContent: '',
-        remarkContent: '',
-      })
+      initializeList(recoList);
+      initializeList(remarkList);
+      initializeList(commentList);
     }
 
     crcDataArr.value = (await crcDataGet()).data;
@@ -346,7 +331,7 @@ window.addEventListener('keyup', handleKeyUp);
 
 const lisClick = async () => {
   passWordType.value = 'lisCbc'
-  if (!passWordPassLis.value && submitState) {
+  if (!passWordPassLis.value && submitState.value) {
     passLayout.value = true;
     return
   } else {
@@ -357,6 +342,7 @@ const lisClick = async () => {
 const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
   ['plt', 'rbc', 'wbc'].forEach(category => {
     nowCrcData.crcContent[category].forEach((nowItem: any) => {
+      // crcSetData -> 셋팅페이지에서 셋팅한 배열들 단일 배열
       const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
       if (matchingItem && matchingItem.crcCode) {
         nowItem.crcTitle = matchingItem.crcCode;
@@ -569,8 +555,22 @@ const closeSelect = (type: string) => {
 }
 
 // 자식 컴포넌트로부터 업데이트된 리스트를 받음
+const initializeList = (list: any) => {
+  if (list.value.length === 0) {
+    list.value.push({
+      code: '',
+      id: 0,
+      remarkAllContent: '',
+      remarkContent: '',
+    });
+  }
+};
 
 const updateList = (newList: any[], type: string) => {
+  initializeList(recoList);
+  initializeList(remarkList);
+  initializeList(commentList);
+
   switch (type) {
     case 'remark':
       remarkList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);

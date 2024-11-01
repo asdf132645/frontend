@@ -344,6 +344,7 @@ const okSelect = () => {
   // console.log(props.type)
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
   showToast('Remark Add Success');
+  console.log(selectedRemarks, props.type)
   emit("listUpdated", selectedRemarks, props.type);
 };
 
