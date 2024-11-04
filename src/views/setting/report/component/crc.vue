@@ -12,6 +12,14 @@
                 @click="crcDefaultModeOn"
             />
           </div>
+          <div class="w200 flex-align-center-justify-between" v-if="masterId === 'uimd'">
+            <span>CRC lis Two Mode</span>
+            <font-awesome-icon
+                :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="lisTwoModeOn"
+            />
+          </div>
 
           <div class="w200 flex-align-center-justify-between" @click="crcConnectOn" v-if="masterId === 'uimd'">
             <span>CRC Connect</span>
@@ -149,6 +157,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const crcDefaultMode = ref(false);
+const lisTwoMode = ref(false);
 const crcConnect = ref(false);
 const crcOptionPutWhether = ref(false);
 const crcOptionId = ref(0);
@@ -168,6 +177,7 @@ onMounted(async () => {
 
   if (crcOptionApi.data.length !== 0) {
     crcDefaultMode.value = crcOptionApi.data[0].crcMode;
+    lisTwoMode.value = crcOptionApi.data[0]?.lisTwoMode;
     crcConnect.value = crcOptionApi.data[0].crcConnect;
     crcOptionId.value = crcOptionApi.data[0].id;
     crcRemarkCountArr.value = crcOptionApi.data[0].crcRemarkCount;
@@ -252,6 +262,7 @@ const saveCrcData = async () => {
         crcConnect: crcConnect.value,
         crcRemarkCount: crcRemarkCountArr.value,
         crcPassWord: crcPassWord.value,
+        lisTwoMode: lisTwoMode.value
       });
     } else {
       await createCrcApi(crcArr.value);
@@ -260,6 +271,7 @@ const saveCrcData = async () => {
         crcConnect: crcConnect.value,
         crcRemarkCount: crcRemarkCountArr.value,
         crcPassWord: crcPassWord.value,
+        lisTwoMode: lisTwoMode.value
       });
 
     }
@@ -278,6 +290,9 @@ const saveCrcData = async () => {
 
 const crcDefaultModeOn = () => {
   crcDefaultMode.value = !crcDefaultMode.value;
+}
+const lisTwoModeOn = () => {
+  lisTwoMode.value = !lisTwoMode.value;
 }
 
 const crcConnectOn = () => {

@@ -102,9 +102,6 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <!--            <button @click="listDel(index, 'reco')">-->
-            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -136,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -144,7 +141,6 @@ import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/set
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {getCbcCodeList, getLisPathData} from "@/common/lib/commonfunction/inhaCbcLis";
-import {createH17} from "@/common/api/service/fileReader/fileReaderApi";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
@@ -152,6 +148,7 @@ import {useStore} from "vuex";
 import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 import {ywmcCbcCheckApi} from "@/common/api/service/lisSend/lisSend";
+import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -184,6 +181,7 @@ const passWordPass = ref(false);
 const passWordPassLis = ref(false);
 const passLayout = ref(false);
 const crcPassWordVal = ref('');
+const lisTwoMode = ref(false);
 const userModuleDataGet = computed(() => store.state.userModule);
 const searchText = ref('');
 const showDropdown = ref(false);
@@ -260,6 +258,7 @@ onBeforeMount(async () => {
     crcRemarkCount.value = crcOptionApi.data[0].crcRemarkCount;
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcPassWordVal.value = crcOptionApi.data[0].crcPassWord;
+    lisTwoMode.value = crcOptionApi.data[0].lisTwoMode;
   }
   const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
   lisHotKey.value = lisHotKeyVal;
@@ -358,7 +357,7 @@ const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
   return nowCrcData;
 };
 
-const newMorphMapSet = () => {
+const newMorphMapSet = async () => {
   morphologyMapping.value = {
     RBC: {},
     WBC: {},
@@ -400,8 +399,6 @@ const newMorphMapSet = () => {
     }
   }
 };
-
-
 
 
 // crcContent 업데이트 함수
@@ -465,21 +462,18 @@ const lisStart = async () => {
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      const req = `smp_no=${props.selectItems?.barcodeNo}`
-      const cbcData: any = (await ywmcCbcCheckApi(req)).data;
       const data = {
-        ttext_rslt: '',
-        tnumeric_rslt: '',
         tequp_cd: 'UIMD', // 장비명
         tequp_typ: '1', //장비구분번호
         tequp_rslt: nowCrcData, // 장비결과값
         tsmp_no: props.selectItems?.barcodeNo, //검체 바코드 넘버
-        texam_cd: cbcData.exam_cd, // 검사코드
-        tspc: cbcData.spc,
-        trslt_srno: '',
-        tsmp_no2: '',
+        trslt_srno: getDateTimeStr(), // (장비검사번호 - 중복안됨)
+        rslt_stus: 'T',
       }
       await lisCommonDataWhether(lisSendYwmc(data));
+      if(lisTwoMode.value) {
+        //
+      }
       break;
   }
 }
