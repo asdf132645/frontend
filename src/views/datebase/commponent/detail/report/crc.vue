@@ -191,6 +191,11 @@ const lisHotKey = ref('');
 const lisFilePathSetArr = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const submitState = ref(false);
+const morphologyMapping: any = ref({
+  RBC: {},
+  WBC: {},
+  PLT: {},
+});
 
 onBeforeMount(async () => {
   await nextTick();
@@ -259,7 +264,7 @@ onBeforeMount(async () => {
   const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
   lisHotKey.value = lisHotKeyVal;
   lisFilePathSetArr.value = lisFilePathSetArrVar;
-
+  await newMorphMapSet();
 });
 
 onMounted(async () => {
@@ -353,41 +358,51 @@ const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
   return nowCrcData;
 };
 
-const morphologyMapping: any = {
-  RBC: {
-    RBC_SIZE: {Normocytic: "2", Microcytic: "1", Macrocytic: "3"},
-    RBC_CHRO: {Normochromic: "2", Hypochromic: "1", Hyperchromic: "3"},
-    RBC_ANIS: {"-": "1", "±": "2", "+": "3", "++": "4", "+++": "5"},
-    RBC_POIK: {
-      "-": "1",
-      Spherocyte: "2",
-      Elliptocyte: "3",
-      "Tear drop cell": "4",
-      Schistocyte: "5",
-      Acanthocyte: "6",
-      "Target cell": "7"
-    },
-    RBC_POLY: {"-": "1", "±": "2", "+": "3", "++": "4", "+++": "5"},
-  },
-  WBC: {
-    WBC_NUMBER: {Decrease: "1", Normal: "2", Increase: "3"},
-    WBC_SEG: {Hyper: "1", Normal: "2", Hypo: "3"},
-    WBC_TOXICG: {"-": "1", "+": "2"},
-    WBC_TOXICV: {"-": "1", "+": "2"},
-    WBC_OTHER: {
-      None: "01",
-      Neutrophilia: "02",
-      "Atypical lymphocytes": "03",
-      Lymphocytosis: "04",
-      "Shift to the left": "05",
-      Eosinophilia: "06"
-    },
-  },
-  PLT: {
-    PLATE_NUMBER: {Decrease: "1", Normal: "2", Increase: "3"},
-    PLATE_SIZE: {Normal: "01", Giant: "02", Clumping: "03"},
-  },
+const newMorphMapSet = () => {
+  morphologyMapping.value = {
+    RBC: {},
+    WBC: {},
+    PLT: {},
+  };
+
+  for (const el of crcArr.value) {
+    if (!el.crcCode || !el.crcCodeMatching || !el.crcContent) {
+      continue;
+    }
+
+    const matchingKeys = el.crcCodeMatching.split(',').map(key => key.trim());
+    const contents = el.crcContent.split(',').map(content => content.trim());
+
+    if (el.morphologyType === 'RBC') {
+      // RBC에 새로운 속성 추가
+      morphologyMapping.value.RBC[el.crcCode] = {};
+      for (let i = 0; i < matchingKeys.length; i++) {
+        const key = matchingKeys[i];
+        const value = contents[i] ? contents[i] : "";
+        morphologyMapping.value.RBC[el.crcCode][value] = key;
+      }
+    } else if (el.morphologyType === 'WBC') {
+      // WBC에 새로운 속성 추가
+      morphologyMapping.value.WBC[el.crcCode] = {};
+      for (let i = 0; i < matchingKeys.length; i++) {
+        const key = matchingKeys[i];
+        const value = contents[i] ? contents[i] : "";
+        morphologyMapping.value.WBC[el.crcCode][value] = key;
+      }
+    } else if (el.morphologyType === 'PLT') {
+      // PLT에 새로운 속성 추가
+      morphologyMapping.value.PLT[el.crcCode] = {};
+      for (let i = 0; i < matchingKeys.length; i++) {
+        const key = matchingKeys[i];
+        const value = contents[i] ? contents[i] : "";
+        morphologyMapping.value.PLT[el.crcCode][value] = key;
+      }
+    }
+  }
 };
+
+
+
 
 // crcContent 업데이트 함수
 const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
@@ -399,7 +414,7 @@ const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
       // id 기준으로 crcSetData에서 매칭 항목 찾기
       const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
       if (matchingItem && matchingItem.crcCode) {
-        const categoryMapping = morphologyMapping[matchingItem.morphologyType];
+        const categoryMapping = morphologyMapping.value[matchingItem.morphologyType];
 
         // 매핑이 존재하고 crcContent의 값이 매핑에 있으면 crcContent 값으로 변경
         if (categoryMapping && categoryMapping[matchingItem.crcCode]) {
@@ -437,7 +452,6 @@ const lisStart = async () => {
       }
     });
   });
-  console.log(nowCrcData)
   nowCrcData.crcRemark = remarkList.value;
   nowCrcData.crcComment = commentList.value;
   nowCrcData.crcRecommendation = recoList.value;
