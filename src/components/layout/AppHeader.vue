@@ -540,7 +540,6 @@ const onModalOpen = () => {
 const cellImgGet = async () => {
   try {
     const result = await getCellImgApi();
-    console.log(';result', result);
     if (result) {
       if (result?.data) {
         const data = result.data;

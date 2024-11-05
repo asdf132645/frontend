@@ -50,9 +50,12 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
         cbcCodeList.forEach(function (cbcCode: any) {
             if (cbcCode?.classCd === data?.exam_cd) {
                 const obj = {
-                    classNm: cbcCode.cd,
+                    classNm: cbcCode.classCd,
                     count: data?.rslt_stus,
                     unit: data?.unit,
+                    textVal: data?.text_rslt,
+                    numVal: data?.numeric_rslt,
+                    spc: data?.spc,
                 }
                 cbcWorkList.push(obj)
             }

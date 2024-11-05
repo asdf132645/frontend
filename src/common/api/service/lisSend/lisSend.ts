@@ -9,3 +9,7 @@ export const ywmcLisPostSendApi = async (request: any): Promise<ApiResponse<void
 export const ywmcCbcCheckApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.lisSend.ywmcCbcCheck, `${request}`, true);
 };
+
+export const ywmcLisCrcSendApi = async (req: any ): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.lisSend.ywmcLisCrcSend, req);
+};

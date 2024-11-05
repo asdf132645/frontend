@@ -9,6 +9,10 @@ export const apiConstants = {
         ywmcLisPostSend: {
             endpoint: 'sybase/save-uimd-result',
             requiresToken: false,
+        },
+        ywmcLisCrcSend: {
+            endpoint: 'sybase/saveUimdCrcData',
+            requiresToken: false,
         }
     },
     auth: {

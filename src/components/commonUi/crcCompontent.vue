@@ -38,6 +38,8 @@
                     <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
                   </select>
                 </div>
+                <input v-if="item.val === 'Etc'" @input="changeEtc($event, item)" type="text"
+                       placeholder="Enter text"/>
               </div>
               <div v-else-if="item?.crcType === 'text'">
                 <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
@@ -121,7 +123,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect']);
+const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect', 'changeCrcData']);
 const arrData = ref<any>([]);
 // 로컬 상태
 const editIndex = ref<number | null>(null);
@@ -135,7 +137,7 @@ const groupedData = computed(() => {
   return rows;
 });
 const crcCodeMatching = ref<any>([]);
-
+const crcSelectEtc = ref<any>([]);
 onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);
 });
@@ -147,6 +149,12 @@ watch(props, (newArr) => {
 const editCrcArr = (id: number) => {
   editIndex.value = id;
 };
+
+const changeEtc = (eve: any, item: any) => {
+  const nes = JSON.parse(JSON.stringify(item));
+  nes.val = eve.target.value;
+  emit('changeCrcData', nes);
+}
 
 const updateCrcArr = (id: number) => {
   const updatedItem = {...arrData.value.find(item => item.id === id)};

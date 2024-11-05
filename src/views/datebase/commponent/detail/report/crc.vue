@@ -51,15 +51,15 @@
       </div>
 
       <!-- RBC 결과 -->
-      <crc-compontent v-if="trrur" :items="crcArr" moType="RBC" pageName="report"></crc-compontent>
+      <crc-compontent v-if="trrur" :items="crcArr" moType="RBC" pageName="report" @changeCrcData="changeCrcData"></crc-compontent>
 
       <!-- WBC, PLT 결과 -->
       <div class="moDivBox mt1">
         <div>
-          <crc-compontent v-if="trrur" :items="crcArr" moType="WBC" pageName="report"></crc-compontent>
+          <crc-compontent v-if="trrur" :items="crcArr" moType="WBC" pageName="report" @changeCrcData="changeCrcData"></crc-compontent>
         </div>
         <div>
-          <crc-compontent v-if="trrur" :items="crcArr" moType="PLT" pageName="report"></crc-compontent>
+          <crc-compontent v-if="trrur" :items="crcArr" moType="PLT" pageName="report" @changeCrcData="changeCrcData"></crc-compontent>
         </div>
       </div>
 
@@ -145,9 +145,9 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
+import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc, ywmcCbcDataLoad} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
-import {ywmcCbcCheckApi} from "@/common/api/service/lisSend/lisSend";
+import {ywmcCbcCheckApi, ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 
 const crcArr = ref<any>([]);
@@ -194,6 +194,8 @@ const morphologyMapping: any = ref({
   WBC: {},
   PLT: {},
 });
+const cbcCodeList = ref<any>([]);
+const lastChnageInputCrcData = ref<any>([]);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -221,25 +223,12 @@ onBeforeMount(async () => {
       if (typeof recoListVal === 'string') {
         recoList.value = JSON.parse(recoListVal);
       }
-      remarkList.value = remarkList.value.map(item => {
-        return {
+      // 공통된 map 처리
+      [remarkList, commentList, recoList].forEach(list => {
+        list.value = list.value.map(item => ({
           ...item,
           remarkAllContent: convertToNewlines(item.remarkAllContent),
-        };
-      });
-
-      commentList.value = commentList.value.map(item => {
-        return {
-          ...item,
-          remarkAllContent: convertToNewlines(item.remarkAllContent),
-        };
-      });
-
-      recoList.value = recoList.value.map(item => {
-        return {
-          ...item,
-          remarkAllContent: convertToNewlines(item.remarkAllContent),
-        };
+        }));
       });
       trrur.value = true;
     } else {
@@ -267,14 +256,13 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-  const cbcCodeList = await getCbcCodeList();
+  cbcCodeList.value = await getCbcCodeList();
 
-  const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList);
+  const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
   const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
   // console.log(autoNomarlCheck);
   submitState.value = props.selectItems?.submitState === 'lisCbc';
 })
-// 옵션 선택 시 호출되는 함수
 const selectOption = (selectedCode: string) => {
   code.value = selectedCode;   // 선택한 코드를 저장
   searchText.value = selectedCode;  // 검색창에 선택된 코드 표시
@@ -282,13 +270,11 @@ const selectOption = (selectedCode: string) => {
   changeCode(selectedCode);
 };
 
-// 입력 필드가 포커스를 잃을 때 드롭다운을 닫는 함수 (딜레이로 클릭을 허용)
 const hideDropdownWithDelay = () => {
   setTimeout(() => {
     showDropdown.value = false;
   }, 200); // 작은 딜레이 추가
 };
-// 검색어에 따라 필터링된 옵션을 계산하는 computed
 const filteredOptions = computed(() => {
   if (!searchText.value) {
     return crcDataArr.value; // 검색어가 없을 경우 전체 목록 표시
@@ -357,6 +343,13 @@ const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
   return nowCrcData;
 };
 
+const changeCrcData = (item: any) => {
+  const nes = JSON.parse(JSON.stringify(crcArr.value));
+  const margeData = nes.findIndex((el: any) => {return  el.id === item.id});
+  nes[margeData].val = item.val
+  lastChnageInputCrcData.value = nes
+}
+
 const newMorphMapSet = async () => {
   morphologyMapping.value = {
     RBC: {},
@@ -406,7 +399,7 @@ const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
   ['plt', 'rbc', 'wbc'].forEach(category => {
     nowCrcData.crcContent[category].forEach((nowItem: any) => {
       // text 타입은 변경하지 않고 유지
-      if (nowItem.crcType === 'text') return;
+      if (nowItem.crcType !== 'select' && nowItem.crcContent !== 'Etc') return;
 
       // id 기준으로 crcSetData에서 매칭 항목 찾기
       const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
@@ -431,6 +424,9 @@ const lisStart = async () => {
     passWordPassLis.value = false;
     return;
   }
+  if(lastChnageInputCrcData.value.length !== 0){
+    crcArr.value = lastChnageInputCrcData.value;
+  }
   const crcSetData = crcArr.value;
 
   let nowCrcData: any = crcDataArr.value.find((item) => {
@@ -449,11 +445,14 @@ const lisStart = async () => {
       }
     });
   });
-  nowCrcData.crcRemark = remarkList.value;
-  nowCrcData.crcComment = commentList.value;
-  nowCrcData.crcRecommendation = recoList.value;
+  Object.assign(nowCrcData, {
+    crcRemark: remarkList.value,
+    crcComment: commentList.value,
+    crcRecommendation: recoList.value
+  });
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
+
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
@@ -462,19 +461,59 @@ const lisStart = async () => {
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      const data = {
-        tequp_cd: 'UIMD', // 장비명
-        tequp_typ: '1', //장비구분번호
-        tequp_rslt: nowCrcData, // 장비결과값
-        tsmp_no: props.selectItems?.barcodeNo, //검체 바코드 넘버
-        trslt_srno: getDateTimeStr(), // (장비검사번호 - 중복안됨)
-        rslt_stus: 'T',
-      }
-      await lisCommonDataWhether(lisSendYwmc(data));
-      if(lisTwoMode.value) {
-        //
-      }
+      await yamcSendLisUpdate(nowCrcData);
       break;
+  }
+}
+
+
+const yamcSendLisUpdate = async (nowCrcData: any) => {
+  const newNowCrcDataArr = [
+    ...nowCrcData.crcContent.plt,
+    ...nowCrcData.crcContent.wbc,
+    ...nowCrcData.crcContent.rbc
+  ];
+  for (const wbcInfo of props.selectItems?.wbcInfoAfter) {
+    // const includesStr = ["AR", "NR", "GP", "PA", "MC", "MA"];
+
+    // const {data} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, cbcCodeList.value);
+    // cbcData.cbcDataVal
+    const req = {
+      // ttext_rslt: (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.text_rslt, // 텍스트 값
+      // tnumeric_rslt: data.find((el: any) => {return el.spc.includes(wbcInfo.title)})?.numeric_rslt, // 수치결과 값
+      tequp_cd: 'UIMD', // 장비명
+      tequp_typ: '1', //장비구분번호
+      // tequp_rslt: !includesStr.includes(wbcInfo.title) ? wbcInfo.percent : wbcInfo.count, // 장비결과값
+      tsmp_no: props.selectItems?.barcodeNo, //검체 바코드 넘버
+      texam_cd: wbcInfo.title, // 장비 검사코드
+      // tspc: (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.spc,
+      trslt_srno: getDateTimeStr(), // (장비검사번호 - 중복안됨)
+      rslt_stus: 'T',
+    }
+    await lisCommonDataWhether(lisSendYwmc(req));
+  }
+
+  if(lisTwoMode.value) {
+    const crcTitles = [
+      'rbc_size', 'rbc_chromicity', 'rbc_anisocytosis', 'rbc_poikilocytosis',
+      'rbc_polychromasia', 'rbc_rouleaux_formation', 'rbc_inclusion', 'rbc_shape1',
+      'rbc_shape2', 'rbc_etc', 'wbc_number', 'wbc_toxic_granulation', 'wbc_vacuolation',
+      'wbc_segmentation', 'wbc_reactive_lymphocyte', 'wbc_abnormal_lymphocyte',
+      'wbc_other_findings', 'wbc_etc', 'plt_number', 'plt_giant_platelet',
+      'plt_other_findings', 'plt_etc', 'comment', 'recommendation'
+    ];
+
+    const req = {
+      barcode_num: props.selectItems?.barcodeNo,
+      ...crcTitles.reduce((acc: any, title) => {
+        const found = newNowCrcDataArr.find((el) => el.crcTitle === title);
+        acc[title] = found ? found.crcContent : null; // null 처리
+        return acc;
+      }, {})
+    };
+
+
+    await ywmcLisCrcSendApi(req);
   }
 }
 
@@ -533,7 +572,6 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
 // }
 
 const openSelect = (type: string) => {
-  console.log(type)
   switch (type) {
     case 'remark':
       isRemark.value = true;
