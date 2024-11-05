@@ -20,28 +20,6 @@ interface WBCInfoAfter {
     percent: string; // percent도 숫자로 변환 필요
 }
 
-const cbcData: CBCDataItem[] = [
-    {classNm: "WBC", count: "10.45", unit: ""},
-    {classNm: "RBC", count: "4.5", unit: ""},
-    {classNm: "Hb", count: "13.0", unit: ""},
-    {classNm: "Hct", count: "38.0", unit: ""},
-    {classNm: "MCV", count: "90.0", unit: ""},
-    {classNm: "MCHC", count: "34.0", unit: ""},
-    {classNm: "RDW", count: "12.0", unit: ""},
-    {classNm: "PLT", count: "300", unit: ""},
-];
-
-const wbcInfoAfter: WBCInfoAfter[] = [
-    {id: "01", name: "Neutrophil", count: "450", title: "NE", images: [], percent: "15.4"},
-    {id: "02", name: "Metamyelocyte", count: "225", title: "ME", images: [], percent: "7.7"},
-    {id: "03", name: "Myelocyte", count: "225", title: "MY", images: [], percent: "7.7"},
-    {id: "04", name: "Promyelocyte", count: "225", title: "PR", images: [], percent: "7.7"},
-    {id: "05", name: "Lymphocyte", count: "225", title: "LY", images: [], percent: "7.7"},
-    {id: "07", name: "Monocyte", count: "225", title: "MO", images: [], percent: "7.7"},
-    {id: "08", name: "Eosinophil", count: "225", title: "EO", images: [], percent: "7.7"},
-    {id: "09", name: "Basophil", count: "225", title: "BA", images: [], percent: "7.7"},
-];
-
 export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
     const req = `smp_no=${barcodeNo}`
     const cbcData: any = (await ywmcCbcCheckApi(req)).data;
@@ -116,11 +94,30 @@ const lisHttpSendSD = async (resultStr: any, barcodeNo: string, lisFilePathSetAr
             'Content-Type': 'application/json'
         }
     })
-        if(res?.data.code === 200){
-            return 'Success';
-        }else{
-            return 'Lis Send Fail';
+    if (res?.data.code === 200) {
+        return 'Success';
+    } else {
+        return 'Lis Send Fail';
+    }
+}
+
+const sdWorklists = async (date: any) => {
+    const body = {
+        apiKey: 'M0ZGODgyREY4NzUxMkY4RTM0MERDRkMyRkQ1MDM3OEU=',
+        interfaceId: '01',
+        workDate: date,
+    };
+
+    const res = await axios.post(`http://121.169.55.132:8081/api/interface/worklists`, body, {
+        headers: {
+            'Content-Type': 'application/json'
         }
+    })
+    if (res?.data.code === 200) {
+        return {data: res?.data, code: res?.data.code};
+    } else {
+        return {data: null, code: res?.data.code};
+    }
 }
 
 export const lisSendYwmc = async (data: any) => {
@@ -162,12 +159,10 @@ export const parseDateString = (dateString: any) => {
 
     let rawDate = dateMatch[1];  // 매칭된 날짜 문자열
 
-    // YYYYMMDD 형식을 YYYY-MM-DD로 변환
     if (!rawDate.includes('-')) {
         rawDate = `${rawDate.substring(0, 4)}-${rawDate.substring(4, 6)}-${rawDate.substring(6, 8)}`;
     }
 
-    // 변환된 날짜를 Date 객체로 반환
     return new Date(rawDate);
 }
 

@@ -31,6 +31,7 @@
           </div>
 
           <button type="button" class="searchClass" @click="search">Search</button>
+          <button @click="openCheckList">checkList</button>
           <div v-if="viewerCheck === 'main'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
@@ -144,6 +145,7 @@ import pako from "pako";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import {useRouter} from "vue-router";
+import Button from "@/components/commonUi/Button.vue";
 
 
 const store = useStore();
@@ -177,7 +179,6 @@ const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
-const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
@@ -286,6 +287,11 @@ const handleInput = (event: any) => {
     search();
   }, bufferDelay);
 };
+
+const openCheckList = () => {
+//   sdWorklists
+}
+
 
 const handleGlobalKeydown = (event: any) => {
   if (router.currentRoute.value.path === '/dataBase') {
