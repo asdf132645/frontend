@@ -24,12 +24,12 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
     const req = `smp_no=${barcodeNo}`
     const cbcData: any = (await ywmcCbcCheckApi(req)).data;
     const cbcWorkList: any = [];
-    cbcData.forEach(function (data: any) {
+    cbcData.data.forEach(function (data: any) {
         cbcCodeList.forEach(function (cbcCode: any) {
-            if (cbcCode?.classCd === data?.exam_cd) {
+            if (cbcCode?.classCd === data?.exam_cd.trim()) {
                 const obj = {
                     classNm: cbcCode.classCd,
-                    count: data?.rslt_stus,
+                    count: data?.text_rslt + data?.numeric_rslt,
                     unit: data?.unit,
                     textVal: data?.text_rslt,
                     numVal: data?.numeric_rslt,

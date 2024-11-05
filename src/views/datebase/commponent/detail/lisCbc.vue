@@ -251,6 +251,7 @@ const cbcYwmcDataMatching = async () => {
   cbcPatientNm.value = cbcDataVal?.pt_nm;
   cbcSex.value = cbcDataVal?.sex;
   cbcAge.value = cbcDataVal?.age;
+  loading.value = false;
 }
 
 const inhaCbcLoad = async () => {

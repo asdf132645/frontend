@@ -1098,6 +1098,7 @@ const reDegree = async (rbcInfoArray: any) => {
 const dateRefresh = () => {
   startDate.value = thirtyDaysAgo
   endDate.value = new Date();
+  searchText.value = '';
   search();
 }
 

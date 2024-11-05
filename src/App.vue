@@ -352,7 +352,7 @@ async function socketData(data: any) {
         }
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
-          deviceSerialNm: parseDataWarp.deviceSerialNm
+          deviceSerialNm: parseDataWarp.deviceBarcode
         }
         if (!siteCdDvBarCode.value) {
           await saveDeviceInfo(deviceInfoObj);

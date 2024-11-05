@@ -6,6 +6,7 @@
             v-model="selectedDate"
             :format="dateFormat"
             class="date-picker"
+            ref="datepicker"
         />
       </div>
 
@@ -23,7 +24,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(item, index) in workListValue" :key="index">
+          <tr v-for="(item, index) in workListShowValue" :key="index">
             <td>{{ index + 1 }}</td>
             <td>{{ item.reqDate }}</td>
             <td>{{ item.testDate }}</td>
@@ -49,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue';
+import { ref, watch } from 'vue';
 import Datepicker from 'vue3-datepicker';
 import {getDateTimeYYYYMMDD} from "@/common/lib/utils/dateUtils";
 
@@ -65,50 +66,18 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 const workListValue = ref<any>([]);
-
+const workListShowValue = ref<any>([]);
+const datepicker = ref(null);
 const selectedDate = ref(new Date());
 
-onMounted(() => {
-  workListValue.value = [
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-    { reqDate: getDateTimeYYYYMMDD(new Date()), testDate: getDateTimeYYYYMMDD(new Date()), receiptNo: '00414', resultCode: 30010, patientName: '백종호', testYn: 'N' },
-  ]
+watch(() => props.workList, (newWorkList) => {
+  workListValue.value = newWorkList;
 })
 
 watch(() => selectedDate.value, () => {
-  console.log('workListValue', workListValue.value);
-  console.log('getDateTimeYYYYMMDD(selectedDate.value)', getDateTimeYYYYMMDD(selectedDate.value));
-  workListValue.value = workListValue.value.filter((item) => {
+  workListShowValue.value = workListValue.value.filter((item) => {
     return item.testDate === getDateTimeYYYYMMDD(selectedDate.value)
   });
-  console.log('workListValue', workListValue.value);
 })
 
 const dateFormat = (date: Date): string => {
