@@ -4450,6 +4450,120 @@ input.codeInput {
     }
 }
 
+.popup-table-container {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.popup-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    min-width: 800px;
+    min-height: 400px;
+    max-width: 1400px;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-modal-header {
+    width: 100%;
+    display: inline-block;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.popup-modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin: 15px 0;
+}
+
+.popup-modal-body::-webkit-scrollbar {
+    width: 8px; /* 스크롤바 너비 */
+}
+
+/* 스크롤바 트랙 (뒷배경) */
+.popup-modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1; /* 트랙 배경색 */
+    border-radius: 10px; /* 트랙 모서리 둥글기 */
+}
+
+/* 스크롤바 핸들 (스크롤바 자체) */
+.popup-modal-body::-webkit-scrollbar-thumb {
+    background-color: #888; /* 핸들 색상 */
+    border-radius: 10px; /* 핸들 모서리 둥글기 */
+    border: 2px solid #f1f1f1; /* 핸들 주위에 여백 효과 */
+}
+
+/* 스크롤바 핸들 hover 시 스타일 */
+.popup-modal-body::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* hover 시 핸들 색상 */
+}
+
+.popup-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.popup-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    user-select: text;
+}
+
+.popup-data-table th,
+.popup-data-table td {
+    padding: 8px 12px;
+    /*border: 1px solid #ddd;*/
+    text-align: center;
+    color: var(--blue-bg-0-color);
+
+}
+
+.popup-data-table th {
+    background-color: white;
+    color: var(--black-color);
+    font-weight: bold;
+    padding-bottom: 18px;
+}
+
+.popup-data-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.popup-btn-close {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #f5f5f5;
+    color: var(--main-bg-4-color);
+}
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;

@@ -101,7 +101,7 @@ const lisHttpSendSD = async (resultStr: any, barcodeNo: string, lisFilePathSetAr
     }
 }
 
-const sdWorklists = async (date: any) => {
+export const sdWorklistsAPI = async (date: any) => {
     const body = {
         apiKey: 'M0ZGODgyREY4NzUxMkY4RTM0MERDRkMyRkQ1MDM3OEU=',
         interfaceId: '01',
