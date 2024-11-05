@@ -7,6 +7,12 @@ export function getDateTimeStr(): string {
     return formattedTime;
 }
 
+export const getDateTimeYYYYMMDD = (dateString: Date | string) => {
+    if (!dateString) return null;
+    const momentObj = moment(dateString, 'YYYY-MM-DD');
+    return momentObj.format('YYYY-MM-DD');
+}
+
 export function getDateTimeStrForUI(): string {
     const now = moment();
     const formattedTime = now.format('YYYYMMDDHHmmssSSSSS');

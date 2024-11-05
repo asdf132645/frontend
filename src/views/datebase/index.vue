@@ -31,7 +31,8 @@
           </div>
 
           <button type="button" class="searchClass" @click="search">Search</button>
-          <button @click="openCheckList">checkList</button>
+          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass">checkList</button>
+
           <div v-if="viewerCheck === 'main'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
           </div>
@@ -111,6 +112,9 @@
     </div>
   </div>
 
+  <PopupTable v-model:isOpen="showPopupTable" :workList="workList" />
+
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -146,6 +150,9 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import {useRouter} from "vue-router";
 import Button from "@/components/commonUi/Button.vue";
+import PopupTable from "@/components/commonUi/PopupTable.vue";
+import {sdWorklistsAPI} from "@/common/lib/lisCbc";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 
 
 const store = useStore();
@@ -179,6 +186,7 @@ const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);
 const selectedItemIdFalse = ref(false);
@@ -202,6 +210,8 @@ const rbcInfoBeforeVal = ref<any>([]);
 const inputTimeout = ref<any>(null);
 const bufferDelay = 100; // 입력 완료 감지 지연 시간 (ms)
 const inputBuffer = ref('');
+const showPopupTable = ref(false);
+const workList = ref({});
 
 async function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -212,7 +222,6 @@ async function handleStateVal(data: any) {
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
-
 })
 
 onMounted(async () => {
@@ -288,8 +297,14 @@ const handleInput = (event: any) => {
   }, bufferDelay);
 };
 
-const openCheckList = () => {
-//   sdWorklists
+const openCheckList = async () => {
+  // const { data, code } = await sdWorklistsAPI(today);
+  // if (Number(code) === 200) {
+  //   workList.value = data;
+    showPopupTable.value = true;
+  // } else {
+  //   await showSuccessAlert('불러오기에 실패했습니다');
+  // }
 }
 
 
@@ -311,7 +326,6 @@ const handleGlobalKeydown = (event: any) => {
     }
   }
 };
-
 
 const handleEnter = () => {
   if (barcodeInput.value) {
@@ -549,7 +563,6 @@ const loadPrevData = async () => {
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertMessage.value = message;
-
 };
 
 const hideAlert = () => {
