@@ -229,7 +229,7 @@ const sendSearchCardCount = () => {
 }
 
 const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
-  if (viewerCheck.value !== 'main') return;
+  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
 
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
@@ -350,18 +350,14 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
-  if (viewerCheck.value !== 'main') return;
+
+  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
   // if (isInitializing.value) {
   //   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
   //     showSuccessAlert(messages.alreadyInitialized);
   //   }
   //     showErrorALert('Program is already running');
   //     return;
-  // }
-
-  // if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
-  //   showSuccessAlert(messages.alreadyInitialized);
-  //   return;
   // }
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);

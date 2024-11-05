@@ -455,9 +455,6 @@ const lisStart = async () => {
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
   switch (siteCd.value) {
-    case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
-      break;
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
@@ -474,6 +471,9 @@ const lisStart = async () => {
       if(lisTwoMode.value) {
         //
       }
+      break;
+    default:
+      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
   }
 }
