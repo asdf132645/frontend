@@ -33,19 +33,19 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
-    wbcclassification:{
+    wbcclassification: {
         list: {
             endpoint: 'wbc/getAllWbc',
             requiresToken: false,
         }
     },
-    user:{
+    user: {
         register: {
             endpoint: 'user/register',
             requiresToken: false,
         },
         login: {
-            endpoint:'user/login',
+            endpoint: 'user/login',
             requiresToken: false,
         },
         logout: {
@@ -61,11 +61,11 @@ export const apiConstants = {
         //     requiresToken: false,
         // },
         getUsers: {
-            endpoint:'user/getUsers',
+            endpoint: 'user/getUsers',
             requiresToken: false,
         },
         userDataPut: {
-            endpoint:'user/update',
+            endpoint: 'user/update',
             requiresToken: false,
         },
         deleteUser: {
@@ -76,15 +76,15 @@ export const apiConstants = {
     settings: {
         cellImgAnalyzedPost: {
             cellImgAdd: {
-                endpoint:'cellImgAnalyzed/cellImgAdd',
+                endpoint: 'cellImgAnalyzed/cellImgAdd',
                 requiresToken: false,
             },
             cellImgGet: {
-                endpoint:'cellImgAnalyzed',
+                endpoint: 'cellImgAnalyzed',
                 requiresToken: false,
             },
             cellImgPut: {
-                endpoint:'cellImgAnalyzed/update',
+                endpoint: 'cellImgAnalyzed/update',
                 requiresToken: false,
             }
         },
@@ -107,7 +107,7 @@ export const apiConstants = {
                 endpoint: 'wbcCustomClass/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'wbcCustomClass/get',
                 requiresToken: false,
             }
@@ -121,7 +121,7 @@ export const apiConstants = {
                 endpoint: 'wbcHotKeys/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'wbcHotKeys/get',
                 requiresToken: false,
             }
@@ -135,7 +135,7 @@ export const apiConstants = {
                 endpoint: 'bfHotKeys/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'bfHotKeys/get',
                 requiresToken: false,
             }
@@ -149,7 +149,7 @@ export const apiConstants = {
                 endpoint: 'normalRange/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'normalRange/get',
                 requiresToken: false,
             }
@@ -163,7 +163,7 @@ export const apiConstants = {
                 endpoint: 'imagePrint/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'imagePrint/get',
                 requiresToken: false,
             }
@@ -177,7 +177,7 @@ export const apiConstants = {
                 endpoint: 'lisCode/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'lisCode/get',
                 requiresToken: false,
             }
@@ -191,7 +191,7 @@ export const apiConstants = {
                 endpoint: 'lisCodeRbc/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'lisCodeRbc/get',
                 requiresToken: false,
             }
@@ -205,7 +205,7 @@ export const apiConstants = {
                 endpoint: 'cbcCode/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'cbcCode/get',
                 requiresToken: false,
             }
@@ -219,7 +219,7 @@ export const apiConstants = {
                 endpoint: 'filePathSet/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'filePathSet/get',
                 requiresToken: false,
             }
@@ -233,7 +233,7 @@ export const apiConstants = {
                 endpoint: 'runCount/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'runCount/get',
                 requiresToken: false,
             }
@@ -247,7 +247,7 @@ export const apiConstants = {
                 endpoint: 'minCount/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'minCount/get',
                 requiresToken: false,
             }
@@ -261,56 +261,56 @@ export const apiConstants = {
                 endpoint: 'runningInfo/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'runningInfo/getAll',
                 requiresToken: false,
             },
-            delete:{
+            delete: {
                 endpoint: 'runningInfo/delete',
                 requiresToken: false,
             },
-            detail:{
+            detail: {
                 endpoint: 'runningInfo/detail',
                 requiresToken: false,
             },
-            classInfoDetail:{
+            classInfoDetail: {
                 endpoint: 'runningInfo/classInfoDetail',
                 requiresToken: false,
             },
-            classInfoDetailSelectQuery:{
+            classInfoDetailSelectQuery: {
                 endpoint: 'runningInfo/classInfoDetailSelectQuery',
                 requiresToken: false,
             },
-            classInfoMenuDetailSelectQuery:{
+            classInfoMenuDetailSelectQuery: {
                 endpoint: 'runningInfo/classInfoMenuDetailSelectQuery',
                 requiresToken: false,
             },
-            pageUpDown:{
-                endpoint:'runningInfo/pageUpDown',
+            pageUpDown: {
+                endpoint: 'runningInfo/pageUpDown',
                 requiresToken: false,
             },
-            updatePcIpState:{
-                endpoint:'runningInfo/updatePcIpState',
+            updatePcIpState: {
+                endpoint: 'runningInfo/updatePcIpState',
                 requiresToken: false,
             },
-            clearPcIpState:{
-                endpoint:'runningInfo/clearPcIpState',
+            clearPcIpState: {
+                endpoint: 'runningInfo/clearPcIpState',
                 requiresToken: false,
             },
-            removePageAllData:{
-                endpoint:'runningInfo/removePageAllData',
+            removePageAllData: {
+                endpoint: 'runningInfo/removePageAllData',
                 requiresToken: false,
             }
         },
         folder: {
-            get:{
+            get: {
                 endpoint: 'folder/drives',
                 requiresToken: false,
             }
         },
         folders: {
-            get:{
-                endpoint:'folders',
+            get: {
+                endpoint: 'folders',
                 requiresToken: false,
             }
         },
@@ -323,7 +323,7 @@ export const apiConstants = {
                 endpoint: 'classOrders/update',
                 requiresToken: false,
             },
-            get:{
+            get: {
                 endpoint: 'classOrders/get',
                 requiresToken: false,
             }
@@ -340,16 +340,16 @@ export const apiConstants = {
                 requiresToken: false,
             }
         },
-        crc:{
-            crcSettingCreate:{
+        crc: {
+            crcSettingCreate: {
                 endpoint: 'crc-setting',
                 requiresToken: false,
             },
-            crcGet:{
+            crcGet: {
                 endpoint: 'crc-setting/crc-get',
                 requiresToken: false,
             },
-            crcPut:{
+            crcPut: {
                 endpoint: 'crc-setting/crc-put',
                 requiresToken: false,
             },
@@ -359,7 +359,7 @@ export const apiConstants = {
             }
         }
     },
-    images:{
+    images: {
         move: {
             endpoint: 'images/move',
             requiresToken: false,
@@ -385,22 +385,38 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
-    pdf:{
-        post:{
+    pdf: {
+        post: {
             endpoint: 'pdf/generate',
             requiresToken: false,
         }
     },
-    filesystem:{
-        post:{
+    filesystem: {
+        post: {
             endpoint: 'filesystem/create-folder',
+            requiresToken: false,
+        },
+        copy: {
+            endpoint: 'filesystem/copy',
+            requiresToken: false,
+        },
+        cleanup: {
+            endpoint: 'filesystem/cleanup',
+            requiresToken: false,
+        },
+        existsFile: {
+            endpoint: 'filesystem/existsFile',
+            requiresToken: false,
+        },
+        fileSearch:{
+            endpoint:'filesystem/fileSearch',
             requiresToken: false,
         },
         delete: {
             endpoint: 'filesystem/delete-folder',
             requiresToken: false,
         },
-        readGetJpg:{
+        readGetJpg: {
             endpoint: 'file/check-file-exists',
             requiresToken: false,
         },
@@ -408,21 +424,21 @@ export const apiConstants = {
             endpoint: 'file/create-directory',
             requiresToken: false,
         },
-        fileCreate:{
+        fileCreate: {
             endpoint: 'file/createFile',
             requiresToken: false,
         },
-        cbcSaveData:{
+        cbcSaveData: {
             endpoint: 'file/cbcSaveData',
             requiresToken: false,
         }
     },
     fileTxtRead: {
-        get:{
+        get: {
             endpoint: 'file/read',
             requiresToken: false,
         },
-        readFileEUCKR:{
+        readFileEUCKR: {
             endpoint: 'file/readFileEUCKR',
             requiresToken: false,
         }
@@ -433,19 +449,19 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
-    H7Message:{
+    H7Message: {
         post: {
             endpoint: 'hl7/message',
             requiresToken: false,
         }
     },
-    H7MessageCustom:{
+    H7MessageCustom: {
         post: {
             endpoint: 'hl7/customMessage',
             requiresToken: false,
         }
     },
-    Hl7Create:{
+    Hl7Create: {
         post: {
             endpoint: 'hl7/hl7Create',
             requiresToken: false,
@@ -471,7 +487,7 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
-    download:{
+    download: {
         backUpDate: {
             endpoint: 'download/post',
             requiresToken: false,
@@ -505,19 +521,19 @@ export const apiConstants = {
             requiresToken: false,
         }
     },
-    browser:{
-        exit:{
+    browser: {
+        exit: {
             endpoint: 'browser/close-edge',
             requiresToken: false,
         }
     },
-    img:{
+    img: {
         checkImageExists: {
             endpoint: 'images/checkImageExists',
             requiresToken: false,
         }
     },
-    report:{
+    report: {
         crcRemarkCreate: {
             endpoint: 'crc-remark-setting/crcRemarkCreate',
             requiresToken: false,
@@ -554,15 +570,15 @@ export const apiConstants = {
             endpoint: 'crc-data-setting/crcDataUpdate',
             requiresToken: false,
         },
-        crcOptionGet:{
+        crcOptionGet: {
             endpoint: 'crc-option/crcOptionGet',
             requiresToken: false,
         },
-        crcOptionCreate:{
+        crcOptionCreate: {
             endpoint: 'crc-option/crcOptionCreate',
             requiresToken: false,
         },
-        crcOptionUpdate:{
+        crcOptionUpdate: {
             endpoint: 'crc-option/crcOptionUpdate',
             requiresToken: false,
         },

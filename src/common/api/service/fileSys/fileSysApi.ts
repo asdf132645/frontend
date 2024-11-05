@@ -6,6 +6,20 @@ export const fileSysPost = async (request: any): Promise<ApiResponse<any | undef
     return httpClient.httpPost(apiConstants.filesystem.post, request, '');
 };
 
+export const fileSysCopy = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.filesystem.copy, request, '');
+};
+
+export const fileSysClean = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.filesystem.cleanup, request, '');
+};
+
+export const fileSysExistsFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
+    return httpClient.httpPost(apiConstants.filesystem.existsFile, request, '');
+};
+export const  fileSearchApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.filesystem.fileSearch, `${request}`, true);
+};
 export const deleteRunningApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.filesystem.delete, request, false);
 };

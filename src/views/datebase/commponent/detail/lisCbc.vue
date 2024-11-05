@@ -84,7 +84,13 @@ import axios from "axios";
 import {readFileEUCKR, readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {createCbcFile, getFolders} from "@/common/api/service/fileSys/fileSysApi";
+import {
+  createCbcFile,
+  createFile, fileSearchApi,
+  fileSysClean,
+  fileSysCopy, fileSysExistsFile,
+  getFolders
+} from "@/common/api/service/fileSys/fileSysApi";
 import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/lib/commonfunction/inhaCbcLis";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
@@ -114,6 +120,7 @@ const cbcPopup = ref(false);
 const cbcDataList = ref<any>([]);
 const firstCbcDatafilename = ref('');
 const datachoice = ref(false);
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
@@ -331,8 +338,36 @@ const commonCbc = async (firstCbcDatafilename: string) => {
 }
 
 const fileData = async (firstCbcDatafilename: string) => {
-  const readFileTxtRes: any = await readFileEUCKR(`path=${cbcFilePathSetArr.value}&filename=${firstCbcDatafilename}`);
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
+
+  const fileSysExistsFileParms = {
+    directoryPath:`${cbcFilePathSetArr.value}`,
+    keyword: 'asdasdasd'
+  };
+  let fileListName = '';
+  let filePath = '';
+  const isExistsFile = await fileSysExistsFile(fileSysExistsFileParms);
+  if(isExistsFile.data === "NoFile"){
+    const fileSearchApiPram = `directoryPath=${path}\\${props.selectItems?.slotId}&searchString=${props.selectItems?.barcodeNo}`
+    fileListName = (await fileSearchApi(fileSearchApiPram)).data[0].split('.')[0];
+    filePath = `${path}\\${props.selectItems?.slotId}`;
+  }else{
+    fileListName = firstCbcDatafilename;
+    filePath = cbcFilePathSetArr.value
+  }
+  const readFileTxtRes: any = await readFileEUCKR(`path=${filePath}&filename=${fileListName}`);
+
   if (readFileTxtRes.data.success) {
+    const fileParams = {
+      source: `${cbcFilePathSetArr.value}\\${firstCbcDatafilename}.hl7`,
+      destination: `${path}\\${props.selectItems?.slotId}`,
+    };
+    const fileSysCleanParams = {
+      directoryPath:`${cbcFilePathSetArr.value}`,
+      keyword: props.selectItems?.barcodeNo
+    }
+    await fileSysCopy(fileParams);
+    await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
     cbcWorkList.value = [];
     msg?.data?.segments?.forEach((cbcSegment: any) => {
