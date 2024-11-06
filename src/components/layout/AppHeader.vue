@@ -154,7 +154,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
-import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
+import {getBrowserExit, nodeExit} from "@/common/api/service/browserExit/browserExitApi";
 import Button from "@/components/commonUi/Button.vue";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {logoutApi} from "@/common/api/service/user/userApi";
@@ -254,6 +254,7 @@ const handleOkConfirm = async () => {
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
       await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
+      await nodeExit();
     } else {
       const result = await getDeviceIpApi();
       const ipAddress = `ip=${result.data}`
