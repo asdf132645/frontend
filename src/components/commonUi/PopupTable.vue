@@ -3,11 +3,11 @@
     <div class="popup-modal-content">
       <div class="popup-modal-header">
         <Datepicker
-            v-model="selectedDate"
-            :format="dateFormat"
-            class="date-picker"
-            ref="datepicker"
-        />
+          v-model="selectedDate"
+          :format="dateFormat"
+          class="date-picker"
+          ref="datepicker"
+      />
       </div>
 
       <div class="popup-modal-body">
@@ -78,7 +78,9 @@ watch(() => props.workList, (newWorkList) => {
 })
 
 watch(() => selectedDate.value, async (newVal: any, prevVal: any) => {
-  const { data, code } = await sdWorklistsAPI(today);
+  const formattedDate = moment(newVal).format('YYYY-MM-DD');
+  const { data, code } = await sdWorklistsAPI(formattedDate);
+
   if (Number(code) === 200) {
     workListValue.value = data;
   } else {

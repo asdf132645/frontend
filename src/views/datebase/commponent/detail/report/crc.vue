@@ -503,6 +503,7 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
       trslt_srno: getDateTimeStr(), // (장비검사번호 - 중복안됨)
       rslt_stus: 'T',
     }
+    // 원주기독
     await lisCommonDataWhether(lisSendYwmc(req));
   }
 

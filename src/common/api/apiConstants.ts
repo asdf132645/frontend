@@ -525,6 +525,10 @@ export const apiConstants = {
         exit: {
             endpoint: 'browser/close-edge',
             requiresToken: false,
+        },
+        nodeExit: {
+            endpoint: 'browser/close-node',
+            requiresToken: false,
         }
     },
     img: {
