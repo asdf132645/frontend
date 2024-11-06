@@ -26,7 +26,7 @@
           <div class="crcSel">
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
             <div v-else>
-              <div v-if="item?.crcType === 'select'">
+              <div v-if="item?.crcType === 'select'" class="etcIncludeDiv">
                 <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)">
                   <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{
                       opItem
@@ -39,7 +39,7 @@
                   </select>
                 </div>
                 <input v-if="item.val === 'Etc'" @input="changeEtc($event, item)" type="text"
-                       placeholder="Enter text"/>
+                       placeholder="Etc Text" class="etcTextInput"/>
               </div>
               <div v-else-if="item?.crcType === 'text'">
                 <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"

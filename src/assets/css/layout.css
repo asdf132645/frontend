@@ -4161,11 +4161,13 @@ span.crcListSpan input {
 }
 
 .crcReport .crcSel {
-    width: 45%;
+    width: 32%;
     max-width: 150px;
     text-align: right;
 }
-
+input.etcTextInput {
+    margin-top: 5px;
+}
 .crcReport .tabs {
     position: sticky;
     top: 0;

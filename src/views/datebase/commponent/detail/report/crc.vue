@@ -17,7 +17,7 @@
       </button>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
-    <div class="tab-content crcDiv" v-if="activeTab === 1">
+    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
       <div class="textLeft crcMenu mb1">
         <button class="crcBtn" @click="lisClick">
           <font-awesome-icon :icon="['fas', 'upload']"/>
@@ -111,7 +111,7 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <div class="tab-content crcDiv" v-if="activeTab === 2">
+    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 2">
       <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh"/>
     </div>
   </div>
