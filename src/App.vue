@@ -67,6 +67,7 @@ import {
   inhaDataSend
 } from "@/common/lib/commonfunction/inhaCbcLis";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -110,6 +111,7 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
+const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
@@ -555,6 +557,16 @@ async function socketData(data: any) {
         let wbcInfoNewVal: any = [];
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
+        const path = iaRootPath.value;
+        const url_new = `${path}/${completeSlot.slotId}/01_WBC_Classification/${completeSlot.slotId}.json`;
+        const response_new = await readJsonFile({fullPath: url_new});
+        console.log(response_new?.data);
+        for (const el of response_new?.data) {
+          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => { return elW.title === el.FILE_NM.split('_')[0]})
+          newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
+            fileName: el.FILE_NM
+          })
+        }
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];

@@ -197,7 +197,7 @@ import {BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD} from "@/common/def
 import axios from "axios";
 import {xml2json} from "xml-js";
 import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
-import {createH17, readH7Message} from "@/common/api/service/fileReader/fileReaderApi";
+import {createH17, readH7Message, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {
@@ -269,6 +269,7 @@ onBeforeMount(async () => {
   if (crcOptionApi.data.length !== 0) {
     crcConnect.value = crcOptionApi.data[0].crcConnect;
   }
+
 })
 
 onMounted(async () => {
@@ -276,6 +277,7 @@ onMounted(async () => {
   await getOrderClass();
   await getCustomClass();
   await mountedMethod();
+
   if (!projectBm.value) {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
     lisCodeWbcArrApp.value = lisCodeWbcArr;
