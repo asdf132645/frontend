@@ -4590,6 +4590,73 @@ input.codeInput {
     left: 0;
 }
 
+.progress-component-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 200px;
+    max-width: 800px; /* 프로그레스 바 최대 길이 설정 */
+    margin: 1rem auto;
+}
+
+.progress-component-bar {
+    flex-grow: 1;
+    height: 20px; /* 높이 증가 */
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.progress-component-fill {
+    height: 100%;
+    border-radius: 10px;
+    position: relative;
+    transform-origin: left;
+    animation: shimmer 2s infinite linear;
+    background-size: 200% 100%;
+}
+
+.progress-component-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+    );
+    animation: glow 2s infinite;
+}
+
+/* 호버 효과 추가 */
+.progress-component-bar:hover .progress-component-fill {
+    filter: brightness(1.1);
+    box-shadow: 0 0 10px rgba(66, 184, 131, 0.5);
+}
+
+@keyframes glow {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;
