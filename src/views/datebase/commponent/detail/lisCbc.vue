@@ -343,7 +343,7 @@ const fileData = async (firstCbcDatafilename: string) => {
 
   const fileSysExistsFileParms = {
     directoryPath:`${cbcFilePathSetArr.value}`,
-    keyword: 'asdasdasd'
+    keyword: props.selectItems?.barcodeNo
   };
   let fileListName = '';
   let filePath = '';
