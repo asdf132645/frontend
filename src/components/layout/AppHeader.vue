@@ -27,7 +27,7 @@
         </router-link>
 
         <!-- 가운데 메뉴 -->
-        <div v-if="machineVersion === '100a'" style="display: inline-block; left: 20%; position: relative; margin-top: 12px;">
+        <div v-if="machineVersion === '100a'" class="autoStart-container">
           <p class="text-center mb1" style="line-height: 0;">Auto Start</p>
           <ProgressBar
               :value="autoStartTimer"
@@ -323,9 +323,7 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
 
   if (machineVersion.value === '100a' && newVals[0].sysInfo?.autoStartTimer) {
     const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
-    if (Number(autoStartTimerNumber) ! == 0) {
-      autoStartTimer.value = (Number(autoStartTimerNumber) / 5) * 100;
-    }
+    autoStartTimer.value = (parseFloat(autoStartTimerNumber) / 5) * 100;
   }
 
 

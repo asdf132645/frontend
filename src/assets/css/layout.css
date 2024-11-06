@@ -4657,6 +4657,13 @@ input.codeInput {
     }
 }
 
+.autoStart-container {
+    display: inline-block;
+    left: 18%;
+    position: relative;
+    top: 10px;
+}
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;
