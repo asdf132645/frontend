@@ -86,7 +86,7 @@ import {useStore} from "vuex";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {
   createCbcFile,
-  createFile, fileSearchApi,
+  fileSearchApi,
   fileSysClean,
   fileSysCopy, fileSysExistsFile,
   getFolders
@@ -126,7 +126,6 @@ watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-  console.log(datachoice.value)
   if (datachoice.value) {
     return
   }
@@ -141,8 +140,9 @@ onMounted(async () => {
   selectItemsVal.value = props.selectItems;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-
-  await initCbcData(selectItemsVal.value);
+  if(cbcFilePathSetArr.value && cbcFilePathSetArr.value !== ''){
+    await initCbcData(selectItemsVal.value);
+  }
 });
 const crcCbcDataLoad = async () => {
   await cbcDataProcess();

@@ -300,7 +300,7 @@ onUnmounted(() => {
 watch(
     () => props.loadingDelayParents,
     (newVal) => {
-      loadingDelay.value = !!newVal;
+      loadingDelay.value = newVal;
     }
 );
 
@@ -309,7 +309,7 @@ watchEffect(async () => {
   try {
     if (props.dbData.length > 0) {
       await nextTick();
-
+      loadingDelay.value = false;
       const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
 
       // IntersectionObserver 설정
@@ -332,13 +332,6 @@ watchEffect(async () => {
         await selectItem(filteredItems[0]);
         await store.dispatch('commonModule/setCommonInfo', { dataBasePageReset: false });
         await removeCheckBox();
-
-        // 선택된 행이 화면에 보이도록 스크롤 조정
-        const selectedRow = document.querySelector(`[data-row-id="${filteredItems[0].id}"]`);
-        if (selectedRow && selectedItemId.value !== '0') {
-          // selectedRow.scrollIntoView({ behavior: 'auto', block: 'center' });
-          loadingDelay.value = false;
-        }
         return;
       }
     }

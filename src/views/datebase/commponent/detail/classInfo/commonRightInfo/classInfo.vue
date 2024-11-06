@@ -117,11 +117,17 @@
           </ul>
           <ul style="width: 29%;">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li class="grayText" style="cursor: default; padding-left: -20px;">{{ Number(nWbcItem?.count.before) || 0 }}</li>
+            <li class="grayText" style="cursor: default; padding-left: -20px;">{{
+                Number(nWbcItem?.count.before) || 0
+              }}
+            </li>
           </ul>
           <ul class="degree" style="width: 27%">
             <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
-            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">{{ Number(nWbcItem?.count.after) || 0 }}</li>
+            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">{{
+                Number(nWbcItem?.count.after) || 0
+              }}
+            </li>
           </ul>
         </div>
       </template>
@@ -206,9 +212,10 @@ import {
   inhaCbc,
   inhaDataSend,
 } from "@/common/lib/commonfunction/inhaCbcLis";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
+
 const router = useRouter();
 
 const selectItems = ref(props.selectItems);
@@ -269,7 +276,7 @@ onMounted(async () => {
   await getOrderClass();
   await getCustomClass();
   await mountedMethod();
-  if(!projectBm.value){
+  if (!projectBm.value) {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
     lisCodeWbcArrApp.value = lisCodeWbcArr;
     lisCodeRbcArrApp.value = lisCodeRbcArr;
@@ -284,7 +291,7 @@ onMounted(async () => {
 let isHotKeyPressed = false;
 
 const handleKeyDown = (event: KeyboardEvent) => {
-  if(router.currentRoute.value.path === '/report'){
+  if (router.currentRoute.value.path === '/report') {
     return;
   }
   const keyName = event.key;
@@ -297,7 +304,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 };
 
 const handleKeyUp = (event: KeyboardEvent) => {
-  if(router.currentRoute.value.path === '/report'){
+  if (router.currentRoute.value.path === '/report') {
     return;
   }
   const keyName = event.key;
@@ -429,17 +436,14 @@ const handleOkConfirm = () => {
   showConfirm.value = false;
 }
 
-const uploadLis = () => {
-  console.log('uploadLis');
-  console.log(props.selectItems.barcodeNo)
+const uploadLis = async () => {
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
     cmcSeoulLisAndCbcDataGet();
     return;
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
     inhaDataSendLoad();
     return;
-  }
-  else {
+  } else {
     lisLastStep();
   }
 }
@@ -531,8 +535,11 @@ const uimdTestCbcLisDataGet = () => {
     }
 
     const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const localTime = moment().local();
     const updatedItem = {
       submitState: 'lisCbc',
+      submitOfDate: localTime.format(),
+      submitUserId: userModuleDataGet.value.userId,
     };
     lisBtnColor.value = true;
     const updatedRuningInfo = {id: result.data.id, ...updatedItem}
@@ -708,10 +715,13 @@ const cmcSeoulLisAndCbcDataGet = () => {
           };
           await createCbcFile(paramsLisCopyLogData);
           if (resultFlag === 'Y') {
+            const localTime = moment().local();
             // lisCbc 등록 후 list 테이블에서 로우 색상 변경 코드
             const result: any = await detailRunningApi(String(props.selectItems?.id));
             const updatedItem = {
               submitState: 'lisCbc',
+              submitOfDate: localTime.format(),
+              submitUserId: userModuleDataGet.value.userId,
             };
             lisBtnColor.value = true;
             const updatedRuningInfo = {...result.data, ...updatedItem}
@@ -759,12 +769,10 @@ const lisLastStep = () => {
     data += 'L|1|N';
     // 파일 URL 생성 함수 호출
     lisFileUrlCreate(data);
-  }
-  else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) {
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) {
     const data = goDae();
     lisFileUrlCreate(data);
-  }
-  else {
+  } else {
     otherDataSend();
   }
 }
@@ -900,7 +908,12 @@ const lisFileUrlCreate = async (data: any) => {
       if (fileRes) {
         // 실행 정보 업데이트
         const result: any = await detailRunningApi(String(props.selectItems?.id));
-        const updatedItem = {submitState: 'lisCbc'};
+        const localTime = moment().local();
+        const updatedItem = {
+          submitState: 'lisCbc',
+          submitOfDate: localTime.format(),
+          submitUserId: userModuleDataGet.value.userId,
+        };
         const updatedRunningInfo = {...result.data, ...updatedItem};
 
         await resRunningItem(updatedRunningInfo, true);
@@ -989,7 +1002,7 @@ const onCommit = async () => {
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
-    submitUserId: userModuleDataGet.value.name,
+    submitUserId: userModuleDataGet.value.userId,
   };
   const updatedRuningInfo = {...result.data, ...updatedItem}
   await resRunningItem(updatedRuningInfo);

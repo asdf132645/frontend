@@ -17,7 +17,7 @@
       </button>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
-    <div class="tab-content crcDiv" v-if="activeTab === 1">
+    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
       <div class="textLeft crcMenu mb1">
         <button class="crcBtn" @click="lisClick">
           <font-awesome-icon :icon="['fas', 'upload']"/>
@@ -51,15 +51,18 @@
       </div>
 
       <!-- RBC 결과 -->
-      <crc-compontent v-if="trrur" :items="crcArr" moType="RBC" pageName="report" @changeCrcData="changeCrcData"></crc-compontent>
+      <crc-compontent v-if="trrur" :items="crcArr" moType="RBC" pageName="report"
+                      @changeCrcData="changeCrcData"></crc-compontent>
 
       <!-- WBC, PLT 결과 -->
       <div class="moDivBox mt1">
         <div>
-          <crc-compontent v-if="trrur" :items="crcArr" moType="WBC" pageName="report" @changeCrcData="changeCrcData"></crc-compontent>
+          <crc-compontent v-if="trrur" :items="crcArr" moType="WBC" pageName="report"
+                          @changeCrcData="changeCrcData"></crc-compontent>
         </div>
         <div>
-          <crc-compontent v-if="trrur" :items="crcArr" moType="PLT" pageName="report" @changeCrcData="changeCrcData"></crc-compontent>
+          <crc-compontent v-if="trrur" :items="crcArr" moType="PLT" pageName="report"
+                          @changeCrcData="changeCrcData"></crc-compontent>
         </div>
       </div>
 
@@ -108,7 +111,7 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <div class="tab-content crcDiv" v-if="activeTab === 2">
+    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 2">
       <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh"/>
     </div>
   </div>
@@ -141,7 +144,7 @@ import Remark from "@/views/datebase/commponent/detail/report/component/remark.v
 import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {getCbcCodeList, getLisPathData} from "@/common/lib/commonfunction/inhaCbcLis";
+import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/lib/commonfunction/inhaCbcLis";
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
@@ -150,6 +153,7 @@ import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc, ywmcCbcDataLoad} f
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 import {ywmcCbcCheckApi, ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import moment from "moment";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -259,11 +263,14 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   cbcCodeList.value = await getCbcCodeList();
-
-  const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
-  const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
-  // console.log(autoNomarlCheck);
-  submitState.value = props.selectItems?.submitState === 'lisCbc';
+  const cbcFilePathSetArr = await getCbcPathData();
+  if (cbcFilePathSetArr && cbcFilePathSetArr !== '') {
+    const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
+    const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
+    console.log(autoNomarlCheck);
+  }
+  console.log(props.selectItems?.submitState)
+  submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
 })
 const selectOption = (selectedCode: string) => {
   code.value = selectedCode;   // 선택한 코드를 저장
@@ -347,7 +354,9 @@ const updateCrcDataWithCode = (crcSetData: any, nowCrcData: any) => {
 
 const changeCrcData = (item: any) => {
   const nes = JSON.parse(JSON.stringify(crcArr.value));
-  const margeData = nes.findIndex((el: any) => {return  el.id === item.id});
+  const margeData = nes.findIndex((el: any) => {
+    return el.id === item.id
+  });
   nes[margeData].val = item.val
   lastChnageInputCrcData.value = nes
 }
@@ -427,7 +436,7 @@ const lisStart = async () => {
     passWordPassLis.value = false;
     return;
   }
-  if(lastChnageInputCrcData.value.length !== 0){
+  if (lastChnageInputCrcData.value.length !== 0) {
     crcArr.value = lastChnageInputCrcData.value;
   }
   const crcSetData = crcArr.value;
@@ -480,23 +489,24 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     // const includesStr = ["AR", "NR", "GP", "PA", "MC", "MA"];
 
     // const {data} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, cbcCodeList.value);
+    // (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.spc
     // cbcData.cbcDataVal
     const req = {
-      // ttext_rslt: (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.text_rslt, // 텍스트 값
-      // tnumeric_rslt: data.find((el: any) => {return el.spc.includes(wbcInfo.title)})?.numeric_rslt, // 수치결과 값
+      ttext_rslt: 'text_rsltTest', // 텍스트 값
+      tnumeric_rslt: 'numeric_rsltTest', // 수치결과 값
       tequp_cd: 'UIMD', // 장비명
       tequp_typ: '1', //장비구분번호
-      // tequp_rslt: !includesStr.includes(wbcInfo.title) ? wbcInfo.percent : wbcInfo.count, // 장비결과값
+      tequp_rslt: !includesStr.includes(wbcInfo.title) ? wbcInfo.percent : wbcInfo.count, // 장비결과값
       tsmp_no: props.selectItems?.barcodeNo, //검체 바코드 넘버
       texam_cd: wbcInfo.title, // 장비 검사코드
-      // tspc: (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.spc,
+      tspc: 'tspcTest',
       trslt_srno: getDateTimeStr(), // (장비검사번호 - 중복안됨)
       rslt_stus: 'T',
     }
     await lisCommonDataWhether(lisSendYwmc(req));
   }
 
-  if(lisTwoMode.value) {
+  if (lisTwoMode.value) {
     const crcTitles = [
       'rbc_size', 'rbc_chromicity', 'rbc_anisocytosis', 'rbc_poikilocytosis',
       'rbc_polychromasia', 'rbc_rouleaux_formation', 'rbc_inclusion', 'rbc_shape1',
@@ -533,8 +543,11 @@ const lisCommonDataWhether = async (lisFunc: any) => {
 const commonSucessLis = async () => {
   if (props.selectItems?.id) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const localTime = moment().local();
     const updatedItem = {
       submitState: 'lisCbc',
+      submitOfDate: localTime.format(),
+      submitUserId: userModuleDataGet.value.userId,
     };
     const updatedRuningInfo = {id: result.data.id, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);

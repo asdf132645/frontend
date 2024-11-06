@@ -1,7 +1,6 @@
 import {messages} from "@/common/defines/constFile/constantMessageText";
 import {inhaCbcTestCode} from "@/common/defines/constFile/inhaCbcTestCode";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
-import store from "@/store";
 import {
     getCbcCodeRbcApi,
     getFilePathSetApi,
@@ -11,6 +10,11 @@ import {
 import axios from "axios";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
+import {computed} from "vue";
+import {useStore} from "vuex";
+import moment from "moment/moment";
+const store = useStore();
+const userModuleDataGet = computed(() => store.state.userModule);
 
 export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeList: any, funcType: string) => {
     console.log('인하대 CBC 데이터 받기');
@@ -305,6 +309,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
         if (res?.returnCode === '0') {
             const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems?.barcodeNo}.txt`;
             const parmsLisCopy = {filePath, data: jsonObject};
+            const localTime = moment().local();
 
             // LIS 파일 생성
             await createCbcFile(parmsLisCopy);
@@ -312,6 +317,9 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
                 const result: any = await detailRunningApi(String(selectItems?.id));
                 const updatedItem = {
                     submitState: 'lisCbc',
+                    submitOfDate: localTime.format(),
+                    submitUserId: userModuleDataGet.value.userId,
+
                 };
                 const updatedRuningInfo = {id: result.data.id, ...updatedItem}
                 await resRunningItem(updatedRuningInfo, true, id);
