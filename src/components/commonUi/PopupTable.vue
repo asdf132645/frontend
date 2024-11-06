@@ -53,6 +53,7 @@
 import { ref, watch } from 'vue';
 import Datepicker from 'vue3-datepicker';
 import {getDateTimeYYYYMMDD} from "@/common/lib/utils/dateUtils";
+import {sdWorklistsAPI} from "@/common/lib/lisCbc";
 
 interface Props {
   isOpen: boolean;
@@ -69,17 +70,25 @@ const workListValue = ref<any>([]);
 const workListShowValue = ref<any>([]);
 const datepicker = ref(null);
 const selectedDate = ref(new Date());
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 watch(() => props.workList, (newWorkList) => {
   workListValue.value = newWorkList;
 })
 
-watch(() => selectedDate.value, () => {
-  workListShowValue.value = workListValue.value.filter((item) => {
-    return item.testDate === getDateTimeYYYYMMDD(selectedDate.value)
-  });
+watch(() => selectedDate.value, async (newVal: any, prevVal: any) => {
+  const { data, code } = await sdWorklistsAPI(today);
+  if (Number(code) === 200) {
+    workListValue.value = data;
+  } else {
+    await showSuccessAlert('불러오기에 실패했습니다');
+  }
 })
-
+const showSuccessAlert = async (message: string) => {
+  showAlert.value = true;
+  alertMessage.value = message;
+};
 const dateFormat = (date: Date): string => {
   return date.toISOString().split('T')[0];
 };

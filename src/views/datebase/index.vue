@@ -298,13 +298,13 @@ const handleInput = (event: any) => {
 };
 
 const openCheckList = async () => {
-  // const { data, code } = await sdWorklistsAPI(today);
-  // if (Number(code) === 200) {
-  //   workList.value = data;
+  const { data, code } = await sdWorklistsAPI(today);
+  if (Number(code) === 200) {
+    workList.value = data;
     showPopupTable.value = true;
-  // } else {
-  //   await showSuccessAlert('불러오기에 실패했습니다');
-  // }
+  } else {
+    await showSuccessAlert('불러오기에 실패했습니다');
+  }
 }
 
 
