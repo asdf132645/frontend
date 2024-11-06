@@ -254,7 +254,6 @@ const handleOkConfirm = async () => {
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
       await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
-      await nodeExit();
     } else {
       const result = await getDeviceIpApi();
       const ipAddress = `ip=${result.data}`
