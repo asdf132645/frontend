@@ -299,14 +299,13 @@ const handleInput = (event: any) => {
 
 const openCheckList = async () => {
   const formattedDate = moment(today).format('YYYY-MM-DD');
-  showPopupTable.value = true;
-  // const { data, code } = await sdWorklistsAPI(formattedDate);
-  // if (Number(code) === 200) {
-  //   workList.value = data;
-  //   showPopupTable.value = true;
-  // } else {
-  //   await showSuccessAlert('불러오기에 실패했습니다');
-  // }
+  const { data, code } = await sdWorklistsAPI(formattedDate);
+  if (Number(code) === 200) {
+    workList.value = data;
+    showPopupTable.value = true;
+  } else {
+    await showSuccessAlert('불러오기에 실패했습니다');
+  }
 }
 
 
