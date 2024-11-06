@@ -298,7 +298,8 @@ const handleInput = (event: any) => {
 };
 
 const openCheckList = async () => {
-  const { data, code } = await sdWorklistsAPI(today);
+  const formattedDate = moment(today).format('YYYY-MM-DD');
+  const { data, code } = await sdWorklistsAPI(formattedDate);
   if (Number(code) === 200) {
     workList.value = data;
     showPopupTable.value = true;
