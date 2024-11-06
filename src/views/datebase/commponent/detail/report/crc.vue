@@ -152,6 +152,7 @@ import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc, ywmcCbcDataLoad} f
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 import {ywmcCbcCheckApi, ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import moment from "moment";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -537,8 +538,11 @@ const lisCommonDataWhether = async (lisFunc: any) => {
 const commonSucessLis = async () => {
   if (props.selectItems?.id) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
+    const localTime = moment().local();
     const updatedItem = {
       submitState: 'lisCbc',
+      submitOfDate: localTime.format(),
+      submitUserId: userModuleDataGet.value.userId,
     };
     const updatedRuningInfo = {id: result.data.id, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);
