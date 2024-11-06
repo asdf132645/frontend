@@ -31,7 +31,7 @@
           </div>
 
           <button type="button" class="searchClass" @click="search">Search</button>
-          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass">checkList</button>
+          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd || siteCd === '' || siteCd === '0000'" @click="openCheckList" class="searchClass">checkList</button>
 
           <div v-if="viewerCheck === 'main'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
@@ -299,13 +299,14 @@ const handleInput = (event: any) => {
 
 const openCheckList = async () => {
   const formattedDate = moment(today).format('YYYY-MM-DD');
-  const { data, code } = await sdWorklistsAPI(formattedDate);
-  if (Number(code) === 200) {
-    workList.value = data;
-    showPopupTable.value = true;
-  } else {
-    await showSuccessAlert('불러오기에 실패했습니다');
-  }
+  showPopupTable.value = true;
+  // const { data, code } = await sdWorklistsAPI(formattedDate);
+  // if (Number(code) === 200) {
+  //   workList.value = data;
+  //   showPopupTable.value = true;
+  // } else {
+  //   await showSuccessAlert('불러오기에 실패했습니다');
+  // }
 }
 
 
