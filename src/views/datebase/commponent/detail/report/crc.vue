@@ -267,7 +267,8 @@ onMounted(async () => {
     const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
     console.log(autoNomarlCheck);
   }
-  submitState.value = props.selectItems?.submitState === 'lisCbc';
+  console.log(props.selectItems?.submitState)
+  submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
 })
 const selectOption = (selectedCode: string) => {
   code.value = selectedCode;   // 선택한 코드를 저장
