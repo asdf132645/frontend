@@ -64,7 +64,7 @@ import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
-import {slideCard, slideCard100a} from "@/common/defines/constFile/analysis";
+import { slideCard, slideCard100a } from "@/common/defines/constFile/analysis";
 
 // 스토어
 const store = useStore();
@@ -72,6 +72,7 @@ const runningInfoModule = computed(() => store.state.runningInfoModule);
 const commonDataGet = computed(() => store.state.commonModule);
 const initValData = computed(() => store.state.commonModule.initValData);
 const timeDataGet = computed(() => store.state.timeModule);
+const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const props = defineProps(['parsedData', 'pb100aCassette']);
 
 
@@ -101,19 +102,19 @@ const fixEqStatCd = ref(false);
 const pbVersion = ref<any>('');
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
-const autoStartTimer = ref(0);
+
+watch(() => embeddedStatusJobCmd.value?.userStop, (userStop) => {
+  if (userStop) {
+    progressColor.value = 'red';
+  } else {
+    progressColor.value = '#00c2ff';
+  }
+})
 
 watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => {
   const sysInfo = newData.sysInfo;
   if (sysInfo.eqStatCd === '02') {
     fixEqStatCd.value = false;
-  }
-
-  if (pbVersion.value === '100a' && sysInfo?.autoStartTimer) {
-    autoStartTimer.value = sysInfo?.autoStartTimer;
-    if (Number(autoStartTimer.value) !== 0) {
-      dashoffset.value = calculateDashOffset((Number(autoStartTimer.value)) / 5 * 100);
-    }
   }
 
   if (!fixEqStatCd.value) {
@@ -124,6 +125,7 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
     updateInputState(sysInfo.iCasStat, slideCardData.value.input);
     updateInputState(sysInfo.oCasStat, slideCardData.value.output);
   } else {
+    dashoffset.value = circumference.value;
     stopTotalCounting();
     stopCounting();
   }
@@ -152,13 +154,7 @@ watch([commonDataGet.value], async (newVals: any) => {
   if (!newValsObj[0].isRunningState) {
     stopTotalCounting();
     stopCounting();
-
-    if (pbVersion.value === '100a' && Number(autoStartTimer.value) === 0) {
-      dashoffset.value = circumference.value;
-    } else if (pbVersion.value === '12a') {
-      dashoffset.value = circumference.value;
-    }
-
+    dashoffset.value = circumference.value;
   }
 });
 
@@ -232,7 +228,7 @@ watch(
 );
 
 onBeforeMount(() => {
-  pbVersion.value = window.PB_VERSION;
+  pbVersion.value = window.MACHINE_VERSION;
   // slideCard100a
   slideCardData.value = pbVersion.value === '100a' ? slideCard100a : slideCard;
 })

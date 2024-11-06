@@ -6,6 +6,7 @@
           <img src="@/assets/celli.png" class="headerLogo"/>
           <p class="logoProjectTitle">{{ projectBm ? 'BM' : 'PB' }}</p>
         </div>
+
         <router-link :to="noRouterPush ? '#' : '/setting'"
                      :class='{ "leftActive": isActive("/setting"), "disabledLink": noRouterPush }'>
           <font-awesome-icon :icon="['fas', 'gear']" style="font-size: 1rem;"/>
@@ -17,7 +18,6 @@
           />
           <span class='icoText'>Analysis</span>
         </router-link>
-
         <router-link to="/dataBase"
                      :class='{ "leftActive": isActive("/dataBase") || isActive("/databaseDetail") || isActive("/databaseRbc") || isActive("/report") || isActive("/databaseWhole") }'>
           <font-awesome-icon :icon="['fas', 'server']"
@@ -25,6 +25,19 @@
           />
           <span class='icoText'>Database</span>
         </router-link>
+
+        <!-- 가운데 메뉴 -->
+        <div v-if="machineVersion === '100a'" style="display: inline-block; left: 20%; position: relative; margin-top: 12px;">
+          <p class="text-center mb1" style="line-height: 0;">Auto Start</p>
+          <ProgressBar
+              :value="autoStartTimer"
+              gradientStart="#2196f3"
+              gradientEnd="#03a9f4"
+              :animationDuration="0.3"
+              :showGlowEffect="true"
+          />
+
+        </div>
 
         <!--  좌측메뉴  -->
         <div class="small-icon-menu">
@@ -148,6 +161,7 @@ import {logoutApi} from "@/common/api/service/user/userApi";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import axios from "axios";
 import {SOUND_COMPLETE_ALARM, SOUND_ERROR_ALARM} from "@/common/lib/utils/assetUtils";
+import ProgressBar from "@/components/commonUi/ProgressBar.vue";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -199,9 +213,11 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const projectBm = ref(false);
+const machineVersion = ref('');
 const clickType = ref('');
 const userSetOutUl = ref(false);
 const isStartCountUpdated = ref(false);
+const autoStartTimer = ref(0);
 
 const keydownHandler = (e: KeyboardEvent) => {
   if (e.ctrlKey && ['61', '107', '173', '109', '187', '189'].includes(String(e.which))) {
@@ -233,6 +249,7 @@ const updateDateTime = () => {
 
 const handleOkConfirm = async () => {
   showConfirm.value = false;
+
   await logoutApi({userId: userId.value});
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
@@ -266,6 +283,7 @@ const fullScreen = () => {
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
+  machineVersion.value = window.MACHINE_VERSION;
 })
 
 onMounted(async () => {
@@ -302,6 +320,14 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   isDoorOpen.value = newVals[0].sysInfo.isDoorOpen;
   storagePercent.value = Number(newVals[0].sysInfo.storageSize);
   eqStatCd.value = newVals[0].sysInfo.eqStatCd;
+
+  if (machineVersion.value === '100a' && newVals[0].sysInfo?.autoStartTimer) {
+    const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
+    if (Number(autoStartTimerNumber) ! == 0) {
+      autoStartTimer.value = (Number(autoStartTimerNumber) / 5) * 100;
+    }
+  }
+
 
   eqStatCdData.value = eqStatCdChangeVal(newVals[0].sysInfo.eqStatCd);
   oilCountData.value = oilCountChangeVal();

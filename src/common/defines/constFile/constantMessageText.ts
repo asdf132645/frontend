@@ -432,6 +432,9 @@ export  const messages: Messages = {
     UPLOAD: 'Upload',
     OK: 'Ok',
 
+    TOAST_MSG_SUCCESS: 'success',
+    TOAST_MSG_ERROR: 'error',
+
     SETTING_INFO_DOWNLOAD_SAVE_PATH_EN: 'Destination path for download and Origin path for upload',
     SETTING_INFO_DOWNLOAD_SAVE_PATH_KO: '다운로드 시 저장 경로 & 업로드 시 백업 파일 경로',
     SETTING_INFO_UPLOAD_EN: '',

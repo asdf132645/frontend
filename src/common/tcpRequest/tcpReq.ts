@@ -113,6 +113,11 @@ export const tcpReq:any = () => {
                 reqDttm: reqDttm,
                 testType: '',
             },
+            errorClear: {
+                jobCmd: 'ERROR_CLEAR',
+                reqUserId: '',
+                reqDttm: reqDttm,
+            }
         },
     };
 };

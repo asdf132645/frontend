@@ -108,6 +108,7 @@ import CrcAdd from "@/views/datebase/commponent/detail/report/component/crcAdd.v
 import Confirm from "@/components/commonUi/Confirm.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 // Props 받기
 const props = defineProps({
@@ -126,6 +127,7 @@ const confirmMessage = ref('');
 const delType = ref('');
 const itemId = ref(0);
 const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
 
 // CrcAdd 열기/닫기 상태
 const isCrcAdd = ref(false);
@@ -176,11 +178,13 @@ const returnPassWordCheck = (val: boolean) => {
     passWordPass.value = true;
     // 패스 체크 모달 닫기
     passLayout.value = false;
+    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
     showToast("Admin verification is complete. Please click the button again.");
   } else {
     passWordPass.value = false;
     // 패스 체크 모달 닫기
     passLayout.value = false;
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     showToast("The administrator password is incorrect.");
   }
 }
@@ -210,6 +214,7 @@ const startEdit = (item: any) => {
 const deleteCrcItem = async (id: number) => {
   try {
     await deleteCrcDataApi({id}); // 서버로 삭제 요청
+    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
     showToast('It s been deleted.')
     await loadCrcData(); // 데이터 새로고침
   } catch (error) {
@@ -220,6 +225,7 @@ const deleteCrcItem = async (id: number) => {
 const deleteRow = (type: string, id?: string | number) => {
   if (type === 'check') {
     if (selectedItems.value.length === 0) {
+      toastMessageType.value = messages.TOAST_MSG_ERROR;
       showToast('Please select the item to delete.')
       return;
     }
@@ -239,8 +245,10 @@ const deleteSelectedItems = async () => {
     await Promise.all(selectedItems.value.map(id => deleteCrcDataApi({id})));
     await loadCrcData(); // 데이터 새로고침
     selectedItems.value = []; // 선택된 항목 초기화
+    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
     showToast('It s been deleted.')
   } catch (error) {
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     showToast('Failed to delete selected items')
     // console.error("Failed to delete selected items:", error);
   }

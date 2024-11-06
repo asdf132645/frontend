@@ -95,6 +95,7 @@
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
+      :messageType="toastMessageType"
       :duration="1500"
       position="bottom-right"
   />
@@ -143,6 +144,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
+import {messages} from "@/common/defines/constFile/constantMessageText";
 
 const emit = defineEmits(['closeIsCrcAdd', 'refresh']);
 
@@ -158,6 +160,7 @@ const crcDataArr = ref<any>({
 });
 
 const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -265,6 +268,7 @@ const convertToNewlines = (content: string) => {
 
 const saveCrcData = async () => {
   if (codeVal.value === '') {
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     await showToast('Please enter the code.');
     return;
   }
@@ -285,6 +289,7 @@ const saveCrcData = async () => {
   crcDataArr.value.crcRemark = remarkList.value;
   crcDataArr.value.crcComment = commentList.value;
   crcDataArr.value.crcRecommendation = recoList.value;
+  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
   await showToast('Success');
   await createCrcDataApi(crcDataArr.value);
   emit('refresh');
@@ -325,12 +330,13 @@ const saveEdit = async () => {
       crcContent: crcDataArr.value.crcContent,
       code: codeVal.value
     }]); // 수정된 데이터 서버로 전송
+    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
     await showToast('Edit completed.');
     emit('refresh');
     emit('closeIsCrcAdd');
   } catch (error) {
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     await showToast('Failed to update item');
-    // console.error("Failed to update item:", error);
   }
 };
 

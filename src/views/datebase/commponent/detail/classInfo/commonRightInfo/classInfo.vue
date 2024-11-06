@@ -143,6 +143,7 @@
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
+      :messageType="toastMessageType"
       :duration="1500"
       position="bottom-right"
   />
@@ -224,6 +225,7 @@ const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
 const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
 
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
@@ -404,6 +406,7 @@ const barcodeCopy = async () => {
   textarea.select();
   document.execCommand('copy');
   document.body.removeChild(textarea);
+  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
   showToast(messages.IDS_MSG_SUCCESS);
 }
 
@@ -713,6 +716,7 @@ const cmcSeoulLisAndCbcDataGet = () => {
             lisBtnColor.value = true;
             const updatedRuningInfo = {...result.data, ...updatedItem}
             await resRunningItem(updatedRuningInfo, true);
+            toastMessageType.value = messages.TOAST_MSG_SUCCESS;
             showToast(messages.IDS_MSG_SUCCESS);
           } else {
             const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
@@ -772,6 +776,7 @@ const inhaDataSendLoad = async () => {
     lisBtnColor: lisBtnColorVal
   } = await inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, props.selectItems, userModuleDataGet.value.id)
   if (errMessage !== '') {
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     showToast(errMessage);
   }
   lisBtnColor.value = lisBtnColorVal || false;
@@ -806,6 +811,7 @@ const otherDataSend = async () => {
         }
         try {
           await createH17(data);
+          toastMessageType.value = messages.TOAST_MSG_SUCCESS;
           showToast(messages.IDS_MSG_SUCCESS);
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
@@ -898,6 +904,7 @@ const lisFileUrlCreate = async (data: any) => {
         const updatedRunningInfo = {...result.data, ...updatedItem};
 
         await resRunningItem(updatedRunningInfo, true);
+        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
         showToast(messages.IDS_MSG_SUCCESS);
 
         // 알림이 없을 경우 다음 페이지로 이동
@@ -927,6 +934,7 @@ const sendLisMessage = async (data: any) => {
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
     const result = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
     if (result.data.errorCode === 'E000') {
+      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
       showToast(messages.IDS_MSG_SUCCESS);
     } else {
       showErrorAlert(result.data.errorMessage);
@@ -1033,6 +1041,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     })
     if (response) {
       if (!noAlert) {
+        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
         showToast('Success');
       }
       wbcMemo.value = updatedRuningInfo.wbcMemo;

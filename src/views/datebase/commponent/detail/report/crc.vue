@@ -123,6 +123,7 @@
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
+      :messageType="toastMessageType"
       :duration="1500"
       position="bottom-right"
   />
@@ -162,6 +163,7 @@ const props = defineProps({
 });
 const store = useStore();
 const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS)
 const passWordType = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const isComment = ref(false);
@@ -420,6 +422,7 @@ const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
 
 const lisStart = async () => {
   if (searchText.value === '') {
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     showToast('Please enter the code.');
     passWordPassLis.value = false;
     return;
@@ -522,6 +525,7 @@ const lisCommonDataWhether = async (lisFunc: any) => {
   if (resText === 'Success') {
     await commonSucessLis();
   } else {
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     showToast('Lis Send Fail');
   }
 }
@@ -536,6 +540,7 @@ const commonSucessLis = async () => {
     await resRunningItem(updatedRuningInfo, true);
     submitState.value = true;
   }
+  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
   showToast(messages.IDS_MSG_SUCCESS);
 }
 
@@ -551,6 +556,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     })
     if (response) {
       if (!noAlert) {
+        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
         showToast('Success');
       }
     } else {
@@ -658,6 +664,7 @@ const returnPassWordCheck = (val: boolean) => {
   const handleFailure = () => {
     isDefaultPassword ? (passWordPass.value = false) : (passWordPassLis.value = false);
     closePassModal();
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
     showToast("The administrator password is incorrect.");
   };
 
@@ -723,6 +730,7 @@ const tempSaveLocalStorage = () => {
   localStorage.setItem('remarkList', JSON.stringify(remarkList.value));
   localStorage.setItem('commentList', JSON.stringify(commentList.value));
   localStorage.setItem('recoList', JSON.stringify(recoList.value));
+  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
   showToast('Data saved to temporary storage')
 };
 
@@ -741,6 +749,7 @@ const tempSaveDataEmpty = async () => {
   commentList.value = [];
   code.value = '';
   searchText.value = '';
+  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
   showToast('Data empty to storage')
 }
 

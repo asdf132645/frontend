@@ -39,7 +39,7 @@ onBeforeMount(async () => {
     router.push('/database')
   }
 
-  pbVersion.value = window.PB_VERSION;
+  pbVersion.value = window.MACHINE_VERSION;
   bmIsBoolen.value = window.PROJECT_TYPE === 'bm' ? true : false;
 });
 

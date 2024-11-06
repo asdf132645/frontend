@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="toast-notification" :class="position">
+  <div v-if="visible" class="toast-notification" :class="[position, messageType]">
     <p>{{ message }}</p>
   </div>
 </template>
@@ -20,6 +20,9 @@ const props = defineProps({
   position: {
     type: String,
     default: 'bottom-right', // 기본 위치: 우측 하단
+  },
+  messageType: {
+    type: String,
   }
 });
 

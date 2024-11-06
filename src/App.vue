@@ -239,7 +239,7 @@ const leave = async (event: any) => {
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
-  pbVersion.value = window.PB_VERSION;
+  pbVersion.value = window.MACHINE_VERSION;
 })
 const isIpMatching = (url: any, ip: any) => {
   // URL 에서 IP 주소 추출
@@ -703,7 +703,7 @@ const startSysPostWebSocket = async () => {
   if (autoStart === 'true') autoStart = 1;
   else if (autoStart === 'false') autoStart = 0;
 
-  if (window.PB_VERSION === '100a') {
+  if (window.MACHINE_VERSION === '100a') {
     Object.assign(req, { isRewindingBelt: isRewindingBelt.value} );
     Object.assign(req, { autoStart: autoStart });
   }
@@ -812,7 +812,6 @@ const showErrorAlert = (message: string) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-
 
 </script>
 

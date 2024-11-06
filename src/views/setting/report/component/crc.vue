@@ -4,7 +4,7 @@
       <div class="crcWrap flex-column-align-center">
 
         <div class="flex-justify-between">
-          <div class="w200 flex-align-center-justify-between" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" v-if="masterId === 'uimd'">
             <span>CRC Default Mode</span>
             <font-awesome-icon
                 :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -12,8 +12,8 @@
                 @click="crcDefaultModeOn"
             />
           </div>
-          <div class="w200 flex-align-center-justify-between" v-if="masterId === 'uimd'">
-            <span>CRC lis Two Mode</span>
+          <div class="w200 flex-column-align-center" v-if="masterId === 'uimd'">
+            <span>CRC LIS Two Mode</span>
             <font-awesome-icon
                 :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
@@ -21,20 +21,20 @@
             />
           </div>
 
-          <div class="w200 flex-align-center-justify-between" @click="crcConnectOn" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" @click="crcConnectOn" v-if="masterId === 'uimd'">
             <span>CRC Connect</span>
             <font-awesome-icon
                 :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
             />
           </div>
-          <div class="w200 flex-align-center-justify-between" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" v-if="masterId === 'uimd'">
             <span>CRC Remark Select Count</span>
             <input type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
             <input type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
             <input type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
           </div>
-          <div class="w200 flex-align-center-justify-between" v-if="userType === 'admin'">
+          <div class="w200 flex-column-align-center" v-if="userType === 'admin'">
             <span>CRC PassWord</span>
             <input type="text" placeholder="password" v-model="crcPassWord"/>
           </div>

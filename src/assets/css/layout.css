@@ -4282,6 +4282,10 @@ span.smCrcTitle {
     animation: fadeInOut 4s ease forwards;
 }
 
+.toast-notification.error {
+    background-color: red;
+}
+
 .reportDiv .moDivBox div p {
     min-width: 120px;
     text-align: left;
@@ -4570,10 +4574,18 @@ input.codeInput {
 }
 
 .etc-textarea {
-    position: absolute;
-    top: 40px;
+    margin-top: 2px;
+    width: 140px;
+    height: 20px;
+    resize: none;
+    border-radius: 5px;
+}
+
+.etc-textarea:active,
+.etc-textarea:focus {
+    width: 200px;
+    height: 40px;
     left: 0;
-    z-index: 10;
 }
 
 @media screen and (max-width: 1900px) {

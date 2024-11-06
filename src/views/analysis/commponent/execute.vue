@@ -108,7 +108,6 @@ const confirmType = ref('');
 const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
-const isInitializing = ref(false);
 const is100A = ref(false);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
@@ -120,7 +119,7 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
 });
 
 onBeforeMount(() => {
-  is100A.value = window.PB_VERSION === '100a';
+  is100A.value = window.MACHINE_VERSION === '100a';
 })
 
 onMounted(async () => {
@@ -352,17 +351,14 @@ const handleOkConfirm = () => {
 const sendInit = () => { // 장비 초기화 진행
 
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
-  // if (isInitializing.value) {
-  //   if (isInit.value === 'Y' || btnStatus.value === "isRunning" || isRunningState.value) {
-  //     showSuccessAlert(messages.alreadyInitialized);
-  //   }
-  //     showErrorALert('Program is already running');
-  //     return;
-  // }
+  if (isInit.value === 'Y') {
+    showSuccessAlert(messages.alreadyInitialized);
+    return;
+  }
+
   tcpReq().embedStatus.init.reqUserId = userId.value;
   emitSocketData('SEND_DATA', tcpReq().embedStatus.init);
   emits('initDataChangeText', true);
-  // isInitializing.value = true;
 }
 
 const sendRewindBelt = async (isRewindingBelt: boolean) => {
