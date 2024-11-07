@@ -6,7 +6,7 @@
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
         <li style="position: relative">
-          <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen"/>
+          <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" v-if="type !== 'report'" />
           <div v-if="memoModal" class="memoModal">
             <textarea v-model="memo"></textarea>
             <button class="memoModalBtn" @click="memoChange">OK</button>
@@ -22,7 +22,7 @@
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">
           <ul class="categoryNm">
-            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Category</li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Category</li>
             <li  :style="type === 'report' && 'cursor: default;'">
               <span :style="type === 'report' && 'cursor: default;'">{{ getCategoryName(category) }}</span>
               <button class="degreeAllCheckBtn" v-if="getCategoryName(category) === 'Shape' && type !== 'report'"
@@ -32,7 +32,7 @@
             </li>
           </ul>
           <ul class="classNmRbc">
-            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Class</li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Class</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li @click="handleLiClick(outerIndex, innerIndex, classIndex, classInfo, category)" :style="type === 'report' && 'cursor: default;'">
@@ -65,7 +65,15 @@
             </template>
           </ul>
           <ul class="degree analysis">
-            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">Degree<p>0 1+ 2+ 3+</p></li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">
+              <p>Degree</p>
+              <p class="rbcDegree-span-wrapper">
+                <span>0</span>
+                <span>1+</span>
+                <span>2+</span>
+                <span>3+</span>
+              </p>
+            </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')"
@@ -153,7 +161,7 @@
 
           </ul>
           <ul class="rbcPercent">
-            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">count</li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Count</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
@@ -189,7 +197,7 @@
             </template>
           </ul>
           <ul class="rbcPercent mr1">
-            <li v-if="innerIndex === 0" class="mb1 liTitle" :style="type === 'report' && 'cursor: default;'">percent</li>
+            <li v-if="innerIndex === 0" class="mt18 liTitle" :style="type === 'report' && 'cursor: default;'">Percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">

@@ -42,7 +42,7 @@
         <!-- Classification List Modal -->
         <div class="filterDivBox" v-if="classListToggle">
           <div class="nrCount" v-if="!bmClassIsBoolen">
-            <span>NR count</span>
+            <span>NR Count</span>
             <input type="text" v-model="nrCount"/>
           </div>
           <div class="wbcTotal">
@@ -65,22 +65,34 @@
           <div class="lastTestType">
             <span>Test Type</span>
             <div>
-              <label><input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>
-                <span>ALL</span></label>
+              <label>
+                <input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>
+                <span>All</span>
+              </label>
               <template v-if="!bmClassIsBoolen">
-                <label><input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
-                  <span>Diff</span></label>
-                <label><input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
-                  <span>PBS</span></label>
+                <label>
+                  <input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
+                  <span>Diff</span>
+                </label>
+                <label>
+                  <input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
+                  <span>PBS</span>
+                </label>
               </template>
 
               <template v-if="bmClassIsBoolen">
-                <label><input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
-                  <span>Wedge</span></label>
-                <label><input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
-                  <span>Biopsy</span></label>
-                <label><input type="checkbox" value="06" @change="changeTestType('06')" :checked="testType === '06'"/>
-                  <span>Squash</span></label>
+                <label>
+                  <input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
+                  <span>Wedge</span>
+                </label>
+                <label>
+                  <input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
+                  <span>Biopsy</span>
+                </label>
+                <label>
+                  <input type="checkbox" value="06" @change="changeTestType('06')" :checked="testType === '06'"/>
+                  <span>Squash</span>
+                </label>
               </template>
             </div>
 
@@ -175,8 +187,8 @@ const selectedItem = ref<any>({});
 const titleItem = ref<any>([]);
 const titleItemArr = ref([]);
 const nrCount = ref(0);
-const testType = ref('');
-const wbcCountOrder = ref('');
+const testType = ref('00');
+const wbcCountOrder = ref('all');
 const classListToggle = ref(false);
 const bmClassIsBoolen = ref(false);
 const instance = getCurrentInstance();

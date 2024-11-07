@@ -5,19 +5,19 @@
   </div>
   <table class='defaultTable mt2 dbDataTable' ref="scrollableDiv">
     <colgroup>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="15%"/>
-      <col width="3%"/>
-      <col width="3%"/>
-      <col width="15%"/>
-      <col width="3%"/>
+      <col width="7%"/>
+      <col width="2%"/>
+      <col width="7%"/>
+      <col width="4%"/>
+      <col width="6%"/>
+      <col width="8%"/>
+      <col width="8%"/>
+      <col width="8%"/>
+      <col width="12%"/>
+      <col width="10%"/>
+      <col width="6%"/>
+      <col width="12%"/>
+      <col width="4%"/>
     </colgroup>
     <thead>
     <tr>
@@ -32,7 +32,7 @@
       <th>Patient ID</th>
       <th>Patient Name</th>
       <th>Analyzed Date</th>
-      <th>Tact Time(S)</th>
+      <th>Tact Time(sec)</th>
       <th>Submit</th>
       <th>Submit Date</th>
       <th>Edit</th>
@@ -57,7 +57,10 @@
           @contextmenu.prevent="rowRightClick(item, $event)"
           title="Double click the row"
       >
-        <td><font-awesome-icon class="red" :icon="['fas', 'triangle-exclamation']" v-if="item.isNormal === 'N'" /> {{ idx + 1 }}</td>
+        <td style="position: relative;">
+          <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']" v-if="item.isNormal === 'N'" />
+          {{ idx + 1 }}
+        </td>
         <td @click="handleCheckboxChange(item)">
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
@@ -76,7 +79,7 @@
         <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
-          <font-awesome-icon v-if="item?.submitState === 'checkFirst' || item?.submitState === ''"
+          <font-awesome-icon v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status"
                              :icon="['fas', 'pen-to-square']"
                              @click="editData(item)"/>
         </td>

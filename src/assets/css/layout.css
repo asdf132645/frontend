@@ -3,12 +3,20 @@
     margin-top: 10px;
 }
 
+.mt18 {
+    margin-top: 18px;
+}
+
 .mt2 {
     margin-top: 20px;
 }
 
 .mt22 {
     margin-top: 22px;
+}
+
+.mt28 {
+    margin-top: 28px;
 }
 
 .mt3 {
@@ -25,6 +33,10 @@
 
 .mb1 {
     margin-bottom: 10px;
+}
+
+.mb14 {
+    margin-bottom: 14px;
 }
 
 .mb2 {
@@ -1958,7 +1970,6 @@ table.defaultTable thead th, table.defaultTable tbody td {
     font-size: 0.9rem;
     text-align: center;
     vertical-align: middle;
-    width: calc(100% / 13);
 }
 
 table.defaultTable tbody td {
@@ -4662,6 +4673,18 @@ input.codeInput {
     left: 18%;
     position: relative;
     top: 10px;
+}
+
+.isNotNormalIcon {
+    position: absolute;
+    left: 16px;
+}
+
+.rbcDegree-span-wrapper {
+    margin-top: 2px;
+    width: 77.56px;
+    display:flex;
+    justify-content: space-around
 }
 
 @media screen and (max-width: 1900px) {

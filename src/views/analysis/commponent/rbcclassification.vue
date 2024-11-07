@@ -26,9 +26,7 @@
       </div>
     </div>
     <div v-else>
-      <h3 class="titleText">
-        <span class="greenColor">RBC</span> <span class="greenColor">C</span>lassification
-      </h3>
+      <h3 class="titleText">RBC Classification</h3>
       <template v-for="(classList, outerIndex) in dspRbcClassList" :key="outerIndex">
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories">

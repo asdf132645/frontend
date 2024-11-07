@@ -1,17 +1,17 @@
 <template>
   <img class="mt1" v-if="type !== 'report' && !barCodeImageShowError" @error="onImageError" :src="barcodeImg"/>
   <div class="mt1" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
-  <div class="mt1 mb2 flex-justify-between">
+  <div class="mt1 mb1 flex-justify-between">
     <h3 class="wbcClassInfoLeft">
       {{ wbcClassTileChange() }}
     </h3>
 
     <ul class="leftWbcInfo">
-      <li @click="barcodeCopy">
-        <font-awesome-icon :icon="['fas', 'copy']"/>
+      <li>
+        <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']"/>
       </li>
-      <li style="position: relative">
-        <font-awesome-icon :icon="['fas', 'comment-dots']" class="memoOpenBtn" @click="memoOpen"/>
+      <li style="position: relative" v-if="type !== 'report'">
+        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" />
         <div v-if="memoModal" class="memoModal">
           <textarea v-model="wbcMemo"></textarea>
           <button class="memoModalBtn" @click="memoChange">OK</button>
