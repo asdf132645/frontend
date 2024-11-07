@@ -57,7 +57,7 @@ import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
 import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
-import { inhaPercentChange } from "@/common/lib/commonfunction/classFicationPercent";
+import {inhaPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
 import axios from "axios";
 import {
   getCbcCodeList,
@@ -66,7 +66,7 @@ import {
   inhaCbc,
   inhaDataSend
 } from "@/common/lib/commonfunction/inhaCbcLis";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const showAlert = ref(false);
@@ -111,7 +111,6 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
-const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
@@ -296,7 +295,7 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
-
+  console.log(pbiaRootDir.value)
 });
 
 onBeforeUnmount(async () => {
@@ -349,7 +348,7 @@ async function socketData(data: any) {
           showErrorAlert(res);
           const isAlarm = sessionStorage.getItem('isAlarm');
           if (isAlarm === 'true') {
-            await store.dispatch('commonModule/setCommonInfo', { isErrorAlarm: true }); // 오류 알람을 킨다.
+            await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
           }
         }
         const deviceInfoObj = {
@@ -557,21 +556,35 @@ async function socketData(data: any) {
         let wbcInfoNewVal: any = [];
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
-        const path = iaRootPath.value;
-        const url_new = `${path}/${completeSlot.slotId}/01_WBC_Classification/${completeSlot.slotId}.json`;
-        const response_new = await readJsonFile({fullPath: url_new});
-        console.log(response_new?.data);
-        for (const el of response_new?.data) {
-          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => { return elW.title === el.FILE_NM.split('_')[0]})
-          newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
-            fileName: el.FILE_NM
-          })
-        }
+        // const path = pbiaRootDir.value;
+        // const url_new = `${path}/${completeSlot.slotId}/01_WBC_Classification/${completeSlot.slotId}.json`;
+        // const response_new = await readJsonFile({fullPath: url_new});
+        // for (const el of newWbcInfo?.wbcInfo[0]) {
+        //   el.images = [];
+        // }
+        // for (const el of response_new?.data) {
+        //
+        //   let fileNm = '';
+        //   if (el.FILE_NM.split('_')[0] === 'NES') {
+        //     fileNm = 'NE';
+        //   } else if (el.FILE_NM.split('_')[0] === 'NEB'){
+        //     fileNm = 'NS';
+        //   }else {
+        //     fileNm = el.FILE_NM.split('_')[0]
+        //   }
+        //
+        //   const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => {
+        //     return elW.title === fileNm
+        //   })
+        //   newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
+        //     fileName: el.FILE_NM
+        //   })
+        // }
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
         let submitState = '';
-        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] && completeSlot.testType !== '04' ) {
+        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] && completeSlot.testType !== '04') {
           // 인하대 WBC 정보를 저장
           newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
 
@@ -716,8 +729,8 @@ const startSysPostWebSocket = async () => {
   else if (autoStart === 'false') autoStart = 0;
 
   if (window.MACHINE_VERSION === '100a') {
-    Object.assign(req, { isRewindingBelt: isRewindingBelt.value} );
-    Object.assign(req, { autoStart: autoStart });
+    Object.assign(req, {isRewindingBelt: isRewindingBelt.value});
+    Object.assign(req, {autoStart: autoStart});
   }
 
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
