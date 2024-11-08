@@ -59,6 +59,10 @@
     padding-left: 0 !important;
 }
 
+.pt5 {
+    padding-top: 5px;
+}
+
 .f18 {
     font-size: 18px;
 }
@@ -162,6 +166,10 @@
 
 .w200 {
     width: 200px;
+}
+
+.w220 {
+    width: 220px;
 }
 
 .w420 {
@@ -4686,6 +4694,11 @@ input.codeInput {
     width: 77.56px;
     display:flex;
     justify-content: space-around
+}
+
+.cbc-setting-icon {
+    position: absolute;
+    left: -30px;
 }
 
 @media screen and (max-width: 1900px) {
