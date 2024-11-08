@@ -21,7 +21,7 @@
               <option value="text">text</option>
               <option value="percent">percent</option>
             </select>
-            <div v-else-if="pageName === 'set' && masterId === 'uimd'">{{ item?.crcType }}</div>
+            <div v-else-if="pageName === 'set' && isMasterId(masterId)">{{ item?.crcType }}</div>
           </div>
           <div class="crcSel">
             <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
@@ -33,7 +33,7 @@
                     }}
                   </option>
                 </select>
-                <div v-else-if="masterId === 'uimd'">
+                <div v-else-if="isMasterId(masterId)">
                   <select @change="changeSelect($event, item.id)">
                     <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
                   </select>
@@ -45,7 +45,7 @@
                 <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
                        placeholder="Enter text" v-if="pageName !== 'set'"/>
                 <input v-model="item.crcContent" :disabled="pageName === 'set'"
-                       v-else-if=" pageName ==='set' && masterId === 'uimd'"
+                       v-else-if=" pageName ==='set' && isMasterId(masterId)"
                        type="text"
                        placeholder="Enter text"/>
               </div>
@@ -53,7 +53,7 @@
                 <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text"
                        placeholder="Enter percentage" v-if="pageName !== 'set'"/>
                 <input class="smallInput" :disabled="pageName === 'set'"
-                       v-else-if=" pageName ==='set' && masterId === 'uimd'"
+                       v-else-if=" pageName ==='set' && isMasterId(masterId)"
                        v-model="item.crcContent" type="text"
                        placeholder="Enter percentage"/>
               </div>
@@ -77,7 +77,7 @@
             </span>
           </div>
 
-          <div v-if="pageName === 'set' && masterId === 'uimd'">
+          <div v-if="pageName === 'set' && isMasterId(masterId)">
             <button type="button" @click="editCrcArr(item.id)">EDIT</button>
             <button
                 type="button"
@@ -87,7 +87,7 @@
               OK
             </button>
           </div>
-          <div v-if="pageName === 'set' && masterId === 'uimd'">
+          <div v-if="pageName === 'set' && isMasterId(masterId)">
             <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
           </div>
 
@@ -99,6 +99,7 @@
 
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue';
+import {isMasterId} from "@/common/lib/utils/validators";
 
 const props = defineProps({
   items: {

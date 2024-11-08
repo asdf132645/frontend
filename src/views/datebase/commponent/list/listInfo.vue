@@ -1,6 +1,5 @@
 <!-- ListInfo.vue -->
 <template>
-
   <div v-if="Object.keys(selectedItem).length !== 0">
     <div>
       <h3 class="orderTitle hh3title">Order Information</h3>

@@ -4,7 +4,7 @@
       <div class="crcWrap flex-column-align-center">
 
         <div class="flex-justify-between">
-          <div class="w200 flex-column-align-center" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" v-if="isMasterId(masterId)">
             <span>CRC Default Mode</span>
             <font-awesome-icon
                 :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -12,7 +12,7 @@
                 @click="crcDefaultModeOn"
             />
           </div>
-          <div class="w200 flex-column-align-center" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" v-if="isMasterId(masterId)">
             <span>CRC LIS Two Mode</span>
             <font-awesome-icon
                 :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
@@ -21,27 +21,27 @@
             />
           </div>
 
-          <div class="w200 flex-column-align-center" @click="crcConnectOn" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" @click="crcConnectOn" v-if="isMasterId(masterId)">
             <span>CRC Connect</span>
             <font-awesome-icon
                 :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
             />
           </div>
-          <div class="w200 flex-column-align-center" v-if="masterId === 'uimd'">
+          <div class="w200 flex-column-align-center" v-if="isMasterId(masterId)">
             <span>CRC Remark Select Count</span>
             <input type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
             <input type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
             <input type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
           </div>
           <div class="w200 flex-column-align-center" v-if="userType === 'admin'">
-            <span>CRC PassWord</span>
+            <span>CRC Password</span>
             <input type="text" placeholder="password" v-model="crcPassWord"/>
           </div>
         </div>
 
 
-        <ul class="mt30" v-if="masterId === 'uimd'">
+        <ul class="mt30" v-if="isMasterId(masterId)">
           <li>
             <p>crcTitle</p>
             <span><input type="text" placeholder="crcTitle" v-model="crcTitle"></span>
@@ -144,6 +144,8 @@ import {
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
+import {MASTER_ID} from "@/common/defines/constFile/settings";
+import {isAdmin, isMasterId} from "@/common/lib/utils/validators";
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -253,7 +255,7 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
-  if(masterId.value === 'uimd'){
+  if(isMasterId(masterId.value)){
     if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
       await updateCrcApi(crcArr.value);
       await updateCrcOptionApi({

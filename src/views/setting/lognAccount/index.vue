@@ -55,7 +55,7 @@
       <div class="editModalContainer">
         <div class="userInputWrapper">
           <label class="userLabel" for="userType" style="line-height: 0">User Type</label>
-          <select id="userType" v-model="selectedUserData.userType" class="searchSelect inputMiddleWrapper" style="width: 132px !important;" :disabled="!isAdmin(currentUserId)">
+          <select id="userType" v-model="selectedUserData.userType" class="searchSelect inputMiddleWrapper" style="width: 132px !important;" :disabled="!isMasterId(currentUserId)">
             <option v-for="option in userTypeOptions" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
@@ -110,7 +110,8 @@ import { User } from '@/common/api/service/user/dto/userDto'
 import Modal from "@/components/commonUi/modal.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import router from "@/router";
-import {useStore} from "vuex";
+import { useStore } from "vuex";
+import { isMasterId } from "@/common/lib/utils/validators";
 
 const store = useStore()
 const storedUser = computed(() => store.state.userModule)
@@ -152,8 +153,6 @@ const filterUsers = (users: any[], searchText: any, searchOption: string) => {
     return searchField.toLowerCase().includes(searchQuery);
   });
 };
-
-const isAdmin = (userId: string) => 'UIMD' === userId.toUpperCase() || 'uimd' === userId.toLowerCase();
 
 const onSearch = async () => {
   try {

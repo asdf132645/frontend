@@ -7,6 +7,38 @@
 
       <div class="circular-progress-bar mt2">
         <svg class="progress-ring" width="120" height="120">
+          <!-- Define Rotating Gradient -->
+          <defs>
+
+            <!-- Gradient for Progress Circle -->
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <template v-if="!embeddedStatusJobCmd.value?.userStop">
+                <stop offset="0%" stop-color="#56ccf2" />
+                <stop offset="50%" :stop-color="progressColor" />
+                <stop offset="100%" stop-color="#2A5A98" />
+              </template>
+              <template v-else>
+                <stop offset="100%" :stop-color="progressColor" />
+              </template>
+
+
+              <!-- Rotate the gradient over time -->
+              <animateTransform
+                  attributeName="gradientTransform"
+                  type="rotate"
+                  from="0 0.5 0.5"
+                  to="360 0.5 0.5"
+                  dur="2s"
+                  repeatCount="indefinite"
+              />
+            </linearGradient>
+
+            <!-- Drop Shadow Filter -->
+            <filter id="shadow">
+              <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="rgba(0, 0, 0, 0.3)" />
+            </filter>
+          </defs>
+
           <circle
               :cx="radius"
               :cy="radius"
@@ -20,7 +52,8 @@
               :cy="radius"
               :r="radius - strokeWidth / 2"
               :stroke-width="strokeWidth"
-              :stroke="progressColor"
+              stroke="url(#gradient)"
+              filter="url(#shadow)"
               fill="none"
               :stroke-dasharray="circumference"
               :stroke-dashoffset="dashoffset"
@@ -80,7 +113,7 @@ const props = defineProps(['parsedData', 'pb100aCassette']);
 
 const timeNum = ref(0);
 const size = ref(120); // SVG 크기
-const strokeWidth = ref(6); // 프로그레스 바 두께
+const strokeWidth = ref(8); // 프로그레스 바 두께
 const progressColor = ref('#00c2ff'); // 프로그레스 바 색상
 const radius = ref(size.value / 2);
 const circumference = ref(2 * Math.PI * (radius.value - strokeWidth.value / 2));

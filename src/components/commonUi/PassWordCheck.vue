@@ -4,7 +4,7 @@
       <p class="mb2">
         <font-awesome-icon :icon="['fas', 'lock']"/>
       </p>
-      <p class="adminText">Admin PassWord</p>
+      <p class="adminText">Admin Password</p>
       <p>
         Please enter the administrator password.
       </p>
