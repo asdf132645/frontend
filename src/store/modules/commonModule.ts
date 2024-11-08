@@ -62,6 +62,7 @@ export interface CommonState {
     settingType: string;
     isDownloadOrUploading: boolean;
     isRewindingBelt: boolean;
+    currentSelectItems: any;
 }
 
 interface CommonModule {
@@ -130,6 +131,7 @@ interface CommonModule {
         setSettingType: (state: CommonState, value: string) => void;
         setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
+        setCurrentSelectItems: (state: CommonState, value: any) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -199,6 +201,7 @@ export const commonModule: CommonModule = {
         settingType: '',
         isDownloadOrUploading: false,
         isRewindingBelt: false,
+        currentSelectItems: {},
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -390,6 +393,9 @@ export const commonModule: CommonModule = {
         },
         setIsRewindingBelt(state: CommonState, value: boolean): void {
             state.isRewindingBelt = value;
+        },
+        setCurrentSelectItems(state: CommonState, value: any): void {
+            state.currentSelectItems = value;
         }
     },
     actions: {
@@ -583,6 +589,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isRewindingBelt')) {
                 commit('setIsRewindingBelt', payload.isRewindingBelt);
+            }
+            if (payload.hasOwnProperty('currentSelectItems')) {
+                commit('setCurrentSelectItems', payload.currentSelectItems);
             }
         },
     },

@@ -197,7 +197,7 @@
             </template>
           </ul>
           <ul class="rbcPercent mr1">
-            <li v-if="innerIndex === 0" class="mt18 liTitle" :style="type === 'report' && 'cursor: default;'">Percent</li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
@@ -358,6 +358,7 @@ const countArtifact = ref(0);
 const countDoubleNormal = ref(0);
 const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
+const currentSelectItems = computed(() => store.state.commonModule.currentSelectItems);
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -957,7 +958,9 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
       runingInfoDtoItems: [updatedRuningInfo],
       dayQuery: dayQuery,
     })
+
     if (response) {
+      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response.data[0] });
       if(degree === 'degree') {
         await rbcTotalAndReCount(rbcImagePageNumber.value);
         await countReAdd();

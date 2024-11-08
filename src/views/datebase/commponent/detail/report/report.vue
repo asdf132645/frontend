@@ -310,6 +310,7 @@ const wbcInfoAfter = ref<any>([]);
 const crcData = ref<any>([]);
 const crcConnect = ref(false);
 const isContent = ref(false);
+
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   const crcOptionApi = await crcOptionGet();
@@ -329,7 +330,6 @@ const handleClickOutside = (event: MouseEvent) => {
     printClose();
   }
 };
-
 
 onMounted(async () => {
   await getDetailRunningInfo();
