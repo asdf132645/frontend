@@ -3848,6 +3848,7 @@ li.crcRow {
 
 .grid-item.crcItemDiv input {
     width: 92%;
+    height: 17px;
 }
 
 .crcItemDiv button {
