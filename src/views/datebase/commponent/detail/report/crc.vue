@@ -486,7 +486,7 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     ...nowCrcData.crcContent.rbc
   ];
   for (const wbcInfo of props.selectItems?.wbcInfoAfter) {
-    // const includesStr = ["AR", "NR", "GP", "PA", "MC", "MA"];
+    const includesStr = ["AR", "NR", "GP", "PA", "MC", "MA"];
 
     // const {data} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, cbcCodeList.value);
     // (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.spc

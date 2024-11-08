@@ -556,30 +556,37 @@ async function socketData(data: any) {
         let wbcInfoNewVal: any = [];
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
-        // const path = pbiaRootDir.value;
-        // const url_new = `${path}/${completeSlot.slotId}/01_WBC_Classification/${completeSlot.slotId}.json`;
-        // const response_new = await readJsonFile({fullPath: url_new});
-        // for (const el of newWbcInfo?.wbcInfo[0]) {
-        //   el.images = [];
-        // }
-        // for (const el of response_new?.data) {
-        //
-        //   let fileNm = '';
-        //   if (el.FILE_NM.split('_')[0] === 'NES') {
-        //     fileNm = 'NE';
-        //   } else if (el.FILE_NM.split('_')[0] === 'NEB'){
-        //     fileNm = 'NS';
-        //   }else {
-        //     fileNm = el.FILE_NM.split('_')[0]
-        //   }
-        //
-        //   const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => {
-        //     return elW.title === fileNm
-        //   })
-        //   newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
-        //     fileName: el.FILE_NM
-        //   })
-        // }
+        const path = pbiaRootDir.value;
+        const url_new = `${path}/${completeSlot.slotId}/01_WBC_Classification/${completeSlot.slotId}.json`;
+        const response_new = await readJsonFile({fullPath: url_new});
+
+        for (const el of newWbcInfo?.wbcInfo[0]) {
+          if (!el.images) {
+            el.images = []; // images 프로퍼티가 없으면 추가하고 빈 배열로 초기화
+          }
+        }
+
+        for (const el of response_new?.data) {
+          let fileNm = '';
+          if (el.FILE_NM.split('_')[0] === 'NES') {
+            fileNm = 'NE';
+          } else if (el.FILE_NM.split('_')[0] === 'NEB') {
+            fileNm = 'NS';
+          } else {
+            fileNm = el.FILE_NM.split('_')[0];
+          }
+
+          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => {
+            return elW.title === fileNm;
+          });
+
+          if (findWbcIndex !== -1) { // 유효한 인덱스인지 확인
+            newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
+              fileName: el.FILE_NM
+            });
+          }
+        }
+
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
