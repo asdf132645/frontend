@@ -71,3 +71,14 @@ export const commonCodeList = [
     { grpCd: '14', grpNm: 'Slot state', cd: '04', cdNm: 'Complete'},
     { grpCd: '14', grpNm: 'Slot state', cd: '05', cdNm: 'Error'}
 ]
+
+export const RUNNING_INFO_INTERFACE_CODE = {
+    I_CAS_STAT_ID_LIST: [
+        { cd: '0', cdNm: 'Empty' },
+        { cd: '1', cdNm: 'Ready' },
+        { cd: '2', cdNm: 'Analyzing' },
+        { cd: '3', cdNm: 'Complete' },
+        { cd: '4', cdNm: 'Error' },
+        { cd: '9', cdNm: 'Scan' },
+    ]
+}

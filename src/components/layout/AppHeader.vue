@@ -321,7 +321,7 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   storagePercent.value = Number(newVals[0].sysInfo.storageSize);
   eqStatCd.value = newVals[0].sysInfo.eqStatCd;
 
-  if (machineVersion.value === '100a' && newVals[0].sysInfo?.autoStartTimer) {
+  if (machineVersion.value === '100a' && (newVals[0].sysInfo?.autoStartTimer ?? true)) {
     const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
     autoStartTimer.value = (parseFloat(autoStartTimerNumber) / 5) * 100;
   }

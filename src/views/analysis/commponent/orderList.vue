@@ -19,7 +19,7 @@
               siteCd === '0019' ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
             }}
           </td>
-          <td>{{ getCommonCode('14', slot?.stateCd) }}</td>
+          <td>{{ slot?.stateCd }}</td>
         </tr>
       </tbody>
       <tbody v-else>
@@ -32,49 +32,35 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, ref, watch} from "vue";
-import {getCommonCode, stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
-import {formatDateString} from "@/common/lib/utils/dateUtils";
-import {useStore} from "vuex";
+import { computed, defineProps, ref, watch } from "vue";
+import { useStore } from "vuex";
+import { stringToDateTime } from "@/common/lib/utils/conversionDataUtils";
+import { formatDateString } from "@/common/lib/utils/dateUtils";
+import { RUNNING_INFO_INTERFACE_CODE } from "@/common/defines/constFile/commonCodeList";
+
 const store = useStore();
-
 const siteCd = computed(() => store.state.commonModule.siteCd);
-
-// 스토어
 const props = defineProps(['parsedData', 'startStatus', 'pb100aCassette']);
-
-// end 스토어
 const dspOrderList = ref<any>([]);
 
-watch(
-    () => props.parsedData,
-    (newVal) => {
+watch(() => props.parsedData, (newVal) => {
       runningInfoGet(newVal);
-    },
-    {deep: true}
-);
+    }, {deep: true});
 
-watch(
-    () => props.pb100aCassette,
-    (newVal) => {
+watch(() => props.pb100aCassette, (newVal) => {
       if (newVal === 'reset') {
         dspOrderList.value = [];
         console.log('pb100aCassette 초기화', dspOrderList.value)
       }
-    },
-    {deep: true}
-);
+    }, {deep: true});
 
 
-watch(
-    () => props.startStatus,
-    (newVal) => {
+watch(() => props.startStatus, (newVal) => {
       if (newVal === true) {
         dspOrderList.value = [];
       }
-    },
-    {deep: true}
-);
+    }, {deep: true});
+
 const runningInfoGet = async (data: any) => {
   const parsedData = data
   if (parsedData.jobCmd === 'RUNNING_INFO') {
@@ -82,23 +68,34 @@ const runningInfoGet = async (data: any) => {
     if (currentSlot) {
       const barcodeNo = currentSlot.barcodeNo;
       const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+      const inputCassetteArr = [...parsedData?.iCasStat].filter((id: string) => id !== '0');
       if (existingItemIndex === -1 && barcodeNo !== '') {
+
         /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
         // Start
         if (dspOrderList.value.length > 10) {
           dspOrderList.value = [];
         }
         // End
+
+        if (dspOrderList.value && dspOrderList.value.length > 0) {
+          // Core에서 받는 stateCd가 저장되는 타이밍을 잡기 어려워 추가한 stateCd 변경 코드
+          const completedCassetteIndex = inputCassetteArr.lastIndexOf('3');
+          if (completedCassetteIndex !== -1) dspOrderList.value[completedCassetteIndex].stateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST[3].cdNm;
+        }
+
+        const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[dspOrderList.value.length]);
+
         dspOrderList.value.push({
           barcodeId: barcodeNo,
           patientName: currentSlot.patientNm,
           orderDate: stringToDateTime(currentSlot.orderDttm) || 0,
           analyzedDttm: stringToDateTime(currentSlot.analyzedDttm) || 0,
-          stateCd: currentSlot.stateCd,
+          stateCd: stateCdObj?.cdNm,
         });
       } else {
-        dspOrderList.value[existingItemIndex].stateCd = currentSlot.stateCd;
-
+        const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[existingItemIndex]);
+        if (dspOrderList.value) dspOrderList.value[existingItemIndex].stateCd = stateCdObj?.cdNm;
       }
     }
   }

@@ -14,13 +14,12 @@
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <template v-if="!embeddedStatusJobCmd.value?.userStop">
                 <stop offset="0%" stop-color="#56ccf2" />
-                <stop offset="50%" :stop-color="progressColor" />
-                <stop offset="100%" stop-color="#2A5A98" />
+                <stop offset="50%" stop-color="#35b0b6" />
+                <stop offset="100%" stop-color="#2f80ed" />
               </template>
               <template v-else>
                 <stop offset="100%" :stop-color="progressColor" />
               </template>
-
 
               <!-- Rotate the gradient over time -->
               <animateTransform
@@ -53,10 +52,10 @@
               :r="radius - strokeWidth / 2"
               :stroke-width="strokeWidth"
               stroke="url(#gradient)"
-              filter="url(#shadow)"
               fill="none"
               :stroke-dasharray="circumference"
               :stroke-dashoffset="dashoffset"
+              filter="url(#shadow)"
           />
         </svg>
         <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
@@ -113,7 +112,7 @@ const props = defineProps(['parsedData', 'pb100aCassette']);
 
 const timeNum = ref(0);
 const size = ref(120); // SVG 크기
-const strokeWidth = ref(8); // 프로그레스 바 두께
+const strokeWidth = ref(6); // 프로그레스 바 두께
 const progressColor = ref('#00c2ff'); // 프로그레스 바 색상
 const radius = ref(size.value / 2);
 const circumference = ref(2 * Math.PI * (radius.value - strokeWidth.value / 2));
@@ -217,12 +216,7 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
 
     if (currentSlot && currentSlot?.stateCd === '03') {
       wbcCount.value = Number(currentSlot.wbcCount);
-      maxWbcCount.value = Number(currentSlot.maxWbcCount);
-
-      if (wbcCount.value > maxWbcCount.value) {
-        wbcCount.value = maxWbcCount.value;
-      }
-
+      maxWbcCount.value = window.PROJECT_TYPE === 'pb' ? Number(currentSlot.maxWbcCount) : Number(currentSlot.cellCount);
       const percentage = (wbcCount.value / maxWbcCount.value) * 100;
       dashoffset.value = calculateDashOffset(percentage);
     }
