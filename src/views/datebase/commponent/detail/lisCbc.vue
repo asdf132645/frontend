@@ -350,7 +350,14 @@ const fileData = async (firstCbcDatafilename: string) => {
   const isExistsFile = await fileSysExistsFile(fileSysExistsFileParms);
   if(isExistsFile.data === "NoFile"){
     const fileSearchApiPram = `directoryPath=${path}\\${props.selectItems?.slotId}&searchString=${props.selectItems?.barcodeNo}`
-    fileListName = (await fileSearchApi(fileSearchApiPram)).data[0].split('.')[0];
+    try {
+      const response = await fileSearchApi(fileSearchApiPram);
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        fileListName = response.data[0].split('.')[0];
+      }
+    } catch (error) {
+      console.error('Error fetching file list:', error);
+    }
     filePath = `${path}\\${props.selectItems?.slotId}`;
   }else{
     fileListName = firstCbcDatafilename;

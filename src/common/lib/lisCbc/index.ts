@@ -167,78 +167,85 @@ export const parseDateString = (dateString: any) => {
 }
 
 
-export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[]): any {
-    const results: string[] = [];
+export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[], rbcInfoAfter: any): any {
+    const newRbcArr = [];
+    for (const result of rbcInfoAfter) {
+        newRbcArr.push(...result.classInfo);
+    }
+    const results: object[] = [];
+    const rbcNormalRanges: { [key: string]: [number, number] } = {
+        'Spherocyte': [0, 5.0],
+        'Ovalocyte': [0, 5.0],
+        'TearDropCell': [0, 5.0],
+        'Acanthocyte': [0, 5.0],
+        'Target Cell': [0, 5.0],
+        'Schistocyte': [0, 1],
+        'Howell-Jolly Body': [0, 2],
+    };
 
-    // CBC 데이터 검사
-    for (const item of cbcData) {
-        const value = parseFloat(item.count);
-        let normalRange: [number, number] | undefined;
-
-        switch (item.classNm) {
-            case 'WBC':
-                normalRange = [4.0, 10.0];
-                break;
-            case 'RBC':
-                normalRange = [3.7, 5.2];
-                break;
-            case 'Hb':
-                normalRange = [11.0, 16.0];
-                break;
-            case 'Hct':
-                normalRange = [32.0, 44.0];
-                break;
-            case 'MCV':
-                normalRange = [80.0, 105.0];
-                break;
-            case 'MCHC':
-                normalRange = [32.5, 36.0];
-                break;
-            case 'RDW':
-                normalRange = [11.0, 15.0];
-                break;
-            case 'PLT':
-                normalRange = [150, 450];
-                break;
-            default:
-                continue;
-        }
+    for (const item of newRbcArr) {
+        const value = parseFloat(item.percent);
+        const normalRange = rbcNormalRanges[item.classNm];
 
         if (normalRange && (value < normalRange[0] || value > normalRange[1])) {
-            results.push(`${item.classNm} 값이 비정상입니다: ${value} (정상 범위: ${normalRange[0]} - ${normalRange[1]})`);
+            // results.push(`${item.classNm} 값이 비정상입니다: ${value} (정상 범위: ${normalRange[0]} - ${normalRange[1]})`);
+            results.push({
+                classNm: item.classNm,
+                value: value,
+                normalRangeFirst: normalRange[0],
+                normalRangeLast: normalRange[1]
+            })
         }
     }
+    // CBC 데이터 검사
+    const cbcNormalRanges: { [key: string]: [number, number] } = {
+        'WBC': [4.0, 10.0],
+        'RBC': [3.7, 5.2],
+        'HGB': [11.0, 16.0],
+        'HCT': [32.0, 44.0],
+        'MCV': [80.0, 105.0],
+        'MCHC': [32.5, 36.0],
+        'RDWCV': [0, 17.0],
+        'PLT': [150, 450],
+        'RETI': [0, 5],
+    };
+    for (const item of cbcData) {
+        const value = parseFloat(item.count);
+        const normalRange = cbcNormalRanges[item.classNm];
+
+        if (normalRange && (value < normalRange[0] || value > normalRange[1])) {
+            // results.push(`${item.classNm} 값이 비정상입니다: ${value} (정상 범위: ${normalRange[0]} - ${normalRange[1]})`);
+            results.push({
+                classNm: item.classNm,
+                value: value,
+                normalRangeFirst: normalRange[0],
+                normalRangeLast: normalRange[1]
+            })
+        }
+    }
+
 
     // WBC 정보 검사
+    const wbcNormalRanges: { [key: string]: [number, number] } = {
+        'NB': [0, 6],
+        'LR': [0, 10],
+    };
+
     for (const info of wbcInfoAfter) {
         const percent = parseFloat(info.percent);
-
-        // 각 세포의 정상 범위를 정의
-        let normalRange: [number, number] = [0, 10]; // 기본값 설정
-        switch (info.name) {
-            case 'Neutrophil':
-                normalRange = [1.5, 8.5];
-                break;
-            case 'Lymphocyte':
-                normalRange = [1.0, 4.5];
-                break;
-            case 'Monocyte':
-                normalRange = [0, 1];
-                break;
-            case 'Eosinophil':
-                normalRange = [0, 0.5];
-                break;
-            case 'Basophil':
-                normalRange = [0, 0.2];
-                break;
-            default:
-                continue;
-        }
+        const normalRange = wbcNormalRanges[info.title] || [0, 10]; // 기본값 설정
 
         if (percent < normalRange[0] || percent > normalRange[1]) {
-            results.push(`${info.name}의 퍼센트가 비정상입니다: ${percent}% (정상 범위: ${normalRange[0]}% - ${normalRange[1]}%)`);
+            // results.push(`${info.title} 값이 비정상입니다: ${percent} (정상 범위: ${normalRange[0]} - ${normalRange[1]})`);
+            results.push({
+                classNm: info.title,
+                percent: percent,
+                normalRangeFirst: normalRange[0],
+                normalRangeLast: normalRange[1]
+            });
         }
     }
+
 
     return results;
 }
