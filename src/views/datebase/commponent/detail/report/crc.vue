@@ -6,7 +6,7 @@
           :class="{ active: activeTab === 1 }"
           @click="activeTab = 1"
       >
-        종합결과코드
+        LIS Result Codes
       </button>
       <button
           class="tab"
@@ -213,7 +213,7 @@ const morphologyMapping: any = ref({
 });
 const cbcCodeList = ref<any>([]);
 const lastChnageInputCrcData = ref<any>([]);
-
+const autoNomarlCheck = ref<any>([]);
 onBeforeMount(async () => {
   await nextTick();
 
@@ -278,9 +278,9 @@ onMounted(async () => {
   const cbcFilePathSetArr = await getCbcPathData();
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '') {
     const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
-    const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter);
-    console.log(autoNomarlCheck.length);
-    if(autoNomarlCheck.length === 0){
+    autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter);
+    console.log(autoNomarlCheck.value);
+    if(autoNomarlCheck.value.length === 0){
       selectOption('Normal');
     }
   }
