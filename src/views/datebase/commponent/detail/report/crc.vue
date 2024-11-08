@@ -13,7 +13,14 @@
           :class="{ active: activeTab === 2 }"
           @click="adminPassword()"
       >
-        종합결과코드 LIST
+        Code Repository
+      </button>
+      <button
+          class="tab"
+          :class="{ active: activeTab === 3 }"
+          @click="cellStatus()"
+      >
+        Cell Status Dashboard
       </button>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
@@ -114,7 +121,10 @@
     <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 2">
       <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh"/>
     </div>
-  </div>
+    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 3">
+      <cell-status-dash-board/>
+    </div>
+    </div>
 
   <!-- 자식 컴포넌트 Remark -->
   <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
@@ -154,6 +164,7 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 import {ywmcCbcCheckApi, ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import moment from "moment";
+import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -262,14 +273,17 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
+  await nextTick()
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '') {
     const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
-    const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter);
-    console.log(autoNomarlCheck);
+    const autoNomarlCheck = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter);
+    console.log(autoNomarlCheck.length);
+    if(autoNomarlCheck.length === 0){
+      selectOption('Normal');
+    }
   }
-  console.log(props.selectItems?.submitState)
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
 })
 const selectOption = (selectedCode: string) => {
@@ -659,6 +673,10 @@ const adminPassword = () => {
   } else {
     activeTab.value = 2;
   }
+}
+
+const cellStatus = () => {
+  activeTab.value = 3;
 }
 
 const returnPassWordCheck = (val: boolean) => {

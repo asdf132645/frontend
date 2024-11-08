@@ -295,7 +295,6 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
-  console.log(pbiaRootDir.value)
 });
 
 onBeforeUnmount(async () => {
@@ -557,7 +556,8 @@ async function socketData(data: any) {
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
         const path = pbiaRootDir.value;
-        const url_new = `${path}/${completeSlot.slotId}/01_WBC_Classification/${completeSlot.slotId}.json`;
+        const folderPath = !projectBm.value ? '01_WBC_Classification' : '04_BM_Classification';
+        const url_new = `${path}/${completeSlot.slotId}/${folderPath}/${completeSlot.slotId}.json`;
         const response_new = await readJsonFile({fullPath: url_new});
 
         for (const el of newWbcInfo?.wbcInfo[0]) {
