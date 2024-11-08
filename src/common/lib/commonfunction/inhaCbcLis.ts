@@ -345,12 +345,13 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean, id?: an
         const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
         const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
         const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-        const response = await updateRunningApi({
+        const response: any = await updateRunningApi({
             userId: Number(id),
             runingInfoDtoItems: [updatedRuningInfo],
             dayQuery: dayQuery,
         })
         if (response) {
+            await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
             if (!noAlert) {
                 message = 'success';
             }

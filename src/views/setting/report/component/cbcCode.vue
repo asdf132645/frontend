@@ -5,6 +5,10 @@
       <input type="text" v-model="item.classCd" />
     </label>
   </div>
+
+  <button class="">
+    <font-awesome-icon :icon="['fas', 'plus']" />
+  </button>
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
   </div>
