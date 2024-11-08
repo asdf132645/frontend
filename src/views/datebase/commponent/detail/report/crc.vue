@@ -6,7 +6,7 @@
           :class="{ active: activeTab === 1 }"
           @click="activeTab = 1"
       >
-        LIS Result Codes
+        Result Codes
       </button>
       <button
           class="tab"
@@ -20,7 +20,7 @@
           :class="{ active: activeTab === 3 }"
           @click="cellStatus()"
       >
-        Cell Status Dashboard
+        Dashboard
       </button>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
@@ -121,8 +121,8 @@
     <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 2">
       <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh"/>
     </div>
-    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 3">
-      <cell-status-dash-board/>
+    <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
+      <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
     </div>
 
@@ -277,9 +277,8 @@ onMounted(async () => {
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '') {
-    const cbcData = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
-    autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter);
-    console.log(autoNomarlCheck.value);
+    const { cbcData, cbcSex, cbcAge } = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
+    autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
     if(autoNomarlCheck.value.length === 0){
       selectOption('Normal');
     }
