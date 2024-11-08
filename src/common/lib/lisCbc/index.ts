@@ -167,11 +167,13 @@ export const parseDateString = (dateString: any) => {
 }
 
 
-export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[], rbcInfoAfter: any): any {
+export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[], rbcInfoAfter: any, cbcSex: string, cbcAge: string): any {
     const newRbcArr = [];
     for (const result of rbcInfoAfter) {
         newRbcArr.push(...result.classInfo);
     }
+    console.log(cbcSex)
+    console.log(cbcAge)
     const results: object[] = [];
     const rbcNormalRanges: { [key: string]: [number, number] } = {
         'Spherocyte': [0, 5.0],
@@ -197,18 +199,25 @@ export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAf
             })
         }
     }
+
     // CBC 데이터 검사
     const cbcNormalRanges: { [key: string]: [number, number] } = {
         'WBC': [4.0, 10.0],
-        'RBC': [3.7, 5.2],
-        'HGB': [11.0, 16.0],
-        'HCT': [32.0, 44.0],
+        'RBC': [3.7, 5.2], // Female
+        'HGB': [11.0, 16.0], // Female
+        'HCT': [32.0, 44.0], // Female
         'MCV': [80.0, 105.0],
         'MCHC': [32.5, 36.0],
-        'RDWCV': [0, 17.0],
-        'PLT': [150, 450],
+        'RDWCV': [0, 15.0], // Female
+        'PLT': [150, 450], // Female
         'RETI': [0, 5],
     };
+
+    if (cbcSex === 'M') {
+        cbcNormalRanges['RBC'] = [4.0, 5.8];
+        cbcNormalRanges['HGB'] = [12.5, 16.5];
+        cbcNormalRanges['HCT'] = [40.0, 52.0];
+    }
     for (const item of cbcData) {
         const value = parseFloat(item.count);
         const normalRange = cbcNormalRanges[item.classNm];
@@ -239,7 +248,7 @@ export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAf
             // results.push(`${info.title} 값이 비정상입니다: ${percent} (정상 범위: ${normalRange[0]} - ${normalRange[1]})`);
             results.push({
                 classNm: info.title,
-                percent: percent,
+                value: percent,
                 normalRangeFirst: normalRange[0],
                 normalRangeLast: normalRange[1]
             });
@@ -255,7 +264,10 @@ export const cbcDataGet = async (barcodeNo: string, cbcCodeList: any) => {
     const path = await getCbcPathData();
     const readFileTxtRes: any = await readFileEUCKR(`path=${path}&filename=${fileNm}`);
     const cbcData: any = [];
+    let cbcSex = ''
+    let cbcAge = '';
     if (readFileTxtRes.data.success) {
+
         const msg: any = await readH7File(readFileTxtRes.data.data);
         msg?.data?.segments?.forEach((cbcSegment: any) => {
             const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
@@ -270,8 +282,11 @@ export const cbcDataGet = async (barcodeNo: string, cbcCodeList: any) => {
                     unit: unit
                 }
                 cbcData.push(obj)
+            } else if (cbcSegment.name.trim() === 'PID') {
+                cbcSex = cbcSegment?.fields[6].value[0][0].value[0]
+                cbcAge = cbcSegment?.fields[7].value[0][0].value[0];
             }
         })
     }
-    return cbcData;
+    return {cbcData: cbcData, cbcSex: cbcSex, cbcAge: cbcAge};
 }
