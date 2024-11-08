@@ -1,10 +1,27 @@
 <template>
   <div class="alignDiv">
-    <label v-for="item in cbcCodeArr" :key="item.cd">
-      <p class="mb1">{{ item.fullNm }}</p>
-      <input type="text" v-model="item.classCd" />
+    <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
+      <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>
+      <input v-else type="text" v-model="item.fullNm" />
+      <div class="pos-relative w220 flex-align-center">
+        <font-awesome-icon
+            v-show="editingCBCCd !== item.cd"
+            @click="editCBC(item.cd)"
+            class="cursorPointer hoverSizeAction cbc-setting-icon"
+            :icon="['fas', 'pen-to-square']"
+        />
+        <font-awesome-icon
+            v-show="editingCBCCd === item.cd"
+            @click="clearEditing"
+            class="cursorPointer hoverSizeAction cbc-setting-icon"
+            :icon="['fas', 'square-check']" />
+        <input type="text" v-model="item.classCd" />
+      </div>
     </label>
   </div>
+
+  <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
+  <button class="cursorPointer" @click="deleteCBCCode"><font-awesome-icon :icon="['fas', 'minus']" /></button>
   <div class="mt1">
     <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
   </div>
@@ -29,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed, watch} from 'vue';
+import {ref, onMounted, computed, watch, onBeforeUnmount} from 'vue';
 import {defaultCbcList, defaultCbcList_0011, settingName} from "@/common/defines/constFile/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
@@ -55,6 +72,7 @@ const enteringRouterPath = computed(() => store.state.commonModule.enteringRoute
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const siteCd = ref('');
+const editingCBCCd = ref('00');
 
 onMounted(async () => {
   await getDeviceInfo();
@@ -140,6 +158,33 @@ const getImagePrintData = async () => {
   }
 };
 
+const getDeviceInfo = async () => {
+  try {
+    const deviceData = await getDeviceInfoApi();
+    siteCd.value = deviceData.data.siteCd;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const addCBCCode = () => {
+  let maxCBCCode = Math.max(...cbcCodeArr.value.map(item => Number(item.cd))) + 1;
+  const cbcCodeCd = maxCBCCode.toString().padStart(2, '0');
+  const defaultCBCCode = { cd: cbcCodeCd, classCd: '', fullNm: 'Edit CBC Code', isSelected: true };
+  cbcCodeArr.value.push(defaultCBCCode);
+}
+
+const deleteCBCCode = () => {
+  const maxCBCCode = Math.max(...cbcCodeArr.value.map(item => Number(item.cd)));
+  cbcCodeArr.value = cbcCodeArr.value.filter(item => Number(item.cd) !== maxCBCCode);
+}
+
+const editCBC = (CBCCd: string) => editingCBCCd.value = CBCCd;
+
+const clearEditing = () => {
+  editingCBCCd.value = '00';
+}
+
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
@@ -151,15 +196,6 @@ const showErrorAlert = (message: string) => {
   alertType.value = 'error';
   alertMessage.value = message;
 };
-
-const getDeviceInfo = async () => {
-  try {
-    const deviceData = await getDeviceInfoApi();
-    siteCd.value = deviceData.data.siteCd;
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 const hideAlert = () => {
   showAlert.value = false;

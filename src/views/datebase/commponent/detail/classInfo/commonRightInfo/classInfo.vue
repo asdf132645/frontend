@@ -1049,12 +1049,13 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response = await updateRunningApi({
+    const response: any = await updateRunningApi({
       userId: Number(userModuleDataGet.value.id),
       runingInfoDtoItems: [updatedRuningInfo],
       dayQuery: dayQuery,
     })
     if (response) {
+      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
       if (!noAlert) {
         toastMessageType.value = messages.TOAST_MSG_SUCCESS;
         showToast('Success');
@@ -1398,13 +1399,13 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response = await updateRunningApi({
+    const response: any = await updateRunningApi({
       userId: Number(userId.value),
       runingInfoDtoItems: originalDb,
       dayQuery: dayQuery
     })
     if (response) {
-
+      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
