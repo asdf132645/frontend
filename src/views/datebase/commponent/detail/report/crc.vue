@@ -94,7 +94,6 @@
           <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
         </div>
 
-        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
             <textarea maxlength="1000" v-model="item.remarkAllContent"></textarea>
@@ -652,18 +651,24 @@ const updateList = (newList: any[], type: string) => {
 
   switch (type) {
     case 'remark':
-      remarkList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
+      remarkallContentPush(newList,remarkList)
       closeSelect('remark');
       break;
     case 'comment':
-      commentList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
+      remarkallContentPush(newList,commentList)
       closeSelect('comment');
       break;
     case 'reco':
-      recoList.value[0].remarkAllContent += convertToNewlines(newList[0].remarkAllContent);
+      remarkallContentPush(newList,recoList)
       closeSelect('recommendation');
       break;
   }
+}
+const remarkallContentPush = (newList: any, list) => {
+  for (const el of newList) {
+    list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent)
+  }
+  list.value[0].remarkAllContent += '\r'
 }
 const adminPassword = () => {
   passWordType.value = ''

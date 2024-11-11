@@ -172,8 +172,7 @@ export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAf
     for (const result of rbcInfoAfter) {
         newRbcArr.push(...result.classInfo);
     }
-    console.log(cbcSex)
-    console.log(cbcAge)
+
     const results: object[] = [];
     const rbcNormalRanges: { [key: string]: [number, number] } = {
         'Spherocyte': [0, 5.0],

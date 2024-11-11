@@ -7,6 +7,7 @@
         <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">CBC Code</button>
         <button @click="selectTab('filePathSet')" :class="{ 'active': activeTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
         <button @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
+        <button @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto Result Link</button>
       </div>
     </div>
 
@@ -46,6 +47,7 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import Alert from "@/components/commonUi/Alert.vue";
+import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore();
 const projectBm = ref(false);
