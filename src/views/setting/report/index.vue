@@ -39,7 +39,8 @@
 import ImagePrint from "@/views/setting/report/component/ImagePrint.vue";
 import LisCode from "@/views/setting/report/component/lisCode.vue";
 import cbcCode from "@/views/setting/report/component/cbcCode.vue";
-import CRC from "@/views/setting/report/component/crc.vue"
+import CRC from "@/views/setting/report/component/crc.vue";
+import ARL from '@/views/setting/report/component/arl.vue';
 import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
 import { computed, ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
@@ -89,6 +90,8 @@ const selectedTabComponent = computed(() => {
       return FilePathSet;
     case 'CRC':
       return CRC;
+    case 'ARL':
+      return ARL;
     default:
       return null;
   }

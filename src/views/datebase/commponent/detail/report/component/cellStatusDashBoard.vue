@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 import { defineProps, onMounted } from "vue";
-import { Chart, BarController, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title } from "chart.js";
+import { Chart, BarController, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title, LineController, LineElement } from "chart.js";
 
 // Chart.js 구성 요소 등록
-Chart.register(BarController, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
+Chart.register(BarController, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title, LineController, LineElement);
 
 const props = defineProps(['autoNomarlCheck']);
 
@@ -98,4 +98,5 @@ onMounted(() => {
   // 차트 생성
   new Chart(document.getElementById('abnormalChart') as HTMLCanvasElement, config);
 });
+
 </script>
