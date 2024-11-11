@@ -385,44 +385,44 @@ const closeSelect = (type: string) => {
       break;
   }
 }
+
+const initializeList = (list: any) => {
+  if (list.value.length === 0) {
+    list.value.push({
+      code: '',
+      id: 0,
+      remarkAllContent: '',
+      remarkContent: '',
+    });
+  }
+};
+const remarkallContentPush = (newList: any, list) => {
+  for (const el of newList) {
+    list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent)
+  }
+  list.value[0].remarkAllContent += '\r'
+}
+
 const updateList = (newList: any[], type: string) => {
+  initializeList(recoList);
+  initializeList(remarkList);
+  initializeList(commentList);
+
   switch (type) {
     case 'remark':
-      remarkList.value = newList;
+      remarkallContentPush(newList,remarkList)
       closeSelect('remark');
       break;
     case 'comment':
-      commentList.value = newList;
+      remarkallContentPush(newList,commentList)
       closeSelect('comment');
       break;
     case 'reco':
-      recoList.value = newList;
+      remarkallContentPush(newList,recoList)
       closeSelect('recommendation');
       break;
   }
-
-  remarkList.value = remarkList.value.map(item => {
-    return {
-      ...item,
-      remarkAllContent: convertToNewlines(item.remarkAllContent),
-    };
-  });
-
-  commentList.value = commentList.value.map(item => {
-    return {
-      ...item,
-      remarkAllContent: convertToNewlines(item.remarkAllContent),
-    };
-  });
-
-  recoList.value = recoList.value.map(item => {
-    return {
-      ...item,
-      remarkAllContent: convertToNewlines(item.remarkAllContent),
-    };
-  });
 }
-
 const remarkCountReturnCode = (idx: any) => {
   if (crcRemarkCount.value.length === 0) {
     return;

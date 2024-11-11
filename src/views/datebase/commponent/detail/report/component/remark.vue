@@ -355,11 +355,11 @@ const typeToText = (type: string) => {
 
 // OK 버튼 클릭 시 처리
 const okSelect = () => {
-  // console.log(props.type)
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
+  console.log(selectedRemarks)
+
   toastMessageType.value = messages.TOAST_MSG_SUCCESS;
   showToast('Remark Add Success');
-  console.log(selectedRemarks, props.type)
   emit("listUpdated", selectedRemarks, props.type);
 };
 

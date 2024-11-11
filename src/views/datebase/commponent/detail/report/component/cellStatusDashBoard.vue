@@ -10,65 +10,53 @@
         <small style="color: #6c757d;">(정상 범위: {{ item.normalRangeFirst }} - {{ item.normalRangeLast }})</small>
       </li>
     </ul>
-
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, onMounted } from "vue";
-import { Chart, BarController, LineController, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
+import { Chart, BarController, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title } from "chart.js";
 
 // Chart.js 구성 요소 등록
-Chart.register(BarController, LineController, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
+Chart.register(BarController, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
 
 const props = defineProps(['autoNomarlCheck']);
 
 onMounted(() => {
-  // 그래프 데이터 설정
+  // 데이터 설정
   const labels = props.autoNomarlCheck.map(item => item.classNm);
+  const normalRangeData = props.autoNomarlCheck.map(item => ({
+    x: item.classNm,
+    y: [item.normalRangeFirst, item.normalRangeLast] // Floating Bars 범위 설정
+  }));
   const dataValues = props.autoNomarlCheck.map(item => item.value);
-  const normalRanges = props.autoNomarlCheck.map(item => item.normalRangeLast);
-  const normalRangeFirst = props.autoNomarlCheck.map(item => item.normalRangeFirst);
 
   const data = {
     labels: labels,
     datasets: [
       {
+        label: '정상 범위',
+        data: normalRangeData,
+        backgroundColor: '#ff5700',
+        borderColor: 'rgba(102, 187, 106, 1)',
+        borderWidth: 1,
+        barThickness: 30, // 막대 두께 설정
+      },
+      {
         label: '측정 값',
         data: dataValues,
-        backgroundColor: 'rgba(233, 83, 83, 0.6)',
-        borderColor: 'rgba(233, 83, 83, 1)',
-        borderWidth: 1,
-        borderRadius: 5, // 막대 끝부분 둥글게
-        barThickness: 30, // 막대 두께
-      },
-      {
-        label: '정상 범위 최대값',
-        data: normalRanges,
         type: 'line',
         borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderWidth: 2,
-        tension: 0.3, // 선 부드럽게
-        pointRadius: 5, // 데이터 포인트 크기
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderWidth: 0,
+        pointRadius: 3, // 데이터 포인트 크기
         pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-      },
-      {
-        label: '정상 범위 최소값',
-        data: normalRangeFirst,
-        type: 'line',
-        borderColor: 'rgb(230, 57, 70)',
-        backgroundColor: 'rgb(231, 111, 81)',
-        borderWidth: 2,
-        tension: 0.3, // 선 부드럽게
-        pointRadius: 5, // 데이터 포인트 크기
-        pointBackgroundColor: 'rgb(231, 111, 81)',
       },
     ],
   };
 
-  // 차트 생성
-  new Chart(document.getElementById('abnormalChart') as HTMLCanvasElement, {
+  // 차트 설정 객체
+  const config = {
     type: 'bar',
     data: data,
     options: {
@@ -76,12 +64,6 @@ onMounted(() => {
       plugins: {
         legend: {
           position: 'top',
-          labels: {
-            font: {
-              size: 14,
-            },
-            color: '#333',
-          },
         },
       },
       scales: {
@@ -111,6 +93,9 @@ onMounted(() => {
         },
       },
     },
-  });
+  };
+
+  // 차트 생성
+  new Chart(document.getElementById('abnormalChart') as HTMLCanvasElement, config);
 });
 </script>
