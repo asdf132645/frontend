@@ -57,7 +57,7 @@
                 v-model="imageSize"
                 @input="changeImageSize"
             />
-            <button class="resetBtn mb1" @click="imgSizeReset">Size Reset</button>
+            <button class="resetBtn mb10" @click="imgSizeReset">Size Reset</button>
           </div>
 
         </div>
@@ -79,7 +79,7 @@
                   v-model="imgBrightness"
                   @input="changeImgBrightness"
               />
-              <button class="resetBtn mb2" @click="brightnessReset">Brightness Reset</button>
+              <button class="resetBtn mb20" @click="brightnessReset">Brightness Reset</button>
             </div>
             <div>
               <font-awesome-icon :icon="['fas', 'palette']"/>
@@ -177,7 +177,7 @@
            class="context-menu detail">
         <ul>
           <li v-for="(item, itemIdx) in wbcInfo" :key="itemIdx" @click="moveSelectedImages(item, itemIdx)">
-            {{ item.name }}
+            {{ excludeClassName(item.name) }}
           </li>
         </ul>
       </div>
@@ -239,6 +239,7 @@ import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGall
 import Alert from "@/components/commonUi/Alert.vue";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {useGetRunningInfoByIdQuery} from "@/gql";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -535,6 +536,10 @@ const moveSelectedImages = async (item: any, itemIdx: any) => {
   contextMenuVisible.value = false;
 };
 
+const excludeClassName = (title: string): string => {
+  if (title === 'Smudge' && siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) return "";
+  return title;
+}
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = wbcInfo.slice(); // 기존 배열 복사

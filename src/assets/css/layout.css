@@ -1,5 +1,5 @@
 
-.mt1 {
+.mt10 {
     margin-top: 10px;
 }
 
@@ -7,7 +7,7 @@
     margin-top: 18px;
 }
 
-.mt2 {
+.mt20 {
     margin-top: 20px;
 }
 
@@ -19,19 +19,15 @@
     margin-top: 28px;
 }
 
-.mt3 {
-    margin-top: 30px;
-}
-
 .mt30 {
     margin-top: 30px;
 }
 
-.mt4 {
+.mt40 {
     margin-top: 40px;
 }
 
-.mb1 {
+.mb10 {
     margin-bottom: 10px;
 }
 
@@ -39,19 +35,19 @@
     margin-bottom: 14px;
 }
 
-.mb2 {
+.mb20 {
     margin-bottom: 20px;
 }
 
-.mb3 {
+.mb30 {
     margin-bottom: 30px;
 }
 
-.mb4 {
+.mb40 {
     margin-bottom: 40px;
 }
 
-.ml1 {
+.ml10 {
     margin-left: 10px;
 }
 
@@ -61,6 +57,10 @@
 
 .pt5 {
     padding-top: 5px;
+}
+
+.gap14 {
+    gap: 14px;
 }
 
 .f18 {
@@ -92,6 +92,12 @@
     align-items: center;
 }
 
+.flex-justify-start-align-center {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
 .flex-justify-center {
     display: flex;
     justify-content: center;
@@ -117,6 +123,19 @@
 .flex-column {
     display: flex;
     flex-direction: column;
+}
+
+.flex-column-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-column-justify-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .flex-column-align-center {
@@ -160,6 +179,14 @@
     width: auto;
 }
 
+.w50 {
+    width: 50px;
+}
+
+.w100 {
+    width: 100px;
+}
+
 .w140 {
     width: 140px;
 }
@@ -176,7 +203,7 @@
     width: 420px;
 }
 
-.w-800 {
+.w800 {
     width: 800px;
 }
 
@@ -196,11 +223,31 @@
     width: 20px;
 }
 
-.textLeft {
+.w20p {
+    width: 20%;
+}
+
+.w30p {
+    width: 30%;
+}
+
+.w40p {
+    width: 40%;
+}
+
+.w60p {
+    width: 60%;
+}
+
+.w80p {
+    width: 80%;
+}
+
+.text-left {
     text-align: left;
 }
 
-.textRight {
+.text-right {
     text-align: right;
 }
 
@@ -222,6 +269,10 @@
 
 .fw-normal {
     font-weight: normal;
+}
+
+input.number-small {
+    width: 42px;
 }
 
 /* header-menu */
@@ -1458,7 +1509,7 @@ ul.slideContent.pb100a {
     margin-right: 2px;
 }
 
-li.mb1.liTitle {
+li.mb10.liTitle {
     font-weight: 600;
     margin-top: 10px;
 }
@@ -3050,33 +3101,20 @@ ul.wbcHotKeysItems {
 }
 
 ul.normalItems {
-    text-align: left;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
-ul.normalItems li {
-    display: inline-block;
-    margin: 10px;
-    max-width: 584px;
-    font-size: 0.8rem;
-    width: 100%;
-}
-
-ul.normalItems li div {
-    display: block;
-    width: 100%;
-}
-
-ul.normalItems li div span {
-    display: inline-block;
-    width: 41%;
-    margin-right: 21px;
-}
-
-ul.normalItems li div span:last-child {
-    width: 5%;
+.normalItems-wrapper {
+    /*gap: 14px;*/
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px auto;
+    font-size: 1rem;
+    width: 520px;
 }
 
 .bmclass {
@@ -3810,9 +3848,8 @@ table.cbcTable td {
 }
 
 .moDivBox > div {
-    /*border: 1px solid #fff;*/
     margin-right: 5px;
-    padding: 2px;
+    /*padding: 2px;*/
 }
 
 .tab-content.crcDiv {
@@ -3834,6 +3871,7 @@ table.cbcTable td {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 li.crcRow input, li.crcRow select {
@@ -3842,7 +3880,7 @@ li.crcRow input, li.crcRow select {
 
 li.crcRow {
     display: inline-block;
-    width: 48%;
+    width: 50%;
     vertical-align: top;
     margin-right: 5px;
     font-size: 0.8rem;
@@ -3908,7 +3946,7 @@ li.crcRow {
     box-sizing: border-box;
 }
 
-.textLeft.crcMenu {
+.text-left.crcMenu {
     display: flex;
     align-items: center;
 }
@@ -4101,6 +4139,10 @@ span.crcListSpan span {
     cursor: pointer;
 }
 
+.crcListSpan:hover {
+    transform: scale(1.01);
+}
+
 .sortDownBig.caret-up {
     padding-top: 10px;
 }
@@ -4188,7 +4230,7 @@ span.crcListSpan input {
 }
 
 .reportDiv .moDivBox div {
-    width: 99%;
+    width: 100%;
 }
 
 .crcReport .crcSel {
@@ -4269,6 +4311,11 @@ button.crcBtn {
     cursor: pointer;
     border-radius: 3px;
     color: #ffffff;
+}
+
+button.crcBtn:hover {
+    color: #252629;
+    background-color: var(--white-color);
 }
 
 .rbcCrcDiv {

@@ -37,24 +37,24 @@
           <td v-if="editIndex === idx">
             <input v-model="editedCode" type="text"/>
           </td>
-          <td v-else class="textLeft">{{ item?.code }}</td>
+          <td v-else class="text-left">{{ item?.code }}</td>
 
           <td v-if="editIndex === idx">
             <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000"/>
           </td>
-          <td v-else class="textLeft" v-html="item?.remarkAllContent"></td>
+          <td v-else class="text-left" v-html="item?.remarkAllContent"></td>
 
           <td v-if="editIndex === idx">
             <!-- Save 버튼 -->
             <button class="crcDefaultBtn" @click="saveEdit(item.id)">Save</button>
-            <button class="crcDefaultBtn ml1" @click="cancelEdit">Cancel</button>
+            <button class="crcDefaultBtn ml10" @click="cancelEdit">Cancel</button>
           </td>
           <td v-else>
             <!-- Edit 버튼 -->
             <button @click="startEdit(idx, item)">
               <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
             </button>
-            <button @click="deleteRemark(item.id)" class="ml1">
+            <button @click="deleteRemark(item.id)" class="ml10">
               <font-awesome-icon :icon="['fas', 'trash']"/>
             </button>
           </td>
@@ -62,18 +62,18 @@
         </tbody>
       </table>
 
-      <div class="mt2 remarkBottomFix">
-        <p class="textLeft fs10 fw-bold mb1">Add New {{ typeToText(type) }}</p>
-        <div class="remarkBottomBtnGroup mb1">
+      <div class="mt20 remarkBottomFix">
+        <p class="text-left fs10 fw-bold mb10">Add New {{ typeToText(type) }}</p>
+        <div class="remarkBottomBtnGroup mb10">
           <div class="flex-justify-between">
             <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
-            <button @click="addRemark" class="crcDefaultBtn ml1">Add</button>
+            <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>
           </div>
           <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>
         </div>
         <div>
           <button class="crcDefaultBtn" @click="okSelect">OK</button>
-          <button @click="cancelSelect" class="ml1 crcDefaultBtn">CANCEL</button>
+          <button @click="cancelSelect" class="ml10 crcDefaultBtn">CANCEL</button>
         </div>
 
       </div>

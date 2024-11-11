@@ -13,7 +13,7 @@
             pageName="report"
         ></crc-compontent>
 
-        <div class="moDivBox mt2">
+        <div class="moDivBox mt20">
           <div>
             <crc-compontent
                 :items="crcSetArr"
@@ -33,7 +33,7 @@
           </div>
         </div>
         <!-- Remark 관련 -->
-        <div class="mt2" v-if="remarkCountReturnCode(0)">
+        <div class="mt20" v-if="remarkCountReturnCode(0)">
           <div class="crcDivTitle">
             <span>Remark</span>
             <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div class="mt2" v-if="remarkCountReturnCode(1)">
+        <div class="mt20" v-if="remarkCountReturnCode(1)">
           <div class="crcDivTitle">
             <span> Comment </span>
             <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
@@ -67,7 +67,7 @@
           </div>
         </div>
 
-        <div class="mt2" v-if="remarkCountReturnCode(2)">
+        <div class="mt20" v-if="remarkCountReturnCode(2)">
           <div class="crcDivTitle">
             <span> Recommendation </span>
             <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
@@ -85,10 +85,10 @@
         </div>
       </div>
 
-      <div class="mt2">
+      <div class="mt20">
         <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
         <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
-        <button class="crcDefaultBtn ml1" type="button" @click="closeIsCrcAddChild">Close</button>
+        <button class="crcDefaultBtn ml10" type="button" @click="closeIsCrcAddChild">Close</button>
       </div>
     </div>
   </div>

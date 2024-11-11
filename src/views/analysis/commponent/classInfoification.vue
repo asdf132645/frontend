@@ -10,15 +10,15 @@
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories" v-if="shouldRenderCategory(category)">
             <ul class="categoryNm">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb10 liTitle" style="cursor: default;">Class</li>
               <li style="cursor: default;">{{ getCategoryName(category) }}</li>
             </ul>
             <ul class="classNm">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb10 liTitle" style="cursor: default;">Count</li>
               <li style="text-align: center; cursor: default;">{{ category?.count }}</li>
             </ul>
             <ul class="degree">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle" style="cursor: default;">%</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb10 liTitle" style="cursor: default;">%</li>
               <li style="cursor: default;">
                 {{
                   totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed((Number(category?.count) / Number(totalCount)) === 0 ? 0 : 1) : '0'
@@ -47,17 +47,17 @@
       </div>
       <template v-for="(classList, outerIndex) in dspWbcClassList" :key="outerIndex">
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-          <div class="categories mt1" v-if="category.title === 'OT'">
+          <div class="categories mt10" v-if="category.title === 'OT'">
             <ul class="categoryNm">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Class</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb10 liTitle">Class</li>
               <li>{{ getCategoryName(category) }}</li>
             </ul>
             <ul class="classNm">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">Count</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb10 liTitle">Count</li>
               <li style="text-align: center">{{ category?.count }}</li>
             </ul>
             <ul class="degree">
-              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb1 liTitle">-</li>
+              <li v-if="innerIndex === 0 && outerIndex === 0" class="mb10 liTitle">-</li>
               <li>
                 {{
                   totalCount && totalCount !== '0' ? ((Number(category?.count) / Number(totalCount)) * 100).toFixed(0) : '0'
@@ -69,20 +69,20 @@
       </template>
 
       <!-- nonWbc -->
-      <div class='mt1'>
+      <div class='mt10'>
         <template v-for="(nWbcItem, outerIndex) in selectNonWbc(dspWbcClassList)" :key="outerIndex">
           <div class="categories">
             <ul class="categoryNm" style="cursor: default;">
-              <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
+              <li class="mb10 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
               <li style="cursor: default;">{{ getCategoryName(nWbcItem) }}</li>
             </ul>
             <ul class="classNm">
-              <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+              <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
               <li style="cursor: default;">{{ nWbcItem?.count }} <span
                   v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ maxWbcCount }} WBC</span></li>
             </ul>
             <ul class="degree">
-              <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+              <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
               <li style="cursor: default;">-</li>
             </ul>
           </div>

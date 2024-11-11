@@ -2,45 +2,44 @@
   <div>
     <div v-if="isToggle">
       <div class="crcWrap flex-column-align-center">
-
-        <div class="flex-justify-between">
-          <div class="w200 flex-column-align-center" v-if="isMasterId(masterId)">
-            <span>CRC Default Mode</span>
-            <font-awesome-icon
-                :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="crcDefaultModeOn"
-            />
-          </div>
-          <div class="w200 flex-column-align-center" v-if="isMasterId(masterId)">
-            <span>CRC LIS Two Mode</span>
-            <font-awesome-icon
-                :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="lisTwoModeOn"
-            />
-          </div>
-
-          <div class="w200 flex-column-align-center" @click="crcConnectOn" v-if="isMasterId(masterId)">
-            <span>CRC Connect</span>
-            <font-awesome-icon
-                :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-            />
-          </div>
-          <div class="w200 flex-column-align-center" v-if="isMasterId(masterId)">
-            <span>CRC Remark Select Count</span>
-            <input type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
-            <input type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
-            <input type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
-          </div>
-          <div class="w200 flex-column-align-center" v-if="userType === 'admin'">
+        <div class="w30p">
+          <div v-if="isUserAdminType(userType)" class="flex-align-center-justify-between mb10">
             <span>CRC Password</span>
-            <input type="text" placeholder="password" v-model="crcPassWord"/>
+            <input style="width: 100px;" type="text" placeholder="password" v-model="crcPassWord"/>
           </div>
         </div>
 
+        <div v-if="isMasterId(masterId)" class="w30p">
+          <div class="flex-align-center-justify-between mb20">
+            <span>CRC Default Mode</span>
+            <font-awesome-icon :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" @click="crcDefaultModeOn" />
+          </div>
 
+          <div class="flex-align-center-justify-between mb20">
+            <span>CRC LIS Two Mode</span>
+            <font-awesome-icon :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" @click="lisTwoModeOn" />
+          </div>
+
+          <div class="flex-align-center-justify-between mb20">
+            <span>CRC Connect</span>
+            <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" />
+          </div>
+
+          <div class="flex-column-align-center mt10">
+            <span>CRC Remark Select Count</span>
+            <div class="flex-center mt10" style="gap: 14px;">
+              <label for="crc-remark">Remark</label>
+              <input id="crc-remark" type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
+
+              <label for="crc-comment">Comment</label>
+              <input id="crc-comment" type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
+
+              <label for="crc-recommendation">Recommendation</label>
+              <input id="crc-recommendation" type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
+            </div>
+
+          </div>
+        </div>
         <ul class="mt30" v-if="isMasterId(masterId)">
           <li>
             <p>crcTitle</p>
@@ -92,7 +91,7 @@
           :userType="userType"
       ></crc-compontent>
 
-      <div class="moDivBox mt2">
+      <div class="moDivBox mt20">
         <div>
           <crc-compontent
               :items="crcArr"
@@ -119,7 +118,7 @@
       </div>
     </div>
   </div>
-  <div class="mt1">
+  <div class="mt10">
     <button class="saveBtn" type="button" @click="saveCrcData">Save</button>
   </div>
   <Alert
@@ -145,7 +144,7 @@ import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import {MASTER_ID} from "@/common/defines/constFile/settings";
-import {isAdmin, isMasterId} from "@/common/lib/utils/validators";
+import {isAdmin, isMasterId, isUserAdminType} from "@/common/lib/utils/validators";
 
 const isToggle = ref(false);
 const crcTitle = ref('');

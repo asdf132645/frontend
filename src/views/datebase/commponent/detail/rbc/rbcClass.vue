@@ -2,7 +2,7 @@
   <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
-    <div class="mt1 flex-justify-between">
+    <div class="mt10 flex-justify-between">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
         <li style="position: relative">
@@ -267,7 +267,7 @@
     <!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
     <!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
     <!--    </div>-->
-    <div class="memoModal bottom textLeft staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
+    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="memo"></textarea>
       <button class="memoModalBtn" @click="memoChange">Save</button>
     </div>

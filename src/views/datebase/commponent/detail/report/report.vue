@@ -82,7 +82,7 @@
           </div>
           <div :class="['reportDivBottom', selectItems.testType !== '04' && 'reportDiff']">
             <div :class="['wbcLeft', projectBm && 'wbcLeftBm']">
-              <h3 class="reportH3 mb1 pl0">{{ wbcClassTileChange() }} result</h3>
+              <h3 class="reportH3 mb10 pl0">{{ wbcClassTileChange() }} result</h3>
               <table class="tableClass mt22">
                 <colgroup>
                   <col width="40%">
@@ -112,7 +112,7 @@
                 </tbody>
               </table>
 
-              <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList && !projectBm" class="reportH3 mb1 pl0">non-WBC</h3>
+              <h3 v-if="!selectItems?.wbcInfo?.nonRbcClassList && !projectBm" class="reportH3 mb10 pl0">non-WBC</h3>
               <table class="tableClass" v-if="!projectBm">
                 <colgroup>
                   <col width="40%">
@@ -143,11 +143,11 @@
                   <div class="categories">
                     <ul class="printRbcCategory">
                       {{ type }}
-                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Category</li>
+                      <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Category</li>
                       <li style="cursor: default;">{{ category?.categoryNm }}</li>
                     </ul>
                     <ul class="printRbcClass">
-                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
+                      <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Class</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">{{ classInfo?.classNm }}</li>
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
@@ -163,7 +163,7 @@
                       </template>
                     </ul>
                     <ul class="printRbcDegree">
-                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Degree</li>
+                      <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Degree</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">
                           {{ Number(classInfo?.degree) || 0 }}
@@ -185,7 +185,7 @@
                       </li>
                     </ul>
                     <ul class="printRbcCount">
-                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Count</li>
+                      <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Count</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">
                           {{ Number(classInfo?.originalDegree) || 0 }}
@@ -213,7 +213,7 @@
                       </li>
                     </ul>
                     <ul class="printRbcPercent">
-                      <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Percent</li>
+                      <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Percent</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">
                           {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}

@@ -1,6 +1,11 @@
 <template>
   <div class="alignDiv">
-    <table class="defaultTable" style="margin: auto;">
+    <table class="defaultTable" style="margin: auto; width: 300px;">
+      <colgroup>
+        <col width="35%" />
+        <col width="35%" />
+        <col width="30%" />
+      </colgroup>
       <thead>
       <tr>
         <th>WBC min</th>
@@ -22,7 +27,7 @@
     </table>
   </div>
 
-  <div class="mt1">
+  <div class="mt10">
     <button class="saveBtn" type="button" @click="saveWbcRunningCount()">Save</button>
   </div>
 

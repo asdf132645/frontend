@@ -1,5 +1,5 @@
 <template>
-  <div class="mt1">
+  <div class="mt10">
     <transition name="fade" mode="out-in">
       <div class="slider-found" v-if="images.length > 0">
         <template v-for="type in images" :key="type.id">

@@ -17,7 +17,7 @@
   <ul class="cellImgBox" v-if="!classCompareShow">
     <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
       <div v-if="item?.count !== '0' && item?.count !== 0">
-        <p class="mt1">
+        <p class="mt10">
           <input type="checkbox" @input="$emit('allCheckChange', $event, item.title)"
                  :checked="selectedTitle === item.title">
           {{ item?.title }} <span class="smallName">({{ item.name }})</span>
@@ -71,14 +71,13 @@
   <!--  클래스 단일 비교 부분 -->
   <div v-else class="divCompare">
     <div class="divCompareChild">
-<!--      ssss-->
       <select v-model="firstClass" @change="classImgChange('first' , $event)">
         <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
       </select>
       <ul class="cellImgBox">
         <li>
           <div>
-            <p class="mt1">
+            <p class="mt10">
               <input type="checkbox" @input="$emit('allCheckChange', $event, firstClassObj?.title)"
                      :checked="selectedTitle === firstClassObj?.title">
               <label>
@@ -141,7 +140,7 @@
       <ul class="cellImgBox">
         <li>
           <div>
-            <p class="mt1">
+            <p class="mt10">
               <input type="checkbox" @input="$emit('allCheckChange', $event, lastClassObj?.title)"
                      :checked="selectedTitle === lastClassObj?.title">
               {{ lastClassObj?.title }} <span class="smallName">({{ lastClassObj.name }})</span>

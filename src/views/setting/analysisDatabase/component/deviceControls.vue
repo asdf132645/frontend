@@ -2,21 +2,21 @@
   <div>
     <ul class="customSettingContainer">
       <li>
-        <p class="mb1">Gripper Open</p>
+        <p class="mb10">Gripper Open</p>
         <button @click="onGripperOpen" :class="{'defaultBtn': true, 'blinkGripper': isBlinkingGripper}">OK</button>
       </li>
-      <li class="mt2">
-        <p class="mb1">Camera Reset</p>
+      <li class="mt20">
+        <p class="mb10">Camera Reset</p>
         <button type="button" class="defaultBtn" :class="{'defaultBtn': true, 'blinkGripper': isBlinkCameraReset}"
                 @click="onCameraReset">OK
         </button>
       </li>
-      <li class="mt2">
-        <p class="mb1">Charge Remaining Count</p>
+      <li class="mt20">
+        <p class="mb10">Charge Remaining Count</p>
         <button type="button" class="defaultBtn" @click="onScan">Scan</button>
       </li>
       <li class="mt22">
-        <p class="mb1">Auto Start</p>
+        <p class="mb10">Auto Start</p>
         <font-awesome-icon
             :icon="autoStart ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
             class="iconSize"

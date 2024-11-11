@@ -5,7 +5,7 @@
       <p :class="{'blinkColor': isBlinking}">{{ changeWqStatCd() }}</p>
       <p>{{ wbcCount }}</p>
 
-      <div class="circular-progress-bar mt2">
+      <div class="circular-progress-bar mt20">
         <svg class="progress-ring" width="120" height="120">
           <!-- Define Rotating Gradient -->
           <defs>
@@ -60,7 +60,7 @@
         </svg>
         <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
       </div>
-      <p class="slideTime1 mt2">Total Time</p>
+      <p class="slideTime1 mt20">Total Time</p>
       <p> {{ timeDataGet.totalSlideTime }} </p>
 
     </div>
@@ -69,13 +69,13 @@
       <ul class='slideContent'>
         <li v-for="item in slideCardData.input" :key="item.slotNo"
             :class="getSlotStateClass(item.slotState,'input')"></li>
-        <p class="mt1">INPUT</p>
+        <p class="mt10">INPUT</p>
       </ul>
       <!-- output -->
       <ul class='slideContent'>
         <li v-for="item in slideCardData.output" :key="item.slotNo"
             :class="getSlotStateClass(item.slotState,'output')"></li>
-        <p class="mt1">OUTPUT</p>
+        <p class="mt10">OUTPUT</p>
       </ul>
     </div>
     <div class='slideCardWrap' v-else>
@@ -84,7 +84,7 @@
         <p>INPUT : {{ casExistChangeText(iCasExist) }}</p>
         <li v-for="item in [...slideCardData.input].reverse()" :key="item.slotNo"
             :class="getSlotStateClass(item.slotState,'input')"></li>
-        <p class="mt1">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
+        <p class="mt10">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
       </ul>
     </div>
   </div>

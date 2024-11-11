@@ -4,7 +4,7 @@
     <p v-if="props.type === 'error'">
       <font-awesome-icon :icon="['fas', 'circle-exclamation']" class="bigFont" />
     </p>
-    <p class="mb1 alertMessage">
+    <p class="mb10 alertMessage">
       {{ message }}
     </p>
     <button class="alertButton" @click="hideAlert">Close</button>

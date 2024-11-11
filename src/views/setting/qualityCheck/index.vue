@@ -1,8 +1,8 @@
 <template>
   <div>
     <ul class="customSettingContainer">
-      <li class="mt2">
-        <p class="mb1">QualityCheck</p>
+      <li class="mt20">
+        <p class="mb10">QualityCheck</p>
         <button type="button" class="defaultBtn" @click="qualityCheckOpen">Ok</button>
       </li>
     </ul>

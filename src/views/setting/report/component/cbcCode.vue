@@ -22,7 +22,7 @@
 
   <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
   <button class="cursorPointer" @click="deleteCBCCode"><font-awesome-icon :icon="['fas', 'minus']" /></button>
-  <div class="mt1">
+  <div class="mt10">
     <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
   </div>
 

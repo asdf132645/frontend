@@ -8,7 +8,7 @@
       <font-awesome-icon :icon="['fas', 'search']" class="searchBtn" @click="onSearch"/>
 
     </div>
-    <table class="table defaultTable mt2">
+    <table class="table defaultTable mt20">
       <thead>
         <tr>
           <th>No.</th>

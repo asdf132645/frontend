@@ -229,7 +229,7 @@
         <!--      </tr>-->
         </tbody>
       </table>
-      <button class="saveBtn mb2" type="button" @click='cellImgSet()'>Save</button>
+      <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
     </div>
 
 
@@ -274,7 +274,7 @@
 
       </ul>
     </div>
-    <p class="mt4" v-show="possibleUploadFileNames.length === 0">No files</p>
+    <p class="mt40" v-show="possibleUploadFileNames.length === 0">No files</p>
     <div class="uploadModalBtnContainer">
       <template v-if="possibleUploadFileNames.length > 0">
         <button class="memoModalBtn" @click="handleUploadSelectFile">{{ messages.UPLOAD }}</button>

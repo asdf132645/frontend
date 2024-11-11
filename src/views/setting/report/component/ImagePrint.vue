@@ -1,12 +1,12 @@
 <template>
   <div class="settingImagePrint">
-    <button class="imagePrintBtn mb2" type="button" @click="toggleAllChecks">{{ allChecked ? 'Uncheck All' : 'Check All' }}</button>
+    <button class="imagePrintBtn mb20" type="button" @click="toggleAllChecks">{{ allChecked ? 'Uncheck All' : 'Check All' }}</button>
     <label v-for="item in imagePrintAndWbcArr" :key="item.id">
       <div>{{ item.fullNm }}</div>
       <div><input type="checkbox" :value="item.classId" v-model="selectedItems" /></div>
     </label>
   </div>
-  <div class="mt1">
+  <div class="mt10">
     <button class="saveBtn" type="button" @click="saveImagePrint()">Save</button>
   </div>
 

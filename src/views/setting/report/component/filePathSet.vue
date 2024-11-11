@@ -2,25 +2,25 @@
   <div class="alignDiv" style="text-align: center">
     <ul>
       <li>
-        <p class="mb2">LIS Hot Key</p>
+        <p class="mb20">LIS Hot Key</p>
         <input
             @keydown="handleKeyDown($event, 0)"
             type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
             @input="updateHotKey($event, 0)">
       </li>
       <li>
-        <p class="mb2 mt2">LIS File Path</p>
+        <p class="mb20 mt20">LIS File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''"
                @input="updateFilePath($event, 0)">
       </li>
       <li>
-        <p class="mb2 mt2">CBC File Path</p>
+        <p class="mb20 mt20">CBC File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].cbcFilePath : ''"
                @input="updateCbcFilePath($event, 0)">
       </li>
     </ul>
   </div>
-  <div class="mt1">
+  <div class="mt10">
     <button class="saveBtn" type="button" @click="saveFilePathSet()">Save</button>
   </div>
 

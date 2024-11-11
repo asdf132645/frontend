@@ -1,6 +1,6 @@
 <template>
   <div class="joinContent">
-    <p class="mt2 mb4 ">CREATE ACCOUNT</p>
+    <p class="mt20 mb40 ">CREATE ACCOUNT</p>
     <div>
       <ul class="joinWrapper">
         <li>

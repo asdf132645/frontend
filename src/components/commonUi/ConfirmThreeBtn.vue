@@ -1,6 +1,6 @@
 <template>
   <div v-if="isVisible" class="alert" :class="typeClass">
-    <p class="mb1">
+    <p class="mb10">
       {{ message }}
     </p>
     <button class="alertButton" @click="okConfirm">{{ confirmFirstText || 'OK' }}</button>

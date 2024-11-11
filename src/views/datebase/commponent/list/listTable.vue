@@ -3,7 +3,7 @@
     <div class="loader"></div>
     <p class="loadingText">Loading...</p>
   </div>
-  <table class='defaultTable mt2 dbDataTable' ref="scrollableDiv">
+  <table class='defaultTable mt20 dbDataTable' ref="scrollableDiv">
     <colgroup>
       <col width="7%"/>
       <col width="2%"/>
@@ -20,23 +20,23 @@
       <col width="4%"/>
     </colgroup>
     <thead>
-    <tr>
-      <th>NO</th>
-      <th>
-        <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
-      </th>
-      <th>Type</th>
-      <th>State</th>
-      <th>Tray Slot</th>
-      <th>Barcode NO</th>
-      <th>Patient ID</th>
-      <th>Patient Name</th>
-      <th>Analyzed Date</th>
-      <th>Tact Time(sec)</th>
-      <th>Submit</th>
-      <th>Submit Date</th>
-      <th>Edit</th>
-    </tr>
+      <tr style="position: sticky; top: 0;">
+        <th>NO</th>
+        <th>
+          <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
+        </th>
+        <th>Type</th>
+        <th>State</th>
+        <th>Tray Slot</th>
+        <th>Barcode NO</th>
+        <th>Patient ID</th>
+        <th>Patient Name</th>
+        <th>Analyzed Date</th>
+        <th>Tact Time(sec)</th>
+        <th>Submit</th>
+        <th>Submit Date</th>
+        <th>Edit</th>
+      </tr>
     </thead>
 
     <tbody v-if="dbData.length !== 0">
@@ -146,7 +146,7 @@
           </li>
           <li v-if="!barCodeImageShowError">
             <p>Barcode Image</p>
-            <img class="mt1" :src="barcodeImg" @error="onImageError"/>
+            <img class="mt10" :src="barcodeImg" @error="onImageError"/>
           </li>
         </ul>
       </div>

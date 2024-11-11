@@ -1,56 +1,53 @@
 <template>
-  <div>
-    <div>
-<!--      <div class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">-->
-<!--        <div style="display: flex; flex-direction: column">-->
-<!--          <h2 class="fs12">{{ category?.categoryNm }}</h2>-->
-
-<!--          <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">-->
-
-<!--            <div style="display: flex; align-items: center; justify-content: space-between;">-->
-<!--              <template v-if="classItem.classNm !== 'Normal'">-->
-<!--                <h3 class="fs10">{{ classItem.classNm }} [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]</h3>-->
-<!--                <div class="mt1">-->
-<!--                  <div class='degreeInput mb1' style="display: flex;">-->
-<!--                    <input type="number" v-model="classItem.degree1"/>-->
-<!--                    <input type="number" v-model="classItem.degree2"/>-->
-<!--                    <input type="number" v-model="classItem.degree3"/>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </template>-->
-<!--            </div>-->
-
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div class="mt2 mb4 rbcClassListArr" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
-        <div class="mb1 fs12">
-          {{ category?.categoryNm }}
-        </div>
-
+  <div class="flex-column-center">
+    <div style="width: 480px;" class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
+      <div class="flex-column mt22">
+        <h2 class="fs12 mb14">{{ category?.categoryNm }}</h2>
         <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
-          <template v-if="classItem.classNm !== 'Normal'">
-            <span>
-              {{ classItem.classNm }}
-            </span>
-            <div class="mb1">
-              [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]
-            </div>
-            <div class="mt1">
-              <div class='degreeInput mb1'>
-                <input type="number" v-model="classItem.degree1"/>
-                <input type="number" v-model="classItem.degree2"/>
-                <input type="number" v-model="classItem.degree3"/>
+          <div class="flex-align-center-justify-between mb10">
+            <template v-if="classItem.classNm !== 'Normal'">
+              <div style="width: 240px;" class="flex-justify-between">
+                <h3 class="fs10">{{ classItem.classNm }}</h3>
+                <h3>[{{ classItem.degree1 }}, {{ classItem.degree2}}, {{ classItem.degree3 }}]</h3>
               </div>
-            </div>
-          </template>
-        </div>
+              <div class='degreeInput mt1 mb1 flex-justify-between'>
+                <input class="number-small" type="number" v-model="classItem.degree1"/>
+                <input class="number-small" type="number" v-model="classItem.degree2"/>
+                <input class="number-small" type="number" v-model="classItem.degree3"/>
+              </div>
+            </template>
+          </div>
 
+        </div>
       </div>
+<!--      <div class="mt20 mb40 rbcClassListArr" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">-->
+<!--        <div class="mb10 fs12">-->
+<!--          {{ category?.categoryNm }}-->
+<!--        </div>-->
+
+<!--        <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">-->
+<!--          <template v-if="classItem.classNm !== 'Normal'">-->
+<!--            <span>-->
+<!--              {{ classItem.classNm }}-->
+<!--            </span>-->
+<!--            <div class="mb10">-->
+<!--              [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]-->
+<!--            </div>-->
+<!--            <div class="mt10">-->
+<!--              <div class='degreeInput mb10'>-->
+<!--                <input type="number" v-model="classItem.degree1"/>-->
+<!--                <input type="number" v-model="classItem.degree2"/>-->
+<!--                <input type="number" v-model="classItem.degree3"/>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </div>-->
+
+<!--      </div>-->
     </div>
     <div class="mt-2 degreeDiv" >
-      <button class="saveBtn mb2" @click="onResetDegree">Reset</button>
-      <button class="saveBtn mb2" type="button" @click="createRbcDegreeData">Save</button>
+      <button class="saveBtn mb20" @click="onResetDegree">Reset</button>
+      <button class="saveBtn mb20" type="button" @click="createRbcDegreeData">Save</button>
     </div>
   </div>
 

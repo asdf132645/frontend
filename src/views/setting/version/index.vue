@@ -1,6 +1,6 @@
 <template>
   <div class="versionContainer">
-    <h3 class="fs12 mb1">SW</h3>
+    <h3 class="fs12 mb10">SW</h3>
     <ul>
       <li v-for="(item, index) in projectVersionArr" :key="index">
         <span>{{ item.key }}</span>
@@ -9,7 +9,7 @@
     </ul>
   </div>
   <div class="versionContainer">
-    <h3 class="fs12 mb1">Engine</h3>
+    <h3 class="fs12 mb10">Engine</h3>
     <ul>
       <li v-for="(item, index) in engineVersionArr" :key="index">
         <span>{{ item.key }}</span>

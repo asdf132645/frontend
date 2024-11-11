@@ -31,11 +31,11 @@
         <template v-for="(category, innerIndex) in classList" :key="innerIndex">
           <div class="categories">
             <ul class="categoryNm">
-              <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Category</li>
+              <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Category</li>
               <li style="cursor: default;">{{ getCategoryName(category) }}</li>
             </ul>
             <ul class="classNmRbc">
-              <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Class</li>
+              <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Class</li>
               <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                 <li style="cursor: default;">{{ classInfo?.classNm }}</li>
 
@@ -43,7 +43,7 @@
               </template>
             </ul>
             <ul class="degree analysis">
-              <li v-if="innerIndex === 0" class="mb1 liTitle" style="cursor: default;">Degree</li>
+              <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Degree</li>
               <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                 <li v-if="classInfo.classId !== '01' || category.categoryId === '05'" style="cursor: default;">
                   <font-awesome-icon

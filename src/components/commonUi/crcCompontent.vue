@@ -3,7 +3,7 @@
     {{ moTypeTextChange(moType) }}
   </div>
   <div :class="{ rbcCrcDiv: moType === 'RBC' }">
-    <ul>
+    <ul :class="{ 'flex-center': moType === 'RBC' }">
       <li v-for="(row, rowIndex) in groupedData" :key="rowIndex" class="crcRow">
         <div v-for="(item, idx) in row" :key="idx" class="grid-item crcItemDiv">
           <p>
@@ -78,19 +78,10 @@
           </div>
 
           <div v-if="pageName === 'set' && isMasterId(masterId)">
-            <button type="button" @click="editCrcArr(item.id)">EDIT</button>
-            <button
-                type="button"
-                v-if="editIndex === item.id"
-                @click="updateCrcArr(item.id)"
-            >
-              OK
-            </button>
+            <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex !== item.id" @click="editCrcArr(item.id)">EDIT</button>
+            <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex === item.id" @click="updateCrcArr(item.id)">OK</button>
+            <button type="button" class="crcBtn" style="padding: 4px 0;" @click="delCrcArr(rowIndex, item.id)">DEL</button>
           </div>
-          <div v-if="pageName === 'set' && isMasterId(masterId)">
-            <button type="button" @click="delCrcArr(rowIndex, item.id)">DEL</button>
-          </div>
-
         </div>
       </li>
     </ul>

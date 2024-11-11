@@ -6,8 +6,8 @@
       <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
           <li class="flex-column">
-            <span class="mb1">Order ID:</span>
-            <span class="mb2">{{ selectedItem?.slotId }}</span>
+            <span class="mb10">Order ID:</span>
+            <span class="mb20">{{ selectedItem?.slotId }}</span>
           </li>
           <li>NS, NB Integration: {{integrationFindNe(selectedItem.wbcInfoAfter)}}</li>
         </ul>
@@ -18,11 +18,11 @@
       </div>
     </div>
     <div class="resultInformationContainer" style="padding-top: 0;">
-      <h3 class="mt2 mb1 hh3title">Result Information</h3>
+      <h3 class="mt20 mb10 hh3title">Result Information</h3>
       <ul class="resInfoTopContainer">
         <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || projectType === 'bm'">
           <div class="resInfoContainer">
-            <li class="resInfoWrapper mb1">
+            <li class="resInfoWrapper mb10">
               <p>Class</p>
               <p>Count</p>
               <p>Percent</p>
@@ -35,7 +35,7 @@
                 <p>{{ percentWithNoError(result.percent) + '%' }}</p>
               </li>
             </template>
-            <li class="resInfoWrapper mt1 mb2">
+            <li class="resInfoWrapper mt10 mb20">
               <p>Total</p>
               <p>{{ wbcTotal }}</p>
               <p>100%</p>

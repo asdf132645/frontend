@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="textLeft mb1">
+    <div class="text-left mb10">
       <button class="crcBtn" @click="openCrcAdd">
         Add
       </button>
-      <button class="crcBtn ml1" @click="deleteRow('check')">
+      <button class="crcBtn ml10" @click="deleteRow('check')">
         Check Delete
       </button>
     </div>
@@ -20,10 +20,10 @@
             <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/>
             <span>{{ item.code }}</span>
             <div class="crcListDiv">
-                <button @click.stop="startEdit(item)">
+                <button @click.stop="startEdit(item)" class="hoverSizeAction">
                     <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
                 </button>
-                <button @click.stop="deleteRow('', item.id)">
+                <button @click.stop="deleteRow('', item.id)" class="hoverSizeAction">
                     <font-awesome-icon :icon="['fas', 'trash']"/>
                 </button>
             </div>
@@ -62,15 +62,15 @@
           </div>
 
           <!-- Remark 출력 -->
-          <div class="mt1" v-if="item.crcRemark && item.crcRemark.length > 0">
+          <div class="mt10" v-if="item.crcRemark && item.crcRemark.length > 0">
             <span class="smCrcTitle">Remark</span>
             <p v-for="remark in item.crcRemark" :key="remark.id" v-html="remark?.remarkAllContent"></p>
           </div>
-          <div class="mt1" v-if="item.crcComment && item.crcComment.length > 0">
+          <div class="mt10" v-if="item.crcComment && item.crcComment.length > 0">
             <span class="smCrcTitle">Comment</span>
             <p v-for="remark in item.crcComment" :key="remark.id" v-html="remark?.remarkAllContent"></p>
           </div>
-          <div class="mt1" v-if="item.crcRecommendation && item.crcRecommendation.length > 0">
+          <div class="mt10" v-if="item.crcRecommendation && item.crcRecommendation.length > 0">
             <span class="smCrcTitle">Recommendation</span>
             <p v-for="remark in item.crcRecommendation" :key="remark.id" v-html="remark?.remarkAllContent"></p>
           </div>
@@ -86,7 +86,7 @@
       v-if="showConfirm"
       :is-visible="showConfirm"
       :message="confirmMessage"
-      type=""
+      type="delete"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
@@ -235,7 +235,7 @@ const deleteRow = (type: string, id?: string | number) => {
     delType.value = '';
   }
   showConfirm.value = true;
-  confirmMessage.value = 'are you sure you want to delete it?';
+  confirmMessage.value = 'Are you sure you want to delete it?';
 }
 
 // 체크된 항목 삭제

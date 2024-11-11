@@ -1,33 +1,33 @@
 <template>
   <div class="alignDiv">
-    <p class="mb4"> [ WBC ] </p>
+    <p class="mb40"> [ WBC ] </p>
     <label v-for="item in lisCodeWbcArr" :key="item.classId">
-      <p class="mb1">{{ item.fullNm }}</p>
+      <p class="mb10">{{ item.fullNm }}</p>
       <input type="text" v-model="item.key" />
     </label>
   </div>
   <div class="alignDiv">
-    <p class="mt2 mb4"> [ RBC ] </p>
+    <p class="mt20 mb40"> [ RBC ] </p>
     <label v-for="item in lisCodeRbcArr" :key="item.fullNm">
-      <p class="mb1">{{ item.categoryNm }} - {{ item.fullNm }}</p>
+      <p class="mb10">{{ item.categoryNm }} - {{ item.fullNm }}</p>
       <input type="text" v-model="item.key" />
     </label>
   </div>
   <div class="alignDiv">
-    <p class="mb2"> [ Min Count ] </p>
+    <p class="mb20"> [ Min Count ] </p>
     <ul>
       <li class="minCountWrapper" v-if="minCountArr.length > 0">
-        <p class="mb1 mt1">Giant Platelet</p>
+        <p class="mb10 mt10">Giant Platelet</p>
         <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)" class="form-control form-control-sm">
       </li>
       <li class="minCountWrapper" v-if="minCountArr.length > 0">
-        <p class="mb1 mt1">Platelet Aggregation</p>
+        <p class="mb10 mt10">Platelet Aggregation</p>
         <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)" class="form-control form-control-sm">
       </li>
     </ul>
   </div>
 
-  <div class="mt1">
+  <div class="mt10">
     <button class="saveBtn" type="button" @click="saveLisCode()">Save</button>
   </div>
 

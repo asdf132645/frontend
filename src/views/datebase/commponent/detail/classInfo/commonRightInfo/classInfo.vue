@@ -1,7 +1,7 @@
 <template>
-  <img class="mt1" v-if="type !== 'report' && !barCodeImageShowError" @error="onImageError" :src="barcodeImg"/>
-  <div class="mt1" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
-  <div class="mt1 mb1 flex-justify-between">
+  <img class="mt10" v-if="type !== 'report' && !barCodeImageShowError" @error="onImageError" :src="barcodeImg"/>
+  <div class="mt10" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
+  <div class="mt10 mb10 flex-justify-between">
     <h3 class="wbcClassInfoLeft">
       {{ wbcClassTileChange() }}
     </h3>
@@ -62,14 +62,14 @@
           @click="goClass(item.id)" title="BLUE text: changed element">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span class="grayText w20 textLeft">{{ Number(item.count.before) || 0 }}</span>
-          <span class="grayText w50 textLeft">{{
+          <span class="grayText w20 text-left">{{ Number(item.count.before) || 0 }}</span>
+          <span class="grayText w50 text-left">{{
               Number(item?.percent.before) ? item?.percent.before + '%' : '0'
             }}</span>
         </li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span :class="['w20', 'textLeft', item.isChanged && 'blueText']">{{ Number(item?.count.after) || 0 }}</span>
-          <span :class="['w50', 'textLeft', item.isChanged && 'blueText']">{{
+          <span :class="['w20', 'text-left', item.isChanged && 'blueText']">{{ Number(item?.count.after) || 0 }}</span>
+          <span :class="['w50', 'text-left', item.isChanged && 'blueText']">{{
               Number(item?.percent.after) ? item?.percent.after + '%' : '0'
             }}</span>
         </li>
@@ -79,12 +79,12 @@
       <ul class="nth1Child">
         <li>Total</li>
         <li class="classInfoWbc">
-          <span class="w20 textLeft">{{ Number(totalBeforeCount) || 0 }}</span>
-          <span class="w50 textLeft">100%</span>
+          <span class="w20 text-left">{{ Number(totalBeforeCount) || 0 }}</span>
+          <span class="w50 text-left">100%</span>
         </li>
         <li class="classInfoWbc">
-          <span class="w20 textLeft">{{ Number(totalAfterCount) || 0 }}</span>
-          <span class="w50 textLeft">100%</span>
+          <span class="w20 text-left">{{ Number(totalAfterCount) || 0 }}</span>
+          <span class="w50 text-left">100%</span>
         </li>
       </ul>
     </div>
@@ -93,7 +93,7 @@
       <div
           v-for="(item, idx) in wbcInfoVal"
           :key="item.id"
-          class="wbcClassDbDiv mb2"
+          class="wbcClassDbDiv mb20"
           draggable="true"
           @dragstart="startDrag(idx, $event)"
           @dragover.prevent
@@ -112,18 +112,18 @@
         <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
-            <li class="mb1 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
+            <li class="mb10 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
             <li class="w-fit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
           <ul style="width: 29%;">
-            <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+            <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
             <li class="grayText" style="cursor: default; padding-left: -20px;">{{
                 Number(nWbcItem?.count.before) || 0
               }}
             </li>
           </ul>
           <ul class="degree" style="width: 27%">
-            <li class="mb1 liTitle" v-if="outerIndex === 0"></li>
+            <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
             <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">{{
                 Number(nWbcItem?.count.after) || 0
               }}
@@ -132,7 +132,7 @@
         </div>
       </template>
     </div>
-    <div class="memoModal bottom textLeft staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
+    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="wbcMemo"></textarea>
       <button class="memoModalBtn" @click="memoChange">Save</button>
     </div>

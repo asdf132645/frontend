@@ -1,25 +1,23 @@
 <template>
-  <div>
+  <div class="flex-column-center">
     <ul class="normalItems">
-      <li v-for="item in normalItems" :key="item.id">
-        <div>
-          {{ item.abbreviation }} - {{ item.fullNm }}
-        </div>
-        <div class="mt1">
-          <span>
-            <input v-model="item.min"
-                   type="text"
-                   maxlength="25"
-                   placeholder="class name"
-                   @input="filterNumbersOnly($event, item, 'min')"
-            />
-          </span>
-          <span>
-            <input
-                @input="filterNumbersOnly($event, item, 'max')"
-                v-model="item.max" type="text" maxlength="25" placeholder="class name"
-            />
-          </span>
+      <li v-for="item in normalItems" :key="item.id" class="flex-justify-start-align-center normalItems-wrapper">
+        <span>{{ item.abbreviation }}</span>
+        <span class="text-left">{{ item?.fullNm }}</span>
+        <div class="flex-justify-start-align-center gap14" style="width: 250px;">
+          <input v-model="item.min"
+                 class="w50"
+                 type="number"
+                 maxlength="25"
+                 placeholder="class name"
+                 @input="filterNumbersOnly($event, item, 'min')"
+          />
+          <span>-</span>
+          <input
+              class="w50"
+              @input="filterNumbersOnly($event, item, 'max')"
+              v-model="item.max" type="number" maxlength="25" placeholder="class name"
+          />
           <span>{{ item.unit }}</span>
         </div>
       </li>

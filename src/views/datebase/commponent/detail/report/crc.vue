@@ -25,12 +25,12 @@
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
-      <div class="textLeft crcMenu mb1">
+      <div class="text-left crcMenu mb10">
         <button class="crcBtn" @click="lisClick">
           <font-awesome-icon :icon="['fas', 'upload']"/>
         </button>
         <span class="crcSpanMenu">List</span>
-        <div class="autocomplete-container ml1">
+        <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
           <input
               v-model="searchText"
@@ -52,8 +52,8 @@
             </li>
           </ul>
         </div>
-        <button class="crcBtn tempSave ml1" @click="tempSaveLocalStorage">Save</button>
-        <button class="crcBtn tempSave ml1" @click="tempSaveDataEmpty">Clear</button>
+        <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
+        <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
 
       </div>
 
@@ -62,7 +62,7 @@
                       @changeCrcData="changeCrcData"></crc-compontent>
 
       <!-- WBC, PLT 결과 -->
-      <div class="moDivBox mt1">
+      <div class="moDivBox mt10">
         <div>
           <crc-compontent v-if="trrur" :items="crcArr" moType="WBC" pageName="report"
                           @changeCrcData="changeCrcData"></crc-compontent>
@@ -74,7 +74,7 @@
       </div>
 
       <!-- Remark 관련 -->
-      <div class="mt2" v-if="remarkCountReturnCode(0)">
+      <div class="mt20" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
           <span><font-awesome-icon :icon="['fas', 'message']"/> Remark</span>
           <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
@@ -88,7 +88,7 @@
         </div>
       </div>
 
-      <div class="mt2" v-if="remarkCountReturnCode(1)">
+      <div class="mt20" v-if="remarkCountReturnCode(1)">
         <div class="crcDivTitle">
           <span><font-awesome-icon :icon="['fas', 'message']"/> Comment </span>
           <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
@@ -102,7 +102,7 @@
         </div>
       </div>
 
-      <div class="mt2" v-if="remarkCountReturnCode(2)">
+      <div class="mt20" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
           <span><font-awesome-icon :icon="['fas', 'message']"/> Recommendation </span>
           <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>

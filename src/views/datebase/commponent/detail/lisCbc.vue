@@ -5,7 +5,7 @@
       <p class="loadingText">Loading...</p>
     </div>
     <h1 class="titleCbc"><span>CBC + DIFF</span>
-      <span class="ml1" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
+      <span class="ml10" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
         <font-awesome-icon :icon="['fas', 'rectangle-list']" class="cursorPointer"/>
       </span>
       <div v-if="cbcPopup" class="cbcPopUpContainer">
