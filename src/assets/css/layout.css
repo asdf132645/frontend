@@ -4763,12 +4763,14 @@ input.codeInput {
     background: #ffffff;
     box-shadow: 2px 2px 6px #ffffff;
 }
+
 .tab-content.crcDiv.reportCrcDiv.dashboard {
     height: 91%;
     /*background: #fff;*/
     padding: 10px;
     width: 94%;
 }
+
 .normalCheckList {
     margin: 8px 0;
     color: #353942;
@@ -4781,6 +4783,60 @@ input.codeInput {
 .cbc-setting-icon {
     position: absolute;
     left: -30px;
+}
+
+.split-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.split-left, .split-right {
+    width: 48%;
+}
+
+.resultImage {
+    background: #ffffff;
+    color: #000;
+    text-align: left;
+    padding: 20px;
+    position: absolute;
+    left: 37%;
+    z-index: 99;
+    min-width: 450px;
+}
+
+.resultCode {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.resultImgBody {
+    font-size: 0.8rem;
+}
+
+.split-left li div, .split-right li div {
+    display: inline-block;
+}
+.rimgcrctitle {
+    width: 100px;
+}
+table.resultImgTable {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    min-width: 445px;
+}
+
+td.resultImgTableTitle {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.resultImgBody h1 {
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
 }
 
 @media screen and (max-width: 1900px) {

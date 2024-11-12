@@ -568,13 +568,22 @@ async function socketData(data: any) {
 
         for (const el of response_new?.data) {
           let fileNm = '';
-          if (el.FILE_NM.split('_')[0] === 'NES') {
-            fileNm = 'NS';
-          } else if (el.FILE_NM.split('_')[0] === 'NEB') {
-            fileNm = 'NB'
+          if (isNsNbIntegrationLocal.value === 'Y') {
+            if (el.FILE_NM.split('_')[0] === 'NEB') {
+              fileNm = 'NE'
+            } else {
+              fileNm = el.FILE_NM.split('_')[0];
+            }
           } else {
-            fileNm = el.FILE_NM.split('_')[0];
+            if (el.FILE_NM.split('_')[0] === 'NES') {
+              fileNm = 'NS';
+            } else if (el.FILE_NM.split('_')[0] === 'NEB') {
+              fileNm = 'NB'
+            } else {
+              fileNm = el.FILE_NM.split('_')[0];
+            }
           }
+
 
           const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => {
             return elW.title === fileNm;

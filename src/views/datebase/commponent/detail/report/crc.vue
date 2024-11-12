@@ -123,7 +123,7 @@
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
-    </div>
+  </div>
 
   <!-- 자식 컴포넌트 Remark -->
   <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
@@ -142,11 +142,20 @@
   <PassWordCheck :type="passWordType" v-if="passLayout" :crcPassWord="crcPassWordVal"
                  @returnPassWordCheck="returnPassWordCheck"
                  @passWordClose="passWordClose"/>
+  <ResultImage :nowCrcData="nowCrcDataRef" v-if="captureAndConvertOk"
+               :captureAndConvertOk="captureAndConvertOk"
+                @resetBool="resetBool"
+  />
+<!--  <ResultImage :nowCrcData="nowCrcDataRef" v-if="nowCrcDataRef.length !== 0"-->
+<!--               :captureAndConvertOk="captureAndConvertOk"-->
+<!--               @resetBool="resetBool"-->
+<!--  />-->
 
 </template>
 
 <script setup lang="ts">
 import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
+
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
@@ -158,12 +167,13 @@ import {messages} from "@/common/defines/constFile/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc, ywmcCbcDataLoad} from "@/common/lib/lisCbc";
+import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
-import {ywmcCbcCheckApi, ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
+import {ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
+import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -213,6 +223,9 @@ const morphologyMapping: any = ref({
 const cbcCodeList = ref<any>([]);
 const lastChnageInputCrcData = ref<any>([]);
 const autoNomarlCheck = ref<any>([]);
+const nowCrcDataRef = ref<any>([]);
+const captureAndConvertOk = ref(false);
+
 onBeforeMount(async () => {
   await nextTick();
 
@@ -276,14 +289,24 @@ onMounted(async () => {
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '') {
-    const { cbcData, cbcSex, cbcAge } = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
+    const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
-    if(autoNomarlCheck.value.length === 0){
+    if (autoNomarlCheck.value.length === 0) {
       selectOption('Normal');
     }
   }
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
-})
+});
+
+
+const captureAndConvert = () => {
+  captureAndConvertOk.value = true;
+}
+const resetBool = () => {
+  captureAndConvertOk.value = false;
+
+}
+
 const selectOption = (selectedCode: string) => {
   code.value = selectedCode;   // 선택한 코드를 저장
   searchText.value = selectedCode;  // 검색창에 선택된 코드 표시
@@ -476,12 +499,19 @@ const lisStart = async () => {
   });
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
+  // console.log(nowCrcData)
 
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      await yamcSendLisUpdate(nowCrcData);
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
+      await yamcSendLisUpdate(nowCrcData);
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['NONE']:
       await yamcSendLisUpdate(nowCrcData);
       break;
     default:
@@ -492,55 +522,9 @@ const lisStart = async () => {
 
 
 const yamcSendLisUpdate = async (nowCrcData: any) => {
-  const newNowCrcDataArr = [
-    ...nowCrcData.crcContent.plt,
-    ...nowCrcData.crcContent.wbc,
-    ...nowCrcData.crcContent.rbc
-  ];
-  for (const wbcInfo of props.selectItems?.wbcInfoAfter) {
-    const includesStr = ["AR", "NR", "GP", "PA", "MC", "MA"];
-
-    // const {data} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, cbcCodeList.value);
-    // (data.find((el: any) => {return el.spc.includes(wbcInfo.title)}))?.spc
-    // cbcData.cbcDataVal
-    const req = {
-      ttext_rslt: 'text_rsltTest', // 텍스트 값
-      tnumeric_rslt: 'numeric_rsltTest', // 수치결과 값
-      tequp_cd: 'UIMD', // 장비명
-      tequp_typ: '1', //장비구분번호
-      tequp_rslt: !includesStr.includes(wbcInfo.title) ? wbcInfo.percent : wbcInfo.count, // 장비결과값
-      tsmp_no: props.selectItems?.barcodeNo, //검체 바코드 넘버
-      texam_cd: wbcInfo.title, // 장비 검사코드
-      tspc: 'tspcTest',
-      trslt_srno: getDateTimeStr(), // (장비검사번호 - 중복안됨)
-      rslt_stus: 'T',
-    }
-    // 원주기독
-    await lisCommonDataWhether(lisSendYwmc(req));
-  }
-
-  if (lisTwoMode.value) {
-    const crcTitles = [
-      'rbc_size', 'rbc_chromicity', 'rbc_anisocytosis', 'rbc_poikilocytosis',
-      'rbc_polychromasia', 'rbc_rouleaux_formation', 'rbc_inclusion', 'rbc_shape1',
-      'rbc_shape2', 'rbc_etc', 'wbc_number', 'wbc_toxic_granulation', 'wbc_vacuolation',
-      'wbc_segmentation', 'wbc_reactive_lymphocyte', 'wbc_abnormal_lymphocyte',
-      'wbc_other_findings', 'wbc_etc', 'plt_number', 'plt_giant_platelet',
-      'plt_other_findings', 'plt_etc', 'comment', 'recommendation'
-    ];
-
-    const req = {
-      barcode_num: props.selectItems?.barcodeNo,
-      ...crcTitles.reduce((acc: any, title) => {
-        const found = newNowCrcDataArr.find((el) => el.crcTitle === title);
-        acc[title] = found ? found.crcContent : null; // null 처리
-        return acc;
-      }, {})
-    };
-
-
-    await ywmcLisCrcSendApi(req);
-  }
+  nowCrcDataRef.value = nowCrcData;
+  await nextTick();
+  await captureAndConvert();
 }
 
 const lisCommonDataWhether = async (lisFunc: any) => {
@@ -581,7 +565,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
+      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       if (!noAlert) {
         toastMessageType.value = messages.TOAST_MSG_SUCCESS;
         showToast('Success');
@@ -651,15 +635,15 @@ const updateList = (newList: any[], type: string) => {
 
   switch (type) {
     case 'remark':
-      remarkallContentPush(newList,remarkList)
+      remarkallContentPush(newList, remarkList)
       closeSelect('remark');
       break;
     case 'comment':
-      remarkallContentPush(newList,commentList)
+      remarkallContentPush(newList, commentList)
       closeSelect('comment');
       break;
     case 'reco':
-      remarkallContentPush(newList,recoList)
+      remarkallContentPush(newList, recoList)
       closeSelect('recommendation');
       break;
   }

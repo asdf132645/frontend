@@ -120,7 +120,6 @@ const arrData = ref<any>([]);
 // 로컬 상태
 const editIndex = ref<number | null>(null);
 
-// 8개씩 그룹화된 데이터를 계산하는 computed property
 const groupedData = computed(() => {
   const rows: any[] = [];
   for (let i = 0; i < arrData.value.length; i += 4) {
@@ -128,8 +127,7 @@ const groupedData = computed(() => {
   }
   return rows;
 });
-const crcCodeMatching = ref<any>([]);
-const crcSelectEtc = ref<any>([]);
+
 onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);
 });
