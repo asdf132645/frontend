@@ -216,19 +216,19 @@
                       <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Percent</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">
-                          {{ percentageChange(Number(classInfo?.originalDegree)) || 0 }}
+                          {{ percentageChange(Number(classInfo?.originalDegree), RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) || 0 }}
                         </li>
 
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
                             style="cursor: default;"
                         >
-                          {{ percentageChange(shapeOthersCount) || 0 }}
+                          {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
                         </li>
 
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
                             style="cursor: default;"
                         >
-                          {{ percentageChange(malariaCount) || 0 }}
+                          {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
                         </li>
                       </template>
 
@@ -275,6 +275,7 @@ import {
 import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constFile/dataBase";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -341,7 +342,6 @@ onMounted(async () => {
     await rbcTotalAndReCount();
     await getRbcDegreeData();
     await reDegree();
-    await calcShapeOthersCount();
   }
   document.addEventListener('click', handleClickOutside);
 
@@ -403,37 +403,6 @@ const percentChangeBySiteCd = () => {
   wbcInfo.value = selectItems.value.wbcInfoAfter;
 }
 
-const calcShapeOthersCount = async () => {
-  const shapeOthers: any = await getShapeOthers();
-  shapeOthersCount.value = shapeOthers?.artifact + shapeOthers?.doubleNormal;
-}
-
-const getShapeOthers = async () => {
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
-  const url_Old = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}.json`;
-  const response_old = await readJsonFile({fullPath: url_Old});
-  const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  const otherCount = {artifact: 0, doubleNormal: 0};
-
-  if (!rbcInfoPathAfter) {
-    return;
-  }
-
-  rbcInfoPathAfter.forEach((item: any) => {
-    if (item.categoryId === '03') {
-      for (const classItem of item.classInfo) {
-        if (classItem.classNm === 'Artifact') {
-          otherCount.artifact += 1
-        } else if (classItem.classNm === 'DoubleNormal') {
-          otherCount.doubleNormal += 1
-        }
-      }
-    }
-  })
-
-  return otherCount;
-}
-
 const rbcTotalAndReCount = async () => {
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
   const url_new = `${path}/${selectItems.value?.slotId}/03_RBC_Classification/${selectItems.value?.slotId}_new.json`;
@@ -483,16 +452,22 @@ const rbcTotalAndReCount = async () => {
         : '';
 
     switch (el.categoryId) {
-      case '01':
+      case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
         total = lastIndex;
         break;
-      case '02':
+      case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
         chromiaTotalval = lastIndex;
         break;
-      case '03':
+      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
         shapeBodyTotalVal = lastIndex;
+
+        for (const classItem of el.classInfo) {
+          if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
+            shapeOthersCount.value += 1;
+          }
+        }
         break;
-      case '05':
+      case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
         shapeBodyTotalVal2 = lastIndex;
         break;
       default:
@@ -556,9 +531,23 @@ const countReAdd = async () => {
   malariaCount.value = malariaTotal
 };
 
-const percentageChange = (count: any): any => {
-  const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+const percentageChange = (count: any, categoryId: string): any => {
+  const percentage = ((Number(count) / calculateRbcTotalByCategoryId(categoryId)) * 100).toFixed(1);
   return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
+}
+
+const calculateRbcTotalByCategoryId = (categoryId: string) => {
+  switch (categoryId) {
+    case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
+      return Number(rbcTotalVal.value);
+    case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
+      return Number(chromiaTotalTwo.value);
+    case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
+    case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
+      return Number(shapeBodyTotal.value);
+    default:
+      return Number(rbcTotalVal.value);
+  }
 }
 
 // WbC Classification 쪽에서 Order Class 바꿀 시 Print 영역에도 바로 적용시키기 위한 코드

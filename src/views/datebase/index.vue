@@ -165,6 +165,7 @@ import Button from "@/components/commonUi/Button.vue";
 import PopupTable from "@/components/commonUi/PopupTable.vue";
 import {sdWorklistsAPI} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constFile/dataBase";
 
 
 const store = useStore();
@@ -206,8 +207,7 @@ const notStartLoading = ref(false);
 const barcodeInput = ref<HTMLInputElement | null>(null);
 const isPrintingExcel = ref(false);
 const rbcInfoPathAfter = ref<any>([]);
-const countArtifact = ref(0);
-const countDoubleNormal = ref(0);
+const shapeOthersCount = ref(0);
 
 const maxRbcCount = ref(0);
 const pltCount = ref(0);
@@ -648,7 +648,6 @@ const convertRbcData = async (dataList: any) => {
     }
 
     const sendingItem = {before: {}, after: {}};
-    const shapeOthersCount: any = await getShapeOthers(data);
 
     // Before
     for (const classItem of rbcInfoBeforeVal.value) {
@@ -683,7 +682,7 @@ const convertRbcData = async (dataList: any) => {
           ...beforeItem, ...{
             Others: {
               degree: '-',
-              count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact)
+              count: Number(shapeOthersCount.value)
             }
           }
         }
@@ -721,7 +720,7 @@ const convertRbcData = async (dataList: any) => {
           ...afterItem, ...{
             Others: {
               degree: '-',
-              count: Number(shapeOthersCount.doubleNormal + shapeOthersCount.artifact)
+              count: Number(shapeOthersCount.value)
             }
           }
         }
@@ -826,29 +825,25 @@ const rbcTotalAndReCount = async (selectItem: any) => {
   let chromiaTotalval = 0;
   let shapeTotalVal = 0;
   let inclusionBody = 0;
-  countArtifact.value = 0;
-  countDoubleNormal.value = 0;
+  shapeOthersCount.value = 0;
   rbcInfoPathAfter.value.forEach(el => {
-    if (el.categoryId === '03') {
-      for (const classItem of el.classInfo) {
-        if (classItem.classNm === 'Artifact') {
-          countArtifact.value += 1
-        } else if (classItem.classNm === 'DoubleNormal') {
-          countDoubleNormal.value += 1
-        }
-      }
-    }
     switch (el.categoryId) {
-      case '01':
+      case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
         total = el.classInfo.length;
         break;
-      case '02':
+      case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
         chromiaTotalval = el.classInfo.length;
         break;
-      case '03':
+      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
         shapeTotalVal = el.classInfo.length;
+
+        for (const classItem of el.classInfo) {
+          if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
+            shapeOthersCount.value += 1;
+          }
+        }
         break;
-      case '05':
+      case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
         inclusionBody = el.classInfo.length;
         break;
       default:
@@ -937,30 +932,6 @@ const countReAdd = async () => {
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal;
 };
-
-const getShapeOthers = async (selectItems: any) => {
-  const path = selectItems.img_drive_root_path !== '' && selectItems.img_drive_root_path ? selectItems?.img_drive_root_path : iaRootPath.value;
-  const url_Old = `${path}/${selectItems.slotId}/03_RBC_Classification/${selectItems.slotId}.json`;
-  const response_old = await readJsonFile({fullPath: url_Old});
-  const rbcInfoPathAfter = response_old.data[0].rbcClassList;
-  const otherCount = {artifact: 0, doubleNormal: 0};
-  if (!rbcInfoPathAfter) {
-    return;
-  }
-  rbcInfoPathAfter.forEach((item: any) => {
-    if (item.categoryId === '03') {
-      for (const classItem of item.classInfo) {
-        if (classItem.classNm === 'Artifact') {
-          otherCount.artifact += 1
-        } else if (classItem.classNm === 'DoubleNormal') {
-          otherCount.doubleNormal += 1
-        }
-      }
-    }
-  })
-
-  return otherCount;
-}
 
 const getRbcDegreeData = async () => {
   try {

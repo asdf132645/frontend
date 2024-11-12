@@ -172,7 +172,7 @@
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
                   :style="type === 'report' && 'cursor: default;'"
               >
-                {{ Number(countArtifact + countDoubleNormal) || 0 }}
+                {{ Number(shapeOthersCount) || 0 }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
@@ -208,13 +208,13 @@
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'"
                   :style="type === 'report' && 'cursor: default;'"
               >
-                {{ percentageChange(countArtifact + countDoubleNormal) || 0 }}
+                {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
                   :style="type === 'report' && 'cursor: default;'"
               >
-                {{ percentageChange(malariaCount) || 0 }}
+                {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
@@ -306,7 +306,7 @@ import {tcpReq} from "@/common/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
-import { RBC_CODE_CLASS_ID } from "@/common/defines/constFile/dataBase";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constFile/dataBase";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -354,8 +354,7 @@ const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
 const submitState = ref('');
 const projectType = ref(window.PROJECT_TYPE);
-const countArtifact = ref(0);
-const countDoubleNormal = ref(0);
+const shapeOthersCount = ref(0);
 const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
 const currentSelectItems = computed(() => store.state.commonModule.currentSelectItems);
@@ -548,18 +547,8 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
   let chromiaTotalval = 0;
   let shapeTotalVal = 0;
   let inclusionBody = 0;
-  countArtifact.value = 0;
-  countDoubleNormal.value = 0;
+  shapeOthersCount.value = 0;
   rbcInfoPathAfter.value.forEach(el => {
-    if (el.categoryId === '03') {
-      for (const classItem of el.classInfo) {
-        if (classItem.classNm === 'Artifact') {
-          countArtifact.value += 1
-        } else if (classItem.classNm === 'DoubleNormal') {
-          countDoubleNormal.value += 1
-        }
-      }
-    }
     switch (el.categoryId) {
       case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
         total = el.classInfo.length;
@@ -569,6 +558,13 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
         break;
       case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
         shapeTotalVal = el.classInfo.length;
+
+        for (const classItem of el.classInfo) {
+          if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
+            shapeOthersCount.value += 1;
+          }
+        }
+
         break;
       case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
         inclusionBody = el.classInfo.length;
@@ -586,12 +582,24 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
   shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
 }
 
-const percentageChange = (count: any): any => {
-  const percentage: any = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
-  if (isNaN(percentage)) {
-    return '-';
-  }
+const percentageChange = (count: any, categoryId: string): any => {
+  const percentage: any = ((Number(count) / calculateRbcTotalByCategoryId(categoryId)) * 100).toFixed(1);
+  if (isNaN(percentage)) return '-';
   return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
+}
+
+const calculateRbcTotalByCategoryId = (categoryId: string) => {
+  switch (categoryId) {
+    case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
+      return Number(rbcTotalVal.value);
+    case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
+      return Number(chromiaTotalTwo.value);
+    case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
+    case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
+      return Number(shapeBodyTotal.value);
+    default:
+      return Number(rbcTotalVal.value);
+  }
 }
 
 const classChange = async () => {
@@ -744,6 +752,7 @@ const countReAdd = async () => {
   }
 
 
+  console.log('rbcInfoBeforeVal', rbcInfoBeforeVal.value);
   for (const category of rbcInfoBeforeVal.value) {
     for (const classItem of category.classInfo) {
       let count = 0;
@@ -758,7 +767,7 @@ const countReAdd = async () => {
       }
 
       classItem.originalDegree = count;
-      classItem.percent = percentageChange(count);
+      classItem.percent = percentageChange(count, category.categoryId);
     }
   }
 

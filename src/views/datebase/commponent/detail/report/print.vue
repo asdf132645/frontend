@@ -89,7 +89,7 @@
                   <td style="text-align: left;">{{ category.classInfo[0]?.classNm }}</td>
                   <td style="text-align: left;">{{ category.classInfo[0]?.degree }}</td>
                   <td style="text-align: left;">{{ category.classInfo[0]?.originalDegree }}</td>
-                  <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree) }}</td>
+                  <td style="text-align: left;">{{ percentageChange(category.classInfo[0]?.originalDegree, RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) }}</td>
                 </tr>
 
                 <template v-for="(classInfo, classIndex) in category.classInfo.slice(1)" :key="classIndex">
@@ -97,7 +97,7 @@
                     <td style="text-align: left;">{{ classInfo.classNm }}</td>
                     <td style="text-align: left;">{{ classInfo.degree }}</td>
                     <td style="text-align: left;">{{ classInfo.originalDegree }}</td>
-                    <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree) }}</td>
+                    <td style="text-align: left;">{{ percentageChange(classInfo.originalDegree, RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) }}</td>
                   </tr>
 
                   <!-- Shape Others -->
@@ -106,7 +106,7 @@
                     <td style="text-align: left;">Others</td>
                     <td style="text-align: left;">-</td>
                     <td style="text-align: left;">{{ shapeOthersCount }}</td>
-                    <td style="text-align: left;">{{ percentageChange(shapeOthersCount) }} %</td>
+                    <td style="text-align: left;">{{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) }} %</td>
                   </tr>
 
                   <!-- Inclusion Body Malaria -->
@@ -114,14 +114,14 @@
                     <td style="text-align: left;">Malaria</td>
                     <td style="text-align: left;">-</td>
                     <td style="text-align: left;">{{ malariaCount }}</td>
-                    <td style="text-align: left;">{{ percentageChange(malariaCount) }}</td>
+                    <td style="text-align: left;">{{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) }}</td>
                   </tr>
                 </template>
                 <tr v-if="category.categoryNm !== 'Shape' && category.categoryNm !== 'Inclusion Body'">
                   <td style="text-align: left;"></td>
                   <td style="text-align: left; font-weight: bold;">Total</td>
                   <td style="text-align: left; font-weight: bold;">{{ sizeChromiaTotal }}</td>
-                  <td style="text-align: left; font-weight: bold;">{{ percentageChange(sizeChromiaTotal) }} %</td>
+                  <td style="text-align: left; font-weight: bold;">{{ percentageChange(sizeChromiaTotal, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) }} %</td>
                 </tr>
 
                 <tr v-if="category.categoryNm == 'Inclusion Body'">
@@ -129,7 +129,7 @@
                   <td></td>
                   <td style="text-align: left; font-weight: bold;">Total</td>
                   <td style="text-align: left; font-weight: bold;">{{ shapeBodyTotal }}</td>
-                  <td style="text-align: left; font-weight: bold;">{{ percentageChange(shapeBodyTotal) }} %</td>
+                  <td style="text-align: left; font-weight: bold;">{{ percentageChange(shapeBodyTotal, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) }} %</td>
                 </tr>
               </template>
             </template>
@@ -250,6 +250,7 @@ import {
   seoulStMaryPercentChange
 } from "@/common/lib/commonfunction/classFicationPercent";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constFile/dataBase";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
@@ -365,21 +366,28 @@ const rbcTotalAndReCount = async () => {
   let chromiaTotalval = 0;
   let shapeBodyTotalVal = 0;
   let shapeBodyTotalVal2 = 0;
+  shapeOthersCount.value = 0;
 
   rbcInfoPathAfter.value.forEach(el => {
     const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
 
     switch (el.categoryId) {
-      case '01':
+      case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
         total = lastIndex;
         break;
-      case '02':
+      case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
         chromiaTotalval = lastIndex;
         break;
-      case '03':
+      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
         shapeBodyTotalVal = lastIndex;
+
+        for (const classItem of el.classInfo) {
+          if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
+            shapeOthersCount.value += 1;
+          }
+        }
         break;
-      case '05':
+      case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
         shapeBodyTotalVal2 = lastIndex;
         break;
       default:
@@ -421,9 +429,23 @@ const handleImageError = (itemId: number, fileName: string) => {
   hiddenImages.value[`${itemId}-${fileName}`] = true;
 };
 
-const percentageChange = (count: any): any => {
-  const percentage = ((Number(count) / Number(rbcTotalVal.value)) * 100).toFixed(1);
+const percentageChange = (count: any, categoryId: string): any => {
+  const percentage = ((Number(count) / calculateRbcTotalByCategoryId(categoryId)) * 100).toFixed(1);
   return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
+}
+
+const calculateRbcTotalByCategoryId = (categoryId: string) => {
+  switch (categoryId) {
+    case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
+      return Number(rbcTotalVal.value);
+    case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
+      return Number(chromiaTotalTwo.value);
+    case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
+    case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
+      return Number(shapeBodyTotal.value);
+    default:
+      return Number(rbcTotalVal.value);
+  }
 }
 
 const countReAdd = async () => {

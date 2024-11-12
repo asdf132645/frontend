@@ -22,7 +22,7 @@
 
           <div class="flex-align-center-justify-between mb20">
             <span>CRC Connect</span>
-            <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" />
+            <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" @click="crcConnectOn" />
           </div>
 
           <div class="flex-column-align-center mt10">

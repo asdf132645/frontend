@@ -48,6 +48,20 @@ export const RBC_CODE_CLASS_ID = {
     }
 }
 
+export const SHOWING_RBC_SHAPE_CLASS_IDS = [
+    RBC_CODE_CLASS_ID.SHAPE.NORMAL,
+    RBC_CODE_CLASS_ID.SHAPE.POLIKILOCYTOSIS,
+    RBC_CODE_CLASS_ID.SHAPE.TARGET_CELL,
+    RBC_CODE_CLASS_ID.SHAPE.BURR_CELL,
+    RBC_CODE_CLASS_ID.SHAPE.ACANTHOCYTE,
+    RBC_CODE_CLASS_ID.SHAPE.OVALOCYTE,
+    RBC_CODE_CLASS_ID.SHAPE.SCHISTOCYTE,
+    RBC_CODE_CLASS_ID.SHAPE.SICKLE_CELL,
+    RBC_CODE_CLASS_ID.SHAPE.STOMATOCYTE,
+    RBC_CODE_CLASS_ID.SHAPE.TEAR_DROP_CELL,
+    RBC_CODE_CLASS_ID.SHAPE.SPHEROCYTE,
+]
+
 export const lisCodeRbcOption = [
     { categoryId: '01', categoryNm: 'Size', classId: '01', fullNm: 'Normal', key: 'SIZN' },
     { categoryId: '01', categoryNm: 'Size', classId: '02', fullNm: 'Macrocyte', key: 'SIZMA' },
