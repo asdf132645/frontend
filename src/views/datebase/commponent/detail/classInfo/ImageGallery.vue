@@ -42,8 +42,7 @@
               <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
                 <div class="fileTitle" :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
                   {{ replaceFileNamePrefix(image.fileName) }}
-                  <font-awesome-icon
-                      :icon="['fas', 'arrow-right']"/>
+                  <font-awesome-icon :icon="['fas', 'arrow-right']"/>
                   {{ image.title }}
                 </div>
               </div>
@@ -353,6 +352,7 @@ const handleImageLoad = (itemIndex: any) => {
 }
 
 function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {
+  console.log('imageName', imageName);
   // 이미지 정보가 없다면 빈 문자열 반환
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";

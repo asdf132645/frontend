@@ -31,7 +31,7 @@
           </div>
 
           <button type="button" class="searchClass" @click="search">Search</button>
-          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd || siteCd === '' || siteCd === '0000'" @click="openCheckList" class="searchClass">checkList</button>
+          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd || siteCd === '' || siteCd === '0000'" @click="openCheckList" class="searchClass">Patient List</button>
 
           <div v-if="viewerCheck === 'main'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>

@@ -567,7 +567,7 @@ async function socketData(data: any) {
         for (const el of response_new?.data) {
           let fileNm = '';
           if (isNsNbIntegrationLocal.value === 'Y') {
-            if (el.FILE_NM.split('_')[0] === 'NEB') {
+            if (el.FILE_NM.split('_')[0] === 'NEB' || el.FILE_NM.split('_')[0] === 'NES') {
               fileNm = 'NE'
             } else {
               fileNm = el.FILE_NM.split('_')[0];

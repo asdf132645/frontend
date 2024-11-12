@@ -13,7 +13,7 @@
         </ul>
         <div>
           <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath"
-               style="width: 200px; float:right;"/>
+               style="width: 200px; height: 120px; float:right;"/>
         </div>
       </div>
     </div>

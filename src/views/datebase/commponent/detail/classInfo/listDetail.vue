@@ -692,7 +692,7 @@ function replaceFileNamePrefix(fileName: string) {
 
   const replacements: any = {
     'NES': isNsNbIntegration ? 'NE' : 'NS',
-    'NEB': 'NB'
+    'NEB': isNsNbIntegration ? 'NE' : 'NB'
   };
 
   const prefix = fileName.split('_')[0];
