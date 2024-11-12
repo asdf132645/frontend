@@ -243,6 +243,18 @@
     width: 80%;
 }
 
+.w96-max {
+    max-width: 96px;
+}
+
+.w120-max {
+    max-width: 120px;
+}
+
+.w120-min {
+    min-width: 120px;
+}
+
 .text-left {
     text-align: left;
 }
