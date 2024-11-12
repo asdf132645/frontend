@@ -169,7 +169,6 @@ import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningIn
 import {useStore} from "vuex";
 import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
-import {ywmcLisCrcSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";

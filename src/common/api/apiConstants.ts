@@ -10,8 +10,8 @@ export const apiConstants = {
             endpoint: 'sybase/save-uimd-result',
             requiresToken: false,
         },
-        ywmcLisCrcSend: {
-            endpoint: 'sybase/saveUimdCrcData',
+        cbcImgGet: {
+            endpoint: 'sybase/cbcImgGet',
             requiresToken: false,
         }
     },

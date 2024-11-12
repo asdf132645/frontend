@@ -79,6 +79,8 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from "vue";
 import html2canvas from "html2canvas";
+import {cbcImgGetApi} from "@/common/api/service/lisSend/lisSend";
+import {lisSendYwmc} from "@/common/lib/lisCbc";
 
 const props = defineProps(['nowCrcData', 'captureAndConvertOk']);
 const arrDataWbc = ref<any>([]);
@@ -134,11 +136,34 @@ const captureAndConvert = async () => {
     // Blob을 ISO-8859-1로 인코딩하고 16진수로 변환
     const hexString = arrayBufferToHex(ab);
 
-    console.log(hexString);
+    // console.log(hexString);
+    await saveToDatabase(hexString);
     // displayImageFromHex(hexString);
     emits('resetBool', true);
   }
 };
+
+const getImageDimensions = (hex) => {
+  const blob = hexToBlob(hex);
+  const url = URL.createObjectURL(blob);
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const width = img.width;
+      const height = img.height;
+      const size = blob.size; // Blob의 크기 (바이트 단위)
+      URL.revokeObjectURL(url); // 메모리 해제
+      resolve({ width, height, size });
+    };
+    img.onerror = (error) => {
+      URL.revokeObjectURL(url); // 메모리 해제
+      reject(error);
+    };
+    img.src = url;
+  });
+};
+
 
 const displayImageFromHex = (hexString: string) => {
   const blob = hexToBlob(hexString);
@@ -153,6 +178,7 @@ const displayImageFromHex = (hexString: string) => {
   // 이미지 요소를 DOM에 추가
   document.body.appendChild(img);
 };
+
 const hexToBlob = (hex: string): Blob => {
   const byteNumbers = [];
   for (let i = 0; i < hex.length; i += 2) {
@@ -161,6 +187,7 @@ const hexToBlob = (hex: string): Blob => {
   const byteArray = new Uint8Array(byteNumbers);
   return new Blob([byteArray], { type: 'image/png' }); // 이미지 타입에 맞게 조정
 };
+
 // 어레이버퍼를 ISO-8859-1로 인코딩하고 16진수로 변환하는 함수
 const arrayBufferToHex = (buffer: ArrayBuffer): string => {
   const bytes = new Uint8Array(buffer);
@@ -174,8 +201,29 @@ const arrayBufferToHex = (buffer: ArrayBuffer): string => {
   return hexString;
 };
 
-const saveToDatabase = (hexString: string) => {
+const saveToDatabase = async (hexString: string) => {
   // db 저장 로직
+  const res = (await cbcImgGetApi())?.data;
+  if (res) {
+    // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
+    const { width, height, size } = await getImageDimensions(hexString);
+
+    const data = {
+      size: size, // Blob의 크기
+      image_rslt: hexString, // 실제 이미지 결과 데이터로 대체
+      width: width, // 이미지 너비
+      height: height, // 이미지 높이
+      rslt_stus: 'F',
+      exam_ymd_unit: res?.data[0].exam_ymd_unit,
+      slip: res?.data[0].slip,
+      wrk_no: res?.data[0].wrk_no,
+      exam_cd: res?.data[0].exam_cd,
+      spc: res?.data[0].spc
+    };
+
+    await lisSendYwmc(data);
+  }
 };
+
 
 </script>
