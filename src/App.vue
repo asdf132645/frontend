@@ -423,10 +423,8 @@ async function socketData(data: any) {
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         break;
       case 'ERROR_CLEAR':
+        showAlert.value = false;
         console.log('err')
-        await showSuccessAlert(messages.IDS_MSG_FAILED);
-        break;
-      case 'SEARCH_CARD_COUNT':
         break;
     }
 
@@ -850,8 +848,9 @@ const showErrorAlert = (message: string) => {
   alertMessage.value = message;
 };
 
-const hideAlert = () => {
+const hideAlert = async () => {
   showAlert.value = false;
+  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
 };
 
 </script>

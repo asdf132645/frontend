@@ -537,7 +537,8 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
     }
     rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
   } else {
-    rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
+    if (rbcResponseOldArr.value?.data.length === 0 || !rbcResponseOldArr.value?.data[pageNumber]) rbcInfoPathAfter.value = [];
+    else rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
     // console.error('rbcInfoPathAfter.value is not iterable');
