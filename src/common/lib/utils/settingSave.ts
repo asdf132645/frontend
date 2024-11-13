@@ -1,4 +1,4 @@
-import { settingName } from "@/common/defines/constFile/settings";
+import { settingName } from "@/common/defines/constants/settings";
 import {
     putCellImgApi,
     putOrderClassApi,

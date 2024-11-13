@@ -1,5 +1,5 @@
-import {messages} from "@/common/defines/constFile/constantMessageText";
-import {inhaCbcTestCode} from "@/common/defines/constFile/inhaCbcTestCode";
+import {messages} from "@/common/defines/constants/constantMessageText";
+import {inhaCbcTestCode} from "@/common/defines/constants/inhaCbcTestCode";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 import {
     getCbcCodeRbcApi,

@@ -63,13 +63,13 @@ import {
   wbcCountOptions,
   stitchCountOptions,
   bmCountOptions
-} from '@/common/defines/constFile/analysis';
-import {messages} from '@/common/defines/constFile/constantMessageText';
-import {tcpReq} from '@/common/tcpRequest/tcpReq';
+} from '@/common/defines/constants/analysis';
+import {messages} from '@/common/defines/constants/constantMessageText';
+import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import {testBmTypeList, testTypeList, wbcRunningCount} from "@/common/defines/constFile/settings";
+import {testBmTypeList, testTypeList, wbcRunningCount} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import router from "@/router";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";

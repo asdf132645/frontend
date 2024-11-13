@@ -96,7 +96,7 @@ import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
-import { slideCard, slideCard100a } from "@/common/defines/constFile/analysis";
+import { slideCard, slideCard100a } from "@/common/defines/constants/analysis";
 
 // 스토어
 const store = useStore();

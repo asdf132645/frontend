@@ -80,7 +80,7 @@
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from "vue";
 import html2canvas from "html2canvas";
 import {cbcImgGetApi} from "@/common/api/service/lisSend/lisSend";
-import {lisSendYwmc} from "@/common/lib/lisCbc";
+import {lisSendYwmc} from "@/common/helpers/lisCbc";
 
 const props = defineProps(['nowCrcData', 'captureAndConvertOk']);
 const arrDataWbc = ref<any>([]);

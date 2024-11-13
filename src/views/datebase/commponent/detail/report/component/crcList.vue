@@ -108,7 +108,7 @@ import CrcAdd from "@/views/datebase/commponent/detail/report/component/crcAdd.v
 import Confirm from "@/components/commonUi/Confirm.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 
 // Props 받기
 const props = defineProps({

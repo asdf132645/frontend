@@ -239,7 +239,7 @@ import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGall
 import Alert from "@/components/commonUi/Alert.vue";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {useGetRunningInfoByIdQuery} from "@/gql";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);

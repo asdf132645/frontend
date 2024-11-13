@@ -57,7 +57,7 @@ import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue"
 import WbcRunningCount from "@/views/setting/analysisDatabase/component/wbcRunningCount.vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 

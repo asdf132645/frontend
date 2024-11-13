@@ -54,8 +54,8 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constFile/constantMessageText';
-import {AnalysisList2, settingName, wbcRunningCount} from "@/common/defines/constFile/settings";
+import {messages} from '@/common/defines/constants/constantMessageText';
+import {AnalysisList2, settingName, wbcRunningCount} from "@/common/defines/constants/settings";
 import {runCountItem} from "@/common/api/service/setting/dto/runWbcInfoCountDto";
 import { createRunInfoWbcApi, getRunInfoApi, updateRunInfoApi } from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";

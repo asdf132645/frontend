@@ -53,7 +53,7 @@
 import { ref, watch } from 'vue';
 import Datepicker from 'vue3-datepicker';
 import {getDateTimeYYYYMMDD} from "@/common/lib/utils/dateUtils";
-import {sdWorklistsAPI} from "@/common/lib/lisCbc";
+import {sdWorklistsAPI} from "@/common/helpers/lisCbc";
 
 interface Props {
   isOpen: boolean;

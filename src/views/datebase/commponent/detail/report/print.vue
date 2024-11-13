@@ -248,9 +248,9 @@ import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
-} from "@/common/lib/commonfunction/classFicationPercent";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
-import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constFile/dataBase";
+} from "@/common/helpers/common/classPercent";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();

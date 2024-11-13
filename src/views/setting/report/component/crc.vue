@@ -143,7 +143,7 @@ import {
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
-import {MASTER_ID} from "@/common/defines/constFile/settings";
+import {MASTER_ID} from "@/common/defines/constants/settings";
 import {isAdmin, isMasterId, isUserAdminType} from "@/common/lib/utils/validators";
 
 const isToggle = ref(false);

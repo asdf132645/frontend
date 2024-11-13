@@ -144,7 +144,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 
 const emit = defineEmits(['closeIsCrcAdd', 'refresh']);
 

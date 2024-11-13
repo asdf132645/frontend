@@ -58,7 +58,7 @@
 
 <script setup>
 import {ref, defineProps, onMounted, watch, computed, onBeforeMount} from 'vue';
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {barcodeImgDir} from "@/common/defines/constants/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
@@ -68,8 +68,8 @@ import {
   inhaPercentChange,
   percentWithNoError,
   seoulStMaryPercentChange
-} from "@/common/lib/commonfunction/classFicationPercent";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+} from "@/common/helpers/common/classPercent";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);

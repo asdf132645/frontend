@@ -40,9 +40,8 @@ import {
   onBeforeMount,
 } from 'vue';
 import {useStore} from "vuex";
-import {sysInfoStore, runningInfoStore} from '@/common/lib/storeSetData/common';
-import {tcpReq} from '@/common/tcpRequest/tcpReq';
-import {messages} from '@/common/defines/constFile/constantMessageText';
+import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
+import {messages} from '@/common/defines/constants/constantMessageText';
 import {
   getCellImgApi,
   getNormalRangeApi,
@@ -54,10 +53,10 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
 import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
-import {basicBmClassList, basicWbcArr} from "@/common/defines/constFile/classArr";
+import {basicBmClassList, basicWbcArr} from "@/common/defines/constants/classArr";
 import Analysis from "@/views/analysis/index.vue";
 import {logoutApi} from "@/common/api/service/user/userApi";
-import {inhaPercentChange} from "@/common/lib/commonfunction/classFicationPercent";
+import {inhaPercentChange} from "@/common/helpers/common/classPercent";
 import axios from "axios";
 import {
   getCbcCodeList,
@@ -65,9 +64,10 @@ import {
   getLisWbcRbcData,
   inhaCbc,
   inhaDataSend
-} from "@/common/lib/commonfunction/inhaCbcLis";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+} from "@/common/helpers/lisCbc/inhaCbcLis";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/storeSetData/common";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -840,7 +840,7 @@ const showErrorAlert = (message: string) => {
 
 const hideAlert = async () => {
   showAlert.value = false;
-  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
+  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear});
 };
 
 </script>

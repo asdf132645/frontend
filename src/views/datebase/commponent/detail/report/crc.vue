@@ -162,13 +162,13 @@ import Remark from "@/views/datebase/commponent/detail/report/component/remark.v
 import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/lib/commonfunction/inhaCbcLis";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/lib/lisCbc";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/helpers/lisCbc";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";

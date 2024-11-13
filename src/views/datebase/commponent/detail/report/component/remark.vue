@@ -107,7 +107,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 
 const props = defineProps({
   crcDefaultMode: {

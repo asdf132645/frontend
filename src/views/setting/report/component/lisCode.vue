@@ -58,7 +58,7 @@ import {
   minRunCount,
   settingName,
   WBC_CUSTOM_CLASS
-} from "@/common/defines/constFile/settings";
+} from "@/common/defines/constants/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
   createLisCodeWbcApi, createLisCodeRbcApi, createMinCountApi,
@@ -67,7 +67,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constFile/constantMessageText';
+import {messages} from '@/common/defines/constants/constantMessageText';
 import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";

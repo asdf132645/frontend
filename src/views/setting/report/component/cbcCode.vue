@@ -47,17 +47,17 @@
 
 <script setup lang="ts">
 import {ref, onMounted, computed, watch, onBeforeUnmount} from 'vue';
-import {defaultCbcList, defaultCbcList_0011, settingName} from "@/common/defines/constFile/settings";
+import {defaultCbcList, defaultCbcList_0011, settingName} from "@/common/defines/constants/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
-import {messages} from '@/common/defines/constFile/constantMessageText';
+import {messages} from '@/common/defines/constants/constantMessageText';
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
 
 const store = useStore();
 const router = useRouter();

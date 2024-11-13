@@ -325,10 +325,10 @@ import {
   testTypeList,
   WbcPositionMarginList,
   testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList
-} from "@/common/defines/constFile/settings";
+} from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import moment from "moment";
 import {
   backUpDateApi,

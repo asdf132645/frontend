@@ -1,5 +1,5 @@
-import { commonCodeList } from '@/common/defines/constFile/commonCodeList';
-import {bmTestType, testType} from "@/common/defines/constFile/dataBase";
+import { commonCodeList } from '@/common/defines/constants/commonCodeList';
+import {bmTestType, testType} from "@/common/defines/constants/dataBase";
 interface CommonCode {
     grpCd: string;
     cd: string;

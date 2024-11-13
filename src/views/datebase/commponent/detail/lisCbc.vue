@@ -98,10 +98,10 @@ import {
   fileSysCopy, fileSysExistsFile,
   getFolders
 } from "@/common/api/service/fileSys/fileSysApi";
-import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/lib/commonfunction/inhaCbcLis";
-import {messages} from "@/common/defines/constFile/constantMessageText";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
-import {parseDateString, ywmcCbcDataLoad} from "@/common/lib/lisCbc";
+import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/helpers/lisCbc/inhaCbcLis";
+import {messages} from "@/common/defines/constants/constantMessageText";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {parseDateString, ywmcCbcDataLoad} from "@/common/helpers/lisCbc";
 
 const store = useStore();
 const props = defineProps(['selectItems']);

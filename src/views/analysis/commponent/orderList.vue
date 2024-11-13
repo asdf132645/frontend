@@ -36,7 +36,7 @@ import { computed, defineProps, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { stringToDateTime } from "@/common/lib/utils/conversionDataUtils";
 import { formatDateString } from "@/common/lib/utils/dateUtils";
-import { RUNNING_INFO_INTERFACE_CODE } from "@/common/defines/constFile/commonCodeList";
+import { RUNNING_INFO_INTERFACE_CODE } from "@/common/defines/constants/commonCodeList";
 
 const store = useStore();
 const siteCd = computed(() => store.state.commonModule.siteCd);

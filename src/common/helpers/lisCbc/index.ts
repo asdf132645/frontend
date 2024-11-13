@@ -3,7 +3,7 @@ import {createCbcFile, getFolders} from "@/common/api/service/fileSys/fileSysApi
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {readCustomH7Message, readFileEUCKR, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import axios from "axios";
-import {getCbcPathData} from "@/common/lib/commonfunction/inhaCbcLis";
+import {getCbcPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
 
 interface CBCDataItem {
     classNm: string;

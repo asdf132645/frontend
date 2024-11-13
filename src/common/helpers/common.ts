@@ -1,4 +1,4 @@
-import {tcpReq} from '@/common/tcpRequest/tcpReq';
+import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCurrentInstance} from 'vue';
 import {useStore} from "vuex";
 

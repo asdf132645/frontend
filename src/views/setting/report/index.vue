@@ -44,7 +44,7 @@ import ARL from '@/views/setting/report/component/arl.vue';
 import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
 import { computed, ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import Alert from "@/components/commonUi/Alert.vue";

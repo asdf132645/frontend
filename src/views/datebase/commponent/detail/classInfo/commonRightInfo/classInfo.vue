@@ -167,7 +167,7 @@
 import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {crcOptionGet, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {barcodeImgDir} from "@/common/defines/constants/settings";
 import {
   basicBmClassList,
   basicWbcArr,
@@ -180,7 +180,7 @@ import {
   updateRunningApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {
@@ -193,7 +193,7 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
-import {BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD} from "@/common/defines/constFile/lis";
+import {BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD} from "@/common/defines/constants/lis";
 import axios from "axios";
 import {xml2json} from "xml-js";
 import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
@@ -204,15 +204,15 @@ import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
-} from "@/common/lib/commonfunction/classFicationPercent";
+} from "@/common/helpers/common/classPercent";
 import {
   getCbcCodeList,
   getCbcPathData, getLisPathData,
   getLisWbcRbcData,
   inhaCbc,
   inhaDataSend,
-} from "@/common/lib/commonfunction/inhaCbcLis";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
+} from "@/common/helpers/lisCbc/inhaCbcLis";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
 

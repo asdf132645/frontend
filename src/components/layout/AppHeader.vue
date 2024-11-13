@@ -148,10 +148,10 @@ import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, 
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {tcpReq} from "@/common/tcpRequest/tcpReq";
+import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
 import {getBrowserExit, nodeExit} from "@/common/api/service/browserExit/browserExitApi";

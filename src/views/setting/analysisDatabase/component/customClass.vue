@@ -55,12 +55,12 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constFile/constantMessageText';
+import {messages} from '@/common/defines/constants/constantMessageText';
 import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclassification";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constFile/settings";
+import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
 
 const store = useStore();
 const router = useRouter();

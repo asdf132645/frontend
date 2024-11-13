@@ -10,7 +10,7 @@
 
 <script setup>
 import { defineProps, computed } from 'vue';
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 const props = defineProps(['isVisible', 'type', 'message']);
 const typeClass = computed(() => `confirm-${props.type}`);
 const emit = defineEmits(['okConfirm']);

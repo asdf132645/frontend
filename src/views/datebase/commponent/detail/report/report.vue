@@ -271,11 +271,11 @@ import {
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
-} from "@/common/lib/commonfunction/classFicationPercent";
+} from "@/common/helpers/common/classPercent";
 import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constFile/siteCd";
-import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constFile/dataBase";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();

@@ -194,13 +194,13 @@ import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constFile/constantMessageText";
+import {messages} from "@/common/defines/constants/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {barcodeImgDir} from "@/common/defines/constFile/settings";
+import {barcodeImgDir} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);

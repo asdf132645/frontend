@@ -168,8 +168,8 @@
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
-import {rulers} from '@/common/defines/constFile/rbc';
-import {dirName} from "@/common/defines/constFile/settings";
+import {rulers} from '@/common/defines/constants/rbc';
+import {dirName} from "@/common/defines/constants/settings";
 import Malaria from './Malaria.vue';
 import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";

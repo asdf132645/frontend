@@ -45,12 +45,12 @@
 
 <script setup lang="ts">
 import {ref, onMounted, computed, watch} from 'vue';
-import {lisHotKeyAndLisFilePathAndUrl, settingName} from "@/common/defines/constFile/settings";
+import {lisHotKeyAndLisFilePathAndUrl, settingName} from "@/common/defines/constants/settings";
 import {ApiResponse} from "@/common/api/httpClient";
 import {createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
-import {messages} from '@/common/defines/constFile/constantMessageText';
+import {messages} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";

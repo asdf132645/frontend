@@ -43,8 +43,8 @@ import { UserResponse  } from '@/common/api/service/user/dto/userDto'
 import { ApiResponse } from "@/common/api/httpClient";
 import { useStore } from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import { initializeAllSettings } from "@/common/lib/commonfunction/settingFunctions";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constFile/siteCd";
+import { initializeAllSettings } from "@/common/helpers/common/setting";
+import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
 
 // 스토어
 const store = useStore();

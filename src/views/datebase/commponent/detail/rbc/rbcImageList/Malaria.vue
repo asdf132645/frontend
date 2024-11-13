@@ -60,7 +60,7 @@
 import { defineProps } from 'vue';
 import axios from "axios";
 import { ref, onMounted } from "vue";
-import { dirName } from "@/common/defines/constFile/settings";
+import { dirName } from "@/common/defines/constants/settings";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 
 const props = defineProps(['selectItems']);
