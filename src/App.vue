@@ -565,27 +565,16 @@ async function socketData(data: any) {
         }
 
         for (const el of response_new?.data) {
+          const prefix = el.FILE_NM.split('_')[0];
           let fileNm = '';
+
           if (isNsNbIntegrationLocal.value === 'Y') {
-            if (el.FILE_NM.split('_')[0] === 'NEB' || el.FILE_NM.split('_')[0] === 'NES') {
-              fileNm = 'NE'
-            } else {
-              fileNm = el.FILE_NM.split('_')[0];
-            }
+            fileNm = (prefix === 'NEB' || prefix === 'NES') ? 'NE' : prefix;
           } else {
-            if (el.FILE_NM.split('_')[0] === 'NES') {
-              fileNm = 'NS';
-            } else if (el.FILE_NM.split('_')[0] === 'NEB') {
-              fileNm = 'NB'
-            } else {
-              fileNm = el.FILE_NM.split('_')[0];
-            }
+            fileNm = (prefix === 'NES') ? 'NS' : (prefix === 'NEB') ? 'NB' : prefix;
           }
 
-
-          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => {
-            return elW.title === fileNm;
-          });
+          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex(elW => elW.title === fileNm);
 
           if (findWbcIndex !== -1) { // 유효한 인덱스인지 확인
             newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
@@ -593,6 +582,7 @@ async function socketData(data: any) {
             });
           }
         }
+
 
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
