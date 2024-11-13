@@ -26,7 +26,7 @@
             Refresh
           </button>
           <div class="settingDatePickers">
-            <Datepicker v-model="startDate"></Datepicker>
+            <Datepicker v-model="startDate" @change="updateEndDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>
 
@@ -147,7 +147,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onMounted,
-  ref,
+  ref, watch,
 } from "vue";
 import {detailRunningApi, getRunningApi, removePageAllDataApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import moment from "moment/moment";
@@ -224,13 +224,10 @@ const bufferDelay = 100; // 입력 완료 감지 지연 시간 (ms)
 const inputBuffer = ref('');
 const showPopupTable = ref(false);
 const workList = ref({});
+const previousValue = ref('');
+let lastInputTime = Date.now();
+const isBarcodeScannerInput = { value: false };
 
-async function handleStateVal(data: any) {
-  eventTriggered.value = true;
-  notStartLoading.value = false;
-  await removePageAllDataApi();
-  await initDbData();
-}
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
@@ -253,9 +250,26 @@ onMounted(async () => {
 
 });
 
-const previousValue = ref('');
-let lastInputTime = Date.now();
-const isBarcodeScannerInput = { value: false };
+
+async function handleStateVal(data: any) {
+  eventTriggered.value = true;
+  notStartLoading.value = false;
+  await removePageAllDataApi();
+  await initDbData();
+}
+
+const updateEndDate = () => {
+  if (startDate.value) {
+    const start = new Date(startDate.value);
+    const end = new Date(start);
+    end.setMonth(start.getMonth() + 1); // 한 달 후로 설정
+    endDate.value = end; // endDate를 업데이트
+  } else {
+    endDate.value = null; // startDate가 없으면 endDate도 초기화
+  }
+};
+
+watch(startDate, updateEndDate);
 
 // 이벤트 핸들러 함수
 const handleInput = (event: any) => {
@@ -542,8 +556,8 @@ const search = () => {
   // 전시회 갈 때 주석처리할 코드 START
   const diffInMs = endDate.value.getTime() - startDate.value.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-  if (diffInDays > 30) {
-    showSuccessAlert("You cannot select a period of more than 30 days.");
+  if (diffInDays > 31) {
+    showSuccessAlert("You cannot select a period of more than 31 days.");
     return;
   }
   // 전시회 갈 때 주석처리할 코드 END
