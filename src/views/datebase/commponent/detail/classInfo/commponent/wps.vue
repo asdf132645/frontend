@@ -5,7 +5,7 @@
            id="tilingViewerImgListWps"
            class="tilingViewerImgListWps" style="width: 100%;"></div>
     </div>
-    <img id="background-image"
+    <img v-show="!hideSideNavigatorImage" id="background-image"
          :src="backgroundImage"
          class="background-image"/>
   </div>
@@ -17,8 +17,8 @@ import {useStore} from "vuex";
 import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const store = useStore();
-const props = defineProps(['wspImgClickInfoData', 'slotId', 'selectItems']);
-const wsp = ref<any>({});
+const props = defineProps(['wpsImgClickInfoData', 'slotId', 'selectItems']);
+const wps = ref<any>({});
 const tilingViewerLayer = ref(null);
 let viewer: any = ref<any>(null);
 const canvasCurrentHeight = ref('0');
@@ -29,9 +29,10 @@ const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const canvasOverlay = ref<any>(null);
 const backgroundImage = ref('');
+const hideSideNavigatorImage = ref(false);
 
-watch(() => props.wspImgClickInfoData, async (newVal) => {
-      wsp.value = newVal;
+watch(() => props.wpsImgClickInfoData, async (newVal) => {
+      wps.value = newVal;
       const tilingViewerLayer = document.getElementById('tilingViewerImgListWps');
       if (tilingViewerLayer) {
         tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
@@ -95,13 +96,17 @@ const wpsInitElement = async () => {
       id: "tilingViewerImgListWps",
       animationTime: 0.4,
       navigatorSizeRatio: 0.05,
-      showNavigator: true,
+      showNavigator: !hideSideNavigatorImage.value,
       sequenceMode: true,
       defaultZoomLevel: 1,
       navigatorBackground: "transparent",
       prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
       tileSources: tilesInfo,
       showReferenceStrip: false,
+      showFullPageControl: false,
+      showSequenceControl: false,
+      showZoomControl: false,
+      showHomeControl: false,
       gestureSettingsMouse: {clickToZoom: false},
       maxZoomLevel: 30,
       minZoomLevel: 1,
@@ -111,8 +116,33 @@ const wpsInitElement = async () => {
       visibilityRatio: 1.0,
       navigator: {
         autoHide: false // 네비게이터가 자동으로 숨겨지지 않도록 설정
+      },
+      navImages: {
+        toggleNavigator: {
+          REST: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_reset.png`,
+          GROUP: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_grouphover.png`,
+          HOVER: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_hover.png`,
+          DOWN: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_pressed.png`
+        }
       }
     });
+
+    const navigatorButton = new OpenSeadragon.Button({
+      tooltip: 'Toggle Navigator',
+      srcReset: viewer.value.navImages.toggleNavigator.RESET,
+      srcGroup: viewer.value.navImages.toggleNavigator.GROUP,
+      srcHover: viewer.value.navImages.toggleNavigator.HOVER,
+      srcDown: viewer.value.navImages.toggleNavigator.DOWN,
+
+      onClick: () => {
+        hideSideNavigatorImage.value = !hideSideNavigatorImage.value;
+        const nav = viewer.value.navigator.element;
+        nav.style.display = nav.style.display === 'none' ? 'inline-block' : 'none';
+      }
+    })
+
+    viewer.value.buttonGroup.buttons.push(navigatorButton);
+    viewer.value.buttonGroup.element.appendChild(navigatorButton.element);
 
     const canvas = document.createElement('canvas');
     viewer.value.addOverlay({

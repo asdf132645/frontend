@@ -15,7 +15,7 @@
     </template>
   </ul>
   <template v-if="!classCompareShow">
-    <ul :class="{ wpsDiv: wspShow, cellImgBox: true }">
+    <ul :class="{ wpsDiv: wpsShow, cellImgBox: true }">
       <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
         <div v-if="item?.count !== '0' && item?.count !== 0">
           <p class="mt10">
@@ -48,7 +48,7 @@
                   </div>
                 </div>
                 <img
-                    @click="wspImgClickInfo(image, item)"
+                    @click="wpsImgClickInfo(image, item)"
                     v-if="image && image.fileName && !hiddenImages[`${item.id}-${image.fileName}`]"
                     :key="image.uniqueKey"
                     :src="getImageUrl(image.fileName, item.id, item.title, '')"
@@ -69,7 +69,7 @@
         </ul>
       </li>
     </ul>
-    <Wps v-if="wspShow" :wspImgClickInfoData="wspImgClickInfoData" :slotId="slotId" :selectItems="selectItems" :iaRootPath="iaRootPath"/>
+    <Wps v-if="wpsShow" :wpsImgClickInfoData="wpsImgClickInfoData" :slotId="slotId" :selectItems="selectItems" :iaRootPath="iaRootPath"/>
   </template>
   <!--  클래스 단일 비교 부분 -->
   <div v-else-if="classCompareShow" class="divCompare">
@@ -268,7 +268,7 @@ const props = defineProps<{
   wbcInfoRefresh: any;
   imageSize: number;
   isLocalNsNbIntegration: boolean;
-  wspShow: boolean;
+  wpsShow: boolean;
   selectItems: any;
 }>();
 const emits = defineEmits();
@@ -280,7 +280,7 @@ const previousFirstClass = ref('Metamyelocyte');
 const previousLastClass = ref('Myelocyte');
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
-const wspImgClickInfoData = ref<any>({});
+const wpsImgClickInfoData = ref<any>({});
 onMounted(() => {
   updateFirstLastClass(props.isLocalNsNbIntegration);
 })
@@ -338,8 +338,8 @@ watch(
     }
 );
 
-const wspImgClickInfo = (img: any, item: any) => {
-  wspImgClickInfoData.value = {item: item, img: img};
+const wpsImgClickInfo = (img: any, item: any) => {
+  wpsImgClickInfoData.value = {item: item, img: img};
 }
 
 const updateFirstLastClass = (isIntegration: boolean) => {

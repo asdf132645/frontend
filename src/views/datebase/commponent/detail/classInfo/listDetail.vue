@@ -130,9 +130,9 @@
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
-        <button @click="wsp">
+        <button @click="wps">
           <font-awesome-icon :icon="['fas', 'expand']" />
-          wsp
+          wps
         </button>
         <button @click="rollbackChanges" class="rollbackButton">
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
@@ -154,7 +154,7 @@
             :projectType="projectType"
             :apiBaseUrl="apiBaseUrl"
             :classCompareShow="classCompareShow"
-            :wspShow="wspShow"
+            :wpsShow="wpsShow"
             :selectedTitle="selectedTitle"
             :hiddenImages="hiddenImages"
             :replaceFileNamePrefix="replaceFileNamePrefix"
@@ -306,7 +306,7 @@ const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 const isNext = ref(false);
 const classCompareShow = ref(false);
-const wspShow = ref(false);
+const wpsShow = ref(false);
 const isLoading = ref(true);
 const $imageGalleryRef = ref<any>(null);
 const showAlert = ref(false);
@@ -408,8 +408,8 @@ const classCompare = () => {
   classCompareShow.value = !classCompareShow.value;
 }
 
-const wsp = () => {
-  wspShow.value = !wspShow.value;
+const wps = () => {
+  wpsShow.value = !wpsShow.value;
 }
 
 const imgPixelConvertToPercent = (imageSize: number) => {
