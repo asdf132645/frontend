@@ -5,10 +5,10 @@
            id="tilingViewerImgListWps"
            class="tilingViewerImgListWps" style="width: 100%;"></div>
     </div>
-    <img v-if="imgOn && !hideSideNavigatorImage" id="background-image"
+    <img v-show="imgOn && !hideSideNavigatorImage" id="background-image"
          :src="backgroundImage"
          class="background-image"/>
-    <div v-else class="selectImgWarn">
+    <div v-if="!imgOn" class="selectImgWarn">
       <p class="hand-pointer">
         <font-awesome-icon :icon="['fas', 'arrow-pointer']" />
       </p>
@@ -21,6 +21,7 @@ import {computed, defineProps, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import {useStore} from "vuex";
 import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const store = useStore();
 const props = defineProps(['wpsImgClickInfoData', 'slotId', 'selectItems']);
@@ -103,10 +104,11 @@ const wpsInitElement = async () => {
       animationTime: 0.4,
       navigatorSizeRatio: 0.05,
       showNavigator: !hideSideNavigatorImage.value,
+      navigatorAutoFade: false, // 네비게이터가 자동으로 숨겨지지 않도록 설정
       sequenceMode: true,
       defaultZoomLevel: 1,
       navigatorBackground: "transparent",
-      prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+      prefixUrl: openseadragonPrefixUrl(apiBaseUrl),
       tileSources: tilesInfo,
       showReferenceStrip: false,
       showFullPageControl: false,
@@ -120,30 +122,19 @@ const wpsInitElement = async () => {
       zoomPerScroll: 1.2,
       viewportMargins: {top: 0, left: 0, bottom: 0, right: 0},
       visibilityRatio: 1.0,
-      navigator: {
-        autoHide: false // 네비게이터가 자동으로 숨겨지지 않도록 설정
-      },
-      navImages: {
-        toggleNavigator: {
-          REST: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_reset.png`,
-          GROUP: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_grouphover.png`,
-          HOVER: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_hover.png`,
-          DOWN: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/home_pressed.png`
-        }
-      }
     });
 
     const navigatorButton = new OpenSeadragon.Button({
       tooltip: 'Toggle Navigator',
-      srcReset: viewer.value.navImages.toggleNavigator.RESET,
-      srcGroup: viewer.value.navImages.toggleNavigator.GROUP,
-      srcHover: viewer.value.navImages.toggleNavigator.HOVER,
-      srcDown: viewer.value.navImages.toggleNavigator.DOWN,
+      srcRest: openseadragonPrefixUrl(apiBaseUrl) + 'home_rest.png',
+      srcGroup: openseadragonPrefixUrl(apiBaseUrl) + 'home_grouphover.png',
+      srcHover: openseadragonPrefixUrl(apiBaseUrl) + 'home_hover.png',
+      srcDown: openseadragonPrefixUrl(apiBaseUrl) + 'home_pressed.png',
 
       onClick: () => {
         hideSideNavigatorImage.value = !hideSideNavigatorImage.value;
-        const nav = viewer.value.navigator.element;
-        nav.style.display = nav.style.display === 'none' ? 'inline-block' : 'none';
+        const nav = viewer.value.navigator?.element;
+        if (nav) nav.style.display = nav.style.display === 'none' ? 'block' : 'none';
       }
     })
 

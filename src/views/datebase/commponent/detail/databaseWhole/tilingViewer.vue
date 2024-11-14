@@ -12,6 +12,7 @@ import { defineProps, onMounted, ref, watch, computed, nextTick } from 'vue';
 import OpenSeadragon from 'openseadragon';
 import { useStore } from "vuex";
 import { readDziFile } from "@/common/api/service/fileReader/fileReaderApi";
+import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const props = defineProps(['selectItems']);
 const store = useStore();
@@ -67,7 +68,7 @@ const initElement = async (imageHeight: any, bool: boolean) => {
       showNavigator: true,
       sequenceMode: true,
       defaultZoomLevel: 1,
-      prefixUrl:`${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+      prefixUrl:openseadragonPrefixUrl(apiBaseUrl),
       tileSources: tilesInfo,
       gestureSettingsMouse: { clickToZoom: false },
     });

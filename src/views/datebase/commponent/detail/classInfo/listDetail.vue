@@ -130,7 +130,7 @@
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
-        <button @click="wps">
+        <button v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME.UIMD" @click="wps">
           <font-awesome-icon :icon="['fas', 'expand']" />
           wps
         </button>
