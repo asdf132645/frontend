@@ -67,7 +67,7 @@ import {
 } from "@/common/helpers/lisCbc/inhaCbcLis";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/storeSetData/common";
+import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/store/common";
 
 const showAlert = ref(false);
 const alertType = ref('');
