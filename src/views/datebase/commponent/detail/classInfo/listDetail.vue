@@ -1025,7 +1025,7 @@ async function onDropCircle(item: any) {
 function handleBodyClick(event: Event) {
   const target = event.target as HTMLElement;
   // 클릭한 요소 또는 그 부모 중에 .wbcImgWrap 클래스를 가지고 있지 않으면
-  if (!target.closest('.wbcImgWrapLi') && !target.closest('.context-menu')) {
+  if (!target.closest('.wbcImgWrapLi') && !target.closest('.context-menu') && target.className !== 'openseadragon-canvas') {
     // 모든 selected-image 클래스를 리셋
     selectedClickImages.value = [];
     shiftClickImages.value = [];

@@ -37,8 +37,8 @@ onMounted(() => {
       {
         label: '정상 범위',
         data: normalRangeData,
-        backgroundColor: '#ff5700',
-        borderColor: 'rgba(102, 187, 106, 1)',
+        backgroundColor: '#007bff',
+        borderColor: '#007bff',
         borderWidth: 1,
         barThickness: 30, // 막대 두께 설정
       },
@@ -46,11 +46,11 @@ onMounted(() => {
         label: '측정 값',
         data: dataValues,
         type: 'line',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: '#1DDDE0',
+        backgroundColor: '#1DDDE0',
         borderWidth: 0,
         pointRadius: 3, // 데이터 포인트 크기
-        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+        pointBackgroundColor: '#1DDDE0',
       },
     ],
   };
