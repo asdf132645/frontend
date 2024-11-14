@@ -1,5 +1,5 @@
 <template>
-  <div class="alignDiv">
+  <div class="alignDiv" style="width: 660px;">
     <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
       <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>
       <input v-else type="text" v-model="item.fullNm" />
@@ -15,13 +15,17 @@
             @click="clearEditing"
             class="cursorPointer hoverSizeAction cbc-setting-icon"
             :icon="['fas', 'square-check']" />
+        <font-awesome-icon
+            @click="deleteCBCCode(item.cd)"
+            class="cursorPointer hoverSizeAction"
+            style="margin-right: 4px;"
+            :icon="['fas', 'trash']" />
         <input type="text" v-model="item.classCd" />
       </div>
     </label>
   </div>
 
   <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
-  <button class="cursorPointer" @click="deleteCBCCode"><font-awesome-icon :icon="['fas', 'minus']" /></button>
   <div class="mt10">
     <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
   </div>
@@ -174,9 +178,8 @@ const addCBCCode = () => {
   cbcCodeArr.value.push(defaultCBCCode);
 }
 
-const deleteCBCCode = () => {
-  const maxCBCCode = Math.max(...cbcCodeArr.value.map(item => Number(item.cd)));
-  cbcCodeArr.value = cbcCodeArr.value.filter(item => Number(item.cd) !== maxCBCCode);
+const deleteCBCCode = (cbcCd: string) => {
+  cbcCodeArr.value = cbcCodeArr.value.filter(item => Number(item.cd) !== Number(cbcCd));
 }
 
 const editCBC = (CBCCd: string) => editingCBCCd.value = CBCCd;
@@ -189,6 +192,7 @@ const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
+  window.scrollTo({top: 0, behavior: 'smooth'});
 };
 
 const showErrorAlert = (message: string) => {
