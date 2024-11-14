@@ -4832,7 +4832,22 @@ ul.wpsDiv.cellImgBox {
     width: 48%;
     vertical-align: top;
 }
+.wpsDiv.main{
+    background: #252629;
+    height: 75vh;
+}
 
+.selectImgWarn {
+    position: absolute;
+    top: 39%;
+    left: 31%;
+    font-size: 1.5rem;
+}
+
+p.hand-pointer {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
 .resultCode {
     margin-bottom: 10px;
     font-size: 18px;

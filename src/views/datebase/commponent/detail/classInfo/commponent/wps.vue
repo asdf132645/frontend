@@ -1,13 +1,19 @@
 <template>
-  <div class="wpsDiv">
+  <div class="wpsDiv main">
     <div class="tiling-viewer_img_list-box_img_list">
       <div ref="tilingViewerLayer"
            id="tilingViewerImgListWps"
            class="tilingViewerImgListWps" style="width: 100%;"></div>
     </div>
-    <img id="background-image"
+    <img v-if="imgOn" id="background-image"
          :src="backgroundImage"
          class="background-image"/>
+    <div v-else class="selectImgWarn">
+      <p class="hand-pointer">
+        <font-awesome-icon :icon="['fas', 'arrow-pointer']" />
+      </p>
+      <span>Please select an image.</span>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -29,7 +35,7 @@ const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const canvasOverlay = ref<any>(null);
 const backgroundImage = ref('');
-
+const imgOn = ref(false);
 watch(() => props.wspImgClickInfoData, async (newVal) => {
       wsp.value = newVal;
       const tilingViewerLayer = document.getElementById('tilingViewerImgListWps');
@@ -64,7 +70,7 @@ const adjustNavBar = (x1: any, x2: any, y1: any, y2: any) => {
     parentElement.style.height = `375px`;
   }
 
-  if(navBar){
+  if (navBar) {
     navBar.classList.add('custom-nav-bar-canvas');
     // 배경 이미지 축소 비율에 맞춰 좌표와 크기 계산
     const scaleFactor = 0.5;  // 1/2 비율로 축소
@@ -81,7 +87,6 @@ const adjustNavBar = (x1: any, x2: any, y1: any, y2: any) => {
   }
 
 }
-
 
 
 const wpsInitElement = async () => {
@@ -125,8 +130,8 @@ const wpsInitElement = async () => {
     canvasOverlay.value = canvas;
 
     viewer.value.addHandler('open', function (event) {
-      adjustNavBar(40,100,170,210);
-
+      adjustNavBar(40, 100, 170, 210);
+      imgOn.value = true;
       const fullPageButton = viewer.value.buttons.buttons.find((button) => button.tooltip === 'Toggle full page');
 
       if (fullPageButton) {
