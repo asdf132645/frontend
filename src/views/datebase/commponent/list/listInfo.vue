@@ -58,7 +58,7 @@
 
 <script setup>
 import {ref, defineProps, onMounted, watch, computed, onBeforeMount} from 'vue';
-import {barcodeImgDir} from "@/common/defines/constants/settings";
+import { DIR_NAME } from "@/common/defines/constants/settings";
 import moment from "moment/moment";
 import {useStore} from "vuex";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
@@ -242,7 +242,7 @@ const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.M
 
 function getImageUrl(imageName) {
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;
-  return `${apiBaseUrl}/images?folder=${path + '/' + props.selectedItem.slotId + '/' + barcodeImgDir.barcodeDirName + '/'}&imageName=${imageName}`;
+  return `${apiBaseUrl}/images?folder=${path + '/' + props.selectedItem.slotId + '/' + DIR_NAME.BARCODE + '/'}&imageName=${imageName}`;
 }
 
 const onImageError = () => {

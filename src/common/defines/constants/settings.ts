@@ -829,22 +829,18 @@ export const lisHotKeyAndLisFilePathAndUrl =[
     { lisHotKey: '', lisFilePath:'', cbcFilePath:'' },
 ]
 
-export const barcodeImgDir = {
-    barcodeDirName: '00_Barcode_Image'
-}
-
-export const dirName = {
-    howellJollyDirName: '19_Howell_jolly',
-    malariaDirName: '43_InclusionBody_Malaria',
-    noMalariaDirName: '44_InclusionBody_NoMalaria',
-    rbcClassDirName: '03_RBC_Classification',
-    rbcImageDirName: '02_RBC_Image',
-    barcodeDirName: '00_Barcode_Image',
-    wbcClassDirName: '01_WBC_Classification',
-    bfDirName: '02_LowPower_Image',
-    bfHighDirName: '03_HighPower_Image',
-    bfClassDirName: '05_BF_Classification',
-    iaRootPath: 'D:/ia_proc',
+export const DIR_NAME = {
+    HOWELL_JOLLY: '19_Howell_jolly',
+    MALARIA: '43_InclusionBody_Malaria',
+    NO_MALARIA: '44_InclusionBody_NoMalaria',
+    RBC_CLASS: '03_RBC_Classification',
+    RBC_IMAGE: '02_RBC_Image',
+    BARCODE: '00_Barcode_Image',
+    WBC_CLASS: '01_WBC_Classification',
+    BF: '02_LowPower_Image',
+    BF_HIGH: '03_HighPower_Image',
+    BF_CLASS: '05_BF_Classification',
+    IA_ROOT_PATH: 'D:/ia_proc',
 }
 
 export const settingName = {

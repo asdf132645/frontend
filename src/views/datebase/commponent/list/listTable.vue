@@ -200,7 +200,7 @@ import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {barcodeImgDir} from "@/common/defines/constants/settings";
+import { DIR_NAME } from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
@@ -591,7 +591,7 @@ const editData = async (item) => {
   itemObj.value.submitState = ['', 'Ready', 'checkFirst'].includes(itemObj.value.submitState) ? '' : itemObj.value.submitState;
   itemObj.value.testType = projectType.value !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType);
   const path = item?.img_drive_root_path !== '' && item?.img_drive_root_path ? item?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, item.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, item.slotId, DIR_NAME.BARCODE);
 
 }
 

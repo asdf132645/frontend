@@ -564,7 +564,6 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
             shapeOthersCount.value += 1;
           }
         }
-
         break;
       case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
         inclusionBody = el.classInfo.length;

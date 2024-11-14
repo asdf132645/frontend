@@ -60,11 +60,11 @@
 import { defineProps } from 'vue';
 import axios from "axios";
 import { ref, onMounted } from "vue";
-import { dirName } from "@/common/defines/constants/settings";
+import { DIR_NAME } from "@/common/defines/constants/settings";
 import {moveImgPost} from "@/common/api/service/dataBase/wbc/wbcApi";
 
 const props = defineProps(['selectItems']);
-const iaRootPath = sessionStorage.getItem('iaRootPath') || dirName.iaRootPath;
+const iaRootPath = sessionStorage.getItem('iaRootPath') || DIR_NAME.IA_ROOT_PATH;
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.115:3002';
 const malariaList = ref([]);
 const noMalariaList = ref([]);
@@ -78,15 +78,15 @@ const modalImageWidth = ref('150px');
 const modalImageHeight = ref('150px');
 
 onMounted(async () => {
-  await getImageList(dirName.malariaDirName, malariaList);
-  await getImageList(dirName.noMalariaDirName, noMalariaList);
+  await getImageList(DIR_NAME.MALARIA, malariaList);
+  await getImageList(DIR_NAME.NO_MALARIA, noMalariaList);
   document.body.addEventListener("click", handleBodyClick);
 });
 
 async function getImageList(folderName: string, list: []) {
   const slotId = props.selectItems.slotId || '';
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath;
-  const folderPath = `${path}/${slotId}/${dirName.rbcClassDirName}/${folderName}`;
+  const folderPath = `${path}/${slotId}/${DIR_NAME.RBC_CLASS}/${folderName}`;
 
   try {
     const response = await fetch(`${apiBaseUrl}/folders?folderPath=${folderPath}`);
@@ -203,9 +203,9 @@ async function moveImage(targetSection: string, imgName: string) {
   const slotId = props.selectItems.slotId || '';
   const pathNew = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath;
 
-  const path = `${pathNew}/${slotId}/${dirName.rbcClassDirName}`
-  const sourceFolder = targetSection === 'malaria' ? `${path}/${dirName.noMalariaDirName}` : `${path}/${dirName.malariaDirName}`;
-  const destinationFolder = targetSection === 'malaria' ? `${path}/${dirName.malariaDirName}` : `${path}/${dirName.noMalariaDirName}`;
+  const path = `${pathNew}/${slotId}/${DIR_NAME.RBC_CLASS}`
+  const sourceFolder = targetSection === 'malaria' ? `${path}/${DIR_NAME.NO_MALARIA}` : `${path}/${DIR_NAME.MALARIA}`;
+  const destinationFolder = targetSection === 'malaria' ? `${path}/${DIR_NAME.MALARIA}` : `${path}/${DIR_NAME.NO_MALARIA}`;
 
   const imgNameArr = imgName.split("/");
   const imageName = imgNameArr[imgNameArr.length-1];

@@ -167,7 +167,7 @@
 import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {crcOptionGet, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
-import {barcodeImgDir} from "@/common/defines/constants/settings";
+import { DIR_NAME } from "@/common/defines/constants/settings";
 import {
   basicBmClassList,
   basicWbcArr,
@@ -332,7 +332,7 @@ watch(() => props.wbcInfo, (newItem) => {
     beforeAfterChange(newItem)
     wbcMemo.value = props.selectItems?.wbcMemo;
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
+    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
     store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
     if (props.selectItems?.submitState === "") {
       const result: any = detailRunningApi(String(props.selectItems?.id));
@@ -352,7 +352,7 @@ const mountedMethod = async () => {
   }
   wbcMemo.value = props.selectItems?.wbcMemo;
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, barcodeImgDir.barcodeDirName);
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
   if (props.selectItems?.submitState) {
     lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }

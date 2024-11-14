@@ -318,10 +318,10 @@ onBeforeMount(async () => {
   if (crcOptionApi.data.length !== 0) {
     crcConnect.value = crcOptionApi.data[0].crcConnect;
   }
-  const ss = (await crcGet());
-  if (ss.code === 200) {
+  const result = (await crcGet());
+  if (result.code === 200) {
     isContent.value = true;
-    crcData.value = ss.data;
+    crcData.value = result.data;
   }
 
 })

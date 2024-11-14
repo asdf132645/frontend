@@ -10,15 +10,15 @@
       <div class="mt30 loginDiv">
         <ul class="loginUl">
           <li>
-            <input class="loginInput" type="text" v-model="idVal" placeholder="ID">
+            <input class="loginInput" type="text" v-model="idVal" placeholder="ID" @keydown="loginUser" >
           </li>
           <li>
-            <input class="loginInput" type="password" v-model="password" placeholder="password">
+            <input class="loginInput" type="password" v-model="password" placeholder="password" @keydown="loginUser" >
           </li>
         </ul>
 
         <div class='loginBtn'>
-          <button type="button" @click="loginUser">Login</button>
+          <button type="button" @click="loginUser()" @keydown="loginUser" >Login</button>
           <button type="button" @click="goJoinPage">Add User</button>
         </div>
       </div>
@@ -85,7 +85,9 @@ const goJoinPage = () => {
   router.push('/user/join');
 }
 
-const loginUser = async () => {
+const loginUser = async (event?: KeyboardEvent) => {
+  if (event && event.key !== 'Enter' && event.type !== 'click') return;
+
   const user = {
     userId: idVal.value,
     password: password.value,

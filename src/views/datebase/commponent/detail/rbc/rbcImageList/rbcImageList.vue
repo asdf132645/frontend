@@ -169,7 +169,7 @@
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constants/rbc';
-import {dirName} from "@/common/defines/constants/settings";
+import { DIR_NAME } from "@/common/defines/constants/settings";
 import Malaria from './Malaria.vue';
 import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
@@ -607,7 +607,7 @@ const initElement = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
   try {
-    const folderPath = `${path}/${props.selectItems.slotId}/${dirName.rbcImageDirName}`;
+    const folderPath = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_IMAGE}`;
     const tilesInfo = await fetchTilesInfo(folderPath);
 
     if (tilesInfo.length !== 0) {
