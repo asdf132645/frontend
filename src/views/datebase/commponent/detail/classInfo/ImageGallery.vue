@@ -14,61 +14,65 @@
       </li>
     </template>
   </ul>
-  <ul class="cellImgBox" v-if="!classCompareShow">
-    <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
-      <div v-if="item?.count !== '0' && item?.count !== 0">
-        <p class="mt10">
-          <input type="checkbox" @input="$emit('allCheckChange', $event, item.title)"
-                 :checked="selectedTitle === item.title">
-          {{ item?.title }} <span class="smallName">({{ item.name }})</span>
-          ({{ item?.count }})
-        </p>
-      </div>
-      <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver" @drop="() => $emit('onDrop', itemIndex)"
-          v-if="item?.count !== '0' && item?.count !== 0 && item.images">
-        <template v-for="(image, imageIndex) in item.images" :key="image.uniqueKey">
-          <li
-              :class="{
+  <template v-if="!classCompareShow">
+    <ul :class="{ wpsDiv: wspShow, cellImgBox: true }">
+      <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
+        <div v-if="item?.count !== '0' && item?.count !== 0">
+          <p class="mt10">
+            <input type="checkbox" @input="$emit('allCheckChange', $event, item.title)"
+                   :checked="selectedTitle === item.title">
+            {{ item?.title }} <span class="smallName">({{ item.name }})</span>
+            ({{ item?.count }})
+          </p>
+        </div>
+        <ul :class="'wbcImgWrap ' + item?.title" @dragover.prevent="onDragOver" @drop="() => $emit('onDrop', itemIndex)"
+            v-if="item?.count !== '0' && item?.count !== 0 && item.images">
+          <template v-for="(image, imageIndex) in item.images" :key="image.uniqueKey">
+            <li
+                :class="{
               'border-changed': isBorderChanged(image),
               'selected-image': isSelected(image),
               'wbcImgWrapLi': true
             }"
-              @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
-              @dblclick="() => $emit('openModal', image, item)"
-              v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
-              @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
-          >
-            <div style="position: relative;">
-              <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
-                <div class="fileTitle" :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
-                  {{ replaceFileNamePrefix(image.fileName) }}
-                  <font-awesome-icon :icon="['fas', 'arrow-right']"/>
-                  {{ image.title }}
+                @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
+                @dblclick="() => $emit('openModal', image, item)"
+                v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
+                @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
+            >
+              <div style="position: relative;" @click="wbcDbClickOpen">
+                <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
+                  <div class="fileTitle" :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
+                    {{ replaceFileNamePrefix(image.fileName) }}
+                    <font-awesome-icon :icon="['fas', 'arrow-right']"/>
+                    {{ image.title }}
+                  </div>
                 </div>
+                <img
+                    @click="wspImgClickInfo(image, item)"
+                    v-if="image && image.fileName && !hiddenImages[`${item.id}-${image.fileName}`]"
+                    :key="image.uniqueKey"
+                    :src="getImageUrl(image.fileName, item.id, item.title, '')"
+                    :width="imageSize"
+                    :height="imageSize"
+                    :style="{ filter: image.filter }"
+                    @dragstart="() => $emit('onDragStart', itemIndex, imageIndex)"
+                    draggable="true"
+                    class="cellImg"
+                    ref="cellRef"
+                    @error="() => $emit('hideImage', item.id, image.fileName, item.title)"
+                    @load="handleImageLoad(itemIndex)"
+                />
+                <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
               </div>
-              <img
-                  v-if="image && image.fileName && !hiddenImages[`${item.id}-${image.fileName}`]"
-                  :key="image.uniqueKey"
-                  :src="getImageUrl(image.fileName, item.id, item.title, '')"
-                  :width="imageSize"
-                  :height="imageSize"
-                  :style="{ filter: image.filter }"
-                  @dragstart="() => $emit('onDragStart', itemIndex, imageIndex)"
-                  draggable="true"
-                  class="cellImg"
-                  ref="cellRef"
-                  @error="() => $emit('hideImage', item.id, image.fileName, item.title)"
-                  @load="handleImageLoad(itemIndex)"
-              />
-              <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
-            </div>
-          </li>
-        </template>
-      </ul>
-    </li>
-  </ul>
+            </li>
+          </template>
+        </ul>
+      </li>
+    </ul>
+    <Wps v-if="wspShow" :wspImgClickInfoData="wspImgClickInfoData" :slotId="slotId" :selectItems="selectItems" :iaRootPath="iaRootPath"/>
+  </template>
   <!--  클래스 단일 비교 부분 -->
-  <div v-else class="divCompare">
+  <div v-else-if="classCompareShow" class="divCompare">
     <div class="divCompareChild">
       <select v-model="firstClass" @change="classImgChange('first' , $event)">
         <option v-for="option in classList" :key="option.id" :value="option.name">{{ option?.name }}</option>
@@ -174,15 +178,15 @@
                   <img
                       v-if="image && image.fileName && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
                       :src="getImageUrl(image.fileName, lastClassObj.id, lastClassObj.title, '')"
-                       :width="imageSize"
-                       :height="imageSize"
-                       :style="{ filter: image.filter }"
-                       @dragstart="() => $emit('onDragStart', lastItemIndex, imageIndex)"
-                       draggable="true"
-                       class="cellImg"
-                       ref="cellRef"
-                       @error="() => $emit('hideImage', lastClassObj.id, image.fileName, lastClassObj.title)"
-                       @load="handleImageLoad(lastItemIndex)"
+                      :width="imageSize"
+                      :height="imageSize"
+                      :style="{ filter: image.filter }"
+                      @dragstart="() => $emit('onDragStart', lastItemIndex, imageIndex)"
+                      draggable="true"
+                      class="cellImg"
+                      ref="cellRef"
+                      @error="() => $emit('hideImage', lastClassObj.id, image.fileName, lastClassObj.title)"
+                      @load="handleImageLoad(lastItemIndex)"
                   />
                   <div v-if="image && image.coordinates" class="center-point" :style="image.coordinates"></div>
                 </div>
@@ -199,9 +203,9 @@
 
 import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'vue';
 import {useStore} from "vuex";
-import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
-import { removeDuplicatesById } from "@/common/lib/utils/removeDuplicateIds";
-import { debounce } from "lodash";
+import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
+import {debounce} from "lodash";
+import Wps from "@/views/datebase/commponent/detail/classInfo/commponent/wps.vue";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -213,6 +217,7 @@ const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
 const loading = ref(true);
+const wbcDbClick = ref(false);
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
@@ -263,6 +268,8 @@ const props = defineProps<{
   wbcInfoRefresh: any;
   imageSize: number;
   isLocalNsNbIntegration: boolean;
+  wspShow: boolean;
+  selectItems: any;
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
@@ -273,7 +280,7 @@ const previousFirstClass = ref('Metamyelocyte');
 const previousLastClass = ref('Myelocyte');
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
-
+const wspImgClickInfoData = ref<any>({});
 onMounted(() => {
   updateFirstLastClass(props.isLocalNsNbIntegration);
 })
@@ -286,6 +293,7 @@ watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
   loading.value = false;
 });
+
 
 const debouncedUpdate = debounce(async (newVal) => {
   const timestamp = Date.now();
@@ -303,7 +311,7 @@ const debouncedUpdate = debounce(async (newVal) => {
   await classImgChange('last', null);
 }, 10); //디바운스 적용
 
-watch(wbcInfo, debouncedUpdate, { deep: true });
+watch(wbcInfo, debouncedUpdate, {deep: true});
 
 watch(
     () => props.wbcReset,
@@ -329,6 +337,10 @@ watch(
       }
     }
 );
+
+const wspImgClickInfo = (img: any, item: any) => {
+  wspImgClickInfoData.value = {item: item, img: img};
+}
 
 const updateFirstLastClass = (isIntegration: boolean) => {
   firstClass.value = isIntegration ? 'Metamyelocyte' : 'Neutrophil-Segmented';
