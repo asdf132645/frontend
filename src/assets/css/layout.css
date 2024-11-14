@@ -1210,7 +1210,11 @@ p.loadingText {
     width: 100%;
     height: 80vh;
 }
-
+.tilingViewerImgListWps{
+    position: relative;;
+    width: 100%;
+    height: 70vh;
+}
 .rbc-container {
     height: 85vh;
 }
@@ -4817,16 +4821,46 @@ input.codeInput {
     min-width: 450px;
 }
 
+ul.wpsDiv.cellImgBox {
+    width: 50%;
+    display: inline-block;
+}
+
+.wpsDiv {
+    position: relative;
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+}
+
 .resultCode {
     margin-bottom: 10px;
     font-size: 18px;
     font-weight: 600;
 }
-
+.background-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 0; /* 이미지가 가장 뒤에 위치 */
+    width: 130px; /* 260px의 1/4 크기 */
+    height: 375px; /* 750px의 1/4 크기 */
+    opacity: 0.8;
+}
 .resultImgBody {
     font-size: 0.8rem;
 }
-
+.nav-bar-custom {
+    /*position: absolute!important;*/
+    position: relative !important;
+    z-index: 10;
+}
+.opacityZero{
+    opacity: 1!important;
+}
+.custom-nav-bar-canvas {
+    position: absolute !important;
+}
 .split-left li div, .split-right li div {
     display: inline-block;
 }

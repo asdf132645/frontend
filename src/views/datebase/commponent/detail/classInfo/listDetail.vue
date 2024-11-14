@@ -130,6 +130,10 @@
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
+        <button @click="wsp">
+          <font-awesome-icon :icon="['fas', 'expand']" />
+          wsp
+        </button>
         <button @click="rollbackChanges" class="rollbackButton">
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
@@ -142,6 +146,7 @@
             :wbcInfoRefresh="wbcInfoRefresh"
             :wbcInfo="wbcInfo"
             :wbcReset="wbcReset"
+            :selectItems="selectItems"
             :totalCount="selectItems?.wbcInfo?.totalCount"
             :slotId="selectItems?.slotId"
             :iaRootPath="iaRootPath"
@@ -149,6 +154,7 @@
             :projectType="projectType"
             :apiBaseUrl="apiBaseUrl"
             :classCompareShow="classCompareShow"
+            :wspShow="wspShow"
             :selectedTitle="selectedTitle"
             :hiddenImages="hiddenImages"
             :replaceFileNamePrefix="replaceFileNamePrefix"
@@ -300,6 +306,7 @@ const contextMenuY = ref(0);
 const targetItem = ref<any>(null);
 const isNext = ref(false);
 const classCompareShow = ref(false);
+const wspShow = ref(false);
 const isLoading = ref(true);
 const $imageGalleryRef = ref<any>(null);
 const showAlert = ref(false);
@@ -399,6 +406,10 @@ const handleUpdateCellRef = (refValue: any) => {
 
 const classCompare = () => {
   classCompareShow.value = !classCompareShow.value;
+}
+
+const wsp = () => {
+  wspShow.value = !wspShow.value;
 }
 
 const imgPixelConvertToPercent = (imageSize: number) => {

@@ -707,7 +707,6 @@ const initElement = async () => {
             }
           });
         }
-
         // 캔버스 크기를 조정
         canvas.width = event.source.Image.Size.Width;
         canvas.height = event.source.Image.Size.Height;
