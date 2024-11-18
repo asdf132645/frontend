@@ -175,6 +175,7 @@ import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileRea
 import {useStore} from "vuex";
 import pako from 'pako';
 import Alert from "@/components/commonUi/Alert.vue";
+import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -618,7 +619,7 @@ const initElement = async () => {
         showNavigator: true,
         sequenceMode: true,
         defaultZoomLevel: 1,
-        prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+        prefixUrl: openseadragonPrefixUrl(apiBaseUrl),
         tileSources: tilesInfo,
         showReferenceStrip: false,
         gestureSettingsMouse: {clickToZoom: false},

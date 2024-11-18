@@ -5,10 +5,10 @@
            id="tilingViewerImgListWps"
            class="tilingViewerImgListWps" style="width: 100%;"></div>
     </div>
-    <img v-if="imgOn" id="background-image"
+    <img v-show="imgOn && !hideSideNavigatorImage" id="background-image"
          :src="backgroundImage"
          class="background-image"/>
-    <div v-else class="selectImgWarn">
+    <div v-if="!imgOn" class="selectImgWarn">
       <p class="hand-pointer">
         <font-awesome-icon :icon="['fas', 'arrow-pointer']" />
       </p>
@@ -21,10 +21,11 @@ import {computed, defineProps, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import {useStore} from "vuex";
 import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const store = useStore();
-const props = defineProps(['wspImgClickInfoData', 'slotId', 'selectItems']);
-const wsp = ref<any>({});
+const props = defineProps(['wpsImgClickInfoData', 'slotId', 'selectItems']);
+const wps = ref<any>({});
 const tilingViewerLayer = ref(null);
 let viewer: any = ref<any>(null);
 const canvasCurrentHeight = ref('0');
@@ -35,9 +36,11 @@ const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const canvasOverlay = ref<any>(null);
 const backgroundImage = ref('');
+const hideSideNavigatorImage = ref(false);
 const imgOn = ref(false);
-watch(() => props.wspImgClickInfoData, async (newVal) => {
-      wsp.value = newVal;
+
+watch(() => props.wpsImgClickInfoData, async (newVal) => {
+      wps.value = newVal;
       const tilingViewerLayer = document.getElementById('tilingViewerImgListWps');
       if (tilingViewerLayer) {
         tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
@@ -100,13 +103,18 @@ const wpsInitElement = async () => {
       id: "tilingViewerImgListWps",
       animationTime: 0.4,
       navigatorSizeRatio: 0.05,
-      showNavigator: true,
+      showNavigator: !hideSideNavigatorImage.value,
+      navigatorAutoFade: false, // 네비게이터가 자동으로 숨겨지지 않도록 설정
       sequenceMode: true,
       defaultZoomLevel: 1,
       navigatorBackground: "transparent",
-      prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+      prefixUrl: openseadragonPrefixUrl(apiBaseUrl),
       tileSources: tilesInfo,
       showReferenceStrip: false,
+      showFullPageControl: false,
+      showSequenceControl: false,
+      showZoomControl: false,
+      showHomeControl: false,
       gestureSettingsMouse: {clickToZoom: false},
       maxZoomLevel: 30,
       minZoomLevel: 1,
@@ -114,10 +122,24 @@ const wpsInitElement = async () => {
       zoomPerScroll: 1.2,
       viewportMargins: {top: 0, left: 0, bottom: 0, right: 0},
       visibilityRatio: 1.0,
-      navigator: {
-        autoHide: false // 네비게이터가 자동으로 숨겨지지 않도록 설정
-      }
     });
+
+    const navigatorButton = new OpenSeadragon.Button({
+      tooltip: 'Toggle Navigator',
+      srcRest: openseadragonPrefixUrl(apiBaseUrl) + 'home_rest.png',
+      srcGroup: openseadragonPrefixUrl(apiBaseUrl) + 'home_grouphover.png',
+      srcHover: openseadragonPrefixUrl(apiBaseUrl) + 'home_hover.png',
+      srcDown: openseadragonPrefixUrl(apiBaseUrl) + 'home_pressed.png',
+
+      onClick: () => {
+        hideSideNavigatorImage.value = !hideSideNavigatorImage.value;
+        const nav = viewer.value.navigator?.element;
+        if (nav) nav.style.display = nav.style.display === 'none' ? 'block' : 'none';
+      }
+    })
+
+    viewer.value.buttonGroup.buttons.push(navigatorButton);
+    viewer.value.buttonGroup.element.appendChild(navigatorButton.element);
 
     const canvas = document.createElement('canvas');
     viewer.value.addOverlay({

@@ -42,6 +42,7 @@ import axios from "axios";
 import { useStore } from "vuex";
 import { readDziFile } from "@/common/api/service/fileReader/fileReaderApi";
 import { fileReadJpg } from "@/common/api/service/fileSys/fileSysApi";
+import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const props = defineProps(['selectItems']);
 const store = useStore();
@@ -183,7 +184,7 @@ const openInViewer = async (imageUrl: string, type: string, bmOldData: any, inde
     tileSources: urlTileSources,
     defaultZoomLevel: 0.2,
     navigator: false,
-    prefixUrl: `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/`,
+    prefixUrl: openseadragonPrefixUrl(apiBaseUrl),
     minZoomLevel: 0.2,
     maxZoomLevel: 2,
     showZoomControl: false,
@@ -202,7 +203,7 @@ const openInViewer = async (imageUrl: string, type: string, bmOldData: any, inde
   customButton.style.cursor = 'pointer';
   customButton.style.padding = '10px';
   customButton.style.color = 'white';
-  customButton.src = `${apiBaseUrl}/folders?folderPath=D:/UIMD_Data/Res/uimdFe/images/zoomin_grouphover.png`;
+  customButton.src = openseadragonPrefixUrl(apiBaseUrl) + 'zoomin_grouphover.png';
 
 // 클릭 이벤트 핸들러 추가
   customButton.addEventListener('click', () => {
