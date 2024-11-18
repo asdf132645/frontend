@@ -4,6 +4,7 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {readCustomH7Message, readFileEUCKR, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import axios from "axios";
 import {getCbcPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
+import {SD_CBC_AUTO_MATCHING} from "@/common/defines/constants/autoResultCodeMatching";
 
 interface CBCDataItem {
     classNm: string;
@@ -179,8 +180,18 @@ export const parseDateString = (dateString: any) => {
     return new Date(rawDate);
 }
 
+export function isAutoCBCMatching(cbcData: CBCDataItem[], cbcSex: string, cbcAge: string): any {
+    console.log(cbcData)
+    const res = cbcData.flatMap((data) =>
+        SD_CBC_AUTO_MATCHING
+            .filter(({ condition }) => condition(data, cbcSex, cbcAge))
+            .map(({ code, description }) => ({ code, description }))
+    );
+    return res
+}
 
 export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[], rbcInfoAfter: any, cbcSex: string, cbcAge: string): any {
+    // console.log(cbcData)
     const newRbcArr = [];
     for (const result of rbcInfoAfter) {
         newRbcArr.push(...result.classInfo);
@@ -202,7 +213,6 @@ export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAf
         const normalRange = rbcNormalRanges[item.classNm];
 
         if (normalRange && (value < normalRange[0] || value > normalRange[1])) {
-            // results.push(`${item.classNm} 값이 비정상입니다: ${value} (정상 범위: ${normalRange[0]} - ${normalRange[1]})`);
             results.push({
                 classNm: item.classNm,
                 value: value,

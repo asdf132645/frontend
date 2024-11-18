@@ -750,8 +750,6 @@ const countReAdd = async () => {
     return;
   }
 
-
-  console.log('rbcInfoBeforeVal', rbcInfoBeforeVal.value);
   for (const category of rbcInfoBeforeVal.value) {
     for (const classItem of category.classInfo) {
       let count = 0;

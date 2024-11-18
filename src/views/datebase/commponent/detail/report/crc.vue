@@ -167,9 +167,8 @@ import {messages} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {cbcDataGet, isAdultNormalCBC, lisSendSD, lisSendYwmc} from "@/common/helpers/lisCbc";
+import {cbcDataGet, isAdultNormalCBC, isAutoCBCMatching, lisSendSD} from "@/common/helpers/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
 import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
@@ -292,13 +291,17 @@ onMounted(async () => {
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
     if (autoNomarlCheck.value.length === 0) {
       selectOption('Normal');
+    }else{
+      const res = await isAutoCBCMatching(cbcData, cbcSex, cbcAge);
+      console.log(res)
+      console.log('?!@@')
     }
   }
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
 });
 
 
-const captureAndConvert = () => {
+const captureAndConvert = async () => {
   captureAndConvertOk.value = true;
 }
 const resetBool = () => {
