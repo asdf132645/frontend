@@ -4918,6 +4918,57 @@ td.resultImgTableTitle {
     font-size: 0.9rem;
 }
 
+.progressBarLogin {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progressDiv {
+    width: 50%;
+    padding-top: 20px;
+}
+
+progress {
+    width: 100%;
+    height: 20px;
+    margin-top: 10px;
+    z-index: 99999999;
+    position: relative;
+    border-radius: 10px; /* 모서리 둥글게 */
+    overflow: hidden; /* 내부 요소가 넘치지 않도록 */
+    background-color: #e0e0e0; /* 배경색 */
+}
+
+progress::-webkit-progress-bar {
+    background-color: #e0e0e0; /* 기본 배경색 */
+    border-radius: 10px; /* 모서리 둥글게 */
+}
+
+progress::-webkit-progress-value {
+    background-color: #4caf50; /* 진행 중 색상 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    transition: width 0.5s; /* 애니메이션 효과 */
+}
+
+progress::-moz-progress-bar {
+    background-color: #4caf50; /* Firefox 진행 중 색상 */
+    border-radius: 10px; /* 모서리 둥글게 */
+}
+
+.loading-text {
+    color: #ffffff; /* 텍스트 색상 */
+    font-size: 18px; /* 텍스트 크기 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    margin-top: 10px; /* 텍스트와 프로그래스 바 간격 */
+}
+
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;

@@ -1,8 +1,16 @@
 <template>
-  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected && uimdOpenIp !== 'http://192.168.0.131:3002'">
-    <div class="loaderForLogin"></div>
-    <p class="loadingTextLogin">Loading...</p>
+<!--    <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected && uimdOpenIp !== 'http://192.168.0.131:3002'">-->
+<!--  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected">-->
+<!--    <div class="loaderForLogin"></div>-->
+<!--    <p class="loadingTextLogin">Loading...</p>-->
+<!--  </div>-->
+  <div class="progressBarLogin" v-if="!progressOnOff">
+    <div class="progressDiv">
+      <progress id="file" :value="progress" max="100" v-if="forceViewer === 'main' && !isViewer"></progress>
+      <div class="loading-text">Loading...</div>
+    </div>
   </div>
+
   <div class='uimdLogin'>
     <div class='loginContent'>
       <p class="loginTitle"><span class="loginColorSpan">U</span>IMD</p>
@@ -10,41 +18,41 @@
       <div class="mt30 loginDiv">
         <ul class="loginUl">
           <li>
-            <input class="loginInput" type="text" v-model="idVal" placeholder="ID" @keydown="loginUser" >
+            <input class="loginInput" type="text" v-model="idVal" placeholder="ID" @keydown="loginUser">
           </li>
           <li>
-            <input class="loginInput" type="password" v-model="password" placeholder="password" @keydown="loginUser" >
+            <input class="loginInput" type="password" v-model="password" placeholder="password" @keydown="loginUser">
           </li>
         </ul>
 
         <div class='loginBtn'>
-          <button type="button" @click="loginUser()" @keydown="loginUser" >Login</button>
+          <button type="button" @click="loginUser()" @keydown="loginUser">Login</button>
           <button type="button" @click="goJoinPage">Add User</button>
         </div>
       </div>
     </div>
   </div>
-    <Alert
-    v-if="showAlert"
-    :is-visible="showAlert"
-    :type="alertType"
-    :message="alertMessage"
-    @hide="hideAlert"
-    @update:hideAlert="hideAlert"
+  <Alert
+      v-if="showAlert"
+      :is-visible="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @hide="hideAlert"
+      @update:hideAlert="hideAlert"
   />
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, ref, onMounted, computed, onBeforeMount } from "vue";
-import { login } from "@/common/api/service/user/userApi";
-import { getDeviceInfoApi, getDeviceIpApi } from "@/common/api/service/device/deviceApi";
+import {getCurrentInstance, ref, onMounted, computed, onBeforeMount, watch} from "vue";
+import {login} from "@/common/api/service/user/userApi";
+import {getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import router from "@/router";
-import { UserResponse  } from '@/common/api/service/user/dto/userDto'
-import { ApiResponse } from "@/common/api/httpClient";
-import { useStore } from "vuex";
+import {UserResponse} from '@/common/api/service/user/dto/userDto'
+import {ApiResponse} from "@/common/api/httpClient";
+import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import { initializeAllSettings } from "@/common/helpers/common/setting";
-import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
+import {initializeAllSettings} from "@/common/helpers/common/setting";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 // 스토어
 const store = useStore();
@@ -59,15 +67,43 @@ const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
 const uimdOpenIp = ref('');
+const progress = ref(0);
+const progressOnOff = ref(false);
 
-onBeforeMount(async  () => {
+onBeforeMount(async () => {
   uimdOpenIp.value = window.MAIN_WEBSOCKET_IP;
   forceViewer.value = window.FORCE_VIEWER;
+  await checkIsViewer();
 })
 
+const startProgress = () => {
+  progress.value = 0;
+
+  const interval = setInterval(() => {
+    if (!isTcpConnected.value) {
+      progress.value += 0.2;
+    } else {
+      progress.value = 100;
+      clearInterval(interval);
+    }
+  }, 1000);
+
+  watch(isTcpConnected, (newValue) => {
+    if (newValue) {
+      progress.value = 100;
+      setTimeout(() => {
+        progressOnOff.value = true;
+      }, 1000);
+      clearInterval(interval);
+    }
+  });
+};
+
+
+
 onMounted(async () => {
-  await checkIsViewer()
   isAutoLogginable();
+  startProgress();
 })
 
 /** 자동 로그인 확인 */
@@ -111,7 +147,7 @@ const loginUser = async (event?: KeyboardEvent) => {
       }
       await getIpAddress(result?.data?.user.userId);
 
-    }else{
+    } else {
       showSuccessAlert('Login failed.');
     }
   } catch (e) {
@@ -123,7 +159,7 @@ const loginUser = async (event?: KeyboardEvent) => {
 const checkIsViewer = async () => {
   try {
     const result = await getDeviceIpApi();
-    if((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data)))) {
+    if ((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data)))) {
       isViewer.value = false;
     } else {
       isViewer.value = true;
@@ -136,19 +172,19 @@ const checkIsViewer = async () => {
 const getIpAddress = async (userId: string) => {
   try {
     const result = await getDeviceIpApi();
-    if((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data))) && window.FORCE_VIEWER !== 'viewer'){
+    if ((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount('main');
       sessionStorage.setItem('viewerCheck', 'main');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
-    }else{
+    } else {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'viewer'});
       await updateAccount('viewer');
       sessionStorage.setItem('viewerCheck', 'viewer');
       sessionStorage.setItem('pcIp', JSON.stringify(result.data));
-      const deviceInfo =  await getDeviceInfoApi();
+      const deviceInfo = await getDeviceInfoApi();
       const siteCd = deviceInfo.data[0]?.siteCd ? deviceInfo.data[0]?.siteCd : HOSPITAL_SITE_CD_BY_NAME['UIMD'];
-      await store.dispatch('commonModule/setCommonInfo', { siteCd: siteCd })
+      await store.dispatch('commonModule/setCommonInfo', {siteCd: siteCd})
       localStorage.setItem('siteCd', siteCd);
     }
   } catch (e) {
@@ -157,17 +193,17 @@ const getIpAddress = async (userId: string) => {
 }
 
 const updateAccount = async (viewerCheck: string) => {
-      showSuccessAlert('login successful.');
+  showSuccessAlert('login successful.');
 
-      if(viewerCheck === 'main'){
-        await router.push('/');
-        await document.documentElement.requestFullscreen();
-      }else{
-        await router.push('/dataBase');
-        await document.documentElement.requestFullscreen();
-      }
-      await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
-      await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
+  if (viewerCheck === 'main') {
+    await router.push('/');
+    await document.documentElement.requestFullscreen();
+  } else {
+    await router.push('/dataBase');
+    await document.documentElement.requestFullscreen();
+  }
+  await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
+  await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
 }
 
 const showSuccessAlert = (message: string) => {
