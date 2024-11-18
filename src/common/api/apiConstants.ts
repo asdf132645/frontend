@@ -10,6 +10,10 @@ export const apiConstants = {
             endpoint: 'sybase/save-uimd-result',
             requiresToken: false,
         },
+        saveComment:{
+            endpoint: 'sybase/saveComment',
+            requiresToken: false,
+        },
         cbcImgGet: {
             endpoint: 'sybase/cbcImgGet',
             requiresToken: false,

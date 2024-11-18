@@ -145,6 +145,7 @@
   <ResultImage :nowCrcData="nowCrcDataRef" v-if="captureAndConvertOk"
                :captureAndConvertOk="captureAndConvertOk"
                 @resetBool="resetBool"
+               :barcodeNo="selectItems?.barcodeNo"
   />
 <!--  <ResultImage :nowCrcData="nowCrcDataRef" v-if="nowCrcDataRef.length !== 0"-->
 <!--               :captureAndConvertOk="captureAndConvertOk"-->

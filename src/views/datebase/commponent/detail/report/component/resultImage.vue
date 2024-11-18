@@ -74,15 +74,25 @@
       </table>
     </div>
   </div>
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :messageType="toastMessageType"
+      :duration="1500"
+      position="bottom-right"
+  />
 </template>
 
 <script setup lang="ts">
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from "vue";
 import html2canvas from "html2canvas";
-import {cbcImgGetApi} from "@/common/api/service/lisSend/lisSend";
-import {lisSendYwmc} from "@/common/helpers/lisCbc";
+import {cbcImgGetApi, ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
+import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc";
+import {getCbcCodeList} from "@/common/helpers/lisCbc/inhaCbcLis";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {messages} from "@/common/defines/constants/constantMessageText";
 
-const props = defineProps(['nowCrcData', 'captureAndConvertOk']);
+const props = defineProps(['nowCrcData', 'captureAndConvertOk', 'barcodeNo']);
 const arrDataWbc = ref<any>([]);
 const arrDataRbc = ref<any>([]);
 const arrDataPlt = ref<any>([]);
@@ -95,7 +105,8 @@ const arrDataWbcRight = computed(() => arrDataWbc.value.slice(4));
 const arrDataPltLeft = computed(() => arrDataPlt.value.slice(0, 4));
 const arrDataPltRight = computed(() => arrDataPlt.value.slice(4));
 const nowCrcDataVal = ref([]);
-
+const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS)
 watch(
     () => [arrDataRbc.value, arrDataWbc.value, arrDataPlt.value],
     async () => {
@@ -202,11 +213,12 @@ const arrayBufferToHex = (buffer: ArrayBuffer): string => {
 };
 
 const saveToDatabase = async (hexString: string) => {
+
   // db 저장 로직
-  const res = (await cbcImgGetApi())?.data;
+  const res = (await cbcImgGetApi(props.barcodeNo))?.data;
   if (res) {
     // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
-    const { width, height, size } = await getImageDimensions(hexString);
+    const { width , height, size } : any = await getImageDimensions(hexString);
 
     const data = {
       size: size, // Blob의 크기
@@ -220,10 +232,25 @@ const saveToDatabase = async (hexString: string) => {
       exam_cd: res?.data[0].exam_cd,
       spc: res?.data[0].spc
     };
-
-    await lisSendYwmc(data);
+    //props.barcodeNo
+    const saveData = {
+      tsmp_no: props.barcodeNo,
+      ttext_rslt: ''
+    }
+    const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
+    if(setDataYWmc?.code === 200){
+      await lisSendYwmc(data);
+    }else{
+      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      showToast('Lis fail');
+    }
   }
 };
-
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
 
 </script>
