@@ -1210,11 +1210,13 @@ p.loadingText {
     width: 100%;
     height: 80vh;
 }
-.tilingViewerImgListWps{
+
+.tilingViewerImgListWps {
     position: relative;;
     width: 100%;
     height: 70vh;
 }
+
 .rbc-container {
     height: 85vh;
 }
@@ -1742,11 +1744,17 @@ span.proSpan {
 
 p.loginTitle {
     color: var(--white-color);
-    font-size: 3rem;
+    font-size: 4rem;
+    font-weight: 600;
 }
 
 p.loginP {
     color: var(--white-color);
+}
+
+p.nodataimg {
+    font-size: 4rem;
+    margin-bottom: 20px;
 }
 
 ul.loginUl {
@@ -4832,7 +4840,8 @@ ul.wpsDiv.cellImgBox {
     width: 48%;
     vertical-align: top;
 }
-.wpsDiv.main{
+
+.wpsDiv.main {
     background: #252629;
     height: 75vh;
 }
@@ -4840,7 +4849,7 @@ ul.wpsDiv.cellImgBox {
 .selectImgWarn {
     position: absolute;
     top: 39%;
-    left: 31%;
+    left: 25%;
     font-size: 1.5rem;
 }
 
@@ -4848,11 +4857,13 @@ p.hand-pointer {
     font-size: 5rem;
     margin-bottom: 20px;
 }
+
 .resultCode {
     margin-bottom: 10px;
     font-size: 18px;
     font-weight: 600;
 }
+
 .background-image {
     position: absolute;
     top: 0;
@@ -4862,26 +4873,33 @@ p.hand-pointer {
     height: 375px; /* 750px의 1/4 크기 */
     opacity: 0.8;
 }
+
 .resultImgBody {
     font-size: 0.8rem;
 }
+
 .nav-bar-custom {
     /*position: absolute!important;*/
     position: relative !important;
     z-index: 10;
 }
-.opacityZero{
-    opacity: 1!important;
+
+.opacityZero {
+    opacity: 1 !important;
 }
+
 .custom-nav-bar-canvas {
     position: absolute !important;
 }
+
 .split-left li div, .split-right li div {
     display: inline-block;
 }
+
 .rimgcrctitle {
     width: 100px;
 }
+
 table.resultImgTable {
     margin-top: 20px;
     font-size: 0.8rem;

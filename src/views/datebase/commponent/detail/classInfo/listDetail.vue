@@ -130,9 +130,9 @@
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
-        <button @click="wsp">
+        <button @click="wsp" v-if="siteCd === ''"> 
           <font-awesome-icon :icon="['fas', 'expand']" />
-          wsp
+          WSP
         </button>
         <button @click="rollbackChanges" class="rollbackButton">
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>

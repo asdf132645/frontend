@@ -20,23 +20,23 @@
       <col width="4%"/>
     </colgroup>
     <thead>
-      <tr style="position: sticky; top: 0;">
-        <th>NO</th>
-        <th>
-          <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
-        </th>
-        <th>Type</th>
-        <th>State</th>
-        <th>Tray Slot</th>
-        <th>Barcode NO</th>
-        <th>Patient ID</th>
-        <th>Patient Name</th>
-        <th>Analyzed Date</th>
-        <th>Tact Time(sec)</th>
-        <th>Submit</th>
-        <th>Submit Date</th>
-        <th>Edit</th>
-      </tr>
+    <tr style="position: sticky; top: 0;">
+      <th>NO</th>
+      <th>
+        <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
+      </th>
+      <th>Type</th>
+      <th>State</th>
+      <th>Tray Slot</th>
+      <th>Barcode NO</th>
+      <th>Patient ID</th>
+      <th>Patient Name</th>
+      <th>Analyzed Date</th>
+      <th>Tact Time(sec)</th>
+      <th>Submit</th>
+      <th>Submit Date</th>
+      <th>Edit</th>
+    </tr>
     </thead>
 
     <tbody v-if="dbData.length !== 0">
@@ -58,7 +58,8 @@
           title="Double click the row"
       >
         <td style="position: relative;">
-          <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']" v-if="item.isNormal === 'N'" />
+          <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                             v-if="item.isNormal === 'N'"/>
           {{ idx + 1 }}
         </td>
         <td @click="handleCheckboxChange(item)">
@@ -79,9 +80,10 @@
         <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
-          <font-awesome-icon v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status"
-                             :icon="['fas', 'pen-to-square']"
-                             @click="editData(item)"/>
+          <font-awesome-icon
+              v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status"
+              :icon="['fas', 'pen-to-square']"
+              @click="editData(item)"/>
         </td>
       </tr>
     </template>
@@ -91,7 +93,12 @@
     </tbody>
     <tbody v-else>
     <tr class="text-center">
-      <td colspan="13"> NO Data</td>
+      <td colspan="13">
+        <p class="nodataimg">
+          <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
+        </p>
+        NO Data
+      </td>
     </tr>
     </tbody>
   </table>
@@ -200,7 +207,7 @@ import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import { DIR_NAME } from "@/common/defines/constants/settings";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
@@ -333,7 +340,7 @@ watchEffect(async () => {
       if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
         // loadingDelay.value = true;
         await selectItem(filteredItems[0]);
-        await store.dispatch('commonModule/setCommonInfo', { dataBasePageReset: false });
+        await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
         await removeCheckBox();
         return;
       }
@@ -343,7 +350,6 @@ watchEffect(async () => {
     loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
   }
 });
-
 
 
 const printClose = () => {
@@ -572,7 +578,7 @@ const dbDataEditSet = async () => {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
+      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       showSuccessAlert('Success');
       emits('initData');
       closeLayer();

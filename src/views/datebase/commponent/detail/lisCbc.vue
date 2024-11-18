@@ -147,7 +147,7 @@ onMounted(async () => {
   selectItemsVal.value = props.selectItems;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
-  if(cbcFilePathSetArr.value && cbcFilePathSetArr.value !== ''){
+  if (cbcFilePathSetArr.value && cbcFilePathSetArr.value !== '') {
     await initCbcData(selectItemsVal.value);
   }
 });
@@ -197,7 +197,6 @@ const cbcDataProcess = async () => {
 }
 
 // 다양한 날짜 형식을 처리하는 함수
-
 
 
 const initCbcData = async (newVal: any) => {
@@ -349,13 +348,13 @@ const fileData = async (firstCbcDatafilename: string) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
 
   const fileSysExistsFileParms = {
-    directoryPath:`${cbcFilePathSetArr.value}`,
+    directoryPath: `${cbcFilePathSetArr.value}`,
     keyword: props.selectItems?.barcodeNo
   };
   let fileListName = '';
   let filePath = '';
   const isExistsFile = await fileSysExistsFile(fileSysExistsFileParms);
-  if(isExistsFile.data === "NoFile"){
+  if (isExistsFile.data === "NoFile") {
     const fileSearchApiPram = `directoryPath=${path}\\${props.selectItems?.slotId}&searchString=${props.selectItems?.barcodeNo}`
     try {
       const response = await fileSearchApi(fileSearchApiPram);
@@ -366,7 +365,7 @@ const fileData = async (firstCbcDatafilename: string) => {
       console.error('Error fetching file list:', error);
     }
     filePath = `${path}\\${props.selectItems?.slotId}`;
-  }else{
+  } else {
     fileListName = firstCbcDatafilename;
     filePath = cbcFilePathSetArr.value
   }
@@ -378,7 +377,7 @@ const fileData = async (firstCbcDatafilename: string) => {
       destination: `${path}\\${props.selectItems?.slotId}`,
     };
     const fileSysCleanParams = {
-      directoryPath:`${cbcFilePathSetArr.value}`,
+      directoryPath: `${cbcFilePathSetArr.value}`,
       keyword: props.selectItems?.barcodeNo
     }
     await fileSysCopy(fileParams);
@@ -525,7 +524,7 @@ async function updateRunningApiPost(originalDb: any) {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
+      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       // console.log('')
     } else {
       console.error('백엔드가 디비에 저장 실패함');

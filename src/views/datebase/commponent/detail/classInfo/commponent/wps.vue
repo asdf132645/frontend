@@ -12,7 +12,7 @@
       <p class="hand-pointer">
         <font-awesome-icon :icon="['fas', 'arrow-pointer']" />
       </p>
-      <span>Please select an image.</span>
+      <span>Please select an class image.</span>
     </div>
   </div>
 </template>
