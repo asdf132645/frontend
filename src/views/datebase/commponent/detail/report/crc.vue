@@ -286,7 +286,7 @@ onMounted(async () => {
   await nextTick()
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
-  if (cbcFilePathSetArr && cbcFilePathSetArr !== '') {
+  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
     const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
     if (autoNomarlCheck.value.length === 0) {
