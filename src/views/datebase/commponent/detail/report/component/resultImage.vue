@@ -215,7 +215,8 @@ const arrayBufferToHex = (buffer: ArrayBuffer): string => {
 const saveToDatabase = async (hexString: string) => {
 
   // db 저장 로직
-  const res = (await cbcImgGetApi(props.barcodeNo))?.data;
+  const req = `smp_no=${props.barcodeNo}`;
+  const res = (await cbcImgGetApi(req))?.data;
   if (res) {
     // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
     const { width , height, size } : any = await getImageDimensions(hexString);
