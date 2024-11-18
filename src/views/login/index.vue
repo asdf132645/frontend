@@ -81,7 +81,7 @@ const startProgress = () => {
 
   const interval = setInterval(() => {
     if (!isTcpConnected.value) {
-      progress.value += 0.2;
+      progress.value += 0.5;
     } else {
       progress.value = 100;
       clearInterval(interval);
