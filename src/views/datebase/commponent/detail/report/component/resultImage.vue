@@ -239,14 +239,14 @@ const saveToDatabase = async (hexString: string) => {
       tsmp_no: props.barcodeNo,
       ttext_rslt: ''
     }
-    displayImageFromHex(hexString);
-    // const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
-    // if (setDataYWmc?.code === 201) {
-    //   await lisSendYwmc(data);
-    // } else {
-    //   toastMessageType.value = messages.TOAST_MSG_ERROR;
-    //   showToast('Lis fail');
-    // }
+    // displayImageFromHex(hexString);
+    const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
+    if (setDataYWmc?.code === 201) {
+      await lisSendYwmc(data);
+    } else {
+      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      showToast('Lis fail');
+    }
   }
 };
 const showToast = (message: string) => {
