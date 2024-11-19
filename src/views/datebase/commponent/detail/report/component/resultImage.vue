@@ -220,12 +220,10 @@ const saveToDatabase = async (hexString: string) => {
   if (res) {
     // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
     const {width, height, size}: any = await getImageDimensions(hexString);
-    let image_rslt = '0x' + hexString;
-    let buffer = Buffer.from(image_rslt, 'hex');
 
     const data = {
       size: size, // Blob의 크기
-      image_rslt: buffer, // 실제 이미지 결과 데이터로 대체
+      image_rslt: '0x' + hexString, // 실제 이미지 결과 데이터로 대체
       width: width, // 이미지 너비
       height: height, // 이미지 높이
       rslt_stus: 'F',
