@@ -227,11 +227,11 @@ const saveToDatabase = async (hexString: string) => {
       width: width, // 이미지 너비
       height: height, // 이미지 높이
       rslt_stus: 'F',
-      exam_ymd_unit: res?.data[0].exam_ymd_unit,
-      slip: res?.data[0].slip,
-      wrk_no: res?.data[0].wrk_no,
-      exam_cd: res?.data[0].exam_cd,
-      spc: res?.data[0].spc
+      exam_ymd_unit: res[0]?.exam_ymd_unit,
+      slip: res[0]?.slip,
+      wrk_no: res[0]?.wrk_no,
+      exam_cd: res[0]?.exam_cd,
+      spc: res[0]?.spc
     };
     console.log('data', data);
     //props.barcodeNo
