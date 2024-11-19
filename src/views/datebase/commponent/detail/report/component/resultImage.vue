@@ -7,14 +7,14 @@
       <div class="split-container">
         <ul class="split-left">
           <li v-for="(item, idx) in arrDataRbcLeft" :key="'rbc-left' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }} </div>
-            <div> {{ item?.crcContent }} </div>
+            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
+            <div> {{ item?.crcContent }}</div>
           </li>
         </ul>
         <ul class="split-right">
           <li v-for="(item, idx) in arrDataRbcRight" :key="'rbc-right' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }} </div>
-            <div> {{ item?.crcContent }} </div>
+            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
+            <div> {{ item?.crcContent }}</div>
           </li>
         </ul>
       </div>
@@ -25,14 +25,14 @@
       <div class="split-container">
         <ul class="split-left">
           <li v-for="(item, idx) in arrDataWbcLeft" :key="'wbc-left' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }} </div>
-            <div> {{ item?.crcContent }} </div>
+            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
+            <div> {{ item?.crcContent }}</div>
           </li>
         </ul>
         <ul class="split-right">
           <li v-for="(item, idx) in arrDataWbcRight" :key="'wbc-right' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }} </div>
-            <div> {{ item?.crcContent }} </div>
+            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
+            <div> {{ item?.crcContent }}</div>
           </li>
         </ul>
       </div>
@@ -43,14 +43,14 @@
       <div class="split-container">
         <ul class="split-left">
           <li v-for="(item, idx) in arrDataPltLeft" :key="'plt-left' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }} </div>
-            <div> {{ item?.crcContent }} </div>
+            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
+            <div> {{ item?.crcContent }}</div>
           </li>
         </ul>
         <ul class="split-right">
           <li v-for="(item, idx) in arrDataPltRight" :key="'plt-right' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }} </div>
-            <div> {{ item?.crcContent }} </div>
+            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
+            <div> {{ item?.crcContent }}</div>
           </li>
         </ul>
       </div>
@@ -165,7 +165,7 @@ const getImageDimensions = (hex) => {
       const height = img.height;
       const size = blob.size; // Blob의 크기 (바이트 단위)
       URL.revokeObjectURL(url); // 메모리 해제
-      resolve({ width, height, size });
+      resolve({width, height, size});
     };
     img.onerror = (error) => {
       URL.revokeObjectURL(url); // 메모리 해제
@@ -196,7 +196,7 @@ const hexToBlob = (hex: string): Blob => {
     byteNumbers.push(parseInt(hex.substr(i, 2), 16));
   }
   const byteArray = new Uint8Array(byteNumbers);
-  return new Blob([byteArray], { type: 'image/png' }); // 이미지 타입에 맞게 조정
+  return new Blob([byteArray], {type: 'image/png'}); // 이미지 타입에 맞게 조정
 };
 
 // 어레이버퍼를 ISO-8859-1로 인코딩하고 16진수로 변환하는 함수
@@ -219,11 +219,11 @@ const saveToDatabase = async (hexString: string) => {
   const res = (await cbcImgGetApi(req))?.data;
   if (res) {
     // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
-    const { width , height, size } : any = await getImageDimensions(hexString);
+    const {width, height, size}: any = await getImageDimensions(hexString);
 
     const data = {
       size: size, // Blob의 크기
-      image_rslt: hexString, // 실제 이미지 결과 데이터로 대체
+      image_rslt: '0x' + hexString, // 실제 이미지 결과 데이터로 대체
       width: width, // 이미지 너비
       height: height, // 이미지 높이
       rslt_stus: 'F',
@@ -239,13 +239,14 @@ const saveToDatabase = async (hexString: string) => {
       tsmp_no: props.barcodeNo,
       ttext_rslt: ''
     }
-    const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
-    if(setDataYWmc?.code === 201){
-      await lisSendYwmc(data);
-    }else{
-      toastMessageType.value = messages.TOAST_MSG_ERROR;
-      showToast('Lis fail');
-    }
+    displayImageFromHex(hexString);
+    // const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
+    // if (setDataYWmc?.code === 201) {
+    //   await lisSendYwmc(data);
+    // } else {
+    //   toastMessageType.value = messages.TOAST_MSG_ERROR;
+    //   showToast('Lis fail');
+    // }
   }
 };
 const showToast = (message: string) => {
