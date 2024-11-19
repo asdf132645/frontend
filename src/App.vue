@@ -19,6 +19,7 @@
         :type="alertType"
         :message="alertMessage"
         @hide="hideAlert"
+        @errorClear="errorClear"
         @update:hideAlert="hideAlert"
     />
   </div>
@@ -147,9 +148,9 @@ function checkFullscreenStatus() {
   }
   isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
   if (!isFullscreen.value) {
-    showErrorAlert('Please click the full screen button.');
+    showSuccessAlert(messages.FULLSCREEN_SUGGEST);
   } else {
-    if (alertMessage.value === 'Please click the full screen button.') {
+    if (alertMessage.value === messages.FULLSCREEN_SUGGEST) {
       hideAlert();
     }
   }
@@ -838,10 +839,14 @@ const showErrorAlert = (message: string) => {
   alertMessage.value = message;
 };
 
-const hideAlert = async () => {
+const hideAlert = () => {
+  if (alertType.value === 'alert') errorClear();
   showAlert.value = false;
-  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear});
 };
+
+const errorClear = async () => {
+  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
+}
 
 </script>
 

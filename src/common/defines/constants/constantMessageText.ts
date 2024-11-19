@@ -431,6 +431,7 @@ export  const messages: Messages = {
     DELETE: 'Delete',
     UPLOAD: 'Upload',
     OK: 'Ok',
+    FULLSCREEN_SUGGEST: 'Please click the full screen button.',
 
     TOAST_MSG_SUCCESS: 'success',
     TOAST_MSG_ERROR: 'error',

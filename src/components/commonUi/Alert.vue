@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup type="ts">
 import { defineProps, computed } from 'vue';
 
 const props = defineProps(['isVisible', 'type', 'message']);
