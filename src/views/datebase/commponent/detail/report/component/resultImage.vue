@@ -240,7 +240,7 @@ const saveToDatabase = async (hexString: string) => {
       ttext_rslt: ''
     }
     const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
-    if(setDataYWmc?.code === 200){
+    if(setDataYWmc?.code === 201){
       await lisSendYwmc(data);
     }else{
       toastMessageType.value = messages.TOAST_MSG_ERROR;
