@@ -10,6 +10,7 @@ export const sdCbcAutoMatiching = (data: any, sex: any, age: any) => {
     const MONO = parseFloat(data.find((item: any) => item.classNm === 'MONO')?.count);
     const RBC = parseFloat(data.find((item: any) => item.classNm === 'RBC')?.count);
 
+
     // Normocytic normochromic anemia
     if ((sex === 'F' && Hb <= 10.9) || (sex === 'M' && Hb <= 12.4)) {
         if(EOSINO >= 0.51){
