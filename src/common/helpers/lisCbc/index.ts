@@ -1,10 +1,7 @@
-import {ywmcCbcCheckApi, ywmcLisPostSendApi, ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
-import {createCbcFile, getFolders} from "@/common/api/service/fileSys/fileSysApi";
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
-import {readCustomH7Message, readFileEUCKR, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
-import axios from "axios";
+import {getFolders} from "@/common/api/service/fileSys/fileSysApi";
+import {readFileEUCKR, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {getCbcPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {SD_CBC_AUTO_MATCHING} from "@/common/defines/constants/autoResultCodeMatching";
+import {sdCbcAutoMatiching} from "@/common/defines/constants/autoResultCodeMatching";
 
 interface CBCDataItem {
     classNm: string;
@@ -21,127 +18,7 @@ interface WBCInfoAfter {
     percent: string; // percent도 숫자로 변환 필요
 }
 
-export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
-    const req = `smp_no=${barcodeNo}`;
-    const cbcData: any = (await ywmcCbcCheckApi(req)).data;
-    const cbcWorkList: any = [];
 
-    // 최신 날짜 찾기
-    const latestDate = cbcData.data.reduce((latest: string, item: any) => {
-        return item.exam_ymd_unit > latest ? item.exam_ymd_unit : latest;
-    }, cbcData.data[0].exam_ymd_unit);
-
-    // 최신 날짜에 해당하는 데이터만 필터링
-    const latestCbcData = cbcData.data.filter((item: any) => item.exam_ymd_unit === latestDate);
-
-    latestCbcData.forEach(function (data: any) {
-        cbcCodeList.forEach(function (cbcCode: any) {
-            if (cbcCode?.classCd === data?.exam_cd.trim()) {
-                const obj = {
-                    classNm: cbcCode.classCd,
-                    count: data?.text_rslt + data?.numeric_rslt,
-                    unit: data?.unit,
-                    textVal: data?.text_rslt,
-                    numVal: data?.numeric_rslt,
-                    spc: data?.spc,
-                    day: data?.exam_ymd_unit,
-                    slip: data?.slip
-                };
-                cbcWorkList.push(obj);
-            }
-        });
-    });
-
-    const parms = {
-        filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${barcodeNo}.txt`,
-        data: cbcWorkList,
-    };
-    await createCbcFile(parms);
-    return { data: cbcWorkList, cbcDataVal: cbcData };
-}
-
-
-export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathSetArr: string) => {
-    const fileNm = await cbcFileNameExtract(barcodeNo);
-    const path = await getCbcPathData();
-    const readFileTxtRes: any = await readFileEUCKR(`path=${path}&filename=${fileNm}`);
-    let patientId = '';
-    let patientName = '';
-    if (readFileTxtRes.data.success) {
-        const msg: any = await readH7File(readFileTxtRes.data.data);
-        msg?.data?.segments?.forEach((cbcSegment: any) => {
-            if (cbcSegment.name.trim() === 'PID') {
-                patientId = cbcSegment.fields[2].value[0][0].value[0]
-                patientName = cbcSegment.fields[4].value[0][0].value[0]
-            }
-        })
-    }
-    const data = {
-        sendingApp: 'PBIA',
-        sendingFacility: 'PBIA',
-        receivingApp: 'LIS',
-        receivingFacility: 'LIS',
-        dateTime: getDateTimeStr(),
-        security: '',
-        messageType: ['ADT', 'R02'],
-        messageControlId: barcodeNo,
-        processingId: 'P',
-        hl7VersionId: '2.5',
-        customData: nowCrcData,
-        pidData: {patientId: patientId, patientName: patientName},
-    };
-    const res = await readCustomH7Message(data);
-    if (res) {
-        return await lisHttpSendSD(res, barcodeNo, lisFilePathSetArr);
-    }
-}
-
-const lisHttpSendSD = async (resultStr: any, barcodeNo: string, lisFilePathSetArr: string) => {
-    const body = {
-        apiKey: 'M0ZGODgyREY4NzUxMkY4RTM0MERDRkMyRkQ1MDM3OEU=',
-        interfaceId: '01',
-        dataText: resultStr.data,
-    };
-
-    const res = await axios.post(`${lisFilePathSetArr}`, body, {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    if (res?.data.code === 200) {
-        return 'Success';
-    } else {
-        return 'Lis Send Fail';
-    }
-}
-
-export const sdWorklistsAPI = async (date: any) => {
-    const body = {
-        apiKey: 'M0ZGODgyREY4NzUxMkY4RTM0MERDRkMyRkQ1MDM3OEU=',
-        interfaceId: '01',
-        workDate: date,
-    };
-
-    const res = await axios.post(`http://121.169.55.132:8081/api/interface/worklists`, body, {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    if (res?.data.code === 200) {
-        return {data: res?.data, code: res?.data.code};
-    } else {
-        return {data: null, code: res?.data.code};
-    }
-}
-
-export const lisSendYwmc = async (data: any) => {
-    const res = await ywmcLisPostSendApi(data);
-    if (res) {
-        return 'Update successful';
-    } else {
-        return 'Lis Send Fail';
-    }
-}
 
 export const cbcFileNameExtract = async (barcodeNo: string) => {
     const cbcFilePathSetArr = await getCbcPathData();
@@ -181,12 +58,10 @@ export const parseDateString = (dateString: any) => {
 }
 
 export function isAutoCBCMatching(cbcData: CBCDataItem[], cbcSex: string, cbcAge: string): any {
-    console.log(cbcData)
-    const res = cbcData.flatMap((data) =>
-        SD_CBC_AUTO_MATCHING
-            .filter(({ condition }) => condition(data, cbcSex, cbcAge))
-            .map(({ code, description }) => ({ code, description }))
-    );
+    console.log(JSON.stringify(cbcData))
+
+    const res = sdCbcAutoMatiching(cbcData, cbcSex, cbcAge);
+    console.log(res)
     return res
 }
 
@@ -232,7 +107,7 @@ export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAf
         'MCHC': [32.5, 36.0],
         'RDWCV': [0, 15.0], // Female
         'PLT': [150, 450], // Female
-        'RETI': [0, 5],
+        'RET': [0, 5],
     };
 
     if (cbcSex === 'M') {

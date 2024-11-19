@@ -1,171 +1,127 @@
-export const SD_CBC_AUTO_MATCHING = [
-    {
-        code: "Iron depleted state",
-        description: "MCV ≤ 79.9, MCHC ≤ 32.4",
-        condition: (data: any, sex: string, age: string) => data.MCV <= 79.9 && data.MCHC <= 32.4,
-    },
-    {
-        code: "Normocytic normochromic anemia",
-        description: "HGB가 낮음",
-        condition: (data: any, sex: string, age: string) =>
-            (sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4),
-    },
-    {
-        code: "NNA, WBC(H)",
-        description: "WBC ≥ 10.1",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.WBC >= 10.1,
-    },
-    {
-        code: "NNA, PLT(H)",
-        description: "PLT ≥ 451",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.PLT >= 451,
-    },
-    {
-        code: "NNA, WBC(L)",
-        description: "WBC ≤ 3.9",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.WBC <= 3.9,
-    },
-    {
-        code: "NNA, PLT(L)",
-        description: "PLT ≤ 149",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.PLT <= 149,
-    },
-    {
-        code: "NNA, Eosinophilia",
-        description: "EOSINO ≥ 0.51",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.EOSINO >= 0.51,
-    },
-    {
-        code: "Hemolytic anemia",
-        description: "MCV ≤ 79.9, MCHC ≤ 32.4",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.MCV <= 79.9 &&
-            data.MCHC <= 32.4,
-    },
-    {
-        code: "IDA, PLT(H)",
-        description: "PLT ≥ 451",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.PLT >= 451,
-    },
-    {
-        code: "IDA, WBC(H)",
-        description: "WBC ≥ 10.1",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.WBC >= 10.1,
-    },
-    {
-        code: "IDA, WBC(L)",
-        description: "WBC ≤ 3.9",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.WBC <= 3.9,
-    },
-    {
-        code: "IDA, WBC(L), PLT(L)",
-        description: "WBC ≤ 3.9, PLT ≤ 149",
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB <= 10.9) || (sex === "M" && data.HGB <= 12.4)) &&
-            data.WBC <= 3.9 &&
-            data.PLT <= 149,
-    },
-    {
-        code: "Macrocytic anemia",
-        description: "MCV ≥ 105",
-        condition: (data: any, sex: string, age: string) => data.MCV >= 105,
-    },
-    {
-        code: "RBC(H), HGB(H)",
-        description: "여성 RBC ≥ 5.21, HGB ≥ 16.1 / 남성 RBC ≥ 5.81, HGB ≥ 16.6",
-        condition: (data: any, sex: string, age: string) =>
-            (sex === "F" && data.RBC >= 5.21 && data.HGB >= 16.1) ||
-            (sex === "M" && data.RBC >= 5.81 && data.HGB >= 16.6),
-    },
-    {
-        code: "Neutrophilia",
-        description: "WBC ≥ 10.1, NEUTRO ≥ 8.51",
-        condition: (data: any, sex: string, age: string) => data.WBC >= 10.1 && data.NEUT >= 8.51,
-    },
-    {
-        code: "Lymphocytosis",
-        description: "성인 LYMPH ≥ 4.01, 소아 LYMPH ≥ 9.01",
-        condition: (data: any, sex: string, age: string) =>
-            (parseInt(age) >= 18 && data.LYMPH >= 4.01) ||
-            (parseInt(age) < 18 && data.LYMPH >= 9.01),
-    },
-    {
-        code: "LYMPHocytopenia",
-        description: "LYMPH ≤ 1.49",
-        condition: (data: any, sex: string, age: string) => data.LYMPH <= 1.49,
-    },
-    {
-        code: "Eosinophilia",
-        description: "EOSINO ≥ 0.51",
-        condition: (data: any, sex: string, age: string) => data.EOSINO >= 0.51,
-    },
-    {
-        code: "PLT(L)",
-        description: '',
-        condition: (data: any, sex: string, age: string) => data.PLT !== undefined && data.PLT <= 149,
-    },
-    {
-        code: "PLT(H), mild",
-        description: '',
-        condition: (data: any, sex: string, age: string) => data.PLT !== undefined && data.PLT >= 451,
-    },
-    {
-        code: "Pancytopenia, mild",
-        description: '',
-        condition: (data: any, sex: string, age: string) =>
-            ((sex === "F" && data.HGB !== undefined && data.HGB <= 10.9) ||
-                (sex === "M" && data.HGB !== undefined && data.HGB <= 12.4)) &&
-            data.WBC !== undefined &&
-            data.WBC <= 3.9 &&
-            data.PLT !== undefined &&
-            data.PLT <= 149,
-    },
-    {
-        code: "WBC(H), PLT(H)",
-        description: '',
-        condition: (data: any, sex: string, age: string) =>
-            data.WBC !== undefined &&
-            data.WBC >= 10.1 &&
-            data.PLT !== undefined &&
-            data.PLT >= 451,
-    },
-    {
-        code: "WBC(H)",
-        description: '',
-        condition: (data: any, sex: string, age: string) => data.WBC !== undefined && data.WBC >= 10.1,
-    },
-    {
-        code: "M.A, WBC(H)",
-        description: '',
-        condition: (data: any, sex: string, age: string) =>
-            data.MCV !== undefined && data.MCV >= 105.1 && data.WBC !== undefined && data.WBC >= 10.1,
-    },
-    {
-        code: "M.A, PLT(L)",
-        description: '',
-        condition: (data: any, sex: string, age: string) =>
-            data.MCV !== undefined && data.MCV >= 105.1 && data.PLT !== undefined && data.PLT >= 451,
-    },
-    {
-        code: "Monocytosis",
-        description: '',
-        condition: (data: any, sex: string, age: string) => data.MONO !== undefined && data.MONO >= 1.1,
-    },
-];
+export const sdCbcAutoMatiching = (data: any, sex: any, age: any) => {
+    const MCV = parseFloat(data.find((item: any) => item.classNm === 'MCV')?.count);
+    const MCHC = parseFloat(data.find((item: any) => item.classNm === 'MCHC')?.count);
+    const Hb = parseFloat(data.find((item: any) => item.classNm === 'HGB')?.count);
+    const WBC = parseFloat(data.find((item: any) => item.classNm === 'WBC')?.count);
+    const PLT = parseFloat(data.find((item: any) => item.classNm === 'PLT')?.count);
+    const EOSINO = parseFloat(data.find((item: any) => item.classNm === 'EO')?.count);
+    const NEUTRO = parseFloat(data.find((item: any) => item.classNm === 'NEUT')?.count);
+    const LYMPHO = parseFloat(data.find((item: any) => item.classNm === 'LYMPH')?.count);
+    const MONO = parseFloat(data.find((item: any) => item.classNm === 'MONO')?.count);
+    const RBC = parseFloat(data.find((item: any) => item.classNm === 'RBC')?.count);
+
+    // Normocytic normochromic anemia
+    if ((sex === 'F' && Hb <= 10.9) || (sex === 'M' && Hb <= 12.4)) {
+        if (WBC > 10.1) {
+            return { code: "NNA, WBC(H)" };
+        } else if (WBC < 3.9) {
+            return { code: "NNA, WBC(L)" };
+        } else if (PLT > 451) {
+            return { code: "NNA, PLT(H)" };
+        } else if (PLT < 149) {
+            return { code: "NNA, PLT(L)" };
+        } else {
+            return { code: "Normocytic normochromic anemia" };
+        }
+    }
+
+    // Iron deficiency anemia
+    if ((sex === 'F' && Hb <= 10.9) || (sex === 'M' && Hb <= 12.4)) {
+        if (MCV <= 79.9 && MCHC <= 32.4) {
+            if (WBC > 10.1) {
+                return { code: "IDA, WBC(H)" };
+            } else if (WBC < 3.9) {
+                return { code: "IDA, WBC(L)" };
+            } else if (PLT > 451) {
+                return { code: "IDA, PLT(H)" };
+            } else if (PLT < 149) {
+                return { code: "IDA, PLT(L)" };
+            } else {
+                return { code: "Iron deficiency anemia" };
+            }
+        }
+    }
+
+    // Iron depleted state
+    if (MCV <= 79.9 && MCHC <= 32.4) {
+        return { code: "Iron depleted state" };
+    }
+
+    // Macrocytic anemia
+    if (MCV >= 105.1) {
+        if (WBC > 10.1) {
+            return { code: "M.A, WBC(H)" };
+        } else if (PLT < 149) {
+            return { code: "M.A, PLT(L)" };
+        } else {
+            return { code: "Macrocytic anemia" };
+        }
+    }
+
+    // RBC(H), Hb(H)
+    if ((sex === 'F' && RBC >= 5.21) || (sex === 'M' && RBC >= 5.81)) {
+        if ((sex === 'F' && Hb >= 16.1) || (sex === 'M' && Hb >= 16.6)) {
+            return { code: "RBC(H), Hb(H)" };
+        }
+    }
+
+    // Neutrophilia
+    if (WBC > 10.1 && NEUTRO > 8.51) {
+        return { code: "Neutrophilia" };
+    }
+
+    // Lymphocytosis
+    if ((Number(age) > 12 && LYMPHO > 4.01) || (Number(age) <= 12 && LYMPHO > 9.01)) {
+        return { code: "Lymphocytosis" };
+    }
+
+    // Lymphocytopenia
+    if (LYMPHO < 1.49) {
+        return { code: "Lymphocytopenia" };
+    }
+
+    // Eosinophilia
+    if (EOSINO > 0.51) {
+        return { code: "Eosinophilia" };
+    }
+
+    // Monocytosis
+    if (MONO > 1.1) {
+        return { code: "Monocytosis" };
+    }
+
+    // Pancytopenia
+    if ((sex === 'F' && Hb <= 10.9) || (sex === 'M' && Hb <= 12.4)) {
+        if (WBC < 3.9 && PLT < 149) {
+            return { code: "Pancytopenia, mild" };
+        }
+    }
+
+    // Chronic inflammation
+    if (WBC > 10.1) {
+        return { code: "Chronic inflammation" };
+    }
+
+    // WBC(L)
+    if (WBC < 3.9) {
+        return { code: "WBC(L)" };
+    }
+
+    // WBC(L), PLT(L)
+    if (WBC < 3.9 && PLT < 149) {
+        return { code: "WBC(L), PLT(L)" };
+    }
+
+    // PLT(L)
+    if (PLT < 149) {
+        return { code: "PLT(L)" };
+    }
+
+    // PLT(H), mild
+    if (PLT > 451) {
+        return { code: "PLT(H), mild" };
+    }
+
+    // If no conditions matched
+    return { code: "No matching condition" };
+};

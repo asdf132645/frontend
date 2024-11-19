@@ -52,8 +52,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import Datepicker from 'vue3-datepicker';
-import {getDateTimeYYYYMMDD} from "@/common/lib/utils/dateUtils";
-import {sdWorklistsAPI} from "@/common/helpers/lisCbc";
 
 interface Props {
   isOpen: boolean;
@@ -73,6 +71,7 @@ const selectedDate = ref(new Date());
 const showAlert = ref(false);
 const alertMessage = ref('');
 import moment from "moment/moment";
+import {sdWorklistsAPI} from "@/common/helpers/lisCbc/sdCbcLis";
 
 watch(() => props.workList, (newWorkList) => {
   workListValue.value = newWorkList;

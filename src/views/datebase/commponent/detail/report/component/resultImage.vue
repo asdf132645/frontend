@@ -87,10 +87,10 @@
 import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from "vue";
 import html2canvas from "html2canvas";
 import {cbcImgGetApi, ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
-import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc";
 import {getCbcCodeList} from "@/common/helpers/lisCbc/inhaCbcLis";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {messages} from "@/common/defines/constants/constantMessageText";
+import {lisSendYwmc} from "@/common/helpers/lisCbc/ywmcCbcLis";
 
 const props = defineProps(['nowCrcData', 'captureAndConvertOk', 'barcodeNo']);
 const arrDataWbc = ref<any>([]);

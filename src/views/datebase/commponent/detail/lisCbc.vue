@@ -101,7 +101,8 @@ import {
 import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/helpers/lisCbc/inhaCbcLis";
 import {messages} from "@/common/defines/constants/constantMessageText";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
-import {parseDateString, ywmcCbcDataLoad} from "@/common/helpers/lisCbc";
+import {parseDateString} from "@/common/helpers/lisCbc";
+import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -228,7 +229,8 @@ const initCbcData = async (newVal: any) => {
       await cbcYwmcDataMatching();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-      await cbcYwmcDataMatching();
+      await crcCbcDataLoad();
+      await commonCbc(firstCbcDatafilename.value);
       break;
       // CBC 공통
     default:

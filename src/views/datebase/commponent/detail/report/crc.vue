@@ -169,11 +169,12 @@ import {messages} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {cbcDataGet, isAdultNormalCBC, isAutoCBCMatching, lisSendSD} from "@/common/helpers/lisCbc";
+import {cbcDataGet, isAdultNormalCBC, isAutoCBCMatching} from "@/common/helpers/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
 import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
+import {lisSendSD} from "@/common/helpers/lisCbc/sdCbcLis";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -288,7 +289,7 @@ onMounted(async () => {
   await nextTick()
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
-  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
+  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']) {
     const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
     if (autoNomarlCheck.value.length === 0) {
