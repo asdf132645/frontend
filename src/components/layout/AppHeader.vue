@@ -3,7 +3,7 @@
     <nav>
       <div class='appHeaderLeft' :class="{ 'bmComponent': projectBm }" v-if="!appHeaderLeftHidden">
         <div class="borderLine">
-          <img src="@/assets/celli.png" class="headerLogo"/>
+          <img src="../../assets/images/celli.png" class="headerLogo"/>
           <p class="logoProjectTitle">{{ projectBm ? 'BM' : 'PB' }}</p>
         </div>
 

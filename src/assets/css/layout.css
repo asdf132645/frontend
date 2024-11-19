@@ -187,6 +187,10 @@
     width: 100px;
 }
 
+.w108 {
+    width: 108px;
+}
+
 .w140 {
     width: 140px;
 }
@@ -4258,8 +4262,7 @@ span.crcListSpan input {
 }
 
 .crcReport .crcSel {
-    width: 32%;
-    max-width: 150px;
+    width: 120px;
     text-align: right;
 }
 
@@ -4344,6 +4347,11 @@ button.crcBtn:hover {
 
 .rbcCrcDiv {
     text-align: left;
+}
+
+.rbcCrcGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 .sortDownBig {
