@@ -4,7 +4,7 @@
 <!--    <div class="loaderForLogin"></div>-->
 <!--    <p class="loadingTextLogin">Loading...</p>-->
 <!--  </div>-->
-  <div class="progressBarLogin" v-if="!progressOnOff">
+  <div class="progressBarLogin" v-if="!progressOnOff && uimdOpenIp !== 'http://192.168.0.131:3002'">
     <div class="progressDiv">
       <progress id="file" :value="progress" max="100" v-if="forceViewer === 'main' && !isViewer"></progress>
       <div class="loading-text">Loading...</div>
@@ -58,7 +58,6 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 const store = useStore();
 const password = ref('');
 const idVal = ref('');
-const instance = getCurrentInstance();
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
