@@ -62,12 +62,22 @@
           </td>
         </tr>
         <tr v-show="projectType === 'pb' && testTypeCd === '04' && viewerCheck !== 'viewer'">
-          <th>Edge Shot Type</th>
+          <th>
+            Edge Shot Type
+<!--            <font-awesome-icon-->
+<!--                :icon="['fas', 'circle-info']"-->
+<!--                @mouseenter="() => informationFontHover('edgeShotType', 'hover')"-->
+<!--                @mouseleave="informationFontHover('edgeShotType', 'leave')"-->
+<!--            />-->
+          </th>
           <td>
             <select v-model='edgeShotType'>
               <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
+          <div v-show="showEdgeShotTypeInfo" style="position: absolute;">
+            <img :src="slideImage" />
+          </div>
         </tr>
         <!--      BF analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
@@ -317,8 +327,9 @@
 <script setup lang="ts">
 import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-
 import { computed, nextTick, onMounted, ref, watch, getCurrentInstance } from "vue";
+import {useStore} from "vuex";
+import moment from "moment";
 import {
   AnalysisList,
   PositionMarginList, stitchCountList,
@@ -327,9 +338,7 @@ import {
   testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
-import {useStore} from "vuex";
 import {messages} from "@/common/defines/constants/constantMessageText";
-import moment from "moment";
 import {
   backUpDateApi,
   downloadPossibleApi,
@@ -341,6 +350,7 @@ import {
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
+import slideImage from "@/assets/images/slide.jpg";
 
 
 const instance = getCurrentInstance();
@@ -417,6 +427,7 @@ const loadingState = ref('');
 const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
+const showEdgeShotTypeInfo = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -641,6 +652,22 @@ const toggleAlarm = () => {
 const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
+
+const informationFontHover = (type: 'edgeShotType', hoverStatus: 'hover' | 'leave') => {
+  if (hoverStatus === 'leave') {
+    console.log(1);
+    showEdgeShotTypeInfo.value = false;
+    return;
+  }
+  console.log(2);
+  switch (type) {
+    case 'edgeShotType':
+      showEdgeShotTypeInfo.value = true;
+      break;
+    default:
+      break;
+  }
+}
 
 const uploadConfirm = async (uploadType: 'move' | 'copy') => {
   showUploadModal.value = false;

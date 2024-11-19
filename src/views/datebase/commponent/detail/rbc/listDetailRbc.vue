@@ -16,7 +16,7 @@
       </ul>
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
-    <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '') ">
+    <div :class="'databaseWbcRight shadowBox pos-relative' + (cbcLayer ? ' cbcLayer' : '')">
       <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
                 @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable'
                 :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"

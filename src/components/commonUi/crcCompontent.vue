@@ -3,87 +3,83 @@
     {{ moTypeTextChange(moType) }}
   </div>
   <div :class="{ rbcCrcDiv: moType === 'RBC' }">
-    <ul :class="{ 'flex-center': moType === 'RBC' }">
-      <li v-for="(row, rowIndex) in groupedData" :key="rowIndex" class="crcRow">
-        <div v-for="(item, idx) in row" :key="idx" class="grid-item crcItemDiv">
-          <p>
-            <input
-                class="smallBox"
-                type="text"
-                v-model="item.crcTitle"
-                v-if="editIndex === item.id"
-            />
-            <span class="spanTitle" v-else>{{ item.crcTitle }}</span>
-          </p>
-          <div>
-            <select v-model="item.crcType" v-if="editIndex === item.id">
-              <option value="select">select</option>
-              <option value="text">text</option>
-              <option value="percent">percent</option>
-            </select>
-            <div v-else-if="pageName === 'set' && isMasterId(masterId)">{{ item?.crcType }}</div>
-          </div>
-          <div class="crcSel">
-            <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
-            <div v-else>
-              <div v-if="item?.crcType === 'select'" class="etcIncludeDiv">
-                <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)">
-                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{
-                      opItem
-                    }}
-                  </option>
+    <ul :class="{ 'rbcCrcGrid': moType === 'RBC' }">
+      <div v-for="(item, idx) in arrData" :key="idx" class="grid-item crcItemDiv">
+        <p>
+          <input
+              class="smallBox"
+              type="text"
+              v-model="item.crcTitle"
+              v-if="editIndex === item.id"
+          />
+          <span class="spanTitle" v-else>{{ item.crcTitle }}</span>
+        </p>
+        <div>
+          <select v-model="item.crcType" v-if="editIndex === item.id" class="w108">
+            <option value="select">select</option>
+            <option value="text">text</option>
+            <option value="percent">percent</option>
+          </select>
+          <div v-else-if="pageName === 'set' && isMasterId(masterId)">{{ item?.crcType }}</div>
+        </div>
+        <div class="crcSel">
+          <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
+          <template v-else>
+            <template v-if="item?.crcType === 'select'">
+              <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)" class="w108">
+                <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{
+                    opItem
+                  }}
+                </option>
+              </select>
+              <template v-else-if="isMasterId(masterId)">
+                <select @change="changeSelect($event, item.id)" class="w108">
+                  <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
                 </select>
-                <div v-else-if="isMasterId(masterId)">
-                  <select @change="changeSelect($event, item.id)">
-                    <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx">{{ opItem }}</option>
-                  </select>
-                </div>
-                <input v-if="item.val === 'Etc'" @input="changeEtc($event, item)" type="text"
-                       placeholder="Etc Text" class="etcTextInput"/>
-              </div>
-              <div v-else-if="item?.crcType === 'text'">
-                <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
-                       placeholder="Enter text" v-if="pageName !== 'set'"/>
-                <input v-model="item.crcContent" :disabled="pageName === 'set'"
-                       v-else-if=" pageName ==='set' && isMasterId(masterId)"
-                       type="text"
-                       placeholder="Enter text"/>
-              </div>
-              <div v-else>
-                <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text"
-                       placeholder="Enter percentage" v-if="pageName !== 'set'"/>
-                <input class="smallInput" :disabled="pageName === 'set'"
-                       v-else-if=" pageName ==='set' && isMasterId(masterId)"
-                       v-model="item.crcContent" type="text"
-                       placeholder="Enter percentage"/>
-              </div>
-            </div>
-            <div v-if="pageName==='set'">
-              <input class="smallInput" type="text"
-                     placeholder="code" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
-              <input class="smallInput" type="text"
-                     placeholder="code" v-model="item.crcCodeMatching" @change="updateCrcArr(item.id)"/>
-            </div>
-          </div>
-          <div v-if="item.crcType === 'percent'" class="smallBox">
-            <input
-                type="text"
-                v-model="item.crcPercentText"
-                v-if="editIndex === item.id"
-                class="crcPercentInput"
-            />
-            <span v-else class="crcPercentText">
+              </template>
+              <input v-if="item.val === 'Etc'" @input="changeEtc($event, item)" type="text"
+                     placeholder="Etc Text" class="etcTextInput"/>
+            </template>
+            <template v-else-if="item?.crcType === 'text'">
+              <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
+                     placeholder="Enter text" v-if="pageName !== 'set'"/>
+              <input v-model="item.crcContent" :disabled="pageName === 'set'"
+                     v-else-if=" pageName ==='set' && isMasterId(masterId)"
+                     type="text"
+                     placeholder="Enter text"/>
+            </template>
+            <template v-else>
+              <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text"
+                     placeholder="Enter percentage" v-if="pageName !== 'set'"/>
+              <input class="smallInput" :disabled="pageName === 'set'"
+                     v-else-if=" pageName ==='set' && isMasterId(masterId)"
+                     v-model="item.crcContent" type="text"
+                     placeholder="Enter percentage"/>
+            </template>
+          </template>
+          <template v-if="pageName==='set'">
+            <input class="smallInput" type="text" placeholder="code" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
+            <input class="smallInput" type="text" placeholder="code" v-model="item.crcCodeMatching" @change="updateCrcArr(item.id)"/>
+          </template>
+        </div>
+        <div v-if="item.crcType === 'percent'" class="smallBox">
+          <input
+              type="text"
+              v-model="item.crcPercentText"
+              v-if="editIndex === item.id"
+              class="crcPercentInput"
+          />
+          <span v-else class="crcPercentText">
               {{ item?.crcPercentText }}
             </span>
-          </div>
-
-          <div v-if="pageName === 'set' && isMasterId(masterId)">
-            <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex !== item.id" @click="editCrcArr(item.id)">EDIT</button>
-            <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex === item.id" @click="updateCrcArr(item.id)">OK</button>
-            <button type="button" class="crcBtn" style="padding: 4px 0;" @click="delCrcArr(rowIndex, item.id)">DEL</button>
-          </div>
         </div>
-      </li>
+
+        <div v-if="pageName === 'set' && isMasterId(masterId)">
+          <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex !== item.id" @click="editCrcArr(item.id)">EDIT</button>
+          <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex === item.id" @click="updateCrcArr(item.id)">OK</button>
+          <button type="button" class="crcBtn" style="padding: 4px 0;" @click="delCrcArr(idx, item.id)">DEL</button>
+        </div>
+      </div>
     </ul>
   </div>
 </template>
