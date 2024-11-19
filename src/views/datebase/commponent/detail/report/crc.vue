@@ -19,6 +19,7 @@
           class="tab"
           :class="{ active: activeTab === 3 }"
           @click="cellStatus()"
+          v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']"
       >
         Dashboard
       </button>

@@ -233,6 +233,7 @@ const saveToDatabase = async (hexString: string) => {
       exam_cd: res?.data[0].exam_cd,
       spc: res?.data[0].spc
     };
+    console.log('data', data);
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.barcodeNo,
