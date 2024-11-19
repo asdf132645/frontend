@@ -15,7 +15,7 @@
           <span class="spanTitle" v-else>{{ item.crcTitle }}</span>
         </p>
         <div>
-          <select v-model="item.crcType" v-if="editIndex === item.id" class="w108">
+          <select v-model="item.crcType" v-if="editIndex === item.id" class="w120">
             <option value="select">select</option>
             <option value="text">text</option>
             <option value="percent">percent</option>
@@ -26,7 +26,7 @@
           <input type="text" v-model="item.crcContent" v-if="editIndex === item.id">
           <template v-else>
             <template v-if="item?.crcType === 'select'">
-              <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)" class="w108">
+              <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)" class="w120">
                 <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{
                     opItem
                   }}
