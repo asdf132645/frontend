@@ -90,9 +90,9 @@ import {cbcImgGetApi, ywmcSaveCommentPostSendApi} from "@/common/api/service/lis
 import {getCbcCodeList} from "@/common/helpers/lisCbc/inhaCbcLis";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {messages} from "@/common/defines/constants/constantMessageText";
-import {lisSendYwmc} from "@/common/helpers/lisCbc/ywmcCbcLis";
+import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 
-const props = defineProps(['nowCrcData', 'captureAndConvertOk', 'barcodeNo']);
+const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo']);
 const arrDataWbc = ref<any>([]);
 const arrDataRbc = ref<any>([]);
 const arrDataPlt = ref<any>([]);
@@ -148,7 +148,7 @@ const captureAndConvert = async () => {
     const hexString = arrayBufferToHex(ab);
 
     // 디버그용 확인
-    console.log("Hex String:", hexString);
+    // console.log("Hex String:", hexString);
 
     // 데이터베이스로 저장
     await saveToDatabase(hexString);
@@ -223,8 +223,8 @@ const saveToDatabase = async (hexString: string) => {
   if (res) {
     // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
     const {width, height, size}: any = await getImageDimensions(hexString);
-
-    const data = {
+    const {data, cbcDataVal} = await ywmcCbcDataLoad(props?.barcodeNo, await getCbcCodeList());
+    const imgData = {
       size: size, // Blob의 크기
       image_rslt: hexString, // 실제 이미지 결과 데이터로 대체
       width: width, // 이미지 너비
@@ -236,16 +236,17 @@ const saveToDatabase = async (hexString: string) => {
       exam_cd: res[0]?.exam_cd,
       spc: res[0]?.spc
     };
-    console.log('data', data);
+    console.log('data', imgData);
+
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.barcodeNo,
-      ttext_rslt: ''
+      ttext_rslt: data[0]?.slip.trim() === 'H1' ? data[0]?.rmk : `Comment:${props?.commentList}/rRecommendation:${props?.recoList}`
     }
     // displayImageFromHex(hexString);
     const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
     if (setDataYWmc?.code === 201) {
-      await lisSendYwmc(data);
+      await lisSendYwmc(imgData);
     } else {
       toastMessageType.value = messages.TOAST_MSG_ERROR;
       showToast('Lis fail');

@@ -149,6 +149,8 @@
                :captureAndConvertOk="captureAndConvertOk"
                @resetBool="resetBool"
                :barcodeNo="selectItems?.barcodeNo"
+               :commentList="commentList"
+               :recoList="recoList"
   />
 
 

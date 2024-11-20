@@ -217,16 +217,14 @@ const initCbcData = async (newVal: any) => {
       /** Todo 작업 필요 */
       break;
     case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
-      // 병원 전산팀 url 사용
-      await inhaCbcLoad();
+      await inhaCbcLoad(); // 병원 전산팀 url 사용
       break;
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
       await crcCbcDataLoad();
       await commonCbc(firstCbcDatafilename.value);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      // 원주기독은 디비 접근해서 작업함
-      await cbcYwmcDataMatching();
+      await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
       await crcCbcDataLoad();

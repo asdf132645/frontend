@@ -4840,7 +4840,8 @@ input.codeInput {
     text-align: left;
     padding: 20px;
     position: absolute;
-    left: 37%;
+    /*left: 37%;*/
+    margin: auto;
     z-index: 99;
     min-width: 450px;
 }
