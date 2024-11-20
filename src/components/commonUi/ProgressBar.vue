@@ -1,5 +1,6 @@
 <template>
   <div class="progress-component-container">
+    <p>{{ text }}</p>
     <div class="progress-component-bar">
       <div
           class="progress-component-fill"
@@ -43,6 +44,9 @@ const props = defineProps({
   showGlowEffect: {
     type: Boolean,
     default: true
+  },
+  text: {
+    type: String,
   }
 })
 

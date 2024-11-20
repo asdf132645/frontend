@@ -31,6 +31,7 @@
 </template>
 
 
+
 <script setup lang="ts">
 import {ref, computed, watch, onMounted, getCurrentInstance, defineProps} from "vue";
 import {useStore} from "vuex";
@@ -83,7 +84,7 @@ const runningInfoGet = async (data: any) => {
     const currentSlot = parsedData?.slotInfo;
     if (currentSlot) {
       processInfoItem.value = {
-        cassetteNo: '',
+        cassetteNo: parsedData.cassetId ?? '',
         barcodeId: currentSlot.barcodeNo,
         patientId: currentSlot.patientId,
         patientName: currentSlot.patientNm,

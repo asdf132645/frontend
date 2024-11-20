@@ -4710,15 +4710,16 @@ input.codeInput {
 .progress-component-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1.5rem;
     width: 200px;
-    max-width: 800px; /* 프로그레스 바 최대 길이 설정 */
+    max-width: 800px;
     margin: 1rem auto;
 }
 
 .progress-component-bar {
     flex-grow: 1;
-    height: 20px; /* 높이 증가 */
+    height: 20px;
     background: #f0f0f0;
     border-radius: 4px;
     overflow: hidden;
@@ -4728,7 +4729,7 @@ input.codeInput {
 
 .progress-component-fill {
     height: 100%;
-    border-radius: 10px;
+    border-radius: 4px;
     position: relative;
     transform-origin: left;
     animation: shimmer 2s infinite linear;
@@ -4750,7 +4751,6 @@ input.codeInput {
     animation: glow 2s infinite;
 }
 
-/* 호버 효과 추가 */
 .progress-component-bar:hover .progress-component-fill {
     filter: brightness(1.1);
     box-shadow: 0 0 10px rgba(66, 184, 131, 0.5);
@@ -4778,7 +4778,7 @@ input.codeInput {
     display: inline-block;
     left: 20%;
     position: relative;
-    top: 10px;
+    top: -4px;
 }
 
 .isNotNormalIcon {

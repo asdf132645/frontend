@@ -28,8 +28,8 @@
 
         <!-- 가운데 메뉴 -->
         <div v-if="machineVersion === '100a'" class="autoStart-container">
-          <p class="text-center mb10" style="line-height: 0;">Auto Start</p>
           <ProgressBar
+              text="Auto Start"
               :value="autoStartTimer"
               gradientStart="#2196f3"
               gradientEnd="#03a9f4"
@@ -321,8 +321,8 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   storagePercent.value = Number(newVals[0].sysInfo.storageSize);
   eqStatCd.value = newVals[0].sysInfo.eqStatCd;
 
-  if (machineVersion.value === '100a' && (newVals[0].sysInfo?.autoStartTimer ?? true)) {
-    const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
+  const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
+  if (machineVersion.value === '100a' && (autoStartTimerNumber || autoStartTimerNumber === '0.0')) {
     autoStartTimer.value = (parseFloat(autoStartTimerNumber) / 5) * 100;
   }
 
