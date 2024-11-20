@@ -3,20 +3,17 @@
   <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"/>
 
   <div class="wbcContent">
-    <div class="topClintInfo">
-      <ul>
-        <li>
-          {{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}
-        </li>
-        <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
-        <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
-        <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
-        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
-          {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
-        </li>
-        <li v-show="selectItems?.analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(selectItems?.analyzedDttm) }}</li>
-      </ul>
-    </div>
+    <DetailHeader
+        :testType="projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
+        :barcodeNo="selectItems?.barcodeNo"
+        :cbcPatientNo="selectItems?.cbcPatientNo"
+        :patientName="selectItems?.patientName"
+        :hospitalName="selectItems?.hosName"
+        :cbcPatientName="selectItems?.cbcPatientNm"
+        :cbcSex="selectItems?.cbcSex"
+        :cbcAge="selectItems?.cbcAge"
+        :analyzedDttm="selectItems?.analyzedDttm"
+    />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow"
@@ -246,7 +243,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {useGetRunningInfoByIdQuery} from "@/gql";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
-import {getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
+import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);

@@ -2,19 +2,17 @@
   <ClassInfoMenu @refreshClass="refreshClass"/>
 
   <div class="wbcContent" v-if="isLoading">
-
-    <div class="topClintInfo">
-      <ul>
-        <li>{{ getTestTypeText(selectItems?.testType) }}</li>
-        <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
-        <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
-        <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
-        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
-          {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
-        </li>
-        <li v-show="selectItems?.analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(selectItems?.analyzedDttm) }}</li>
-      </ul>
-    </div>
+    <DetailHeader
+        :testType="getTestTypeText(selectItems?.testType)"
+        :barcodeNo="selectItems?.barcodeNo"
+        :cbcPatientNo="selectItems?.cbcPatientNo"
+        :patientName="selectItems?.patientName"
+        :hospitalName="selectItems?.hosName"
+        :cbcPatientName="selectItems?.cbcPatientNm"
+        :cbcSex="selectItems?.cbcSex"
+        :cbcAge="selectItems?.cbcAge"
+        :analyzedDttm="selectItems?.analyzedDttm"
+    />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox pos-relative' + (cbcLayer ? ' cbcLayer' : '')">
       <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
@@ -42,6 +40,7 @@ import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue"
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
 import {getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
+import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 
 const selectItems = ref<any>({});
 const store = useStore();

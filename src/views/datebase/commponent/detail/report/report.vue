@@ -2,20 +2,17 @@
 
   <ClassInfoMenu @refreshClass="refreshClass"/>
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')" v-if="siteCd !== '0007'">
-    <div class="topClintInfo">
-      <ul>
-        <li>
-          {{ projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType) }}
-        </li>
-        <li v-show="selectItems?.barcodeNo">{{ selectItems?.barcodeNo }}</li>
-        <li v-show="selectItems?.cbcPatientNo">{{ selectItems?.cbcPatientNo }}</li>
-        <li v-show="selectItems?.patientName">{{ selectItems?.patientName }}</li>
-        <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
-          {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
-        </li>
-        <li v-show="selectItems?.analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(selectItems?.analyzedDttm) }}</li>
-      </ul>
-    </div>
+    <DetailHeader
+        :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
+        :barcodeNo="selectItems?.barcodeNo"
+        :cbcPatientNo="selectItems?.cbcPatientNo"
+        :patientName="selectItems?.patientName"
+        :hospitalName="selectItems?.hosName"
+        :cbcPatientName="selectItems?.cbcPatientNm"
+        :cbcSex="selectItems?.cbcSex"
+        :cbcAge="selectItems?.cbcAge"
+        :analyzedDttm="selectItems?.analyzedDttm"
+    />
     <div style="display:flex;">
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
       <div class="reportDiv">
@@ -261,7 +258,7 @@ import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import {useStore} from "vuex";
-import {formatDateString, getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
+import { formatDateString } from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
@@ -276,6 +273,7 @@ import Crc from "@/views/datebase/commponent/detail/report/crc.vue";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
+import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
