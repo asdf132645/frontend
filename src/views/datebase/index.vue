@@ -8,7 +8,9 @@
     <h3 class="titleH3">
       Classification List
       <button @click="classListToggleEvent" class="classificationListBtn">
-        <font-awesome-icon :icon="['fas', 'list-check']"/>
+        <font-awesome-icon v-if="!classListToggle" :icon="['fas', 'caret-up']" flip="vertical" />
+        <font-awesome-icon v-else :icon="['fas', 'caret-up']" />
+<!--        <font-awesome-icon :icon="['fas', 'list-check']"/>-->
       </button>
     </h3>
     <div class='listBoxTable'>
@@ -19,19 +21,14 @@
             <option value="patientId">Patient ID</option>
             <option value="patientNm">Patient Name</option>
           </select>
-          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput"
-                 @input="handleInput"/>
-          <button class="searchClass" @click="dateRefresh">
-            <font-awesome-icon :icon="['fas', 'calendar-days']"/>
-            Refresh
-          </button>
+          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
           <div class="settingDatePickers">
             <Datepicker v-model="startDate" @change="updateEndDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>
-
+          <button class="searchClass" @click="dateRefresh">Clear</button>
           <button type="button" class="searchClass" @click="search">Search</button>
-          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd || siteCd === '' || siteCd === '0000'" @click="openCheckList" class="searchClass">Patient List</button>
+          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass">Patient List</button>
 
           <div v-if="viewerCheck === 'main'" class="excelDivList">
             <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
@@ -166,6 +163,8 @@ import PopupTable from "@/components/commonUi/PopupTable.vue";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
 import {sdWorklistsAPI} from "@/common/helpers/lisCbc/sdCbcLis";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
+import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
 
 
 const store = useStore();
@@ -249,7 +248,6 @@ onMounted(async () => {
   document.addEventListener('keydown', handleGlobalKeydown);
 
 });
-
 
 async function handleStateVal(data: any) {
   eventTriggered.value = true;
@@ -387,18 +385,27 @@ const updateFilter = () => {
 }
 
 const initDbData = async () => {
-  // titleItem.value = [];
   // 이전 조회 결과 및 검색 조건 불러오기
   loadingDelayParents.value = true;
   // const lastQuery = loadLastQuery();
   const lastSearchParams = loadLastSearchParams();
   // 이전 검색 조건 적용
-  if (Object.keys(lastSearchParams).length !== 0) {
+  if (!isObjectEmpty(lastSearchParams)) {
+    page.value = lastSearchParams.page || 1;
     searchType.value = lastSearchParams.searchType || 'barcodeNo';
     searchText.value = lastSearchParams.searchText || '';
     startDate.value = new Date(lastSearchParams.startDate) || new Date();
     endDate.value = new Date(lastSearchParams.endDate) || new Date();
-    page.value = lastSearchParams.page || 1;
+    nrCount.value = lastSearchParams.nrCount;
+    wbcCountOrder.value = lastSearchParams.wbcTotal;
+    testType.value = lastSearchParams.testType;
+    titleItemArr.value = lastSearchParams.wbcInfo;
+    titleItem.value = titleItem.value.map((item: WbcInfo) => {
+      if (lastSearchParams.wbcInfo.includes(item.title)) {
+        return {...item, checked: true }
+      }
+      return item;
+    })
     await getDbData('search');
   } else {
     await getDbData('mounted', 1);
@@ -514,7 +521,13 @@ const getDbData = async (type: string, pageNum?: number) => {
         }
 
         if (titleItem.value.length === 0) {
-          titleItem.value = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
+          const wbcInfoItems = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
+          titleItem.value = wbcInfoItems.map((item: WbcInfo) => {
+            if (titleItemArr.value.includes(item.title)) {
+              return {...item, checked: true };
+            }
+            return { ...item, checked: false };
+          });
         }
 
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
@@ -551,7 +564,6 @@ const getDbData = async (type: string, pageNum?: number) => {
 
 const search = () => {
   dbGetData.value = [];
-  sessionStorage.removeItem('lastSearchParams');
 
   // 전시회 갈 때 주석처리할 코드 START
   const diffInMs = endDate.value.getTime() - startDate.value.getTime();
@@ -902,25 +914,6 @@ const countReAdd = async () => {
     }
   }
 
-  /** TODO
-   * json 파일을 변경하기 때문에 초기 before 값을 저장하는 곳이 따로 필요하다.
-   * */
-      // for (const category of rbcInfoBeforeVal.value) {
-      //   for (const classItem of category.classInfo) {
-      //     let count = 0;
-      //
-      //     for (const afterCategory of rbcInfoPathAfter.value) {
-      //       for (const afterClassItem of afterCategory.classInfo) {
-      //         if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
-      //           count++;
-      //         }
-      //       }
-      //     }
-      //
-      //     classItem.originalDegree = count;
-      //   }
-      // }
-
   let totalPLT = 0;
   let malariaTotal = 0;
   for (const el of rbcInfoPathAfter.value) {
@@ -1100,6 +1093,13 @@ const dateRefresh = () => {
   startDate.value = thirtyDaysAgo
   endDate.value = new Date();
   searchText.value = '';
+  nrCount.value = 0;
+  wbcCountOrder.value = 'all';
+  testType.value = '00';
+  titleItemArr.value = [];
+  titleItem.value = [];
+  sessionStorage.removeItem('lastSearchParams');
+  localStorage.removeItem('lastSearchParams');
   search();
 }
 

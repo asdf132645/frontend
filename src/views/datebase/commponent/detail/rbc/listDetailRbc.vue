@@ -12,7 +12,7 @@
         <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
           {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
         </li>
-        <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
+        <li v-show="selectItems?.analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(selectItems?.analyzedDttm) }}</li>
       </ul>
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
@@ -41,6 +41,7 @@ import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionD
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
+import {getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 
 const selectItems = ref<any>({});
 const store = useStore();

@@ -18,7 +18,7 @@ interface Image {
     fileName: string;
 }
 
-interface WbcInfo {
+export interface WbcInfo {
     id: string;
     title: string;
     name: string;

@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<script setup type="ts">
+<script setup>
 import { defineProps, computed } from 'vue';
 
 const props = defineProps(['isVisible', 'type', 'message']);

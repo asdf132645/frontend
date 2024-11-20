@@ -13,7 +13,7 @@
         <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
           {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
         </li>
-        <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
+        <li v-show="selectItems?.analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(selectItems?.analyzedDttm) }}</li>
       </ul>
     </div>
     <div style="display:flex;">
@@ -261,7 +261,7 @@ import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import router from "@/router";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import {useStore} from "vuex";
-import {formatDateString} from "@/common/lib/utils/dateUtils";
+import {formatDateString, getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";

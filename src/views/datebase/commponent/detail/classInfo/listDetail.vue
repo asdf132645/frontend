@@ -14,7 +14,7 @@
         <li v-show="selectItems?.cbcPatientNm && selectItems?.cbcSex && selectItems?.cbcAge && selectItems?.hosName">
           {{ selectItems?.cbcPatientNm }} {{ selectItems?.cbcSex }} {{ selectItems?.cbcAge }} {{ selectItems?.hosName }}
         </li>
-        <li v-show="selectItems?.analyzedDttm">{{ selectItems?.analyzedDttm }}</li>
+        <li v-show="selectItems?.analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(selectItems?.analyzedDttm) }}</li>
       </ul>
     </div>
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
@@ -246,6 +246,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {useGetRunningInfoByIdQuery} from "@/gql";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);

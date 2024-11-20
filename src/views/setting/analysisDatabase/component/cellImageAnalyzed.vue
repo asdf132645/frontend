@@ -339,6 +339,7 @@ import {
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from "@/common/defines/constants/constantMessageText";
+import ImageTooltip from "@/components/commonUi/ImageTooltip.vue";
 import {
   backUpDateApi,
   downloadPossibleApi,
@@ -674,7 +675,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
   totalFileCount.value = possibleUploadCount.value;
   try {
     isLoadingProgressBar.value = true;
-    const day = localStorage.getItem('lastSearchParams') || '';
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
 
@@ -797,7 +798,7 @@ const updateFileCounts = async () => {
 const downloadDtoObj = (downloadType: 'move' | 'copy') => {
   downloadUploadType.value = downloadType;
   showDownloadConfirm.value = false;
-  const day = localStorage.getItem('lastSearchParams') || '';
+  const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
   const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
   const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
   const sendingDownloadStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
