@@ -1,12 +1,7 @@
 <template>
-<!--    <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected && uimdOpenIp !== 'http://192.168.0.131:3002'">-->
-<!--  <div class="loaderBackgroundForLogin" v-if="forceViewer === 'main' && !isViewer && !isTcpConnected">-->
-<!--    <div class="loaderForLogin"></div>-->
-<!--    <p class="loadingTextLogin">Loading...</p>-->
-<!--  </div>-->
-  <div class="progressBarLogin" v-if="!progressOnOff && uimdOpenIp !== 'http://192.168.0.131:3002'">
+  <div class="progressBarLogin" v-if="!progressOnOff && uimdOpenIp !== 'http://192.168.0.131:3002' && forceViewer === 'main' && !isViewer">
     <div class="progressDiv">
-      <progress id="file" :value="progress" max="100" v-if="forceViewer === 'main' && !isViewer"></progress>
+      <progress id="file" :value="progress" max="100"></progress>
       <div class="loading-text">Loading...</div>
     </div>
   </div>
