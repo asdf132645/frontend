@@ -3478,6 +3478,12 @@ button.rollbackButton {
     color: #ffffff;
 }
 
+.alert-coreError {
+    background-color: #414141;
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
 .alertButton {
     border: none;
     background-color: var(--button-confirm);

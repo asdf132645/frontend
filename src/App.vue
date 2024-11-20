@@ -345,7 +345,7 @@ async function socketData(data: any) {
       case 'SYSINFO':
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
-          showErrorAlert(res);
+          showCoreErrorAlert(res);
           const isAlarm = sessionStorage.getItem('isAlarm');
           if (isAlarm === 'true') {
             await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
@@ -657,7 +657,7 @@ async function socketData(data: any) {
     async function saveDeviceInfo(deviceInfo: any) {
       try {
         const deviceData = await getDeviceInfoApi();
-        sessionStorage.setItem('autoStart', deviceData.data[0].autoStart);
+        sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
         if (deviceData.data.length === 0 || !deviceData.data) {
           await createDeviceInfoApi({deviceItem: deviceInfo});
           siteCdDvBarCode.value = true;
@@ -827,6 +827,10 @@ const cellImgGet = async () => {
   }
 }
 
+const getRbcData = () => {
+  //
+}
+
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
@@ -839,8 +843,14 @@ const showErrorAlert = (message: string) => {
   alertMessage.value = message;
 };
 
+const showCoreErrorAlert = (message: string) => {
+  showAlert.value = true;
+  alertType.value = 'coreError'
+  alertMessage.value = message;
+}
+
 const hideAlert = () => {
-  if (alertType.value === 'alert') errorClear();
+  if (alertType.value === 'coreError') errorClear();
   showAlert.value = false;
 };
 

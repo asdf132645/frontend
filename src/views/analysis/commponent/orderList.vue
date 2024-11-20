@@ -81,7 +81,9 @@ const runningInfoGet = async (data: any) => {
         if (dspOrderList.value && dspOrderList.value.length > 0) {
           // Core에서 받는 stateCd가 저장되는 타이밍을 잡기 어려워 추가한 stateCd 변경 코드
           const completedCassetteIndex = inputCassetteArr.lastIndexOf('3');
-          if (completedCassetteIndex !== -1) dspOrderList.value[completedCassetteIndex].stateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST[3].cdNm;
+          if (completedCassetteIndex !== -1) {
+            dspOrderList.value[completedCassetteIndex].stateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST[3].cdNm;
+          }
         }
 
         const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[dspOrderList.value.length]);
@@ -95,7 +97,11 @@ const runningInfoGet = async (data: any) => {
         });
       } else {
         const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[existingItemIndex]);
-        if (dspOrderList.value) dspOrderList.value[existingItemIndex].stateCd = stateCdObj?.cdNm;
+        if (dspOrderList.value && dspOrderList.value.length > 0) {
+          if (dspOrderList.value[existingItemIndex]?.stateCd) {
+            dspOrderList.value[existingItemIndex].stateCd = stateCdObj?.cdNm;
+          }
+        }
       }
     }
   }
