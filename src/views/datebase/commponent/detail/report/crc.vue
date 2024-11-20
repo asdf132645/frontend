@@ -124,6 +124,8 @@
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
+    <AutoCBCMatching v-if="autoCBCMatchingShow" :isAutoCBCMatchingArr="isAutoCBCMatchingArr" @codeSelect="codeSelect"/>
+
   </div>
 
   <!-- 자식 컴포넌트 Remark -->
@@ -145,13 +147,10 @@
                  @passWordClose="passWordClose"/>
   <ResultImage :nowCrcData="nowCrcDataRef" v-if="captureAndConvertOk"
                :captureAndConvertOk="captureAndConvertOk"
-                @resetBool="resetBool"
+               @resetBool="resetBool"
                :barcodeNo="selectItems?.barcodeNo"
   />
-<!--  <ResultImage :nowCrcData="nowCrcDataRef" v-if="nowCrcDataRef.length !== 0"-->
-<!--               :captureAndConvertOk="captureAndConvertOk"-->
-<!--               @resetBool="resetBool"-->
-<!--  />-->
+
 
 </template>
 
@@ -175,6 +174,7 @@ import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
 import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
 import {lisSendSD} from "@/common/helpers/lisCbc/sdCbcLis";
+import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component/autoCBCMatching.vue";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -226,6 +226,8 @@ const lastChnageInputCrcData = ref<any>([]);
 const autoNomarlCheck = ref<any>([]);
 const nowCrcDataRef = ref<any>([]);
 const captureAndConvertOk = ref(false);
+const isAutoCBCMatchingArr = ref<any>([]);
+const autoCBCMatchingShow = ref(false);
 
 onBeforeMount(async () => {
   await nextTick();
@@ -286,23 +288,39 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-  await nextTick()
-  cbcCodeList.value = await getCbcCodeList();
-  const cbcFilePathSetArr = await getCbcPathData();
-  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']) {
-    const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
-    autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
-    if (autoNomarlCheck.value.length === 0) {
-      selectOption('Normal');
-    }else{
-      const res = await isAutoCBCMatching(cbcData, cbcSex, cbcAge);
-      console.log(res)
-      console.log('?!@@')
-    }
-  }
+  await nextTick();
+  await sdMounted();
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
 });
 
+const sdMounted = async () => {
+  cbcCodeList.value = await getCbcCodeList();
+  const cbcFilePathSetArr = await getCbcPathData();
+  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
+    const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
+    autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
+
+    const savedData = localStorage.getItem('crcSetData');
+    if (!savedData) {
+      if (autoNomarlCheck.value.length === 0) {
+        selectOption('Normal');
+      } else {
+        const res = await isAutoCBCMatching(cbcData, cbcSex, cbcAge);
+        isAutoCBCMatchingArr.value = res;
+        if (isAutoCBCMatchingArr.value.length !== 0) {
+          autoCBCMatchingShow.value = true;
+        }
+      }
+    }
+
+  }
+}
+
+const codeSelect = (code: string) => {
+  console.log(code);
+  selectOption(code);
+  autoCBCMatchingShow.value = false;
+}
 
 const captureAndConvert = async () => {
   captureAndConvertOk.value = true;

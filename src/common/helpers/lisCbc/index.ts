@@ -58,11 +58,7 @@ export const parseDateString = (dateString: any) => {
 }
 
 export function isAutoCBCMatching(cbcData: CBCDataItem[], cbcSex: string, cbcAge: string): any {
-    console.log(JSON.stringify(cbcData))
-
-    const res = sdCbcAutoMatiching(cbcData, cbcSex, cbcAge);
-    console.log(res)
-    return res
+    return sdCbcAutoMatiching(cbcData, cbcSex, cbcAge);
 }
 
 export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[], rbcInfoAfter: any, cbcSex: string, cbcAge: string): any {

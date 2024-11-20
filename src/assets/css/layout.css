@@ -4207,6 +4207,7 @@ span.crcListSpan > span {
 }
 
 .crcReport {
+    position: relative;
     width: 42%;
     background: #252629;
     color: #fff;
@@ -4959,7 +4960,40 @@ progress {
     overflow: hidden; /* 내부 요소가 넘치지 않도록 */
     background-color: #e0e0e0; /* 배경색 */
 }
+.isAutoCBCMatchingDiv {
+    position: absolute;
+    z-index: 9;
+    right: 0;
+    background: #000000e3;
+    font-size: 0.8rem;
+    padding: 10px;
+    width: 97%;
+    top: 0;
+    height: 100%;
+}
+.isAutoCBCMatchingDiv p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1ddde0;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+.isAutoCBCMatchingDiv ul {list-style: circle;}
 
+.isAutoCBCMatchingDiv ul li {
+    padding: 10px 2px;
+    cursor: pointer;
+    width: 90%;
+    border-bottom: 1px dotted;
+    border-top: 1px solid #fff;
+    margin: 5px auto;
+    text-align: left;
+}
+
+.isAutoCBCMatchingDiv ul li:hover {
+    background: #fff;
+    color: #007bff;
+}
 progress::-webkit-progress-bar {
     background-color: #e0e0e0; /* 기본 배경색 */
     border-radius: 10px; /* 모서리 둥글게 */
