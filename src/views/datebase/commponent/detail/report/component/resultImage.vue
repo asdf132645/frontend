@@ -147,12 +147,15 @@ const captureAndConvert = async () => {
     // Blob을 ISO-8859-1로 인코딩하고 16진수로 변환
     const hexString = arrayBufferToHex(ab);
 
-    // console.log(hexString);
+    // 디버그용 확인
+    console.log("Hex String:", hexString);
+
+    // 데이터베이스로 저장
     await saveToDatabase(hexString);
-    // displayImageFromHex(hexString);
     emits('resetBool', true);
   }
 };
+
 
 const getImageDimensions = (hex) => {
   const blob = hexToBlob(hex);
