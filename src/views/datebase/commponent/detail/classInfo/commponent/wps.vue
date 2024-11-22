@@ -20,7 +20,7 @@
 import {computed, defineProps, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import {useStore} from "vuex";
-import {readDziFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const store = useStore();
@@ -94,8 +94,8 @@ const adjustNavBar = (x1: any, x2: any, y1: any, y2: any) => {
 
 const wpsInitElement = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${props.slotId}/02_WBC_Image`;
-  backgroundImage.value = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=slideImg.jpg`;
+  const folderPath = `${path}/${props.slotId}/04_WPS`;
+  backgroundImage.value = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=slide.jpg`;
   const tilesInfo = await fetchTilesInfo(folderPath);
 
   try {
@@ -177,37 +177,40 @@ const wpsInitElement = async () => {
       viewer.value.viewport.fitBounds(zoomRect);
     });
 
-    const drawBoxOnCanvas = (x, y, width, height) => {
-      const canvas = canvasOverlay.value;
-      const ctx = canvas.getContext('2d');
+    const drawBoxOnCanvas = async (x, y, width, height) => {
+      if (!viewer.value) return;
 
-      // 캔버스 크기와 뷰포트 비율을 고려한 변환
-      const imageWidth = viewer.value.world.getItemAt(0).getContentSize().x;
-      const imageHeight = viewer.value.world.getItemAt(0).getContentSize().y;
+      // OpenSeadragon의 `addOverlay` 사용
+      const overlayDiv = document.createElement('div');
+      overlayDiv.style.border = '2px solid red'; // 박스 스타일
+      overlayDiv.style.position = 'absolute'; // 위치 설정
+      overlayDiv.style.width = `${width}%`; // 뷰포트에 비례한 너비
+      overlayDiv.style.height = `${height}%`; // 뷰포트에 비례한 높이
 
-      const scaleX = canvas.width / imageWidth;
-      const scaleY = canvas.height / imageHeight;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // 기존 그려진 내용 지우기
-      ctx.beginPath();
-      ctx.strokeStyle = 'red'; // 박스 색상
-      ctx.lineWidth = 2; // 박스 두께
-      let rectPath = new Path2D();
 
-      // 캔버스에서의 좌표계에 맞게 그리기
-      rectPath.rect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
-      ctx.stroke(rectPath);
+      const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(x), Number(y), Number(width), Number(height)); // 이미지 좌표를 뷰포트 좌표로 변환
+      viewer.value.addOverlay({
+        element: overlayDiv,
+        location: overlayRect
+      });
+
+      await zoomToBox(x, y, width, height); // 박스에 맞춰 줌
+
     };
 
 
-    let isZoomed = false;  // 줌이 설정된 상태를 추적하는 변수
+
+
+    let isZoomed = false;
 
     const zoomToBox = (x, y, width, height) => {
       if (isZoomed) return;  // 이미 줌이 설정된 경우, 더 이상 실행하지 않음
 
-      // 이미지 크기 가져오기
-      const imageWidth = viewer.value.world.getItemAt(0).getContentSize().x;
-      const imageHeight = viewer.value.world.getItemAt(0).getContentSize().y;
+      // // 이미지 크기 가져오기
+      const imageWidth = Number(canvasCurrentWitdh.value);
+      const imageHeight = Number(canvasCurrentHeight.value);
+
 
       // x, y, width, height를 뷰포트 좌표로 변환
       const viewportX = x / imageWidth;
@@ -215,31 +218,48 @@ const wpsInitElement = async () => {
       const viewportWidth = width / imageWidth;
       const viewportHeight = height / imageHeight;
 
-      // 이미지가 너무 커서 확대가 심한 경우, 적절한 줌 비율을 계산하여 제한
-      const zoomLevel = Math.min(viewer.value.viewport.getZoom() * 2, 4); // 줌 레벨 제한 4
+      // 현재 줌 레벨 가져오기
+      const currentZoom = viewer.value.viewport.getZoom();
+
+      // 줌 비율을 이미지 크기와 뷰포트 비율에 맞게 계산
+      const zoomLevel = Math.min(currentZoom * 2, 2); // 줌 레벨 제한 (최대 줌 비율 4배)
 
       // 줌 비율 적용
       viewer.value.viewport.zoomTo(zoomLevel);
 
       // 주어진 영역에 맞춰서 뷰포트 영역 조정
-      viewer.value.viewport.panTo(new OpenSeadragon.Point(viewportX + viewportWidth / 2, viewportY + viewportHeight / 2));
+      const newCenterX = viewportX + viewportWidth / 2;
+      const newCenterY = viewportY + viewportHeight / 2;
+      viewer.value.viewport.panTo(new OpenSeadragon.Point(newCenterX, newCenterY));
 
       isZoomed = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
+
+      // 박스를 그리기 위한 추가 함수 호출
     };
 
 
-    viewer.value.addHandler('animation', () => {
-      const boxX1 = 1400; // 박스의 시작 X 좌표
-      const boxY1 = 2000; // 박스의 시작 Y 좌표
-      const boxX2 = 2400; // 박스의 시작 X 좌표
-      const boxY2 = 1000; // 박스의 시작 Y 좌표
 
-      const boxWidth = Number(boxX2) - Number(boxX1);// 박스의 너비
-      const boxHeight = Number(boxY2) - Number(boxY1); // 박스의 높이
+    viewer.value.addHandler('animation',async () => {
+      // FILE_NM
+      // console.log(props.wpsImgClickInfoData.img.fileName)
+      const extracted = props.wpsImgClickInfoData.img.fileName.split('_').slice(2).join('_');
+      const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
 
-      drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight); // 박스 그리기
-      zoomToBox(boxX1, boxY1, boxWidth, boxHeight); // 박스에 맞춰 줌
+      const response_new = await readJsonFile({fullPath: url_new});
+      const findWbcClass = response_new.data.find((el: any) => {return el.FILE_NM === extracted})
+      console.log(findWbcClass)
+      if(findWbcClass){
+        const boxX1 = Number(findWbcClass.POSX1); // 박스의 시작 X 좌표
+        const boxY1 = Number(findWbcClass.POSY1); // 박스의 시작 Y 좌표
+        const boxX2 = Number(findWbcClass.POSX2); // 박스의 시작 X 좌표
+        const boxY2 = Number(findWbcClass.POSY2); // 박스의 시작 Y 좌표
 
+        const boxWidth = Number(boxX2) - Number(boxX1);// 박스의 너비
+        const boxHeight = Number(boxY2) - Number(boxY1); // 박스의 높이
+
+        drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
+
+      }
     });
 
   } catch (e) {
@@ -267,10 +287,12 @@ const fetchTilesInfo = async (folderPath: string) => {
         tilesInfo.push({
           Image: {
             xmlns: "http://schemas.microsoft.com/deepzoom/2009",
+            Type: 'image',
             Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
-            Format: "png",
+            Format: "jpg",
             Overlap: "1",
             TileSize: tileSize,
+            buildPyramid: false,
             Size: {
               Width: width,
               Height: height
@@ -299,9 +321,9 @@ const extractSubStringBeforeFiles = (str: string) => {
 
 const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const urlImage = `${path}/${props.selectItems.slotId}/02_WBC_Image/low_stitched_files.dzi`;
+  const urlImage = `${path}/${props.selectItems.slotId}/04_WPS/WPS.dzi`;
   const imageResponse = await readDziFile({filePath: urlImage});
-  return await extractWidthHeightFromDzi(`low_stitched_files`, imageResponse);
+  return await extractWidthHeightFromDzi(`WPS_files`, imageResponse);
 }
 
 const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
