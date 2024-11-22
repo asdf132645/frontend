@@ -1,5 +1,5 @@
 <template>
-  <div class="progressBarLogin" v-if="!progressOnOff && uimdOpenIp !== 'http://192.168.0.131:3002' && forceViewer === 'main' && !isViewer">
+  <div class="progressBarLogin" v-if="!progressOnOff && forceViewer === 'main' && !isViewer">
     <div class="progressDiv">
       <progress id="file" :value="progress" max="100"></progress>
       <div class="loading-text">Loading...</div>
@@ -98,6 +98,9 @@ const startProgress = () => {
 onMounted(async () => {
   isAutoLogginable();
   startProgress();
+  if(isTcpConnected.value){
+    progressOnOff.value = true;
+  }
 })
 
 /** 자동 로그인 확인 */
