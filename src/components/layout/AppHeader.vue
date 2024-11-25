@@ -322,7 +322,7 @@ watch([embeddedStatusJobCmd.value], async (newVals: any) => {
   eqStatCd.value = newVals[0].sysInfo.eqStatCd;
 
   const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
-  if (machineVersion.value === '100a' && (autoStartTimerNumber || autoStartTimerNumber === '0.0')) {
+  if (machineVersion.value === '100a' && autoStartTimerNumber !== undefined) {
     autoStartTimer.value = (parseFloat(autoStartTimerNumber) / 5) * 100;
   }
 

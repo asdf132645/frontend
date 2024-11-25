@@ -11,12 +11,14 @@
         <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
       <li>
         <!--0019 길병원-->
-        <span class="proSpan">
-          {{ siteCd === '0019' ? 'Order Date' : 'Analyzed Date' }}
-        </span>
-        <span class="proVal">
-          {{ siteCd === '0019' ? processInfoItem?.analyzedDttm   : processInfoItem?.orderDate }}
-        </span>
+        <template v-if="HOSPITAL_SITE_CD_BY_NAME['인천길병원'] === siteCd">
+          <span class="proSpan">Order Date</span>
+          <span class="proVal">{{ processInfoItem?.analyzedDttm }}</span>
+        </template>
+        <template v-else>
+          <span class="proSpan">Analyzed Date</span>
+          <span class="proVal">{{ processInfoItem?.orderDate }}</span>
+        </template>
       </li>
       <li>
         <span class="proSpan">Oil Count</span>
@@ -37,6 +39,7 @@ import {ref, computed, watch, onMounted, getCurrentInstance, defineProps} from "
 import {useStore} from "vuex";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import process from "process";
+import {HOSPITAL_SITE_CD_BY_NAME} from "../../../common/defines/constants/siteCd";
 const props = defineProps([ 'parsedData']);
 
 // 스토어

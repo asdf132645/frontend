@@ -502,6 +502,9 @@ const kuahGilHosCbc = async () => {
           case 'PT_NO':
             cbcPatientNo.value = value;
             break;
+          case 'PT_NM':
+            cbcPatientNm.value = value;
+            break;
           case 'SEX':
             cbcSex.value = value;
             break;
