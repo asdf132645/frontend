@@ -227,8 +227,7 @@ const initCbcData = async (newVal: any) => {
       await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-      await crcCbcDataLoad();
-      await commonCbc(firstCbcDatafilename.value);
+      await uimdTestUrlSend();
       break;
       // CBC 공통
     default:
@@ -424,6 +423,14 @@ const fileData = async (firstCbcDatafilename: string) => {
     console.error(readFileTxtRes.data.message);
     loading.value = false;
   }
+}
+
+const uimdTestUrlSend = async () => {
+  await axios.get(cbcFilePathSetArr.value).then(async function (result) {
+    console.log(result.data.data.data)
+    cbcWorkList.value = result.data.data.data;
+    loading.value = false;
+  });
 }
 
 const showErrorAlert = (message: string) => {

@@ -26,7 +26,6 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
                     spc: data?.spc,
                     day: data?.exam_ymd_unit,
                     slip: data?.slip,
-                    rmk: data?.rmk,
                 };
                 cbcWorkList.push(obj);
             }

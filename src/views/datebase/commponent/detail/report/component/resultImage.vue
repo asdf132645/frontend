@@ -73,6 +73,16 @@
         </tbody>
       </table>
     </div>
+    <ul class="wbcImgArea">
+      <li v-for="(item) in selectWbcImgArr" :key="item.id">
+        <div v-if="item?.count !== '0' && item?.count !== 0">
+<!--          <p class="mt10">-->
+<!--            {{ item?.title }} <span class="smallName">({{ item.item.name }})</span>-->
+<!--          </p>-->
+          <img :src="getImageUrl(item.image.fileName, item.item.id, item.item.title, '')"/>
+        </div>
+      </li>
+    </ul>
   </div>
   <ToastNotification
       v-if="toastMessage"
@@ -84,15 +94,16 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from "vue";
+import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
 import html2canvas from "html2canvas";
 import {cbcImgGetApi, ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getCbcCodeList} from "@/common/helpers/lisCbc/inhaCbcLis";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {messages} from "@/common/defines/constants/constantMessageText";
 import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
+import {useStore} from "vuex";
 
-const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo']);
+const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo', 'selectWbcImgArr', 'slotId']);
 const arrDataWbc = ref<any>([]);
 const arrDataRbc = ref<any>([]);
 const arrDataPlt = ref<any>([]);
@@ -106,7 +117,13 @@ const arrDataPltLeft = computed(() => arrDataPlt.value.slice(0, 4));
 const arrDataPltRight = computed(() => arrDataPlt.value.slice(4));
 const nowCrcDataVal = ref([]);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS)
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const store = useStore();
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
+const projectType = ref<any>('');
+const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+
+
 watch(
     () => [arrDataRbc.value, arrDataWbc.value, arrDataPlt.value],
     async () => {
@@ -120,6 +137,9 @@ watch(
 onMounted(async () => {
   await initializeData();
 });
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
+})
 
 // 데이터 초기화 함수 정의
 const initializeData = async () => {
@@ -132,7 +152,10 @@ const initializeData = async () => {
 
 const captureAndConvert = async () => {
   if (crcReport.value) {
-    const canvas = await html2canvas(crcReport.value);
+    const canvas = await html2canvas(crcReport.value, {
+      useCORS: true, // CORS를 허용하도록 설정
+      allowTaint: true // 외부 리소스 사용 허용
+    });
     const dataUrl = canvas.toDataURL('image/png');
 
     // Base64 문자열을 Blob으로 변환
@@ -216,6 +239,8 @@ const arrayBufferToHex = (buffer: ArrayBuffer): string => {
 };
 
 const saveToDatabase = async (hexString: string) => {
+  // uimd 이미지 테스트 하는 함수 실제 사용 x 이미지 태그로 확인 하고 싶으면 이 함수 사용
+  // displayImageFromHex(hexString);
 
   // db 저장 로직
   const req = `smp_no=${props.barcodeNo}`;
@@ -236,18 +261,11 @@ const saveToDatabase = async (hexString: string) => {
       exam_cd: res[0]?.exam_cd,
       spc: res[0]?.spc
     };
-    console.log('data', imgData);
-
-    //props.barcodeNo
-    const saveData = {
-      tsmp_no: props.barcodeNo,
-      ttext_rslt: data[0]?.slip.trim() === 'H1' ? data[0]?.rmk : `Comment:${props?.commentList}/rRecommendation:${props?.recoList}`
-    }
-    // displayImageFromHex(hexString);
-    const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
-    if (setDataYWmc?.code === 201) {
-      await lisSendYwmc(imgData);
-    } else {
+    const aa = await lisSendYwmc(imgData);
+    if(aa === 'Update successful'){
+      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      showToast('Success');
+    }else{
       toastMessageType.value = messages.TOAST_MSG_ERROR;
       showToast('Lis fail');
     }
@@ -259,5 +277,32 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {
+  // 이미지 정보가 없다면 빈 문자열 반환
+  if (!props.selectWbcImgArr || props.selectWbcImgArr.length === 0) {
+    return "";
+  }
+  const slotId = props.slotId || '';
+  const folderPath = `${pbiaRootDir.value}/${slotId}/${projectTypeReturn(projectType.value)}/${id}_${title}`;
+  let url = '';
 
+  // 타임스탬프 추가
+
+  if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
+    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  } else {
+    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+  }
+
+
+  return url;
+}
+
+const projectTypeReturn = (type: string): any => {
+  if (type === 'bm') {
+    return '04_BM_Classification';
+  } else if (type === 'pb') {
+    return '01_WBC_Classification';
+  }
+}
 </script>
