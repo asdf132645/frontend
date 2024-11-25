@@ -127,7 +127,7 @@
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
-        <button @click="wps" v-if="siteCd === ''">
+        <button @click="wps" v-if="isWpsShow">
           <font-awesome-icon :icon="['fas', 'expand']" />
           WPS
         </button>
@@ -227,7 +227,7 @@ import {
   getWbcCustomClassApi,
   getWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
-import {deleteRunningApi, fileSysPost} from "@/common/api/service/fileSys/fileSysApi";
+import {deleteRunningApi, fileSysPost, getFolders} from "@/common/api/service/fileSys/fileSysApi";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {
   basicBmClassList,
@@ -313,7 +313,7 @@ const alertMessage = ref('');
 const wbcReset = ref(false);
 const showImageGallery = ref(true);
 const isLocalNsNbIntegration = ref(false);
-
+const isWpsShow = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -351,8 +351,13 @@ onMounted(async () => {
       // runningInfo를 이용한 UI 렌더링
     }
   }
-
+  if (projectType.value !== 'bm'){
+    await checkWps();
+  }else{
+    isWpsShow.value = false;
+  }
 });
+
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
@@ -379,6 +384,17 @@ watch(() => moveImgIsBool.value, (currentMoveImgIsBool) => {
     enableScroll();
   }
 })
+
+const checkWps = async () => {
+  const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/04_WPS`;
+
+  const foldersPath = `folderPath=${filePath}`;
+  const wpsFolderCheck = await getFolders(foldersPath);
+  if(wpsFolderCheck?.code !== 400){
+    isWpsShow.value = true;
+  }
+}
+
 const handleZoom = () => {
   const newSize = zoomValue.value;
   modalImageWidth.value = `${newSize}px`;

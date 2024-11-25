@@ -115,7 +115,6 @@ const wpsInitElement = async () => {
       showZoomControl: false,
       showHomeControl: false,
       gestureSettingsMouse: {clickToZoom: false},
-      maxZoomLevel: 30,
       minZoomLevel: 1,
       zoomPerClick: 1.2,
       zoomPerScroll: 1.2,
@@ -306,10 +305,10 @@ const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const urlImage = `${path}/${props.selectItems.slotId}/04_WPS/WPS.dzi`;
   const imageResponse = await readDziFile({filePath: urlImage});
-  return await extractWidthHeightFromDzi(`WPS_files`, imageResponse);
+  return await extractWidthHeightFromDzi(imageResponse);
 }
 
-const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
+const extractWidthHeightFromDzi = ( xmlString: any): any => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "application/xml");
   const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
@@ -317,6 +316,6 @@ const extractWidthHeightFromDzi = (fileName: string, xmlString: any): any => {
   const tileSize = tileSizeEl.getAttribute("TileSize");
   const width = sizeElement.getAttribute("Width");
   const height = sizeElement.getAttribute("Height");
-  return {fileName, width: Number(width), height: Number(height), tileSize: Number(tileSize)}
+  return { width: Number(width), height: Number(height), tileSize: Number(tileSize)}
 }
 </script>
