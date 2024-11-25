@@ -1,6 +1,6 @@
 <template>
   <div class="wpsDiv main">
-    <div class="tiling-viewer_img_list-box_img_list">
+    <div class="tiling-viewer_img_list-box_img_list" style="border-radius: 4px">
       <div ref="tilingViewerLayer"
            id="tilingViewerImgListWps"
            class="tilingViewerImgListWps" style="width: 100%;"></div>
@@ -39,27 +39,57 @@ const backgroundImage = ref('');
 const hideSideNavigatorImage = ref(false);
 const imgOn = ref(false);
 const findWbcClass = ref<any>([]);
+const localSlotId = ref('');
+let isZoomed = ref(true);
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
-      wps.value = newVal;
-      const tilingViewerLayer = document.getElementById('tilingViewerImgListWps');
-      if (tilingViewerLayer) {
-        tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
+  wps.value = newVal;
 
-        // OpenSeadragon 인스턴스가 존재하면 초기화하지 않고 캔버스만 업데이트
-        if (viewer.value) {
-          viewer.value.destroy(); // 기존 뷰어 인스턴스 파괴
-        }
-        const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-        const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
-        const response_new = await readJsonFile({fullPath: url_new});
-        findWbcClass.value = response_new.data;
-        await wpsInitElement();
+  // slotId가 변경된 경우
+  if (localSlotId.value !== props.slotId) {
+    const tilingViewerLayer = document.getElementById('tilingViewerImgListWps');
+    if (tilingViewerLayer) {
+      localSlotId.value = props.slotId;
+      tilingViewerLayer.innerHTML = ''; // 기존 내용 삭제
+
+      // OpenSeadragon 초기화
+      if (viewer.value) {
+        viewer.value.destroy(); // 기존 뷰어 인스턴스 파괴
       }
-    },
-    {deep: true}
-);
-const adjustNavBar = (x1: any, x2: any, y1: any, y2: any) => {
+      const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path
+          ? props.selectItems?.img_drive_root_path
+          : iaRootPath.value;
+      const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
+      const response_new = await readJsonFile({ fullPath: url_new });
+      findWbcClass.value = response_new.data;
+      await wpsInitElement();
+    }
+  } else {
+    // slotId는 동일하지만 wpsImgClickInfoData만 변경된 경우
+    if (viewer.value) {
+      isZoomed.value = false;
+      // 네비게이션 바 위치 조정
+      const currentClass = findWbcClass.value.find((el: any) => el.FILE_NM === newVal.img.fileName.split('_').slice(2).join('_'));
+      if (currentClass) {
+        const { x1, x2, y1, y2 } = currentClass;
+        adjustNavBar(x1, x2, y1, y2);
+
+        // drawBoxOnCanvas 호출
+        const boxX1 = Number(currentClass.POSX1);
+        const boxY1 = Number(currentClass.POSY1);
+        const boxX2 = Number(currentClass.POSX2);
+        const boxY2 = Number(currentClass.POSY2);
+
+        const boxWidth = boxX2 - boxX1;
+        const boxHeight = boxY2 - boxY1;
+
+        await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
+      }
+    }
+  }
+}, { deep: true });
+
+const adjustNavBar = (x1: number, x2: number, y1: number, y2: number) => {
   const navBar = document.querySelector('.openseadragon-container .navigator');
   const navBarCanvas = document.querySelector('.openseadragon-container .navigator .openseadragon-canvas');
   const parentElement = navBar?.parentNode;
@@ -103,7 +133,7 @@ const wpsInitElement = async () => {
       animationTime: 0.4,
       navigatorSizeRatio: 0.05,
       showNavigator: !hideSideNavigatorImage.value,
-      navigatorAutoFade: false, // 네비게이터가 자동으로 숨겨지지 않도록 설정
+      navigatorAutoFade: true, // 네비게이터가 자동으로 숨겨지지 않도록 설정
       sequenceMode: true,
       defaultZoomLevel: 1,
       navigatorBackground: "transparent",
@@ -175,56 +205,7 @@ const wpsInitElement = async () => {
       viewer.value.viewport.fitBounds(zoomRect);
     });
 
-    const drawBoxOnCanvas = async (x, y, width, height) => {
-      if (!viewer.value) return;
-
-      // OpenSeadragon의 `addOverlay` 사용
-      const overlayDiv = document.createElement('div');
-      overlayDiv.style.border = '2px solid red'; // 박스 스타일
-      overlayDiv.style.position = 'absolute'; // 위치 설정
-      overlayDiv.style.width = `${width}%`; // 뷰포트에 비례한 너비
-      overlayDiv.style.height = `${height}%`; // 뷰포트에 비례한 높이
-
-
-
-      const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(x), Number(y), Number(width), Number(height)); // 이미지 좌표를 뷰포트 좌표로 변환
-      viewer.value.addOverlay({
-        element: overlayDiv,
-        location: overlayRect
-      });
-
-      zoomToBox(x, y, width, height); // 박스에 맞춰 줌
-
-    };
-
-
-
-
-    let isZoomed = false;
-
-    const zoomToBox  = (x: any, y: any, width: any, height: any) => {
-      if (isZoomed) return;  // 이미 줌이 설정된 경우, 더 이상 실행하지 않음
-
-      if (viewer.value) {
-        // OpenSeadragon 뷰포트 좌표로 변환
-        let viewportRect = viewer.value.viewport.imageToViewportRectangle(x, y, width, height);
-
-        // 4배 확대를 위해 영역 크기 축소
-        const zoomFactor = 0.1;
-        const adjustedRect = new OpenSeadragon.Rect(
-            viewportRect.x + viewportRect.width * (1 - 1 / zoomFactor) / 2, // 중심점 기준으로 위치 조정
-            viewportRect.y + viewportRect.height * (1 - 1 / zoomFactor) / 2,
-            viewportRect.width / zoomFactor, // 크기 축소
-            viewportRect.height / zoomFactor
-        );
-
-        // 뷰포트를 해당 영역으로 확대
-        viewer.value.viewport.fitBounds(adjustedRect, true);
-      }
-      isZoomed = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
-    };
-
-
+    isZoomed.value = false;
 
     viewer.value.addHandler('animation',async () => {
       // FILE_NM
@@ -249,6 +230,53 @@ const wpsInitElement = async () => {
   }
 }
 
+const zoomToBox  = (x: any, y: any, width: any, height: any) => {
+  if (isZoomed.value) return;  // 이미 줌이 설정된 경우, 더 이상 실행하지 않음
+
+  if (viewer.value) {
+    // OpenSeadragon 뷰포트 좌표로 변환
+    let viewportRect = viewer.value.viewport.imageToViewportRectangle(x, y, width, height);
+
+    // 4배 확대를 위해 영역 크기 축소
+    const zoomFactor = 0.1;
+    const adjustedRect = new OpenSeadragon.Rect(
+        viewportRect.x + viewportRect.width * (1 - 1 / zoomFactor) / 2, // 중심점 기준으로 위치 조정
+        viewportRect.y + viewportRect.height * (1 - 1 / zoomFactor) / 2,
+        viewportRect.width / zoomFactor, // 크기 축소
+        viewportRect.height / zoomFactor
+    );
+
+    // 뷰포트를 해당 영역으로 확대
+    viewer.value.viewport.fitBounds(adjustedRect, true);
+
+    // 애니메이션 속도를 설정
+    viewer.value.animationTime = 1.0; // 애니메이션 지속 시간 (초)
+    viewer.value.springStiffness = 5.0; // 애니메이션 반응 속도
+  }
+  isZoomed.value = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
+};
+
+const drawBoxOnCanvas = async (x: number, y: number, width: number, height: number) => {
+  if (!viewer.value) return;
+
+  // OpenSeadragon의 `addOverlay` 사용
+  const overlayDiv = document.createElement('div');
+  overlayDiv.style.border = '2px solid red'; // 박스 스타일
+  overlayDiv.style.position = 'absolute'; // 위치 설정
+  overlayDiv.style.width = `${width}%`; // 뷰포트에 비례한 너비
+  overlayDiv.style.height = `${height}%`; // 뷰포트에 비례한 높이
+
+
+
+  const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(x), Number(y), Number(width), Number(height)); // 이미지 좌표를 뷰포트 좌표로 변환
+  viewer.value.addOverlay({
+    element: overlayDiv,
+    location: overlayRect
+  });
+
+  zoomToBox(x, y, width, height); // 박스에 맞춰 줌
+
+};
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;

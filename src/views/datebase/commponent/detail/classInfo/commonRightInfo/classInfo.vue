@@ -452,7 +452,8 @@ const uploadLis = async () => {
     case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
       godaeAnamDataSendLoad();
       break;
-    default:
+    case HOSPITAL_SITE_CD_BY_NAME['NONE']:
+    case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
       lisLastStep();
       break;
   }
@@ -776,8 +777,8 @@ const gilDataSendLoad = () => {
     return props.selectItems?.wbcInfoAfter
         .filter((wbcItem: any) => lisCode.IA_CD === wbcItem.id && (Number(wbcItem.percent) > 0 || Number(wbcItem.count)))
         .map((wbcItem: any) => {
-          const countLine = `R|${++seq}|^^^^${lisCode.LIS_CD}|${wbcItem.count}|||||||^${userModuleDataGet.value.userId}\n`;
-          const percentLine = `R|${++seq}|^^^^${lisCode.LIS_CD}%|${wbcItem.percent}|%||||||^${userModuleDataGet.value.userId}\n`;
+          const countLine = `R|${++seq}|^^^^${lisCode.LIS_CD}|${wbcItem.count}|||||||^${userModuleDataGet.value.name}\n`;
+          const percentLine = `R|${++seq}|^^^^${lisCode.LIS_CD}%|${wbcItem.percent}|%||||||^${userModuleDataGet.value.name}\n`;
           return countLine + percentLine;
         })
         .join(''); // 모든 줄을 합쳐서 반환
@@ -918,7 +919,6 @@ const lisFileUrlCreate = async (data: any) => {
 
       // 파일 생성
       const fileRes = await createFile(fileParams);
-      console.log('fileRes', fileRes);
       if (fileRes) {
         // 실행 정보 업데이트
         const result: any = await detailRunningApi(String(props.selectItems?.id));
