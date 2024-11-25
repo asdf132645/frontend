@@ -15,8 +15,10 @@
           <td>{{ slot?.barcodeId }}</td>
           <td>{{ slot?.patientName }}</td>
           <!--    0019는 길병원(검사 끝나는 시간으로 해달라는 길병원 요구)    -->
-          <td>{{
-              siteCd === '0019' ? formatDateString(slot?.analyzedDttm) : formatDateString(slot?.orderDate)
+          <td>
+            {{ HOSPITAL_SITE_CD_BY_NAME['인천길병원'] === siteCd
+              ? formatDateString(slot?.analyzedDttm)
+              : formatDateString(slot?.orderDate)
             }}
           </td>
           <td>{{ slot?.stateCd }}</td>
@@ -37,6 +39,7 @@ import { useStore } from "vuex";
 import { stringToDateTime } from "@/common/lib/utils/conversionDataUtils";
 import { formatDateString } from "@/common/lib/utils/dateUtils";
 import { RUNNING_INFO_INTERFACE_CODE } from "@/common/defines/constants/commonCodeList";
+import {HOSPITAL_SITE_CD_BY_NAME} from "../../../common/defines/constants/siteCd";
 
 const store = useStore();
 const siteCd = computed(() => store.state.commonModule.siteCd);

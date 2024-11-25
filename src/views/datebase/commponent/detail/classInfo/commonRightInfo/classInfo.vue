@@ -749,33 +749,37 @@ const cmcSeoulLisAndCbcDataGet = () => {
   });
 }
 const lisLastStep = () => {
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    // 데이터 초기화
-    let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
-    let seq = 0;
-    // 'wbcInfoAfter'와 'lisCodeWbcArr'를 순회하며 데이터 구성
-    const buildDataString = (lisCode: any) => {
-      if (lisCode.LIS_CD === '') return ''; // 빈 LIS_CD는 무시
-      return props.selectItems?.wbcInfoAfter
-          .filter((wbcItem: any) => lisCode.IA_CD === wbcItem.id && (Number(wbcItem.percent) > 0 || Number(wbcItem.count)))
-          .map((wbcItem: any) => {
-            const countLine = `R|${++seq}|^^^^${lisCode.LIS_CD}|${wbcItem.count}|||||||^${userModuleDataGet.value.name}\n`;
-            const percentLine = `R|${++seq}|^^^^${lisCode.LIS_CD}%|${wbcItem.percent}|%||||||^${userModuleDataGet.value.name}\n`;
-            return countLine + percentLine;
-          })
-          .join(''); // 모든 줄을 합쳐서 반환
-    };
-    // 'lisCodeWbcArr'를 순회하며 데이터를 추가
-    data += lisCodeWbcArr.value.map(buildDataString).join('');
-    // 종료 데이터 추가
-    data += 'L|1|N';
-    // 파일 URL 생성 함수 호출
-    lisFileUrlCreate(data);
-  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) {
-    const data = goDae();
-    lisFileUrlCreate(data);
-  } else {
-    otherDataSend();
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
+      // 데이터 초기화
+      let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
+      let seq = 0;
+      // 'wbcInfoAfter'와 'lisCodeWbcArr'를 순회하며 데이터 구성
+      const buildDataString = (lisCode: any) => {
+        if (lisCode.LIS_CD === '') return ''; // 빈 LIS_CD는 무시
+        return props.selectItems?.wbcInfoAfter
+            .filter((wbcItem: any) => lisCode.IA_CD === wbcItem.id && (Number(wbcItem.percent) > 0 || Number(wbcItem.count)))
+            .map((wbcItem: any) => {
+              const countLine = `R|${++seq}|^^^^${lisCode.LIS_CD}|${wbcItem.count}|||||||^${userModuleDataGet.value.userId}\n`;
+              const percentLine = `R|${++seq}|^^^^${lisCode.LIS_CD}%|${wbcItem.percent}|%||||||^${userModuleDataGet.value.userId}\n`;
+              return countLine + percentLine;
+            })
+            .join(''); // 모든 줄을 합쳐서 반환
+      };
+      // 'lisCodeWbcArr'를 순회하며 데이터를 추가
+      data += lisCodeWbcArr.value.map(buildDataString).join('');
+      // 종료 데이터 추가
+      data += 'L|1|N';
+      // 파일 URL 생성 함수 호출
+      lisFileUrlCreate(data);
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
+      const goDaeData = goDae();
+      lisFileUrlCreate(goDaeData);
+      break;
+    default:
+      otherDataSend();
+      break;
   }
 }
 
