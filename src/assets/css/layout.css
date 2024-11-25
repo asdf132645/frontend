@@ -4877,7 +4877,53 @@ ul.wpsDiv.cellImgBox {
     vertical-align: top;
     border-radius: 4px;
 }
+.IsWbcImageSelect {
+    position: absolute;
+    z-index: 999;
+    top: 18%;
+    right: 1%;
+    width: 44%;
+    background: #333;
+    height: 500px;
+    overflow: auto;
+    border: 1px solid #fff;
+}
+.IsWbcImageSelect  ul > li > div > img {
+    margin: 5px;
+    max-width: 150px;
+}
 
+ul.wbcImgArea li {
+    display: inline-block;
+    margin: 4px;
+}
+
+ul.wbcImgArea li img {
+    max-width: 150px;
+}
+.fixedWbcBottom {
+    position: fixed;
+    bottom: 37%;
+    right: 21%;
+}
+.IsWbcImageSelect > div > ul {
+    margin-bottom: 50px;
+}
+
+.fixedWbcBottom {
+    position: fixed;
+}
+.IsWbcImageSelect > div > ul > li {
+    text-align: left;
+    margin: 0px 0px 0px 7px;
+}
+.IsWbcImageSelect > div > ul > li > div {
+    display: inline-block;
+}
+
+.IsWbcImageSelect > div > ul > li > div > p {
+    display: block;
+}
 .wpsDiv.main {
     background: #252629;
     height: 75vh;

@@ -55,6 +55,10 @@
         </div>
         <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
+        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
+                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['NONE']"
+        >Image Select
+        </button>
 
       </div>
 
@@ -73,9 +77,8 @@
                           @changeCrcData="changeCrcData"></crc-compontent>
         </div>
       </div>
-
       <!-- Remark 관련 -->
-      <div class="mt20" v-if="remarkCountReturnCode(0)">
+      <div class="mt20" v-if="remarkCountReturnCode(0) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
           <span><font-awesome-icon :icon="['fas', 'message']"/> Remark</span>
           <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
@@ -89,7 +92,7 @@
         </div>
       </div>
 
-      <div class="mt20" v-if="remarkCountReturnCode(1)">
+      <div class="mt20" v-if="remarkCountReturnCode(1) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
           <span><font-awesome-icon :icon="['fas', 'message']"/> Comment </span>
           <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
@@ -102,7 +105,7 @@
         </div>
       </div>
 
-      <div class="mt20" v-if="remarkCountReturnCode(2)">
+      <div class="mt20" v-if="remarkCountReturnCode(2) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
           <span><font-awesome-icon :icon="['fas', 'message']"/> Recommendation </span>
           <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
@@ -112,6 +115,19 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt20" v-if="ywmcSlip === 'H1'">
+        <div class="crcDivTitle">
+          <span><font-awesome-icon :icon="['fas', 'message']"/> CBC flag </span>
+        </div>
+
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <div>
+            <textarea v-model="cbcFlag"></textarea>
           </div>
         </div>
       </div>
@@ -151,9 +167,12 @@
                :barcodeNo="selectItems?.barcodeNo"
                :commentList="commentList"
                :recoList="recoList"
+               :selectWbcImgArr="selectWbcImgArr"
+               :slotId="selectItems?.slotId"
   />
-
-
+  <WbcImageSelect v-if="IsWbcImageSelect" :selectItems="selectItems" @closeWbcSelect="closeWbcSelect"
+                  @selectWbcImgSend="selectWbcImgSend"
+  />
 </template>
 
 <script setup lang="ts">
@@ -177,6 +196,10 @@ import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/compo
 import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
 import {lisSendSD} from "@/common/helpers/lisCbc/sdCbcLis";
 import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component/autoCBCMatching.vue";
+import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
+import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
+import axios from "axios";
+import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -230,7 +253,17 @@ const nowCrcDataRef = ref<any>([]);
 const captureAndConvertOk = ref(false);
 const isAutoCBCMatchingArr = ref<any>([]);
 const autoCBCMatchingShow = ref(false);
-
+const IsWbcImageSelect = ref(false);
+const selectWbcImgArr = ref<any>([]);
+const ywmcSlip = ref('H3');
+const cbcFlag = ref('');
+const selectWbcImgSend = (arr: any) => {
+  selectWbcImgArr.value = [];
+  selectWbcImgArr.value = arr;
+  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  showToast('Success');
+  IsWbcImageSelect.value = false;
+}
 onBeforeMount(async () => {
   await nextTick();
 
@@ -291,11 +324,43 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   await nextTick();
-  await sdMounted();
+  await dataAutoComputeLoad();
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
-});
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']) {
+    const {data, cbcDataVal} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
+    ywmcSlip.value = data[0].slip.trim();
+  } else if (siteCd.value === '') {
+    await axios.get(await getCbcPathData()).then(async function (result) {
+      console.log(result.data.data.data[0].slip.trim())
+      ywmcSlip.value = result.data.data.data[0].slip.trim();
+      cbcFlag.value = '';
+      for (const el of result.data.data.data) {
+        switch (el.exam_cd.trim()) {
+          case '8HN109GBL_F':
+            cbcFlag.value += 'Blasts Flag'
+            break;
+          case '8HN109G_NRBC_F':
+            cbcFlag.value += 'Nucleated RBC Flag'
+            break;
+          case '8HN109G_ATYP_FRAG':
+            cbcFlag.value += 'Atypical Lymphocyte Flag'
+            break;
+          case '8HN109GIG_F':
+            cbcFlag.value += 'Immature Granulocytes Flag'
+            break;
+        }
+      }
+    });
+  } else {
+    ywmcSlip.value = 'H3'; // 원주기독에 독단적인 커스텀마이징 때문에 강제적으로 H3 pbs 기준으로 맞춤..
 
-const sdMounted = async () => {
+  }
+
+});
+const closeWbcSelect = () => {
+  IsWbcImageSelect.value = false;
+}
+const dataAutoComputeLoad = async () => {
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
@@ -314,7 +379,6 @@ const sdMounted = async () => {
         }
       }
     }
-
   }
 }
 
@@ -549,7 +613,24 @@ const lisStart = async () => {
 const yamcSendLisUpdate = async (nowCrcData: any) => {
   nowCrcDataRef.value = nowCrcData;
   await nextTick();
-  await captureAndConvert();
+  if(ywmcSlip.value.trim() === 'H3'){
+    await captureAndConvert();
+  }else{
+    //props.barcodeNo
+    const saveData = {
+      tsmp_no: props.selectItems?.barcodeNo,
+      ttext_rslt: cbcFlag.value
+    }
+    const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
+    if (setDataYWmc?.code === 201) {
+      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      showToast('Success');
+    }else{
+      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      showToast('Lis fail');
+    }
+
+  }
 }
 
 const lisCommonDataWhether = async (lisFunc: any) => {

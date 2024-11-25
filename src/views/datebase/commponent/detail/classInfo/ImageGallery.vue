@@ -39,7 +39,7 @@
                 v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
                 @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
             >
-              <div style="position: relative;" @click="wbcDbClickOpen">
+              <div style="position: relative;">
                 <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
                   <div class="fileTitle" :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
                     {{ replaceFileNamePrefix(image.fileName) }}
