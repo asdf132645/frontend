@@ -798,7 +798,7 @@ const inhaDataSendLoad = async () => {
 
 const otherDataSend = async () => {
   const url = lisFilePathSetArr.value;
-  const fileCreateRes = await createDirectory(url);
+  const fileCreateRes = await createDirectory(`path=${url}`);
 
   if (fileCreateRes) {
     const data = {
@@ -901,11 +901,11 @@ const lisFileUrlCreate = async (data: any) => {
     const url = lisFilePathSetArr.value;
 
     // 디렉토리 생성
-    const fileCreateRes = await createDirectory(url);
+    const fileCreateRes = await createDirectory(`path=${url}`);
     if (fileCreateRes) {
       const fileParams = {
         path: url,
-        filename: `${url}/${props.selectItems?.barcodeNo}.lst2msg`,
+        filename: `${props.selectItems?.barcodeNo}.lst2msg`,
         content: data,
       };
 
