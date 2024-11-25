@@ -42,7 +42,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th :rowspan="projectType === 'pb' && testTypeCd === '04' ? 3 : 2">PBS Analysis Values</th>
+          <th :rowspan="projectType === 'pb' ? 3 : 2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
@@ -61,7 +61,7 @@
             </select>
           </td>
         </tr>
-        <tr v-show="projectType === 'pb' && testTypeCd === '04' && viewerCheck !== 'viewer'">
+        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>
             Edge Shot Type
 <!--            <font-awesome-icon-->
