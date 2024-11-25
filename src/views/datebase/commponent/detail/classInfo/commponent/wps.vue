@@ -38,6 +38,7 @@ const canvasOverlay = ref<any>(null);
 const backgroundImage = ref('');
 const hideSideNavigatorImage = ref(false);
 const imgOn = ref(false);
+const findWbcClass = ref<any>([]);
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
       wps.value = newVal;
@@ -49,7 +50,10 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
         if (viewer.value) {
           viewer.value.destroy(); // 기존 뷰어 인스턴스 파괴
         }
-
+        const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
+        const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
+        const response_new = await readJsonFile({fullPath: url_new});
+        findWbcClass.value = response_new.data;
         await wpsInitElement();
       }
     },
@@ -61,7 +65,6 @@ const adjustNavBar = (x1: any, x2: any, y1: any, y2: any) => {
   const parentElement = navBar?.parentNode;
 
   if (parentElement) {
-    // parentElement.classList.add('nav-bar-custom');
     navBarCanvas?.classList.add('nav-bar-canvas');
 
     parentElement?.classList.add('opacityZero');  // 배경 이미지보다 앞에 위치하도록 설정
@@ -79,14 +82,10 @@ const adjustNavBar = (x1: any, x2: any, y1: any, y2: any) => {
     const scaleFactor = 0.5;  // 1/2 비율로 축소
     const left = x1 * scaleFactor;
     const top = y1 * scaleFactor;
-    // const width = (x2 - x1) * scaleFactor;
-    // const height = (y2 - y1) * scaleFactor;
     navBar.style.position = 'absolute';
     // 네비게이션 바의 위치 및 크기 적용
     navBar.style.left = `${left}px`;
     navBar.style.top = `${top}px`;
-    // navBar.style.width = `${width}px`;
-    // navBar.style.height = `${height}px`;
   }
 
 }
@@ -151,10 +150,10 @@ const wpsInitElement = async () => {
     canvas.id = 'myCanvas';
     canvasOverlay.value = canvas;
 
-    viewer.value.addHandler('open', function (event) {
-      adjustNavBar(40, 100, 170, 210);
+    viewer.value.addHandler('open', function  (event: any) {
+      adjustNavBar(findWbcClass.value[0].x1, findWbcClass.value[0].x2, findWbcClass.value[0].y1, findWbcClass.value[0].y2);
       imgOn.value = true;
-      const fullPageButton = viewer.value.buttons.buttons.find((button) => button.tooltip === 'Toggle full page');
+      const fullPageButton = viewer.value.buttons.buttons.find((button: any) => button.tooltip === 'Toggle full page');
 
       if (fullPageButton) {
         fullPageButton.element.addEventListener('click', async () => {
@@ -195,7 +194,7 @@ const wpsInitElement = async () => {
         location: overlayRect
       });
 
-      await zoomToBox(x, y, width, height); // 박스에 맞춰 줌
+      zoomToBox(x, y, width, height); // 박스에 맞춰 줌
 
     };
 
@@ -204,60 +203,44 @@ const wpsInitElement = async () => {
 
     let isZoomed = false;
 
-    const zoomToBox = (x, y, width, height) => {
+    const zoomToBox  = (x: any, y: any, width: any, height: any) => {
       if (isZoomed) return;  // 이미 줌이 설정된 경우, 더 이상 실행하지 않음
 
-      // // 이미지 크기 가져오기
-      const imageWidth = Number(canvasCurrentWitdh.value);
-      const imageHeight = Number(canvasCurrentHeight.value);
+      if (viewer.value) {
+        // OpenSeadragon 뷰포트 좌표로 변환
+        let viewportRect = viewer.value.viewport.imageToViewportRectangle(x, y, width, height);
 
+        // 4배 확대를 위해 영역 크기 축소
+        const zoomFactor = 0.1;
+        const adjustedRect = new OpenSeadragon.Rect(
+            viewportRect.x + viewportRect.width * (1 - 1 / zoomFactor) / 2, // 중심점 기준으로 위치 조정
+            viewportRect.y + viewportRect.height * (1 - 1 / zoomFactor) / 2,
+            viewportRect.width / zoomFactor, // 크기 축소
+            viewportRect.height / zoomFactor
+        );
 
-      // x, y, width, height를 뷰포트 좌표로 변환
-      const viewportX = x / imageWidth;
-      const viewportY = y / imageHeight;
-      const viewportWidth = width / imageWidth;
-      const viewportHeight = height / imageHeight;
-
-      // 현재 줌 레벨 가져오기
-      const currentZoom = viewer.value.viewport.getZoom();
-
-      // 줌 비율을 이미지 크기와 뷰포트 비율에 맞게 계산
-      const zoomLevel = Math.min(currentZoom * 2, 2); // 줌 레벨 제한 (최대 줌 비율 4배)
-
-      // 줌 비율 적용
-      viewer.value.viewport.zoomTo(zoomLevel);
-
-      // 주어진 영역에 맞춰서 뷰포트 영역 조정
-      const newCenterX = viewportX + viewportWidth / 2;
-      const newCenterY = viewportY + viewportHeight / 2;
-      viewer.value.viewport.panTo(new OpenSeadragon.Point(newCenterX, newCenterY));
-
+        // 뷰포트를 해당 영역으로 확대
+        viewer.value.viewport.fitBounds(adjustedRect, true);
+      }
       isZoomed = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
-
-      // 박스를 그리기 위한 추가 함수 호출
     };
 
 
 
     viewer.value.addHandler('animation',async () => {
       // FILE_NM
-      // console.log(props.wpsImgClickInfoData.img.fileName)
       const extracted = props.wpsImgClickInfoData.img.fileName.split('_').slice(2).join('_');
-      const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
-
-      const response_new = await readJsonFile({fullPath: url_new});
-      const findWbcClass = response_new.data.find((el: any) => {return el.FILE_NM === extracted})
-      console.log(findWbcClass)
-      if(findWbcClass){
-        const boxX1 = Number(findWbcClass.POSX1); // 박스의 시작 X 좌표
-        const boxY1 = Number(findWbcClass.POSY1); // 박스의 시작 Y 좌표
-        const boxX2 = Number(findWbcClass.POSX2); // 박스의 시작 X 좌표
-        const boxY2 = Number(findWbcClass.POSY2); // 박스의 시작 Y 좌표
+      const findWbcClassVal = findWbcClass.value.find((el: any) => {return el.FILE_NM === extracted})
+      if(findWbcClassVal){
+        const boxX1 = Number(findWbcClassVal.POSX1); // 박스의 시작 X 좌표
+        const boxY1 = Number(findWbcClassVal.POSY1); // 박스의 시작 Y 좌표
+        const boxX2 = Number(findWbcClassVal.POSX2); // 박스의 시작 X 좌표
+        const boxY2 = Number(findWbcClassVal.POSY2); // 박스의 시작 Y 좌표
 
         const boxWidth = Number(boxX2) - Number(boxX1);// 박스의 너비
         const boxHeight = Number(boxY2) - Number(boxY1); // 박스의 높이
 
-        drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
+        await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
 
       }
     });
