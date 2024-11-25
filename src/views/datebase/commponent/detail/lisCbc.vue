@@ -473,7 +473,8 @@ const kuahGilHosCbc = async () => {
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD'] || siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']) {
     readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
   } else {
-    readFileTxtRes = await readFileTxt(`path=C:/Users/user/Desktop/IA_MSG/CBC&filename=${props.selectItems.barcodeNo}`);
+    // ${cbcFilePathSetArr.value} === C:/Users/user/Desktop/IA_MSG/CBC
+    readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
   }
   if (readFileTxtRes.data.success) {
     let cbcDataArray = JSON.parse(JSON.stringify(readFileTxtRes.data.data));
