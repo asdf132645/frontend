@@ -76,7 +76,9 @@
             </select>
           </td>
           <div v-show="showEdgeShotTypeInfo" style="position: absolute;">
-            <img :src="slideImage" />
+            <img :src="smearTop" width="100" />
+            <img :src="smearTopLowPower" width="100" />
+            <img :src="smearTopHighPower" width="100" />
           </div>
         </tr>
         <!--      BF analysis values-->
@@ -215,8 +217,6 @@
               <select v-model='uploadRootPath' class="uploadSavePath">
                 <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
               </select>
-
-<!--              <input type="file" ref="uploadFileInput" @change="handleUploadFileChange" style="display: none;" accept=".sql" />-->
               <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>
             </div>
           </td>
@@ -352,6 +352,9 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import slideImage from "@/assets/images/slide.jpg";
+import smearTop from "@/assets/images/smearTop.png";
+import smearTopLowPower from "@/assets/images/smearTopLowPower.png";
+import smearTopHighPower from "@/assets/images/smearTopHighPower.png";
 
 
 const instance = getCurrentInstance();
@@ -656,11 +659,9 @@ const toggleKeepPage = () => {
 
 const informationFontHover = (type: 'edgeShotType', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
-    console.log(1);
     showEdgeShotTypeInfo.value = false;
     return;
   }
-  console.log(2);
   switch (type) {
     case 'edgeShotType':
       showEdgeShotTypeInfo.value = true;
@@ -689,11 +690,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
     }
     downloadUploadType.value = uploadType;
 
-    if (uploadType === 'move') {
-      loadingState.value = 'moved';
-    } else {
-      loadingState.value = 'copied';
-    }
+    loadingState.value = uploadType === 'move' ? 'moved' : 'copied';
 
     successFileCount.value = 0;
     await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });

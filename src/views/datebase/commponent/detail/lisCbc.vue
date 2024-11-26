@@ -475,14 +475,9 @@ const cmcSeoulCbc = async (newVal: any) => {
 }
 
 const kuahGilHosCbc = async () => {
-  let readFileTxtRes: any;
+  // ${cbcFilePathSetArr.value} === C:/Users/user/Desktop/IA_MSG/CBC
+  const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
 
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD'] || siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']) {
-    readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
-  } else {
-    // ${cbcFilePathSetArr.value} === C:/Users/user/Desktop/IA_MSG/CBC
-    readFileTxtRes = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
-  }
   if (readFileTxtRes.data.success) {
     let cbcDataArray = JSON.parse(JSON.stringify(readFileTxtRes.data.data));
     // 검체번호, 검사일시, 환자번호, 환자명, 성별, 나이, 그래프 데이터 제외
@@ -515,11 +510,11 @@ const kuahGilHosCbc = async () => {
         }
       }
     });
-    const parms = {
+    const parameter = {
       filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
       data: cbcWorkList.value,
     };
-    await createCbcFile(parms);
+    await createCbcFile(parameter);
   }
   loading.value = false;
 }

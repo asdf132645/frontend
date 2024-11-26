@@ -381,7 +381,7 @@ const changeTestType = (value: any) => {
 
 const updateFilter = () => {
   const selectedItems = titleItem.value?.filter((item: any) => item.checked).map((item: any) => item.title);
-  titleItemArr.value = selectedItems;
+  titleItemArr.value = selectedItems ?? [];
 }
 
 const initDbData = async () => {
@@ -399,7 +399,7 @@ const initDbData = async () => {
     nrCount.value = lastSearchParams.nrCount;
     wbcCountOrder.value = lastSearchParams.wbcTotal;
     testType.value = lastSearchParams.testType;
-    titleItemArr.value = lastSearchParams.wbcInfo;
+    titleItemArr.value = lastSearchParams.wbcInfo ?? [];
     titleItem.value = titleItem.value.map((item: WbcInfo) => {
       if (lastSearchParams.wbcInfo.includes(item.title)) {
         return {...item, checked: true }
