@@ -329,6 +329,23 @@ onMounted(async () => {
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']) {
     const {data, cbcDataVal} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
     ywmcSlip.value = data[0].slip.trim();
+    cbcFlag.value = '';
+    for (const el of data) {
+      switch (el.exam_cd.trim()) {
+        case '8HN109GBL_F':
+          cbcFlag.value += 'Blasts Flag'
+          break;
+        case '8HN109G_NRBC_F':
+          cbcFlag.value += 'Nucleated RBC Flag'
+          break;
+        case '8HN109G_ATYP_FRAG':
+          cbcFlag.value += 'Atypical Lymphocyte Flag'
+          break;
+        case '8HN109GIG_F':
+          cbcFlag.value += 'Immature Granulocytes Flag'
+          break;
+      }
+    }
   } else if (siteCd.value === '') {
     await axios.get(await getCbcPathData()).then(async function (result) {
       console.log(result.data.data.data[0].slip.trim())
