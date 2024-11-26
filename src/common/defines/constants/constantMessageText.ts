@@ -443,7 +443,7 @@ export  const messages: Messages = {
     SETTING_INFO_DOWNLOAD_EN: '',
     SETTING_INFO_DOWNLOAD_KO: '다운로드 받을 날짜 선택 & copy: 다른 컴퓨터로 이동시킬때 사용(데이터 복사)',
     SETTING_INFO_KEEP_PAGE_EN: 'Keep page when moving in Database detail page by up, down arrows',
-    SETTING_INFO_KEEP_PAGE_KO: '데이터베이스 상세 페이지에서 좌측 하단 위, 아래 화살표를 사용하여 검체 이동할 때 탭 유지',
+    SETTING_INFO_KEEP_PAGE_KO: '데이터베이스 상세 페이지에서 검체 이동 시 보고 있는 탭 유지',
     SETTING_INFO_ALARM_TIME_EN: '',
     SETTING_INFO_ALARM_TIME_KO: '알람 켜기/끄기 & 타이머(초) 선택',
     SETTING_INFO_NS_NB_INTEGRATION_EN: '',

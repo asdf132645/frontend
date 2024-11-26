@@ -14,7 +14,7 @@
     <p class="loadingTextLogin">Loading...</p>
   </div>
     <div class="settingCellImgAnalyzedContainer">
-        <table class="settingTable">
+      <table class="settingTable">
         <tbody>
         <tr v-if="viewerCheck !== 'viewer'">
           <th>Analysis Type</th>
@@ -24,7 +24,6 @@
             </select>
           </td>
         </tr>
-        <!--Common analysis values-->
 
         <tr v-if="viewerCheck !== 'viewer'">
           <!-- WBC diff analysis values -->
@@ -69,11 +68,11 @@
                 @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
                 @mouseleave="informationFontHover('edgeShotType', 'leave')"
             />
-            <div v-show="showEdgeShotTypeInfo" class="tutorial-edgeShotType-container">
-              <img :src="smearTop" width="140" />
-              <img :src="smearTopLowPower" width="140" />
-              <img :src="smearTopHighPower" width="140" />
-            </div>
+            <Transition>
+              <div v-if="showEdgeShotTypeInfo" class="tutorial-edgeShotType-container">
+                <img :src="smearTop" width="400" />
+              </div>
+            </Transition>
           </th>
           <td>
             <select v-model='edgeShotType'>
@@ -100,9 +99,11 @@
                 @mouseenter="() => informationFontHover('positionMargin', 'hover')"
                 @mouseleave="informationFontHover('positionMargin', 'leave')"
             />
-            <div v-show="showPositionMarginTutorialImg" class="tutorial-positionMargin-container">
-              <img :src="commonPositionMargin" width="140" />
-            </div>
+            <Transition>
+              <div v-show="showPositionMarginTutorialImg" class="tutorial-positionMargin-container">
+                <img :src="commonPositionMargin" width="140" />
+              </div>
+            </Transition>
           </th>
           <th>Wbc Position Margin</th>
           <td>
@@ -185,8 +186,8 @@
 
       <table class="settingTable auto">
         <colgroup>
-          <col width="90">
-          <col width="10">
+          <col width="70">
+          <col width="30">
         </colgroup>
         <tbody>
         <tr>
@@ -349,7 +350,6 @@ import {
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {messages} from "@/common/defines/constants/constantMessageText";
-import ImageTooltip from "@/components/commonUi/ImageTooltip.vue";
 import {
   backUpDateApi,
   downloadPossibleApi,
@@ -363,8 +363,6 @@ import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
-import smearTopLowPower from "@/assets/images/smearTopLowPower.png";
-import smearTopHighPower from "@/assets/images/smearTopHighPower.png";
 
 
 const instance = getCurrentInstance();

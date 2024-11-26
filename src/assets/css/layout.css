@@ -1,3 +1,12 @@
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
 
 .mt10 {
     margin-top: 10px;
@@ -828,7 +837,7 @@ ul.customClass li {
 }
 
 table.settingTable {
-    width: 80%;
+    width: 90%;
     text-align: left;
     margin: auto;
 }
@@ -5127,6 +5136,11 @@ progress::-moz-progress-bar {
     left: 140px;
     display: flex;
     z-index: 12;
+    background-color: var(--main-gray-color);
+    padding: 4px;
+    border-radius: 4px;
+    box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);
+
 }
 
 .tutorial-positionMargin-container {
@@ -5134,6 +5148,11 @@ progress::-moz-progress-bar {
     top: 0;
     left: 90px;
     z-index: 10;
+    background-color: var(--main-gray-color);
+    padding: 4px;
+    border-radius: 4px;
+    box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);
+
 }
 
 
