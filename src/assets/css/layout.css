@@ -4141,12 +4141,12 @@ button.reSelect {
 }
 
 .crcPopUpDiv.crcAdd {
-    top: 4%;
+    top: 0px;
     background: #f7fafc;
     border: 1px solid #3498db;
     padding: 20px;
-    width: 36%;
-    left: 35%;
+    width: 89%;
+    left: 0;
     z-index: 1000;
     max-height: 800px;
     overflow: auto;
@@ -4866,17 +4866,22 @@ input.codeInput {
 }
 
 ul.wpsDiv.cellImgBox {
-    width: 50%;
+    width: 40%;
+    margin-right: 30px;
     display: inline-block;
 }
 
 .wpsDiv {
     position: relative;
     display: inline-block;
-    width: 48%;
+    width: 56%;
     vertical-align: top;
     border-radius: 4px;
 }
+ul.wpsDiv.cellImgBox .isLowMagnWhether {
+    outline: solid #007bff;
+}
+
 .IsWbcImageSelect {
     position: absolute;
     z-index: 999;

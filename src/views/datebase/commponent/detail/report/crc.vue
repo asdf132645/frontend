@@ -333,16 +333,16 @@ onMounted(async () => {
     for (const el of data) {
       switch (el.exam_cd.trim()) {
         case '8HN109GBL_F':
-          cbcFlag.value += 'Blasts Flag'
+          cbcFlag.value += 'Blasts Flag\n'
           break;
         case '8HN109G_NRBC_F':
-          cbcFlag.value += 'Nucleated RBC Flag'
+          cbcFlag.value += 'Nucleated RBC Flag\n'
           break;
         case '8HN109G_ATYP_FRAG':
-          cbcFlag.value += 'Atypical Lymphocyte Flag'
+          cbcFlag.value += 'Atypical Lymphocyte Flag\n'
           break;
         case '8HN109GIG_F':
-          cbcFlag.value += 'Immature Granulocytes Flag'
+          cbcFlag.value += 'Immature Granulocytes Flag\n'
           break;
       }
     }
@@ -354,16 +354,16 @@ onMounted(async () => {
       for (const el of result.data.data.data) {
         switch (el.exam_cd.trim()) {
           case '8HN109GBL_F':
-            cbcFlag.value += 'Blasts Flag'
+            cbcFlag.value += 'Blasts Flag\n'
             break;
           case '8HN109G_NRBC_F':
-            cbcFlag.value += 'Nucleated RBC Flag'
+            cbcFlag.value += 'Nucleated RBC Flag\n'
             break;
           case '8HN109G_ATYP_FRAG':
-            cbcFlag.value += 'Atypical Lymphocyte Flag'
+            cbcFlag.value += 'Atypical Lymphocyte Flag\n'
             break;
           case '8HN109GIG_F':
-            cbcFlag.value += 'Immature Granulocytes Flag'
+            cbcFlag.value += 'Immature Granulocytes Flag\n'
             break;
         }
       }
@@ -636,7 +636,7 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.selectItems?.barcodeNo,
-      ttext_rslt: cbcFlag.value
+      comment: cbcFlag.value
     }
     const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
     if (setDataYWmc?.code === 201) {
