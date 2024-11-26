@@ -34,6 +34,7 @@
               'selected-image': isSelected(image),
               'wbcImgWrapLi': true
             }"
+                ref="clickableItem"
                 @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
                 @dblclick="() => $emit('openModal', image, item)"
                 v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
@@ -69,7 +70,8 @@
         </ul>
       </li>
     </ul>
-    <Wps v-if="wpsShow" :wpsImgClickInfoData="wpsImgClickInfoData" :slotId="slotId" :selectItems="selectItems" :iaRootPath="iaRootPath"/>
+    <Wps v-if="wpsShow" :wpsImgClickInfoData="wpsImgClickInfoData" :slotId="slotId" :selectItems="selectItems"
+         :iaRootPath="iaRootPath" @forcingClick="triggerClick"/>
   </template>
   <!--  클래스 단일 비교 부분 -->
   <div v-else-if="classCompareShow" class="divCompare">
@@ -155,10 +157,10 @@
             <template v-for="(image, imageIndex) in lastClassObj.images" :key="image?.fileName">
               <li
                   :class="{
-              'border-changed': isBorderChanged(image),
-              'selected-image': isSelected(image),
-              'wbcImgWrapLi': true
-            }"
+                    'border-changed': isBorderChanged(image),
+                    'selected-image': isSelected(image),
+                    'wbcImgWrapLi': true
+                  }"
                   @click="() => $emit('selectImage', lastItemIndex, imageIndex, lastClassObj)"
                   @dblclick="() => $emit('openModal', image, lastClassObj)"
                   v-if="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
@@ -206,6 +208,7 @@ import {useStore} from "vuex";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {debounce} from "lodash";
 import Wps from "@/views/datebase/commponent/detail/classInfo/commponent/wps.vue";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -217,7 +220,8 @@ const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
 const loading = ref(true);
-const wbcDbClick = ref(false);
+const clickableItem = ref<HTMLElement | null>(null);
+
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
@@ -273,7 +277,7 @@ const props = defineProps<{
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
-const {wbcInfo, wbcReset} = toRefs(props);
+const {wbcInfo} = toRefs(props);
 const firstClass = ref('Metamyelocyte');
 const lastClass = ref('Myelocyte');
 const previousFirstClass = ref('Metamyelocyte');
@@ -414,5 +418,11 @@ const classImgChange = async (type: string, event: any) => {
   }
 };
 
+const triggerClick = (item: any) => {
+  const itemIndex = props.selectItems.wbcInfoAfter.findIndex((el: any) => {return el?.id === item?.item?.id});
+  const findItem = props.selectItems.wbcInfoAfter.find((el: any) => {return el.id === item.item.id});
+  const imageIndex = findItem.images.findIndex((el: any) => {return el.fileName === item.img.fileName});
+  emits('selectImage', itemIndex, imageIndex, findItem);
+};
 
 </script>

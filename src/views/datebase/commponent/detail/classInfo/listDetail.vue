@@ -1253,6 +1253,24 @@ function isSelected(image: any) {
   return selectedClickImages.value.some((selectedImage: any) => selectedImage.fileName === imageFileName);
 }
 
+const isLowMagnWhether = async (image: any) => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path
+      ? selectItems.value?.img_drive_root_path
+      : iaRootPath.value;
+  const url_new = `${path}/${selectItems.value.slotId}/04_WPS/WPS.json`;
+  const response_new = await readJsonFile({ fullPath: url_new });
+  const extracted = image.fileName.split('_').slice(2).join('_');
+
+  // response_new.data가 배열인지 확인
+  if (Array.isArray(response_new.data)) {
+    return response_new.data.some((el: any) => el.FILE_NM === extracted);
+  } else {
+    console.error('response_new.data is not an array:', response_new.data);
+    return false; // 또는 적절한 기본값 반환
+  }
+}
+
+
 async function onDrop(targetItemIndex: any) {
   await addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {

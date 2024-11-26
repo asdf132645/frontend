@@ -17,7 +17,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {computed, defineProps, ref, watch} from "vue";
+import {computed, defineProps, onMounted, ref, watch} from "vue";
 import OpenSeadragon from "openseadragon";
 import {useStore} from "vuex";
 import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
@@ -41,9 +41,9 @@ const imgOn = ref(false);
 const findWbcClass = ref<any>([]);
 const localSlotId = ref('');
 let isZoomed = ref(true);
+const emit = defineEmits(['forcingClick']);
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
-  wps.value = newVal;
 
   // slotId가 변경된 경우
   if (localSlotId.value !== props.slotId) {
@@ -63,6 +63,8 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
       const response_new = await readJsonFile({ fullPath: url_new });
       findWbcClass.value = response_new.data;
       await wpsInitElement();
+      wps.value = newVal;
+
     }
   } else {
     // slotId는 동일하지만 wpsImgClickInfoData만 변경된 경우
@@ -82,9 +84,16 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
         const boxWidth = boxX2 - boxX1;
         const boxHeight = boxY2 - boxY1;
-
+        console.log('???')
+        wps.value = newVal;
         await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
+      } else {
+        console.log('wps.value', wps.value)
+        emit('forcingClick', wps.value);
       }
+
+
+
     }
   }
 }, { deep: true });
