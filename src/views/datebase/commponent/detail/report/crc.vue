@@ -19,7 +19,7 @@
           class="tab"
           :class="{ active: activeTab === 3 }"
           @click="cellStatus()"
-          v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']"
+          v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['NONE']"
       >
         Dashboard
       </button>
@@ -140,7 +140,7 @@
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
-    <AutoCBCMatching v-if="autoCBCMatchingShow" :isAutoCBCMatchingArr="isAutoCBCMatchingArr" @codeSelect="codeSelect"/>
+    <AutoCBCMatching v-if="autoCBCMatchingShow" :isAutoCBCMatchingArr="isAutoCBCMatchingArr" @codeSelect="codeSelect" @codeClose="codeClose"/>
 
   </div>
 
@@ -346,29 +346,7 @@ onMounted(async () => {
           break;
       }
     }
-  } else if (siteCd.value === '') {
-    await axios.get(await getCbcPathData()).then(async function (result) {
-      console.log(result.data.data.data[0].slip.trim())
-      ywmcSlip.value = result.data.data.data[0].slip.trim();
-      cbcFlag.value = '';
-      for (const el of result.data.data.data) {
-        switch (el.exam_cd.trim()) {
-          case '8HN109GBL_F':
-            cbcFlag.value += 'Blasts Flag\n'
-            break;
-          case '8HN109G_NRBC_F':
-            cbcFlag.value += 'Nucleated RBC Flag\n'
-            break;
-          case '8HN109G_ATYP_FRAG':
-            cbcFlag.value += 'Atypical Lymphocyte Flag\n'
-            break;
-          case '8HN109GIG_F':
-            cbcFlag.value += 'Immature Granulocytes Flag\n'
-            break;
-        }
-      }
-    });
-  } else {
+  }  else {
     ywmcSlip.value = 'H3'; // 원주기독에 독단적인 커스텀마이징 때문에 강제적으로 H3 pbs 기준으로 맞춤..
 
   }
@@ -380,7 +358,7 @@ const closeWbcSelect = () => {
 const dataAutoComputeLoad = async () => {
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
-  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
+  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['NONE']) {
     const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
 
@@ -393,6 +371,8 @@ const dataAutoComputeLoad = async () => {
         isAutoCBCMatchingArr.value = res;
         if (isAutoCBCMatchingArr.value.length !== 0) {
           autoCBCMatchingShow.value = true;
+        }else{
+          autoCBCMatchingShow.value = true;
         }
       }
     }
@@ -402,6 +382,10 @@ const dataAutoComputeLoad = async () => {
 const codeSelect = (code: string) => {
   console.log(code);
   selectOption(code);
+  autoCBCMatchingShow.value = false;
+}
+
+const codeClose = () => {
   autoCBCMatchingShow.value = false;
 }
 
