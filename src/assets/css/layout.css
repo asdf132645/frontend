@@ -5117,6 +5117,21 @@ progress::-moz-progress-bar {
     margin-top: 10px; /* 텍스트와 프로그래스 바 간격 */
 }
 
+.tutorial-edgeShotType-container {
+    position: absolute;
+    top: 0;
+    left: 140px;
+    display: flex;
+    z-index: 12;
+}
+
+.tutorial-positionMargin-container {
+    position: absolute;
+    top: 0;
+    left: 90px;
+    z-index: 10;
+}
+
 
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {

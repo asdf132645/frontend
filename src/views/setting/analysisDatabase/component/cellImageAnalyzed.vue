@@ -62,24 +62,24 @@
           </td>
         </tr>
         <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             Edge Shot Type
-<!--            <font-awesome-icon-->
-<!--                :icon="['fas', 'circle-info']"-->
-<!--                @mouseenter="() => informationFontHover('edgeShotType', 'hover')"-->
-<!--                @mouseleave="informationFontHover('edgeShotType', 'leave')"-->
-<!--            />-->
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
+                @mouseleave="informationFontHover('edgeShotType', 'leave')"
+            />
+            <div v-show="showEdgeShotTypeInfo" class="tutorial-edgeShotType-container">
+              <img :src="smearTop" width="140" />
+              <img :src="smearTopLowPower" width="140" />
+              <img :src="smearTopHighPower" width="140" />
+            </div>
           </th>
           <td>
             <select v-model='edgeShotType'>
               <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
-          <div v-show="showEdgeShotTypeInfo" style="position: absolute;">
-            <img :src="smearTop" width="100" />
-            <img :src="smearTopLowPower" width="100" />
-            <img :src="smearTopHighPower" width="100" />
-          </div>
         </tr>
         <!--      BF analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
@@ -93,7 +93,17 @@
         </tr>
 
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th rowspan="3">Common</th>
+          <th rowspan="3" class="pos-relative">
+            Common
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="() => informationFontHover('positionMargin', 'hover')"
+                @mouseleave="informationFontHover('positionMargin', 'leave')"
+            />
+            <div v-show="showPositionMarginTutorialImg" class="tutorial-positionMargin-container">
+              <img :src="commonPositionMargin" width="140" />
+            </div>
+          </th>
           <th>Wbc Position Margin</th>
           <td>
             <select v-model='wbcPositionMargin'>
@@ -351,7 +361,7 @@ import {
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
-import slideImage from "@/assets/images/slide.jpg";
+import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
 import smearTopLowPower from "@/assets/images/smearTopLowPower.png";
 import smearTopHighPower from "@/assets/images/smearTopHighPower.png";
@@ -432,6 +442,7 @@ const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
 const showEdgeShotTypeInfo = ref(false);
+const showPositionMarginTutorialImg = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -657,14 +668,18 @@ const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
 
-const informationFontHover = (type: 'edgeShotType', hoverStatus: 'hover' | 'leave') => {
+const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
     showEdgeShotTypeInfo.value = false;
+    showPositionMarginTutorialImg.value = false;
     return;
   }
   switch (type) {
     case 'edgeShotType':
       showEdgeShotTypeInfo.value = true;
+      break;
+    case 'positionMargin':
+      showPositionMarginTutorialImg.value = true;
       break;
     default:
       break;
