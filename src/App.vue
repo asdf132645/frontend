@@ -425,7 +425,7 @@ async function socketData(data: any) {
         break;
       case 'ERROR_CLEAR':
         showAlert.value = false;
-        console.log('err')
+        console.log('error clear');
         break;
     }
 
@@ -535,7 +535,6 @@ async function socketData(data: any) {
         completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
 
         if (completeSlot.testType === '01') {
-          console.log('normalItems.value', normalItems.value);
           const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
           completeSlot.isNormal = isNormal;
         }
@@ -559,7 +558,6 @@ async function socketData(data: any) {
         const url_new = `${path}/${completeSlot.slotId}/${folderPath}/${completeSlot.slotId}.json`;
         const response_new = await readJsonFile({fullPath: url_new});
 
-        console.log("SAVETESTHISTORY isNsNbIntegration", isNsNbIntegrationLocal.value);
         for (const el of newWbcInfo?.wbcInfo[0]) {
           if (!el.images) {
             el.images = []; // images 프로퍼티가 없으면 추가하고 빈 배열로 초기화
@@ -757,7 +755,6 @@ const emitSocketData = async (payload: any) => {
 };
 
 const sendSettingInfo = () => {
-  console.log("SEND_SETTING isNsNbIntegration", isNsNbIntegrationLocal.value);
   const req = {
     jobCmd: 'SETTINGS',
     reqUserId: '',
