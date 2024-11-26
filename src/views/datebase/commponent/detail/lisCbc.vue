@@ -475,7 +475,6 @@ const cmcSeoulCbc = async (newVal: any) => {
 }
 
 const kuahGilHosCbc = async () => {
-  // ${cbcFilePathSetArr.value} === C:/Users/user/Desktop/IA_MSG/CBC
   const readFileTxtRes: any = await readFileTxt(`path=${cbcFilePathSetArr.value}&filename=${props.selectItems.barcodeNo}`);
 
   if (readFileTxtRes.data.success) {

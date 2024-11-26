@@ -2464,7 +2464,11 @@ ul.leftWbcInfo {
 
 
 .submittedTr {
-    color: #b1d9f8;
+    color: #2A5A98;
+}
+
+.lisTr {
+    color: gray;
 }
 
 .dbDataTable {

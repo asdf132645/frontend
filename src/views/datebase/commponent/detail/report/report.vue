@@ -98,7 +98,7 @@
                   <template v-if="shouldRenderCategory(item.title)">
                     <td>{{ item?.name }}</td>
                     <td>{{ item?.count }}</td>
-                    <td> {{ Number(item?.percent) || '0' }}</td>
+                    <td> {{ Math.floor(Number(item?.percent)) || '0' }}</td>
                   </template>
                 </tr>
                 <tr>
@@ -265,6 +265,7 @@ import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
+  incheonGilPercentChange,
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
@@ -397,6 +398,8 @@ const percentChangeBySiteCd = () => {
     selectItems.value.wbcInfoAfter = inhaPercentChange(selectItems.value, selectItems.value?.wbcInfoAfter);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     selectItems.value.wbcInfoAfter = incheonStMaryPercentChange(projectType, selectItems.value?.wbcInfoAfter);
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    selectItems.value.wbcInfoAfter = incheonGilPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfo.maxWbcCount);
   }
   wbcInfo.value = selectItems.value.wbcInfoAfter;
 }

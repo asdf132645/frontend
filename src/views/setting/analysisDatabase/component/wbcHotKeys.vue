@@ -89,7 +89,7 @@ const checkIsMovingWhenSettingNotSaved = () => {
 
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm') => {
   const input = event.target as HTMLInputElement;
-  const filteredValue = input.value.replace(/[^a-zA-Z0-9]/g, '');
+  const filteredValue = input.value.replace(/[^a-zA-Z0-9!@#$%^&*()\\/*\-+,.?":\[\]`{}|<> ]/g, '');
   item[field] = filteredValue.trim();
 };
 

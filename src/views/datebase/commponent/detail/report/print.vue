@@ -245,6 +245,7 @@ import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassif
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {
+  incheonGilPercentChange,
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
@@ -636,6 +637,8 @@ const percentChangeBySiteCd = async () => {
     wbcInfo.value = await inhaPercentChange(selectItems.value, wbcInfo.value);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     wbcInfo.value = incheonStMaryPercentChange(projectType, wbcInfo.value);
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    wbcInfo.value = incheonGilPercentChange(wbcInfo.value, selectItems.value?.wbcInfo.maxWbcCount);
   }
 }
 

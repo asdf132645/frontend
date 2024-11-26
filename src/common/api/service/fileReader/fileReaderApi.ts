@@ -30,6 +30,10 @@ export const readH7Message = async (request: any): Promise<ApiResponse<void>> =>
     return httpClient.httpPost(apiConstants.H7Message.post, request, '', false, sessionStorage.getItem('viewerCheck') || 'viewer');
 };
 
+export const readNoFlagHl7Message = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.H7Message.noFlagHl7, request, '', false, sessionStorage.getItem('viewerCheck') || 'viewer');
+}
+
 export const readCustomH7Message = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.H7MessageCustom.post, request, '', false, sessionStorage.getItem('viewerCheck') || 'viewer');
 };

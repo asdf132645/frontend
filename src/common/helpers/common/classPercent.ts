@@ -118,3 +118,21 @@ export const incheonStMaryPercentChange = (projectType: string, wbcInfo: any) =>
     }
     return wbcInfo;
 }
+
+export const incheonGilPercentChange = (wbcInfo: any, maxWbcCount: string) => {
+    const nonWbcTitles = ['NR', 'GP', 'PA', 'MA', 'AR', 'SM'];
+    return wbcInfo.map((item: any) => {
+        let itemPercent = 0;
+        if (Number(item.count) && item.title === 'NR') itemPercent = Math.ceil((Number(item.count) / Number(maxWbcCount)) * 100);
+        else if (nonWbcTitles.includes(item.title) && Number(item.count)) {
+            itemPercent = Math.floor((Number(item.count) / Number(maxWbcCount)) * 100);
+        } else {
+            itemPercent = Math.floor(Number(item.percent) || 0);
+        }
+
+        return {
+            ...item,
+            percent: itemPercent
+        };
+    })
+};

@@ -164,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {crcOptionGet, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
 import { DIR_NAME } from "@/common/defines/constants/settings";
@@ -197,10 +197,16 @@ import {BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD} from "@/common/def
 import axios from "axios";
 import {xml2json} from "xml-js";
 import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
-import {createH17, readH7Message, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {
+  createH17,
+  readH7Message,
+  readJsonFile,
+  readNoFlagHl7Message
+} from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {
+  incheonGilPercentChange,
   incheonStMaryPercentChange,
   inhaPercentChange,
   seoulStMaryPercentChange
@@ -261,6 +267,7 @@ const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisHotKey = ref('');
 const crcConnect = ref(false);
+const isHotKeyPressed = ref(false);
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -273,6 +280,10 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keyup', handleKeyUp);
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keyup', handleKeyUp);
   await nextTick();
   await getOrderClass();
   await getCustomClass();
@@ -290,34 +301,29 @@ onMounted(async () => {
   }
   barCodeImageShowError.value = false;
 })
-let isHotKeyPressed = false;
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keyup', handleKeyUp);
+})
 
 const handleKeyDown = (event: KeyboardEvent) => {
-  if (router.currentRoute.value.path === '/report') {
-    return;
-  }
+  if (router.currentRoute.value.path === '/report') return;
   const keyName = event.key;
 
-  if (!isHotKeyPressed && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+  if (!isHotKeyPressed.value && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
     event.preventDefault(); // 기본 동작 방지
-    isHotKeyPressed = true; // 한 번만 실행되도록 설정
+    isHotKeyPressed.value = true; // 한 번만 실행되도록 설정
     uploadLis();
   }
 };
 
 const handleKeyUp = (event: KeyboardEvent) => {
-  if (router.currentRoute.value.path === '/report') {
-    return;
-  }
-  const keyName = event.key;
-
-  if (keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
-    isHotKeyPressed = false; // 키를 떼면 다시 실행 가능
+  if (router.currentRoute.value.path === '/report') return;
+  if (isHotKeyPressed.value) {
+    isHotKeyPressed.value = false; // 키를 떼면 다시 실행 가능
   }
 };
-
-window.addEventListener('keydown', handleKeyDown);
-window.addEventListener('keyup', handleKeyUp);
 
 watch(() => props.isCommitChanged, () => {
   selectItems.value.submitState = 'Submit';
@@ -328,6 +334,10 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 watch(() => props.wbcInfo, (newItem) => {
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keyup', handleKeyUp);
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keyup', handleKeyUp);
   if (Object.keys(newItem).length !== 0) {
     beforeAfterChange(newItem)
     wbcMemo.value = props.selectItems?.wbcMemo;
@@ -447,6 +457,8 @@ const uploadLis = async () => {
       inhaDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
+    case '':
+    case '0000':
       gilDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
@@ -767,28 +779,56 @@ const godaeAnamDataSendLoad = () => {
   lisFileUrlCreate(goDaeData);
 }
 
-const gilDataSendLoad = () => {
-  // 데이터 초기화
-  let data = `H|\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
-  let seq = 0;
-  // 'wbcInfoAfter'와 'lisCodeWbcArr'를 순회하며 데이터 구성
-  const buildDataString = (lisCode: any) => {
-    if (lisCode.LIS_CD === '') return ''; // 빈 LIS_CD는 무시
-    return props.selectItems?.wbcInfoAfter
-        .filter((wbcItem: any) => lisCode.IA_CD === wbcItem.id && (Number(wbcItem.percent) > 0 || Number(wbcItem.count)))
-        .map((wbcItem: any) => {
-          const countLine = `R|${++seq}|^^^^${lisCode.LIS_CD}|${wbcItem.count}|||||||^${userModuleDataGet.value.name}\n`;
-          const percentLine = `R|${++seq}|^^^^${lisCode.LIS_CD}%|${wbcItem.percent}|%||||||^${userModuleDataGet.value.name}\n`;
-          return countLine + percentLine;
-        })
-        .join(''); // 모든 줄을 합쳐서 반환
-  };
-  // 'lisCodeWbcArr'를 순회하며 데이터를 추가
-  data += lisCodeWbcArrApp.value.map(buildDataString).join('');
-  // 종료 데이터 추가
-  data += 'L|1|N';
-  // 파일 URL 생성 함수 호출
-  lisFileUrlCreate(data);
+const gilDataSendLoad = async () => {
+  const url = lisFilePathSetArr.value;
+  const fileCreateRes = await createDirectory(`path=${url}`);
+
+  if (fileCreateRes) {
+    const data = {
+      sendingApp: 'PBIA',
+      sendingFacility: 'PBIA',
+      receivingApp: 'LIS',
+      receivingFacility: 'LIS',
+      dateTime: getDateTimeStr(),
+      security: '',
+      messageType: ['ADT', 'R02'],
+      messageControlId: props.selectItems?.barcodeNo,
+      processingId: 'P',
+      hl7VersionId: '2.5',
+      selectedItem: { /* selectedItem 데이터 */},
+      wbcInfo: incheonGilPercentChange(props.selectItems?.wbcInfoAfter, props.selectItems?.wbcInfo.maxWbcCount),
+      result: lisCodeWbcArrApp.value,
+    };
+    const res = await readNoFlagHl7Message(data);
+    if (res) {
+      if (!lisFilePathSetArr.value.includes("http")) { // file
+        const data = {
+          filepath: `${lisFilePathSetArr.value}\\${props.selectItems.barcodeNo}.hl7`,
+          msg: res,
+        }
+        try {
+          await createH17(data);
+          toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+          showToast(messages.IDS_MSG_SUCCESS);
+
+          const result: any = await detailRunningApi(String(props.selectItems?.id));
+          const localTime = moment().local();
+          const updatedItem = {
+            submitState: 'lisCbc',
+            submitOfDate: localTime.format(),
+            submitUserId: userModuleDataGet.value.userId,
+          };
+          lisBtnColor.value = true;
+          const updatedRuningInfo = { id: result.data.id, ...updatedItem }
+          await resRunningItem(updatedRuningInfo, true);
+        } catch (error: any) {
+          showErrorAlert(error.response.data.message);
+        }
+      } else { // url
+        await sendLisMessage(res);
+      }
+    }
+  }
 }
 
 const inhaDataSendLoad = async () => {
@@ -908,7 +948,6 @@ const lisFileUrlCreate = async (data: any) => {
   if (!lisFilePathSetArr.value.includes("http")) {
     const url = lisFilePathSetArr.value;
 
-    // 디렉토리 생성
     const fileCreateRes = await createDirectory(`path=${url}`);
     if (fileCreateRes) {
       const fileParams = {
@@ -963,6 +1002,7 @@ const sendLisMessage = async (data: any) => {
     if (result.data.errorCode === 'E000') {
       toastMessageType.value = messages.TOAST_MSG_SUCCESS;
       showToast(messages.IDS_MSG_SUCCESS);
+
     } else {
       showErrorAlert(result.data.errorMessage);
     }
@@ -1206,6 +1246,9 @@ const beforeAfterChange = async (newItem: any) => {
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = incheonStMaryPercentChange(selectItems.value, wbcInfoBeforeVal.value);
+  } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.maxWbcCount);
+    wbcInfoBeforeVal.value = incheonGilPercentChange(wbcInfoBeforeVal.value, props.selectItems?.wbcInfo.maxWbcCount);
   }
 
   wbcInfoVal.value = [];
@@ -1377,6 +1420,8 @@ async function updateOriginalDb() {
       wbcInfoAfterVal.value = inhaPercentChange(selectItems.value, wbcInfoAfterVal.value);
     } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
+    } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+      wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.maxWbcCount);
     }
   });
 
