@@ -66,7 +66,7 @@
               </li>
               <li>
                 <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
-                <font-awesome-icon v-else :icon="['fas', 'door-open']"/>
+                <font-awesome-icon v-else :icon="['fas', 'door-open']" style="color: red;"/>
               </li>
               <li>
                 <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
