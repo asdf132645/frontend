@@ -267,7 +267,7 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
     let viewportRect = viewer.value.viewport.imageToViewportRectangle(x, y, width, height);
 
     // 4배 확대를 위해 영역 크기 축소
-    const zoomFactor = 0.1;
+    const zoomFactor = 0.09;
     const adjustedRect = new OpenSeadragon.Rect(
         viewportRect.x + viewportRect.width * (1 - 1 / zoomFactor) / 2, // 중심점 기준으로 위치 조정
         viewportRect.y + viewportRect.height * (1 - 1 / zoomFactor) / 2,
@@ -277,10 +277,6 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
 
     // 뷰포트를 해당 영역으로 확대
     viewer.value.viewport.fitBounds(adjustedRect, true);
-
-    // 애니메이션 속도를 설정
-    viewer.value.animationTime = 1.0; // 애니메이션 지속 시간 (초)
-    viewer.value.springStiffness = 5.0; // 애니메이션 반응 속도
   }
   isZoomed.value = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
 };
@@ -351,7 +347,7 @@ const fetchTilesInfo = async (folderPath: string) => {
             xmlns: "http://schemas.microsoft.com/deepzoom/2009",
             Type: 'image',
             Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
-            Format: "png",
+            Format: "jpg",
             Overlap: "1",
             TileSize: tileSize,
             buildPyramid: false,
