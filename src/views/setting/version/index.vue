@@ -90,8 +90,6 @@ const setVersions = async () => {
     pbRbcEngineVersion.value = iniFileData.match(pbRbcPattern)[1] || '';
   } catch (e) {
     console.log(e);
-    deepNetVersion.value = '';
-    coreVersion.value = '';
   }
 }
 
