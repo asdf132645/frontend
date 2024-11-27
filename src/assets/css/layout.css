@@ -76,6 +76,10 @@
     font-size: 18px;
 }
 
+.lh-normal {
+    line-height: normal;
+}
+
 .pos-relative {
     position: relative;
 }
@@ -462,7 +466,7 @@ main.bmComponent {
 }
 
 .startBtn.onRecover {
-    color: var(--coral-bg-3-color);
+    color: var(--coral-bg-4-color);
 }
 
 .lastLiM {
@@ -970,19 +974,6 @@ ul.degree.analysis {
 
 .categories.rbcClass > .degree > li > span > svg {
     margin-right: 5px;
-}
-
-button.degreeAllCheckBtn {
-    background: none;
-    color: var(--main-bg-5-color);
-    font-size: 0.8rem;
-    border-radius: 5px;
-    background: var(--white-color);
-    display: inline-block;
-    margin-top: 5px;
-    padding: 4px;
-    border: 1px solid var(--blue-bg-0-color);
-    cursor: pointer;
 }
 
 .analysisWbc .categories > ul > li {
@@ -1534,12 +1525,6 @@ button.degreeBtn {
     border-top-color: white;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 .overlay-element {
@@ -3525,6 +3510,12 @@ button.rollbackButton {
     margin-right: 19px;
     cursor: pointer;
     padding: 3px;
+    transition: 0.2s all;
+}
+
+.imgSetWrap > button:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
 }
 
 .imgSetWrap {
@@ -5194,6 +5185,9 @@ progress::-moz-progress-bar {
     height: fit-content;
 }
 
+.openseadragon-canvas.nav-bar-canvas {
+    display: none !important;
+}
 
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {

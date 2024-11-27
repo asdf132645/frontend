@@ -426,7 +426,7 @@ const barcodeCopy = async () => {
   document.execCommand('copy');
   document.body.removeChild(textarea);
   toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-  showToast(messages.IDS_MSG_SUCCESS);
+  showToast(messages.TOAST_MSG_BAR_CODE_SUCCESS);
 }
 
 const commitConfirmed = () => {

@@ -425,7 +425,7 @@ async function socketData(data: any) {
         break;
       case 'ERROR_CLEAR':
         showAlert.value = false;
-        console.log('error clear');
+        console.log('ERROR CLEAR');
         break;
     }
 

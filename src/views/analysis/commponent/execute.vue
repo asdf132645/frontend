@@ -20,7 +20,7 @@
         <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState">
-        <option v-for="option in stitchCountOptions" :key="option.value" :value="option.value">
+        <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>
       </select>
@@ -60,9 +60,9 @@ import {ref, computed, watch, onMounted, nextTick, defineEmits, onBeforeMount} f
 
 import {useStore} from "vuex";
 import {
-  wbcCountOptions,
-  stitchCountOptions,
-  bmCountOptions
+  WBC_COUNT_OPTIONS,
+  STITCH_COUNT_OPTIONS,
+  BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
 import {messages} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
@@ -130,7 +130,7 @@ const initDataExecute = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
 
-  countType.value = window.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
+  countType.value = window.PROJECT_TYPE === 'bm' ? BM_COUNT_OPTIONS : WBC_COUNT_OPTIONS
   // userId.value = getStoredUser.id;
 
   await nextTick();
