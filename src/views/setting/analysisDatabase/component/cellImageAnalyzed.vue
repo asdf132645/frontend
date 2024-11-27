@@ -121,7 +121,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Plt Position Margin</th>
+          <th>Edge Shot Margin</th>
           <td>
             <select v-model='pltPositionMargin'>
               <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -129,7 +129,7 @@
           </td>
         </tr>
         <tr>
-          <th :style="viewerCheck === 'viewer' && 'width: 214px;'">
+          <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
             IA Root Path
             <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_IA_ROOT_PATH_KO" />
           </th>
@@ -363,6 +363,7 @@ import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 
 const instance = getCurrentInstance();
@@ -441,6 +442,15 @@ const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
 const showEdgeShotTypeInfo = ref(false);
 const showPositionMarginTutorialImg = ref(false);
+const tooltipVisible = ref({
+  iaRootPath: false,
+  nsNbIntegration: false,
+  alarmTimer: false,
+  keepPage: false,
+  downloadSavePath: false,
+  download: false,
+  upload: false,
+})
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
