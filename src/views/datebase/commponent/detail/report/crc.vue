@@ -601,7 +601,7 @@ const lisStart = async () => {
       await yamcSendLisUpdate(nowCrcData);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-      await yamcSendLisUpdate(nowCrcData);
+      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     default:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
