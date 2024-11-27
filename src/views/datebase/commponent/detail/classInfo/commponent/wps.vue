@@ -10,7 +10,7 @@
          class="background-image"/>
     <div v-if="!imgOn" class="selectImgWarn">
       <p class="hand-pointer">
-        <font-awesome-icon :icon="['fas', 'arrow-pointer']" />
+        <font-awesome-icon :icon="['fas', 'arrow-pointer']"/>
       </p>
       <span>Please select an class image.</span>
     </div>
@@ -71,11 +71,17 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
           ? props.selectItems?.img_drive_root_path
           : iaRootPath.value;
       const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
-      const response_new = await readJsonFile({ fullPath: url_new });
+      const response_new = await readJsonFile({fullPath: url_new});
       findWbcClass.value = response_new.data;
       await wpsInitElement();
       wps.value = newVal;
 
+    }
+    const currentClass = findWbcClass.value.find((el: any) => el.FILE_NM === newVal.img.fileName.split('_').slice(2).join('_'));
+    if (!currentClass) {
+      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      showToast('Selected image does not have corresponding coordinates.');
+      emit('borderDel');
     }
   } else {
     // slotId는 동일하지만 wpsImgClickInfoData만 변경된 경우
@@ -84,7 +90,7 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
       // 네비게이션 바 위치 조정
       const currentClass = findWbcClass.value.find((el: any) => el.FILE_NM === newVal.img.fileName.split('_').slice(2).join('_'));
       if (currentClass) {
-        const { x1, x2, y1, y2 } = currentClass;
+        const {x1, x2, y1, y2} = currentClass;
         adjustNavBar(x1, x2, y1, y2);
 
         // drawBoxOnCanvas 호출
@@ -106,10 +112,9 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
       }
 
 
-
     }
   }
-}, { deep: true });
+}, {deep: true});
 
 const adjustNavBar = (x1: number, x2: number, y1: number, y2: number) => {
   const navBar = document.querySelector('.openseadragon-container .navigator');
@@ -201,7 +206,7 @@ const wpsInitElement = async () => {
     canvas.id = 'myCanvas';
     canvasOverlay.value = canvas;
 
-    viewer.value.addHandler('open', function  (event: any) {
+    viewer.value.addHandler('open', function (event: any) {
       adjustNavBar(findWbcClass.value[0].x1, findWbcClass.value[0].x2, findWbcClass.value[0].y1, findWbcClass.value[0].y2);
       imgOn.value = true;
       const fullPageButton = viewer.value.buttons.buttons.find((button: any) => button.tooltip === 'Toggle full page');
@@ -229,11 +234,13 @@ const wpsInitElement = async () => {
 
     isZoomed.value = false;
 
-    viewer.value.addHandler('animation',async () => {
+    viewer.value.addHandler('animation', async () => {
       // FILE_NM
       const extracted = props.wpsImgClickInfoData.img.fileName.split('_').slice(2).join('_');
-      const findWbcClassVal = findWbcClass.value.find((el: any) => {return el.FILE_NM === extracted})
-      if(findWbcClassVal){
+      const findWbcClassVal = findWbcClass.value.find((el: any) => {
+        return el.FILE_NM === extracted
+      })
+      if (findWbcClassVal) {
         const boxX1 = Number(findWbcClassVal.POSX1); // 박스의 시작 X 좌표
         const boxY1 = Number(findWbcClassVal.POSY1); // 박스의 시작 Y 좌표
         const boxX2 = Number(findWbcClassVal.POSX2); // 박스의 시작 X 좌표
@@ -252,7 +259,7 @@ const wpsInitElement = async () => {
   }
 }
 
-const zoomToBox  = (x: any, y: any, width: any, height: any) => {
+const zoomToBox = (x: any, y: any, width: any, height: any) => {
   if (isZoomed.value) return;  // 이미 줌이 설정된 경우, 더 이상 실행하지 않음
 
   if (viewer.value) {
@@ -287,7 +294,6 @@ const drawBoxOnCanvas = async (x: number, y: number, width: number, height: numb
   overlayDiv.style.position = 'absolute'; // 위치 설정
   overlayDiv.style.width = `${width}%`; // 뷰포트에 비례한 너비
   overlayDiv.style.height = `${height}%`; // 뷰포트에 비례한 높이
-
 
 
   const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(x), Number(y), Number(width), Number(height)); // 이미지 좌표를 뷰포트 좌표로 변환
@@ -358,7 +364,7 @@ const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   return await extractWidthHeightFromDzi(imageResponse);
 }
 
-const extractWidthHeightFromDzi = ( xmlString: any): any => {
+const extractWidthHeightFromDzi = (xmlString: any): any => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "application/xml");
   const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
@@ -366,7 +372,7 @@ const extractWidthHeightFromDzi = ( xmlString: any): any => {
   const tileSize = tileSizeEl.getAttribute("TileSize");
   const width = sizeElement.getAttribute("Width");
   const height = sizeElement.getAttribute("Height");
-  return { width: Number(width), height: Number(height), tileSize: Number(tileSize)}
+  return {width: Number(width), height: Number(height), tileSize: Number(tileSize)}
 }
 
 const showToast = (message: string) => {
