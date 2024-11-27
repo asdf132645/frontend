@@ -54,11 +54,15 @@ const toastMessage = ref('');
 const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
 const emit = defineEmits(['borderDel', 'borderOn']);
 let currentOverlay: HTMLElement | null = null;
+const imgType = ref('');
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
   // slotId가 변경된 경우
   if (localSlotId.value !== props.slotId) {
+    const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path
+        ? props.selectItems?.img_drive_root_path
+        : iaRootPath.value;
     const tilingViewerLayer = document.getElementById('tilingViewerImgListWps');
     if (tilingViewerLayer) {
       localSlotId.value = props.slotId;
@@ -68,9 +72,15 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
       if (viewer.value) {
         viewer.value.destroy(); // 기존 뷰어 인스턴스 파괴
       }
-      const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path
-          ? props.selectItems?.img_drive_root_path
-          : iaRootPath.value;
+
+      const folderPath = `${path}/${props.slotId}/04_WPS/WPS_files/0`;
+      const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+      const res = await fetch(url);
+      const a = await res.json();
+
+      imgType.value = a[0].split('.')[1];
+
+
       const url_new = `${path}/${props.slotId}/04_WPS/WPS.json`;
       const response_new = await readJsonFile({fullPath: url_new});
       findWbcClass.value = response_new.data;
@@ -341,13 +351,14 @@ const fetchTilesInfo = async (folderPath: string) => {
 
         const fileNameResult = extractSubStringBeforeFiles(fileName);
         fileNameResultArr.value.push(fileNameResult)
-        const {width, height, tileSize} = await dziWidthHeight(fileNameResult)
+        const {width, height, tileSize} = await dziWidthHeight(fileNameResult);
+
         tilesInfo.push({
           Image: {
             xmlns: "http://schemas.microsoft.com/deepzoom/2009",
             Type: 'image',
             Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
-            Format: "jpg",
+            Format: imgType.value,
             Overlap: "1",
             TileSize: tileSize,
             buildPyramid: false,
