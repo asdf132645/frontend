@@ -9,7 +9,7 @@ export const testTypeList = [
     {value: '04', text: 'PBS(Premium)'},
     // {value: '02', text: 'Body fluid default'},
     // {value: '03', text: 'Body fluid select'}
-    // {value: '05', text: 'Quality Check'}
+    {value: '05', text: 'Quality Check'}
 ];
 
 export const testBmTypeList = [
