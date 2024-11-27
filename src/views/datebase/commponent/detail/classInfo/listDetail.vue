@@ -163,6 +163,8 @@
             :updateWbcInfo="updateWbcInfo"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
+            @borderDel="borderDel"
+            @borderOn="borderOn"
             @openModal="openModal"
             @hideImage="hideImage"
             @handleRightClick="handleRightClick"
@@ -204,7 +206,13 @@
     </div>
   </div>
 
-
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :messageType="toastMessageType"
+      :duration="1500"
+      position="bottom-right"
+  />
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -244,6 +252,8 @@ import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
 import {useGetRunningInfoByIdQuery} from "@/gql";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {messages} from "@/common/defines/constants/constantMessageText";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -314,6 +324,9 @@ const wbcReset = ref(false);
 const showImageGallery = ref(true);
 const isLocalNsNbIntegration = ref(false);
 const isWpsShow = ref(false);
+const blockClicks = ref(false);
+const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -385,6 +398,14 @@ watch(() => moveImgIsBool.value, (currentMoveImgIsBool) => {
   }
 })
 
+const borderDel = () => {
+  blockClicks.value = true;
+}
+
+const borderOn = () => {
+  blockClicks.value = false;
+}
+
 const checkWps = async () => {
   const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/04_WPS`;
 
@@ -394,7 +415,12 @@ const checkWps = async () => {
     isWpsShow.value = true;
   }
 }
-
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
 const handleZoom = () => {
   const newSize = zoomValue.value;
   modalImageWidth.value = `${newSize}px`;
@@ -424,6 +450,14 @@ const classCompare = () => {
 
 const wps = () => {
   wpsShow.value = !wpsShow.value;
+  if(!wpsShow.value){
+    blockClicks.value = false;
+  }
+  if(classCompareShow.value){
+    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    showToast('When classCompare is enabled, WPS cannot be checked.');
+    wpsShow.value = false;
+  }
 }
 
 const imgPixelConvertToPercent = (imageSize: number) => {
@@ -1193,6 +1227,10 @@ function onDragStart(itemIndex: any, imageIndex: any) {
 }
 
 function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
+  console.log('selectImage')
+  if(blockClicks.value){
+    return;
+  }
   // 쉬프트 키를 누른 경우
   if (isShiftKeyPressed.value) {
     if (firstClickedImageIndex.value !== null) {

@@ -71,7 +71,7 @@
       </li>
     </ul>
     <Wps v-if="wpsShow" :wpsImgClickInfoData="wpsImgClickInfoData" :slotId="slotId" :selectItems="selectItems"
-         :iaRootPath="iaRootPath" @forcingClick="triggerClick"/>
+         :iaRootPath="iaRootPath" @borderDel="() => $emit('borderDel')" @borderOn="() => $emit('borderOn')"/>
   </template>
   <!--  클래스 단일 비교 부분 -->
   <div v-else-if="classCompareShow" class="divCompare">
@@ -416,13 +416,6 @@ const classImgChange = async (type: string, event: any) => {
   if (props.totalCount === '0') {
     loading.value = false
   }
-};
-
-const triggerClick = (item: any) => {
-  const itemIndex = props.selectItems.wbcInfoAfter.findIndex((el: any) => {return el?.id === item?.item?.id});
-  const findItem = props.selectItems.wbcInfoAfter.find((el: any) => {return el.id === item.item.id});
-  const imageIndex = findItem.images.findIndex((el: any) => {return el.fileName === item.img.fileName});
-  emits('selectImage', itemIndex, imageIndex, findItem);
 };
 
 </script>

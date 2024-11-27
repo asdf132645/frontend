@@ -198,7 +198,6 @@ import {lisSendSD} from "@/common/helpers/lisCbc/sdCbcLis";
 import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component/autoCBCMatching.vue";
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
-import axios from "axios";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 
 const crcArr = ref<any>([]);

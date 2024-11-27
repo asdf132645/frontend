@@ -15,6 +15,13 @@
       <span>Please select an class image.</span>
     </div>
   </div>
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :messageType="toastMessageType"
+      :duration="1500"
+      position="bottom-right"
+  />
 </template>
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref, watch} from "vue";
@@ -22,6 +29,8 @@ import OpenSeadragon from "openseadragon";
 import {useStore} from "vuex";
 import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
+import {messages} from "@/common/defines/constants/constantMessageText";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const props = defineProps(['wpsImgClickInfoData', 'slotId', 'selectItems']);
@@ -41,7 +50,9 @@ const imgOn = ref(false);
 const findWbcClass = ref<any>([]);
 const localSlotId = ref('');
 let isZoomed = ref(true);
-const emit = defineEmits(['forcingClick']);
+const toastMessage = ref('');
+const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const emit = defineEmits(['borderDel', 'borderOn']);
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
@@ -85,11 +96,13 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
         const boxWidth = boxX2 - boxX1;
         const boxHeight = boxY2 - boxY1;
         console.log('???')
+        emit('borderOn');
         wps.value = newVal;
         await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
       } else {
-        console.log('wps.value', wps.value)
-        emit('forcingClick', wps.value);
+        toastMessageType.value = messages.TOAST_MSG_ERROR;
+        showToast('Selected image does not have corresponding coordinates.');
+        emit('borderDel');
       }
 
 
@@ -355,4 +368,11 @@ const extractWidthHeightFromDzi = ( xmlString: any): any => {
   const height = sizeElement.getAttribute("Height");
   return { width: Number(width), height: Number(height), tileSize: Number(tileSize)}
 }
+
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
 </script>
