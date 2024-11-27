@@ -351,7 +351,7 @@ const fetchTilesInfo = async (folderPath: string) => {
             xmlns: "http://schemas.microsoft.com/deepzoom/2009",
             Type: 'image',
             Url: `${apiBaseUrl}/folders?folderPath=${folderPath}/${fileName}/`,
-            Format: "jpg",
+            Format: "png",
             Overlap: "1",
             TileSize: tileSize,
             buildPyramid: false,
