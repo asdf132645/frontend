@@ -53,6 +53,7 @@ let isZoomed = ref(true);
 const toastMessage = ref('');
 const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
 const emit = defineEmits(['borderDel', 'borderOn']);
+let currentOverlay: HTMLElement | null = null;
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
@@ -101,7 +102,6 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
         const boxWidth = boxX2 - boxX1;
         const boxHeight = boxY2 - boxY1;
-        console.log('???')
         emit('borderOn');
         wps.value = newVal;
         await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
@@ -285,25 +285,49 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
   isZoomed.value = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
 };
 
-const drawBoxOnCanvas = async (x: number, y: number, width: number, height: number) => {
-  if (!viewer.value) return;
+let currentBox: { x: number; y: number; width: number; height: number } | null = null;
 
-  // OpenSeadragon의 `addOverlay` 사용
+
+const drawBoxOnCanvas = async (x: number, y: number, width: number, height: number) => {
+  // 새 박스가 기존 박스와 동일하면 작업 생략
+  // if (
+  //     currentBox &&
+  //     currentBox.x === x &&
+  //     currentBox.y === y &&
+  //     currentBox.width === width &&
+  //     currentBox.height === height
+  // ) {
+  //   return;
+  // }
+  if (!viewer.value) return;
+  // 이전 오버레이 삭제
+  if (currentOverlay) {
+    viewer.value.removeOverlay(currentOverlay);
+    currentOverlay = null;
+  }
+
+  // 새로운 오버레이 생성
   const overlayDiv = document.createElement('div');
   overlayDiv.style.border = '2px solid red'; // 박스 스타일
   overlayDiv.style.position = 'absolute'; // 위치 설정
   overlayDiv.style.width = `${width}%`; // 뷰포트에 비례한 너비
   overlayDiv.style.height = `${height}%`; // 뷰포트에 비례한 높이
 
+  // 이미지 좌표를 뷰포트 좌표로 변환
+  const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(x), Number(y), Number(width), Number(height));
 
-  const overlayRect = viewer.value.viewport.imageToViewportRectangle(Number(x), Number(y), Number(width), Number(height)); // 이미지 좌표를 뷰포트 좌표로 변환
+  // 오버레이 추가
   viewer.value.addOverlay({
     element: overlayDiv,
-    location: overlayRect
+    location: overlayRect,
   });
 
-  zoomToBox(x, y, width, height); // 박스에 맞춰 줌
+  // 현재 오버레이 요소를 추적
+  currentOverlay = overlayDiv;
+  // currentBox = { x, y, width, height };
 
+  // 박스에 맞춰 줌
+  zoomToBox(x, y, width, height);
 };
 
 const fetchTilesInfo = async (folderPath: string) => {
