@@ -253,7 +253,7 @@ import {useGetRunningInfoByIdQuery} from "@/gql";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -326,7 +326,7 @@ const isLocalNsNbIntegration = ref(false);
 const isWpsShow = ref(false);
 const blockClicks = ref(false);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -454,7 +454,7 @@ const wps = () => {
     blockClicks.value = false;
   }
   if(classCompareShow.value){
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('When classCompare is enabled, WPS cannot be checked.');
     wpsShow.value = false;
   }

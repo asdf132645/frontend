@@ -99,7 +99,7 @@ import html2canvas from "html2canvas";
 import {cbcImgGetApi, ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {getCbcCodeList} from "@/common/helpers/lisCbc/inhaCbcLis";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {useStore} from "vuex";
 
@@ -117,7 +117,7 @@ const arrDataPltLeft = computed(() => arrDataPlt.value.slice(0, 4));
 const arrDataPltRight = computed(() => arrDataPlt.value.slice(4));
 const nowCrcDataVal = ref([]);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const store = useStore();
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const projectType = ref<any>('');
@@ -263,10 +263,10 @@ const saveToDatabase = async (hexString: string) => {
     };
     const aa = await lisSendYwmc(imgData);
     if(aa === 'Update successful'){
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast('Success');
     }else{
-      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
       showToast('Lis fail');
     }
   }

@@ -46,7 +46,7 @@ import {
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {bfHotKeys, settingName} from "@/common/defines/constants/settings";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
@@ -82,7 +82,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm') => {
@@ -100,10 +100,10 @@ const saveBfCustomClass = async () => {
       const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getBfHotKeyClasses();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -111,7 +111,7 @@ const saveBfCustomClass = async () => {
     }
     if (result) {
 
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getBfHotKeyClasses();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

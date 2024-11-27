@@ -42,7 +42,7 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {
   getCellImgApi,
   getNormalRangeApi,
@@ -148,9 +148,9 @@ function checkFullscreenStatus() {
   }
   isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
   if (!isFullscreen.value) {
-    showSuccessAlert(messages.FULLSCREEN_SUGGEST);
+    showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
   } else {
-    if (alertMessage.value === messages.FULLSCREEN_SUGGEST) {
+    if (alertMessage.value === MESSAGES.FULLSCREEN_SUGGEST) {
       hideAlert();
     }
   }
@@ -322,7 +322,7 @@ async function socketData(data: any) {
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
-      await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      await showSuccessAlert(MESSAGES.TCP_DiSCONNECTED);
       return
     }
     const textDecoder = new TextDecoder('utf-8');
@@ -331,7 +331,7 @@ async function socketData(data: any) {
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
 
-    if (alertMessage.value === messages.TCP_DiSCONNECTED) {
+    if (alertMessage.value === MESSAGES.TCP_DiSCONNECTED) {
       hideAlert();
     }
 

@@ -99,7 +99,7 @@ import {
   getFolders
 } from "@/common/api/service/fileSys/fileSysApi";
 import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {parseDateString} from "@/common/helpers/lisCbc";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
@@ -291,7 +291,7 @@ const inhaCbcLoad = async () => {
 
 const commonCbc = async (firstCbcDatafilename: string) => {
   if (cbcFilePathSetArr.value === '') {
-    showErrorAlert(messages.UPLOAD_PLEASE_CBC);
+    showErrorAlert(MESSAGES.UPLOAD_PLEASE_CBC);
     return;
   }
   if (cbcFilePathSetArr.value.includes("http")) { // url

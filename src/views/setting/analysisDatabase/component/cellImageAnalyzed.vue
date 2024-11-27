@@ -131,7 +131,7 @@
         <tr>
           <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
             IA Root Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_IA_ROOT_PATH_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO" />
           </th>
           <td colspan="2">
             <select v-model='iaRootPath'>
@@ -142,7 +142,7 @@
         <tr v-if="viewerCheck !== 'viewer'">
           <th>
             NS/NB Integration
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_NS_NB_INTEGRATION_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_NS_NB_INTEGRATION_KO" />
           </th>
           <td>
             <font-awesome-icon
@@ -155,7 +155,7 @@
         <tr v-if="viewerCheck !== 'viewer'">
           <th>
             Alarm Timer (sec)
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_ALARM_TIME_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_ALARM_TIME_KO" />
           </th>
           <td>
             <font-awesome-icon
@@ -171,7 +171,7 @@
         <tr v-if="viewerCheck !== 'viewer'">
           <th>
             Keep Page
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_KEEP_PAGE_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_KEEP_PAGE_KO" />
           </th>
           <td>
             <font-awesome-icon
@@ -193,7 +193,7 @@
         <tr>
           <th>
             Download Save Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />
           </th>
 
           <td>
@@ -208,7 +208,7 @@
         <tr>
           <th title="Download data from start to end date">
             Download
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_DOWNLOAD_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_DOWNLOAD_KO" />
           </th>
           <td>
             <div class="backupDatePickers">
@@ -221,7 +221,7 @@
         <tr>
           <th>
             Upload
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="messages.SETTING_INFO_UPLOAD_KO" />
+            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_UPLOAD_KO" />
           </th>
           <td colspan="2">
             <div class="settingUploadContainer">
@@ -276,9 +276,11 @@
       </ul>
     </div>
     <div class="uploadModalBtnContainer">
-      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ messages.COPY }}</button>
-      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ messages.MOVE }}</button>
-      <button class="memoModalBtn" @click="uploadCancel">{{ impossibleUploadCount === 0 ? messages.CANCEL : messages.CLOSE }}</button>
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ MESSAGES.COPY }}</button>
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ MESSAGES.MOVE }}</button>
+      <button class="memoModalBtn" @click="uploadCancel">{{
+          impossibleUploadCount === 0 ? MESSAGES.CANCEL : MESSAGES.CLOSE
+        }}</button>
     </div>
   </div>
 
@@ -298,10 +300,10 @@
     <p class="mt40" v-show="possibleUploadFileNames.length === 0">No files</p>
     <div class="uploadModalBtnContainer">
       <template v-if="possibleUploadFileNames.length > 0">
-        <button class="memoModalBtn" @click="handleUploadSelectFile">{{ messages.UPLOAD }}</button>
-        <button class="memoModalBtn" @click="handleUploadSelectModalClose">{{ messages.CANCEL }}</button>
+        <button class="memoModalBtn" @click="handleUploadSelectFile">{{ MESSAGES.UPLOAD }}</button>
+        <button class="memoModalBtn" @click="handleUploadSelectModalClose">{{ MESSAGES.CANCEL }}</button>
       </template>
-      <button v-else class="memoModalBtn" @click="handleUploadSelectModalClose">{{ messages.CLOSE }}</button>
+      <button v-else class="memoModalBtn" @click="handleUploadSelectModalClose">{{ MESSAGES.CLOSE }}</button>
     </div>
   </div>
 
@@ -318,9 +320,9 @@
       v-if="showDownloadConfirm"
       :is-visible="showDownloadConfirm"
       :message="downloadConfirmMessage"
-      :confirmFirstText="messages.MOVE"
-      :confirmSecondText="messages.COPY"
-      :closeText="messages.CLOSE"
+      :confirmFirstText="MESSAGES.MOVE"
+      :confirmSecondText="MESSAGES.COPY"
+      :closeText="MESSAGES.CLOSE"
       @hide="handleDownloadClose"
       @okConfirm="handleDownload('move')"
       @okConfirm2="handleDownload('copy')"
@@ -349,7 +351,7 @@ import {
   testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {
   backUpDateApi,
   downloadPossibleApi,
@@ -540,7 +542,7 @@ const driveGet = async () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const cellImgGet = async () => {
@@ -637,7 +639,7 @@ const cellImgSet = async () => {
     }
 
     if (result) {
-      const text = saveHttpType.value === 'post' ? messages.settingSaveSuccess : messages.UPDATE_SUCCESSFULLY;
+      const text = saveHttpType.value === 'post' ? MESSAGES.settingSaveSuccess : MESSAGES.UPDATE_SUCCESSFULLY;
       showSuccessAlert(text);
       const data = result?.data;
       await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });

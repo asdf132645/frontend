@@ -79,7 +79,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 
 const store = useStore();
 const router = useRouter();
@@ -112,7 +112,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const combindDegree = async () => {
@@ -167,11 +167,11 @@ const createRbcDegreeData = async () => {
     }
 
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
     }
   } catch (e) {
-    showErrorAlert(messages.settingSaveFailure);
+    showErrorAlert(MESSAGES.settingSaveFailure);
     console.error(e);
   } finally {
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

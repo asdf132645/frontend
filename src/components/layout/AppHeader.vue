@@ -148,7 +148,7 @@ import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, 
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {GENERAL_MSG, MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
@@ -438,7 +438,7 @@ const isActive = (path: string) => {
 
 const logout = () => {
   clickType.value = 'logout';
-  confirmMessage.value = messages.Logout;
+  confirmMessage.value = MESSAGES.LOGOUT;
   showConfirm.value = true;
   localStorage.removeItem('user')
   userSetOutUl.value = false;
@@ -446,7 +446,7 @@ const logout = () => {
 
 const exit = async () => {
   clickType.value = 'exit';
-  confirmMessage.value = messages.exit;
+  confirmMessage.value = MESSAGES.exit;
   showConfirm.value = true;
   userSetOutUl.value = false;
 }
@@ -533,7 +533,7 @@ const onReset = () => {
   });
   EventBus.publish('childEmitSocketData', settings);
 
-  showSuccessAlert(messages.IDS_MSG_SUCCESS);
+  showSuccessAlert(MESSAGES.IDS_MSG_SUCCESS);
 }
 
 const getPercent = () => {

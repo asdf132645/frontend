@@ -39,7 +39,7 @@ import {
   updateImagePrintApi
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import { messages } from '@/common/defines/constants/constantMessageText';
+import { MESSAGES } from '@/common/defines/constants/constantMessageText';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Confirm from "@/components/commonUi/Confirm.vue";
@@ -81,7 +81,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const saveImagePrint = async () => {
@@ -98,10 +98,10 @@ const saveImagePrint = async () => {
       const updateResult = await updateImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value });
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -109,7 +109,7 @@ const saveImagePrint = async () => {
     }
 
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

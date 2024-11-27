@@ -185,7 +185,7 @@ import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/set
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -212,7 +212,7 @@ const props = defineProps({
 });
 const store = useStore();
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS)
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS)
 const passWordType = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const isComment = ref(false);
@@ -259,7 +259,7 @@ const cbcFlag = ref('');
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
   selectWbcImgArr.value = arr;
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Success');
   IsWbcImageSelect.value = false;
 }
@@ -555,7 +555,7 @@ const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
 
 const lisStart = async () => {
   if (searchText.value === '') {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Please enter the code.');
     passWordPassLis.value = false;
     return;
@@ -623,10 +623,10 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     }
     const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
     if (setDataYWmc?.code === 201) {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast('Success');
     }else{
-      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
       showToast('Lis fail');
     }
 
@@ -638,7 +638,7 @@ const lisCommonDataWhether = async (lisFunc: any) => {
   if (resText === 'Success') {
     await commonSucessLis();
   } else {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Lis Send Fail');
   }
 }
@@ -656,8 +656,8 @@ const commonSucessLis = async () => {
     await resRunningItem(updatedRuningInfo, true);
     submitState.value = true;
   }
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-  showToast(messages.IDS_MSG_SUCCESS);
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+  showToast(MESSAGES.IDS_MSG_SUCCESS);
 }
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
@@ -673,7 +673,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     if (response) {
       await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       if (!noAlert) {
-        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+        toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast('Success');
       }
     } else {
@@ -791,7 +791,7 @@ const returnPassWordCheck = (val: boolean) => {
   const handleFailure = () => {
     isDefaultPassword ? (passWordPass.value = false) : (passWordPassLis.value = false);
     closePassModal();
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("The administrator password is incorrect.");
   };
 
@@ -857,7 +857,7 @@ const tempSaveLocalStorage = () => {
   localStorage.setItem('remarkList', JSON.stringify(remarkList.value));
   localStorage.setItem('commentList', JSON.stringify(commentList.value));
   localStorage.setItem('recoList', JSON.stringify(recoList.value));
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data saved to temporary storage')
 };
 
@@ -876,7 +876,7 @@ const tempSaveDataEmpty = async () => {
   commentList.value = [];
   code.value = '';
   searchText.value = '';
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data empty to storage')
 }
 

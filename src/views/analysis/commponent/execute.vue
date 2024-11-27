@@ -64,7 +64,7 @@ import {
   STITCH_COUNT_OPTIONS,
   BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
@@ -240,10 +240,10 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     }
     // 실행 여부 체크
     if (isRunningState.value && autoStart !== 'autoStart') {
-      showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
+      showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      confirmMessage.value = messages.IDS_RECOVER_GRIPPER_CONDITION;
+      confirmMessage.value = MESSAGES.IDS_RECOVER_GRIPPER_CONDITION;
       showConfirm.value = true;
       return;
     }
@@ -311,7 +311,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
   } else {
     // 장비 중단
     if (!isRunningState.value) {
-      showSuccessAlert(messages.IDS_ERROR_STOP_PROCESS);
+      showSuccessAlert(MESSAGES.IDS_ERROR_STOP_PROCESS);
       return;
     }
     store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: true});
@@ -352,7 +352,7 @@ const sendInit = () => { // 장비 초기화 진행
 
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
   if (isInit.value === 'Y') {
-    showSuccessAlert(messages.alreadyInitialized);
+    showSuccessAlert(MESSAGES.alreadyInitialized);
     return;
   }
 

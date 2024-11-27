@@ -300,7 +300,7 @@ import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningIn
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {useRouter} from "vue-router";
 import moment from "moment/moment";
 import SliderBar from "@/components/commonUi/SliderBar.vue";
@@ -1035,7 +1035,7 @@ const commitConfirmed = () => {
     return;
   }
   showConfirm.value = true;
-  confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
+  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
 }
 
 const handleOkConfirm = () => {

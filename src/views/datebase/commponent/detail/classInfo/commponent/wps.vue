@@ -29,7 +29,7 @@ import OpenSeadragon from "openseadragon";
 import {useStore} from "vuex";
 import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
@@ -51,7 +51,7 @@ const findWbcClass = ref<any>([]);
 const localSlotId = ref('');
 let isZoomed = ref(true);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const emit = defineEmits(['borderDel', 'borderOn']);
 let currentOverlay: HTMLElement | null = null;
 const imgType = ref('');
@@ -90,7 +90,7 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
     }
     const currentClass = findWbcClass.value.find((el: any) => el.FILE_NM === newVal.img.fileName.split('_').slice(2).join('_'));
     if (!currentClass) {
-      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
       showToast('Selected image does not have corresponding coordinates.');
       emit('borderDel');
     }
@@ -116,7 +116,7 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
         wps.value = newVal;
         await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
       } else {
-        toastMessageType.value = messages.TOAST_MSG_ERROR;
+        toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
         showToast('Selected image does not have corresponding coordinates.');
         emit('borderDel');
       }

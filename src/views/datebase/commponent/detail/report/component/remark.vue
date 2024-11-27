@@ -107,7 +107,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 
 const props = defineProps({
   crcDefaultMode: {
@@ -125,7 +125,7 @@ const props = defineProps({
 
 const emit = defineEmits(['cancel', 'listUpdated']);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const remarkArr = ref<any>([]);
 const selectedItems = ref<number[]>([]);
 const newRemarkCode = ref("");
@@ -159,7 +159,7 @@ const loadRemarks = async (type?: string) => {
 
   remarkArr.value = response?.data || [];
   if (type !== 'mounted') {
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast("Search completed.");
   }
 };
@@ -172,13 +172,13 @@ const returnPassWordCheck = (val: boolean) => {
     passWordPass.value = true;
     // 패스 체크 모달 닫기
     passLayout.value = false;
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast("Admin verification is complete. Please click the button again.");
   } else {
     passWordPass.value = false;
     // 패스 체크 모달 닫기
     passLayout.value = false;
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("The administrator password is incorrect.");
   }
 }
@@ -209,14 +209,14 @@ const searchRemarkData = async () => {
     remarkArr.value = response?.data || [];
 
     if (remarkArr.value.length === 0) {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast("No results found.");
     } else {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast("Search completed.");
     }
   } catch (error) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Search failed.');
     console.error("Error during search:", error);
   }
@@ -226,7 +226,7 @@ const searchRemarkData = async () => {
 // Remark 추가
 const addRemark = async () => {
   if (!newRemarkCode.value || !newRemarkContent.value) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("code와 content를 입력해주세요.");
     return;
   }
@@ -254,7 +254,7 @@ const addRemark = async () => {
     await loadRemarks();
     await scrollToBottom();
   } catch (error) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Failed to add remark')
   }
 };
@@ -270,7 +270,7 @@ const deleteRemark = async (id: number) => {
     } else {
       await deleteCrcRecoApi({id});
     }
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast('delete Success')
     await loadRemarks();
   } catch (error) {
@@ -296,7 +296,7 @@ const startEdit = (index: number, item: any) => {
 // 편집 저장
 const saveEdit = async (id: number) => {
   if (!editedCode.value || !editedContent.value) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("코드와 내용을 입력해주세요.");
     return;
   }
@@ -330,7 +330,7 @@ const saveEdit = async (id: number) => {
     }
     editIndex.value = null;
     await loadRemarks();
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast('save Success')
   } catch (error) {
     console.error("Failed to update remark:", error);
@@ -358,7 +358,7 @@ const okSelect = () => {
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
   console.log(selectedRemarks)
 
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Remark Add Success');
   emit("listUpdated", selectedRemarks, props.type);
 };

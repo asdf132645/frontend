@@ -54,7 +54,7 @@ import {
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {normalRange, settingName} from "@/common/defines/constants/settings";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
@@ -90,7 +90,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const saveNormalRange = async () => {
@@ -102,7 +102,7 @@ const saveNormalRange = async () => {
       const updateResult = await updateNormalRangeApi({normalRangeItems: normalItems.value});
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getNormalRange();
       } else {
         showErrorAlert('update failed');
@@ -112,7 +112,7 @@ const saveNormalRange = async () => {
       return;
     }
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getNormalRange();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

@@ -57,7 +57,7 @@ import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue"
 import WbcRunningCount from "@/views/setting/analysisDatabase/component/wbcRunningCount.vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 
@@ -85,7 +85,7 @@ const activateTab = (tabName: string) => {
   movingTab.value = tabName;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
-    confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+    confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
   } else {
     activeTab.value = movingTab.value;
   }
@@ -144,9 +144,9 @@ const handleOkConfirm = async () => {
   try {
     console.log(settingType.value);
     await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
-    await showSuccessAlert(messages.settingSaveSuccess);
+    await showSuccessAlert(MESSAGES.settingSaveSuccess);
   } catch (e) {
-    await showErrorAlert(messages.settingSaveFailure);
+    await showErrorAlert(MESSAGES.settingSaveFailure);
   }
 }
 

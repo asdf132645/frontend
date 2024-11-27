@@ -1,4 +1,4 @@
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {inhaCbcTestCode} from "@/common/defines/constants/inhaCbcTestCode";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 import {
@@ -30,7 +30,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
     let cbcDataArray = [];
 
     if (cbcFilePathSetArr === '') {
-        errMessage = messages.UPLOAD_PLEASE_CBC;
+        errMessage = MESSAGES.UPLOAD_PLEASE_CBC;
         return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading}
     }
 
@@ -130,7 +130,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     let errMessage = '';
     let lisBtnColor = false;
     if (lisFilePathSetArr === '') {
-        errMessage = messages.UPLOAD_PLEASE_LIS;
+        errMessage = MESSAGES.UPLOAD_PLEASE_LIS;
         return {errMessage};
     }
     let resultStr = '';
@@ -326,7 +326,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
             }
 
             lisBtnColor = true;
-            errMessage = messages.IDS_MSG_SUCCESS;
+            errMessage = MESSAGES.IDS_MSG_SUCCESS;
         } else {
             errMessage = res?.message
 
