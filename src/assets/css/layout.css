@@ -1907,7 +1907,7 @@ input.loginInput {
 }
 
 .statusBarWrapper {
-    width: 100%;
+    width: 286px;
     height: 20px;
     margin: 5px 0;
     background-color: var(--blue-bg-2-color);
