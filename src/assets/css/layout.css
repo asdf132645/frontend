@@ -4923,7 +4923,9 @@ ul.wpsDiv.cellImgBox {
 ul.wpsDiv.cellImgBox .isLowMagnWhether {
     outline: solid #007bff;
 }
-
+.layer-content.oil {
+    max-width: 326px;
+}
 .chooseDiv {
     font-size: 1.2rem;
     margin-bottom: 20px;

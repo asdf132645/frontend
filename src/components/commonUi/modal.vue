@@ -1,7 +1,7 @@
 <!-- 자식 모달 컴포넌트 -->
 <template>
   <div class="layer">
-    <div class="layer-content">
+    <div class="layer-content oil">
       <div class="layer-header">
         <slot name="header"></slot>
         <button @click="closeLayer" class="alertCloseButton">Close</button>
