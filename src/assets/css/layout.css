@@ -5155,6 +5155,15 @@ progress::-moz-progress-bar {
 
 }
 
+.tooltip-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+}
+
 
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
