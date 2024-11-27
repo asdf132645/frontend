@@ -121,7 +121,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Plt Position Margin</th>
+          <th>Edge Shot Margin</th>
           <td>
             <select v-model='pltPositionMargin'>
               <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
