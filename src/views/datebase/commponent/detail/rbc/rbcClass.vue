@@ -23,8 +23,10 @@
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Category</li>
-            <li  :style="type === 'report' && 'cursor: default;'">
+            <li  :style="type === 'report' && 'cursor: default;'" @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" class="flex-align-center">
               <span :style="type === 'report' && 'cursor: default;'">{{ getCategoryName(category) }}</span>
+              <font-awesome-icon :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryNm !== 'Chromia'" />
+              <font-awesome-icon :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryNm !== 'Chromia'" />
             </li>
           </ul>
           <ul class="classNmRbc">
@@ -32,23 +34,22 @@
                 v-if="innerIndex === 0"
                 class="mt18 mb14 liTitle flex-justify-start-align-center w-fit"
                 :style="type === 'report' && 'cursor: default;'"
-                @click="toggleAll(allCheckType)"
+                style="top: -4px;"
             >
-              <input type="checkbox" v-if="type !== 'report'" :checked="!allCheckType" />
-              <p>Class</p>
+              <p style="padding-top: 2px;">Class</p>
+
             </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category.categoryId}-${classInfo.classId}`">
-              <li @click="handleLiClick(category.categoryId, classInfo.classId, classInfo, category)" :style="type === 'report' && 'cursor: default;'">
-                <div
-                    v-if="showCheckbox(category.categoryId, classInfo.classId) && type !== 'report'">
-                  <input type="checkbox" :value="`${category.categoryId}-${classInfo.classId}`"
-                         v-show="!except"
-                         v-model="checkedClassIndices">
-                </div>
+              <li @click="handleLiClick(category.categoryId, classInfo.classId, classInfo, category)" :style="type === 'report' && 'cursor: default;'" class="flex-align-center">
                 <span :style="type === 'report' && 'cursor: default;'">
                   {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}
                 </span>
+                <div
+                    v-if="showCheckbox(category.categoryId, classInfo.classId, showCheckboxClassIds) && type !== 'report'">
+                  <font-awesome-icon :icon="['fas', 'eye']" color="#29C7CA" v-show="!except && checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" v-show="!except && !checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
+                </div>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'" :style="type === 'report' && 'cursor: default;'">
                 <span :style="type === 'report' && 'cursor: default;'">Others</span>
@@ -56,15 +57,13 @@
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
                   @click="handleClick({ classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '05-03')"
                   :style="type === 'report' && 'cursor: default;'"
+                  class="flex-align-center"
               >
-                <div v-if="type !== 'report'">
-                  <input type="checkbox"
-                         v-show="!except"
-                         value="05-03"
-                         v-model="checkedClassIndices"
-                         @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
-                </div>
                 <span :style="type === 'report' && 'cursor: default;'">Malaria</span>
+                <div v-if="type !== 'report'">
+                  <font-awesome-icon :icon="['fas', 'eye']" color="#29C7CA" v-show="!except && checkedClassIndices.includes('05-03')" @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')" />
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" v-show="!except && !checkedClassIndices.includes('05-03')" @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')" />
+                </div>
               </li>
             </template>
           </ul>
@@ -240,16 +239,12 @@
           <li :style="type === 'report' && 'cursor: default;'">Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li @click="handleClick({ classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '04-01')"
-              style="padding-top: 0;">
-            <div v-if="type !== 'report'">
-              <input type="checkbox"
-                     value="04-01"
-                     v-show="!except"
-                     v-model="checkedClassIndices"
-                     @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')">
-            </div>
+          <li @click="handleClick({ classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '04-01')" style="padding-top: 0;" class="flex-align-center">
             <span :style="type === 'report' && 'cursor: default;'">Platelet</span>
+            <div v-if="type !== 'report'">
+              <font-awesome-icon :icon="['fas', 'eye']" color="#29C7CA" v-show="!except && checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
+              <font-awesome-icon :icon="['fas', 'eye-slash']" v-show="!except && !checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
+            </div>
           </li>
         </ul>
         <ul class="degree analysis">
@@ -260,15 +255,16 @@
       </div>
     </div>
     <!--  RBC 감도 조절 기능  -->
-    <!--    <div class="sensitivityDiv" v-if="type !== 'report'">-->
-    <!--      <select v-model="selectedClass" @change="classChange">-->
-    <!--        <option v-for="(item) in rightClickItem" :key="item.classNm">-->
-    <!--          {{ item.classNm }}-->
-    <!--        </option>-->
-    <!--      </select>-->
-    <!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
-    <!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
-    <!--    </div>-->
+        <div class="sensitivityDiv" v-if="type !== 'report'">
+          <select v-model="selectedClass" @change="classChange">
+            <option v-for="(item) in rightClickItem" :key="item.classNm">
+              {{ item.classNm }}
+            </option>
+          </select>
+          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>
+          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
+        </div>
+
     <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="memo"></textarea>
       <button style="width: 454px" class="memoModalBtn" @click="memoChange">Save</button>
@@ -337,7 +333,13 @@ const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Macrocyte');
-const allCheckType = ref(true);
+const allCheckType = ref({
+  '01': true,
+  '02': true,
+  '03': true,
+  '05': true,
+  '04': true,
+})
 const rbcInfoPathAfter = ref<any>([]);
 const rbcTotalVal = ref(0);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
@@ -416,7 +418,13 @@ watch(() => props.selectItems, async (newItem) => {
   await afterChange(newItem);
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   rightClickItemSet();
-  allCheckType.value = true;
+  allCheckType.value = {
+    size: true,
+    chromia: true,
+    shape: true,
+    inclusionBody: true,
+    others: true,
+  }
   await updateRbcInfo();
 });
 
@@ -468,7 +476,13 @@ watch(() => resetRbcArr, async (newItem) => {
 watch(() => props.allCheckClear, () => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
-  allCheckType.value = true;
+  allCheckType.value = {
+    '01': true,
+    '02': true,
+    '03': true,
+    '04': true,
+    '05': true,
+  }
 }, {deep: true})
 
 
@@ -491,7 +505,7 @@ watch(() => rbcReData, async (newItem) => {
 
 }, {deep: true});
 
-const showCheckbox = (categoryId: string, classId: string) => showCheckboxClassIds.value.find((item) => item.categoryId === categoryId && item.classId === classId);
+const showCheckbox = (categoryId: string, classId: string, availableClassIds: {categoryId: string; classId: string }[]) => availableClassIds.find((item) => item.categoryId === categoryId && item.classId === classId);
 
 const handleClick = (classInfo: any, category: any, value: string) => {
   const isChecked = checkedClassIndices.value.includes(value);
@@ -507,7 +521,7 @@ const handleClick = (classInfo: any, category: any, value: string) => {
 };
 
 const handleLiClick = (categoryId: string, classId: string, classInfo: any, category: any) => {
-  if (!showCheckbox(categoryId, classId)) return;
+  if (!showCheckbox(categoryId, classId, showCheckboxClassIds.value)) return;
 
   toggleCheckbox(categoryId, classId, classInfo);
   clickChangeSens(classInfo.classNm, category.categoryNm, categoryId, classId);
@@ -855,22 +869,23 @@ const updateRbcInfo = async () => {
   await resRunningItem(updatedRuningInfo, false);
 }
 
-const toggleAll = (check: boolean) => {
+const toggleAll = (check: boolean, categoryId: string) => {
   if (props.notCanvasClickVal) return;
+
+  const allClassIds = showCheckboxClassIds.value.filter((item) => item.categoryId === categoryId);
 
   let allCheckboxes: any = [];
   for (const item of rbcInfoBeforeVal.value) {
     item.classInfo.forEach((classInfo: any, innerIndex: number) => {
-      if (showCheckbox(item.categoryId, classInfo.classId)) {
+      if (showCheckbox(item.categoryId, classInfo.classId, allClassIds)) {
         allCheckboxes.push({
           classNm: classInfo.classNm,
           categoryId: item.categoryId,
           classId: classInfo.classId
         });
       }
-
     });
-    if (item.categoryId === '05') {
+    if (categoryId === item.categoryId && item.categoryId === '05') {
       allCheckboxes.push({
         classNm: 'Malaria',
         categoryId: '05',
@@ -878,14 +893,18 @@ const toggleAll = (check: boolean) => {
       });
     }
   }
-  allCheckboxes.push({
-    classNm: 'Platelet',
-    categoryId: '04',
-    classId: '01'
-  });
+
+  if (categoryId === '04') {
+    allCheckboxes.push({
+      classNm: 'Platelet',
+      categoryId: '04',
+      classId: '01'
+    });
+  }
+
 
   if (check) {
-    checkedClassIndices.value = showCheckboxClassIds.value.map((item) => `${item.categoryId}-${item.classId}`);
+    checkedClassIndices.value = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
   } else {
     checkedClassIndices.value = [];
   }
@@ -894,7 +913,10 @@ const toggleAll = (check: boolean) => {
     updateClassInfoArr(checkbox.classNm, check, checkbox.categoryId, checkbox.classId);
   });
 
-  allCheckType.value = !allCheckType.value;
+  const validCategories = ['01', '02', '03', '04', '05'];
+  if (validCategories.includes(categoryId)) {
+    allCheckType.value[categoryId] = !allCheckType.value[categoryId];
+  }
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
@@ -997,7 +1019,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
         // await reDegree(rbcInfoBeforeVal.value);
         // await reDegree(rbcInfoAfterVal.value);
         // rightClickItemSet();
-        // allCheckType.value = true;
       }
       if (alertShow) {
         showSuccessAlert('Success');
