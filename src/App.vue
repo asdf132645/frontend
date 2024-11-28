@@ -52,7 +52,12 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
-import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {
+  createDeviceInfoApi,
+  getDeviceInfoApi,
+  getDeviceIpApi,
+  putDeviceInfoApi
+} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constants/classArr";
 import Analysis from "@/views/analysis/index.vue";
@@ -664,6 +669,7 @@ async function socketData(data: any) {
           await createDeviceInfoApi({deviceItem: deviceInfo});
           siteCdDvBarCode.value = true;
         } else {
+          await putDeviceInfoApi({ siteCd: parseDataWarp.siteCd, deviceSerialNm: parseDataWarp.deviceBarcode });
           siteCdDvBarCode.value = true;
         }
 
