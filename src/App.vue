@@ -260,6 +260,7 @@ onMounted(async () => {
   await nextTick();
   await cellImgGet();
   await getNormalRange();
+  await getDeviceInfo();
   startChecking();
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
@@ -666,7 +667,7 @@ async function socketData(data: any) {
           siteCdDvBarCode.value = true;
         }
 
-        await store.dispatch('commonModule/setCommonInfo', {siteCd: parseDataWarp.siteCd})
+        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
         localStorage.setItem('siteCd', parseDataWarp.siteCd);
       } catch (err) {
         console.error("Error handling device information", err);
@@ -691,6 +692,25 @@ async function socketData(data: any) {
     }
   } catch (error) {
     console.error(error);
+  }
+}
+
+const getDeviceInfo = async () => {
+  try {
+    const deviceData = await getDeviceInfoApi();
+    sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
+    if (deviceData.data.length === 0 || !deviceData.data) {
+      await createDeviceInfoApi({deviceItem: deviceInfo});
+      siteCdDvBarCode.value = true;
+    } else {
+      siteCdDvBarCode.value = true;
+    }
+
+    await store.dispatch('commonModule/setCommonInfo', { siteCd: deviceData.data[0]?.siteCd });
+    localStorage.setItem('siteCd', deviceData.data[0]?.siteCd);
+  } catch (err) {
+    console.error("Error handling device information", err);
+    siteCdDvBarCode.value = true;
   }
 }
 
