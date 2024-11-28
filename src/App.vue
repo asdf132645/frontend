@@ -697,20 +697,14 @@ async function socketData(data: any) {
 
 const getDeviceInfo = async () => {
   try {
-    const deviceData = await getDeviceInfoApi();
-    sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
-    if (deviceData.data.length === 0 || !deviceData.data) {
-      await createDeviceInfoApi({deviceItem: deviceInfo});
-      siteCdDvBarCode.value = true;
-    } else {
-      siteCdDvBarCode.value = true;
+    const result = await getDeviceInfoApi();
+    if (result) {
+      sessionStorage.setItem('autoStart', result.data[0]?.autoStart);
+      await store.dispatch('commonModule/setCommonInfo', { siteCd: result.data[0]?.siteCd });
+      localStorage.setItem('siteCd', result.data[0]?.siteCd);
     }
-
-    await store.dispatch('commonModule/setCommonInfo', { siteCd: deviceData.data[0]?.siteCd });
-    localStorage.setItem('siteCd', deviceData.data[0]?.siteCd);
   } catch (err) {
     console.error("Error handling device information", err);
-    siteCdDvBarCode.value = true;
   }
 }
 
