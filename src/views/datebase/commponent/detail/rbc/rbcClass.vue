@@ -419,11 +419,11 @@ watch(() => props.selectItems, async (newItem) => {
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   rightClickItemSet();
   allCheckType.value = {
-    size: true,
-    chromia: true,
-    shape: true,
-    inclusionBody: true,
-    others: true,
+    '01': true,
+    '02': true,
+    '03': true,
+    '04': true,
+    '05': true,
   }
   await updateRbcInfo();
 });
