@@ -236,6 +236,8 @@ const leave = async (event: any) => {
     const ipAddress = `ip=${result.data}`
     const url = `http://${result.data}:3000/close?${ipAddress}`;
     await axios.get(url);
+  } else {
+    await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
   }
 };
 

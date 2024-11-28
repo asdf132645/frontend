@@ -46,7 +46,7 @@
                   {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}
                 </span>
                 <div
-                    v-if="showCheckbox(category.categoryId, classInfo.classId, showCheckboxClassIds) && type !== 'report'">
+                    v-if="showCheckbox(category.categoryId, classInfo.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
                   <font-awesome-icon :icon="['fas', 'eye']" color="#29C7CA" v-show="!except && checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
                   <font-awesome-icon :icon="['fas', 'eye-slash']" v-show="!except && !checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
                 </div>
@@ -304,11 +304,17 @@ import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
-import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
+import { RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS } from "@/common/defines/constants/dataBase";
+import {
+  VISIBLE_CHROMIA_OPTIONS, VISIBLE_INCLUSION_BODY_OPTIONS, VISIBLE_OTHERS_OPTIONS,
+  VISIBLE_RBC_OPTIONS,
+  VISIBLE_SHAPE_OPTIONS,
+  VISIBLE_SIZE_OPTIONS, VisibleRbcType
+} from "@/common/defines/constants/rbc";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
-const checkedClassIndices = ref<any>([]);
+const checkedClassIndices = ref<string[]>([]);
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal', 'currentRbcPageNumber']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
@@ -333,7 +339,7 @@ const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Macrocyte');
-const allCheckType = ref({
+const allCheckType = ref<Record<string, boolean>>({
   '01': true,
   '02': true,
   '03': true,
@@ -361,24 +367,6 @@ const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
 const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
-const showCheckboxClassIds = ref([
-  { categoryId: '01', classId: '02' },
-  { categoryId: '01', classId: '03' },
-  { categoryId: '03', classId: '01' },
-  { categoryId: '03', classId: '03' },
-  { categoryId: '03', classId: '04' },
-  { categoryId: '03', classId: '05' },
-  { categoryId: '03', classId: '06' },
-  { categoryId: '03', classId: '07' },
-  { categoryId: '03', classId: '08' },
-  { categoryId: '03', classId: '09' },
-  { categoryId: '03', classId: '10' },
-  { categoryId: '03', classId: '11' },
-  { categoryId: '05', classId: '01' },
-  { categoryId: '05', classId: '02' },
-  { categoryId: '05', classId: '03' },
-  { categoryId: '04', classId: '01' },
-]);  // checkbox 보여줄 class 배열
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -521,7 +509,7 @@ const handleClick = (classInfo: any, category: any, value: string) => {
 };
 
 const handleLiClick = (categoryId: string, classId: string, classInfo: any, category: any) => {
-  if (!showCheckbox(categoryId, classId, showCheckboxClassIds.value)) return;
+  if (!showCheckbox(categoryId, classId, VISIBLE_RBC_OPTIONS)) return;
 
   toggleCheckbox(categoryId, classId, classInfo);
   clickChangeSens(classInfo.classNm, category.categoryNm, categoryId, classId);
@@ -535,6 +523,21 @@ const toggleCheckbox = (categoryId: string, classId: string, classInfo: any) => 
     checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== checkValue);
   } else {
     checkedClassIndices.value.push(checkValue);
+  }
+
+  const optionsMap: Record<string, VisibleRbcType[]> = {
+    '01': VISIBLE_SIZE_OPTIONS,
+    // '02': VISIBLE_CHROMIA_OPTIONS,
+    '03': VISIBLE_SHAPE_OPTIONS,
+    '04': VISIBLE_OTHERS_OPTIONS,
+    '05': VISIBLE_INCLUSION_BODY_OPTIONS,
+  };
+
+  if (optionsMap[categoryId]) {
+    const availableOptions = optionsMap[categoryId].map((item) => `${item.categoryId}-${item.classId}`);
+    const setCheckedClassIndices = new Set(checkedClassIndices.value);
+    const allChecked = availableOptions.every((item => setCheckedClassIndices.has(item)))
+    allCheckType.value[categoryId] = !allChecked;
   }
 
   updateClassInfoArr(classInfo.classNm, !isChecked, categoryId, classId);
@@ -869,10 +872,10 @@ const updateRbcInfo = async () => {
   await resRunningItem(updatedRuningInfo, false);
 }
 
-const toggleAll = (check: boolean, categoryId: string) => {
+const toggleAll = (allCheck: boolean, categoryId: string) => {
   if (props.notCanvasClickVal) return;
 
-  const allClassIds = showCheckboxClassIds.value.filter((item) => item.categoryId === categoryId);
+  const allClassIds = VISIBLE_RBC_OPTIONS.filter((item) => item.categoryId === categoryId);
 
   let allCheckboxes: any = [];
   for (const item of rbcInfoBeforeVal.value) {
@@ -902,15 +905,16 @@ const toggleAll = (check: boolean, categoryId: string) => {
     });
   }
 
+  const categoryClassIdStrArr = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
 
-  if (check) {
-    checkedClassIndices.value = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
+  if (allCheck) {
+    checkedClassIndices.value = [...checkedClassIndices.value, ...categoryClassIdStrArr];
   } else {
-    checkedClassIndices.value = [];
+    checkedClassIndices.value = checkedClassIndices.value.filter((item) => !categoryClassIdStrArr.includes(item))
   }
 
   allCheckboxes.forEach(checkbox => {
-    updateClassInfoArr(checkbox.classNm, check, checkbox.categoryId, checkbox.classId);
+    updateClassInfoArr(checkbox.classNm, allCheck, checkbox.categoryId, checkbox.classId);
   });
 
   const validCategories = ['01', '02', '03', '04', '05'];
