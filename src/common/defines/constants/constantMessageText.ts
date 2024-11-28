@@ -99,7 +99,7 @@ export const enum MESSAGES {
     SETTING_INFO_ANALYSIS_TYPE = '',
 }
 
-export const enum GENERAL_MSG {
+export const enum MSG_GENERAL {
     SAVE = 'Save',
     LEAVE = 'Leave',
     CANCEL = 'Cancel',
@@ -109,6 +109,7 @@ export const enum GENERAL_MSG {
     DELETE = 'Delete',
     UPLOAD = 'Upload',
     OK = 'OK',
+    SUCCESS = 'Success',
 }
 
 export const enum SYSTEM_MSG {

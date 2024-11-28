@@ -255,15 +255,15 @@
       </div>
     </div>
     <!--  RBC 감도 조절 기능  -->
-        <div class="sensitivityDiv" v-if="type !== 'report'">
-          <select v-model="selectedClass" @change="classChange">
-            <option v-for="(item) in rightClickItem" :key="item.classNm">
-              {{ item.classNm }}
-            </option>
-          </select>
-          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>
-          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>
-        </div>
+<!--        <div class="sensitivityDiv" v-if="type !== 'report'">-->
+<!--          <select v-model="selectedClass" @change="classChange">-->
+<!--            <option v-for="(item) in rightClickItem" :key="item.classNm">-->
+<!--              {{ item.classNm }}-->
+<!--            </option>-->
+<!--          </select>-->
+<!--          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
+<!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
+<!--        </div>-->
 
     <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="memo"></textarea>

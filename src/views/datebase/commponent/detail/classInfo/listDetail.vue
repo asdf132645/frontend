@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"/>
+  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse" :changeSlideByLisUpload="changeSlideByLisUpload" />
 
   <div class="wbcContent">
     <DetailHeader
@@ -19,7 +19,9 @@
       <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow"
                  type='listTable'
                  @nextPage="nextPage"
-                 @scrollEvent="scrollToElement"/>
+                 @scrollEvent="scrollToElement"
+                 @uploadLisChangeSlide="uploadLisChangeSlide"
+      />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
@@ -327,6 +329,7 @@ const isWpsShow = ref(false);
 const blockClicks = ref(false);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const changeSlideByLisUpload = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -1851,6 +1854,12 @@ const projectTypeReturn = (type: string): any => {
 
 const hideAlert = () => {
   showAlert.value = false;
+}
+
+const uploadLisChangeSlide = (hospitalNm: any) => {
+  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
+  }
 }
 
 </script>

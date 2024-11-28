@@ -151,7 +151,7 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="bottom-right"
+      position="center"
   />
   <Confirm
       v-if="showConfirm"
@@ -180,7 +180,7 @@ import {
   updateRunningApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import { MESSAGES } from "@/common/defines/constants/constantMessageText";
+import { MESSAGES, MSG_GENERAL } from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {
@@ -817,6 +817,8 @@ const gilDataSendLoad = async () => {
           lisBtnColor.value = true;
           const updatedRuningInfo = { id: result.data.id, ...updatedItem }
           await resRunningItem(updatedRuningInfo, true);
+          emits('uploadLisChangeSlide', HOSPITAL_SITE_CD_BY_NAME['인천길병원']);
+
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
         }
@@ -1475,6 +1477,7 @@ const getCustomClass = async () => {
     console.log(e);
   }
 }
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';

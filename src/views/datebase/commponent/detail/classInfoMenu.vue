@@ -97,7 +97,7 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const isButtonDisabled = ref(false);
 let timeoutId: number | undefined = undefined;
 const pageMoveDeleteStop = ref(false);
-const props = defineProps(['isNext']);
+const props = defineProps(['isNext', 'changeSlideByLisUpload']);
 const ipAddress = ref<any>('');
 const isLoading = ref(true);
 const keepPage = ref('');
@@ -111,6 +111,10 @@ watch(props.isNext, (newVal) => {
     moveWbc('down')
   }
 });
+
+watch(() => props.changeSlideByLisUpload, (newVal) => {
+  moveWbc('up');
+})
 
 onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
