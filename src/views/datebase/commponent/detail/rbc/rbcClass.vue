@@ -23,10 +23,10 @@
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Category</li>
-            <li  :style="type === 'report' && 'cursor: default;'" @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" class="flex-align-center">
+            <li  :style="type === 'report' && 'cursor: default;'" @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" style="display: flex; flex-direction: column; align-items: center">
               <span :style="type === 'report' && 'cursor: default;'">{{ getCategoryName(category) }}</span>
-              <font-awesome-icon :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryNm !== 'Chromia'" />
-              <font-awesome-icon :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryNm !== 'Chromia'" />
+              <font-awesome-icon class="rbc-allCheck-eye-font" :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryNm !== 'Chromia' && category.categoryNm !== 'Size'" />
+              <font-awesome-icon class="rbc-allCheck-eye-font" :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryNm !== 'Chromia' && category.categoryNm !== 'Size'" />
             </li>
           </ul>
           <ul class="classNmRbc">
