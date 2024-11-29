@@ -1384,9 +1384,7 @@ ul.nth1Child > :nth-child(3) {
     padding-top: 3px;
     font-size: 0.8rem;
     height: 17px;
-    /*margin-bottom: 2px;*/
     position: relative;
-    cursor: pointer;
 }
 
 span.rbcSapnDown {
@@ -1450,7 +1448,6 @@ span.rbcSapnDown .degreeActive {
     min-width: 74%;
     font-size: 0.8rem;
     vertical-align: sub;
-    cursor: pointer;
 }
 
 .categories > ul > li > div > input {
@@ -5208,6 +5205,18 @@ progress::-moz-progress-bar {
 .rbc-allCheck-eye-font {
     margin-top: 4px;
     margin-left: -10px;
+}
+
+.rbc-check-eye-font {
+    cursor: pointer;
+}
+
+.rbc-check-eye-font:hover {
+    transform: scale(1.1);
+}
+
+.testsets:hover {
+    transform: scale(1.21);
 }
 
 @media screen and (max-width: 1900px) {
