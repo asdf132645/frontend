@@ -142,7 +142,7 @@ const getIpAddress = async (ip: string) => {
       viewerCheckApp.value = result.data;
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -802,7 +802,7 @@ const getNormalRange = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -844,7 +844,7 @@ const cellImgGet = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

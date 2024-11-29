@@ -46,7 +46,6 @@ watch(
     () => props.parsedData,
     (newVal, oldVal) => {
       const slotInfo = newVal?.slotInfo;
-      // console.log(changeSlide.value.changeSlide.value);
       if(changeSlide.value.changeSlide.value === 'afterChange'){
         images.value = [];
       }

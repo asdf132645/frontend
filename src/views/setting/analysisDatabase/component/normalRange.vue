@@ -119,7 +119,7 @@ const saveNormalRange = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -145,7 +145,7 @@ const getNormalRange = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(normalItems.value) });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

@@ -363,7 +363,6 @@ onMounted(async () => {
     );
 
     if (result) {
-      // console.log(result)
       // runningInfo를 이용한 UI 렌더링
     }
   }
@@ -440,7 +439,7 @@ const getDetailRunningInfo = async () => {
     iaRootPath.value = path;
 
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 const handleUpdateCellRef = (refValue: any) => {
@@ -695,7 +694,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     await getOrderClass();
     await initData(newData, upDown, upDownData);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -709,7 +708,7 @@ const getBfHotKeyClasses = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -720,7 +719,7 @@ const getWbcHotKeyClasses = async () => {
       wbcHotKeysItems.value = result.data;
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -1212,7 +1211,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -1230,7 +1229,6 @@ function onDragStart(itemIndex: any, imageIndex: any) {
 }
 
 function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
-  console.log('selectImage')
   if(blockClicks.value){
     return;
   }
@@ -1430,7 +1428,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     const res = await moveClassImagePost(data);
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     if (res) {
-      // console.log('wbc 옮기기');
       let idx = 0;
       for (const selectedImage of arrType) {
         const fileName = selectedImage.fileName;

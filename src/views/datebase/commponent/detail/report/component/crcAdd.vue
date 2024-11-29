@@ -229,7 +229,6 @@ onBeforeMount(async () => {
 
   } else {
     crcSetArr.value = (await crcGet()).data;
-    console.log(crcSetArr.value)
     for (const argument of crcSetArr.value) {
       if (argument.crcType === 'select') {
         if (!argument?.val) {

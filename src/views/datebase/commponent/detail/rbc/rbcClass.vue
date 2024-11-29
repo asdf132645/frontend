@@ -1070,7 +1070,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 

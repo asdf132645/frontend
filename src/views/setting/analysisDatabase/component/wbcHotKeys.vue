@@ -119,7 +119,7 @@ const saveWbcCustomClass = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -140,7 +140,7 @@ const getWbcHotKeyClasses = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcHotKeysItems.value) });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

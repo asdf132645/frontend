@@ -565,7 +565,7 @@ const uimdTestCbcLisDataGet = () => {
     await resRunningItem(updatedRuningInfo, true);
 
   }).catch(function (err) {
-    console.log('error.config', err.config)
+    console.error('error.config', err.config)
     showErrorAlert(err.message);
   });
 }
@@ -761,7 +761,7 @@ const cmcSeoulLisAndCbcDataGet = () => {
       }
     })
   }).catch(function (err) {
-    console.log('error.config', err.config)
+    console.error('error.config', err.config)
     showErrorAlert(err.message);
   });
 }
@@ -1036,7 +1036,7 @@ const checkUserAuth = async (empNo: any) => {
         }
 
       }).catch(function (err) {
-        console.log('checkUserAuth :' + err.message)
+        console.error('checkUserAuth :' + err.message)
         fail(new Error(err.message))
       })
 
@@ -1077,7 +1077,6 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
-  console.log(props.selectItems?.wbcMemo)
   // wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
   memoModal.value = !memoModal.value;
 }
@@ -1147,7 +1146,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -1474,7 +1473,7 @@ const getCustomClass = async () => {
     const result = await getWbcCustomClassApi();
     customClassArr.value = result.data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

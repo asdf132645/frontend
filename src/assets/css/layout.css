@@ -4069,10 +4069,6 @@ li.crcRow {
     min-height: 200px;
 }
 
-span.smallName {
-    font-size: 0.8rem;
-}
-
 .lockInput {
     width: 96%;
     border: 1px solid #000;
@@ -4395,7 +4391,21 @@ button.crcBtn {
     color: #ffffff;
 }
 
+button.crcBtnWithBg {
+    background: #252629;
+    border: 1px solid #ffffff;
+    padding: 5px 17px;
+    cursor: pointer;
+    border-radius: 3px;
+    color: #ffffff;
+}
+
 button.crcBtn:hover {
+    color: #252629;
+    background-color: var(--white-color);
+}
+
+button.crcBtnWithBg:hover {
     color: #252629;
     background-color: var(--white-color);
 }
@@ -4889,25 +4899,69 @@ input.codeInput {
     left: -30px;
 }
 
-.split-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.split-left, .split-right {
-    width: 48%;
-}
-
 .resultImage {
-    background: #ffffff;
-    color: #000;
+    background: var(--main-bg-2-color);
+    border: 1px solid black;
+    border-radius: 4px;
+    box-shadow: 13px 8px 28px -7px var(--main-bg-2-color);
+    color: var(--white-color);
     text-align: left;
     padding: 20px;
     position: absolute;
     /*left: 37%;*/
     margin: auto;
-    z-index: 99;
-    min-width: 450px;
+    z-index: 9999;
+    width: 624px;
+    height: 1000px;
+}
+
+.resultImage-mainTitle {
+    color: var(--coral-bg-0-color);
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.resultImage-mainTitleWithFont {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.resultImage-wbcPlt-container {
+    display: flex;
+    gap: 118px;
+}
+
+.resultImage-remark-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.resultImage-remark-container > pre {
+    white-space: pre-wrap;
+}
+
+.resultImage-split-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 5px;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.resultImage-split-wrapper li {
+    width: fit-content;
+}
+
+.resultImage-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    justify-content: space-between;
+    flex-direction: column;
 }
 
 ul.wpsDiv.cellImgBox {
@@ -4949,11 +5003,13 @@ button.chooseBtn {
     z-index: 999;
     top: 18%;
     right: 1%;
-    width: 44%;
+    width: 840px;
     background: #333;
     height: 500px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid #fff;
+    border-radius: 4px;
 }
 
 .IsWbcImageSelect ul > li > div > img {
@@ -4961,27 +5017,39 @@ button.chooseBtn {
     max-width: 150px;
 }
 
-ul.wbcImgArea li {
-    display: inline-block;
-    margin: 4px;
+.wbcImageSelect-title {
+    color: var(--white-color);
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 1rem;
 }
 
-ul.wbcImgArea li img {
+.resultImage-wbcImgArea-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.resultImage-wbcImgArea-wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.resultImage-wbcImgArea-wrapper li img {
     max-width: 150px;
 }
 
 .fixedWbcBottom {
     position: fixed;
+    display: flex;
+    gap: 4px;
     bottom: 37%;
     right: 21%;
 }
 
 .IsWbcImageSelect > div > ul {
     margin-bottom: 50px;
-}
-
-.fixedWbcBottom {
-    position: fixed;
 }
 
 .IsWbcImageSelect > div > ul > li {
@@ -5017,7 +5085,7 @@ p.hand-pointer {
 .resultCode {
     margin-bottom: 10px;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .background-image {
@@ -5049,12 +5117,9 @@ p.hand-pointer {
     border: none !important;
 }
 
-.split-left li div, .split-right li div {
-    display: inline-block;
-}
-
-.rimgcrctitle {
-    width: 100px;
+.resultImg-crcTitle {
+    width: 140px;
+    font-size: 0.8rem;
 }
 
 table.resultImgTable {
@@ -5065,13 +5130,6 @@ table.resultImgTable {
 
 td.resultImgTableTitle {
     font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.resultImgBody h1 {
-    font-weight: 600;
-    margin-top: 20px;
-    margin-bottom: 5px;
     font-size: 0.9rem;
 }
 

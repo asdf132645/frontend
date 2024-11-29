@@ -112,7 +112,6 @@ const hideConfirm = async () => {
 const handleOkConfirm = async () => {
   showConfirm.value = false;
   try {
-    console.log('seeting');
     await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
     await showSuccessAlert(MESSAGES.settingSaveSuccess);
   } catch (e) {

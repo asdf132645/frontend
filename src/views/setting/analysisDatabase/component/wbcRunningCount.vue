@@ -105,7 +105,6 @@ const getWbcRunningCountData = async () => {
       const runInfoData = runCountResult.data;
 
       if (!runInfoData || (runInfoData instanceof Array && runInfoData.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         wbcRunInfoCountArr.value = wbcRunningCount;
       } else {

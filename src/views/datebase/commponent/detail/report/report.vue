@@ -378,7 +378,7 @@ const getDetailRunningInfo = async () => {
     rbcInfo.value = result.data;
 
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -623,7 +623,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -805,7 +805,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 

@@ -273,7 +273,7 @@ onMounted(async () => {
     userId.value = getStoredUser.id;
     await getRbcDegreeData();
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
@@ -503,10 +503,10 @@ const getIpAddress = async (item) => {
     await updatePcIpStateApi(req).then(response => {
       delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
-      console.log(error)
+      console.error(error)
     });
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -541,7 +541,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data
   } catch (e) {
-    // console.log(e);
+    console.error(e);
   }
 };
 

@@ -376,7 +376,7 @@ watch(() => isErrorAlarm.value, async (newIsErrorAlarm: boolean) => {
       try {
         await SOUND_ERROR_ALARM.play();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       } finally {
         isPlayingErrorAlarm.value = false;
       }
@@ -396,7 +396,7 @@ watch(() => isCompleteAlarm.value, async (newIsCompleteAlarm: boolean) => {
       try {
         await SOUND_COMPLETE_ALARM.play();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       } finally {
         isPlayingCompleteAlarm.value = false;
       }
@@ -588,7 +588,7 @@ const cellImgGet = async () => {
     }
 
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

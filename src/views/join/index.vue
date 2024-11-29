@@ -121,7 +121,7 @@ const createAccount = async () => {
 
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
     await showErrorAlert('Signin fail');
   }
 }

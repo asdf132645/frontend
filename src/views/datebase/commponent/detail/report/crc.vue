@@ -56,7 +56,7 @@
         <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
         <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
-                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['NONE']"
+                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']"
         >Image Select
         </button>
 
@@ -87,7 +87,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
-            <textarea maxlength="1000" v-model="item.remarkAllContent"></textarea>
+            <textarea maxlength="1000" v-model="item.remarkAllContent" @input="checkTextAreaMaxLength('remark')"></textarea>
           </div>
         </div>
       </div>
@@ -199,6 +199,7 @@ import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
+import {getCrcContentMaxLength} from "@/common/helpers/crc/crcContent";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -379,7 +380,6 @@ const dataAutoComputeLoad = async () => {
 }
 
 const codeSelect = (code: string) => {
-  console.log(code);
   selectOption(code);
   autoCBCMatchingShow.value = false;
 }
@@ -588,7 +588,6 @@ const lisStart = async () => {
   });
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
-  // console.log(nowCrcData)
 
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
@@ -893,5 +892,31 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
+const checkTextAreaMaxLength = (type: 'remark' | 'comment' | 'recommendation') => {
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      if (type === 'remark') {
+        let remarkLength = 0;
+        for (const remark of remarkList.value) {
+          remarkLength += remark.remarkAllContent.length;
+        }
+
+        if (remarkLength > getCrcContentMaxLength(siteCd.value, type)) {
+          const excessLength = remarkLength - getCrcContentMaxLength(siteCd.value, type); // 초과된 길이 계산
+          const lastRemarkIndex = remarkList.value.length - 1;
+
+          // 마지막 remarkAllContent에서 초과된 길이만큼 잘라내기
+          remarkList.value[lastRemarkIndex].remarkAllContent =
+              remarkList.value[lastRemarkIndex].remarkAllContent.substring(0, remarkList.value[lastRemarkIndex].remarkAllContent.length - excessLength);
+
+          toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+          showToast('Text is too long');
+        }
+      }
+      break;
+    default:
+      break;
+  }
+}
 
 </script>

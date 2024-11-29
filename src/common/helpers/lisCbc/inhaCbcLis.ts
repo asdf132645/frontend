@@ -17,8 +17,7 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 
 export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeList: any, funcType: string) => {
-    console.log('인하대 CBC 데이터 받기');
-    console.log('inhaCbc cbcFilePathSetArr', cbcFilePathSetArr);
+    console.log('인하대 CBC 데이터 받기 - inhaCbc cbcFilePathSetArr', cbcFilePathSetArr);
     let errMessage = '';
     let loading = false;
     let cbcWorkList: any = [];
@@ -71,7 +70,6 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 cbcSex = res?.sex;
                 cbcAge = res?.age;
                 inhaTestCode = res?.testCode;
-                console.log(res?.testCode);
                 // 공통 정보 설정
                 await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
 
@@ -114,7 +112,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             loading = false;
             // console.log('Response:', response.data);
         } catch (error: any) {
-            console.log(error.message + ' : no CBC result');
+            console.error(error.message + ' : no CBC result');
             loading = false;
             errMessage = error.message;
         }

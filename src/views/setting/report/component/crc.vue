@@ -214,7 +214,6 @@ const changeCrcRemarkCount = (eve: Event) => {
     return item.name === nameChange(eve.target?.value)
   })
   crcRemarkCountArr.value[countId].checked = eve.target?.checked;
-  // console.log(JSON.stringify(crcRemarkCountArr.value))
 }
 
 const hideAlert = () => {

@@ -114,7 +114,7 @@ const getOrderClass = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -148,7 +148,7 @@ const saveWbcCustomClass = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'abbreviation' | 'fullNm') => {
@@ -173,7 +173,7 @@ const getWbcCustomClasses = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcCustomItems.value) });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

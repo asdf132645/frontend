@@ -150,7 +150,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -175,7 +175,7 @@ const saveOrderClassSave = async () => {
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
     await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

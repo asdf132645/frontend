@@ -118,7 +118,7 @@ const saveBfCustomClass = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -137,7 +137,7 @@ const getBfHotKeyClasses = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(bfHotKeysItems.value) });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

@@ -149,7 +149,7 @@ const loginUser = async (event?: KeyboardEvent) => {
     }
   } catch (e) {
     showSuccessAlert('server Err.')
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -162,7 +162,7 @@ const checkIsViewer = async () => {
       isViewer.value = true;
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -185,7 +185,7 @@ const getIpAddress = async (userId: string) => {
       localStorage.setItem('siteCd', siteCd);
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

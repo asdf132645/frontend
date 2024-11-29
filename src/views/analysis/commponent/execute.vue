@@ -404,8 +404,7 @@ const cellImgGet = async () => {
     }
 
   } catch (e) {
-
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -427,7 +426,7 @@ const setWbcRunningCount = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -436,7 +435,7 @@ const getDeviceInfo = async () => {
     const deviceData = await getDeviceInfoApi();
     siteCd.value = deviceData.data.siteCd;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

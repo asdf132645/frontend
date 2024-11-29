@@ -70,7 +70,7 @@ const getDetailRunningInfo = async () => {
     const result = await detailRunningApi(String(selectedSampleId.value));
     selectItems.value = result.data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     selectItems.value = null;
   }
   isLoading.value = true;

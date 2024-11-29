@@ -1,89 +1,92 @@
 <template>
   <div class="resultImage" ref="crcReport">
-    <div class="resultCode">Code {{ nowCrcData.code }}</div>
+    <h1 class="resultCode">Code - {{ nowCrcData.code }}</h1>
 
     <div class="resultImgBody">
-      <h1>RBC Morphology</h1>
-      <div class="split-container">
-        <ul class="split-left">
-          <li v-for="(item, idx) in arrDataRbcLeft" :key="'rbc-left' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
-            <div> {{ item?.crcContent }}</div>
+      <h2 class="resultImage-mainTitle">RBC Morphology</h2>
+      <ul class="resultImage-split-wrapper">
+        <li v-for="(item, idx) in arrDataRbcLeft" :key="'rbc-left' + idx" class="flex-justify-start-align-center">
+          <h3 class="resultImg-crcTitle"> {{ item?.crcTitle }}</h3>
+          <p> {{ item?.crcContent }}</p>
+        </li>
+        <li v-for="(item, idx) in arrDataRbcRight" :key="'rbc-right' + idx" class="flex-justify-start-align-center">
+          <h3 class="resultImg-crcTitle"> {{ item?.crcTitle }}</h3>
+          <p> {{ item?.crcContent }}</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="resultImage-wbcPlt-container">
+      <div class="resultImgBody">
+        <h2 class="resultImage-mainTitle">WBC Morphology</h2>
+        <ul class="resultImage-wrapper">
+          <li v-for="(item, idx) in arrDataWbcLeft" :key="'wbc-left' + idx" class="flex-justify-start-align-center">
+            <h3 class="resultImg-crcTitle"> {{ item?.crcTitle }}</h3>
+            <p> {{ item?.crcContent }}</p>
+          </li>
+          <li v-for="(item, idx) in arrDataWbcRight" :key="'wbc-right' + idx" class="flex-justify-start-align-center">
+            <h3 class="resultImg-crcTitle"> {{ item?.crcTitle }}</h3>
+            <p> {{ item?.crcContent }}</p>
           </li>
         </ul>
-        <ul class="split-right">
-          <li v-for="(item, idx) in arrDataRbcRight" :key="'rbc-right' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
-            <div> {{ item?.crcContent }}</div>
+      </div>
+
+      <div class="resultImgBody">
+        <h2 class="resultImage-mainTitle">PLT Morphology</h2>
+        <ul class="resultImage-wrapper">
+          <li v-for="(item, idx) in arrDataPltLeft" :key="'plt-left' + idx" class="flex-justify-start-align-center" >
+            <h3 class="resultImg-crcTitle"> {{ item?.crcTitle }}</h3>
+            <p> {{ item?.crcContent }}</p>
+          </li>
+          <li v-for="(item, idx) in arrDataPltRight" :key="'plt-right' + idx" class="flex-justify-start-align-center" >
+            <h3 class="resultImg-crcTitle"> {{ item?.crcTitle }}</h3>
+            <p> {{ item?.crcContent }}</p>
           </li>
         </ul>
       </div>
     </div>
 
-    <div class="resultImgBody">
-      <h1>WBC Morphology</h1>
-      <div class="split-container">
-        <ul class="split-left">
-          <li v-for="(item, idx) in arrDataWbcLeft" :key="'wbc-left' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
-            <div> {{ item?.crcContent }}</div>
-          </li>
-        </ul>
-        <ul class="split-right">
-          <li v-for="(item, idx) in arrDataWbcRight" :key="'wbc-right' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
-            <div> {{ item?.crcContent }}</div>
-          </li>
-        </ul>
+
+    <div class="resultImage-remark-container">
+      <div v-if="nowCrcData.crcComment.length !== 0 && nowCrcData.crcComment[0].remarkAllContent.length > 0">
+        <h2 class="resultImage-mainTitle resultImage-mainTitleWithFont">
+          <font-awesome-icon :icon="['fas', 'message']" />
+          <span>Comment</span>
+        </h2>
+        <pre class="fs08">{{ nowCrcData?.crcComment[0]?.remarkAllContent }}</pre>
+      </div>
+      <div v-if="nowCrcData.crcRecommendation.length !== 0 && nowCrcData.crcRecommendation[0].remarkAllContent.length > 0">
+        <h2 class="resultImage-mainTitle resultImage-mainTitleWithFont">
+          <font-awesome-icon :icon="['fas', 'message']" />
+          <span>Recommendation</span>
+        </h2>
+        <pre class="fs08">{{ nowCrcData?.crcRecommendation[0]?.remarkAllContent }}</pre>
+      </div>
+      <div v-if="nowCrcData.crcRemark.length !== 0 && nowCrcData.crcRemark[0].remarkAllContent.length > 0">
+        <h2 class="resultImage-mainTitle resultImage-mainTitleWithFont">
+          <font-awesome-icon :icon="['fas', 'message']" />
+          <span>Remark</span>
+        </h2>
+        <pre class="fs08">{{ nowCrcData?.crcRemark[0]?.remarkAllContent }}</pre>
       </div>
     </div>
 
-    <div class="resultImgBody">
-      <h1>PLT Morphology</h1>
-      <div class="split-container">
-        <ul class="split-left">
-          <li v-for="(item, idx) in arrDataPltLeft" :key="'plt-left' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
-            <div> {{ item?.crcContent }}</div>
-          </li>
-        </ul>
-        <ul class="split-right">
-          <li v-for="(item, idx) in arrDataPltRight" :key="'plt-right' + idx">
-            <div class="rimgcrctitle"> {{ item?.crcTitle }}</div>
-            <div> {{ item?.crcContent }}</div>
-          </li>
-        </ul>
-      </div>
+    <div class="resultImage-wbcImgArea-container">
+      <h2 class="resultImage-mainTitle resultImage-mainTitleWithFont">
+        <font-awesome-icon :icon="['fas', 'image']" />
+        <span>WBC Images</span>
+      </h2>
+      <ul class="resultImage-wbcImgArea-wrapper">
+        <li v-for="(item) in selectWbcImgArr" :key="item.id">
+          <div v-if="item?.count !== '0' && item?.count !== 0">
+            <img :src="getImageUrl(item.image.fileName, item.item.id, item.item.title, '')"/>
+          </div>
+        </li>
+      </ul>
     </div>
-    <div>
-      <table class="resultImgTable">
-        <tbody>
-        <tr v-if="nowCrcData.crcComment.length !== 0">
-          <td class="resultImgTableTitle">Comment</td>
-          <td>{{ nowCrcData?.crcComment[0]?.remarkAllContent }}</td>
-        </tr>
-        <tr v-if="nowCrcData.crcRecommendation.length !== 0">
-          <td class="resultImgTableTitle">Recommendation</td>
-          <td>{{ nowCrcData?.crcRecommendation[0]?.remarkAllContent }}</td>
-        </tr>
-        <tr v-if="nowCrcData.crcRemark.length !== 0">
-          <td class="resultImgTableTitle">Remark</td>
-          <td>{{ nowCrcData?.crcRemark[0]?.remarkAllContent }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <ul class="wbcImgArea">
-      <li v-for="(item) in selectWbcImgArr" :key="item.id">
-        <div v-if="item?.count !== '0' && item?.count !== 0">
-<!--          <p class="mt10">-->
-<!--            {{ item?.title }} <span class="smallName">({{ item.item.name }})</span>-->
-<!--          </p>-->
-          <img :src="getImageUrl(item.image.fileName, item.item.id, item.item.title, '')"/>
-        </div>
-      </li>
-    </ul>
+
   </div>
+
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
