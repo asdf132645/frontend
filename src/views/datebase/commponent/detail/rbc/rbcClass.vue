@@ -269,7 +269,7 @@
     <!--    </div>-->
     <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="memo"></textarea>
-      <button style="width: 454px" class="memoModalBtn" @click="memoChange">Save</button>
+      <button  class="memoModalBtn" @click="memoChange">Save</button>
     </div>
   </div>
   <Alert

@@ -388,7 +388,7 @@ const extractSubStringBeforeFiles = (str: string) => {
   return str;
 }
 
-const dziWidthHeight = async (imageFileName: any): Promise<any> => {
+const dziWidthHeight = async (): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const urlImage = `${path}/${props.selectItems.slotId}/04_WPS/WPS.dzi`;
   const imageResponse = await readDziFile({filePath: urlImage});
