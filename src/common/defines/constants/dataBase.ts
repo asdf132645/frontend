@@ -45,6 +45,10 @@ export const RBC_CODE_CLASS_ID = {
         CATEGORY_ID: '05',
         HOWELL_JOLLY_BODY: '01',
         BASOPHILIC_STIPPLING: '02',
+    },
+    OTHERS: {
+        CATEGORY_ID: '04',
+        PLATELET: '01',
     }
 }
 

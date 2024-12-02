@@ -15,15 +15,15 @@ export const rulers = [{
 export type VisibleRbcType = { classId: string; categoryId: string };
 
 export const VISIBLE_SIZE_OPTIONS = [
-  // { categoryId: '01', classId: '01' },
-  // { categoryId: '01', classId: '02' },
-  // { categoryId: '01', classId: '03' },
+  { categoryId: '01', classId: '01' },
+  { categoryId: '01', classId: '02' },
+  { categoryId: '01', classId: '03' },
 ];
 
 export const VISIBLE_CHROMIA_OPTIONS = [
-  // { categoryId: '02', classId: '01' },
-  // { categoryId: '02', classId: '02' },
-  // { categoryId: '02', classId: '03' },
+  { categoryId: '02', classId: '01' },
+  { categoryId: '02', classId: '02' },
+  { categoryId: '02', classId: '03' },
 ];
 
 export const VISIBLE_SHAPE_OPTIONS = [
