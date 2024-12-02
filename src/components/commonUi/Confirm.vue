@@ -10,7 +10,7 @@
 
 <script setup>
 import { defineProps, computed } from 'vue';
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 const props = defineProps(['isVisible', 'type', 'message']);
 const typeClass = computed(() => `confirm-${props.type}`);
 const emit = defineEmits(['okConfirm']);
@@ -18,9 +18,9 @@ const emit = defineEmits(['okConfirm']);
 const typeConvertConfirmText = (type) => {
   switch (type) {
     case 'setting':
-      return messages.SAVE;
+      return MESSAGES.SAVE;
     case 'delete':
-      return messages.DELETE;
+      return MESSAGES.DELETE;
     default:
       return 'OK';
   }
@@ -29,9 +29,9 @@ const typeConvertConfirmText = (type) => {
 const typeConvertCloseText = (type) => {
   switch (type) {
     case 'setting':
-      return messages.LEAVE;
+      return MESSAGES.LEAVE;
     case 'delete':
-      return messages.CLOSE;
+      return MESSAGES.CLOSE;
     default:
       return 'CLOSE';
   }

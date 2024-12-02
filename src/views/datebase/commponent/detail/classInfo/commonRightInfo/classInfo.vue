@@ -151,7 +151,7 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="bottom-right"
+      position="center"
   />
   <Confirm
       v-if="showConfirm"
@@ -180,7 +180,7 @@ import {
   updateRunningApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import { MESSAGES, MSG_GENERAL } from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {
@@ -238,7 +238,7 @@ const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 
 const toggleLock = ref(false);
 const dragIndex = ref(-1);
@@ -379,7 +379,7 @@ const mountedMethod = async () => {
 
 const lisModalOpen = () => {
   showConfirm.value = true;
-  confirmMessage.value = messages.IDS_MSG_UPLOAD_LIS;
+  confirmMessage.value = MESSAGES.IDS_MSG_UPLOAD_LIS;
   okMessageType.value = 'lisCbc';
 }
 
@@ -401,9 +401,8 @@ const startDrag = (index: any, event: any) => {
 };
 
 const drop = (index: any, event: any) => {
-  if (!toggleLock.value) {
-    return;
-  }
+  if (!toggleLock.value) return;
+
   event.preventDefault();
   if (dragIndex.value !== -1) {
     const movedItem = wbcInfoVal.value.splice(dragIndex.value, 1)[0];
@@ -425,17 +424,14 @@ const barcodeCopy = async () => {
   textarea.select();
   document.execCommand('copy');
   document.body.removeChild(textarea);
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-  showToast(messages.IDS_MSG_SUCCESS);
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+  showToast(MESSAGES.TOAST_MSG_BAR_CODE_SUCCESS);
 }
 
 const commitConfirmed = () => {
-  // if (props.selectItems?.submitState === 'Submit' || submittedScreen.value) {
-  //   return;
-  // }
   submittedScreen.value = true;
   showConfirm.value = true;
-  confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
+  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
   okMessageType.value = 'commit';
 }
 
@@ -569,7 +565,7 @@ const uimdTestCbcLisDataGet = () => {
     await resRunningItem(updatedRuningInfo, true);
 
   }).catch(function (err) {
-    console.log('error.config', err.config)
+    console.error('error.config', err.config)
     showErrorAlert(err.message);
   });
 }
@@ -749,8 +745,8 @@ const cmcSeoulLisAndCbcDataGet = () => {
             lisBtnColor.value = true;
             const updatedRuningInfo = {...result.data, ...updatedItem}
             await resRunningItem(updatedRuningInfo, true);
-            toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-            showToast(messages.IDS_MSG_SUCCESS);
+            toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+            showToast(MESSAGES.IDS_MSG_SUCCESS);
           } else {
             const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
             const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
@@ -761,11 +757,11 @@ const cmcSeoulLisAndCbcDataGet = () => {
           showErrorAlert(err.message);
         })
       } else {
-        showErrorAlert(messages.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
+        showErrorAlert(MESSAGES.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
       }
     })
   }).catch(function (err) {
-    console.log('error.config', err.config)
+    console.error('error.config', err.config)
     showErrorAlert(err.message);
   });
 }
@@ -808,8 +804,8 @@ const gilDataSendLoad = async () => {
         }
         try {
           await createH17(data);
-          toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-          showToast(messages.IDS_MSG_SUCCESS);
+          toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+          showToast(MESSAGES.IDS_MSG_SUCCESS);
 
           const result: any = await detailRunningApi(String(props.selectItems?.id));
           const localTime = moment().local();
@@ -821,6 +817,8 @@ const gilDataSendLoad = async () => {
           lisBtnColor.value = true;
           const updatedRuningInfo = { id: result.data.id, ...updatedItem }
           await resRunningItem(updatedRuningInfo, true);
+          emits('uploadLisChangeSlide', HOSPITAL_SITE_CD_BY_NAME['인천길병원']);
+
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
         }
@@ -838,7 +836,7 @@ const inhaDataSendLoad = async () => {
     lisBtnColor: lisBtnColorVal
   } = await inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, props.selectItems, userModuleDataGet.value.id)
   if (errMessage !== '') {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast(errMessage);
   }
   lisBtnColor.value = lisBtnColorVal || false;
@@ -873,8 +871,8 @@ const otherDataSend = async () => {
         }
         try {
           await createH17(data);
-          toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-          showToast(messages.IDS_MSG_SUCCESS);
+          toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+          showToast(MESSAGES.IDS_MSG_SUCCESS);
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
         }
@@ -970,8 +968,8 @@ const lisFileUrlCreate = async (data: any) => {
         const updatedRunningInfo = {...result.data, ...updatedItem};
 
         await resRunningItem(updatedRunningInfo, true);
-        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-        showToast(messages.IDS_MSG_SUCCESS);
+        toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+        showToast(MESSAGES.IDS_MSG_SUCCESS);
 
         // 알림이 없을 경우 다음 페이지로 이동
         if (!showAlert.value) {
@@ -1000,8 +998,8 @@ const sendLisMessage = async (data: any) => {
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
     const result = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
     if (result.data.errorCode === 'E000') {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-      showToast(messages.IDS_MSG_SUCCESS);
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+      showToast(MESSAGES.IDS_MSG_SUCCESS);
 
     } else {
       showErrorAlert(result.data.errorMessage);
@@ -1038,7 +1036,7 @@ const checkUserAuth = async (empNo: any) => {
         }
 
       }).catch(function (err) {
-        console.log('checkUserAuth :' + err.message)
+        console.error('checkUserAuth :' + err.message)
         fail(new Error(err.message))
       })
 
@@ -1079,7 +1077,6 @@ const memoChange = async () => {
 }
 
 const memoOpen = () => {
-  console.log(props.selectItems?.wbcMemo)
   // wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
   memoModal.value = !memoModal.value;
 }
@@ -1109,7 +1106,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     if (response) {
       await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
       if (!noAlert) {
-        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+        toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast('Success');
       }
       wbcMemo.value = updatedRuningInfo.wbcMemo;
@@ -1149,7 +1146,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -1476,9 +1473,10 @@ const getCustomClass = async () => {
     const result = await getWbcCustomClassApi();
     customClassArr.value = result.data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
+
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';

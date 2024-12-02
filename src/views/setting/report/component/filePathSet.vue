@@ -50,7 +50,7 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
@@ -86,7 +86,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 const handleKeyDown = (event: KeyboardEvent, index: number) => {
   const allowedKeys = /^[a-zA-Z0-9]$|F[1-9]|F1[0-2]/; // 알파벳 대소문자, 숫자 및 F1~F12 키 패턴
@@ -123,10 +123,10 @@ const saveFilePathSet = async () => {
       const updateResult = await updateFilePathSetApi({filePathSetItems: filePathSetArr.value});
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getFilePathSetData();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
       await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
@@ -134,7 +134,7 @@ const saveFilePathSet = async () => {
     }
 
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getFilePathSetData();
       await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});

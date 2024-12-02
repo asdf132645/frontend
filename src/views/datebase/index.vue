@@ -639,7 +639,7 @@ const excecuteExcel = async () => {
       await showSuccessAlert('Excel create failed');
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
     await showSuccessAlert('Excel create failed');
   } finally {
     isPrintingExcel.value = false;
@@ -946,7 +946,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 

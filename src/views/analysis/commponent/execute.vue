@@ -20,7 +20,7 @@
         <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
       <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState">
-        <option v-for="option in stitchCountOptions" :key="option.value" :value="option.value">
+        <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>
       </select>
@@ -60,11 +60,11 @@ import {ref, computed, watch, onMounted, nextTick, defineEmits, onBeforeMount} f
 
 import {useStore} from "vuex";
 import {
-  wbcCountOptions,
-  stitchCountOptions,
-  bmCountOptions
+  WBC_COUNT_OPTIONS,
+  STITCH_COUNT_OPTIONS,
+  BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
@@ -130,7 +130,7 @@ const initDataExecute = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
 
-  countType.value = window.PROJECT_TYPE === 'bm' ? bmCountOptions : wbcCountOptions
+  countType.value = window.PROJECT_TYPE === 'bm' ? BM_COUNT_OPTIONS : WBC_COUNT_OPTIONS
   // userId.value = getStoredUser.id;
 
   await nextTick();
@@ -240,10 +240,10 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     }
     // 실행 여부 체크
     if (isRunningState.value && autoStart !== 'autoStart') {
-      showSuccessAlert(messages.IDS_ERROR_ALREADY_RUNNING);
+      showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      confirmMessage.value = messages.IDS_RECOVER_GRIPPER_CONDITION;
+      confirmMessage.value = MESSAGES.IDS_RECOVER_GRIPPER_CONDITION;
       showConfirm.value = true;
       return;
     }
@@ -311,7 +311,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
   } else {
     // 장비 중단
     if (!isRunningState.value) {
-      showSuccessAlert(messages.IDS_ERROR_STOP_PROCESS);
+      showSuccessAlert(MESSAGES.IDS_ERROR_STOP_PROCESS);
       return;
     }
     store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: true});
@@ -352,7 +352,7 @@ const sendInit = () => { // 장비 초기화 진행
 
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
   if (isInit.value === 'Y') {
-    showSuccessAlert(messages.alreadyInitialized);
+    showSuccessAlert(MESSAGES.alreadyInitialized);
     return;
   }
 
@@ -404,8 +404,7 @@ const cellImgGet = async () => {
     }
 
   } catch (e) {
-
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -427,7 +426,7 @@ const setWbcRunningCount = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -436,7 +435,7 @@ const getDeviceInfo = async () => {
     const deviceData = await getDeviceInfoApi();
     siteCd.value = deviceData.data.siteCd;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

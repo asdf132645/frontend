@@ -40,7 +40,7 @@
           <td v-else class="text-left">{{ item?.code }}</td>
 
           <td v-if="editIndex === idx">
-            <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000"/>
+            <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000" @input="checkTextAreaMaxLength(type, 'edit')" />
           </td>
           <td v-else class="text-left" v-html="item?.remarkAllContent"></td>
 
@@ -69,7 +69,7 @@
             <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
             <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>
           </div>
-          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>
+          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000" @input="checkTextAreaMaxLength(type, 'add')"></textarea>
         </div>
         <div>
           <button class="crcDefaultBtn" @click="okSelect">OK</button>
@@ -91,7 +91,7 @@
 
 
 <script setup lang="ts">
-import {ref, defineEmits, onBeforeMount, nextTick} from "vue";
+import {ref, defineEmits, onBeforeMount, nextTick, computed} from "vue";
 import {
   crcRemarkGet,
   createCrcRemarkApi,
@@ -107,7 +107,10 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {useStore} from "vuex";
+import {getCrcContentMaxLength} from "@/common/helpers/crc/crcContent";
 
 const props = defineProps({
   crcDefaultMode: {
@@ -123,9 +126,10 @@ const props = defineProps({
   }
 });
 
+const store = useStore();
 const emit = defineEmits(['cancel', 'listUpdated']);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const remarkArr = ref<any>([]);
 const selectedItems = ref<number[]>([]);
 const newRemarkCode = ref("");
@@ -139,6 +143,7 @@ const crcDefaultModeVal = ref(false);
 const crcPassWordVal = ref('');
 const passWordPass = ref(false);
 const passLayout = ref(false);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 onBeforeMount(async () => {
   crcDefaultModeVal.value = props.crcDefaultMode;
@@ -159,7 +164,7 @@ const loadRemarks = async (type?: string) => {
 
   remarkArr.value = response?.data || [];
   if (type !== 'mounted') {
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast("Search completed.");
   }
 };
@@ -172,13 +177,13 @@ const returnPassWordCheck = (val: boolean) => {
     passWordPass.value = true;
     // 패스 체크 모달 닫기
     passLayout.value = false;
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast("Admin verification is complete. Please click the button again.");
   } else {
     passWordPass.value = false;
     // 패스 체크 모달 닫기
     passLayout.value = false;
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("The administrator password is incorrect.");
   }
 }
@@ -209,14 +214,14 @@ const searchRemarkData = async () => {
     remarkArr.value = response?.data || [];
 
     if (remarkArr.value.length === 0) {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast("No results found.");
     } else {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast("Search completed.");
     }
   } catch (error) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Search failed.');
     console.error("Error during search:", error);
   }
@@ -226,7 +231,7 @@ const searchRemarkData = async () => {
 // Remark 추가
 const addRemark = async () => {
   if (!newRemarkCode.value || !newRemarkContent.value) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("code와 content를 입력해주세요.");
     return;
   }
@@ -254,7 +259,7 @@ const addRemark = async () => {
     await loadRemarks();
     await scrollToBottom();
   } catch (error) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Failed to add remark')
   }
 };
@@ -270,7 +275,7 @@ const deleteRemark = async (id: number) => {
     } else {
       await deleteCrcRecoApi({id});
     }
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast('delete Success')
     await loadRemarks();
   } catch (error) {
@@ -296,7 +301,7 @@ const startEdit = (index: number, item: any) => {
 // 편집 저장
 const saveEdit = async (id: number) => {
   if (!editedCode.value || !editedContent.value) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("코드와 내용을 입력해주세요.");
     return;
   }
@@ -330,7 +335,7 @@ const saveEdit = async (id: number) => {
     }
     editIndex.value = null;
     await loadRemarks();
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast('save Success')
   } catch (error) {
     console.error("Failed to update remark:", error);
@@ -356,9 +361,9 @@ const typeToText = (type: string) => {
 // OK 버튼 클릭 시 처리
 const okSelect = () => {
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
-  console.log(selectedRemarks)
+  if (!validateContentLength(selectedRemarks)) return;
 
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Remark Add Success');
   emit("listUpdated", selectedRemarks, props.type);
 };
@@ -375,5 +380,40 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 2000);
 };
-</script>
 
+const checkTextAreaMaxLength = (type: 'remark' | 'comment' | 'recommendation', editType: 'edit' | 'add') => {
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      if (type === 'remark') {
+        const contentToCheck = editType === 'add' ? newRemarkContent.value : editedContent.value;
+        if (contentToCheck.length > getCrcContentMaxLength(siteCd.value, 'remark')) {
+          const trimmedContent = contentToCheck.substring(0, getCrcContentMaxLength(siteCd.value, 'remark'));
+          if (editType === 'add') newRemarkContent.value = trimmedContent;
+          else if (editType === 'edit') editedContent.value = trimmedContent;
+          toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+          showToast('Text is too long');
+        }
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+const validateContentLength = (selectedRemarks) => {
+  const remarkContentLength = selectedRemarks.reduce((acc, item) => acc + item.remarkAllContent.length, 0);
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      if (props.type === 'remark' && remarkContentLength > getCrcContentMaxLength(siteCd.value, props.type)) {
+        toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+        showToast('Text is too long');
+        return false;
+      }
+
+      return true;
+    default:
+      return true;
+  }
+}
+
+</script>

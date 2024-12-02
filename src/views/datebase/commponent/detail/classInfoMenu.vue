@@ -97,7 +97,7 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const isButtonDisabled = ref(false);
 let timeoutId: number | undefined = undefined;
 const pageMoveDeleteStop = ref(false);
-const props = defineProps(['isNext']);
+const props = defineProps(['isNext', 'changeSlideByLisUpload']);
 const ipAddress = ref<any>('');
 const isLoading = ref(true);
 const keepPage = ref('');
@@ -111,6 +111,10 @@ watch(props.isNext, (newVal) => {
     moveWbc('down')
   }
 });
+
+watch(() => props.changeSlideByLisUpload, (newVal) => {
+  moveWbc('up');
+})
 
 onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
@@ -141,7 +145,7 @@ const getDetailRunningInfo = async () => {
 
     resData.value = result.data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     selectItems.value = null;
     resData.value = null;
   }
@@ -161,7 +165,7 @@ const deleteConnectionStatus = async () => {
       .then(response => {
         delayedEmit('SEND_DATA', 'refreshDb', 300);
       }).catch(error => {
-        console.log('2 err', error)
+        console.error('2 err', error)
       });
 }
 
@@ -176,10 +180,10 @@ const upDownBlockAccess = async (selectItems: any) => {
     await updatePcIpStateApi(req).then(response => {
       delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
-      console.log('3 err', error)
+      console.error('3 err', error)
     });
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -194,7 +198,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 const delayedEmit = (type: string, payload: string, delay: number) => {
@@ -227,7 +231,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
       await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(res.data.id)});
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 

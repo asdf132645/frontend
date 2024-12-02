@@ -5,7 +5,7 @@
     <div class="mt10 flex-justify-between">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
-        <li style="position: relative">
+        <li class="pos-relative">
           <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" v-if="type !== 'report'" />
           <div v-if="memoModal" class="memoModal">
             <textarea v-model="memo"></textarea>
@@ -22,50 +22,51 @@
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">
           <ul class="categoryNm">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Category</li>
-            <li  :style="type === 'report' && 'cursor: default;'">
-              <span :style="type === 'report' && 'cursor: default;'">{{ getCategoryName(category) }}</span>
-              <button class="degreeAllCheckBtn" v-if="getCategoryName(category) === 'Shape' && type !== 'report'"
-                      @click="toggleAll(allCheckType, category)">
-                {{ allCheckType ? 'All Check' : 'All Uncheck' }}
-              </button>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Category</li>
+            <li @click="toggleAll(allCheckType[category.categoryId], category.categoryId)">
+              <span>{{ getCategoryName(category) }}</span>
+              <span style="margin-left: 12px;">
+                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryNm !== 'Size' && category.categoryNm !== 'Chromia'" />
+                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryNm !== 'Size' && category.categoryNm !== 'Chromia'" />
+              </span>
             </li>
           </ul>
           <ul class="classNmRbc">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Class</li>
+            <li
+                v-if="innerIndex === 0"
+                class="mt18 mb14 liTitle flex-justify-start-align-center w-fit"
+                style="top: -4px;"
+            >
+              <p style="padding-top: 2px;">Class</p>
+
+            </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
-                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li @click="handleLiClick(outerIndex, innerIndex, classIndex, classInfo, category)" :style="type === 'report' && 'cursor: default;'">
+                      :key="`${category.categoryId}-${classInfo.classId}`">
+              <li @click="handleLiClick(category.categoryId, classInfo.classId, classInfo, category)" class="flex-align-center">
+                <span>{{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
                 <div
-                    v-if="(category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body') && type !== 'report' && classInfo?.classNm !== 'Poikilocyte'">
-                  <input type="checkbox" :value="`${outerIndex}-${innerIndex}-${classIndex}`"
-                         v-show="!except"
-                         v-model="checkedClassIndices">
+                    v-if="showCheckbox(category.categoryId, classInfo.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
+                  <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font" v-show="!except && !checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
                 </div>
-                <span :style="type === 'report' && 'cursor: default;'">
-                  {{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}
-                </span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'" :style="type === 'report' && 'cursor: default;'">
-                <span :style="type === 'report' && 'cursor: default;'">Others</span>
+              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+                <span>Others</span>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
-                  @click="handleClick(0, 0, 2, { classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '9-9-2')"
-                  :style="type === 'report' && 'cursor: default;'"
+                  @click="handleClick({ classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '05-03')"
+                  class="flex-align-center"
               >
+                <span>Malaria</span>
                 <div v-if="type !== 'report'">
-                  <input type="checkbox"
-                         v-show="!except"
-                         value="9-9-2"
-                         v-model="checkedClassIndices"
-                         @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')">
+                  <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes('05-03')" @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')" />
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font" v-show="!except && !checkedClassIndices.includes('05-03')" @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')" />
                 </div>
-                <span :style="type === 'report' && 'cursor: default;'">Malaria</span>
               </li>
             </template>
           </ul>
           <ul class="degree analysis">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">
               <p>Degree</p>
               <p class="rbcDegree-span-wrapper">
                 <span>0</span>
@@ -75,13 +76,9 @@
               </p>
             </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
-                      :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
-                <span v-if="classInfo.classId !== '01' || category.categoryId === '05'" class="rbcSapn"
-                      :style="type === 'report' && 'cursor: default;'"
-                >
+                      :key="`${category.categoryId}-${classInfo.classId}`">
+              <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')">
+                <span v-if="classInfo.classId !== '01' || category.categoryId === '05'" class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
@@ -95,7 +92,6 @@
                 <span
                     v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05'"
                     class="rbcSapnDown"
-                    :style="type === 'report' && 'cursor: default;'"
                 >
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-down']"
@@ -109,31 +105,26 @@
                 </span>
 
               </li>
-              <li v-else
-                  :style="type === 'report' && 'cursor: default;'"
-              >
-                <span v-if="classInfo.degree === '0'" class="rbcSapn" :style="type === 'report' && 'cursor: default;'">
+              <li v-else>
+                <span v-if="classInfo.degree === '0'" class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                   />
                 </span>
-                <span v-else class="rbcSapn" :style="type === 'report' && 'cursor: default;'">
+                <span v-else class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       class="degreeActive"
                   />
                 </span>
                 <span v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"
-                      :style="type === 'report' && 'cursor: default;'"
                 >
                   <font-awesome-icon
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex],'0', true)"
                       :icon="['fac', 'half-circle-down']"
                   />
                 </span>
-                <span v-else class="rbcSapnDown"
-                      :style="type === 'report' && 'cursor: default;'"
-                >
+                <span v-else class="rbcSapnDown">
                   <font-awesome-icon
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], '1', true) "
                       :icon="['fac', 'half-circle-down']"
@@ -141,16 +132,8 @@
                   />
                 </span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
-                -
-              </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
-                -
-              </li>
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">-</li>
+              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">-</li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
                      v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
@@ -161,65 +144,44 @@
 
           </ul>
           <ul class="rbcPercent">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Count</li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Count</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
-                {{ Number(classInfo?.originalDegree) || 0 }}
-              </li>
+              <li v-if="classInfo?.classNm !== 'Poikilocyte'">{{ Number(classInfo?.originalDegree) || 0 }}</li>
               <li v-else>-</li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
+              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
                 {{ Number(shapeOthersCount) || 0 }}
               </li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
+              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
                 {{ Number(malariaCount) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
-                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
-                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId"
-                     :style="type === 'report' && 'cursor: default;'"
-                >
+                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
                   {{ Number(sizeChromiaTotal) || 0 }}
                 </div>
               </div>
-              <div class="underline"
-                   v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
-                   :style="type === 'report' && 'cursor: default;'"
-              >
+              <div class="underline" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 {{ Number(shapeBodyTotal) || 0 }}
               </div>
             </template>
           </ul>
           <ul class="rbcPercent mr1">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle" :style="type === 'report' && 'cursor: default;'">Percent</li>
+            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
-              <li v-if="classInfo?.classNm !== 'Poikilocyte'" :style="type === 'report' && 'cursor: default;'">
+              <li v-if="classInfo?.classNm !== 'Poikilocyte'">
                 {{ Number(classInfo?.percent) || 0 }}
               </li>
-              <li v-else :style="type === 'report' && 'cursor: default;'">-</li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
+              <li v-else>-</li>
+              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
                 {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
               </li>
-              <li class="defaultText"
-                  v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'"
-                  :style="type === 'report' && 'cursor: default;'"
-              >
+              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
                 {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
               </li>
               <div v-if="classIndex === category.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
                      v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId"
-                     :style="type === 'report' && 'cursor: default;'"
                 >
                   100%
                 </div>
@@ -235,41 +197,38 @@
     <div>
       <div class="categories rbcClass">
         <ul class="categoryNm">
-          <li :style="type === 'report' && 'cursor: default;'">Others</li>
+          <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li @click="handleClick(0, 0, 1, { classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '9-9-1')"
-              style="padding-top: 0;">
+          <li @click="handleClick({ classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '04-01')" style="padding-top: 0;" class="flex-align-center">
+            <span>Platelet</span>
             <div v-if="type !== 'report'">
-              <input type="checkbox"
-                     value="9-9-1"
-                     v-show="!except"
-                     v-model="checkedClassIndices"
-                     @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')">
+              <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
+              <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font" v-show="!except && !checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
             </div>
-            <span :style="type === 'report' && 'cursor: default;'">Platelet</span>
           </li>
         </ul>
         <ul class="degree analysis">
-          <li :style="type === 'report' && 'cursor: default;'">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li>{{ pltCount || 0 }} PLT / 1000 RBC</li>
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
       </div>
     </div>
     <!--  RBC 감도 조절 기능  -->
-    <!--    <div class="sensitivityDiv" v-if="type !== 'report'">-->
-    <!--      <select v-model="selectedClass" @change="classChange">-->
-    <!--        <option v-for="(item) in rightClickItem" :key="item.classNm">-->
-    <!--          {{ item.classNm }}-->
-    <!--        </option>-->
-    <!--      </select>-->
-    <!--      <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
-    <!--      <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
-    <!--    </div>-->
+<!--        <div class="sensitivityDiv" v-if="type !== 'report'">-->
+<!--          <select v-model="selectedClass" @change="classChange">-->
+<!--            <option v-for="(item) in rightClickItem" :key="item.classNm">-->
+<!--              {{ item.classNm }}-->
+<!--            </option>-->
+<!--          </select>-->
+<!--          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
+<!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
+<!--        </div>-->
+
     <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="memo"></textarea>
-      <button  class="memoModalBtn" @click="memoChange">Save</button>
+      <button class="memoModalBtn" @click="memoChange">Save</button>
     </div>
   </div>
   <Alert
@@ -298,7 +257,7 @@ import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningIn
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {useRouter} from "vue-router";
 import moment from "moment/moment";
 import SliderBar from "@/components/commonUi/SliderBar.vue";
@@ -306,11 +265,17 @@ import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
-import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
+import { RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS } from "@/common/defines/constants/dataBase";
+import {
+  VISIBLE_CHROMIA_OPTIONS, VISIBLE_INCLUSION_BODY_OPTIONS, VISIBLE_OTHERS_OPTIONS,
+  VISIBLE_RBC_OPTIONS,
+  VISIBLE_SHAPE_OPTIONS,
+  VISIBLE_SIZE_OPTIONS, VisibleRbcType
+} from "@/common/defines/constants/rbc";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
-const checkedClassIndices = ref<any>([]);
+const checkedClassIndices = ref<string[]>([]);
 const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal', 'currentRbcPageNumber']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
@@ -335,7 +300,13 @@ const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
 const selectedClass = ref('Macrocyte');
-const allCheckType = ref(true);
+const allCheckType = ref<Record<string, boolean>>({
+  '01': true,
+  '02': true,
+  '03': true,
+  '05': true,
+  '04': true,
+})
 const rbcInfoPathAfter = ref<any>([]);
 const rbcTotalVal = ref(0);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
@@ -357,7 +328,6 @@ const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
 const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
-const currentSelectItems = computed(() => store.state.commonModule.currentSelectItems);
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -397,7 +367,13 @@ watch(() => props.selectItems, async (newItem) => {
   await afterChange(newItem);
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   rightClickItemSet();
-  allCheckType.value = true;
+  allCheckType.value = {
+    '01': true,
+    '02': true,
+    '03': true,
+    '04': true,
+    '05': true,
+  }
   await updateRbcInfo();
 });
 
@@ -446,10 +422,16 @@ watch(() => resetRbcArr, async (newItem) => {
   }
 }, {deep: true})
 
-watch(() => props.allCheckClear, (newItem) => {
+watch(() => props.allCheckClear, () => {
   checkedClassIndices.value = [];
   classInfoArr.value = [];
-  allCheckType.value = true;
+  allCheckType.value = {
+    '01': true,
+    '02': true,
+    '03': true,
+    '04': true,
+    '05': true,
+  }
 }, {deep: true})
 
 
@@ -472,7 +454,9 @@ watch(() => rbcReData, async (newItem) => {
 
 }, {deep: true});
 
-const handleClick = (outerIndex: number, innerIndex: number, classIndex: number, classInfo: any, category: any, value: string) => {
+const showCheckbox = (categoryId: string, classId: string, availableClassIds: {categoryId: string; classId: string }[]) => availableClassIds.find((item) => item.categoryId === categoryId && item.classId === classId);
+
+const handleClick = (classInfo: any, category: any, value: string) => {
   const isChecked = checkedClassIndices.value.includes(value);
 
   if (isChecked) {
@@ -480,27 +464,47 @@ const handleClick = (outerIndex: number, innerIndex: number, classIndex: number,
   } else {
     checkedClassIndices.value.push(value);
   }
+
 
   updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
   clickChangeSens(classInfo.classNm, 'Others', category.categoryId, classInfo.classId);
 };
 
-function handleLiClick(outerIndex: number, innerIndex: any, classIndex: any, classInfo: any, category: any) {
-  toggleCheckbox(outerIndex, innerIndex, classIndex, classInfo, category);
-  clickChangeSens(classInfo.classNm, category.categoryNm, category.categoryId, classInfo.classId);
+const handleLiClick = (categoryId: string, classId: string, classInfo: any, category: any) => {
+  if (!showCheckbox(categoryId, classId, VISIBLE_RBC_OPTIONS)) return;
+
+  toggleCheckbox(categoryId, classId, classInfo);
+  clickChangeSens(classInfo.classNm, category.categoryNm, categoryId, classId);
 }
 
-function toggleCheckbox(outerIndex: number, innerIndex: number, classIndex: number, classInfo: any, category: any) {
-  const value = `${outerIndex}-${innerIndex}-${classIndex}`;
-  const isChecked = checkedClassIndices.value.includes(value);
+const toggleCheckbox = (categoryId: string, classId: string, classInfo: any) => {
+  const checkValue = `${categoryId}-${classId}`;
+  const isChecked = checkedClassIndices.value.includes(checkValue);
 
   if (isChecked) {
-    checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== value);
+    checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== checkValue);
   } else {
-    checkedClassIndices.value.push(value);
+    const checkedCategoryIdArr = checkedClassIndices.value.map((item) => item.split('-')[0]);
+    if (!checkedCategoryIdArr.includes(categoryId)) checkedClassIndices.value = [checkValue];
+    else checkedClassIndices.value.push(checkValue);
   }
 
-  updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
+  const optionsMap: Record<string, VisibleRbcType[]> = {
+    '01': VISIBLE_SIZE_OPTIONS,
+    '02': VISIBLE_CHROMIA_OPTIONS,
+    '03': VISIBLE_SHAPE_OPTIONS,
+    '04': VISIBLE_OTHERS_OPTIONS,
+    '05': VISIBLE_INCLUSION_BODY_OPTIONS,
+  };
+
+  if (optionsMap[categoryId]) {
+    const availableOptions = optionsMap[categoryId].map((item) => `${item.categoryId}-${item.classId}`);
+    const setCheckedClassIndices = new Set(checkedClassIndices.value);
+    const allChecked = availableOptions.every((item => setCheckedClassIndices.has(item)))
+    allCheckType.value[categoryId] = !allChecked;
+  }
+
+  updateClassInfoArr(classInfo.classNm, !isChecked, categoryId, classId);
 }
 
 const rbcTotalAndReCount = async (pageNumber: any) => {
@@ -662,9 +666,8 @@ const sensRbcReJsonSend = async () => {
 }
 
 const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string, classId: any) => {
-  if (classNm === 'Normal') {
-    return;
-  }
+  if (classNm === 'Normal') return;
+
   const rbcData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
   for (const el of rbcData) {
     for (const item of el?.classInfo) {
@@ -833,22 +836,23 @@ const updateRbcInfo = async () => {
   await resRunningItem(updatedRuningInfo, false);
 }
 
-const toggleAll = (check: boolean, category?: any) => {
-  if (props.notCanvasClickVal) {
-    return;
-  }
+const toggleAll = (allCheck: boolean, categoryId: string) => {
+  if (props.notCanvasClickVal) return;
+
+  const allClassIds = VISIBLE_RBC_OPTIONS.filter((item) => item.categoryId === categoryId);
+
   let allCheckboxes: any = [];
   for (const item of rbcInfoBeforeVal.value) {
-    if (item.categoryId === '03' || item.categoryId === '04' || item.categoryId === '05') {
-      item.classInfo.forEach((classInfo: any, innerIndex: number) => {
+    item.classInfo.forEach((classInfo: any, innerIndex: number) => {
+      if (showCheckbox(item.categoryId, classInfo.classId, allClassIds)) {
         allCheckboxes.push({
           classNm: classInfo.classNm,
           categoryId: item.categoryId,
           classId: classInfo.classId
         });
-      });
-    }
-    if (item.categoryId === '05') {
+      }
+    });
+    if (categoryId === item.categoryId && item.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
       allCheckboxes.push({
         classNm: 'Malaria',
         categoryId: '05',
@@ -856,31 +860,51 @@ const toggleAll = (check: boolean, category?: any) => {
       });
     }
   }
-  allCheckboxes.push({
-    classNm: 'Platelet',
-    categoryId: '04',
-    classId: '01'
-  });
-  if (check) {
-    checkedClassIndices.value = ["0-2-0", "0-2-1", "0-2-2", "0-2-3", "0-2-4", "0-2-5", "0-2-6", "0-2-7", "0-2-8", "0-2-9", "0-2-10", "0-3-0", "0-3-1", "9-9-1", "9-9-2"];
+
+  if (categoryId === '04') {
+    allCheckboxes.push({
+      classNm: 'Platelet',
+      categoryId: '04',
+      classId: '01'
+    });
+  }
+
+  const categoryClassIdStrArr = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
+
+  if (allCheck) {
+    checkedClassIndices.value = [...checkedClassIndices.value, ...categoryClassIdStrArr];
   } else {
-    checkedClassIndices.value = [];
+    checkedClassIndices.value = checkedClassIndices.value.filter((item) => !categoryClassIdStrArr.includes(item))
   }
 
   allCheckboxes.forEach(checkbox => {
-    updateClassInfoArr(checkbox.classNm, check, checkbox.categoryId, checkbox.classId);
+    updateClassInfoArr(checkbox.classNm, allCheck, checkbox.categoryId, checkbox.classId);
   });
 
-  allCheckType.value = !allCheckType.value;
+  const validCategories = ['01', '02', '03', '04', '05'];
+  if (validCategories.includes(categoryId)) {
+    allCheckType.value[categoryId] = !allCheckType.value[categoryId];
+  }
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
-  if (props.notCanvasClickVal) {
-    return;
-  }
+  if (props.notCanvasClickVal) return;
+
+
+  // if (isChecked) {
+  //   checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== checkValue);
+  // } else {
+  //   const checkedCategoryIdArr = checkedClassIndices.value.map((item) => item.split('-')[0]);
+  //   if (!checkedCategoryIdArr.includes(categoryId)) checkedClassIndices.value = [checkValue];
+  //   else checkedClassIndices.value.push(checkValue);
+  // }
+  const classItem = { classNm, categoryId, classId };
+
   if (isChecked) {
     if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId && item.categoryId === categoryId)) {
-      classInfoArr.value.push({classNm: classNm, categoryId: categoryId, classId: classId});
+      const drawingCategoryIdArr = classInfoArr.value.map((item: { classNm: string; categoryId: string; classId: string }) => item.categoryId);
+      if (drawingCategoryIdArr.includes(categoryId)) classInfoArr.value.push(classItem);
+      else classInfoArr.value = [classItem];
     }
   } else {
     classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId && item.categoryId === categoryId));
@@ -975,7 +999,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
         // await reDegree(rbcInfoBeforeVal.value);
         // await reDegree(rbcInfoAfterVal.value);
         // rightClickItemSet();
-        // allCheckType.value = true;
       }
       if (alertShow) {
         showSuccessAlert('Success');
@@ -1013,7 +1036,7 @@ const commitConfirmed = () => {
     return;
   }
   showConfirm.value = true;
-  confirmMessage.value = messages.IDS_MSG_CONFIRM_SLIDE;
+  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
 }
 
 const handleOkConfirm = () => {
@@ -1047,7 +1070,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -1073,10 +1096,10 @@ const reDegree = async (rbcInfoArray: any) => {
           const degreeCount = Number(rbcClass.originalDegree);
           let percent = 0;
 
-          if (degreeStandard.categoryId === '01') { // size total
+          if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) { // size total
             percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
 
-          } else if (degreeStandard.categoryId === '02') { // chromia total
+          } else if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) { // chromia total
             percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
@@ -1123,28 +1146,21 @@ const reDegree = async (rbcInfoArray: any) => {
           const degreeCount = Number(rbcClass.originalDegree);
           let percent = 0;
 
-          if (degreeStandard.categoryId === '01') { // size total
+          if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) { // size total
             percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
-
-          } else if (degreeStandard.categoryId === '02') { // chromia total
+          } else if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) { // chromia total
             percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
           }
 
-          if (isNaN(percent)) {
-            percent = 0;
-          }
+          if (isNaN(percent)) percent = 0;
 
           const setDegree = (value: any) => (rbcClass.degree = value);
 
-          // 0
           if (percent < Number(degreeStandard.degree1)) setDegree('0');
-          // 1
           else if (percent < Number(degreeStandard.degree2)) setDegree('1');
-          // 2
           else if (percent < Number(degreeStandard.degree3)) setDegree('2');
-          // 3
           else setDegree('3');
         }
       });
@@ -1154,29 +1170,29 @@ const reDegree = async (rbcInfoArray: any) => {
   rbcInfoArray.forEach((rbcCategory) => {
     rbcCategory.classInfo.forEach((rbcClass) => {
       // size
-      if (rbcCategory.categoryId === '01') {
-        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
-        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+      if (rbcCategory.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) {
+        if (rbcClass.classId === RBC_CODE_CLASS_ID.SIZE.NORMAL) rbcCategory.classInfo[0].degree = '1';
+        if ([RBC_CODE_CLASS_ID.SIZE.MACROCYTE, RBC_CODE_CLASS_ID.SIZE.MICROCTYE].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
           rbcCategory.classInfo[0].degree = '0';
       }
 
       // chromia
-      if (rbcCategory.categoryId === '02') {
-        if (rbcClass.classId === '01') rbcCategory.classInfo[0].degree = '1';
-        if (['02', '03'].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+      if (rbcCategory.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) {
+        if (rbcClass.classId === RBC_CODE_CLASS_ID.CHROMIA.NORMAL) rbcCategory.classInfo[0].degree = '1';
+        if ([RBC_CODE_CLASS_ID.CHROMIA.HYPERCHROMIC, RBC_CODE_CLASS_ID.CHROMIA.HYPOCHROMIC].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
           rbcCategory.classInfo[0].degree = '0';
       }
 
       // Poikilocytosis
-      if (rbcCategory.categoryId === '03') {
-        if (rbcClass.classId === '01') {
+      if (rbcCategory.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) {
+        if (rbcClass.classId === RBC_CODE_CLASS_ID.SHAPE.NORMAL) {
           // normal
           rbcCategory.classInfo[0].degree = '1'
           // poikilo
           rbcCategory.classInfo[1].degree = '0'
         }
 
-        if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
+        if (rbcClass.classId !== RBC_CODE_CLASS_ID.SHAPE.NORMAL && rbcClass.classId !== RBC_CODE_CLASS_ID.SHAPE.POLIKILOCYTOSIS) {
           var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
 
           if (Number(rbcClass.degree) > poikiloDegree) {

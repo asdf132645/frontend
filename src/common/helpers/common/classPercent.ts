@@ -121,18 +121,57 @@ export const incheonStMaryPercentChange = (projectType: string, wbcInfo: any) =>
 
 export const incheonGilPercentChange = (wbcInfo: any, maxWbcCount: string) => {
     const nonWbcTitles = ['NR', 'GP', 'PA', 'MA', 'AR', 'SM'];
-    return wbcInfo.map((item: any) => {
+
+    const addPercentWbcInfo = wbcInfo.map((item: any) => {
         let itemPercent = 0;
         if (Number(item.count) && item.title === 'NR') itemPercent = Math.ceil((Number(item.count) / Number(maxWbcCount)) * 100);
-        else if (nonWbcTitles.includes(item.title) && Number(item.count)) {
-            itemPercent = Math.floor((Number(item.count) / Number(maxWbcCount)) * 100);
-        } else {
-            itemPercent = Math.floor(Number(item.percent) || 0);
-        }
-
+        else if (nonWbcTitles.includes(item.title) && Number(item.count)) itemPercent = (Number(item.count) / Number(maxWbcCount)) * 100;
+        else itemPercent = Number(item.percent) || 0;
         return {
             ...item,
             percent: itemPercent
         };
     })
+
+    const wbcInfoPercentArr = addPercentWbcInfo.filter((item: any) => !nonWbcTitles.includes(item.title));
+
+    const adjustedItems = adjustPercentages(wbcInfoPercentArr);
+
+    return wbcInfo.map((item: any) => {
+        const adjustedItem = adjustedItems.find(adjusted => adjusted.title === item.title);
+        return adjustedItem ? { ...item, percent: adjustedItem.percent } : item;
+    });
 };
+
+const adjustPercentages = (items: any[]) => {
+    // Step 1: 초기 반올림
+    const rounded = items.map(item => Math.round(item.percent)); // 반올림하여 정수 변환
+    const total = rounded.reduce((sum, p) => sum + p, 0); // 합계 계산
+
+    // Step 2: 오차 계산
+    const difference = 100 - total; // 남은 오차 계산
+
+    // Step 3: 소수점 크기 기준으로 정렬 및 오차 분배
+    if (difference !== 0) {
+        const decimalParts = items.map((item, i) => ({
+            index: i,
+            decimal: item.percent - Math.floor(item.percent) // 소수점 부분 계산
+        }));
+
+        // 소수점 부분이 큰 순서로 정렬
+        decimalParts.sort((a, b) => b.decimal - a.decimal);
+
+        // Step 4: 오차 분배
+        for (let i = 0; i < Math.abs(difference); i++) {
+            const adjustIndex = decimalParts[i % decimalParts.length].index; // 인덱스가 범위를 넘지 않도록 조정
+            rounded[adjustIndex] += difference > 0 ? 1 : -1; // 오차 조정
+        }
+    }
+
+    // Step 5: 원래 아이템의 percent 값을 수정
+    for (let i = 0; i < items.length; i++) {
+        items[i].percent = rounded[i];
+    }
+
+    return items;
+}

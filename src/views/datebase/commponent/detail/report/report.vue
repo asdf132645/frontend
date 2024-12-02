@@ -1,6 +1,6 @@
 <template>
 
-  <ClassInfoMenu @refreshClass="refreshClass"/>
+  <ClassInfoMenu @refreshClass="refreshClass" :changeSlideByLisUpload="changeSlideByLisUpload" />
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')" v-if="siteCd !== '0007'">
     <DetailHeader
         :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
@@ -23,7 +23,8 @@
         <div class="wbcDiv shadowBox">
           <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
                     @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged"
-                    :isCommitChanged="isCommitChanged"/>
+                    :isCommitChanged="isCommitChanged" @uploadLisChangeSlide="uploadLisChangeSlide"
+          />
         </div>
         <div class="reportDetail shadowBox" v-if="!crcConnect">
           <div class="reportTitle">
@@ -310,6 +311,7 @@ const wbcInfoAfter = ref<any>([]);
 const crcData = ref<any>([]);
 const crcConnect = ref(false);
 const isContent = ref(false);
+const changeSlideByLisUpload = ref(false);
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
@@ -376,7 +378,7 @@ const getDetailRunningInfo = async () => {
     rbcInfo.value = result.data;
 
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -621,7 +623,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -803,7 +805,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -812,5 +814,11 @@ const submitStateChanged = (changedSubmitState: string) => {
     isCommitChanged.value = !isCommitChanged.value;
   }
 };
+
+const uploadLisChangeSlide = (hospitalNm: any) => {
+  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
+  }
+}
 
 </script>

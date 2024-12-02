@@ -42,7 +42,7 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {
   getCellImgApi,
   getNormalRangeApi,
@@ -52,7 +52,12 @@ import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useRouter} from "vue-router";
-import {createDeviceInfoApi, getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {
+  createDeviceInfoApi,
+  getDeviceInfoApi,
+  getDeviceIpApi,
+  putDeviceInfoApi
+} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constants/classArr";
 import Analysis from "@/views/analysis/index.vue";
@@ -137,7 +142,7 @@ const getIpAddress = async (ip: string) => {
       viewerCheckApp.value = result.data;
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -148,9 +153,9 @@ function checkFullscreenStatus() {
   }
   isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
   if (!isFullscreen.value) {
-    showSuccessAlert(messages.FULLSCREEN_SUGGEST);
+    showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
   } else {
-    if (alertMessage.value === messages.FULLSCREEN_SUGGEST) {
+    if (alertMessage.value === MESSAGES.FULLSCREEN_SUGGEST) {
       hideAlert();
     }
   }
@@ -236,6 +241,8 @@ const leave = async (event: any) => {
     const ipAddress = `ip=${result.data}`
     const url = `http://${result.data}:3000/close?${ipAddress}`;
     await axios.get(url);
+  } else {
+    await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
   }
 };
 
@@ -258,6 +265,7 @@ onMounted(async () => {
   await nextTick();
   await cellImgGet();
   await getNormalRange();
+  await getDeviceInfo();
   startChecking();
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
@@ -322,7 +330,7 @@ async function socketData(data: any) {
   deleteData.value = false;
   try {
     if (typeof data === 'string') {
-      await showSuccessAlert(messages.TCP_DiSCONNECTED);
+      await showSuccessAlert(MESSAGES.TCP_DiSCONNECTED);
       return
     }
     const textDecoder = new TextDecoder('utf-8');
@@ -331,7 +339,7 @@ async function socketData(data: any) {
     const parsedData = JSON.parse(stringData);
     const parseDataWarp = parsedData;
 
-    if (alertMessage.value === messages.TCP_DiSCONNECTED) {
+    if (alertMessage.value === MESSAGES.TCP_DiSCONNECTED) {
       hideAlert();
     }
 
@@ -425,7 +433,7 @@ async function socketData(data: any) {
         break;
       case 'ERROR_CLEAR':
         showAlert.value = false;
-        console.log('error clear');
+        console.log('ERROR CLEAR');
         break;
     }
 
@@ -661,10 +669,11 @@ async function socketData(data: any) {
           await createDeviceInfoApi({deviceItem: deviceInfo});
           siteCdDvBarCode.value = true;
         } else {
+          await putDeviceInfoApi({ siteCd: parseDataWarp.siteCd, deviceSerialNm: parseDataWarp.deviceBarcode });
           siteCdDvBarCode.value = true;
         }
 
-        await store.dispatch('commonModule/setCommonInfo', {siteCd: parseDataWarp.siteCd})
+        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
         localStorage.setItem('siteCd', parseDataWarp.siteCd);
       } catch (err) {
         console.error("Error handling device information", err);
@@ -689,6 +698,19 @@ async function socketData(data: any) {
     }
   } catch (error) {
     console.error(error);
+  }
+}
+
+const getDeviceInfo = async () => {
+  try {
+    const result = await getDeviceInfoApi();
+    if (result) {
+      sessionStorage.setItem('autoStart', result.data[0]?.autoStart);
+      await store.dispatch('commonModule/setCommonInfo', { siteCd: result.data[0]?.siteCd });
+      localStorage.setItem('siteCd', result.data[0]?.siteCd);
+    }
+  } catch (err) {
+    console.error("Error handling device information", err);
   }
 }
 
@@ -780,7 +802,7 @@ const getNormalRange = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -822,7 +844,7 @@ const cellImgGet = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

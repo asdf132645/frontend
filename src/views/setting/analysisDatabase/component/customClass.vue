@@ -55,7 +55,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclassification";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
@@ -98,7 +98,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const getOrderClass = async () => {
@@ -114,7 +114,7 @@ const getOrderClass = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -131,24 +131,24 @@ const saveWbcCustomClass = async () => {
       const updateResult = await updateWbcCustomClassApi({ classArr: wbcCustomItems.value });
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getWbcCustomClasses();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getWbcCustomClasses();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'abbreviation' | 'fullNm') => {
@@ -173,7 +173,7 @@ const getWbcCustomClasses = async () => {
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcCustomItems.value) });
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

@@ -56,7 +56,7 @@ import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
@@ -97,7 +97,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const saveCbcCode = async () => {
@@ -110,10 +110,10 @@ const saveCbcCode = async () => {
       const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -121,7 +121,7 @@ const saveCbcCode = async () => {
     }
 
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -167,7 +167,7 @@ const getDeviceInfo = async () => {
     const deviceData = await getDeviceInfoApi();
     siteCd.value = deviceData.data.siteCd;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

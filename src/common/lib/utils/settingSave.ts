@@ -47,7 +47,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
                     await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
                 }
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -69,7 +69,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
                 });
                 await putRbcDegreeApi(rbcDegreeList);
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -77,7 +77,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateRunInfoApi({ wbcRunCountItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -85,7 +85,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateWbcCustomClassApi({ classArr: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -93,7 +93,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateWbcHotKeysApi({ wbcHotKeysItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -101,7 +101,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateBfHotKeysApi({ bfHotKeysItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -109,7 +109,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateNormalRangeApi({ normalRangeItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -120,7 +120,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await putOrderClassApi(settingUpdatingData);
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -128,7 +128,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateImagePrintApi({ imagePrintItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -142,7 +142,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateCbcCodeRbcApi({ cbcCodeItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 
@@ -150,7 +150,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             try {
                 await updateFilePathSetApi({ filePathSetItems: settingUpdatingData });
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
             break;
 

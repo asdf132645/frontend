@@ -65,26 +65,20 @@
 
     </div>
     <div class='slideCardWrap' v-if="pbVersion === '12a'">
-      <!-- input -->
       <ul class='slideContent'>
-        <li v-for="item in slideCardData.input" :key="item.slotNo"
-            :class="getSlotStateClass(item.slotState,'input')"></li>
-        <p class="mt10">INPUT</p>
+        <li v-for="item in slideCardData.INPUT" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'input')"></li>
+        <p v-show="commonDataGet.isRunningState" class="mt10">INPUT</p>
       </ul>
-      <!-- output -->
       <ul class='slideContent'>
-        <li v-for="item in slideCardData.output" :key="item.slotNo"
-            :class="getSlotStateClass(item.slotState,'output')"></li>
-        <p class="mt10">OUTPUT</p>
+        <li v-for="item in slideCardData.OUTPUT" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'output')"></li>
+        <p v-show="commonDataGet.isRunningState" class="mt10">OUTPUT</p>
       </ul>
     </div>
     <div class='slideCardWrap' v-else>
-      <!-- input -->
       <ul class='slideContent pb100a'>
-        <p>INPUT : {{ casExistChangeText(iCasExist) }}</p>
-        <li v-for="item in [...slideCardData.input].reverse()" :key="item.slotNo"
-            :class="getSlotStateClass(item.slotState,'input')"></li>
-        <p class="mt10">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
+        <p v-show="commonDataGet.isRunningState">INPUT : {{ casExistChangeText(iCasExist) }}</p>
+        <li v-for="item in [...slideCardData.INPUT].reverse()" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'input')"></li>
+        <p v-show="commonDataGet.isRunningState" class="mt10">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
       </ul>
     </div>
   </div>
@@ -96,7 +90,7 @@ import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
-import { slideCard, slideCard100a } from "@/common/defines/constants/analysis";
+import { SLIDE_CARD_12A, SLIDE_CARD_100A } from "@/common/defines/constants/analysis";
 
 // 스토어
 const store = useStore();
@@ -124,7 +118,7 @@ const slideTime = ref('');
 const totalSlideTime = ref('');
 let countingInterval: any = null;
 let countingIntervalTotal: any = null;
-const slideCardData = ref(slideCard);
+const slideCardData = ref(SLIDE_CARD_12A);
 let totalElapsedTimeCount = ref(0);
 let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
@@ -154,8 +148,8 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
   }
 
   if (commonDataGet.value.isRunningState) {
-    updateInputState(sysInfo.iCasStat, slideCardData.value.input);
-    updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+    updateInputState(sysInfo.iCasStat, slideCardData.value.INPUT);
+    updateInputState(sysInfo.oCasStat, slideCardData.value.OUTPUT);
   } else {
     dashoffset.value = circumference.value;
     stopTotalCounting();
@@ -166,8 +160,8 @@ watch(() => store.state.embeddedStatusModule, (newData: EmbeddedStatusState) => 
   const dataICasStat = String(sysInfo?.iCasStat);
   if (String(sysInfo?.iCasStat) !== '999999999999') {
     if ((dataICasStat.search(regex) < 0) || sysInfo?.oCasStat === '111111111111') { // 끝났을 경우 체크하는 곳
-      updateInputState(sysInfo.iCasStat, slideCardData.value.input);
-      updateInputState(sysInfo.oCasStat, slideCardData.value.output);
+      updateInputState(sysInfo.iCasStat, slideCardData.value.INPUT);
+      updateInputState(sysInfo.oCasStat, slideCardData.value.OUTPUT);
     }
   }
 }, {deep: true});
@@ -256,17 +250,16 @@ watch(
 
 onBeforeMount(() => {
   pbVersion.value = window.MACHINE_VERSION;
-  // slideCard100a
-  slideCardData.value = pbVersion.value === '100a' ? slideCard100a : slideCard;
+  slideCardData.value = pbVersion.value === '100a' ? SLIDE_CARD_100A : SLIDE_CARD_12A;
 })
 
 onMounted(() => {
   eqStatCd.value = '01';
-  slideCardData.value.input.forEach(item => {
+  slideCardData.value.INPUT.forEach(item => {
     item.slotState = '0';
   });
 
-  slideCardData.value.output.forEach(item => {
+  slideCardData.value.OUTPUT.forEach(item => {
     item.slotState = '0';
   });
 

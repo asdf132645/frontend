@@ -56,7 +56,7 @@
         <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
         <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
-                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['NONE']"
+                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']"
         >Image Select
         </button>
 
@@ -87,7 +87,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
-            <textarea maxlength="1000" v-model="item.remarkAllContent"></textarea>
+            <textarea maxlength="1000" v-model="item.remarkAllContent" @input="checkTextAreaMaxLength('remark')"></textarea>
           </div>
         </div>
       </div>
@@ -185,7 +185,7 @@ import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/set
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -199,6 +199,7 @@ import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
+import {getCrcContentMaxLength} from "@/common/helpers/crc/crcContent";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -212,7 +213,7 @@ const props = defineProps({
 });
 const store = useStore();
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS)
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS)
 const passWordType = ref('');
 const isRemark = ref(false); // Remark 모달 창 열림/닫힘 상태
 const isComment = ref(false);
@@ -259,7 +260,7 @@ const cbcFlag = ref('');
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
   selectWbcImgArr.value = arr;
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Success');
   IsWbcImageSelect.value = false;
 }
@@ -379,7 +380,6 @@ const dataAutoComputeLoad = async () => {
 }
 
 const codeSelect = (code: string) => {
-  console.log(code);
   selectOption(code);
   autoCBCMatchingShow.value = false;
 }
@@ -555,7 +555,7 @@ const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
 
 const lisStart = async () => {
   if (searchText.value === '') {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Please enter the code.');
     passWordPassLis.value = false;
     return;
@@ -588,7 +588,6 @@ const lisStart = async () => {
   });
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
-  // console.log(nowCrcData)
 
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
@@ -623,10 +622,10 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     }
     const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
     if (setDataYWmc?.code === 201) {
-      toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast('Success');
     }else{
-      toastMessageType.value = messages.TOAST_MSG_ERROR;
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
       showToast('Lis fail');
     }
 
@@ -638,7 +637,7 @@ const lisCommonDataWhether = async (lisFunc: any) => {
   if (resText === 'Success') {
     await commonSucessLis();
   } else {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('Lis Send Fail');
   }
 }
@@ -656,8 +655,8 @@ const commonSucessLis = async () => {
     await resRunningItem(updatedRuningInfo, true);
     submitState.value = true;
   }
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
-  showToast(messages.IDS_MSG_SUCCESS);
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+  showToast(MESSAGES.IDS_MSG_SUCCESS);
 }
 
 const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
@@ -673,7 +672,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
     if (response) {
       await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       if (!noAlert) {
-        toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+        toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast('Success');
       }
     } else {
@@ -791,7 +790,7 @@ const returnPassWordCheck = (val: boolean) => {
   const handleFailure = () => {
     isDefaultPassword ? (passWordPass.value = false) : (passWordPassLis.value = false);
     closePassModal();
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast("The administrator password is incorrect.");
   };
 
@@ -857,7 +856,7 @@ const tempSaveLocalStorage = () => {
   localStorage.setItem('remarkList', JSON.stringify(remarkList.value));
   localStorage.setItem('commentList', JSON.stringify(commentList.value));
   localStorage.setItem('recoList', JSON.stringify(recoList.value));
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data saved to temporary storage')
 };
 
@@ -876,7 +875,7 @@ const tempSaveDataEmpty = async () => {
   commentList.value = [];
   code.value = '';
   searchText.value = '';
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data empty to storage')
 }
 
@@ -893,5 +892,31 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
+const checkTextAreaMaxLength = (type: 'remark' | 'comment' | 'recommendation') => {
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      if (type === 'remark') {
+        let remarkLength = 0;
+        for (const remark of remarkList.value) {
+          remarkLength += remark.remarkAllContent.length;
+        }
+
+        if (remarkLength > getCrcContentMaxLength(siteCd.value, type)) {
+          const excessLength = remarkLength - getCrcContentMaxLength(siteCd.value, type); // 초과된 길이 계산
+          const lastRemarkIndex = remarkList.value.length - 1;
+
+          // 마지막 remarkAllContent에서 초과된 길이만큼 잘라내기
+          remarkList.value[lastRemarkIndex].remarkAllContent =
+              remarkList.value[lastRemarkIndex].remarkAllContent.substring(0, remarkList.value[lastRemarkIndex].remarkAllContent.length - excessLength);
+
+          toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+          showToast('Text is too long');
+        }
+      }
+      break;
+    default:
+      break;
+  }
+}
 
 </script>

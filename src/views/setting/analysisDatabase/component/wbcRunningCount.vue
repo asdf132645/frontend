@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {AnalysisList2, settingName, wbcRunningCount} from "@/common/defines/constants/settings";
 import {runCountItem} from "@/common/api/service/setting/dto/runWbcInfoCountDto";
 import { createRunInfoWbcApi, getRunInfoApi, updateRunInfoApi } from "@/common/api/service/setting/settingApi";
@@ -94,7 +94,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const getWbcRunningCountData = async () => {
@@ -105,7 +105,6 @@ const getWbcRunningCountData = async () => {
       const runInfoData = runCountResult.data;
 
       if (!runInfoData || (runInfoData instanceof Array && runInfoData.length === 0)) {
-        console.log(null);
         saveHttpType.value = 'post';
         wbcRunInfoCountArr.value = wbcRunningCount;
       } else {
@@ -131,10 +130,10 @@ const saveWbcRunningCount = async () => {
       const updateResult = await updateRunInfoApi({ wbcRunCountItems: wbcRunInfoCountArr.value });
 
       if (updateResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getWbcRunningCountData();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -142,7 +141,7 @@ const saveWbcRunningCount = async () => {
     }
 
     if (result) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getWbcRunningCountData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

@@ -1,4 +1,4 @@
-export const wbcCountOptions = [
+export const WBC_COUNT_OPTIONS = [
     {value: '100', text: '100 WBC'},
     {value: '150', text: '150 WBC'},
     {value: '200', text: '200 WBC'},
@@ -10,7 +10,7 @@ export const wbcCountOptions = [
     {value: '500', text: '500 WBC'}
 ];
 
-export const bmCountOptions = [
+export const BM_COUNT_OPTIONS = [
     { value: '100', text: '100' },
     { value: '200', text: '200' },
     { value: '300', text: '300' },
@@ -28,66 +28,68 @@ export const bmCountOptions = [
     { value: '1500', text: '1500' },
 ];
 
-export const stitchCountOptions = [{value: '1', text: '1 stitch'},
-    {value: '2', text: '2 stitch'},
-    {value: '3', text: '3 stitch'},
-    {value: '4', text: '4 stitch'},
-    {value: '5', text: '5 stitch'}];
+export const STITCH_COUNT_OPTIONS = [
+    { value: '1', text: '1 stitch' },
+    { value: '2', text: '2 stitch' },
+    { value: '3', text: '3 stitch' },
+    { value: '4', text: '4 stitch' },
+    { value: '5', text: '5 stitch' }
+];
 
-export const slideCard = {
-    input: [
-        {slotNo: 1, slotState: '0'},
-        {slotNo: 2, slotState: '0'},
-        {slotNo: 3, slotState: '0'},
-        {slotNo: 4, slotState: '0'},
-        {slotNo: 5, slotState: '0'},
-        {slotNo: 6, slotState: '0'},
-        {slotNo: 7, slotState: '0'},
-        {slotNo: 8, slotState: '0'},
-        {slotNo: 9, slotState: '0'},
-        {slotNo: 10, slotState: '0'},
-        {slotNo: 11, slotState: '0'},
-        {slotNo: 12, slotState: '0'}
+export const SLIDE_CARD_12A = {
+    INPUT: [
+        { slotNo: 1, slotState: '0' },
+        { slotNo: 2, slotState: '0' },
+        { slotNo: 3, slotState: '0' },
+        { slotNo: 4, slotState: '0' },
+        { slotNo: 5, slotState: '0' },
+        { slotNo: 6, slotState: '0' },
+        { slotNo: 7, slotState: '0' },
+        { slotNo: 8, slotState: '0' },
+        { slotNo: 9, slotState: '0' },
+        { slotNo: 10, slotState: '0' },
+        { slotNo: 11, slotState: '0' },
+        { slotNo: 12, slotState: '0' }
     ],
-    output: [
-        {slotNo: 1, slotState: '0'},
-        {slotNo: 2, slotState: '0'},
-        {slotNo: 3, slotState: '0'},
-        {slotNo: 4, slotState: '0'},
-        {slotNo: 5, slotState: '0'},
-        {slotNo: 6, slotState: '0'},
-        {slotNo: 7, slotState: '0'},
-        {slotNo: 8, slotState: '0'},
-        {slotNo: 9, slotState: '0'},
-        {slotNo: 10, slotState: '0'},
-        {slotNo: 11, slotState: '0'},
-        {slotNo: 12, slotState: '0'}
+    OUTPUT: [
+        { slotNo: 1, slotState: '0' },
+        { slotNo: 2, slotState: '0' },
+        { slotNo: 3, slotState: '0' },
+        { slotNo: 4, slotState: '0' },
+        { slotNo: 5, slotState: '0' },
+        { slotNo: 6, slotState: '0' },
+        { slotNo: 7, slotState: '0' },
+        { slotNo: 8, slotState: '0' },
+        { slotNo: 9, slotState: '0' },
+        { slotNo: 10, slotState: '0' },
+        { slotNo: 11, slotState: '0' },
+        { slotNo: 12, slotState: '0' }
     ]
 };
 
-export const slideCard100a = {
-    input: [
-        {slotNo: 1, slotState: '0'},
-        {slotNo: 2, slotState: '0'},
-        {slotNo: 3, slotState: '0'},
-        {slotNo: 4, slotState: '0'},
-        {slotNo: 5, slotState: '0'},
-        {slotNo: 6, slotState: '0'},
-        {slotNo: 7, slotState: '0'},
-        {slotNo: 8, slotState: '0'},
-        {slotNo: 9, slotState: '0'},
-        {slotNo: 10, slotState: '0'},
+export const SLIDE_CARD_100A = {
+    INPUT: [
+        { slotNo: 1, slotState: '0' },
+        { slotNo: 2, slotState: '0' },
+        { slotNo: 3, slotState: '0' },
+        { slotNo: 4, slotState: '0' },
+        { slotNo: 5, slotState: '0' },
+        { slotNo: 6, slotState: '0' },
+        { slotNo: 7, slotState: '0' },
+        { slotNo: 8, slotState: '0' },
+        { slotNo: 9, slotState: '0' },
+        { slotNo: 10, slotState: '0' },
     ],
-    output: [
-        {slotNo: 1, slotState: '0'},
-        {slotNo: 2, slotState: '0'},
-        {slotNo: 3, slotState: '0'},
-        {slotNo: 4, slotState: '0'},
-        {slotNo: 5, slotState: '0'},
-        {slotNo: 6, slotState: '0'},
-        {slotNo: 7, slotState: '0'},
-        {slotNo: 8, slotState: '0'},
-        {slotNo: 9, slotState: '0'},
-        {slotNo: 10, slotState: '0'},
+    OUTPUT: [
+        { slotNo: 1, slotState: '0' },
+        { slotNo: 2, slotState: '0' },
+        { slotNo: 3, slotState: '0' },
+        { slotNo: 4, slotState: '0' },
+        { slotNo: 5, slotState: '0' },
+        { slotNo: 6, slotState: '0' },
+        { slotNo: 7, slotState: '0' },
+        { slotNo: 8, slotState: '0' },
+        { slotNo: 9, slotState: '0' },
+        { slotNo: 10, slotState: '0' },
     ]
 };

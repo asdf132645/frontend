@@ -202,7 +202,7 @@ import router from "@/router";
 import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -273,7 +273,7 @@ onMounted(async () => {
     userId.value = getStoredUser.id;
     await getRbcDegreeData();
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
@@ -401,7 +401,7 @@ const handleOutsideClick = (event) => {
 
 const rowRightClick = async (item, event) => {
   if (props.dbData.filter(data => data.id === item.id).lock_status === false) {
-    showSuccessAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+    showSuccessAlert(MESSAGES.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
 
@@ -503,10 +503,10 @@ const getIpAddress = async (item) => {
     await updatePcIpStateApi(req).then(response => {
       delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
-      console.log(error)
+      console.error(error)
     });
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -541,7 +541,7 @@ const getRbcDegreeData = async () => {
     const data = result.data;
     rbcDegreeStandard.value = data
   } catch (e) {
-    // console.log(e);
+    console.error(e);
   }
 };
 
@@ -609,11 +609,11 @@ const openLayer = () => {
 const deleteRow = async (selectedItems, dbDataFindById) => {
   try {
     if (selectedItems.length === 0 && selectedItemId.value === '') {
-      showErrorAlert(messages.IDS_ERROR_SELECT_A_TARGET_ITEM);
+      showErrorAlert(MESSAGES.IDS_ERROR_SELECT_A_TARGET_ITEM);
     } else if (selectedItems.length === 0 && selectedItemId.value !== '') {
       selectedItems = dbDataFindById;
       if (selectedItems.lock_status) {
-        showErrorAlert(messages.lockRow);
+        showErrorAlert(MESSAGES.lockRow);
         return;
       }
       const idsToDelete = selectedItems
@@ -644,7 +644,7 @@ const deleteRow = async (selectedItems, dbDataFindById) => {
       const idsToDelete = selectedItems.map(item => item.id);
       const idsToDeleteLock = selectedItems.map(item => item.lock_status);
       if (idsToDeleteLock.includes(true)) {
-        showErrorAlert(messages.lockRow);
+        showErrorAlert(MESSAGES.lockRow);
         return
       }
       const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');

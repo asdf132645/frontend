@@ -44,7 +44,7 @@ const getDetailRunningInfo = async () => {
     selectItems.value = result.data;
     isLoading.value = false;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     selectItems.value = null;
     isLoading.value = false;
   }

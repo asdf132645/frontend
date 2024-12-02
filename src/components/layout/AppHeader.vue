@@ -148,7 +148,7 @@ import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, 
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {GENERAL_MSG, MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
@@ -190,8 +190,6 @@ const eqStatCdData = ref({
 });
 const oilCountData = ref('');
 const storagePercentData = ref('');
-const isCompleteAlarm = ref(false);
-const isErrorAlarm = ref(false);
 const oilVisible = ref(false);
 const maxOilCount = ref(1000);
 const statusBarWrapper = ref<HTMLDivElement | null>(null);
@@ -200,6 +198,10 @@ const userId = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '');
 const analysisType = computed(() => store.state.commonModule.analysisType);
+const isCompleteAlarm = computed(() => store.state.commonModule.isCompleteAlarm);
+const isErrorAlarm = computed(() => store.state.commonModule.isErrorAlarm);
+const isErrorAlarmRunning = ref(false);
+const isCompleteAlarmRunning = ref(false);
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
@@ -287,7 +289,7 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-
+  cellImgGet();
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
 
@@ -366,43 +368,46 @@ watch([commonDataGet.value], async (newVals: any) => {
   }
 });
 
-watch([runInfo.value], async (newVals: any) => {
-  isCompleteAlarm.value = newVals[0].isCompleteAlarm;
-  isErrorAlarm.value = newVals[0].isErrorAlarm;
-
-  if (isErrorAlarm.value) {
+watch(() => isErrorAlarm.value, async (newIsErrorAlarm: boolean) => {
+  if (newIsErrorAlarm && !isErrorAlarmRunning.value) {
     if (!isPlayingErrorAlarm.value) {
+      isErrorAlarmRunning.value = true;
       isPlayingErrorAlarm.value = true;
       try {
         await SOUND_ERROR_ALARM.play();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       } finally {
         isPlayingErrorAlarm.value = false;
       }
     }
-
     isErrorAlarmInterval = setTimeout(() => {
       store.dispatch('commonModule/setCommonInfo', { isErrorAlarm: false });
+      isErrorAlarmRunning.value = false;
     }, alarmCount.value);
-  } else if (isCompleteAlarm.value) {
+  }
+})
 
+watch(() => isCompleteAlarm.value, async (newIsCompleteAlarm: boolean) => {
+  if (newIsCompleteAlarm && !isCompleteAlarmRunning.value) {
     if (!isPlayingCompleteAlarm.value) {
+      isCompleteAlarmRunning.value = true;
       isPlayingCompleteAlarm.value = true;
       try {
         await SOUND_COMPLETE_ALARM.play();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       } finally {
         isPlayingCompleteAlarm.value = false;
       }
     }
 
     isCompleteAlarmInterval = setTimeout(() => {
+      isCompleteAlarmRunning.value = false;
       store.dispatch('commonModule/setCommonInfo', { isCompleteAlarm: false });
     }, alarmCount.value);
   }
-});
+})
 
 const closeUserSetBox = (event: any) => {
   const selectBox = document.querySelector('.userSetOutUl');
@@ -433,7 +438,7 @@ const isActive = (path: string) => {
 
 const logout = () => {
   clickType.value = 'logout';
-  confirmMessage.value = messages.Logout;
+  confirmMessage.value = MESSAGES.LOGOUT;
   showConfirm.value = true;
   localStorage.removeItem('user')
   userSetOutUl.value = false;
@@ -441,7 +446,7 @@ const logout = () => {
 
 const exit = async () => {
   clickType.value = 'exit';
-  confirmMessage.value = messages.exit;
+  confirmMessage.value = MESSAGES.exit;
   showConfirm.value = true;
   userSetOutUl.value = false;
 }
@@ -528,7 +533,7 @@ const onReset = () => {
   });
   EventBus.publish('childEmitSocketData', settings);
 
-  showSuccessAlert(messages.IDS_MSG_SUCCESS);
+  showSuccessAlert(MESSAGES.IDS_MSG_SUCCESS);
 }
 
 const getPercent = () => {
@@ -569,9 +574,7 @@ const cellImgGet = async () => {
         const data = result.data;
         await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data.isNsNbIntegration ? 'Y' : 'N'});
         alarmCount.value = data?.isAlarm ? Number(data.alarmCount) * 1000 : 5000;
-        await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-          isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
-        });
+        await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
         // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
         sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
         sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
@@ -585,7 +588,7 @@ const cellImgGet = async () => {
     }
 
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

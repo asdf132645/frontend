@@ -1,4 +1,4 @@
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {inhaCbcTestCode} from "@/common/defines/constants/inhaCbcTestCode";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 import {
@@ -17,8 +17,7 @@ const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 
 export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeList: any, funcType: string) => {
-    console.log('인하대 CBC 데이터 받기');
-    console.log('inhaCbc cbcFilePathSetArr', cbcFilePathSetArr);
+    console.log('인하대 CBC 데이터 받기 - inhaCbc cbcFilePathSetArr', cbcFilePathSetArr);
     let errMessage = '';
     let loading = false;
     let cbcWorkList: any = [];
@@ -30,7 +29,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
     let cbcDataArray = [];
 
     if (cbcFilePathSetArr === '') {
-        errMessage = messages.UPLOAD_PLEASE_CBC;
+        errMessage = MESSAGES.UPLOAD_PLEASE_CBC;
         return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading}
     }
 
@@ -71,7 +70,6 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 cbcSex = res?.sex;
                 cbcAge = res?.age;
                 inhaTestCode = res?.testCode;
-                console.log(res?.testCode);
                 // 공통 정보 설정
                 await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
 
@@ -114,7 +112,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             loading = false;
             // console.log('Response:', response.data);
         } catch (error: any) {
-            console.log(error.message + ' : no CBC result');
+            console.error(error.message + ' : no CBC result');
             loading = false;
             errMessage = error.message;
         }
@@ -130,7 +128,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     let errMessage = '';
     let lisBtnColor = false;
     if (lisFilePathSetArr === '') {
-        errMessage = messages.UPLOAD_PLEASE_LIS;
+        errMessage = MESSAGES.UPLOAD_PLEASE_LIS;
         return {errMessage};
     }
     let resultStr = '';
@@ -326,7 +324,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
             }
 
             lisBtnColor = true;
-            errMessage = messages.IDS_MSG_SUCCESS;
+            errMessage = MESSAGES.IDS_MSG_SUCCESS;
         } else {
             errMessage = res?.message
 

@@ -46,7 +46,7 @@ import {
   getOrderClassApi, getWbcCustomClassApi, putOrderClassApi,
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -89,7 +89,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const getWbcCustomClasses = async () => {
@@ -150,7 +150,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -168,14 +168,14 @@ const saveOrderClassSave = async () => {
       result = await putOrderClassApi(orderList);
     }
     if (result) {
-      const text = saveHttpType.value === 'post' ? messages.settingSaveSuccess : messages.UPDATE_SUCCESSFULLY
+      const text = saveHttpType.value === 'post' ? MESSAGES.settingSaveSuccess : MESSAGES.UPDATE_SUCCESSFULLY
       showSuccessAlert(text);
     }
 
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
     await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

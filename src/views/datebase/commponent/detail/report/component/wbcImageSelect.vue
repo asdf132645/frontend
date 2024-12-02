@@ -1,24 +1,26 @@
 <template>
   <div class="IsWbcImageSelect">
     <div class="pos-relative">
-      <h1 class="mt10">WBC image</h1>
-      <input
-          type="checkbox"
-          id="selectAll"
-          v-model="isAllChecked"
-          @change="toggleSelectAll"
-      />
-      <label for="selectAll">All Check / Uncheck</label>
+      <h1 class="wbcImageSelect-title">WBC images</h1>
+<!--      <input-->
+<!--          type="checkbox"-->
+<!--          id="selectAll"-->
+<!--          v-model="isAllChecked"-->
+<!--          @change="toggleSelectAll"-->
+<!--          style="width: fit-content"-->
+<!--      />-->
+<!--      <label for="selectAll">All Check / Uncheck</label>-->
       <ul>
         <li v-for="(item) in selectItems?.wbcInfoAfter" :key="item.id">
           <div v-if="item?.count !== '0' && item?.count !== 0">
-            <p class="mt10">
+            <p class="mt10" style="margin-left: 4px;">
               {{ item?.title }} <span class="smallName">({{ item.name }})</span>
             </p>
             <template v-for="(image, idx) in item.images" :key="idx">
               <img :src="getImageUrl(image.fileName, item.id, item.title, '')"
                    @click="toggleImageSelection(image, item)"
                    :class="{ selected: isImageSelected(image, item) }"
+                   class="cursorPointer"
               />
             </template>
           </div>
@@ -26,8 +28,8 @@
       </ul>
     </div>
     <div class="fixedWbcBottom">
-      <button @click="closeWbcSelectChild">Close</button>
-      <button @click="confirmSelection">Ok</button>
+      <button class="crcBtn crcBtnWithBg" @click="confirmSelection">Save</button>
+      <button class="crcBtn crcBtnWithBg" @click="closeWbcSelectChild">Close</button>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"/>
+  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse" :changeSlideByLisUpload="changeSlideByLisUpload" />
 
   <div class="wbcContent">
     <DetailHeader
@@ -19,7 +19,9 @@
       <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow"
                  type='listTable'
                  @nextPage="nextPage"
-                 @scrollEvent="scrollToElement"/>
+                 @scrollEvent="scrollToElement"
+                 @uploadLisChangeSlide="uploadLisChangeSlide"
+      />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
@@ -253,7 +255,7 @@ import {useGetRunningInfoByIdQuery} from "@/gql";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -326,7 +328,8 @@ const isLocalNsNbIntegration = ref(false);
 const isWpsShow = ref(false);
 const blockClicks = ref(false);
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const changeSlideByLisUpload = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -360,7 +363,6 @@ onMounted(async () => {
     );
 
     if (result) {
-      // console.log(result)
       // runningInfo를 이용한 UI 렌더링
     }
   }
@@ -437,7 +439,7 @@ const getDetailRunningInfo = async () => {
     iaRootPath.value = path;
 
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 const handleUpdateCellRef = (refValue: any) => {
@@ -454,7 +456,7 @@ const wps = () => {
     blockClicks.value = false;
   }
   if(classCompareShow.value){
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('When classCompare is enabled, WPS cannot be checked.');
     wpsShow.value = false;
   }
@@ -692,7 +694,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
     await getOrderClass();
     await initData(newData, upDown, upDownData);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -706,7 +708,7 @@ const getBfHotKeyClasses = async () => {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -717,7 +719,7 @@ const getWbcHotKeyClasses = async () => {
       wbcHotKeysItems.value = result.data;
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -1209,7 +1211,7 @@ const getOrderClass = async () => {
       }
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
@@ -1227,7 +1229,6 @@ function onDragStart(itemIndex: any, imageIndex: any) {
 }
 
 function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
-  console.log('selectImage')
   if(blockClicks.value){
     return;
   }
@@ -1427,7 +1428,6 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
     const res = await moveClassImagePost(data);
     await store.dispatch('commonModule/setCommonInfo', {moveImgIsBool: true});
     if (res) {
-      // console.log('wbc 옮기기');
       let idx = 0;
       for (const selectedImage of arrType) {
         const fileName = selectedImage.fileName;
@@ -1851,6 +1851,12 @@ const projectTypeReturn = (type: string): any => {
 
 const hideAlert = () => {
   showAlert.value = false;
+}
+
+const uploadLisChangeSlide = (hospitalNm: any) => {
+  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
+  }
 }
 
 </script>

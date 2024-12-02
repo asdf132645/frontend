@@ -67,7 +67,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
-import {messages} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
@@ -115,7 +115,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${messages.settingNotSaved}`;
+  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
 }
 
 const getWbcCustomClasses = async () => {
@@ -176,10 +176,10 @@ const saveLisCode = async () => {
       const updateMinCountResult = await updateMinCountApi({ minCountItems: minCountArr.value });
 
       if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
-        showSuccessAlert(messages.UPDATE_SUCCESSFULLY);
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {
-        showErrorAlert(messages.settingUpdateFailure);
+        showErrorAlert(MESSAGES.settingUpdateFailure);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -187,7 +187,7 @@ const saveLisCode = async () => {
     }
 
     if (result && rbcResult && minCountResult) {
-      showSuccessAlert(messages.settingSaveSuccess);
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
       saveHttpType.value = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

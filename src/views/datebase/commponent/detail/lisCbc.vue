@@ -99,7 +99,7 @@ import {
   getFolders
 } from "@/common/api/service/fileSys/fileSysApi";
 import {getCbcCodeList, getCbcPathData, inhaCbc} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {parseDateString} from "@/common/helpers/lisCbc";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
@@ -164,7 +164,6 @@ const crcCbcDataLoad = async () => {
     // 현재 파일의 날짜가 더 최신이면 그 파일을 선택
     return currentDate > latestDate ? currentFile : latest;
   });
-  // console.log(latestFile.split('.')[0])
   firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
 }
 const cbcListOpen = async () => {
@@ -291,7 +290,7 @@ const inhaCbcLoad = async () => {
 
 const commonCbc = async (firstCbcDatafilename: string) => {
   if (cbcFilePathSetArr.value === '') {
-    showErrorAlert(messages.UPLOAD_PLEASE_CBC);
+    showErrorAlert(MESSAGES.UPLOAD_PLEASE_CBC);
     return;
   }
   if (cbcFilePathSetArr.value.includes("http")) { // url
@@ -331,7 +330,7 @@ const commonCbc = async (firstCbcDatafilename: string) => {
       })
       loading.value = false;
     }).catch(function (err) {
-      console.log(err.message)
+      console.error(err.message)
       loading.value = false;
     })
   } else { // 파일
@@ -427,7 +426,6 @@ const fileData = async (firstCbcDatafilename: string) => {
 
 const uimdTestUrlSend = async () => {
   await axios.get(cbcFilePathSetArr.value).then(async function (result) {
-    console.log(result.data.data.data)
     cbcWorkList.value = result.data.data.data;
     loading.value = false;
   });
@@ -469,7 +467,7 @@ const cmcSeoulCbc = async (newVal: any) => {
     createCbcFile(parms);
     loading.value = false;
   }).catch(function (err) {
-    console.log(err.message)
+    console.error(err.message)
     loading.value = false;
   })
 }
@@ -531,7 +529,6 @@ async function updateRunningApiPost(originalDb: any) {
     })
     if (response) {
       await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
-      // console.log('')
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }

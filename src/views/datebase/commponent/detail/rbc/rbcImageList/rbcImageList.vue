@@ -528,6 +528,12 @@ const drawRbcMarker = async (classInfoArr: any) => {
   // json rbcInfoPathAfter.value 로 그림 그리는곳
   const colors: any = {
     'Normal': 'red',
+    'Macrocyte': '#ff4600',
+    'Microcyte': '#4C0290',
+
+    'Hyperchromic': 'FF0090',
+    'Hypochromic': '#4C0290',
+
     'Poikilocyte': 'orange',
     'Target Cell': 'navy',
     'Burr Cell': 'purple',
@@ -538,6 +544,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
     'Stomatocyte': '#FFFF00',
     'TearDrop Cell': '#4682B4',
     'Spherocyte': '#FF6347',
+
     'Howell-Jolly Body': '#FF4500',
     'Basophilic Stippling': '#DDA0DD',
     'Malaria': 'black',
@@ -557,9 +564,7 @@ const drawRbcMarker = async (classInfoArr: any) => {
     rbcInfoPathAfter.value.forEach((category: any) => {
       category.classInfo.forEach((classItem: any) => {
         // 기존 비교 항목
-        // if (classItem.classNm.replace(/\s/g, '') === info.classNm.replace(/\s/g, '') && category.categoryId === info.categoryId) {
         if (classItem.classId === info.classId && category.categoryId === info.categoryId) {
-
           ctx.lineWidth = 3;
           ctx.strokeStyle = `${colors[info.classNm] || 'black'}`;
           let rectPath = new Path2D();

@@ -125,7 +125,7 @@ const updateDeviceInfo = async () => {
   try {
     await putDeviceInfoApi({ autoStart: autoStart.value })
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 

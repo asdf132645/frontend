@@ -38,3 +38,5 @@ export const HOSPITAL_SITE_CD_BY_NAME = {
     '대구카톨릭병원': '0036',
     '츠쿠바': '0099'
 } as const;
+
+export type HospitalSiteCodesType = typeof HOSPITAL_SITE_CD_BY_NAME[keyof typeof HOSPITAL_SITE_CD_BY_NAME];

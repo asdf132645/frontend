@@ -1,95 +1,95 @@
 <template>
   <div @click="closeIsCrcAddChild" class="crcAddBack">
-    <div class="crcPopUpDiv crcAdd"  @click.stop>
-      <div class="codeDiv">
-        <span>Code</span>
-        <input type="text" class="codeInput" v-model="codeVal"/>
+  </div>
+  <div class="crcPopUpDiv crcAdd"  @click.stop>
+    <div class="codeDiv">
+      <span>Code</span>
+      <input type="text" class="codeInput" v-model="codeVal"/>
+    </div>
+    <div>
+      <crc-compontent
+          :items="crcSetArr"
+          @updateSelect="updateSelect"
+          moType="RBC"
+          pageName="report"
+      ></crc-compontent>
+
+      <div class="moDivBox mt20">
+        <div>
+          <crc-compontent
+              :items="crcSetArr"
+              @updateSelect="updateSelect"
+              moType="WBC"
+              pageName="report"
+          ></crc-compontent>
+        </div>
+
+        <div>
+          <crc-compontent
+              :items="crcSetArr"
+              @updateSelect="updateSelect"
+              moType="PLT"
+              pageName="report"
+          ></crc-compontent>
+        </div>
       </div>
-      <div>
-        <crc-compontent
-            :items="crcSetArr"
-            @updateSelect="updateSelect"
-            moType="RBC"
-            pageName="report"
-        ></crc-compontent>
-
-        <div class="moDivBox mt20">
-          <div>
-            <crc-compontent
-                :items="crcSetArr"
-                @updateSelect="updateSelect"
-                moType="WBC"
-                pageName="report"
-            ></crc-compontent>
-          </div>
-
-          <div>
-            <crc-compontent
-                :items="crcSetArr"
-                @updateSelect="updateSelect"
-                moType="PLT"
-                pageName="report"
-            ></crc-compontent>
-          </div>
-        </div>
-        <!-- Remark 관련 -->
-        <div class="mt20" v-if="remarkCountReturnCode(0)">
-          <div class="crcDivTitle">
-            <span>Remark</span>
-            <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
-          </div>
-
-          <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-          <div class="remarkUlList">
-            <div v-for="(item, index) in remarkList" :key="index">
-              <textarea v-model="item.remarkAllContent"></textarea>
-              <!--            <button @click="listDel(index, 'remark')">-->
-              <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-              <!--            </button>-->
-            </div>
-          </div>
+      <!-- Remark 관련 -->
+      <div class="mt20" v-if="remarkCountReturnCode(0)">
+        <div class="crcDivTitle">
+          <span>Remark</span>
+          <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
-        <div class="mt20" v-if="remarkCountReturnCode(1)">
-          <div class="crcDivTitle">
-            <span> Comment </span>
-            <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
-          </div>
-
-          <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-          <div class="remarkUlList">
-            <div v-for="(item, index) in commentList" :key="index">
-              <textarea v-model="item.remarkAllContent"></textarea>
-              <!--            <button @click="listDel(index, 'comment')">-->
-              <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-              <!--            </button>-->
-            </div>
-          </div>
-        </div>
-
-        <div class="mt20" v-if="remarkCountReturnCode(2)">
-          <div class="crcDivTitle">
-            <span> Recommendation </span>
-            <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
-          </div>
-
-          <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-          <div class="remarkUlList">
-            <div v-for="(item, index) in recoList" :key="index">
-              <textarea v-model="item.remarkAllContent"></textarea>
-              <!--            <button @click="listDel(index, 'reco')">-->
-              <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-              <!--            </button>-->
-            </div>
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <div v-for="(item, index) in remarkList" :key="index">
+            <textarea v-model="item.remarkAllContent"></textarea>
+            <!--            <button @click="listDel(index, 'remark')">-->
+            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+            <!--            </button>-->
           </div>
         </div>
       </div>
 
-      <div class="mt20">
-        <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
-        <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
-        <button class="crcDefaultBtn ml10" type="button" @click="closeIsCrcAddChild">Close</button>
+      <div class="mt20" v-if="remarkCountReturnCode(1)">
+        <div class="crcDivTitle">
+          <span> Comment </span>
+          <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
+        </div>
+
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <div v-for="(item, index) in commentList" :key="index">
+            <textarea v-model="item.remarkAllContent"></textarea>
+            <!--            <button @click="listDel(index, 'comment')">-->
+            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+            <!--            </button>-->
+          </div>
+        </div>
       </div>
+
+      <div class="mt20" v-if="remarkCountReturnCode(2)">
+        <div class="crcDivTitle">
+          <span> Recommendation </span>
+          <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
+        </div>
+
+        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+        <div class="remarkUlList">
+          <div v-for="(item, index) in recoList" :key="index">
+            <textarea v-model="item.remarkAllContent"></textarea>
+            <!--            <button @click="listDel(index, 'reco')">-->
+            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
+            <!--            </button>-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt20">
+      <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
+      <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
+      <button class="crcDefaultBtn ml10" type="button" @click="closeIsCrcAddChild">Close</button>
     </div>
   </div>
   <ToastNotification
@@ -144,7 +144,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {messages} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 
 const emit = defineEmits(['closeIsCrcAdd', 'refresh']);
 
@@ -160,7 +160,7 @@ const crcDataArr = ref<any>({
 });
 
 const toastMessage = ref('');
-const toastMessageType = ref(messages.TOAST_MSG_SUCCESS);
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -229,7 +229,6 @@ onBeforeMount(async () => {
 
   } else {
     crcSetArr.value = (await crcGet()).data;
-    console.log(crcSetArr.value)
     for (const argument of crcSetArr.value) {
       if (argument.crcType === 'select') {
         if (!argument?.val) {
@@ -268,7 +267,7 @@ const convertToNewlines = (content: string) => {
 
 const saveCrcData = async () => {
   if (codeVal.value === '') {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     await showToast('Please enter the code.');
     return;
   }
@@ -289,7 +288,7 @@ const saveCrcData = async () => {
   crcDataArr.value.crcRemark = remarkList.value;
   crcDataArr.value.crcComment = commentList.value;
   crcDataArr.value.crcRecommendation = recoList.value;
-  toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   await showToast('Success');
   await createCrcDataApi(crcDataArr.value);
   emit('refresh');
@@ -330,12 +329,12 @@ const saveEdit = async () => {
       crcContent: crcDataArr.value.crcContent,
       code: codeVal.value
     }]); // 수정된 데이터 서버로 전송
-    toastMessageType.value = messages.TOAST_MSG_SUCCESS;
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     await showToast('Edit completed.');
     emit('refresh');
     emit('closeIsCrcAdd');
   } catch (error) {
-    toastMessageType.value = messages.TOAST_MSG_ERROR;
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     await showToast('Failed to update item');
   }
 };
