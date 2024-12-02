@@ -181,7 +181,13 @@ import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
 import Remark from "@/views/datebase/commponent/detail/report/component/remark.vue";
-import {crcDataGet, crcGet, crcOptionGet} from "@/common/api/service/setting/settingApi";
+import {
+  crcDataGet,
+  crcGet,
+  crcOptionGet,
+  saveDataCreateApi, saveDataDeleteApi, saveDataPutDataApi,
+  saveDataSlotIdGetApi
+} from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
@@ -269,27 +275,20 @@ onBeforeMount(async () => {
 
   isContent.value = true;
   if (isContent.value) {
-    const savedData = localStorage.getItem('crcSetData');
-    const codeVal = localStorage.getItem('code') || '';
-    const remarkListVal = localStorage.getItem('remarkList') || [];
-    const commentListVal = localStorage.getItem('commentList') || [];
-    const recoListVal = localStorage.getItem('recoList') || [];
-    if (savedData) {
-      crcArr.value = JSON.parse(savedData);
-      code.value = JSON.parse(codeVal);
-      searchText.value = JSON.parse(codeVal);
+    const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
+    const crcSettingData = saveDataGet.data.crcArr;
+    const codeVal = saveDataGet.data.code || '';
+    const remarkListVal = saveDataGet.data.remarkList || [];
+    const commentListVal = saveDataGet.data.commentList || [];
+    const recoListVal = saveDataGet.data.recoList || [];
+    if (crcSettingData) {
+      crcArr.value = crcSettingData;
+      code.value = codeVal;
+      searchText.value = codeVal;
+      remarkList.value = remarkListVal;
+      commentList.value = commentListVal;
+      recoList.value = recoListVal;
 
-      if (typeof remarkListVal === "string") {
-        remarkList.value = JSON.parse(remarkListVal);
-      }
-
-      if (typeof commentListVal === "string") {
-        commentList.value = JSON.parse(commentListVal);
-      }
-
-      if (typeof recoListVal === 'string') {
-        recoList.value = JSON.parse(recoListVal);
-      }
       // 공통된 map 처리
       [remarkList, commentList, recoList].forEach(list => {
         list.value = list.value.map(item => ({
@@ -361,9 +360,9 @@ const dataAutoComputeLoad = async () => {
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
     const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
-
-    const savedData = localStorage.getItem('crcSetData');
-    if (!savedData) {
+    const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
+    const crcSettingData = saveDataGet.data.crcArr;
+    if (!crcSettingData) {
       if (autoNomarlCheck.value.length === 0) {
         selectOption('Normal');
       } else {
@@ -618,7 +617,7 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.selectItems?.barcodeNo,
-      comment: cbcFlag.value
+      text_rslt: cbcFlag.value
     }
     const setDataYWmc = await ywmcSaveCommentPostSendApi(saveData);
     if (setDataYWmc?.code === 201) {
@@ -849,25 +848,29 @@ const changeCode = async (codeVal: string) => {
 };
 
 // tempSave를 클릭 시 로컬 스토리지에 데이터 저장
-const tempSaveLocalStorage = () => {
-  localStorage.setItem('code', JSON.stringify(code.value))
-  localStorage.setItem('crcDataArr', JSON.stringify(crcDataArr.value));
-  localStorage.setItem('crcSetData', JSON.stringify(crcArr.value));
-  localStorage.setItem('remarkList', JSON.stringify(remarkList.value));
-  localStorage.setItem('commentList', JSON.stringify(commentList.value));
-  localStorage.setItem('recoList', JSON.stringify(recoList.value));
+const tempSaveLocalStorage = async () => {
+  const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
+  const data = {
+    slotId: props.selectItems.slotId,
+    code: code.value,
+    crcDataArr: crcDataArr.value,
+    crcArr: crcArr.value,
+    remarkList: remarkList.value,
+    commentList: commentList.value,
+    recoList: recoList.value
+  }
+  if(saveDataGet.data.length === 0){
+    await saveDataCreateApi(data);
+  }else{
+    await saveDataPutDataApi(data);
+  }
+
   toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data saved to temporary storage')
 };
 
 const tempSaveDataEmpty = async () => {
-  localStorage.removeItem('code')
-  localStorage.removeItem('crcDataArr');
-  localStorage.removeItem('crcSetData');
-  localStorage.removeItem('remarkList');
-  localStorage.removeItem('commentList');
-  localStorage.removeItem('recoList');
-
+  await saveDataDeleteApi(props.selectItems.slotId);
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
   recoList.value = [];

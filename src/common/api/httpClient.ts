@@ -18,7 +18,7 @@ interface HttpResponse<T> {
 export function useHttpClient() {
     let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
     // type 용도 -> ? 쿼리 스트링으로 보낼지 여부
-    const httpGet = async <T>(url: Endpoint, parameters?: string, type?: boolean, callImg?: string): Promise<ApiResponse<T>> => {
+    const httpGet = async <T>(url: Endpoint, parameters?: string, type?: boolean): Promise<ApiResponse<T>> => {
         return httpGetAct(url.endpoint, parameters, type);
     };
 
