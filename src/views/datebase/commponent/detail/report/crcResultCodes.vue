@@ -87,7 +87,8 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
-            <textarea maxlength="1000" v-model="item.remarkAllContent" @input="checkTextAreaMaxLength('remark')"></textarea>
+            <textarea maxlength="1000" v-model="item.remarkAllContent"
+                      @input="checkTextAreaMaxLength('remark')"></textarea>
           </div>
         </div>
       </div>
@@ -134,13 +135,12 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 2">
-      <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh"/>
-    </div>
+    <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh" v-if="activeTab === 2"/>
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
-    <AutoCBCMatching v-if="autoCBCMatchingShow" :isAutoCBCMatchingArr="isAutoCBCMatchingArr" @codeSelect="codeSelect" @codeClose="codeClose"/>
+    <AutoCBCMatching v-if="autoCBCMatchingShow" :isAutoCBCMatchingArr="isAutoCBCMatchingArr" @codeSelect="codeSelect"
+                     @codeClose="codeClose"/>
 
   </div>
 
@@ -345,7 +345,7 @@ onMounted(async () => {
           break;
       }
     }
-  }  else {
+  } else {
     ywmcSlip.value = 'H3'; // 원주기독에 독단적인 커스텀마이징 때문에 강제적으로 H3 pbs 기준으로 맞춤..
 
   }
@@ -357,7 +357,7 @@ const closeWbcSelect = () => {
 const dataAutoComputeLoad = async () => {
   cbcCodeList.value = await getCbcCodeList();
   const cbcFilePathSetArr = await getCbcPathData();
-  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
+  if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD']) {
     const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
     const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
@@ -370,7 +370,7 @@ const dataAutoComputeLoad = async () => {
         isAutoCBCMatchingArr.value = res;
         if (isAutoCBCMatchingArr.value.length !== 0) {
           autoCBCMatchingShow.value = true;
-        }else{
+        } else {
           autoCBCMatchingShow.value = true;
         }
       }
@@ -611,9 +611,9 @@ const lisStart = async () => {
 const yamcSendLisUpdate = async (nowCrcData: any) => {
   nowCrcDataRef.value = nowCrcData;
   await nextTick();
-  if(ywmcSlip.value.trim() === 'H3'){
+  if (ywmcSlip.value.trim() === 'H3') {
     await captureAndConvert();
-  }else{
+  } else {
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.selectItems?.barcodeNo,
@@ -623,7 +623,7 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
     if (setDataYWmc?.code === 201) {
       toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
       showToast('Success');
-    }else{
+    } else {
       toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
       showToast('Lis fail');
     }
@@ -754,9 +754,14 @@ const updateList = (newList: any[], type: string) => {
 }
 const remarkallContentPush = (newList: any, list) => {
   for (const el of newList) {
-    list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent)
+    if (list.value[0].remarkAllContent.length === 0) {
+      list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
+    } else {
+      list.value[0].remarkAllContent += '\r\r'
+      list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
+    }
   }
-  list.value[0].remarkAllContent += '\r'
+  // list.value[0].remarkAllContent += '\r'
 }
 const adminPassword = () => {
   passWordType.value = ''
@@ -859,9 +864,9 @@ const tempSaveLocalStorage = async () => {
     commentList: commentList.value,
     recoList: recoList.value
   }
-  if(saveDataGet.data.length === 0){
+  if (saveDataGet.data.length === 0) {
     await saveDataCreateApi(data);
-  }else{
+  } else {
     await saveDataPutDataApi(data);
   }
 
@@ -870,7 +875,7 @@ const tempSaveLocalStorage = async () => {
 };
 
 const tempSaveDataEmpty = async () => {
-  await saveDataDeleteApi(props.selectItems.slotId);
+  // await saveDataDeleteApi({slotId: props.selectItems.slotId});
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
   recoList.value = [];

@@ -397,9 +397,13 @@ const initializeList = (list: any) => {
 };
 const remarkallContentPush = (newList: any, list) => {
   for (const el of newList) {
-    list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent)
+    if (list.value[0].remarkAllContent.length === 0) {
+      list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
+    } else {
+      list.value[0].remarkAllContent += '\r\r'
+      list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
+    }
   }
-  list.value[0].remarkAllContent += '\r'
 }
 
 const updateList = (newList: any[], type: string) => {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tab-content crcDiv reportCrcDiv">
     <div class="text-left mb10">
       <button class="crcBtn" @click="openCrcAdd">
         Add
@@ -27,7 +27,7 @@
                     <font-awesome-icon :icon="['fas', 'trash']"/>
                 </button>
             </div>
-                  <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
+          <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
             <font-awesome-icon
                 :icon="isOpen[index] ? ['fas', 'caret-up'] : ['fas', 'sort-down']"
                 :class="isOpen[index] ? ['sortDownBig', 'caret-up'] : ['sortDownBig', 'sort-down']"
@@ -80,8 +80,13 @@
   </div>
 
   <!-- CrcAdd 컴포넌트 -->
-  <CrcAdd v-if="isCrcAdd" :crcSetArrP="crcArr" @closeIsCrcAdd="close" @refresh="pageRefresh" :addEditType="addEditType"
-          :editItem="editItem"/>
+  <Teleport to="body">
+    <div class="reportDivAdd">
+      <CrcAdd v-if="isCrcAdd" :crcSetArrP="crcArr" @closeIsCrcAdd="close" @refresh="pageRefresh"
+              :addEditType="addEditType"
+              :editItem="editItem"/>
+    </div>
+  </Teleport>
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
@@ -97,7 +102,8 @@
       :duration="1500"
       position="bottom-right"
   />
-  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
+  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
+                 @passWordClose="passWordClose"/>
 
 </template>
 
@@ -188,7 +194,7 @@ const returnPassWordCheck = (val: boolean) => {
     showToast("The administrator password is incorrect.");
   }
 }
-const passWordClose= () => {
+const passWordClose = () => {
   passLayout.value = false;
 }
 // CrcAdd 열기 함수

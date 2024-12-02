@@ -4166,12 +4166,12 @@ button.reSelect {
 }
 
 .crcPopUpDiv.crcAdd {
-    top: -130px;
+    top: 0;
     background: #f7fafc;
     border: 1px solid #3498db;
     padding: 20px;
-    width: 90%;
-    left: 14px;
+    width: 50%;
+    left: 25%;
     z-index: 1000;
     max-height: 800px;
     overflow: auto;
@@ -4308,7 +4308,7 @@ span.crcListSpan input {
 
 }
 
-.reportDiv .moDivBox div {
+.reportDiv .moDivBox div, .reportDivAdd .moDivBox div {
     width: 100%;
 }
 
@@ -4482,16 +4482,11 @@ span.smCrcTitle {
     background-color: red;
 }
 
-.reportDiv .moDivBox div p {
+.reportDiv .moDivBox div p, .reportDivAdd div p {
     min-width: 120px;
     text-align: left;
 }
 
-
-.reportDiv .moDivBox div p {
-    min-width: 120px;
-    text-align: left;
-}
 
 .grid-item.crcItemDiv input.smallInput {
     width: 49%;
@@ -4553,6 +4548,7 @@ table.remarkDefaultTable tr th {
 
 table.remarkDefaultTable tr td {
     padding: 3px;
+    vertical-align: top;
 }
 
 .headerRemark.topLine button, .remarkDefaultTable button {
