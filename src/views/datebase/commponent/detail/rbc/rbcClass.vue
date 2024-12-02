@@ -23,11 +23,11 @@
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Category</li>
-            <li @click="toggleAll(allCheckType[category.categoryId], category.categoryId)">
+            <li @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" class="flex-column cursorPointer">
               <span>{{ getCategoryName(category) }}</span>
               <span style="margin-left: 12px;">
-                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryNm !== 'Size' && category.categoryNm !== 'Chromia'" />
-                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryNm !== 'Size' && category.categoryNm !== 'Chromia'" />
+                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryId !== '05'" />
+                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryId !== '05'" />
               </span>
             </li>
           </ul>
@@ -42,7 +42,7 @@
             </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category.categoryId}-${classInfo.classId}`">
-              <li @click="handleLiClick(category.categoryId, classInfo.classId, classInfo, category)" class="flex-align-center">
+              <li @click="handleClick(category.categoryId, classInfo.classId, classInfo.classNm, category.categoryNm)" class="flex-align-center cursorPointer">
                 <span>{{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
                 <div
                     v-if="showCheckbox(category.categoryId, classInfo.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
@@ -54,7 +54,7 @@
                 <span>Others</span>
               </li>
               <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
-                  @click="handleClick({ classNm: 'Malaria', classId: '03' }, { categoryId: '05' }, '05-03')"
+                  @click="handleClick('05', '03', classInfo.classNm, category.categoryNm)"
                   class="flex-align-center"
               >
                 <span>Malaria</span>
@@ -200,7 +200,7 @@
           <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li @click="handleClick({ classNm: 'Platelet', classId: '01' }, { categoryId: '04' }, '04-01')" style="padding-top: 0;" class="flex-align-center">
+          <li @click="handleClick('04', '01', 'Platelet', 'Others')" style="padding-top: 0;" class="flex-align-center">
             <span>Platelet</span>
             <div v-if="type !== 'report'">
               <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
@@ -343,6 +343,7 @@ onMounted(async () => {
   rightClickItemSet();
 });
 
+
 watch(() => props.isCommitChanged, () => {
   submitState.value = 'Submit';
 })
@@ -456,37 +457,39 @@ watch(() => rbcReData, async (newItem) => {
 
 const showCheckbox = (categoryId: string, classId: string, availableClassIds: {categoryId: string; classId: string }[]) => availableClassIds.find((item) => item.categoryId === categoryId && item.classId === classId);
 
-const handleClick = (classInfo: any, category: any, value: string) => {
-  const isChecked = checkedClassIndices.value.includes(value);
-
-  if (isChecked) {
-    checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== value);
-  } else {
-    checkedClassIndices.value.push(value);
-  }
-
-
-  updateClassInfoArr(classInfo.classNm, !isChecked, category.categoryId, classInfo.classId);
-  clickChangeSens(classInfo.classNm, 'Others', category.categoryId, classInfo.classId);
-};
-
-const handleLiClick = (categoryId: string, classId: string, classInfo: any, category: any) => {
+const handleClick = (categoryId: string, classId: string, classNm: string, categoryNm: string) => {
+  if (props.notCanvasClickVal) return;
   if (!showCheckbox(categoryId, classId, VISIBLE_RBC_OPTIONS)) return;
 
-  toggleCheckbox(categoryId, classId, classInfo);
-  clickChangeSens(classInfo.classNm, category.categoryNm, categoryId, classId);
+  toggleCheckbox(categoryId, classId, classNm);
+  clickChangeSens(classNm, categoryNm, categoryId, classId);
 }
 
-const toggleCheckbox = (categoryId: string, classId: string, classInfo: any) => {
+const toggleCheckbox = (categoryId: string, classId: string, classNm: string) => {
   const checkValue = `${categoryId}-${classId}`;
   const isChecked = checkedClassIndices.value.includes(checkValue);
+
+  // `RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID`를 유지하기 위한 필터링 로직 추가
+  const othersCategoryItems = checkedClassIndices.value.filter((item) => item.startsWith(RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID));
 
   if (isChecked) {
     checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== checkValue);
   } else {
-    const checkedCategoryIdArr = checkedClassIndices.value.map((item) => item.split('-')[0]);
-    if (!checkedCategoryIdArr.includes(categoryId)) checkedClassIndices.value = [checkValue];
-    else checkedClassIndices.value.push(checkValue);
+    if (categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) checkedClassIndices.value.push(checkValue);
+    else {
+      const checkedCategoryIdArr = checkedClassIndices.value.map((item) => item.split('-')[0]);
+      
+      // Shape 과 InclusionBody는 같은 Total이므로 조건 추가
+      const isShapeOrInclusionBodyClicked = checkedCategoryIdArr.some((item) => item === '03' || item === '05') && (categoryId === '03' || categoryId === '05');
+
+      if (!checkedCategoryIdArr.includes(categoryId) && !isShapeOrInclusionBodyClicked) {
+        checkedClassIndices.value = [checkValue];
+        if (othersCategoryItems.length > 0) {
+          checkedClassIndices.value = [...checkedClassIndices.value, ...othersCategoryItems];
+        }
+      }
+      else checkedClassIndices.value.push(checkValue);
+    }
   }
 
   const optionsMap: Record<string, VisibleRbcType[]> = {
@@ -497,14 +500,20 @@ const toggleCheckbox = (categoryId: string, classId: string, classInfo: any) => 
     '05': VISIBLE_INCLUSION_BODY_OPTIONS,
   };
 
-  if (optionsMap[categoryId]) {
-    const availableOptions = optionsMap[categoryId].map((item) => `${item.categoryId}-${item.classId}`);
+  if (optionsMap[categoryId] && categoryId !== RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) {
     const setCheckedClassIndices = new Set(checkedClassIndices.value);
-    const allChecked = availableOptions.every((item => setCheckedClassIndices.has(item)))
-    allCheckType.value[categoryId] = !allChecked;
+
+    for (const categoryId of Object.keys(allCheckType.value)) {
+      const availableOptions = categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID
+          ? [...VISIBLE_SHAPE_OPTIONS, ...VISIBLE_INCLUSION_BODY_OPTIONS].map((item) => `${item.categoryId}-${item.classId}`)
+          : optionsMap[categoryId].map((item) => `${item.categoryId}-${item.classId}`);
+      const allChecked = availableOptions.every((item) => setCheckedClassIndices.has(item));
+      if (allChecked) allCheckType.value[categoryId] = !allChecked;
+      else allCheckType.value[categoryId] = true;
+    }
   }
 
-  updateClassInfoArr(classInfo.classNm, !isChecked, categoryId, classId);
+  updateClassInfoArr(classNm, !isChecked, categoryId, classId);
 }
 
 const rbcTotalAndReCount = async (pageNumber: any) => {
@@ -839,73 +848,71 @@ const updateRbcInfo = async () => {
 const toggleAll = (allCheck: boolean, categoryId: string) => {
   if (props.notCanvasClickVal) return;
 
-  const allClassIds = VISIBLE_RBC_OPTIONS.filter((item) => item.categoryId === categoryId);
+  const baseClassIds =
+      categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID
+          ? [...VISIBLE_SHAPE_OPTIONS, ...VISIBLE_INCLUSION_BODY_OPTIONS] // Shape 과 Inclusion Body는 total 값을 공유
+          : VISIBLE_RBC_OPTIONS.filter((item) => item.categoryId === categoryId);
 
-  let allCheckboxes: any = [];
-  for (const item of rbcInfoBeforeVal.value) {
-    item.classInfo.forEach((classInfo: any, innerIndex: number) => {
-      if (showCheckbox(item.categoryId, classInfo.classId, allClassIds)) {
-        allCheckboxes.push({
+  const allClassIds = checkedClassIndices.value.some((item) => item.startsWith(RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID))
+      ? [...baseClassIds, ...VISIBLE_OTHERS_OPTIONS]  // Others는 total 값에서 제외
+      : baseClassIds;
+
+  const allCheckboxes = rbcInfoBeforeVal.value.flatMap((item) => {
+    const categoryCheckboxes = item.classInfo
+        .filter((classInfo: any) => showCheckbox(item.categoryId, classInfo.classId, allClassIds))
+        .map((classInfo: any) => ({
           classNm: classInfo.classNm,
           categoryId: item.categoryId,
           classId: classInfo.classId
-        });
-      }
-    });
+        }));
+
     if (categoryId === item.categoryId && item.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
-      allCheckboxes.push({
-        classNm: 'Malaria',
-        categoryId: '05',
-        classId: '03'
-      });
+      categoryCheckboxes.push({ classNm: 'Malaria', categoryId: '05', classId: '03' });
     }
-  }
 
-  if (categoryId === '04') {
-    allCheckboxes.push({
-      classNm: 'Platelet',
-      categoryId: '04',
-      classId: '01'
-    });
-  }
-
-  const categoryClassIdStrArr = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
-
-  if (allCheck) {
-    checkedClassIndices.value = [...checkedClassIndices.value, ...categoryClassIdStrArr];
-  } else {
-    checkedClassIndices.value = checkedClassIndices.value.filter((item) => !categoryClassIdStrArr.includes(item))
-  }
-
-  allCheckboxes.forEach(checkbox => {
-    updateClassInfoArr(checkbox.classNm, allCheck, checkbox.categoryId, checkbox.classId);
+    return categoryCheckboxes;
   });
 
+  if (categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) allCheckboxes.push({ classNm: 'Platelet', categoryId: '04', classId: '01'});
+
+  const categoryClassIdStrArr = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
+  if (allCheck) {
+    const hasCategoryId = checkedClassIndices.value.some((item) => item.startsWith(categoryId));
+    checkedClassIndices.value = hasCategoryId
+        ? [...new Set([...checkedClassIndices.value, ...categoryClassIdStrArr])]
+        : categoryClassIdStrArr;
+  } else {
+    checkedClassIndices.value = checkedClassIndices.value.filter((item) =>
+        item.startsWith(RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) || !categoryClassIdStrArr.includes(item)
+    );
+  }
+
+  for (const checkbox of allCheckboxes) {
+    updateClassInfoArr(checkbox.classNm, allCheck, checkbox.categoryId, checkbox.classId);
+  }
+
   const validCategories = ['01', '02', '03', '04', '05'];
-  if (validCategories.includes(categoryId)) {
-    allCheckType.value[categoryId] = !allCheckType.value[categoryId];
+  for (const validCategoryId of validCategories) {
+    allCheckType.value[validCategoryId] = true;
+  }
+
+  if (allCheck) {
+    if (categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
+      allCheckType.value[RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID] = false;
+      allCheckType.value[RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID] = false;
+    } else {
+      allCheckType.value[categoryId] = false;
+    }
   }
 }
 
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
   if (props.notCanvasClickVal) return;
 
-
-  // if (isChecked) {
-  //   checkedClassIndices.value = checkedClassIndices.value.filter((item: any) => item !== checkValue);
-  // } else {
-  //   const checkedCategoryIdArr = checkedClassIndices.value.map((item) => item.split('-')[0]);
-  //   if (!checkedCategoryIdArr.includes(categoryId)) checkedClassIndices.value = [checkValue];
-  //   else checkedClassIndices.value.push(checkValue);
-  // }
   const classItem = { classNm, categoryId, classId };
-
   if (isChecked) {
-    if (!classInfoArr.value.some((item: any) => item.classNm === classNm && item.classId === classId && item.categoryId === categoryId)) {
-      const drawingCategoryIdArr = classInfoArr.value.map((item: { classNm: string; categoryId: string; classId: string }) => item.categoryId);
-      if (drawingCategoryIdArr.includes(categoryId)) classInfoArr.value.push(classItem);
-      else classInfoArr.value = [classItem];
-    }
+    classInfoArr.value.push(classItem)
+    classInfoArr.value = classInfoArr.value.filter((item) => checkedClassIndices.value.includes(`${item.categoryId}-${item.classId}`));
   } else {
     classInfoArr.value = classInfoArr.value.filter((item: any) => !(item.classNm === classNm && item.classId === classId && item.categoryId === categoryId));
   }
