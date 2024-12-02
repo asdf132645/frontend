@@ -338,3 +338,19 @@ export const updateCrcCommentApi = async (request: any): Promise<ApiResponse<voi
 export const deleteCrcCommentApi = async (req: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.report.crcCommentRemove, req, true);
 };
+
+export const saveDataCreateApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.report.saveDataCreate, request);
+};
+
+export const  saveDataSlotIdGetApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.report.saveDataSlotIdGet, `${request}`, false);
+};
+
+export const saveDataPutDataApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPut(apiConstants.report.saveDataPutData, request);
+};
+
+export const saveDataDeleteApi = async (req: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpDelete(apiConstants.report.saveDataDelete, req, true);
+};

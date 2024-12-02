@@ -634,6 +634,22 @@ export const apiConstants = {
             endpoint: 'crc-comment-setting/crcCommentSearch',
             requiresToken: false,
         },
+        saveDataCreate: {
+            endpoint: 'crc-save-data/saveDataCreate',
+            requiresToken: false,
+        },
+        saveDataSlotIdGet: {
+            endpoint: 'crc-save-data/saveDataSlotIdGet',
+            requiresToken: false,
+        },
+        saveDataPutData: {
+            endpoint: 'crc-save-data/saveDataPutData',
+            requiresToken: false,
+        },
+        saveDataDelete: {
+            endpoint: 'crc-save-data/saveDataDelete',
+            requiresToken: false,
+        }
 
     }
 };
