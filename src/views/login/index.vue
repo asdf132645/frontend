@@ -40,7 +40,12 @@
 <script setup lang="ts">
 import {getCurrentInstance, ref, onMounted, computed, onBeforeMount, watch} from "vue";
 import {login} from "@/common/api/service/user/userApi";
-import {getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {
+  createDeviceInfoApi,
+  getDeviceInfoApi,
+  getDeviceIpApi,
+  putDeviceInfoApi
+} from "@/common/api/service/device/deviceApi";
 import router from "@/router";
 import {UserResponse} from '@/common/api/service/user/dto/userDto'
 import {ApiResponse} from "@/common/api/httpClient";
@@ -48,6 +53,7 @@ import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import {initializeAllSettings} from "@/common/helpers/common/setting";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
 
 // 스토어
 const store = useStore();
@@ -113,6 +119,35 @@ const isAutoLogginable = () => {
   }
 };
 
+const getDeviceInfoFromTxt = async () => {
+  const filePath = 'D:\\UIMD_Data\\Backend_INI';
+  const fileName = 'HW_Config';
+  try {
+    const result = await readFileTxt(`path=${filePath}&filename=${fileName}`);
+    const iniFileData = result.data.data;
+    const deviceBarcodePattern = /DEVICE_SERIAL\s*=\s*(.+)/;
+    const siteCdPattern = /SERVICE_SITE\s*=\s*(.+)/;
+
+    const deviceBarcode = iniFileData.match(deviceBarcodePattern)[1] || '';
+    const siteCd = iniFileData.match(siteCdPattern)[1] || '';
+
+    const deviceData = await getDeviceInfoApi();
+    if (deviceData.data.length === 0 || !deviceData.data) {
+      await createDeviceInfoApi({ deviceItem: deviceInfo });
+      sessionStorage.setItem('autoStart', 'true');
+    } else {
+      sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
+      await putDeviceInfoApi({ siteCd: siteCd, deviceSerialNm: deviceBarcode });
+    }
+
+    await store.dispatch('commonModule/setCommonInfo', { siteCd: siteCd })
+    localStorage.setItem('siteCd', siteCd);
+
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 
 const goJoinPage = () => {
   router.push('/user/join');
@@ -134,7 +169,7 @@ const loginUser = async (event?: KeyboardEvent) => {
   try {
     const result: ApiResponse<UserResponse | undefined | any> = await login(user);
     if (result?.data?.user) {
-
+      await getDeviceInfoFromTxt();
       await initializeAllSettings();
       await store.dispatch('userModule/setUserAction', result.data?.user);
       sessionStorage.setItem('user', JSON.stringify(result.data.user));
