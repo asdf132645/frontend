@@ -619,6 +619,12 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
       return;
     }
 
+    if (cbcFlag.value.length === 0) {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast('Please enter CBC flag.');
+      return;
+    }
+
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.selectItems?.barcodeNo,
@@ -883,6 +889,7 @@ const tempSaveDataEmpty = async () => {
   // await saveDataDeleteApi({slotId: props.selectItems.slotId});
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
+  cbcFlag.value = '';
   recoList.value = [];
   remarkList.value = [];
   commentList.value = [];
