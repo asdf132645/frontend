@@ -87,8 +87,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
-            <textarea maxlength="1000" v-model="item.remarkAllContent"
-                      @input="checkTextAreaMaxLength('remark')"></textarea>
+            <textarea maxlength="1000" v-model="item.remarkAllContent"></textarea>
           </div>
         </div>
       </div>
@@ -128,7 +127,7 @@
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
         <div class="remarkUlList">
           <div>
-            <textarea v-model="cbcFlag"></textarea>
+            <textarea v-model="cbcFlag" @input="checkTextAreaMaxLength()"></textarea>
           </div>
         </div>
       </div>
@@ -205,7 +204,6 @@ import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
-import {getCrcContentMaxLength} from "@/common/helpers/crc/crcContent";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -614,6 +612,19 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
   if (ywmcSlip.value.trim() === 'H3') {
     await captureAndConvert();
   } else {
+
+    if (cbcFlag.value.length > 60) {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast('Text is too long');
+      return;
+    }
+
+    if (cbcFlag.value.length === 0) {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast('Please enter CBC flag.');
+      return;
+    }
+
     //props.barcodeNo
     const saveData = {
       tsmp_no: props.selectItems?.barcodeNo,
@@ -878,6 +889,7 @@ const tempSaveDataEmpty = async () => {
   // await saveDataDeleteApi({slotId: props.selectItems.slotId});
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
+  cbcFlag.value = '';
   recoList.value = [];
   remarkList.value = [];
   commentList.value = [];
@@ -900,26 +912,14 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
-const checkTextAreaMaxLength = (type: 'remark' | 'comment' | 'recommendation') => {
+const checkTextAreaMaxLength = () => {
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      if (type === 'remark') {
-        let remarkLength = 0;
-        for (const remark of remarkList.value) {
-          remarkLength += remark.remarkAllContent.length;
-        }
-
-        if (remarkLength > getCrcContentMaxLength(siteCd.value, type)) {
-          const excessLength = remarkLength - getCrcContentMaxLength(siteCd.value, type); // 초과된 길이 계산
-          const lastRemarkIndex = remarkList.value.length - 1;
-
-          // 마지막 remarkAllContent에서 초과된 길이만큼 잘라내기
-          remarkList.value[lastRemarkIndex].remarkAllContent =
-              remarkList.value[lastRemarkIndex].remarkAllContent.substring(0, remarkList.value[lastRemarkIndex].remarkAllContent.length - excessLength);
-
-          toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-          showToast('Text is too long');
-        }
+      const cbcFlagLength = cbcFlag.value.length;
+      if (cbcFlagLength > 60) {
+        cbcFlag.value = cbcFlag.value.substring(0, 60);
+        toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+        showToast('Text is too long');
       }
       break;
     default:

@@ -5,12 +5,11 @@
       <p class="loadingText">Loading...</p>
     </div>
     <h1 class="titleCbc"><span>CBC + DIFF</span>
-      <div v-if="cbcWorkList[0]?.day">
-        exam_ymd_unit : {{ cbcWorkList[0]?.day }}
+      <div class="flex-column-align-start ml10">
+        <p v-if="cbcWorkList[0]?.day">exam_ymd_unit : {{ cbcWorkList[0]?.day }}</p>
+        <p v-if="cbcWorkList[0]?.slip">slip : {{ cbcWorkList[0]?.slip }}</p>
       </div>
-      <div v-if="cbcWorkList[0]?.slip">
-        slip : {{ cbcWorkList[0]?.slip }}
-      </div>
+
       <span class="ml10" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
         <font-awesome-icon :icon="['fas', 'rectangle-list']" class="cursorPointer"/>
       </span>
