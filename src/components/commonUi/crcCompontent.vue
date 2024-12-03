@@ -27,9 +27,8 @@
           <template v-else>
             <template v-if="item?.crcType === 'select'">
               <select v-if="pageName === 'report'" v-model="item.val" @change="changeSelect($event, item.id)" class="w120">
-                <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">{{
-                    opItem
-                  }}
+                <option v-for="(opItem, idx) in contentArr(item?.crcContent)" :key="idx" :value="opItem">
+                  {{ opItem }}
                 </option>
               </select>
               <template v-else-if="isMasterId(masterId)">
@@ -58,8 +57,8 @@
             </template>
           </template>
           <template v-if="pageName==='set'">
-            <input class="smallInput" type="text" placeholder="code" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
-            <input class="smallInput" type="text" placeholder="code" v-model="item.crcCodeMatching" @change="updateCrcArr(item.id)"/>
+            <input class="smallInput" type="text" :title="lisCodeMatchingInfo" placeholder="lisCodeMatching" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
+            <input class="smallInput" type="text" placeholder="lisValMatching" :title="lisValMatchingInfo" v-model="item.crcCodeMatching" @change="updateCrcArr(item.id)"/>
           </template>
         </div>
         <div v-if="item.crcType === 'percent'" class="smallBox">
@@ -113,6 +112,9 @@ const props = defineProps({
 
 const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect', 'changeCrcData']);
 const arrData = ref<any>([]);
+const lisCodeMatchingInfo = ref('병원 lis code 매칭 시키는 부분 - 병원에서 사용하는 타이틀로 연동해서 LIS 전송하는 부분');
+const lisValMatchingInfo = ref('병원 lis 받는 Value 매칭 시키는 부분 - 병원에서 Lis 받을 때 실제 보내야하는 값으로 치환시켜주는 부분 , 구분');
+
 // 로컬 상태
 const editIndex = ref<number | null>(null);
 
@@ -123,6 +125,7 @@ const groupedData = computed(() => {
   }
   return rows;
 });
+
 
 onMounted(async () => {
   arrData.value = props.items?.filter((item) => item?.morphologyType === props.moType);

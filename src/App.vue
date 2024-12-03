@@ -220,17 +220,6 @@ window.addEventListener('beforeunload', async function (event: any) {
   await store.dispatch('commonModule/setCommonInfo', {firstLoading: false});
 });
 
-window.addEventListener('unload', async () => {
-  if (!ipMatches.value) return;
-  instance?.appContext.config.globalProperties.$socket.emit('message', {
-    type: 'SEND_DATA',
-    payload: {
-      jobCmd: 'clientExit',
-      reqUserId: '',
-      reqDttm: '',
-    }
-  });
-})
 
 const leave = async (event: any) => {
   event.preventDefault();
@@ -347,7 +336,6 @@ async function socketData(data: any) {
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
         break;
       case 'SYSINFO':
-
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           showCoreErrorAlert(res);
@@ -648,6 +636,26 @@ async function socketData(data: any) {
         }
 
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
+      }
+    }
+
+    async function saveDeviceInfo(deviceInfo: any) {
+      try {
+        const deviceData = await getDeviceInfoApi();
+        sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
+        if (deviceData.data.length === 0 || !deviceData.data) {
+          await createDeviceInfoApi({deviceItem: deviceInfo});
+          siteCdDvBarCode.value = true;
+        } else {
+          await putDeviceInfoApi({ siteCd: parseDataWarp.siteCd, deviceSerialNm: parseDataWarp.deviceBarcode });
+          siteCdDvBarCode.value = true;
+        }
+
+        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
+        localStorage.setItem('siteCd', parseDataWarp.siteCd);
+      } catch (err) {
+        console.error("Error handling device information", err);
+        siteCdDvBarCode.value = true;
       }
     }
 
