@@ -327,7 +327,7 @@ onMounted(async () => {
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']) {
     const {data, cbcDataVal} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
-    ywmcSlip.value = data[0].slip.trim();
+    ywmcSlip.value = data.find((el) => {return el.slip === 'H3'}) === undefined ? 'H1' : 'H3';
     cbcFlag.value = '';
     for (const el of data) {
       switch (el.exam_cd.trim()) {

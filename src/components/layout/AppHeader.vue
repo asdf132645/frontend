@@ -61,6 +61,9 @@
           </div>
           <div class="iconHeaderMenu">
             <ul>
+<!--              <li>-->
+<!--                <font-awesome-icon :icon="['fas', 'circle-exclamation']" />-->
+<!--              </li>-->
               <li class="alarm">
                 <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
               </li>
@@ -77,6 +80,7 @@
               <li class="storage" :title="'storage: ' + (storagePercentData || 0)">
                 <font-awesome-icon :icon="['fas', 'database']"/>
               </li>
+
             </ul>
           </div>
         </div>
