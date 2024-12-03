@@ -5055,12 +5055,34 @@ button.chooseBtn {
 }
 
 .fixedWbcBottom {
-    position: fixed;
+    position: sticky;
+    bottom: 0;
     display: flex;
-    gap: 4px;
-    bottom: 37%;
-    right: 21%;
+    justify-content: center;
+    gap: 14px;
+    left: 50%;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--main-gray-color);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid #ddd;
+    z-index: 100;
+    width: 100%;
 }
+
+.fixedWbcBottom button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.fixedWbcBottom button:hover {
+    outline: 1px solid black;
+}
+
 
 .IsWbcImageSelect > div > ul {
     margin-bottom: 50px;
