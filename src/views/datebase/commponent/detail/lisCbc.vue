@@ -6,8 +6,8 @@
     </div>
     <h1 class="titleCbc"><span>CBC + DIFF</span>
       <div class="flex-column-align-start ml10">
-        <p v-if="cbcWorkList[0]?.day">exam_ymd_unit : {{ cbcWorkList[0]?.day }}</p>
-        <p v-if="slip !== ''">slip : {{ slip }}</p>
+        <p class="fs08" v-if="cbcWorkList[0]?.day">exam_ymd_unit : {{ cbcWorkList[0]?.day }}</p>
+        <p class="fs08" v-if="slip !== ''">slip : {{ slip }}</p>
       </div>
 
       <span class="ml10" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
