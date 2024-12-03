@@ -351,6 +351,7 @@ async function socketData(data: any) {
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
         break;
       case 'SYSINFO':
+
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           showCoreErrorAlert(res);
@@ -359,6 +360,7 @@ async function socketData(data: any) {
             await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
           }
         }
+
         const deviceInfoObj = {
           siteCd: parseDataWarp.siteCd,
           deviceSerialNm: parseDataWarp.deviceBarcode
