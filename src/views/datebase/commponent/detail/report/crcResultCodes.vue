@@ -328,7 +328,7 @@ onMounted(async () => {
     ywmcSlip.value = slip;
     cbcFlag.value = '';
     for (const el of data) {
-      switch (el.exam_cd.trim()) {
+      switch (el.classNm.trim()) {
         case '8HN109GBL_F':
           cbcFlag.value += 'Blasts Flag\n'
           break;
