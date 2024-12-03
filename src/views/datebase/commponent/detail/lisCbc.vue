@@ -7,7 +7,7 @@
     <h1 class="titleCbc"><span>CBC + DIFF</span>
       <div class="flex-column-align-start ml10">
         <p v-if="cbcWorkList[0]?.day">exam_ymd_unit : {{ cbcWorkList[0]?.day }}</p>
-        <p v-if="cbcWorkList[0]?.slip">slip : {{ cbcWorkList[0]?.slip }}</p>
+        <p v-if="slip !== ''">slip : {{ slip }}</p>
       </div>
 
       <span class="ml10" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
@@ -128,7 +128,7 @@ const cbcDataList = ref<any>([]);
 const firstCbcDatafilename = ref('');
 const datachoice = ref(false);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
-
+const slip = ref('');
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
   cbcFilePathSetArr.value = await getCbcPathData();
@@ -256,13 +256,14 @@ const updateCbcData = async () => {
 }
 
 const cbcYwmcDataMatching = async () => {
-  const {data, cbcDataVal} = await ywmcCbcDataLoad(props?.selectItems?.barcodeNo, cbcCodeList.value);
+  const {data, cbcDataVal, slip: slipVal} = await ywmcCbcDataLoad(props?.selectItems?.barcodeNo, cbcCodeList.value);
   cbcWorkList.value = data;
   cbcPatientNo.value = cbcDataVal?.pt_no;
   cbcPatientNm.value = cbcDataVal?.pt_nm;
   cbcSex.value = cbcDataVal?.sex;
   cbcAge.value = cbcDataVal?.age;
   loading.value = false;
+  slip.value = slipVal;
 }
 
 const inhaCbcLoad = async () => {

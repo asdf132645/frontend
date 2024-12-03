@@ -251,7 +251,7 @@ const saveToDatabase = async (hexString: string) => {
   if (res) {
     // 이미지의 크기, 너비, 높이를 가져오는 비동기 함수 호출
     const {width, height, size}: any = await getImageDimensions(hexString);
-    const {data, cbcDataVal} = await ywmcCbcDataLoad(props?.barcodeNo, await getCbcCodeList());
+    // const {data, cbcDataVal} = await ywmcCbcDataLoad(props?.barcodeNo, await getCbcCodeList());
     const imgData = {
       size: size, // Blob의 크기
       image_rslt: hexString, // 실제 이미지 결과 데이터로 대체
