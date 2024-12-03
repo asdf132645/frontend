@@ -39,7 +39,7 @@
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {onCameraResetWebSocket, onGripperOpenWebSocket} from "@/common/helpers/common";
+import {onCameraResetWebSocket, onGripperOpenWebSocket} from "@/common/helpers";
 import EventBus from "@/eventBus/eventBus";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import {remainingCount} from "@/common/api/service/setting/settingApi";

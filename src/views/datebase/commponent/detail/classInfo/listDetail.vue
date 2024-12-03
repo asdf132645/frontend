@@ -363,6 +363,7 @@ onMounted(async () => {
     );
 
     if (result) {
+      console.log('lisDtail_gql', result)
       // runningInfo를 이용한 UI 렌더링
     }
   }
