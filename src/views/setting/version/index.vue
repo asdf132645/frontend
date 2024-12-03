@@ -78,7 +78,7 @@ const setVersions = async () => {
     const bmCellPattern = /BM_CELL_ENGINE\s*=\s*(.+)/;
     const pbSegPattern = /PB_SEG_ENGINE\s*=\s*(.+)/;
     const pbWbcPattern = /PB_WBC_ENGINE\s*=\s*(.+)/;
-    const pbRbcPattern = /PB_RBC_SHAPE_ENGINE\s*=\s*(.+)/;
+    const pbRbcPattern = /PB_RBC_CLASSIFY\s*=\s*(.+)/;
 
     deepNetVersion.value = iniFileData.match(tcpVersionPattern)[1] || '';
     coreVersion.value = iniFileData.match(coreVersionPattern)[1] || '';

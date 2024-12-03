@@ -40,7 +40,7 @@
           <td v-else class="text-left">{{ item?.code }}</td>
 
           <td v-if="editIndex === idx">
-            <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000" @input="checkTextAreaMaxLength(type, 'edit')" />
+            <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000" />
           </td>
           <td v-else class="text-left" v-html="item?.remarkAllContent"></td>
 
@@ -69,7 +69,7 @@
             <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
             <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>
           </div>
-          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000" @input="checkTextAreaMaxLength(type, 'add')"></textarea>
+          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>
         </div>
         <div>
           <button class="crcDefaultBtn" @click="okSelect">OK</button>
@@ -108,9 +108,7 @@ import {
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
-import {useStore} from "vuex";
-import {getCrcContentMaxLength} from "@/common/helpers/crc/crcContent";
+import { useStore } from "vuex";
 
 const props = defineProps({
   crcDefaultMode: {
@@ -361,7 +359,6 @@ const typeToText = (type: string) => {
 // OK 버튼 클릭 시 처리
 const okSelect = () => {
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
-  if (!validateContentLength(selectedRemarks)) return;
 
   toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Remark Add Success');
@@ -380,40 +377,5 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 2000);
 };
-
-const checkTextAreaMaxLength = (type: 'remark' | 'comment' | 'recommendation', editType: 'edit' | 'add') => {
-  switch (siteCd.value) {
-    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      if (type === 'remark') {
-        const contentToCheck = editType === 'add' ? newRemarkContent.value : editedContent.value;
-        if (contentToCheck.length > getCrcContentMaxLength(siteCd.value, 'remark')) {
-          const trimmedContent = contentToCheck.substring(0, getCrcContentMaxLength(siteCd.value, 'remark'));
-          if (editType === 'add') newRemarkContent.value = trimmedContent;
-          else if (editType === 'edit') editedContent.value = trimmedContent;
-          toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-          showToast('Text is too long');
-        }
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-const validateContentLength = (selectedRemarks) => {
-  const remarkContentLength = selectedRemarks.reduce((acc, item) => acc + item.remarkAllContent.length, 0);
-  switch (siteCd.value) {
-    case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      if (props.type === 'remark' && remarkContentLength > getCrcContentMaxLength(siteCd.value, props.type)) {
-        toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-        showToast('Text is too long');
-        return false;
-      }
-
-      return true;
-    default:
-      return true;
-  }
-}
 
 </script>
