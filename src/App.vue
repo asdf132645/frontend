@@ -131,8 +131,6 @@ instance?.appContext.config.globalProperties.$socket.on('viewerCheck', async (ip
   await getIpAddress(ip)
 });
 
-const siteCdDvBarCode = ref(false);
-
 const getIpAddress = async (ip: string) => {
   try {
     const result = await getDeviceIpApi();
@@ -270,8 +268,6 @@ onMounted(async () => {
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
 
-  siteCdDvBarCode.value = false;
-
   if (!projectBm.value) {
     cbcFilePathSetArr.value = await getCbcPathData();
     cbcCodeList.value = await getCbcCodeList();
@@ -359,14 +355,6 @@ async function socketData(data: any) {
           if (isAlarm === 'true') {
             await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
           }
-        }
-
-        const deviceInfoObj = {
-          siteCd: parseDataWarp.siteCd,
-          deviceSerialNm: parseDataWarp.deviceBarcode
-        }
-        if (!siteCdDvBarCode.value) {
-          await saveDeviceInfo(deviceInfoObj);
         }
         break;
       case 'INIT':
@@ -660,26 +648,6 @@ async function socketData(data: any) {
         }
 
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
-      }
-    }
-
-    async function saveDeviceInfo(deviceInfo: any) {
-      try {
-        const deviceData = await getDeviceInfoApi();
-        sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
-        if (deviceData.data.length === 0 || !deviceData.data) {
-          await createDeviceInfoApi({deviceItem: deviceInfo});
-          siteCdDvBarCode.value = true;
-        } else {
-          await putDeviceInfoApi({ siteCd: parseDataWarp.siteCd, deviceSerialNm: parseDataWarp.deviceBarcode });
-          siteCdDvBarCode.value = true;
-        }
-
-        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
-        localStorage.setItem('siteCd', parseDataWarp.siteCd);
-      } catch (err) {
-        console.error("Error handling device information", err);
-        siteCdDvBarCode.value = true;
       }
     }
 
