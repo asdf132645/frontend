@@ -578,12 +578,23 @@ const lisStart = async () => {
       }
     });
   });
+  typeof remarkList.value[0]?.remarkAllContent === "string"
+      ? remarkList.value[0].remarkAllContent.replace(/\n/g, "\r")
+      : "";
+  console.log('commentList', commentList.value)
+  typeof commentList.value[0]?.remarkAllContent === "string"
+      ? commentList.value[0].remarkAllContent.replace(/\n/g, "\r")
+      : "";
+
+  typeof recoList.value[0]?.remarkAllContent === "string"
+      ? recoList.value[0].remarkAllContent.replace(/\n/g, "\r")
+      : "";
+
   Object.assign(nowCrcData, {
-    crcRemark: remarkList.value.replace('/n','/r'),
-    crcComment: commentList.value.replace('/n','/r'),
-    crcRecommendation: recoList.value.replace('/n','/r')
+    crcRemark: remarkList.value,
+    crcComment: commentList.value,
+    crcRecommendation: recoList.value
   });
-  console.log('nowCrcData',nowCrcData);
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
 
