@@ -131,9 +131,14 @@ const getDeviceInfoFromTxt = async () => {
     const deviceBarcode = iniFileData.match(deviceBarcodePattern)[1] || '';
     const siteCd = iniFileData.match(siteCdPattern)[1] || '';
 
+    const deviceInfoObj = {
+      siteCd,
+      deviceSerialNm: deviceBarcode,
+    }
+
     const deviceData = await getDeviceInfoApi();
     if (deviceData.data.length === 0 || !deviceData.data) {
-      await createDeviceInfoApi({ deviceItem: deviceInfo });
+      await createDeviceInfoApi({ deviceItem: deviceInfoObj });
       sessionStorage.setItem('autoStart', 'true');
     } else {
       sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);

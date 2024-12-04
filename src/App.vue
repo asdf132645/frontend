@@ -639,26 +639,6 @@ async function socketData(data: any) {
       }
     }
 
-    async function saveDeviceInfo(deviceInfo: any) {
-      try {
-        const deviceData = await getDeviceInfoApi();
-        sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
-        if (deviceData.data.length === 0 || !deviceData.data) {
-          await createDeviceInfoApi({deviceItem: deviceInfo});
-          siteCdDvBarCode.value = true;
-        } else {
-          await putDeviceInfoApi({ siteCd: parseDataWarp.siteCd, deviceSerialNm: parseDataWarp.deviceBarcode });
-          siteCdDvBarCode.value = true;
-        }
-
-        await store.dispatch('commonModule/setCommonInfo', { siteCd: parseDataWarp.siteCd })
-        localStorage.setItem('siteCd', parseDataWarp.siteCd);
-      } catch (err) {
-        console.error("Error handling device information", err);
-        siteCdDvBarCode.value = true;
-      }
-    }
-
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
         let result: ApiResponse<void>;
