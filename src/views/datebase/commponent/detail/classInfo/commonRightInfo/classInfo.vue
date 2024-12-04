@@ -453,8 +453,6 @@ const uploadLis = async () => {
       inhaDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
-    case '':
-    case '0000':
       gilDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
