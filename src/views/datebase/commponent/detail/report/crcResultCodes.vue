@@ -579,10 +579,11 @@ const lisStart = async () => {
     });
   });
   Object.assign(nowCrcData, {
-    crcRemark: remarkList.value,
-    crcComment: commentList.value,
-    crcRecommendation: recoList.value
+    crcRemark: remarkList.value.replace('/n','/r'),
+    crcComment: commentList.value.replace('/n','/r'),
+    crcRecommendation: recoList.value.replace('/n','/r')
   });
+  console.log('nowCrcData',nowCrcData);
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
 

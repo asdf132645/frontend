@@ -647,6 +647,7 @@ span.icoText {
     padding: 10px;
     margin: 0px 12px 0px 0px;
     border-radius: 5px;
+    box-shadow: 2px 2px 2px var(--black-color);
 }
 
 .contentLeft > div {
@@ -654,6 +655,7 @@ span.icoText {
     padding: 10px;
     border-radius: 5px;
     margin: 0px 10px 10px 0px;
+    box-shadow: 2px 2px 2px var(--black-color);
 }
 
 .contentRight > div:first-child {
