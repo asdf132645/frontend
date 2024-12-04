@@ -219,19 +219,6 @@ const wpsInitElement = async () => {
     viewer.value.addHandler('open', function (event: any) {
       adjustNavBar(findWbcClass.value[0].x1, findWbcClass.value[0].x2, findWbcClass.value[0].y1, findWbcClass.value[0].y2);
       imgOn.value = true;
-      const fullPageButton = viewer.value.buttons.buttons.find((button: any) => button.tooltip === 'Toggle full page');
-
-      if (fullPageButton) {
-        fullPageButton.element.addEventListener('click', async () => {
-          if (viewer.value.isFullPage()) {
-            await document.exitFullscreen();
-            viewer.value.setFullPage(false);
-          } else {
-            viewer.value.setFullPage(true);
-          }
-        });
-
-      }
 
       // 캔버스 크기를 조정
       canvas.width = event.source.Image.Size.Width;
