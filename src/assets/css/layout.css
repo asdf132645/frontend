@@ -327,6 +327,7 @@ input.number-small {
     width: 100%;
     display: block;
     background: var(--main-bg-1-color);
+    position: relative;
 }
 
 .printStart {
@@ -481,6 +482,55 @@ main.bmComponent {
     font-weight: 200;
     font-family: sans-serif;
     border-right: 1px solid var(--gray-1-color);
+}
+
+li.errLogLi {
+    display: flex;
+    justify-content: flex-start;
+    border-top: 1px solid #d3d3d3;
+    margin-top: 5px;
+    padding: 15px 0px;
+    font-size: 0.8rem;
+}
+
+li.errLogLi.warning .errLogTitle, li.errLogLi.warning .errLogIco {
+    color: #cc9200;
+}
+
+
+li.errLogLi.notification:before {
+    content: "";
+    border-left: 2px solid #000000;
+    margin-right: 5px;
+}
+
+.errLogTimestamp {
+    font-size: 0.7rem;
+    color: #555;
+}
+
+li.errLogLi.warning:before {
+    content: "";
+    border-left: 2px solid #cc9200;
+    margin-right: 5px;
+}
+
+.errLogTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.errLogIco {
+    margin-right: 5px;
+}
+
+li.errLogLi.critical .errLogIco {
+    color: #ff4c00;
+}
+
+li.errLogLi.critical .errLogTitle {
+    color: #ff4c00;
 }
 
 .startBtn.onRecover {
@@ -648,6 +698,44 @@ span.icoText {
     margin: 0px 12px 0px 0px;
     border-radius: 5px;
     box-shadow: 2px 2px 2px var(--black-color);
+}
+
+li.errLogLi.critical:before {
+    content: "";
+    border-left: 2px solid #ff4c00;
+    margin-right: 5px;
+}
+
+.errLogDiv {
+    position: absolute;
+    background: #fff;
+    z-index: 9;
+    color: #000;
+    text-align: left;
+    height: 60vh;
+    overflow: auto;
+    padding: 20px;
+    min-width: 500px;
+    top: 35px;
+}
+.errLogClose{
+    cursor: pointer;
+}
+
+span.errLogNum {
+    font-size: 1rem;
+    color: #7e7e7e;
+}
+
+.errLogDiv .title {
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.arrLogDesc {
+    padding-bottom: 5px;
 }
 
 .contentLeft > div {
@@ -4997,9 +5085,11 @@ ul.wpsDiv.cellImgBox {
 ul.wpsDiv.cellImgBox .isLowMagnWhether {
     outline: solid #007bff;
 }
+
 .layer-content.oil {
     max-width: 326px;
 }
+
 .chooseDiv {
     font-size: 1.2rem;
     margin-bottom: 20px;

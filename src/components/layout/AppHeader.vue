@@ -61,8 +61,9 @@
           </div>
           <div class="iconHeaderMenu">
             <ul>
-              <li>
+              <li @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" >
                 <font-awesome-icon :icon="['fas', 'circle-exclamation']" />
+                <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
               <li class="alarm">
                 <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
@@ -144,6 +145,14 @@
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
   />
+
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :messageType="toastMessageType"
+      :duration="1500"
+      position="bottom-right"
+  />
 </template>
 
 <script setup lang="ts">
@@ -152,13 +161,12 @@ import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, 
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {GENERAL_MSG, MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import EventBus from "@/eventBus/eventBus";
-import {getBrowserExit, nodeExit} from "@/common/api/service/browserExit/browserExitApi";
 import Button from "@/components/commonUi/Button.vue";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {logoutApi} from "@/common/api/service/user/userApi";
@@ -166,6 +174,9 @@ import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import axios from "axios";
 import {SOUND_COMPLETE_ALARM, SOUND_ERROR_ALARM} from "@/common/lib/utils/assetUtils";
 import ProgressBar from "@/components/commonUi/ProgressBar.vue";
+import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import ErrLog from "@/components/commonUi/ErrLog.vue";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -185,8 +196,8 @@ const oilCount = ref(0);
 const isDoorOpen = ref('');
 const storagePercent = ref(0);
 const eqStatCd = ref('');
-const runInfo = computed(() => store.state.commonModule);
 const commonDataGet = computed(() => store.state.commonModule);
+const ErrLogOpen = ref(false);
 
 const eqStatCdData = ref({
   icon: ['fas', 'person'],
@@ -204,15 +215,14 @@ const isNsNbIntegration = ref(sessionStorage.getItem('isNsNbIntegration') || '')
 const analysisType = computed(() => store.state.commonModule.analysisType);
 const isCompleteAlarm = computed(() => store.state.commonModule.isCompleteAlarm);
 const isErrorAlarm = computed(() => store.state.commonModule.isErrorAlarm);
+const rootDir = computed(() => store.state.commonModule.iaRootPath);
+
 const isErrorAlarmRunning = ref(false);
 const isCompleteAlarmRunning = ref(false);
 const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
-let isAlarmInterval = null;
-let isCompleteAlarmInterval = null;
-let isErrorAlarmInterval = null;
 const isPlayingCompleteAlarm = ref(false);
 const isPlayingErrorAlarm = ref(false);
 const showAlert = ref(false);
@@ -224,12 +234,12 @@ const clickType = ref('');
 const userSetOutUl = ref(false);
 const isStartCountUpdated = ref(false);
 const autoStartTimer = ref(0);
+const errArr = ref<any>([]);
+const toastMessage = ref('');
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const mouseClick = ref(false);
+const mounseLeave = ref(false);
 
-const keydownHandler = (e: KeyboardEvent) => {
-  if (e.ctrlKey && ['61', '107', '173', '109', '187', '189'].includes(String(e.which))) {
-    e.preventDefault();
-  }
-}
 
 const formattedDate = computed(() => {
   return currentDate.value;
@@ -243,16 +253,54 @@ const userSetOutToggle = () => {
   userSetOutUl.value = !userSetOutUl.value;
 }
 
-const userSetOutOff = () => {
-  userSetOutUl.value = false;
-}
-
 const updateDateTime = () => {
   const now = new Date();
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
   currentTime.value = now.toLocaleTimeString('en-US');
 };
 
+const errLogOn = async () => {
+  mouseClick.value = !mouseClick.value;
+  if(mounseLeave.value){
+    return
+  }
+  ErrLogOpen.value = !ErrLogOpen.value;
+  await errLogLoad();
+
+}
+const errLogLoad = async () => {
+  const folderPath = `folderPath=${rootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
+  const res = await errLogsReadApi(folderPath);
+  if(res.code === 200){
+    if(res?.data?.status === 400){
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast(res?.data?.response.error);
+      return;
+    }
+    let newArr = [];
+
+    // 날짜별로 들어옴 다중 포문 쓴 이유
+    for (const date in res.data) {
+      const entries = res.data[date];
+
+      for (const el of entries) {
+        const fullTimestamp = `${date} ${el.timestamp}`; // 날짜 합치기 용도
+        if (el.E_TYPE !== 'DEV_INFO'){
+          newArr.push({
+            timestamp: fullTimestamp,
+            code: el?.E_CODE,
+            type: el?.E_TYPE,
+            desc: el?.E_DESC,
+            soln: el?.E_SOLN,
+            name: el?.E_NAME,
+          });
+        }
+      }
+    }
+
+    errArr.value = newArr;
+  }
+}
 const handleOkConfirm = async () => {
   showConfirm.value = false;
 
@@ -596,5 +644,34 @@ const cellImgGet = async () => {
   }
 }
 
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
 
+const closeErrLog = () => {
+  ErrLogOpen.value = false;
+}
+
+const openErrLogOver = async () => {
+  ErrLogOpen.value = true;
+  mounseLeave.value = true;
+  await errLogLoad();
+}
+
+const closeErrLogLeave = () => {
+  if (mouseClick.value){
+    return;
+  }
+  mounseLeave.value = false;
+  ErrLogOpen.value = false;
+}
+
+const errMouseSet = () => {
+  mounseLeave.value = false;
+  ErrLogOpen.value = false;
+  mouseClick.value = false;
+}
 </script>

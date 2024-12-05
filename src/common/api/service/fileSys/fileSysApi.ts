@@ -43,3 +43,8 @@ export const createCbcFile = async (request: any): Promise<ApiResponse<any | und
 export const getFolders = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.settings.folders.get, `${request}`, true);
 };
+
+export const errLogsReadApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.filesystem.errLogsRead, `${request}`, true);
+};
+

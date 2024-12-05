@@ -435,6 +435,10 @@ export const apiConstants = {
         cbcSaveData: {
             endpoint: 'file/cbcSaveData',
             requiresToken: false,
+        },
+        errLogsRead:{
+            endpoint: 'filesystem/errLogsRead',
+            requiresToken: false,
         }
     },
     fileTxtRead: {
