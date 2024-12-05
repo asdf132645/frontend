@@ -790,7 +790,7 @@ const gilDataSendLoad = async () => {
       processingId: 'P',
       hl7VersionId: '2.5',
       selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: incheonGilPercentChange(props.selectItems?.wbcInfoAfter, props.selectItems?.wbcInfo.maxWbcCount),
+      wbcInfo: incheonGilPercentChange(props.selectItems?.wbcInfoAfter, props.selectItems?.wbcInfo.totalCount),
       result: lisCodeWbcArrApp.value,
     };
     const res = await readNoFlagHl7Message(data);
@@ -1242,8 +1242,8 @@ const beforeAfterChange = async (newItem: any) => {
     wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = incheonStMaryPercentChange(selectItems.value, wbcInfoBeforeVal.value);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.maxWbcCount);
-    wbcInfoBeforeVal.value = incheonGilPercentChange(wbcInfoBeforeVal.value, props.selectItems?.wbcInfo.maxWbcCount);
+    wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.totalCount);
+    wbcInfoBeforeVal.value = incheonGilPercentChange(wbcInfoBeforeVal.value, props.selectItems?.wbcInfo.totalCount);
   }
 
   wbcInfoVal.value = [];
@@ -1416,7 +1416,7 @@ async function updateOriginalDb() {
     } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-      wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.maxWbcCount);
+      wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.totalCount);
     }
   });
 

@@ -122,10 +122,11 @@ export const incheonStMaryPercentChange = (projectType: string, wbcInfo: any) =>
 export const incheonGilPercentChange = (wbcInfo: any, maxWbcCount: string) => {
     const nonWbcTitles = ['NR', 'GP', 'PA', 'MA', 'AR', 'SM'];
 
+    // 전체 Class
     const addPercentWbcInfo = wbcInfo.map((item: any) => {
         let itemPercent = 0;
         if (Number(item.count) && item.title === 'NR') itemPercent = Math.ceil((Number(item.count) / Number(maxWbcCount)) * 100);
-        else if (nonWbcTitles.includes(item.title) && Number(item.count)) itemPercent = (Number(item.count) / Number(maxWbcCount)) * 100;
+        else if (nonWbcTitles.includes(item.title) && Number(item.count)) itemPercent = Math.round((Number(item.count) / Number(maxWbcCount)) * 100);
         else itemPercent = Number(item.percent) || 0;
         return {
             ...item,
@@ -133,13 +134,14 @@ export const incheonGilPercentChange = (wbcInfo: any, maxWbcCount: string) => {
         };
     })
 
+    // nonWbc 제외 Class
     const wbcInfoPercentArr = addPercentWbcInfo.filter((item: any) => !nonWbcTitles.includes(item.title));
 
     const adjustedItems = adjustPercentages(wbcInfoPercentArr);
 
     return wbcInfo.map((item: any) => {
         const adjustedItem = adjustedItems.find(adjusted => adjusted.title === item.title);
-        return adjustedItem ? { ...item, percent: adjustedItem.percent } : item;
+        return adjustedItem ? { ...item, percent: adjustedItem.percent } : addPercentWbcInfo.find((wbcItem: any) => item.title === wbcItem.title);
     });
 };
 
