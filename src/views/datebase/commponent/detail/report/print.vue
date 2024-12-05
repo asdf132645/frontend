@@ -638,7 +638,7 @@ const percentChangeBySiteCd = async () => {
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
     wbcInfo.value = incheonStMaryPercentChange(projectType, wbcInfo.value);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    wbcInfo.value = incheonGilPercentChange(wbcInfo.value, selectItems.value?.wbcInfo.maxWbcCount);
+    wbcInfo.value = incheonGilPercentChange(wbcInfo.value, selectItems.value?.wbcInfo.totalCount);
   }
 }
 

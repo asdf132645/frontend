@@ -190,7 +190,7 @@ const setWbcTotalAndPercent = async () => {
       } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
         wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
       } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-        wbcInfoAfter.value = await incheonGilPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfo.maxWbcCount);
+        wbcInfoAfter.value = await incheonGilPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfo.totalCount);
       }
     }
   }

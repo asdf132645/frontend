@@ -546,7 +546,6 @@ const getPercent = () => {
   }
   const percent = Math.min(Math.round((oilCount.value / maxOilCount.value) * 100), 100);
   const progressBarWidth = `${(percent / 100) * statusBarWrapper.value.offsetWidth}px`;
-  console.log(statusBarWrapper.value.offsetWidth);
   statusBar.value.style.width = progressBarWidth;
 }
 
