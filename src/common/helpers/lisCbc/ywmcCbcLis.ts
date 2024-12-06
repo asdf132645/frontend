@@ -18,7 +18,7 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
         cbcCodeList.forEach(function (cbcCode: any) {
             if (cbcCode?.classCd === data?.exam_cd.trim()) {
                 const obj = {
-                    classNm: cbcCode.classCd,
+                    classNm: cbcCode.fullNm,
                     count: data?.text_rslt + data?.numeric_rslt,
                     unit: data?.unit,
                     textVal: data?.text_rslt,
