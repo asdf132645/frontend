@@ -263,6 +263,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
       edgeShotType:  edgeShotType || '0',
+      // edgeShotCount: 1 or 2,
     });
 
     if (is100A.value) {
