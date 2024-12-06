@@ -64,6 +64,7 @@
       <p> {{ timeDataGet.totalSlideTime }} </p>
 
     </div>
+    <GaugeBar v-if="siteCd === '0000'"/>
     <div class='slideCardWrap' v-if="pbVersion === '12a'">
       <ul class='slideContent'>
         <li v-for="item in slideCardData.INPUT" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'input')"></li>
@@ -91,6 +92,7 @@ import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
 import { SLIDE_CARD_12A, SLIDE_CARD_100A } from "@/common/defines/constants/analysis";
+import GaugeBar from "@/components/commonUi/GaugeBar.vue";
 
 // 스토어
 const store = useStore();
@@ -100,6 +102,7 @@ const initValData = computed(() => store.state.commonModule.initValData);
 const timeDataGet = computed(() => store.state.timeModule);
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const props = defineProps(['parsedData', 'pb100aCassette']);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 
 // 스토어

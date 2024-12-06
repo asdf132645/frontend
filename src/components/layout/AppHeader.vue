@@ -61,7 +61,7 @@
           </div>
           <div class="iconHeaderMenu">
             <ul>
-              <li @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" >
+              <li @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" v-if="siteCd === '0000'">
                 <font-awesome-icon :icon="['fas', 'circle-exclamation']" />
                 <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
@@ -186,6 +186,7 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const isBlinkingPrime = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 const instance = getCurrentInstance();
 const showConfirm = ref(false);
