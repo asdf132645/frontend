@@ -5246,7 +5246,7 @@ p.hand-pointer {
 
 .custom-nav-bar-canvas {
     position: absolute !important;
-    border: none !important;
+    /*border: none !important;*/
 }
 
 .resultImg-crcTitle {
@@ -5388,9 +5388,10 @@ progress::-moz-progress-bar {
     height: fit-content;
 }
 
-/*.openseadragon-canvas.nav-bar-canvas {*/
-/*    display: none !important;*/
-/*}*/
+.openseadragon-canvas.nav-bar-canvas {
+    display: none !important;
+}
+
 
 .rbc-allCheck-eye-font {
     margin-top: 4px;

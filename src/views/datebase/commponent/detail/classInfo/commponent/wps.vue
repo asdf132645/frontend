@@ -145,11 +145,16 @@ const adjustNavBar = (x1: number, x2: number, y1: number, y2: number) => {
 
   if (navBar) {
     navBar.classList.add('custom-nav-bar-canvas');
+    const realWidth = Number(x2) - Number(x1);
+    const realHeight = Number(y2) - Number(y1);
+
     // 배경 이미지 축소 비율에 맞춰 좌표와 크기 계산
     const scaleFactor = 0.5;  // 1/2 비율로 축소
     const left = x1 * scaleFactor;
     const top = y1 * scaleFactor;
     navBar.style.position = 'absolute';
+    navBar.style.width = `${realWidth * scaleFactor}px`;
+    navBar.style.height = `${realHeight * scaleFactor}px`;
     // 네비게이션 바의 위치 및 크기 적용
     navBar.style.left = `${left}px`;
     navBar.style.top = `${top}px`;
@@ -168,7 +173,8 @@ const wpsInitElement = async () => {
     viewer.value = OpenSeadragon({
       id: "tilingViewerImgListWps",
       animationTime: 0.4,
-      navigatorSizeRatio: 0.05,
+      navigatorHeight: (+findWbcClass.value[0].y2 - +findWbcClass.value[0].y1) * 0.5,
+      navigatorWidth: (+findWbcClass.value[0].x2 - +findWbcClass.value[0].x1) * 0.5,
       showNavigator: !hideSideNavigatorImage.value,
       navigatorAutoFade: true, // 네비게이터가 자동으로 숨겨지지 않도록 설정
       sequenceMode: true,
@@ -217,7 +223,6 @@ const wpsInitElement = async () => {
     canvasOverlay.value = canvas;
 
     viewer.value.addHandler('open', function (event: any) {
-      adjustNavBar(findWbcClass.value[0].x1, findWbcClass.value[0].x2, findWbcClass.value[0].y1, findWbcClass.value[0].y2);
       imgOn.value = true;
 
       // 캔버스 크기를 조정
@@ -227,6 +232,8 @@ const wpsInitElement = async () => {
       // 예시 확대 - 특정 좌표에 맞춰 확대
       const zoomRect = new OpenSeadragon.Rect(0.1, 0.1, 0.2, 0.2); // 비율로 설정
       viewer.value.viewport.fitBounds(zoomRect);
+
+      adjustNavBar(findWbcClass.value[0].x1, findWbcClass.value[0].x2, findWbcClass.value[0].y1, findWbcClass.value[0].y2);
     });
 
     isZoomed.value = false;
