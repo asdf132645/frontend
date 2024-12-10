@@ -722,7 +722,63 @@ li.errLogLi.critical:before {
     min-width: 500px;
     top: 35px;
 }
-.errLogClose{
+
+.lineRenewal {
+    border: 1px solid #525252;
+    margin-bottom: 16px;
+}
+
+p.renewal.slideTime1 {
+    font-size: 1rem;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+}
+
+
+p.renewalTotalTime {
+    font-size: 1.6rem;
+    margin-bottom: 5px;
+}
+
+.renewalSlideTime > span {
+    font-size: 0.8rem;
+}
+
+.renewalSlideTime > .slideTime {
+    position: relative;
+    top: 0;
+    display: inline-block;
+    left: 12%;
+    color: #00c2ff;
+}
+
+.renewalStateText {
+    position: absolute;
+    top: 43px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+}
+
+.progress-bar-text-gauge span {
+    color: #aaaaaa;
+}
+
+.progress-bar-text-gauge {
+    position: absolute;
+    top: 61px;
+    left: 52%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+}
+
+.progress-bar-text-gauge div {
+    display: inline-block;
+    font-size: 2rem;
+    color: #00c2ff;
+}
+
+.errLogClose {
     cursor: pointer;
 }
 

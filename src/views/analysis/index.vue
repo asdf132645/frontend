@@ -1,13 +1,20 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <Execute @initDataChangeText="initDataChangeText" />
+    <Execute @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <workingView  :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild" />
-    <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen" class="contentRightChild"/>
-    <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen" class="contentRightChild"/>
+    <RenewalWorking :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
+                    v-if="siteCd === '0000'"
+                    class="contentRightChild"/>
+    <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
+                 v-else
+                 class="contentRightChild"/>
+    <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen"
+                       class="contentRightChild"/>
+    <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen"
+                       class="contentRightChild"/>
     <div class="contentBottom">
       <FoundingCells :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     </div>
@@ -25,14 +32,17 @@ import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
 import {defineEmits, defineProps, onMounted, ref, onBeforeMount, computed, watch} from "vue";
 import router from "@/router";
 import {useStore} from "vuex";
+import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
+
 const emits = defineEmits();
 
 const store = useStore();
 const bmIsBoolen = ref(false);
-const props = defineProps(['parsedData','isClass', 'startStatus', 'pb100aCassette']);
+const props = defineProps(['parsedData', 'isClass', 'startStatus', 'pb100aCassette']);
 const pbVersion = ref<any>('');
 const initValData = ref(false);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 onBeforeMount(async () => {
   if (viewerCheck.value === 'viewer') {
