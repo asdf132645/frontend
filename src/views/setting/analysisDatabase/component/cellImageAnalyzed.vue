@@ -108,7 +108,7 @@
           <th>Wbc Position Margin</th>
           <td>
             <select v-model='wbcPositionMargin'>
-              <option v-for="type in WbcPositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
@@ -116,7 +116,7 @@
           <th>Rbc Position Margin</th>
           <td>
             <select v-model='rbcPositionMargin'>
-              <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
@@ -124,7 +124,7 @@
           <th>Edge Shot Margin</th>
           <td>
             <select v-model='pltPositionMargin'>
-              <option v-for="type in PositionMarginList" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
@@ -343,13 +343,7 @@ import Datepicker from 'vue3-datepicker';
 import { computed, nextTick, onMounted, ref, watch, getCurrentInstance } from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
-import {
-  AnalysisList,
-  PositionMarginList, stitchCountList,
-  testTypeList,
-  WbcPositionMarginList,
-  testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList
-} from "@/common/defines/constants/settings";
+import { AnalysisList, stitchCountList, testTypeList, testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList, POSITION_MARGIN_LIST } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {
@@ -453,6 +447,7 @@ const tooltipVisible = ref({
   download: false,
   upload: false,
 })
+const apiUrl = ref('');
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -465,6 +460,7 @@ instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished'
 })
 
 onMounted(async () => {
+  getApiUrl();
   await nextTick();
   testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
@@ -505,6 +501,11 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
 })
+
+const getApiUrl = () => {
+  const tmp = window.APP_API_BASE_URL.split(':');
+  apiUrl.value = `${tmp[0]}:${tmp[1]}`;
+}
 
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -799,6 +800,7 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
 
   successFileCount.value = 0;
 
+  console.log('downloadDto', downloadDto);
   try {
     handlePolling();
     await backUpDateApi(downloadDto);
@@ -832,7 +834,8 @@ const downloadDtoObj = (downloadType: 'move' | 'copy') => {
     destinationDownloadPath: downloadRootPath.value, // 백업 경로
     projectType: projectType.value,
     dayQuery,
-    downloadType
+    downloadType,
+    apiUrl: apiUrl.value,
   }
   isLoadingProgressBar.value = true;
 
