@@ -55,9 +55,8 @@
         </div>
         <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
-        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
-                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']"
-        >Image Select
+        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
+          Image Select
         </button>
 
       </div>
@@ -163,6 +162,7 @@
   <ResultImage :nowCrcData="nowCrcDataRef" v-if="captureAndConvertOk"
                :captureAndConvertOk="captureAndConvertOk"
                @resetBool="resetBool"
+               :patientNm="selectItems?.cbcPatientNm ?? selectItems?.patientNm"
                :barcodeNo="selectItems?.barcodeNo"
                :commentList="commentList"
                :recoList="recoList"
