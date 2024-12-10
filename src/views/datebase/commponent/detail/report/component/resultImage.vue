@@ -1,6 +1,11 @@
 <template>
   <div class="resultImage" ref="crcReport">
-    <h1 class="resultCode">Code - {{ nowCrcData.code }}</h1>
+    <h1 class="resultCode">{{ nowCrcData.code }}</h1>
+    <h2 class="resultImage-mainTitle">Information</h2>
+    <div class="flex-align-center gap14">
+      <h3>{{ barcodeNo ?? '' }}</h3>
+      <h3>{{ patientNm ?? '' }}</h3>
+    </div>
 
     <div class="resultImgBody">
       <h2 class="resultImage-mainTitle">RBC Morphology</h2>
@@ -53,21 +58,21 @@
           <font-awesome-icon :icon="['fas', 'message']" />
           <span>Comment</span>
         </h2>
-        <pre class="fs08">{{ nowCrcData?.crcComment[0]?.remarkAllContent }}</pre>
+        <pre class="fs08 pre-wrap">{{ nowCrcData?.crcComment[0]?.remarkAllContent }}</pre>
       </div>
       <div v-if="nowCrcData.crcRecommendation.length !== 0 && nowCrcData.crcRecommendation[0].remarkAllContent.length > 0">
         <h2 class="resultImage-mainTitle resultImage-mainTitleWithFont">
           <font-awesome-icon :icon="['fas', 'message']" />
           <span>Recommendation</span>
         </h2>
-        <pre class="fs08">{{ nowCrcData?.crcRecommendation[0]?.remarkAllContent }}</pre>
+        <pre class="fs08 pre-wrap">{{ nowCrcData?.crcRecommendation[0]?.remarkAllContent }}</pre>
       </div>
       <div v-if="nowCrcData.crcRemark.length !== 0 && nowCrcData.crcRemark[0].remarkAllContent.length > 0">
         <h2 class="resultImage-mainTitle resultImage-mainTitleWithFont">
           <font-awesome-icon :icon="['fas', 'message']" />
           <span>Remark</span>
         </h2>
-        <pre class="fs08">{{ nowCrcData?.crcRemark[0]?.remarkAllContent }}</pre>
+        <pre class="fs08 pre-wrap">{{ nowCrcData?.crcRemark[0]?.remarkAllContent }}</pre>
       </div>
     </div>
 
@@ -106,7 +111,7 @@ import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {useStore} from "vuex";
 
-const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo', 'selectWbcImgArr', 'slotId']);
+const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo', 'selectWbcImgArr', 'slotId', 'patientNm']);
 const arrDataWbc = ref<any>([]);
 const arrDataRbc = ref<any>([]);
 const arrDataPlt = ref<any>([]);

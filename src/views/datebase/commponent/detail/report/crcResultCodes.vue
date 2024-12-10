@@ -55,9 +55,8 @@
         </div>
         <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
-        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
-                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']"
-        >Image Select
+        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
+          Image Select
         </button>
 
       </div>
@@ -163,6 +162,7 @@
   <ResultImage :nowCrcData="nowCrcDataRef" v-if="captureAndConvertOk"
                :captureAndConvertOk="captureAndConvertOk"
                @resetBool="resetBool"
+               :patientNm="selectItems?.cbcPatientNm"
                :barcodeNo="selectItems?.barcodeNo"
                :commentList="commentList"
                :recoList="recoList"
@@ -184,7 +184,7 @@ import {
   crcDataGet,
   crcGet,
   crcOptionGet,
-  saveDataCreateApi, saveDataDeleteApi, saveDataPutDataApi,
+  saveDataCreateApi, saveDataPutDataApi,
   saveDataSlotIdGetApi
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -204,6 +204,7 @@ import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
+import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -261,6 +262,7 @@ const IsWbcImageSelect = ref(false);
 const selectWbcImgArr = ref<any>([]);
 const ywmcSlip = ref('H3');
 const cbcFlag = ref('');
+
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
   selectWbcImgArr.value = arr;
@@ -323,10 +325,18 @@ onMounted(async () => {
   await nextTick();
   await dataAutoComputeLoad();
   submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']) {
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원'] || siteCd.value) {
     const {data, cbcDataVal, slip} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
     ywmcSlip.value = slip;
     cbcFlag.value = '';
+
+    await updateCbcDataToDatabase({
+      cbcPatientNo: cbcDataVal?.pt_no,
+      cbcPatientNm: cbcDataVal?.pt_nm,
+      cbcSex: cbcDataVal?.sex,
+      cbcAge: cbcDataVal?.age,
+    })
+
     for (const el of data) {
       switch (el.classNm.trim()) {
         case '8HN109GBL_F':
@@ -937,6 +947,13 @@ const checkTextAreaMaxLength = () => {
     default:
       break;
   }
+}
+
+const updateCbcDataToDatabase = async ({ cbcPatientNo, cbcPatientNm, cbcSex, cbcAge }: RunningInfoCBCType) => {
+  const result: any = await detailRunningApi(String(props.selectItems?.id));
+  const updatedItem = { cbcPatientNo, cbcPatientNm, cbcSex, cbcAge };
+  const updatedRuningInfo = { id: result.data.id, ...updatedItem };
+  await resRunningItem(updatedRuningInfo, true);
 }
 
 </script>

@@ -15,7 +15,7 @@ import {
     getLisCodeWbcApi, getLisCodeRbcApi
 } from '@/common/api/service/setting/settingApi';
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
-import { defaultCbcList, defaultRbcDegree, lisCodeRbcOption, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
+import { defaultCbcList, defaultRbcDegree, LIS_CODE_RBC_OPTION, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
@@ -58,7 +58,7 @@ const settingsConstant = ref<any>({
     },
     'lisCodeRbc': {
         'sendingForm': 'lisCodeItems',
-        'defaultItem': lisCodeRbcOption,
+        'defaultItem': LIS_CODE_RBC_OPTION,
         'getRequest': getLisCodeRbcApi,
         'createRequest': createLisCodeRbcApi,
     },
