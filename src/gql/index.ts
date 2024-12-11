@@ -1,6 +1,6 @@
-import {gql} from 'graphql-tag';
+import { gql } from 'graphql-tag';
 import * as VueApolloComposable from '@vue/apollo-composable';
-
+import * as VueCompositionApi from 'vue';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -11,196 +11,201 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 export type ReactiveFunction<TParam> = () => TParam;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-    ID: { input: string; output: string; }
-    String: { input: string; output: string; }
-    Boolean: { input: boolean; output: boolean; }
-    Int: { input: number; output: number; }
-    Float: { input: number; output: number; }
-    DateTime: { input: any; output: any; }
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
-export type CreateRuningInfoDto = {
-    dayQuery: Scalars['String']['input'];
-    runingInfoDtoItems: RuningInfoDtoItems;
-    userId?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type Mutation = {
-    __typename?: 'Mutation';
-    createRunningInfo: RuningInfoEntity;
-};
-
-
-export type MutationCreateRunningInfoArgs = {
-    createRunningInfoDto: CreateRuningInfoDto;
+export type ClassInfo = {
+  __typename?: 'ClassInfo';
+  classId?: Maybe<Scalars['String']['output']>;
+  classNm?: Maybe<Scalars['String']['output']>;
+  degree?: Maybe<Scalars['String']['output']>;
 };
 
 export type Query = {
-    __typename?: 'Query';
-    getRunningInfoById?: Maybe<RuningInfoEntity>;
+  __typename?: 'Query';
+  getRunningInfoByIdGQL: RuningInfoEntity;
 };
 
 
-export type QueryGetRunningInfoByIdArgs = {
-    id: Scalars['Int']['input'];
+export type QueryGetRunningInfoByIdGqlArgs = {
+  id: Scalars['Int']['input'];
 };
 
-export type RuningInfoDtoItems = {
-    analyzedDttm: Scalars['String']['input'];
-    barcodeNo: Scalars['String']['input'];
-    bf_lowPowerPath: Array<Scalars['String']['input']>;
-    birthDay: Scalars['String']['input'];
-    cassetId: Scalars['String']['input'];
-    cbcAge?: InputMaybe<Scalars['String']['input']>;
-    cbcPatientNm?: InputMaybe<Scalars['String']['input']>;
-    cbcPatientNo?: InputMaybe<Scalars['String']['input']>;
-    cbcSex?: InputMaybe<Scalars['String']['input']>;
-    classificationResult?: InputMaybe<Array<Scalars['String']['input']>>;
-    gender: Scalars['String']['input'];
-    id: Scalars['Int']['input'];
-    img_drive_root_path?: InputMaybe<Scalars['String']['input']>;
-    isNormal: Scalars['String']['input'];
-    isNsNbIntegration: Scalars['String']['input'];
-    lock_status?: InputMaybe<Scalars['Boolean']['input']>;
-    maxWbcCount: Scalars['String']['input'];
-    orderDttm: Scalars['String']['input'];
-    patientId: Scalars['String']['input'];
-    patientNm: Scalars['String']['input'];
-    pcIp: Scalars['String']['input'];
-    rbcInfo: Array<Scalars['String']['input']>;
-    rbcInfoAfter: Array<Scalars['String']['input']>;
-    rbcMemo?: InputMaybe<Scalars['String']['input']>;
-    slotId: Scalars['String']['input'];
-    slotNo: Scalars['String']['input'];
-    submitOfDate?: InputMaybe<Scalars['DateTime']['input']>;
-    submitState?: InputMaybe<Scalars['String']['input']>;
-    submitUserId?: InputMaybe<Scalars['String']['input']>;
-    tactTime: Scalars['String']['input'];
-    testType: Scalars['String']['input'];
-    traySlot: Scalars['String']['input'];
-    wbcCount: Scalars['String']['input'];
-    wbcInfo: Array<Scalars['String']['input']>;
-    wbcInfoAfter?: InputMaybe<Array<Scalars['String']['input']>>;
-    wbcMemo?: InputMaybe<Scalars['String']['input']>;
+export type RbcInfo = {
+  __typename?: 'RbcInfo';
+  categoryId?: Maybe<Scalars['String']['output']>;
+  categoryNm?: Maybe<Scalars['String']['output']>;
+  classInfo?: Maybe<Array<ClassInfo>>;
 };
 
 export type RuningInfoEntity = {
-    __typename?: 'RuningInfoEntity';
-    analyzedDttm: Scalars['String']['output'];
-    barcodeNo: Scalars['String']['output'];
-    bf_lowPowerPath: Array<Scalars['String']['output']>;
-    birthDay: Scalars['String']['output'];
-    cassetId: Scalars['String']['output'];
-    cbcAge?: Maybe<Scalars['String']['output']>;
-    cbcPatientNm?: Maybe<Scalars['String']['output']>;
-    cbcPatientNo?: Maybe<Scalars['String']['output']>;
-    cbcSex?: Maybe<Scalars['String']['output']>;
-    gender: Scalars['String']['output'];
-    id: Scalars['Float']['output'];
-    img_drive_root_path?: Maybe<Scalars['String']['output']>;
-    isNormal: Scalars['String']['output'];
-    isNsNbIntegration?: Maybe<Scalars['String']['output']>;
-    lock_status?: Maybe<Scalars['Boolean']['output']>;
-    maxWbcCount: Scalars['String']['output'];
-    orderDttm: Scalars['String']['output'];
-    patientId: Scalars['String']['output'];
-    patientNm: Scalars['String']['output'];
-    pcIp?: Maybe<Scalars['String']['output']>;
-    rbcInfo: Array<Scalars['String']['output']>;
-    rbcInfoAfter: Array<Scalars['String']['output']>;
-    rbcInfoPosAfter: Array<Scalars['String']['output']>;
-    rbcMemo?: Maybe<Scalars['String']['output']>;
-    slotId: Scalars['String']['output'];
-    slotNo: Scalars['String']['output'];
-    submitOfDate?: Maybe<Scalars['DateTime']['output']>;
-    submitState?: Maybe<Scalars['String']['output']>;
-    submitUserId?: Maybe<Scalars['String']['output']>;
-    tactTime: Scalars['String']['output'];
-    testType: Scalars['String']['output'];
-    traySlot?: Maybe<Scalars['String']['output']>;
-    wbcCount: Scalars['String']['output'];
-    wbcInfo: Array<Scalars['String']['output']>;
-    wbcInfoAfter: Array<Scalars['String']['output']>;
-    wbcMemo?: Maybe<Scalars['String']['output']>;
+  __typename?: 'RuningInfoEntity';
+  analyzedDttm: Scalars['String']['output'];
+  barcodeNo: Scalars['String']['output'];
+  bf_lowPowerPath: Array<Scalars['String']['output']>;
+  birthDay: Scalars['String']['output'];
+  cassetId: Scalars['String']['output'];
+  cbcAge?: Maybe<Scalars['String']['output']>;
+  cbcPatientNm?: Maybe<Scalars['String']['output']>;
+  cbcPatientNo?: Maybe<Scalars['String']['output']>;
+  cbcSex?: Maybe<Scalars['String']['output']>;
+  gender: Scalars['String']['output'];
+  hosName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  img_drive_root_path?: Maybe<Scalars['String']['output']>;
+  isNormal: Scalars['String']['output'];
+  isNsNbIntegration?: Maybe<Scalars['String']['output']>;
+  lock_status?: Maybe<Scalars['Boolean']['output']>;
+  maxWbcCount: Scalars['String']['output'];
+  orderDttm: Scalars['String']['output'];
+  patientId: Scalars['String']['output'];
+  patientNm: Scalars['String']['output'];
+  pcIp?: Maybe<Scalars['String']['output']>;
+  rbcInfo?: Maybe<RbcInfo>;
+  rbcInfoAfter: Array<Scalars['String']['output']>;
+  rbcInfoPosAfter: Array<Scalars['String']['output']>;
+  rbcMemo?: Maybe<Scalars['String']['output']>;
+  slotId: Scalars['String']['output'];
+  slotNo: Scalars['String']['output'];
+  submitOfDate?: Maybe<Scalars['DateTime']['output']>;
+  submitState?: Maybe<Scalars['String']['output']>;
+  submitUserId?: Maybe<Scalars['String']['output']>;
+  tactTime: Scalars['String']['output'];
+  testType: Scalars['String']['output'];
+  traySlot?: Maybe<Scalars['String']['output']>;
+  wbcCount: Scalars['String']['output'];
+  wbcInfo?: Maybe<WbcResponse>;
+  wbcInfoAfter: Array<WbcInfoAfter>;
+  wbcMemo?: Maybe<Scalars['String']['output']>;
+};
+
+export type WbcInfo = {
+  __typename?: 'WbcInfo';
+  count?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  images?: Maybe<Array<Scalars['String']['output']>>;
+  name?: Maybe<Scalars['String']['output']>;
+  percent?: Maybe<Scalars['Int']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type WbcInfoAfter = {
+  __typename?: 'WbcInfoAfter';
+  count?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  images?: Maybe<Array<Scalars['String']['output']>>;
+  name?: Maybe<Scalars['String']['output']>;
+  percent?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type WbcResponse = {
+  __typename?: 'WbcResponse';
+  maxWbcCount?: Maybe<Scalars['String']['output']>;
+  totalCount?: Maybe<Scalars['String']['output']>;
+  wbcInfo?: Maybe<Array<WbcInfo>>;
 };
 
 export type GetRunningInfoByIdQueryVariables = Exact<{
-    id: Scalars['Int']['input'];
+  id: Scalars['Int']['input'];
 }>;
 
 
-export type GetRunningInfoByIdQuery = {
-    __typename?: 'Query',
-    getRunningInfoById?: { __typename?: 'RuningInfoEntity', id: number } | null
-};
+export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, slotId: string, orderDttm: string, testType: string, analyzedDttm: string, tactTime: string, maxWbcCount: string, bf_lowPowerPath: Array<string>, cassetId: string, isNormal: string, rbcInfoAfter: Array<string>, submitState?: string | null, submitOfDate?: any | null, submitUserId?: string | null, rbcInfoPosAfter: Array<string>, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, images?: Array<string> | null, percent?: number | null }> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, images?: Array<string> | null, percent?: string | null }>, rbcInfo?: { __typename?: 'RbcInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null }> | null } | null } };
 
 
 export const GetRunningInfoByIdDocument = gql`
-  query GetRunningInfoById($id: Int!) {
-    getRunningInfoByIdGQL(id: $id) {
-          id
-          analyzedDttm
-          barcodeNo
-          birthDay
-          cassetId
-          cbcAge
-          cbcPatientNm
-          cbcPatientNo
-          cbcSex
-          gender
-          img_drive_root_path
-          isNormal
-          isNsNbIntegration
-          lock_status
-          maxWbcCount
-          orderDttm
-          patientId
-          patientNm
-          pcIp
-           rbcInfo {
-              classInfo {
-                classId
-                classNm
-                degree
-              }
-              categoryId
-              categoryNm
-           }
-          
-          rbcMemo
-          slotId
-          slotNo
-          submitOfDate
-          submitState
-          submitUserId
-          tactTime
-          testType
-          traySlot
-          wbcCount
-          wbcInfoAfter {
-            id
-            name
-            count
-            title
-            images
-            percent
+    query GetRunningInfoById($id: Int!) {
+  getRunningInfoByIdGQL(id: $id) {
+    id
+    lock_status
+    traySlot
+    slotNo
+    barcodeNo
+    patientId
+    patientNm
+    gender
+    birthDay
+    wbcCount
+    slotId
+    orderDttm
+    testType
+    analyzedDttm
+    tactTime
+    maxWbcCount
+    cassetId
+    isNormal
+    wbcInfo {
+      wbcInfo {
+        id
+        name
+        count
+        title
+        images {
+          coordinates {
+            display
           }
-           wbcInfo {
-            wbcInfo {
-              id
-              name
-              count
-              title
-              images
-              percent
-            }
-            totalCount
-            maxWbcCount
-          }
-          wbcMemo
+          fileName
+          title
+        }
+        percent
+      }
+      totalCount
+      maxWbcCount
     }
+    wbcInfoAfter {
+      id
+      name
+      count
+      title
+      images {
+        coordinates {
+          display
+        }
+        fileName
+        title
+      }
+      percent
+    }
+    rbcInfo {
+      classInfo {
+        classId
+        classNm
+        degree
+      }
+      categoryId
+      categoryNm
+    }
+    rbcInfoAfter {
+      classInfo {
+        classId
+        classNm
+        degree
+      }
+      categoryId
+      categoryNm
+    }
+    submitState
+    submitOfDate
+    submitUserId
+    isNsNbIntegration
+    wbcMemo
+    rbcMemo
+    pcIp
+    cbcPatientNo
+    cbcPatientNm
+    cbcSex
+    cbcAge
+    img_drive_root_path
+    hosName
   }
-`;
+}
+    `;
 
 /**
  * __useGetRunningInfoByIdQuery__
@@ -217,26 +222,10 @@ export const GetRunningInfoByIdDocument = gql`
  *   id: // value for 'id'
  * });
  */
-export function useGetRunningInfoByIdQuery(
-    variables: GetRunningInfoByIdQueryVariables | ReactiveFunction<GetRunningInfoByIdQueryVariables>,
-    options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}
-) {
-    return VueApolloComposable.useQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(
-        GetRunningInfoByIdDocument,
-        variables,
-        options
-    );
+export function useGetRunningInfoByIdQuery(variables: GetRunningInfoByIdQueryVariables | VueCompositionApi.Ref<GetRunningInfoByIdQueryVariables> | ReactiveFunction<GetRunningInfoByIdQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
 }
-
-export function useGetRunningInfoByIdLazyQuery(
-    variables?: GetRunningInfoByIdQueryVariables | ReactiveFunction<GetRunningInfoByIdQueryVariables>,
-    options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}
-) {
-    return VueApolloComposable.useLazyQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(
-        GetRunningInfoByIdDocument,
-        variables,
-        options
-    );
+export function useGetRunningInfoByIdLazyQuery(variables?: GetRunningInfoByIdQueryVariables | VueCompositionApi.Ref<GetRunningInfoByIdQueryVariables> | ReactiveFunction<GetRunningInfoByIdQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
 }
-
 export type GetRunningInfoByIdQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>;

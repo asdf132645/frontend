@@ -1,6 +1,6 @@
 overwrite: true
 schema: "http://192.168.0.131:3002/api/graphql" # GraphQL API URL
-documents: "src/**/*.vue"
+documents: "src/**/*.ts"
 generates:
   src/gql/index.ts:
     plugins:

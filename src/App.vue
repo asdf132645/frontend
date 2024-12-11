@@ -520,10 +520,8 @@ async function socketData(data: any) {
         completeSlot.cassetId = params.cassetId;
         completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
 
-        if (completeSlot.testType === '01') {
-          const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
-          completeSlot.isNormal = isNormal;
-        }
+        const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
+        completeSlot.isNormal = isNormal;
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
