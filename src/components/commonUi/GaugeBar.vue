@@ -2,7 +2,7 @@
   <div class="progress-bar-guage">
     <div class="steps">
       <div
-          v-for="(step, index) in testData"
+          v-for="(step, index) in progressData.progressArr"
           :key="index"
           class="step-container"
       >
@@ -10,94 +10,120 @@
         <div
             class="circleGuage"
             :class="{
-            completed: step.percent === 100,
-            active: step.percent > 0 && step.percent < 100,
-            waiting: step.percent === 0 && index === testData.length - 1,
+            completed: step.progressPercent === 100,
+            active: step.progressPercent > 0 && step.progressPercent < 100,
+            waiting: step.progressPercent === 0 && index === progressData.progressArr.length - 1,
           }"
         >
-          <span v-if="step.percent === 100">✔</span>
+          <span v-if="step.progressPercent === 100">✔</span>
           <span v-else>{{ index + 1 }}</span>
         </div>
 
         <!-- 선 -->
-        <div
-            v-if="index < testData.length - 1"
-            class="lineGuasge"
-        >
+        <div v-if="index < progressData.progressArr.length - 1" class="lineGuasge">
           <div
               class="line-fill"
               :style="{
-              width: step.percent + '%',
+              width: step.progressPercent + '%',
               transition: 'width 0.5s ease',
             }"
           ></div>
         </div>
+        <div class="newProgressNm">
+          {{ step.progressName }}
+        </div>
       </div>
-    </div>
-
-    <!-- 플러스 아이콘 -->
-    <div v-if="isLoading" class="plus-icon">
-      <span>+</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted, ref } from 'vue';
+import {reactive, watch, onMounted, defineProps} from 'vue';
 
-// 테스트 데이터
-const testData = reactive([
-  { name: 'Step 1', percent: 0 },
-  { name: 'Step 2', percent: 0 },
-  { name: 'Step 3', percent: 0 },
-]);
+// Props 정의
+const props = defineProps(['parsedData']);
 
-// 추가 데이터 로딩 상태
-const isLoading = ref(true);
+// 내부 상태: parsedData를 복사하여 관리
+const progressData = reactive({
+  progressBarText: '',
+  progressBarPercent: 0,
+  progressArr: [],
+});
 
-// 퍼센트 업데이트 함수 (애니메이션용)
-const updateProgress = () => {
-  let progressIntervals = [1000, 3000, 5000]; // 각 단계에 대한 딜레이 시간 (밀리초)
-  testData.forEach((step, index) => {
-    setTimeout(() => {
-      let currentPercent = 0;
-      const interval = setInterval(() => {
-        if (currentPercent < 100) {
-          currentPercent += 5; // 5%씩 증가
-          step.percent = currentPercent; // 실시간으로 percent 값 업데이트
+// Props의 parsedData 변경 감지 및 progressData 업데이트
+watch(
+    () => props.parsedData,
+    (newData) => {
+      if (newData) {
+        progressData.progressBarText = newData.progressBarText || '';
+        progressData.progressBarPercent = newData.progressBarPercent || 0;
+        progressData.progressArr = (newData.progressArr || []).map((step) => ({
+          progressNo: step.progressNo,
+          progressName: step.progressName,
+          progressPercent: step.progressPercent,
+        }));
+      }
+    },
+    {immediate: true}
+);
+
+// 테스트용 데이터 생성 함수
+const startFakeDataTest = () => {
+  let fakePercent = 0;
+  const interval = setInterval(() => {
+    if (fakePercent > 100) {
+      clearInterval(interval); // 100%에 도달하면 테스트 종료
+    } else {
+      // progressData 값 업데이트
+      progressData.progressBarText = `테스트 진행 중 (${fakePercent}%)`;
+      progressData.progressBarPercent = fakePercent;
+
+      // 단계별 진행도 계산
+      progressData.progressArr.forEach((step, index) => {
+        const stepStart = index * 33.33; // 각 단계는 33.33%씩 차지
+        const stepEnd = (index + 1) * 33.33;
+
+        if (fakePercent >= stepEnd) {
+          step.progressPercent = 100; // 단계 완료
+        } else if (fakePercent > stepStart) {
+          step.progressPercent = ((fakePercent - stepStart) / (stepEnd - stepStart)) * 100;
         } else {
-          clearInterval(interval); // 100%에 도달하면 애니메이션 종료
-          if (index === 2) {
-            // 마지막 단계 완료 후 다음 상태 추가 (예시)
-            // testData.value = [
-            //   { name: 'Step 1', percent: 0 },
-            //   { name: 'Step 2', percent: 0 },
-            //   { name: 'Step 3', percent: 0 },
-            // ];
-          }
+          step.progressPercent = 0;
         }
-      }, 100); // 매 100ms마다 업데이트
-    }, progressIntervals[index]); // 각 단계 시작 딜레이
-  });
+      });
 
-  // 데이터 로딩 완료 후 "뒤에 더 많은 데이터" 표시 해제
-  setTimeout(() => {
-    isLoading.value = false;
-  }, progressIntervals[progressIntervals.length - 1] + 1000); // 마지막 단계가 끝난 후
+      fakePercent += 5; // 5%씩 증가
+    }
+  }, 500); // 0.5초 간격으로 업데이트
 };
 
-// 컴포넌트가 마운트되면 애니메이션 실행
+// 컴포넌트가 마운트되면 테스트 모드 실행 (옵션)
 onMounted(() => {
-  updateProgress();
+  if (progressData.progressArr.length === 0) {
+    progressData.progressArr = [
+      {progressNo: 1, progressName: "Step 1", progressPercent: 0},
+      {progressNo: 2, progressName: "Step 2", progressPercent: 0},
+      {progressNo: 3, progressName: "Step 3", progressPercent: 0},
+    ];
+  }
+  startFakeDataTest();
 });
+
 </script>
 
 <style scoped>
+.newProgressNm {
+  font-size: 0.8rem;
+  position: absolute;
+  left: 5px;
+  top: 50px;
+}
+
 /* 전체 프로그레스바 */
 .progress-bar-guage {
   width: 100%;
   max-width: 600px;
-  margin: 50px auto;
+  margin: 30px 0px 15px 25px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -135,15 +161,15 @@ onMounted(() => {
 }
 
 .circleGuage.completed {
-  background-color: #4caf50;
+  background-color: #2e2e2e;
   color: white;
-  border-color: #4caf50;
+  border-color: #00c2ff;
 }
 
 .circleGuage.active {
-  background-color: #ffeb3b;
+  background-color: #ffffff;
   color: black;
-  border-color: #ffeb3b;
+  border-color: #00c2ff;
 }
 
 .circleGuage.waiting {
@@ -161,25 +187,7 @@ onMounted(() => {
 
 .line-fill {
   height: 100%;
-  background-color: #4caf50;
+  background-color: #00c2ff;
   transition: width 0.5s ease;
-}
-
-/* 플러스 아이콘 */
-.plus-icon {
-  font-size: 24px;
-  font-weight: bold;
-  color: gray;
-  margin-top: 10px;
-  animation: bounce 1s infinite alternate;
-}
-
-@keyframes bounce {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-10px);
-  }
 }
 </style>

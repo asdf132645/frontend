@@ -2,23 +2,21 @@
   <div>
     <h3 class="titleText">Working View</h3>
     <div>
-      <p :class="{'blinkColor': isBlinking}">{{ changeWqStatCd() }}</p>
-      <p>{{ wbcCount }}</p>
 
       <div class="circular-progress-bar mt20">
-        <svg class="progress-ring" width="120" height="120">
+        <svg class="progress-ring" width="140" height="140">
           <!-- Define Rotating Gradient -->
           <defs>
 
             <!-- Gradient for Progress Circle -->
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <template v-if="!embeddedStatusJobCmd.value?.userStop">
-                <stop offset="0%" stop-color="#56ccf2" />
-                <stop offset="50%" stop-color="#35b0b6" />
-                <stop offset="100%" stop-color="#2f80ed" />
+                <stop offset="0%" stop-color="#56ccf2"/>
+                <stop offset="50%" stop-color="#35b0b6"/>
+                <stop offset="100%" stop-color="#2f80ed"/>
               </template>
               <template v-else>
-                <stop offset="100%" :stop-color="progressColor" />
+                <stop offset="100%" :stop-color="progressColor"/>
               </template>
 
               <!-- Rotate the gradient over time -->
@@ -34,7 +32,7 @@
 
             <!-- Drop Shadow Filter -->
             <filter id="shadow">
-              <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="rgba(0, 0, 0, 0.3)" />
+              <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="rgba(0, 0, 0, 0.3)"/>
             </filter>
           </defs>
 
@@ -43,7 +41,7 @@
               :cy="radius"
               :r="radius - strokeWidth / 2"
               :stroke-width="strokeWidth"
-              stroke="#ccc"
+              stroke="#2e2e2e"
               fill="none"
           />
           <circle
@@ -58,19 +56,25 @@
               filter="url(#shadow)"
           />
         </svg>
-        <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
+        <p :class="{'blinkColor': isBlinking,'renewalStateText': true}">{{ changeWqStatCd() }}</p>
+        <div class="progress-bar-text-gauge">
+          <div>{{ progressData.progressBarPercent }}</div>
+          <span>%</span>
+        </div>
       </div>
-      <p class="slideTime1 mt20">Total Time</p>
-      <p> {{ timeDataGet.totalSlideTime }} </p>
+
 
     </div>
+    <GaugeBar v-if="siteCd === '0000'"/>
     <div class='slideCardWrap' v-if="pbVersion === '12a'">
       <ul class='slideContent'>
-        <li v-for="item in slideCardData.INPUT" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'input')"></li>
+        <li v-for="item in slideCardData.INPUT" :key="item.slotNo"
+            :class="getSlotStateClass(item.slotState,'input')"></li>
         <p v-show="commonDataGet.isRunningState" class="mt10">INPUT</p>
       </ul>
       <ul class='slideContent'>
-        <li v-for="item in slideCardData.OUTPUT" :key="item.slotNo" :class="getSlotStateClass(item.slotState,'output')"></li>
+        <li v-for="item in slideCardData.OUTPUT" :key="item.slotNo"
+            :class="getSlotStateClass(item.slotState,'output')"></li>
         <p v-show="commonDataGet.isRunningState" class="mt10">OUTPUT</p>
       </ul>
     </div>
@@ -81,16 +85,23 @@
         <p v-show="commonDataGet.isRunningState" class="mt10">OUTPUT : {{ casExistChangeText(oCasExist) }}</p>
       </ul>
     </div>
+    <div class="lineRenewal"></div>
+    <p class="renewal slideTime1">Processing Total Time</p>
+    <p class="renewalTotalTime"> {{ timeDataGet.totalSlideTime }} </p>
+    <div class="renewalSlideTime">
+      <span>Slide Time</span>
+      <p class="slideTime"> {{ timeDataGet.slideTime }} </p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, computed, defineProps, onBeforeMount } from 'vue';
+import {ref, onMounted, onBeforeUnmount, watch, computed, defineProps, onBeforeMount, reactive, nextTick} from 'vue';
 import {useStore} from "vuex";
 import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
-import { SLIDE_CARD_12A, SLIDE_CARD_100A } from "@/common/defines/constants/analysis";
+import {SLIDE_CARD_12A, SLIDE_CARD_100A} from "@/common/defines/constants/analysis";
 import GaugeBar from "@/components/commonUi/GaugeBar.vue";
 
 // 스토어
@@ -107,8 +118,8 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 // 스토어
 
 const timeNum = ref(0);
-const size = ref(120); // SVG 크기
-const strokeWidth = ref(6); // 프로그레스 바 두께
+const size = ref(140); // SVG 크기
+const strokeWidth = ref(3); // 프로그레스 바 두께
 const progressColor = ref('#00c2ff'); // 프로그레스 바 색상
 const radius = ref(size.value / 2);
 const circumference = ref(2 * Math.PI * (radius.value - strokeWidth.value / 2));
@@ -120,7 +131,7 @@ const slideTime = ref('');
 const totalSlideTime = ref('');
 let countingInterval: any = null;
 let countingIntervalTotal: any = null;
-const slideCardData = ref(SLIDE_CARD_12A);
+const slideCardData = ref<any>({});
 let totalElapsedTimeCount = ref(0);
 let elapsedTimeCount = ref(0);
 const isBlinking = ref(false);
@@ -130,16 +141,24 @@ const fixEqStatCd = ref(false);
 const pbVersion = ref<any>('');
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
+const progressData = reactive({
+  progressBarText: '',
+  progressBarPercent: 0,
+});
 
-watch(() => embeddedStatusJobCmd.value?.userStop, (userStop) => {
+
+watch(() => embeddedStatusJobCmd.value?.userStop, async (userStop) => {
   if (userStop) {
+    await nextTick();
     progressColor.value = 'red';
+    progressData.progressBarPercent = 0;
     const nnn = pbVersion.value === '100a' ? SLIDE_CARD_100A : SLIDE_CARD_12A;
     slideCardData.value = {
       INPUT: nnn.INPUT.map(item => ({ ...item, slotState: '0' })),
       OUTPUT: nnn.OUTPUT.map(item => ({ ...item, slotState: '0' }))
     };
 
+    console.log('slideCardData', slideCardData.value)
   } else {
     progressColor.value = '#00c2ff';
   }
@@ -192,14 +211,26 @@ watch([commonDataGet.value], async (newVals: any) => {
   }
 });
 
+watch(
+    () => props.parsedData, // 감시할 데이터
+    (newVal, oldVal) => {
+      progressData.progressBarText = newVal.progressBarText || '';
+      progressData.progressBarPercent = newVal.progressBarPercent || 25;
+      // 데이터 변경 시 실행할 코드
+      console.log(newVal)
+    },
+    {deep: true}
+);
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
-  const slotArray = JSON.parse(JSON.stringify(newSlot))
+  const slotArray = JSON.parse(JSON.stringify(newSlot));
+  console.log('slotArray', slotArray)
   iCasExist.value = slotArray[0]?.runningInfo?.iCasExist;
   oCasExist.value = slotArray[0]?.runningInfo?.oCasExist;
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {
     startCounting();
   } else if (slotArray[0].changeSlideState?.changeSlide.value === 'stop') {
+
     if (countingInterval !== null) {
       // stop일 경우 실행 중인 interval을 중지
       clearInterval(countingInterval);
@@ -258,7 +289,9 @@ watch(
 
 onBeforeMount(() => {
   pbVersion.value = window.MACHINE_VERSION;
-  slideCardData.value = pbVersion.value === '100a' ? SLIDE_CARD_100A : SLIDE_CARD_12A;
+  slideCardData.value = pbVersion.value === '100a'
+      ? JSON.parse(JSON.stringify(SLIDE_CARD_100A))
+      : JSON.parse(JSON.stringify(SLIDE_CARD_12A));
 })
 
 onMounted(() => {
@@ -291,7 +324,7 @@ const startCounting = (): void => {
         elapsedTimeCount.value += 1;
         timeNum.value = elapsedTimeCount.value % 60;
         sessionStorage.setItem('elapsedTimeCount', String(elapsedTimeCount.value));
-        store.dispatch('timeModule/setTimeInfo', { slideTime: getCountToTime(elapsedTimeCount.value) });
+        store.dispatch('timeModule/setTimeInfo', {slideTime: getCountToTime(elapsedTimeCount.value)});
       }
     }, 1000);
   }

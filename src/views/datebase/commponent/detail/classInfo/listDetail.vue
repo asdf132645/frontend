@@ -416,6 +416,9 @@ const checkWps = async () => {
   const wpsFolderCheck = await getFolders(foldersPath);
   if(wpsFolderCheck?.code !== 400){
     isWpsShow.value = true;
+  }else{
+    isWpsShow.value = false;
+    wpsShow.value = false;
   }
 }
 const showToast = (message: string) => {
@@ -842,8 +845,12 @@ const refreshClass = async (data: any) => {
 
   await getWbcCustomClasses(true, data);
   await imgSetLocalStorage();
-
-
+  await nextTick();
+  if (projectType.value !== 'bm'){
+    await checkWps();
+  }else{
+    isWpsShow.value = false;
+  }
 }
 
 const drawCellMarker = async (imgResize?: boolean) => {
