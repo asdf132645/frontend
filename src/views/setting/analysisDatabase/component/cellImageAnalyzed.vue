@@ -921,7 +921,8 @@ const handleUploadSelectFile = async () => {
       fileName: selectedUploadFile.value,
       destinationUploadPath: uploadRootPath.value,
       originUploadPath: downloadRootPath.value,
-      projectType: projectType.value
+      projectType: projectType.value,
+      apiUrl: apiUrl.value,
     }
     await store.dispatch('commonModule/setCommonInfo', { isDownloadOrUploading: true });
     downloadUploadStopWebSocket(true);
