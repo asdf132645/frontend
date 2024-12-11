@@ -418,6 +418,7 @@ const checkWps = async () => {
     isWpsShow.value = true;
   }else{
     isWpsShow.value = false;
+    wpsShow.value = false;
   }
 }
 const showToast = (message: string) => {
