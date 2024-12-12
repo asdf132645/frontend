@@ -58,10 +58,22 @@
           @contextmenu.prevent="rowRightClick(item, $event)"
           title="Double click the row"
       >
-        <td style="position: relative;">
+        <td style="position: relative;"
+            @mouseenter="abnormalClassInfoOpen(true, item.id)"
+            @mouseleave="abnormalClassInfoOpen(false, item.id)"
+        >
           <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                             v-if="item.isNormal === 'N'"/>
+                             v-if="item.isNormal === 'N'"
+          />
           {{ idx + 1 }}
+          <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
+          <div v-if="popupItemId === item.id && item.isNormal === 'N'">
+            <div class="abnormalClassInfoPopup">
+              <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
+                <span>{{ abItem.classNm }} : {{ abItem.val }}</span>
+              </div>
+            </div>
+          </div>
         </td>
         <td @click="handleCheckboxChange(item)">
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
@@ -226,6 +238,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const myIp = ref('');
 const loadingDelay = ref(false);
+const abnormalClassInfoPopup = ref(false);
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmss');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
@@ -262,7 +275,7 @@ const scrollableDiv = ref(null);
 const barCodeImageShowError = ref(false);
 const selectedItemsUsedInDelete = ref([]);
 const dbDataFindByIdUsedInDelete = ref([]);
-
+const popupItemId = ref('');
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
 })
@@ -280,6 +293,9 @@ onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 })
+const abnormalClassInfoOpen = (isOpen, itemId) => {
+  popupItemId.value = isOpen ? itemId : null;
+}
 
 async function handleKeyDown(event) {
   // 컨트롤 키가 눌렸는지 확인

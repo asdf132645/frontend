@@ -44,7 +44,7 @@ import {reactive, watch, onMounted, defineProps} from 'vue';
 const props = defineProps(['parsedData']);
 
 // 내부 상태: parsedData를 복사하여 관리
-const progressData = reactive({
+const progressData: any = reactive({
   progressBarText: '',
   progressBarPercent: 0,
   progressArr: [],
@@ -79,7 +79,7 @@ const startFakeDataTest = () => {
       progressData.progressBarPercent = fakePercent;
 
       // 단계별 진행도 계산
-      progressData.progressArr.forEach((step, index) => {
+      progressData.progressArr.forEach((step: any, index: any) => {
         const stepStart = index * 33.33; // 각 단계는 33.33%씩 차지
         const stepEnd = (index + 1) * 33.33;
 
@@ -111,83 +111,3 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-.newProgressNm {
-  font-size: 0.8rem;
-  position: absolute;
-  left: 5px;
-  top: 50px;
-}
-
-/* 전체 프로그레스바 */
-.progress-bar-guage {
-  width: 100%;
-  max-width: 600px;
-  margin: 30px 0px 15px 25px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: Arial, sans-serif;
-}
-
-/* 각 단계 컨테이너 */
-.steps {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.step-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  flex: 1;
-}
-
-/* 동그라미 */
-.circleGuage {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid lightgray;
-  background-color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
-  color: lightgray;
-}
-
-.circleGuage.completed {
-  background-color: #2e2e2e;
-  color: white;
-  border-color: #00c2ff;
-}
-
-.circleGuage.active {
-  background-color: #ffffff;
-  color: black;
-  border-color: #00c2ff;
-}
-
-.circleGuage.waiting {
-  background-color: lightgray;
-  color: white;
-  border-color: lightgray;
-}
-
-/* 선 */
-.lineGuasge {
-  flex: 1;
-  height: 4px;
-  background-color: lightgray;
-}
-
-.line-fill {
-  height: 100%;
-  background-color: #00c2ff;
-  transition: width 0.5s ease;
-}
-</style>

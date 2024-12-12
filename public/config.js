@@ -6,7 +6,7 @@ window.PROJECT_TYPE='pb';  // pb or bm
 window.PROJECT_VERSION='2.00.83';
 window.WEB_BACKEND_VERSION='0.0.85v';
 window.WEB_FRONTEND_VERSION='0.2.67v';
-window.MACHINE_VERSION='100a';  // 12a or 100a
+window.MACHINE_VERSION='12a';  // 12a or 100a
 window.FORCE_VIEWER = 'main'; // main or viewer
 window.PORT = '8080';
 
