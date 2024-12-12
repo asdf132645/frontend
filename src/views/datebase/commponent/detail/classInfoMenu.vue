@@ -224,7 +224,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}`
+    const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}&nrCount=${nrCount}&title=${wbcInfo}`
     const res = await pageUpDownRunnIngApi(req);
     if (res.data !== null) {
       resData.value = res.data;
