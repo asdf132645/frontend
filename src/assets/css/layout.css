@@ -5463,8 +5463,12 @@ progress::-moz-progress-bar {
     transform: scale(1.1);
 }
 
-.testsets:hover {
-    transform: scale(1.21);
+.rbcRulerDiv {
+    width: 100%;
+}
+
+.rbcRulerDiv:hover {
+    cursor: move;
 }
 .newProgressNm {
     font-size: 0.8rem;

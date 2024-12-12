@@ -431,7 +431,7 @@ async function socketData(data: any) {
     }
 
     async function runnStart() {
-      await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
+      await store.dispatch('commonModule/setCommonInfo', { isRunningState: true });// 실행중이라는 여부를 보낸다
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
       await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
@@ -797,6 +797,7 @@ const cellImgGet = async () => {
         const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
+        sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }

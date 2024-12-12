@@ -29,6 +29,7 @@ const defaultCellImgData = {
     pbsCellAnalyzingCount: '100',
     stitchCount: '1',
     edgeShotType: '0',
+    edgeShotCount: '1',
     bfCellAnalyzingCount: '100',
     iaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
@@ -136,6 +137,7 @@ const defaultComputedValueForCreateRequest = async (initializeType: string) => {
                 pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
                 stitchCount: defaultCellImgData.stitchCount,
                 edgeShotType: defaultCellImgData.edgeShotType,
+                edgeShotCount: defaultCellImgData.edgeShotCount,
                 bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
                 iaRootPath: defaultCellImgData.iaRootPath,
                 isNsNbIntegration: defaultCellImgData.isNsNbIntegration ? 'Y' : 'N',
@@ -190,6 +192,7 @@ const afterResponse = (initializeType: string) => {
             sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.diffRbcPositionMargin));
             sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.diffPltPositionMargin));
             sessionStorage.setItem('edgeShotType', String(defaultCellImgData?.edgeShotType));
+            sessionStorage.setItem('edgeShotCount', String(defaultCellImgData?.edgeShotCount));
             sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
             sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
             break;

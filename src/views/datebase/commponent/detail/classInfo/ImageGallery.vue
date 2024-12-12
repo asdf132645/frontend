@@ -209,6 +209,7 @@ import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {debounce} from "lodash";
 import Wps from "@/views/datebase/commponent/detail/classInfo/commponent/wps.vue";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -271,7 +272,6 @@ const props = defineProps<{
   apiBaseUrl: any;
   wbcInfoRefresh: any;
   imageSize: number;
-  isLocalNsNbIntegration: boolean;
   wpsShow: boolean;
   selectItems: any;
 }>();
@@ -285,19 +285,16 @@ const previousLastClass = ref('Myelocyte');
 
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 const wpsImgClickInfoData = ref<any>({});
-onMounted(() => {
-  updateFirstLastClass(props.isLocalNsNbIntegration);
-})
-
-watch(() => props.isLocalNsNbIntegration, (newVal) => {
-  updateFirstLastClass(newVal);
-})
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
   loading.value = false;
 });
 
+watch(() => props.selectItems, (newSelectItems) => {
+  const wbcInfo = isObjectEmpty(newSelectItems.wbcInfoAfter) ? newSelectItems.wbcInfoAfwbcInfo.wbcInfo[0] : newSelectItems.wbcInfoAfter;
+  updateFirstLastClass(wbcInfo);
+})
 
 const debouncedUpdate = debounce(async (newVal) => {
   const timestamp = Date.now();
@@ -313,6 +310,7 @@ const debouncedUpdate = debounce(async (newVal) => {
   }));
   await classImgChange('first', null);
   await classImgChange('last', null);
+
 }, 10); //디바운스 적용
 
 watch(wbcInfo, debouncedUpdate, {deep: true});
@@ -321,9 +319,7 @@ watch(
     () => props.wbcReset,
     async (newVal) => {
       if (newVal) {
-        if (props.wbcInfoRefresh) {
-          return;
-        }
+        if (props.wbcInfoRefresh) return;
         wbcInfoArrChild.value = [];
         await nextTick(); // DOM 업데이트 후 실행
         wbcInfoArrChild.value = props.wbcInfo.map((item, index) => ({
@@ -346,11 +342,12 @@ const wpsImgClickInfo = (img: any, item: any) => {
   wpsImgClickInfoData.value = {item: item, img: img};
 }
 
-const updateFirstLastClass = (isIntegration: boolean) => {
-  firstClass.value = isIntegration ? 'Metamyelocyte' : 'Neutrophil-Segmented';
-  lastClass.value = isIntegration ? 'Myelocyte' : 'Neutrophil-Band';
-  previousFirstClass.value = isIntegration ? 'Metamyelocyte' : 'Neutrophil-Segmented';
-  previousLastClass.value = isIntegration ? 'Myelocyte' : 'Neutrophil-Band';
+const updateFirstLastClass = (wbcInfo: any) => {
+  if (isObjectEmpty(wbcInfo)) return;
+  firstClass.value = wbcInfo.find((item: any) => item.images.length > 0).name;
+  lastClass.value = wbcInfo.find((item: any) => item.images.length > 0 && item.name !== firstClass.value).name;
+  previousFirstClass.value = firstClass.value;
+  previousLastClass.value = lastClass.value;
 }
 
 const handleImageLoad = (itemIndex: any) => {

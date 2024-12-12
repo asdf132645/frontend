@@ -86,7 +86,7 @@ const countType = ref<any>([]);
 const runInfo = computed(() => store.state.commonModule);
 const executeState = computed(() => store.state.executeModule);
 const isPause = ref(runInfo.value?.isPause);
-const isRunningState = ref(executeState.value?.isRunningState);
+const isRunningState = computed(() => store.state.commonModule.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
@@ -251,6 +251,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
+    const edgeShotCount = sessionStorage.getItem('edgeShotCount') || '1';
     const autoStart = sessionStorage.getItem('autoStart') || 1;
 
     let startAction = tcpReq().embedStatus.startAction;
@@ -263,6 +264,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
       edgeShotType:  edgeShotType || '0',
+      // edgeShotCount: 1 or 2,
     });
 
     if (is100A.value) {
@@ -270,6 +272,16 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
         autoStart: Number(autoStart),
       })
     }
+
+    if (window.PROJECT_TYPE === 'pb') {
+      if (edgeShotType === '2' || edgeShotType === '3') {
+        const edgeShotCount = sessionStorage.getItem('edgeShotCount') || '1';
+        Object.assign(startAction, {
+          edgeShotCount: edgeShotCount,
+        })
+      }
+    }
+
 
     if (window.PROJECT_TYPE === 'bm') {
       startAction = {
