@@ -91,7 +91,6 @@ import {SlotInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {EmbeddedStatusState} from "@/store/modules/embeddedStatusModule";
 import {getCountToTime} from "@/common/lib/utils/dateUtils";
 import { SLIDE_CARD_12A, SLIDE_CARD_100A } from "@/common/defines/constants/analysis";
-import GaugeBar from "@/components/commonUi/GaugeBar.vue";
 
 // 스토어
 const store = useStore();

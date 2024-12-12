@@ -6,7 +6,7 @@
   </div>
   <div class="contentRight" v-show="props.isClass">
     <RenewalWorking :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
-                    v-if="siteCd === '0000'"
+                    v-if="siteCd === ''"
                     class="contentRightChild"/>
     <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
                  v-else
