@@ -735,7 +735,8 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
       originUploadPath: downloadRootPath.value,
       dayQuery,
       projectType: projectType.value,
-      uploadType
+      uploadType,
+      apiUrl: apiUrl.value,
     }
     downloadUploadType.value = uploadType;
 
