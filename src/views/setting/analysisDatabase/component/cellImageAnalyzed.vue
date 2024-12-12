@@ -41,7 +41,8 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th :rowspan="projectType === 'pb' ? (edgeShotType === '2' || edgeShotType ==='3') ? 4 : 3 : 2">PBS Analysis Values</th>
+<!--          <th :rowspan="projectType === 'pb' ? (edgeShotType === '2' || edgeShotType ==='3') ? 4 : 3 : 2">PBS Analysis Values</th>-->
+          <th :rowspan="projectType === 'pb' ? 3 : 2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
