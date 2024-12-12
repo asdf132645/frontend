@@ -78,6 +78,19 @@ export const edgeShotTypeList = [
     { value: '3', text: 'Smear Top + High Power Side' },
 ]
 
+export const EDGE_SHOT_COUNT_LIST_LP = [
+    { value: '1', text: '1' },
+    { value: '2', text: '2' },
+]
+
+export const EDGE_SHOT_COUNT_LIST_HP = [
+    { value: '1', text: '1' },
+    { value: '2', text: '2' },
+    { value: '3', text: '3' },
+    { value: '4', text: '4' },
+    { value: '5', text: '5' },
+]
+
 export const POSITION_MARGIN_LIST = [
     // { value: '-5', text: '-5' },
     // { value: '-4', text: '-4' },
