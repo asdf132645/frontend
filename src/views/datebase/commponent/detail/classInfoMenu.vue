@@ -79,6 +79,7 @@ import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {formatDate} from "@/common/lib/utils/dateUtils";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -222,9 +223,13 @@ const pageGo = (path: string) => {
 async function pageUpDownRunnIng(id: number, step: string, type: string) {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal, searchType} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}&nrCount=${nrCount}&title=${wbcInfo}`
+    const startDay = searchText === '' ? formatDate(startDate) : '';
+    const endDay = searchText === '' ? formatDate(endDate) : '';
+    const barcodeNo = searchType === 'barcodeNo' ? searchText : undefined;
+    const testTypeVal = testType;
+    const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}&nrCount=${nrCount}&title=${wbcInfo}&startDay=${startDay}&endDay=${endDay}&barcodeNo=${barcodeNo}&testType=${testTypeVal}`
     const res = await pageUpDownRunnIngApi(req);
     if (res.data !== null) {
       resData.value = res.data;
