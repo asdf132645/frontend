@@ -1,6 +1,7 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse" :changeSlideByLisUpload="changeSlideByLisUpload" />
+  <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"
+                 :changeSlideByLisUpload="changeSlideByLisUpload"/>
 
   <div class="wbcContent">
     <DetailHeader
@@ -130,7 +131,7 @@
           Class Compare
         </button>
         <button @click="wps" v-if="isWpsShow">
-          <font-awesome-icon :icon="['fas', 'expand']" />
+          <font-awesome-icon :icon="['fas', 'expand']"/>
           WPS
         </button>
         <button @click="rollbackChanges" class="rollbackButton">
@@ -159,7 +160,6 @@
             :replaceFileNamePrefix="replaceFileNamePrefix"
             :onDragOver="onDragOver"
             :isBorderChanged="isBorderChanged"
-            :isLocalNsNbIntegration="isLocalNsNbIntegration"
             :isSelected="isSelected"
             :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
@@ -324,7 +324,6 @@ const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
 const showImageGallery = ref(true);
-const isLocalNsNbIntegration = ref(false);
 const isWpsShow = ref(false);
 const blockClicks = ref(false);
 const toastMessage = ref('');
@@ -367,9 +366,9 @@ onMounted(async () => {
       // runningInfo를 이용한 UI 렌더링
     }
   }
-  if (projectType.value !== 'bm'){
+  if (projectType.value !== 'bm') {
     await checkWps();
-  }else{
+  } else {
     isWpsShow.value = false;
   }
 });
@@ -414,8 +413,11 @@ const checkWps = async () => {
 
   const foldersPath = `folderPath=${filePath}`;
   const wpsFolderCheck = await getFolders(foldersPath);
-  if(wpsFolderCheck?.code !== 400){
+  if (wpsFolderCheck?.code !== 400) {
     isWpsShow.value = true;
+  } else {
+    isWpsShow.value = false;
+    wpsShow.value = false;
   }
 }
 const showToast = (message: string) => {
@@ -434,7 +436,6 @@ const getDetailRunningInfo = async () => {
   try {
     const result = await classInfoDetailApi(String(selectedSampleId.value));
     selectItems.value = result.data;
-    setLocalNsNbIntegration();
 
     const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
     iaRootPath.value = path;
@@ -453,10 +454,10 @@ const classCompare = () => {
 
 const wps = () => {
   wpsShow.value = !wpsShow.value;
-  if(!wpsShow.value){
+  if (!wpsShow.value) {
     blockClicks.value = false;
   }
-  if(classCompareShow.value){
+  if (classCompareShow.value) {
     toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast('When classCompare is enabled, WPS cannot be checked.');
     wpsShow.value = false;
@@ -743,10 +744,6 @@ function isBorderChanged(image: any) {
   return image.title !== modifiedPrefix;
 }
 
-const setLocalNsNbIntegration = () => {
-  isLocalNsNbIntegration.value = !!selectItems.value.wbcInfo.wbcInfo[0].find((el: any) => el.title === 'NE') ? true : false
-}
-
 function replaceFileNamePrefix(fileName: string) {
   const isNsNbIntegration = selectItems.value.wbcInfoAfter.find((el: any) => {
     return el.title === 'NE'
@@ -836,14 +833,17 @@ const refreshClass = async (data: any) => {
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
-  setLocalNsNbIntegration();
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
   iaRootPath.value = path;
 
   await getWbcCustomClasses(true, data);
   await imgSetLocalStorage();
-
-
+  await nextTick();
+  if (projectType.value !== 'bm') {
+    await checkWps();
+  } else {
+    isWpsShow.value = false;
+  }
 }
 
 const drawCellMarker = async (imgResize?: boolean) => {
@@ -1230,7 +1230,7 @@ function onDragStart(itemIndex: any, imageIndex: any) {
 }
 
 function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
-  if(blockClicks.value){
+  if (blockClicks.value) {
     return;
   }
   // 쉬프트 키를 누른 경우
@@ -1298,7 +1298,7 @@ const isLowMagnWhether = async (image: any) => {
       ? selectItems.value?.img_drive_root_path
       : iaRootPath.value;
   const url_new = `${path}/${selectItems.value.slotId}/04_WPS/WPS.json`;
-  const response_new = await readJsonFile({ fullPath: url_new });
+  const response_new = await readJsonFile({fullPath: url_new});
   const extracted = image.fileName.split('_').slice(2).join('_');
 
   // response_new.data가 배열인지 확인
@@ -1443,6 +1443,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
             image.title = wbcInfo.value[targetItemIndex].title;
             image.width = imageSize.value;
             image.height = imageSize.value;
+            image.imgBrightness = imgBrightness.value;
             wbcInfo.value[targetItemIndex].images.push(image);
             // 카운트 업데이트
             sourceItem.count--;
@@ -1465,6 +1466,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
           const imgAttr = {
             width: imageSize.value,
             height: imageSize.value,
+            filter: `opacity(0.9) drop-shadow(0 0 0 rgb(${imageRgb.value[0]}, ${imageRgb.value[1]}, ${imageRgb.value[2]})) brightness(${imgBrightness.value}%)`,
           };
           // 드롭된 위치에 이미지를 삽입
           wbcInfo.value[targetItemIndex].images.push({...selectedImage, ...imgAttr});
@@ -1534,6 +1536,8 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
           images.title = wbcInfo.value[targetItemIndex].title;
           images.width = imageSize.value;
           images.height = imageSize.value;
+          images.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${imageRgb.value[0]}, ${imageRgb.value[1]}, ${imageRgb.value[2]})) brightness(${imgBrightness.value}%)`;
+
         }
       } else {
         console.error('이미지 움직임 실패.');
@@ -1628,11 +1632,11 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   });
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
-    item.images.forEach((image: any) => {
-      delete image.width;
-      delete image.height;
-      delete image.filter;
-    });
+    // item.images.forEach((image: any) => {
+    //   delete image.width;
+    //   delete image.height;
+    //   delete image.filter;
+    // });
     if (projectType.value === 'bm') {
       if (item.title !== 'OT') {
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);
@@ -1694,7 +1698,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
       dayQuery: dayQuery
     })
     if (response && response?.data.length !== 0) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
+      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기

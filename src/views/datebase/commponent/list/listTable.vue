@@ -210,6 +210,7 @@ import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -606,72 +607,48 @@ const openLayer = () => {
   visible.value = true;
 };
 
-const deleteRow = async (selectedItems, dbDataFindById) => {
+const deleteRow = async (selectedItems) => {
+  console.log('selectedItems', selectedItems);
   try {
-    if (selectedItems.length === 0 && selectedItemId.value === '') {
+    if (selectedItemId.value === '') {
       showErrorAlert(MESSAGES.IDS_ERROR_SELECT_A_TARGET_ITEM);
-    } else if (selectedItems.length === 0 && selectedItemId.value !== '') {
-      selectedItems = dbDataFindById;
+    } else {
       if (selectedItems.lock_status) {
         showErrorAlert(MESSAGES.lockRow);
         return;
       }
-      const idsToDelete = selectedItems
-      const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-      const rootArr = `${path}/${selectedItems.slotId}`;
+      const idsToDeleteArr = selectedItems.map((item) => item.id);
+      const rootPaths = selectedItems.map((item) => {
+        const path = item?.img_drive_root_path !== '' && item?.img_drive_root_path ? item?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
+        return `${path}/${item.slotId}`;
+      })
       const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
       const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
       const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-      const req = {
-        ids: [idsToDelete.id],
-        img_drive_root_path: [rootArr],
-        dayQuery: dayQuery,
-      }
 
+      const apiUrlTmp = window.APP_API_BASE_URL.split(':');
+      const apiUrl = `${apiUrlTmp[0]}:${apiUrlTmp[1]}`;
+
+      const req = {
+        ids: idsToDeleteArr,
+        img_drive_root_path: rootPaths,
+        dayQuery: dayQuery,
+        apiUrl: apiUrl
+      }
       loadingDelay.value = true;
+
       const response = await deleteRunningApi(req);
 
       if (response.success) {
         showSuccessAlert('Items deleted successfully');
         emits('refresh'); // 데이터 다시 불러오기
 
-      } else {
-        console.error('Failed to delete items');
-      }
-
-      loadingDelay.value = false;
-    } else {
-      const idsToDelete = selectedItems.map(item => item.id);
-      const idsToDeleteLock = selectedItems.map(item => item.lock_status);
-      if (idsToDeleteLock.includes(true)) {
-        showErrorAlert(MESSAGES.lockRow);
-        return
-      }
-      const path = selectedItems?.img_drive_root_path !== '' && selectedItems?.img_drive_root_path ? selectedItems?.img_drive_root_path : sessionStorage.getItem('iaRootPath');
-      const rootArr = selectedItems.map(item => `${path}/${item.slotId}`);
-      const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-      const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
-      const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-      const req = {
-        ids: idsToDelete,
-        img_drive_root_path: rootArr,
-        dayQuery: dayQuery,
-      }
-
-      loadingDelay.value = true;
-      const response = await deleteRunningApi(req);
-
-      if (response.success) {
-        showSuccessAlert('Items deleted successfully');
-        emits('refresh'); // 데이터 다시 불러오기
       } else {
         console.error('Failed to delete items');
       }
 
       loadingDelay.value = false;
     }
-
-
   } catch (error) {
     console.error('Error:', error);
   }
@@ -702,7 +679,7 @@ const hideConfirm = () => {
 
 const handleOkConfirm = async () => {
   showConfirm.value = false;
-  await deleteRow(selectedItemsUsedInDelete.value, dbDataFindByIdUsedInDelete.value);
+  await deleteRow(selectedItemsUsedInDelete.value);
 }
 
 const showDeleteConfirm = () => {
@@ -710,6 +687,7 @@ const showDeleteConfirm = () => {
   confirmMessage.value = 'Would you want delete?';
   selectedItemsUsedInDelete.value = props.dbData.filter(item => item.checked);
   dbDataFindByIdUsedInDelete.value = props.dbData.find(item => item.id === selectedItemId.value);
+  if (isObjectEmpty(selectedItemsUsedInDelete.value)) selectedItemsUsedInDelete.value = [dbDataFindByIdUsedInDelete.value];
   resetContextMenu();
   emits('disableSelectItem');
 }

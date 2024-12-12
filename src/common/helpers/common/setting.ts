@@ -15,7 +15,7 @@ import {
     getLisCodeWbcApi, getLisCodeRbcApi
 } from '@/common/api/service/setting/settingApi';
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
-import { defaultCbcList, defaultRbcDegree, lisCodeRbcOption, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
+import { defaultCbcList, defaultRbcDegree, LIS_CODE_RBC_OPTION, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
@@ -29,6 +29,7 @@ const defaultCellImgData = {
     pbsCellAnalyzingCount: '100',
     stitchCount: '1',
     edgeShotType: '0',
+    edgeShotCount: '1',
     bfCellAnalyzingCount: '100',
     iaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
@@ -58,7 +59,7 @@ const settingsConstant = ref<any>({
     },
     'lisCodeRbc': {
         'sendingForm': 'lisCodeItems',
-        'defaultItem': lisCodeRbcOption,
+        'defaultItem': LIS_CODE_RBC_OPTION,
         'getRequest': getLisCodeRbcApi,
         'createRequest': createLisCodeRbcApi,
     },
@@ -136,6 +137,7 @@ const defaultComputedValueForCreateRequest = async (initializeType: string) => {
                 pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
                 stitchCount: defaultCellImgData.stitchCount,
                 edgeShotType: defaultCellImgData.edgeShotType,
+                edgeShotCount: defaultCellImgData.edgeShotCount,
                 bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
                 iaRootPath: defaultCellImgData.iaRootPath,
                 isNsNbIntegration: defaultCellImgData.isNsNbIntegration ? 'Y' : 'N',
@@ -190,6 +192,7 @@ const afterResponse = (initializeType: string) => {
             sessionStorage.setItem('rbcPositionMargin', String(defaultCellImgData?.diffRbcPositionMargin));
             sessionStorage.setItem('pltPositionMargin', String(defaultCellImgData?.diffPltPositionMargin));
             sessionStorage.setItem('edgeShotType', String(defaultCellImgData?.edgeShotType));
+            sessionStorage.setItem('edgeShotCount', String(defaultCellImgData?.edgeShotCount));
             sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
             sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
             break;

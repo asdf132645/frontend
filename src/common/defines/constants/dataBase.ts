@@ -66,27 +66,3 @@ export const SHOWING_RBC_SHAPE_CLASS_IDS = [
     RBC_CODE_CLASS_ID.SHAPE.TEAR_DROP_CELL,
     RBC_CODE_CLASS_ID.SHAPE.SPHEROCYTE,
 ]
-
-export const lisCodeRbcOption = [
-    { categoryId: '01', categoryNm: 'Size', classId: '01', fullNm: 'Normal', key: 'SIZENO' },
-    { categoryId: '01', categoryNm: 'Size', classId: '02', fullNm: 'Macrocyte', key: 'SIZEMA' },
-    { categoryId: '01', categoryNm: 'Size', classId: '03', fullNm: 'Microcyte', key: 'SIZEMI' },
-    { categoryId: '01', categoryNm: 'Size', classId: '04', fullNm: 'Anisocytosis', key: 'SIZEAN' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '01', fullNm: 'Normal', key: 'CHRONO' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '02', fullNm: 'Hyperchromic', key: 'CHRHPE' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '03', fullNm: 'Hypochromic', key: 'CHRHPO' },
-    { categoryId: '02', categoryNm: 'Chromia', classId: '04', fullNm: 'Polychromia', key: 'CHRPOL' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '01', fullNm: 'Normal', key: 'SHAPNO' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '02', fullNm: 'Poikilocytosis', key: 'SHAPPO' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '03', fullNm: 'Target Cell', key: 'SHAPTA' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '04', fullNm: 'Burr Cell', key: 'SHAPBU' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '05', fullNm: 'Acanthocyte', key: 'SHAPAC' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '06', fullNm: 'Ovalocyte', key: 'SHAPOV' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '07', fullNm: 'Schistocyte', key: 'SHAPSC' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '08', fullNm: 'Sickle Cell', key: 'SHAPSI' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '09', fullNm: 'Stomatocyte', key: 'SHAPST' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '10', fullNm: 'Tear Drop Cell', key: 'SHAPTE' },
-    { categoryId: '03', categoryNm: 'Shape', classId: '11', fullNm: 'Spherocyte', key: 'SHAPSP' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '01', fullNm: 'Howell-Jolly Body', key: 'SHAPHO' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '02', fullNm: 'Basophilic Stippling', key: 'SHAPBA' }
-]

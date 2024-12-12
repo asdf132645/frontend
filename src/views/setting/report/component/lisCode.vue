@@ -54,7 +54,7 @@
 import {ref, onMounted, computed, watch} from 'vue';
 import {
   lisCodeWbcOption,
-  lisCodeRbcOption,
+  LIS_CODE_RBC_OPTION,
   minRunCount,
   settingName,
   WBC_CUSTOM_CLASS
@@ -229,7 +229,7 @@ const getImagePrintData = async () => {
 
       if (!rbcData || (rbcData instanceof Array && rbcData.length === 0)) {
         saveHttpType.value = 'post';
-        lisCodeRbcArr.value = lisCodeRbcOption;
+        lisCodeRbcArr.value = LIS_CODE_RBC_OPTION;
       } else {
         saveHttpType.value = 'put';
         lisCodeRbcArr.value = rbcData;

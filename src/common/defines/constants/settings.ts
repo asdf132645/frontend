@@ -78,31 +78,31 @@ export const edgeShotTypeList = [
     { value: '3', text: 'Smear Top + High Power Side' },
 ]
 
-export const PositionMarginList = [
-    {value: '0', text: '0'},
-    {value: '1', text: '1'},
-    {value: '2', text: '2'},
-    {value: '3', text: '3'},
-    {value: '4', text: '4'},
-    {value: '5', text: '5'}
+export const EDGE_SHOT_COUNT_LIST_LP = [
+    { value: '1', text: '1' },
+    { value: '2', text: '2' },
 ]
 
-export const WbcPositionMarginList = [
-    {value: '0', text: '0'},
-    {value: '1', text: '1'},
-    {value: '2', text: '2'},
-    {value: '3', text: '3'},
-    {value: '4', text: '4'},
-    {value: '5', text: '5'}
+export const EDGE_SHOT_COUNT_LIST_HP = [
+    { value: '1', text: '1' },
+    { value: '2', text: '2' },
+    { value: '3', text: '3' },
+    { value: '4', text: '4' },
+    { value: '5', text: '5' },
 ]
 
-export const PltPositionMarginList = [
-    {value: '0', text: '0'},
-    {value: '1', text: '1'},
-    {value: '2', text: '2'},
-    {value: '3', text: '3'},
-    {value: '4', text: '4'},
-    {value: '5', text: '5'}
+export const POSITION_MARGIN_LIST = [
+    // { value: '-5', text: '-5' },
+    // { value: '-4', text: '-4' },
+    // { value: '-3', text: '-3' },
+    // { value: '-2', text: '-2' },
+    // { value: '-1', text: '-1' },
+    { value: '0', text: '0' },
+    { value: '1', text: '1' },
+    { value: '2', text: '2' },
+    { value: '3', text: '3' },
+    { value: '4', text: '4' },
+    { value: '5', text: '5' },
 ]
 
 export const runningModeList = [
@@ -746,7 +746,7 @@ export const lisCodeWbcOption = [
     { fullNm: 'rbcPrintModel', classId: '99999', key: '' },
 ];
 
-export const lisCodeRbcOption = [
+export const LIS_CODE_RBC_OPTION = [
     { categoryId: '01', categoryNm: 'Size', classId: '01', fullNm: 'Normal', key: 'SIZENO' },
     { categoryId: '01', categoryNm: 'Size', classId: '02', fullNm: 'Macrocyte', key: 'SIZEMA' },
     { categoryId: '01', categoryNm: 'Size', classId: '03', fullNm: 'Microcyte', key: 'SIZEMI' },
@@ -767,9 +767,9 @@ export const lisCodeRbcOption = [
     { categoryId: '03', categoryNm: 'Shape', classId: '10', fullNm: 'Tear Drop Cell', key: 'SHAPTE' },
     { categoryId: '03', categoryNm: 'Shape', classId: '11', fullNm: 'Spherocyte', key: 'SHAPSP' },
     { categoryId: '04', categoryNm: 'Platelet', classId: '01', fullNm: 'Platelet', key: 'PLAT' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '01', fullNm: 'Howell-Jolly Body', key: 'SHAPHO' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '02', fullNm: 'Basophilic Stippling', key: 'SHAPBA' },
-    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '03', fullNm: 'Malaria', key: 'SHAPMA' }
+    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '01', fullNm: 'Howell-Jolly Body', key: 'INBDHO' },
+    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '02', fullNm: 'Basophilic Stippling', key: 'INBDBA' },
+    { categoryId: '05', categoryNm: 'Inclusion Body', classId: '03', fullNm: 'Malaria', key: 'INBDMA' }
 ];
 
 export const minRunCount = [

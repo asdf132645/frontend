@@ -70,5 +70,12 @@ interface RuningInfoApiRequest {
     nrCount?: number;
 }
 
+interface RunningInfoCBCType {
+    cbcPatientNo: string;
+    cbcPatientNm: string;
+    cbcSex: string;
+    cbcAge: string;
+}
 
-export { RuningInfo, WbcInfo, RbcInfo, ClassInfo, RunningInfoRes, RuningInfoApiRequest };
+
+export { RuningInfo, WbcInfo, RbcInfo, ClassInfo, RunningInfoRes, RuningInfoApiRequest, RunningInfoCBCType };

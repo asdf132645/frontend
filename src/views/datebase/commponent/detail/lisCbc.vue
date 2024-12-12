@@ -225,7 +225,10 @@ const initCbcData = async (newVal: any) => {
       await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-      await uimdTestUrlSend();
+    case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
+      // await uimdTestUrlSend();
+      await crcCbcDataLoad();
+      await commonCbc(firstCbcDatafilename.value);
       break;
       // CBC 공통
     default:
@@ -383,6 +386,7 @@ const fileData = async (firstCbcDatafilename: string) => {
     await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
     cbcWorkList.value = [];
+    console.log(msg?.data?.segments)
     msg?.data?.segments?.forEach((cbcSegment: any) => {
       if (cbcSegment.name.trim() === 'OBX') {
         cbcCodeList.value.forEach((cbcCode: any) => {
@@ -408,7 +412,18 @@ const fileData = async (firstCbcDatafilename: string) => {
             }
           }
         });
-      } else if (cbcSegment.name.trim() === 'PID') {
+      }
+      else if(cbcSegment.name.trim() === 'FLG'){
+        console.log('asas')
+        const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+        const obj = {
+          classNm: 'FLG',
+          count: flgNm,
+          unit: '',
+        };
+        cbcWorkList.value.push(obj);
+      }
+      else if (cbcSegment.name.trim() === 'PID') {
         cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
         cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
         cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
