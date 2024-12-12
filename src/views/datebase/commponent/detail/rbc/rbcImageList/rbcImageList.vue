@@ -1262,9 +1262,6 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     const startY = viewBoxWH.value / 2
     const endY = startY
 
-    console.log('rulerWidth', rulerWidth.value);
-    console.log('startX, startX', startX, startY);
-
     titleElement.innerHTML = '<div class="w-full">' + rulerSize + 'μm' + '</div>' +
         '<svg viewBox="0 0 ' + 200 + ' ' + 200 + '" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="' + startX + '" y1="' + startY + '" x2="' + endX + '" y2="' + endY + '" stroke="black" stroke-width="2"/>' +
@@ -1278,8 +1275,8 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     const centerY = viewBoxWH.value / 2;
     const halfWidth = rulerWidth.value / 2;
 
-    titleElement.innerHTML = '<div style="width: 100%;">' + rulerSize + 'μm' + '</div>' +
-        '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">' +
+    titleElement.innerHTML = '<div class="w-full">' + rulerSize + 'μm' + '</div>' +
+        '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="' + (centerX - halfWidth) + '" y1="' + centerY + '" x2="' + (centerX + halfWidth) + '" y2="' + centerY + '" stroke="black" stroke-width="2"/>' +
         '<line x1="' + centerX + '" y1="' + (centerY - halfWidth) + '" x2="' + centerX + '" y2="' + (centerY + halfWidth) + '" stroke="black" stroke-width="2"/>' +
         '</svg>';

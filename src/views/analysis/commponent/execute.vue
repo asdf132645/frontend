@@ -162,8 +162,7 @@ watch([runInfo.value], async (newVals) => {
   await nextTick();
   const [newRunInfo] = newVals;
 
-  const {isRunningState: newIsRunningState, bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
-  isRunningState.value = newIsRunningState;
+  const { bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
   bfSelectFiles.value = newBfSelectFiles;
 
   if (isRunningState.value) {
@@ -379,12 +378,10 @@ const sendRewindBelt = async (isRewindingBelt: boolean) => {
 
 const initData = async () => {
   const newObj = {...embeddedStatusJobCmd.value }
-  const runInfoObj = {...runInfo.value};
   isInit.value = newObj.isInit;
   isPause.value = newObj.isPause;
   userStop.value = newObj.userStop;
   isRecoveryRun.value = newObj.isRecoveryRun;
-  isRunningState.value = runInfoObj.isRunningState;
   showStopBtn.value = (isInit.value === 'N' || isInit.value === '') && !isRunningState.value;
 }
 

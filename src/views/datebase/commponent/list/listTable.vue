@@ -113,7 +113,7 @@
     </ul>
   </div>
 
-  <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen">
+  <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen" width="400">
     <!-- 헤더 슬롯에 들어갈 내용 -->
     <template #header>
       <h2>Edit order data</h2>
