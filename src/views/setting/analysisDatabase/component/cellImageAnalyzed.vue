@@ -41,7 +41,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th :rowspan="projectType === 'pb' ? 3 : 2">PBS Analysis Values</th>
+          <th :rowspan="projectType === 'pb' ? (edgeShotType === '2' || edgeShotType ==='3') ? 4 : 3 : 2">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
@@ -77,6 +77,15 @@
           <td>
             <select v-model='edgeShotType'>
               <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+
+        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && (edgeShotType === '2' || edgeShotType === '3')">
+          <th class="pos-relative">Edge Shot Count</th>
+          <td>
+            <select v-model='edgeShotCount'>
+              <option v-for="type in covertedEdgeShotTypeList(edgeShotType)" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
@@ -343,7 +352,17 @@ import Datepicker from 'vue3-datepicker';
 import { computed, nextTick, onMounted, ref, watch, getCurrentInstance } from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
-import { AnalysisList, stitchCountList, testTypeList, testBmTypeList, bmAnalysisList, settingName, edgeShotTypeList, POSITION_MARGIN_LIST } from "@/common/defines/constants/settings";
+import {
+  AnalysisList,
+  stitchCountList,
+  testTypeList,
+  testBmTypeList,
+  bmAnalysisList,
+  settingName,
+  edgeShotTypeList,
+  POSITION_MARGIN_LIST,
+  EDGE_SHOT_COUNT_LIST_LP, EDGE_SHOT_COUNT_LIST_HP
+} from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {
@@ -359,8 +378,6 @@ import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
-import Tooltip from "@/components/commonUi/Tooltip.vue";
-
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -379,6 +396,7 @@ const pltPositionMargin = ref('0');
 const pbsCellAnalyzingCount = ref('100');
 const stitchCount = ref('1');
 const edgeShotType = ref('0');
+const edgeShotCount = ref('1');
 const bfCellAnalyzingCount = ref('100');
 const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
@@ -473,7 +491,7 @@ onMounted(async () => {
 });
 
 watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
-  pltPositionMargin, pbsCellAnalyzingCount, edgeShotType, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage], async () => {
+  pltPositionMargin, pbsCellAnalyzingCount, edgeShotType, edgeShotCount, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage], async () => {
   const cellAfterSettingObj = {
     id: cellimgId.value,
     analysisType: testTypeCd.value,
@@ -484,6 +502,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
     edgeShotType: edgeShotType.value,
+    edgeShotCount: edgeShotCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
@@ -567,6 +586,7 @@ const cellImgGet = async () => {
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
         edgeShotType.value = String(data?.edgeShotType);
+        edgeShotCount.value = String(data?.edgeShotCount);
         iaRootPath.value = data.iaRootPath;
         downloadRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
         isNsNbIntegration.value = data.isNsNbIntegration;
@@ -587,6 +607,7 @@ const cellImgGet = async () => {
           pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
           stitchCount: data?.stitchCount,
           edgeShotType: data?.edgeShotType,
+          edgeShotCount: data?.edgeShotCount,
           bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
           iaRootPath: data?.iaRootPath,
           isNsNbIntegration: data?.isNsNbIntegration,
@@ -616,6 +637,7 @@ const cellImgSet = async () => {
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     edgeShotType: edgeShotType.value,
+    edgeShotCount: edgeShotType.value,
     stitchCount: stitchCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
@@ -653,6 +675,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
       sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
+      sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('isAlarm', String(data?.isAlarm));
       const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
@@ -951,6 +974,11 @@ const handleUploadSelectFile = async () => {
 const handleUploadSelectModalClose = () => {
   showUploadSelectModal.value = false;
   selectedUploadFile.value = '';
+}
+
+const covertedEdgeShotTypeList = (edgeShotType: string) => {
+  if (edgeShotType === '2') return EDGE_SHOT_COUNT_LIST_LP;
+  else if (edgeShotType === '3') return EDGE_SHOT_COUNT_LIST_HP;
 }
 
 </script>

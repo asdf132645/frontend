@@ -7,10 +7,9 @@
   <div>
     <h3 class="titleH3">
       Classification List
-      <button @click="classListToggleEvent" class="classificationListBtn">
+      <button @click.stop="classListToggleEvent" class="classificationListBtn">
         <font-awesome-icon v-if="!classListToggle" :icon="['fas', 'caret-up']" flip="vertical" />
         <font-awesome-icon v-else :icon="['fas', 'caret-up']" />
-<!--        <font-awesome-icon :icon="['fas', 'list-check']"/>-->
       </button>
     </h3>
     <div class='listBoxTable'>

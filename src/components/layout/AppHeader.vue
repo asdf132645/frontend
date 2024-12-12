@@ -224,6 +224,8 @@ const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
+let isCompleteAlarmInterval = null;
+let isErrorAlarmInterval = null;
 const isPlayingCompleteAlarm = ref(false);
 const isPlayingErrorAlarm = ref(false);
 const showAlert = ref(false);
@@ -633,6 +635,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
         sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
+        sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
         sessionStorage.setItem('iaRootPath', data?.iaRootPath);
         await store.dispatch('commonModule/setCommonInfo', {iaRootPath: String(data?.iaRootPath)});
 
