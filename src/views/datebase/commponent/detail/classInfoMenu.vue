@@ -225,11 +225,31 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal, searchType} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const startDay = searchText === '' ? formatDate(startDate) : '';
-    const endDay = searchText === '' ? formatDate(endDate) : '';
+    const startDay = searchText === '' ? startDate : '';
+    const endDay = searchText === '' ? endDate : '';
     const barcodeNo = searchType === 'barcodeNo' ? searchText : undefined;
-    const testTypeVal = testType;
-    const req = `id=${id}&step=${step}&type=${type}&dayQuery=${dayQuery}&nrCount=${nrCount}&title=${wbcInfo}&startDay=${startDay}&endDay=${endDay}&barcodeNo=${barcodeNo}&testType=${testTypeVal}`
+    const reqParams = [
+      `id=${id}`,
+      `type=${type}`,
+      `dayQuery=${dayQuery}`,
+      `title=${wbcInfo}`,
+      `startDay=${startDay}`,
+      `endDay=${endDay}`
+    ];
+
+    if (barcodeNo) {
+      reqParams.push(`barcodeNo=${barcodeNo}`);
+    }
+
+    if (nrCount) {
+      reqParams.push(`nrCount=${nrCount}`);
+    }
+
+    if (testType && testType !== '00') {
+      reqParams.push(`testType=${testType}`);
+    }
+
+    const req = reqParams.join('&');
     const res = await pageUpDownRunnIngApi(req);
     if (res.data !== null) {
       resData.value = res.data;

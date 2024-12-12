@@ -67,9 +67,11 @@
           />
           {{ idx + 1 }}
           <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
-          <div v-show="popupItemId === item.id" class="abnormalClassInfoPopup">
-            <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
-              <span>{{ abItem.classNm }} : {{ abItem.val }}</span>
+          <div v-if="popupItemId === item.id && item.isNormal === 'N'">
+            <div class="abnormalClassInfoPopup">
+              <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
+                <span>{{ abItem.classNm }} : {{ abItem.val }}</span>
+              </div>
             </div>
           </div>
         </td>
@@ -291,9 +293,10 @@ onMounted(async () => {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 })
-const  abnormalClassInfoOpen = (isOpen, itemId) => {
-  popupItemId .value = isOpen ? itemId : null;
+const abnormalClassInfoOpen = (isOpen, itemId) => {
+  popupItemId.value = isOpen ? itemId : null;
 }
+
 async function handleKeyDown(event) {
   // 컨트롤 키가 눌렸는지 확인
   if (event.ctrlKey) {
