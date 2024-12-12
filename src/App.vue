@@ -549,7 +549,7 @@ async function socketData(data: any) {
         }
 
         for (const el of response_new?.data) {
-          const prefix = el.FILE_NM.split('_')[0];
+          const prefix = el.FILE_NM?.split('_')[0];
           let fileNm = '';
 
           if (isNsNbIntegrationLocal.value === 'Y') {
@@ -631,6 +631,7 @@ async function socketData(data: any) {
           isNsNbIntegration: isNsNbIntegrationLocal.value || '',
           wbcMemo: '',
           rbcMemo: '',
+          abnormalClassInfo: classInfo
         }
 
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
