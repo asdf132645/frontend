@@ -81,14 +81,15 @@
           </td>
         </tr>
 
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && (edgeShotType === '2' || edgeShotType === '3')">
-          <th class="pos-relative">Edge Shot Count</th>
-          <td>
-            <select v-model='edgeShotCount'>
-              <option v-for="type in covertedEdgeShotTypeList(edgeShotType)" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
+<!--        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && (edgeShotType === '2' || edgeShotType === '3')">-->
+<!--          <th class="pos-relative">Edge Shot Count</th>-->
+<!--          <td>-->
+<!--            <select v-model='edgeShotCount'>-->
+<!--              <option v-for="type in covertedEdgeShotTypeList(edgeShotType)" :key="type.value" :value="type.value">{{ type.text }}</option>-->
+<!--            </select>-->
+<!--          </td>-->
+<!--        </tr>-->
+
         <!--      BF analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>BF Analysis Values</th>
