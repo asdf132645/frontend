@@ -67,7 +67,7 @@
           />
           {{ idx + 1 }}
           <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
-          <div v-if="popupItemId === item.id && item.isNormal === 'N'">
+          <div v-if="popupItemId === item.id && item.isNormal === 'N' && !isObjectEmpty(item.abnormalClassInfo)">
             <div class="abnormalClassInfoPopup">
               <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
                 <span>{{ abItem.classNm }} : {{ abItem.val }}</span>

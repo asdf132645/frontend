@@ -731,7 +731,8 @@ const initElement = async () => {
         }
       })
 
-      viewer.value.addHandler('page', function (event: any) {
+      viewer.value.addHandler('page', async (event: any) => {
+        await initGetRulerWidthHeight();
         const notCanvasClick = !fileNameResultArr.value[event.page].includes('RBC_Image');
         if (!notCanvasClick) {
           imagePageType.value = 'PLT';
