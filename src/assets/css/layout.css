@@ -5463,13 +5463,19 @@ progress::-moz-progress-bar {
     transform: scale(1.1);
 }
 
-.rbcRulerDiv {
-    width: 100%;
-}
-
 .rbcRulerDiv:hover {
     cursor: move;
 }
+
+.rulerTitleWrapper {
+    position: absolute;
+    top: -20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translate(0px, -100%)
+}
+
 .newProgressNm {
     font-size: 0.8rem;
     position: absolute;

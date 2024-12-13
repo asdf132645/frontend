@@ -633,7 +633,6 @@ const initElement = async () => {
         gestureSettingsMouse: {clickToZoom: false},
         maxZoomLevel: 15,
         minZoomLevel: 1, // 최소 확대 레벨 설정
-        zoomPerClick: 1.2, // 클릭 확대 비율 설정
         zoomPerScroll: 1.2, // 스크롤 확대 비율 설정
         viewportMargins: {top: 0, left: 0, bottom: 0, right: 0}, // 뷰포트 여백 설정
         visibilityRatio: 1.0 // 이미지를 뷰포트에 맞추기 위한 비율 설정
@@ -741,6 +740,7 @@ const initElement = async () => {
         } else {
           imagePageType.value = 'RBC';
         }
+        drawRuler(ruler);
         emits('notCanvasClick', notCanvasClick);
         // 페이지가 변경될 때 오버레이를 다시 추가
         if (canvas.parentElement !== viewer.value.container) {
@@ -1142,9 +1142,6 @@ const drawRuler = (ruler: any) => {
     element.style.height = rulerWidth.value + 'px';
     element.style.zIndex = '9999999';
 
-    // Zoom level calculation
-    const zoom = viewer.value.viewport.getZoom(true);
-
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.value.container.clientWidth / 2) - (rulerWidth.value / 2) + 'px';
     } else {
@@ -1220,15 +1217,6 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
 
   let zoomRatio = viewer.value.viewport.viewportToImageZoom(viewer.value.viewport.getZoom())
 
-  if (zoomRatio > 1) zoomRatio = zoomRatio * 1.02;
-  else if (zoomRatio > 0.9) zoomRatio = zoomRatio * 1.12;
-  else if (zoomRatio > 0.7) zoomRatio = zoomRatio * 1.22;
-  else if (zoomRatio > 0.6) zoomRatio = zoomRatio * 1.32
-  else if (zoomRatio > 0.5) zoomRatio = zoomRatio * 1.42
-  else if (zoomRatio > 0.4) zoomRatio = zoomRatio * 1.52
-  else if (zoomRatio > 0.3) zoomRatio = zoomRatio * 1.72
-  else if (zoomRatio > 0.2) zoomRatio = zoomRatio * 1.92
-
   let tmp
   if (imagePageType.value === 'PLT') {
     tmp = Number(rulerXResolution.value) * zoomRatio;
@@ -1249,48 +1237,40 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   }
 
   const titleElement = document.createElement('div')
-  titleElement.id = 'rulerTitle'
-  titleElement.style.color = 'black'
-  titleElement.style.textAlign = 'center'
-  titleElement.style.fontSize = '16px'
-  titleElement.style.minWidth = '50px'
-  titleElement.style.width = rulerWidth.value + 'px'
+  titleElement.id = 'rulerTitle';
+  titleElement.style.color = 'black';
+  titleElement.style.fontSize = '16px';
+  titleElement.style.display = 'flex';
+  titleElement.style.alignItems = 'center';
+  titleElement.style.justifyContent = 'center';
+  titleElement.style.flexDirection = 'column';
 
   if (ruler.id === 'line' || ruler === 'Line') {
-    const startX = (viewBoxWH.value / 2) - (rulerWidth.value / 2)
-    const endX = (viewBoxWH.value / 2) + (rulerWidth.value / 2)
-    const startY = viewBoxWH.value / 2
-    const endY = startY
-
-    titleElement.innerHTML = '<div class="w-full">' + rulerSize + 'μm' + '</div>' +
-        '<svg viewBox="0 0 ' + 200 + ' ' + 200 + '" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
-        '<line x1="' + startX + '" y1="' + startY + '" x2="' + endX + '" y2="' + endY + '" stroke="black" stroke-width="2"/>' +
-        '<line x1="' + startX + '" y1="' + (startY - 5) + '" x2="' + startX + '" y2="' + (endY + 5) + '" stroke="black" stroke-width="2"/>' +
-        '<line x1="' + endX + '" y1="' + (endY - 5) + '" x2="' + endX + '" y2="' + (endY + 5) + '" stroke="black" stroke-width="2"/>' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+        '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
+        '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="100%" y1="60%" x2="100%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
         '</svg>'
     element.appendChild(titleElement)
 
   } else if (ruler.id === 'cross' || ruler === 'Cross') {
-    const centerX = viewBoxWH.value / 2;
-    const centerY = viewBoxWH.value / 2;
-    const halfWidth = rulerWidth.value / 2;
-
-    titleElement.innerHTML = '<div class="w-full">' + rulerSize + 'μm' + '</div>' +
-        '<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
-        '<line x1="' + (centerX - halfWidth) + '" y1="' + centerY + '" x2="' + (centerX + halfWidth) + '" y2="' + centerY + '" stroke="black" stroke-width="2"/>' +
-        '<line x1="' + centerX + '" y1="' + (centerY - halfWidth) + '" x2="' + centerX + '" y2="' + (centerY + halfWidth) + '" stroke="black" stroke-width="2"/>' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+        '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
+        '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="100%" y1="60%" x2="100%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="60%" y1="0%" x2="40%" y2="0%" stroke="#212121" stroke-width="5%"/>' +
+        '<line x1="60%" y1="100%" x2="40%" y2="100%" stroke="#212121" stroke-width="5%"/>' +
         '</svg>';
 
     element.appendChild(titleElement);
 
   } else if (ruler.id === 'circle' || ruler === 'Circle') {
-    const cx = viewBoxWH.value / 2;
-    const cy = viewBoxWH.value / 2;
-    const radius = rulerWidth.value * 0.5;
-
-    titleElement.innerHTML = '<div class="w-full">' + rulerSize + 'μm' + '</div>' +
-        '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
-        '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" stroke="black" stroke-width="2" fill="transparent" opacity="0.6" />' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+        '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value + '" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
+        '<circle cx="50%" cy="50%" r="50%" stroke="#212121" fill="transparent" stroke-width="5%" opacity="1"  />' +
         '</svg>';
 
     element.appendChild(titleElement)
