@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="titleText"><span class="greenColor">P</span>rocessing <span class="greenColor">I</span>nformation </h3>
+    <h3 class="titleText">Processing Information </h3>
     <ul class="processInfoUl">
       <li><span class="proSpan">Cassette No</span> <span class="proVal">{{ processInfoItem?.cassetteNo }}</span></li>
       <li><span class="proSpan">Barcode ID</span> <span class="proVal">{{ processInfoItem?.barcodeId }}</span></li>
