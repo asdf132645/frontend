@@ -190,7 +190,7 @@ const imageRgb = ref([0, 0, 0]);
 const isGrid = ref(false);
 const isMagnifyingGlass = ref(false);
 const ruler = ref(null);
-const activeRuler = ref('None');
+const activeRuler = ref<'None' | 'Line' | 'Cross' | 'Circle'>('None');
 const showSelect = ref<any>(false);
 const rulerXResolution = ref(0.000560);
 const rulerPos = ref({
@@ -631,7 +631,6 @@ const initElement = async () => {
         tileSources: tilesInfo,
         showReferenceStrip: false,
         gestureSettingsMouse: {clickToZoom: false},
-        maxZoomLevel: 15,
         minZoomLevel: 1, // 최소 확대 레벨 설정
         zoomPerScroll: 1.2, // 스크롤 확대 비율 설정
         viewportMargins: {top: 0, left: 0, bottom: 0, right: 0}, // 뷰포트 여백 설정
@@ -732,15 +731,16 @@ const initElement = async () => {
       })
 
       viewer.value.addHandler('page', async (event: any) => {
-        await initGetRulerWidthHeight();
         const notCanvasClick = !fileNameResultArr.value[event.page].includes('RBC_Image');
         if (!notCanvasClick) {
-          imagePageType.value = 'PLT';
+          imagePageType.value = 'RBC';
           rbcImagePageNumber.value = event.page;
           emits('changeCurrentRbcImagePageNumber', event.page);
         } else {
-          imagePageType.value = 'RBC';
+          imagePageType.value = 'PLT';
         }
+
+        await removeRuler();
         drawRuler(ruler);
         emits('notCanvasClick', notCanvasClick);
         // 페이지가 변경될 때 오버레이를 다시 추가
@@ -963,7 +963,8 @@ const fetchTilesInfo = async (folderPath: string) => {
             Size: {
               Width: width,
               Height: height
-            }
+            },
+            maxZoomLevel: fileName.includes('RBC') ? 15 : 50,
           }
         });
 
@@ -1211,6 +1212,11 @@ const drawRuler = (ruler: any) => {
   }
 };
 
+const removeRuler = async () => {
+  imgSet_img_list.value = false;
+  activeRuler.value = 'None';
+  await initGetRulerWidthHeight();
+}
 
 const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   if (typeof rulerSize === 'object') rulerSize = rulerSize.value;
@@ -1239,7 +1245,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
 
   const titleElement = document.createElement('div')
   titleElement.id = 'rulerTitle';
-  titleElement.style.color = 'black';
+  titleElement.style.color = '#212121';
   titleElement.style.fontSize = '16px';
   titleElement.style.display = 'flex';
   titleElement.style.alignItems = 'center';
