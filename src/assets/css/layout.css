@@ -5463,6 +5463,11 @@ progress::-moz-progress-bar {
     transform: scale(1.1);
 }
 
+
+.rbcRulerDiv {
+    overflow: visible;
+}
+
 .rbcRulerDiv:hover {
     cursor: move;
 }

@@ -232,7 +232,7 @@ import {classInfoDetailApi, updateRunningApi} from "@/common/api/service/running
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
-  getBfHotKeysApi,
+  getBfHotKeysApi, getNormalRangeApi,
   getOrderClassApi,
   getWbcCustomClassApi,
   getWbcHotKeysApi
@@ -256,6 +256,7 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import { checkPbNormalCell } from "@/common/lib/utils/changeData";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -329,6 +330,7 @@ const blockClicks = ref(false);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const changeSlideByLisUpload = ref(false);
+const normalItems = ref<any>([]);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -336,6 +338,7 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  await getNormalRange();
   await getDetailRunningInfo();
   wbcInfo.value = [];
 
@@ -1045,9 +1048,7 @@ async function addToRollbackHistory() {
 async function onDropCircle(item: any) {
   const draggedItem = wbcInfo.value[draggedCircleIndex.value];
   // 선택한 이미지(들)가 같은 Class로 욺직이려고 할 때
-  if (item.id === draggedItem.id) {
-    return;
-  }
+  if (item.id === draggedItem.id) return;
 
   await addToRollbackHistory();
   if (selectedClickImages.value.length === 0) {
@@ -1399,12 +1400,7 @@ async function moveImage(targetItemIndex: number, selectedImagesToMove: any[], d
         destinationFolders.push(destinationFolder);
         sourceFolders.push(sourceFolder);
       } else if (!wbcInfosArr && keyMove !== 'keyMove') { // 마우스로 같은 class 공간으로 드롭시켜서 이동시
-        let newArr: any;
-        if (!draggedItem[idx]) {
-          newArr = draggedItem;
-        } else {
-          newArr = draggedItem[idx];
-        }
+        const newArr = draggedItem[idx] ? draggedItem[idx] : draggedItem;
         const sourceFolder = type ? `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${selectedImage.id}_${selectedImage.title}` :
             `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${newArr.id}_${newArr.title}`;
         const destinationFolder = `${iaRootPath.value}/${slotId}/${projectTypeReturn(projectType.value)}/${targetItem.id}_${targetItem.title}`;
@@ -1682,6 +1678,9 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     originalDbVal = [res.data];
   }
 
+  const { isNormal, classInfo: abnormalClassInfo } = checkPbNormalCell(clonedWbcInfo, normalItems.value)
+  originalDbVal[0].isNormal = isNormal;
+  originalDbVal[0].abnormalClassInfo = abnormalClassInfo;
 
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDbVal);
@@ -1861,6 +1860,20 @@ const hideAlert = () => {
 const uploadLisChangeSlide = (hospitalNm: any) => {
   if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
     changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
+  }
+}
+
+const getNormalRange = async () => {
+  try {
+    const result = await getNormalRangeApi();
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        normalItems.value = data;
+      }
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 

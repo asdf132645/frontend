@@ -199,6 +199,14 @@
       </ul>
     </div>
   </div>
+
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :messageType="toastMessageType"
+      :duration="1500"
+      position="bottom-right"
+  />
 </template>
 
 <script setup lang="ts">
@@ -210,6 +218,8 @@ import {debounce} from "lodash";
 import Wps from "@/views/datebase/commponent/detail/classInfo/commponent/wps.vue";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -222,6 +232,8 @@ const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
 const loading = ref(true);
 const clickableItem = ref<HTMLElement | null>(null);
+const toastMessage = ref('');
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
@@ -397,6 +409,8 @@ const classImgChange = async (type: string, event: any) => {
   const updateClassValue = (currentClass: any, previousClass: any, classObj: any, itemIndex: any) => {
     if (firstClass.value === lastClass.value) {
       currentClass.value = previousClass.value;
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast('Class already selected.');
       return;
     } else {
       previousClass.value = event ? event.target.value : currentClass.value;
@@ -413,6 +427,13 @@ const classImgChange = async (type: string, event: any) => {
   if (props.totalCount === '0') {
     loading.value = false
   }
+};
+
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
 </script>
