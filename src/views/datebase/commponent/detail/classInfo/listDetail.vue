@@ -1672,15 +1672,12 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
     // originalDb 업데이트
     const res: any = await classInfoDetailApi(String(selectItems.value?.id));
-    if (res) {
-      res.data.wbcInfoAfter = clonedWbcInfo;
-    }
+    if (res) res.data.wbcInfoAfter = clonedWbcInfo;
+    const { isNormal, classInfo } = checkPbNormalCell(clonedWbcInfo, normalItems.value)
+    res.data.isNormal = isNormal;
+    res.data.abnormalClassInfo = classInfo;
     originalDbVal = [res.data];
   }
-
-  const { isNormal, classInfo: abnormalClassInfo } = checkPbNormalCell(clonedWbcInfo, normalItems.value)
-  originalDbVal[0].isNormal = isNormal;
-  originalDbVal[0].abnormalClassInfo = abnormalClassInfo;
 
   //updateRunningApi 호출
   await updateRunningApiPost(clonedWbcInfo, originalDbVal);

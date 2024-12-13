@@ -76,7 +76,6 @@ const runningInfoGet = async (data: any) => {
 
         /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
         if (dspOrderList.value.length > 10) dspOrderList.value = [];
-        /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
 
         if (dspOrderList.value && dspOrderList.value.length > 0) {
           // Core에서 받는 stateCd가 저장되는 타이밍을 잡기 어려워 추가한 stateCd 변경 코드
@@ -96,18 +95,12 @@ const runningInfoGet = async (data: any) => {
           stateCd: stateCdObj?.cdNm,
         });
       } else {
-
-        for (const [dspOrderListIndex, orderItem] of dspOrderList.value.entries()) {
-          const localStateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[dspOrderListIndex])?.cdNm
-          orderItem.stateCd = localStateCd;
+        const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[existingItemIndex]);
+        if (dspOrderList.value && dspOrderList.value.length > 0) {
+          if (dspOrderList.value[existingItemIndex]?.stateCd) {
+            dspOrderList.value[existingItemIndex].stateCd = stateCdObj?.cdNm;
+          }
         }
-
-        // const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[existingItemIndex]);
-        // if (dspOrderList.value && dspOrderList.value.length > 0) {
-        //   if (dspOrderList.value[existingItemIndex]?.stateCd) {
-        //     dspOrderList.value[existingItemIndex].stateCd = stateCdObj?.cdNm;
-        //   }
-        // }
       }
     }
   }
