@@ -117,6 +117,7 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
+const isTcpError = computed(() => store.state.commonModule.isTcpError);
 
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
@@ -207,6 +208,9 @@ watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
+watch(() => isTcpError.value, (newIsTcpError) => {
+  sendBESeverIsTCPError(newIsTcpError);
+})
 
 onBeforeMount(() => {
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
@@ -839,6 +843,14 @@ const hideAlert = () => {
 
 const errorClear = async () => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
+}
+
+const sendBESeverIsTCPError = (newIsTcpError: boolean) => {
+  instance?.appContext.config.globalProperties.$socket.emit('isTCPError', {
+    type: 'SEND_DATA',
+    payload: window.APP_API_BASE_URL,
+    message: newIsTcpError,
+  });
 }
 
 </script>

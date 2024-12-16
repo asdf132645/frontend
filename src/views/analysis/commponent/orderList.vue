@@ -95,6 +95,10 @@ const runningInfoGet = async (data: any) => {
           stateCd: stateCdObj?.cdNm,
         });
       } else {
+        // for (const [dspOrderListIndex, orderItem] of dspOrderList.value.entries()) {
+        //   const localStateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[dspOrderListIndex])?.cdNm
+        //   orderItem.stateCd = localStateCd;
+        // }
         const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[existingItemIndex]);
         if (dspOrderList.value && dspOrderList.value.length > 0) {
           if (dspOrderList.value[existingItemIndex]?.stateCd) {

@@ -82,8 +82,13 @@
             />
           </div> -->
           <div>
-            <font-awesome-icon :icon="['fas', 'ruler']"/>
-            <span>Ruler</span>
+
+            <div>
+              <font-awesome-icon :icon="['fas', 'ruler']"/>
+              <span>Ruler</span>
+              <font-awesome-icon v-if="activeRuler !== 'None'" @click="handleReCenterRuler" :icon="['fas', 'arrows-to-dot']" class="hoverSizeAction cursorPointer" />
+            </div>
+
             <div class="ruler_box_img_list">
               <button
                   class="tab-ruler-btn_img_list"
@@ -231,6 +236,7 @@ const fileNameResultArr = ref<any>([]);
 const notCanvasClick = ref(false);
 const rbcImagePageNumber = ref(0);
 const imagePageType = ref<'RBC' | 'PLT'>('RBC');
+const zoomRatio = ref(0);
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -637,6 +643,10 @@ const initElement = async () => {
         visibilityRatio: 1.0 // 이미지를 뷰포트에 맞추기 위한 비율 설정
       });
 
+
+      const initialMaxZoomLevel = tilesInfo[0]?.maxZoomLevel || 15;
+      viewer.value.viewport.maxZoomLevel = initialMaxZoomLevel;
+
       // 마그니파이어 설정 - 동그라미 줌기능
       new OpenSeadragon.MouseTracker({
         element: viewer.value.element,
@@ -731,11 +741,14 @@ const initElement = async () => {
       })
 
       viewer.value.addHandler('page', async (event: any) => {
-        const notCanvasClick = !fileNameResultArr.value[event.page].includes('RBC_Image');
+        const pageIndex = event.page;
+        const maxZoomLevel = tilesInfo[pageIndex]?.maxZoomLevel || 15;
+        const notCanvasClick = !fileNameResultArr.value[pageIndex].includes('RBC_Image');
+        viewer.value.viewport.maxZoomLevel = maxZoomLevel;
         if (!notCanvasClick) {
           imagePageType.value = 'RBC';
-          rbcImagePageNumber.value = event.page;
-          emits('changeCurrentRbcImagePageNumber', event.page);
+          rbcImagePageNumber.value = pageIndex;
+          emits('changeCurrentRbcImagePageNumber', pageIndex);
         } else {
           imagePageType.value = 'PLT';
         }
@@ -964,8 +977,8 @@ const fetchTilesInfo = async (folderPath: string) => {
               Width: width,
               Height: height
             },
-            maxZoomLevel: fileName.includes('RBC') ? 15 : 50,
-          }
+          },
+          maxZoomLevel: fileName.includes('RBC') ? 15 : 170,
         });
 
         canvasCurrentWitdh.value = width;
@@ -1130,6 +1143,7 @@ const onClickRuler = (ruler: any) => {
 
 const drawRuler = (ruler: any) => {
   const divtilingViewer = document.getElementById('tiling-viewer_img_list');
+  zoomRatio.value = viewer.value.viewport.viewportToImageZoom(viewer.value.viewport.getZoom());
 
   if (divtilingViewer instanceof HTMLElement) {
     const rulerOverlay = document.getElementById('rulerOverlay');
@@ -1140,10 +1154,12 @@ const drawRuler = (ruler: any) => {
     const element = document.createElement('div');
     element.id = 'rulerOverlay';
     element.style.position = 'absolute';
-    element.style.width = rulerWidth.value + 'px';
-    element.style.height = rulerWidth.value + 'px';
+    element.style.display = 'flex';
+    element.style.justifyContent = 'center';
+    element.style.alignItems = 'center';
+    element.style.width = 0;
+    element.style.height = 0;
     element.style.zIndex = '9999999';
-
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.value.container.clientWidth / 2) - (rulerWidth.value / 2) + 'px';
     } else {
@@ -1192,9 +1208,7 @@ const drawRuler = (ruler: any) => {
 
     if (parent instanceof HTMLElement) {
       parent.onmousemove = function (e) {
-        if (!isPress) {
-          return;
-        }
+        if (!isPress) return;
 
         rulerPos.value.posX = rulerPos.value.prevPosX - e.clientX;
         rulerPos.value.posY = rulerPos.value.prevPosY - e.clientY;
@@ -1218,29 +1232,27 @@ const removeRuler = async () => {
   await initGetRulerWidthHeight();
 }
 
-const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
+const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
   if (typeof rulerSize === 'object') rulerSize = rulerSize.value;
   if (document.getElementById('rulerTitle') !== null) element.removeChild(document.getElementById('rulerTitle'))
 
-  let zoomRatio = viewer.value.viewport.viewportToImageZoom(viewer.value.viewport.getZoom())
-
   let tmp
   if (imagePageType.value === 'PLT') {
-    tmp = Number(rulerXResolution.value) * zoomRatio;
+    tmp = Number(rulerXResolution.value) * zoomRatio.value;
   } else if (imagePageType.value === 'RBC') {
-    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio;
+    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
   } else {
-    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio;
+    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
   }
 
   const rSize = rulerSize > 5 ? 1 + (tmp * (rulerSize - 5)) : 1;
 
   if (imagePageType.value === 'PLT') {
-    rulerWidth.value = (rulerSize * 0.001) / Number(rulerXResolution.value) * zoomRatio * rSize;
+    rulerWidth.value = (rulerSize * 0.001) / Number(rulerXResolution.value) * zoomRatio.value * rSize;
   } else if (imagePageType.value === 'RBC') {
-    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio * rSize;
+    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
   } else {
-    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio * rSize;
+    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
   }
 
   const titleElement = document.createElement('div')
@@ -1248,6 +1260,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   titleElement.style.color = '#212121';
   titleElement.style.fontSize = '16px';
   titleElement.style.display = 'flex';
+  titleElement.style.position = 'relative';
   titleElement.style.alignItems = 'center';
   titleElement.style.justifyContent = 'center';
   titleElement.style.flexDirection = 'column';
@@ -1289,6 +1302,32 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     }
   }
 };
+
+const handleReCenterRuler = () => {
+  const rulerOverlay = document.getElementById('rulerOverlay');
+  if (!rulerOverlay) return;
+  rulerOverlay.style.left = (viewer.value.container.clientWidth / 2) + 'px';
+  rulerOverlay.style.top = (viewer.value.container.clientHeight / 2) + 'px';
+  rulerPos.value.prevPosX = rulerOverlay.offsetLeft;
+  rulerPos.value.prevPosY = rulerOverlay.offsetTop;
+  rulerPos.value.left = rulerOverlay.offsetLeft - rulerPos.value.posX;
+  rulerPos.value.top = rulerOverlay.offsetTop - rulerPos.value.posY;
+  handleRulerWidth();
+}
+
+const handleRulerWidth = () => {
+  const isPLT = imagePageType.value === 'PLT';
+  const isRBC = imagePageType.value === 'RBC';
+
+  const baseResolution = isPLT
+    ? Number(rulerXResolution.value)
+    : (Number(rulerXResolution.value) / 10) * 4;
+  const tmp = baseResolution * zoomRatio.value;
+
+  const rSize = rulerSize.value > 5 ? 1 + (tmp * (rulerSize.value - 5)) : 1;
+
+  rulerWidth.value = (rulerSize.value * 0.001) / (baseResolution * zoomRatio.value * rSize);
+}
 
 // Zoom
 const onClickZoom = () => {
