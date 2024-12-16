@@ -2493,7 +2493,7 @@ ul.wbcImgWrap > li {
 
 .databaseWbcRight {
     display: inline-block;
-    width: 26%;
+    width: 22%;
     vertical-align: top;
     text-align: left;
     padding: 0 10px 10px 10px;
@@ -2510,7 +2510,7 @@ ul.wbcImgWrap > li {
 
 .databaseWbcLeft {
     display: inline-block;
-    width: 70%;
+    width: 74%;
     vertical-align: top;
 }
 
@@ -2704,7 +2704,7 @@ button.searchClass:hover {
 
 .wbcDiv {
     position: relative;
-    width: 28%;
+    width: 22%;
     margin-left: 10px;
     border-radius: 4px;
     padding: 10px;
@@ -3889,7 +3889,7 @@ button.rollbackButton {
 }
 
 .databaseWbcRight.cbcLayer {
-    width: 24%;
+    width: 22%;
 }
 
 .databaseWbcLeft.cbcLayer {
@@ -4420,7 +4420,7 @@ span.crcListSpan > span {
 
 .crcReport {
     position: relative;
-    width: 42%;
+    width: 46%;
     background: #252629;
     color: #fff;
     font-size: 0.8rem;
