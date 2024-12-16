@@ -1,19 +1,22 @@
 import {ywmcCbcCheckApi, ywmcLisPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
+import axios from "axios";
 
 export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
-    const req = `smp_no=${barcodeNo}`;
-    const cbcData: any = (await ywmcCbcCheckApi(req)).data;
+    // const url = ` http://128.9.2.30/spo/CpSVL?target_command=ihes.spo.cp.cmd.RetrieveUimdURLCMD&smp_no=${barcodeNo}`;
+    const url = ` http://128.9.2.30/spo/CpSVL?target_command=ihes.spo.cp.cmd.RetrieveUimdURLCMD&smp_no=000032237250`;
+    const cbcData:any = await axios.get(url);
+    // const cbcData: any = (await ywmcCbcCheckApi(req)).data;
     const cbcWorkList: any = [];
-
+    console.log(cbcData);
     // 최신 날짜 찾기
-    const latestDate = cbcData.data.reduce((latest: string, item: any) => {
+    const latestDate = cbcData.reduce((latest: string, item: any) => {
         return item.exam_ymd_unit > latest ? item.exam_ymd_unit : latest;
-    }, cbcData.data[0].exam_ymd_unit);
+    }, cbcData.exam_ymd_unit);
 
     // 최신 날짜에 해당하는 데이터만 필터링
-    const latestCbcData = cbcData.data.filter((item: any) => item.exam_ymd_unit === latestDate);
-    const slip = cbcData.data.find((el: any) => {return el.slip.trim() === 'H3'}) === undefined ? 'H1' : 'H3';
+    const latestCbcData = cbcData.filter((item: any) => item.exam_ymd_unit === latestDate);
+    const slip = cbcData.find((el: any) => {return el.slip.trim() === 'H3'}) === undefined ? 'H1' : 'H3';
     latestCbcData.forEach(function (data: any) {
         cbcCodeList.forEach(function (cbcCode: any) {
             if (cbcCode?.classCd === data?.exam_cd.trim()) {
