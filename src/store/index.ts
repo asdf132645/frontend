@@ -11,6 +11,7 @@ import { runningInfoModule } from '@/store/modules/testPageCommon/ruuningInfo';
 import {commonModule} from "@/store/modules/commonModule";
 import {dataBaseSetDataModule} from "@/store/modules/dataBaseSetData/dataBaseSetDataModule";
 import {timeModule} from "@/store/modules/timeModule";
+import runningModule from "@/store/modules/runningDataModule";
 // import createPersistedState from 'vuex-persistedstate';
 
 
@@ -27,6 +28,7 @@ const store = createStore({
         commonModule,
         dataBaseSetDataModule,
         timeModule,
+        runningModule,
     }
 
 });

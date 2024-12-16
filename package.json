@@ -19,7 +19,7 @@
     "chart.js": "^4.4.6",
     "core-js": "^3.8.3",
     "glob-all": "^3.3.1",
-    "graphql": "^16.9.0",
+    "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6",
     "hl7": "^1.1.1",
     "html2canvas": "^1.4.1",

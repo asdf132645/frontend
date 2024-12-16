@@ -223,6 +223,7 @@ import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
+import {useGetRunningInfoByIdQuery} from "@/gql";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -543,6 +544,21 @@ const rowDbClick = async (item) => {
   if (item.lock_status && item?.pcIp !== myIp.value) {
     return;
   }
+  const runningPayload = {};
+  const { result, loading, error } = useGetRunningInfoByIdQuery(
+      { id: Number(item.id) },
+      { fetchPolicy: 'no-cache' }
+  );
+
+  watch(result, (newValue) => {
+    if (newValue) {
+      console.log('Running Info:', newValue.getRunningInfoByIdGQL); // 새로운 결과를 로그에 출력
+      store.dispatch('runningModule/updateRunningData', newValue.getRunningInfoByIdGQL);
+
+    } else {
+      console.log('No result available');
+    }
+  });
 
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});

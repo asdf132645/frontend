@@ -226,7 +226,16 @@
 </template>
 
 <script setup lang="ts">
-import {computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  onBeforeMount,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch
+} from "vue";
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {classInfoDetailApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -353,22 +362,6 @@ onMounted(async () => {
 
   cellMarkerIcon.value = false;
   await drawCellMarker(true);
-  // end
-  if (selectedSampleId.value) {
-    const {result, loading, error, refetch} = useGetRunningInfoByIdQuery(
-        {
-          id: Number(selectedSampleId.value), // ID를 변수로 전달
-        },
-        {
-          fetchPolicy: 'no-cache', // 필요한 경우 fetchPolicy 설정
-        }
-    );
-
-    if (result) {
-      console.log('lisDtail_gql', result)
-      // runningInfo를 이용한 UI 렌더링
-    }
-  }
   if (projectType.value !== 'bm') {
     await checkWps();
   } else {
