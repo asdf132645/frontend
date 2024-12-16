@@ -800,7 +800,8 @@ const cellImgGet = async () => {
         const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
-        sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
+        sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
+        sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }
