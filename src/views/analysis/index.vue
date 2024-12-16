@@ -67,6 +67,3 @@ const initDataChangeText = (val: any) => {
 }
 
 </script>
-
-<!--<style lang="css" scoped src="@/assets/css/layout.css">-->
-<!--</style>-->

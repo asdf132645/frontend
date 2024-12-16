@@ -338,11 +338,14 @@ async function socketData(data: any) {
       case 'SYSINFO':
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
+          await store.dispatch('commonModule/setCommonInfo', { isTcpError: true });
           showCoreErrorAlert(res);
           const isAlarm = sessionStorage.getItem('isAlarm');
           if (isAlarm === 'true') {
             await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
           }
+        } else {
+          await store.dispatch('commonModule/setCommonInfo', { isTcpError: false });
         }
         break;
       case 'INIT':
