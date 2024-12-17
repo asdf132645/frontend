@@ -65,21 +65,17 @@ import {
 } from "vue";
 import router from "@/router";
 
-import {ApiResponse} from "@/common/api/httpClient";
 import {
   classInfoMenuDetailSelectQueryApi,
   clearPcIpState,
-  detailRunningApi,
   pageUpDownRunnIngApi,
   updatePcIpStateApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
-import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {formatDate} from "@/common/lib/utils/dateUtils";
 
 const emits = defineEmits();
 const showAlert = ref(false);

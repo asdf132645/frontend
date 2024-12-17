@@ -8,6 +8,10 @@
     opacity: 0;
 }
 
+.mt08 {
+    margin-top: 8px;
+}
+
 .mt10 {
     margin-top: 10px;
 }
@@ -34,6 +38,10 @@
 
 .mt40 {
     margin-top: 40px;
+}
+
+.mb08 {
+    margin-bottom: 8px;
 }
 
 .mb10 {
@@ -2626,7 +2634,8 @@ ul.leftWbcInfo li {
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
-    /*margin-left: 13px;*/
+    width: 220px;
+    text-align: left;
 }
 
 .reportDiv ul.leftWbcInfo {
@@ -5448,6 +5457,37 @@ progress::-moz-progress-bar {
     align-items: center;
     width: fit-content;
     height: fit-content;
+    font-size: 0.8rem;
+    font-weight: lighter;
+    z-index: 999999999;
+    background-color: var(--main-bg-2-color);
+    padding: 6px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 2px var(--black-color);
+}
+
+.tooltip-pos-top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-pos-bottom {
+    top: 150%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-pos-left {
+    right: 150%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tooltip-pos-right {
+    left: 150%;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .openseadragon-canvas.nav-bar-canvas {

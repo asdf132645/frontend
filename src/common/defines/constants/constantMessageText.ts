@@ -99,37 +99,44 @@ export const enum MESSAGES {
     SETTING_INFO_ANALYSIS_TYPE = '',
 }
 
-export const enum MSG_GENERAL {
-    SAVE = 'Save',
-    LEAVE = 'Leave',
-    CANCEL = 'Cancel',
-    CLOSE = 'Close',
-    COPY = 'Copy',
-    MOVE = 'Move',
-    DELETE = 'Delete',
-    UPLOAD = 'Upload',
-    OK = 'OK',
-    SUCCESS = 'Success',
-}
+export const MSG_GENERAL = {
+    SAVE: 'Save',
+    LEAVE: 'Leave',
+    CANCEL: 'Cancel',
+    CLOSE: 'Close',
+    COPY: 'Copy',
+    MOVE: 'Move',
+    DELETE: 'Delete',
+    UPLOAD: 'Upload',
+    OK: 'OK',
+    SUCCESS: 'Success',
+} as const;
 
-export const enum SYSTEM_MSG {
-    PROCESS_ALREADY_RUNNING = 'Process is already running.',
-    STOP_PROCESS = 'Process is terminating.',
-}
-
-export const enum SUCCESS_MSG {
-    SETTING_SAVE = 'Saved successfully',
-    SETTING_UPDATE = 'Updated successfully',
-}
-
-export const enum ERROR_MSG {
-    SETTING_SAVE = 'Save failed',
-    SETTING_UPDATE = 'Update failed',
-    SETTING_NOT_SAVE = 'Setting not saved',
-}
-
-export const enum TOAST_MSG {
-    SUCCESS = 'success',
-    ERROR = 'error',
-    BARCODE_COPIED = 'Barcode Copied',
+export const MSG = {
+    TOOLTIP: {
+        BARCODE_COPY: 'Copy barcodeNo',
+        MEMO: 'On/Off Memo',
+        CONFIRM: 'Confirm',
+        CLASS_MOVE: 'Lock/Unlock Class Drag movement',
+        LIS_UPLOAD: 'Upload LIS',
+        COUNT_PERCENT: 'Count   Percent'
+    },
+    TOAST: {
+        SUCCESS: 'success',
+        ERROR: 'error',
+        BARCODE_COPIED: 'Barcode Copied',
+    },
+    ERROR: {
+        SETTING_SAVE: 'Save failed',
+        SETTING_UPDATE: 'Update failed',
+        SETTING_NOT_SAVE: 'Setting not saved',
+    },
+    SUCCESS: {
+        SETTING_SAVE: 'Saved successfully',
+        SETTING_UPDATE: 'Updated successfully',
+    },
+    SYSTEM: {
+        PROCESS_ALREADY_RUNNING: 'Process is already running.',
+        STOP_PROCESS: 'Process is terminating.',
+    }
 }

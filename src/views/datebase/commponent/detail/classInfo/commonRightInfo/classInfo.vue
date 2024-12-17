@@ -3,16 +3,26 @@
   <div class="mt10" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
   <div class="mt10" v-else-if="type !== 'report'" style="height: 209.5px;"></div>
   <div class="mt10 mb10 flex-justify-between">
-    <h3 class="wbcClassInfoLeft">
-      {{ wbcClassTileChange() }}
-    </h3>
+    <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
 
     <ul class="leftWbcInfo">
-      <li>
-        <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']"/>
+      <li
+          class="pos-relative"
+          @mouseenter="tooltipVisibleFunc('barcodeCopy', true)"
+          @mouseleave="tooltipVisibleFunc('barcodeCopy', false)"
+      >
+        <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" position="top" type="" :message="MSG.TOOLTIP.BARCODE_COPY" />
       </li>
-      <li style="position: relative" v-if="type !== 'report'">
-        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" />
+
+      <li
+          v-if="type !== 'report'"
+          class="pos-relative"
+          @mouseenter="tooltipVisibleFunc('memo', true)"
+          @mouseleave="tooltipVisibleFunc('memo', false)"
+      >
+        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
         <div v-if="memoModal" class="memoModal">
           <textarea v-model="wbcMemo"></textarea>
           <button class="memoModalBtn" @click="memoChange">OK</button>
@@ -21,20 +31,33 @@
       </li>
       <li
           @click="commitConfirmed"
+          class="pos-relative"
           :class="{'submitted': selectItems?.submitState === 'Submit',}"
+          @mouseenter="tooltipVisibleFunc('confirm', true)"
+          @mouseleave="tooltipVisibleFunc('confirm', false)"
       >
-        <font-awesome-icon :icon="['fas', 'square-check']"/>
+        <font-awesome-icon :icon="['fas', 'square-check']" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
       </li>
       <li
-          @click="lisModalOpen"
-          :class="{'submitted': selectItems?.submitState === 'lisCbc' || lisBtnColor,}"
           v-if="!crcConnect"
+          @click="lisModalOpen"
+          class="pos-relative"
+          :class="{'submitted': selectItems?.submitState === 'lisCbc' || lisBtnColor,}"
+          @mouseenter="tooltipVisibleFunc('lisUpload', true)"
+          @mouseleave="tooltipVisibleFunc('lisUpload', false)"
       >
-        <font-awesome-icon :icon="['fas', 'upload']"/>
+        <font-awesome-icon :icon="['fas', 'upload']" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
       </li>
-      <li>
-        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent"/>
-        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent"/>
+      <li
+          class="pos-relative"
+          @mouseenter="tooltipVisibleFunc('classMoveLock', true)"
+          @mouseleave="tooltipVisibleFunc('classMoveLock', false)"
+      >
+        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
+        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.classMoveLock" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CLASS_MOVE" />
       </li>
     </ul>
   </div>
@@ -152,7 +175,7 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="center"
+      :position="toastPosition(siteCd)"
   />
   <Confirm
       v-if="showConfirm"
@@ -165,7 +188,18 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from 'vue';
+import {
+  computed,
+  defineEmits,
+  defineProps,
+  nextTick,
+  onBeforeMount,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch
+} from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 import {crcOptionGet, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
 import { DIR_NAME } from "@/common/defines/constants/settings";
@@ -181,7 +215,7 @@ import {
   updateRunningApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import { MESSAGES, MSG_GENERAL } from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {
@@ -222,6 +256,8 @@ import {
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const router = useRouter();
 
@@ -269,6 +305,15 @@ const lisCodeRbcArrApp = ref<any>([]);
 const lisHotKey = ref('');
 const crcConnect = ref(false);
 const isHotKeyPressed = ref(false);
+const tooltipVisible = reactive({
+  barcodeCopy: false,
+  memo: false,
+  confirm: false,
+  classMoveLock: false,
+  beforeCountPercent: false,
+  afterCountPercent: false,
+  lisUpload: false,
+})
 
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
@@ -357,6 +402,7 @@ watch(() => props.wbcInfo, (newItem) => {
 });
 
 const mountedMethod = async () => {
+  if (isObjectEmpty(props.selectItems)) return;
 
   if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
     await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
@@ -367,6 +413,7 @@ const mountedMethod = async () => {
   if (props.selectItems?.submitState) {
     lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }
+
   // 첫 진입시
   if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
     const result: any = await detailRunningApi(String(props.selectItems?.id));
@@ -1490,4 +1537,14 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+
+const tooltipVisibleFunc = (type: 'barcodeCopy' | 'memo' | 'confirm' | 'classMoveLock' | 'beforeAfter' | 'lisUpload', visible: boolean) => {
+  tooltipVisible[type] = visible;
+}
+
+const toastPosition = (siteCd: string) => {
+  if (siteCd === '0019') return 'center';
+  return 'top';
+}
+
 </script>

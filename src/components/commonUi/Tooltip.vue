@@ -1,6 +1,9 @@
 <template>
-  <div v-show="isVisible" class="tooltip-container">
-    <p>{{ message }}</p>
+  <div
+      v-if="isVisible"
+      :class="`tooltip-container tooltip-pos-${position} ${className}`"
+  >
+    <pre>{{ message }}</pre>
   </div>
 </template>
 
@@ -9,11 +12,14 @@ import { defineProps } from 'vue';
 
 interface PropsType {
   isVisible: boolean;
-  type: string;
+  type?: string;
   message: string;
-  position: 'top' | 'bottom' | 'left' | 'right';
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  className?: string;
 }
 
-const props = defineProps<PropsType>();
+const props = withDefaults(defineProps<PropsType>(), {
+  position: 'top',
+});
 
 </script>
