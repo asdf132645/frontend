@@ -1,6 +1,7 @@
 <template>
-  <img class="mt10" v-if="type !== 'report' && !barCodeImageShowError" @error="onImageError" :src="barcodeImg"/>
+  <img class="mt10" v-if="type !== 'report' && !barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
   <div class="mt10" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
+  <div class="mt10" v-else-if="type !== 'report'" style="height: 209.5px;"></div>
   <div class="mt10 mb10 flex-justify-between">
     <h3 class="wbcClassInfoLeft">
       {{ wbcClassTileChange() }}
