@@ -114,10 +114,7 @@
     </div>
     <div class="tiling-viewer_img_list-box_img_list">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else-if="activeTab !== 'malaria' && tileExist"
-           ref="tilingViewerLayer"
-           id="tiling-viewer_img_list" style="width: 100%;"
-           @contextmenu.prevent="rbcClassRightClick"></div>
+      <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer_img_list" @contextmenu.prevent="rbcClassRightClick"></div>
       <div v-else>
         <span>Tile does not exist.</span>
       </div>
@@ -237,6 +234,11 @@ const notCanvasClick = ref(false);
 const rbcImagePageNumber = ref(0);
 const imagePageType = ref<'RBC' | 'PLT'>('RBC');
 const zoomRatio = ref(0);
+const maxNumberOfLines = ref(330);
+const magCanvasDiv = ref({
+  x: 0,
+  y: 0,
+})
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -647,7 +649,6 @@ const initElement = async () => {
       const initialMaxZoomLevel = tilesInfo[0]?.maxZoomLevel || 15;
       viewer.value.viewport.maxZoomLevel = initialMaxZoomLevel;
 
-      // 마그니파이어 설정 - 동그라미 줌기능
       new OpenSeadragon.MouseTracker({
         element: viewer.value.element,
         moveHandler: function (event) {
@@ -747,10 +748,12 @@ const initElement = async () => {
         viewer.value.viewport.maxZoomLevel = maxZoomLevel;
         if (!notCanvasClick) {
           imagePageType.value = 'RBC';
+          maxNumberOfLines.value = 330;
           rbcImagePageNumber.value = pageIndex;
           emits('changeCurrentRbcImagePageNumber', pageIndex);
         } else {
           imagePageType.value = 'PLT';
+          maxNumberOfLines.value = 1000;
         }
 
         await removeRuler();
@@ -1036,8 +1039,13 @@ const changeImgBrightness = (event: any) => {
   const blue = imageRgb.value[2];
 
   const imageContainer = document.getElementById('tiling-viewer_img_list');
+
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+    imageContainer.style.filter = `
+      opacity(0.9)
+      drop-shadow(0 0 10px rgb(${red}, ${green}, ${blue}))
+      brightness(${brightness}%)
+    `;
   }
 };
 
@@ -1048,13 +1056,16 @@ const changeImageRgb = () => {
   const green = imageRgb.value[1];
   const blue = imageRgb.value[2];
   const brightness = imgBrightness.value;
-
   const imageContainer = document.getElementById('tiling-viewer_img_list');
+  const rgbValue = `rgb(${red}, ${green}, ${blue})`;
 
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+    imageContainer.style.filter = `
+      opacity(0.9)
+      drop-shadow(0 0 0 ${rgbValue})
+      brightness(${brightness}%)
+    `;
   }
-
 }
 
 const rgbReset = () => {
@@ -1063,7 +1074,11 @@ const rgbReset = () => {
 
   const imageContainer = document.getElementById('tiling-viewer_img_list');
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(${brightness}%)`;
+    imageContainer.style.filter = `
+      opacity(0.9)
+      drop-shadow(0 0 10px rgb(0,0,0))
+      brightness(${brightness}%)
+    `;
   }
 };
 
@@ -1088,8 +1103,8 @@ const drawLines = () => {
     const imageWidth = viewer.value.world.getItemAt(0).getContentSize().x;
     const zoom = viewer.value.viewport.getZoom();
 
-    const maxNumberOfLines = 400;
-    const numberOfLines = Math.round(maxNumberOfLines / zoom);
+    // 1칸 당 5μm로 고정
+    const numberOfLines = Math.round(maxNumberOfLines.value / zoom);
 
     const minGap = Math.min(imageWidth, imageHeight) / numberOfLines;
 
@@ -1160,6 +1175,7 @@ const drawRuler = (ruler: any) => {
     element.style.width = 0;
     element.style.height = 0;
     element.style.zIndex = '9999999';
+
     if (rulerPos.value.left === 0) {
       element.style.left = (viewer.value.container.clientWidth / 2) - (rulerWidth.value / 2) + 'px';
     } else {
@@ -1198,7 +1214,7 @@ const drawRuler = (ruler: any) => {
           refreshRuler(element, ++rulerSize.value, ruler);
         }
       } else {
-        if (rulerSize.value > 5) {
+        if (rulerSize.value > 1) {
           refreshRuler(element, --rulerSize.value, ruler);
         }
       }
@@ -1245,7 +1261,7 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
     tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
   }
 
-  const rSize = rulerSize > 5 ? 1 + (tmp * (rulerSize - 5)) : 1;
+  const rSize = rulerSize > 1 ? 1 + (tmp * (rulerSize - 1)) : 1;
 
   if (imagePageType.value === 'PLT') {
     rulerWidth.value = (rulerSize * 0.001) / Number(rulerXResolution.value) * zoomRatio.value * rSize;
@@ -1266,7 +1282,8 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
   titleElement.style.flexDirection = 'column';
 
   if (ruler.id === 'line' || ruler === 'Line') {
-    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML =
+        '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
         '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
@@ -1305,13 +1322,22 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
 
 const handleReCenterRuler = () => {
   const rulerOverlay = document.getElementById('rulerOverlay');
+  rulerOverlay.style.transition = `left 0.5s ease-in-out, top 0.5s ease-in-out`;
   if (!rulerOverlay) return;
   rulerOverlay.style.left = (viewer.value.container.clientWidth / 2) + 'px';
   rulerOverlay.style.top = (viewer.value.container.clientHeight / 2) + 'px';
+
+  const handleTransitionEnd = () => {
+    rulerOverlay.style.transition = 'none';
+    rulerOverlay.removeEventListener('transitionend', handleTransitionEnd);
+  }
+
+  rulerOverlay.addEventListener('transitionend', handleTransitionEnd);
+
   rulerPos.value.prevPosX = rulerOverlay.offsetLeft;
   rulerPos.value.prevPosY = rulerOverlay.offsetTop;
-  rulerPos.value.left = rulerOverlay.offsetLeft - rulerPos.value.posX;
-  rulerPos.value.top = rulerOverlay.offsetTop - rulerPos.value.posY;
+  rulerPos.value.left = rulerOverlay.offsetLeft - rulerPos.value.prevPosX;
+  rulerPos.value.top = rulerOverlay.offsetTop - rulerPos.value.prevPosY;
   handleRulerWidth();
 }
 
@@ -1332,6 +1358,10 @@ const handleRulerWidth = () => {
 // Zoom
 const onClickZoom = () => {
   isMagnifyingGlass.value = !isMagnifyingGlass.value;
+  if (!isMagnifyingGlass.value) {
+    const existingMagCanvas = document.getElementById('magCanvas');
+    if (existingMagCanvas) viewer.value.element.removeChild(existingMagCanvas);
+  }
 }
 
 const initGetRulerWidthHeight = async () => {
