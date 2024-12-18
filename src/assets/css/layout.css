@@ -5184,6 +5184,10 @@ ul.wpsDiv.cellImgBox {
     border-radius: 4px;
 }
 
+.wpsDiv.main.cbcLayer {
+    width: 55%;
+}
+
 ul.wpsDiv.cellImgBox .isLowMagnWhether {
     outline: solid #007bff;
 }

@@ -349,7 +349,6 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean, id?: an
             dayQuery: dayQuery,
         })
         if (response) {
-            await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
             if (!noAlert) {
                 message = 'success';
             }

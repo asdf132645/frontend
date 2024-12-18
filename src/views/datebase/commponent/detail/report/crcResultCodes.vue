@@ -702,7 +702,6 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       if (!noAlert) {
         toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast('Success');

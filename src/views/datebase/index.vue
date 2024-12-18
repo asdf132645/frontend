@@ -404,7 +404,6 @@ const initDbData = async () => {
 }
 
 const selectItem = async (item: any) => {
-  await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: item });
   selectedItem.value = item;
 };
 
@@ -573,7 +572,6 @@ const refresh = () => {
 }
 
 const disableSelectItem = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: {} });
   selectedItem.value = {};
 }
 
@@ -654,7 +652,6 @@ const convertRbcData = async (dataList: any) => {
     const result: any = await detailRunningApi(String(item.id));
     await getRbcDegreeData();
     const data = result.data;
-    await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: data });
     rbcInfoBeforeVal.value = data.rbcInfo.rbcClass;
     rbcInfoAfterVal.value = data.rbcInfoAfter;
     await rbcTotalAndReCount(data);

@@ -1703,7 +1703,6 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
       dayQuery: dayQuery
     })
     if (response && response?.data.length !== 0) {
-      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기

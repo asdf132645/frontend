@@ -1015,7 +1015,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
     })
 
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response.data[0] });
       if(degree === 'degree') {
         await rbcTotalAndReCount(rbcImagePageNumber.value);
         await countReAdd();
