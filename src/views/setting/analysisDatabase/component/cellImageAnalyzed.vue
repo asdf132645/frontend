@@ -147,7 +147,13 @@
         <tr>
           <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
             IA Root Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
+                @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
+                @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
           </th>
           <td colspan="2">
             <select v-model='iaRootPath'>
@@ -156,9 +162,14 @@
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             NS/NB Integration
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_NS_NB_INTEGRATION_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
+                @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
           </th>
           <td>
             <font-awesome-icon
@@ -169,9 +180,14 @@
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             Alarm Timer (sec)
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_ALARM_TIME_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('alarm', true)"
+                @mouseleave="tooltipVisibleFunc('alarm', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.ALARM" />
           </th>
           <td>
             <font-awesome-icon
@@ -185,9 +201,14 @@
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             Keep Page
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_KEEP_PAGE_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('keepPage', true)"
+                @mouseleave="tooltipVisibleFunc('keepPage', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type="" :message="MSG.TOOLTIP.KEEP_PAGE" />
           </th>
           <td>
             <font-awesome-icon
@@ -207,9 +228,14 @@
         </colgroup>
         <tbody>
         <tr>
-          <th>
+          <th class="pos-relative">
             Download Save Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('downloadSavePath', true)"
+                @mouseleave="tooltipVisibleFunc('downloadSavePath', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH" />
           </th>
 
           <td>
@@ -217,14 +243,28 @@
               <select v-model='downloadRootPath' class="downloadPath">
                 <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
               </select>
-              <font-awesome-icon :icon="['fas', 'folder-open']" @click="openSourceDrive" class="openDriveIcon" />
+              <div class="pos-relative">
+                <font-awesome-icon
+                    :icon="['fas', 'folder-open']"
+                    @click="openSourceDrive"
+                    class="openDriveIcon"
+                    @mouseenter="tooltipVisibleFunc('openDownloadSavePath', true)"
+                    @mouseleave="tooltipVisibleFunc('openDownloadSavePath', false)"
+                />
+                <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH" />
+              </div>
             </div>
           </td>
         </tr>
         <tr>
-          <th title="Download data from start to end date">
+          <th class="pos-relative">
             Download
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_DOWNLOAD_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('download', true)"
+                @mouseleave="tooltipVisibleFunc('download', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD" />
           </th>
           <td>
             <div class="backupDatePickers">
@@ -235,9 +275,15 @@
           </td>
         </tr>
         <tr>
-          <th>
+          <th class="pos-relative">
             Upload
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_UPLOAD_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
+                @mouseenter="tooltipVisibleFunc('upload', true)"
+                @mouseleave="tooltipVisibleFunc('upload', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.UPLOAD" />
           </th>
           <td colspan="2">
             <div class="settingUploadContainer">
@@ -356,7 +402,7 @@
 <script setup lang="ts">
 import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import { computed, nextTick, onMounted, ref, watch, getCurrentInstance } from "vue";
+import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive} from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -371,7 +417,7 @@ import {
   EDGE_SHOT_COUNT_LIST_LP, EDGE_SHOT_COUNT_LIST_HP
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {
   backUpDateApi,
   downloadPossibleApi,
@@ -386,6 +432,7 @@ import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
 import {EdgeShotType} from "@/common/type/settings";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -467,16 +514,17 @@ const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
 const showEdgeShotTypeInfo = ref(false);
 const showPositionMarginTutorialImg = ref(false);
-const tooltipVisible = ref({
+const apiUrl = ref('');
+const tooltipVisible = reactive({
   iaRootPath: false,
   nsNbIntegration: false,
-  alarmTimer: false,
+  alarm: false,
   keepPage: false,
   downloadSavePath: false,
   download: false,
   upload: false,
+  openDownloadSavePath: false,
 })
-const apiUrl = ref('');
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -991,6 +1039,10 @@ const handleUploadSelectFile = async () => {
 const handleUploadSelectModalClose = () => {
   showUploadSelectModal.value = false;
   selectedUploadFile.value = '';
+}
+
+const tooltipVisibleFunc = (type: 'iaRootPath' | 'nsNbIntegration' | 'alarm' | 'keepPage' | 'downloadSavePath' | 'download' | 'upload' | 'openDownloadSavePath', visible: boolean) => {
+  tooltipVisible[type] = visible;
 }
 
 </script>

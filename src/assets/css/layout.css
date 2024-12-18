@@ -80,6 +80,10 @@
     padding-top: 5px;
 }
 
+.pt6 {
+    padding-top: 6px;
+}
+
 .gap14 {
     gap: 14px;
 }
@@ -419,7 +423,7 @@ main.bmComponent {
 }
 
 .openDriveIcon:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
 }
 
 .loadingBackground {
@@ -1161,7 +1165,7 @@ ul.degree.analysis {
 }
 
 .categories.rbcClass ul.degree.analysis {
-    width: 32%;
+    width: 24%;
 }
 
 .defaultText {
@@ -3342,10 +3346,15 @@ ul.wbcHotKeysItems {
 }
 
 .rbcDiv {
-    width: 30%;
+    position: relative;
+    width: 23%;
     padding: 10px;
     border-radius: 4px;
     height: 85vh;
+}
+
+.rbcDivInReportWithCBC {
+    width: 27%;
 }
 
 ul.normalItems {
@@ -3999,6 +4008,10 @@ table.cbcTable td {
     width: 13%;
 }
 
+.rbcPercent > li {
+    line-height: normal;
+}
+
 .createdRbc {
     position: absolute;
     z-index: 99999;
@@ -4435,7 +4448,7 @@ span.crcListSpan > span {
 
 .crcReport {
     position: relative;
-    width: 46%;
+    width: 51%;
     background: #252629;
     color: #fff;
     font-size: 0.8rem;
@@ -5525,6 +5538,7 @@ progress::-moz-progress-bar {
     justify-content: center;
     align-items: center;
     font-size: 1rem;
+    width: 100px;
     transform: translate(0px, -100%);
     text-shadow:
             -1px -1px 0 white,

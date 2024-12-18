@@ -31,15 +31,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
-import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
+import { getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
-import {getDateTimeYYYYMMDD, getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 
 const selectItems = ref<any>({});

@@ -235,10 +235,6 @@ const rbcImagePageNumber = ref(0);
 const imagePageType = ref<'RBC' | 'PLT'>('RBC');
 const zoomRatio = ref(0);
 const maxNumberOfLines = ref(330);
-const magCanvasDiv = ref({
-  x: 0,
-  y: 0,
-})
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -1283,7 +1279,7 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
 
   if (ruler.id === 'line' || ruler === 'Line') {
     titleElement.innerHTML =
-        '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+        '<div class="rulerTitleWrapper">' + rulerSize + ' μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
         '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
@@ -1292,7 +1288,7 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
     element.appendChild(titleElement)
 
   } else if (ruler.id === 'cross' || ruler === 'Cross') {
-    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + ' μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
         '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
@@ -1305,7 +1301,7 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
     element.appendChild(titleElement);
 
   } else if (ruler.id === 'circle' || ruler === 'Circle') {
-    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + ' μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value + '" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<circle cx="50%" cy="50%" r="50%" stroke="#212121" fill="transparent" stroke-width="5%" opacity="1"  />' +
         '</svg>';
