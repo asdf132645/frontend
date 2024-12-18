@@ -65,7 +65,7 @@
 
 
     </div>
-    <GaugeBar v-if="siteCd === '0000'"/>
+    <GaugeBar :parsedData="parsedData" v-if="siteCd === '0000'"/>
     <div class='slideCardWrap' v-if="pbVersion === '12a'">
       <ul class='slideContent'>
         <li v-for="item in slideCardData.INPUT" :key="item.slotNo"

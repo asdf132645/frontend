@@ -260,7 +260,6 @@ import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGallery.vue';
 import Alert from "@/components/commonUi/Alert.vue";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
-import {useGetRunningInfoByIdQuery} from "@/gql";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";

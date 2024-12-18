@@ -258,7 +258,6 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import {useGetRunningInfoByIdQuery} from "@/gql";
 
 const router = useRouter();
 

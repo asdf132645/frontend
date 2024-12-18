@@ -223,7 +223,7 @@ import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import {useGetRunningInfoByIdQuery} from "@/gql";
+import {useGetRunningInfoByIdQuery} from "@/gql/runninginfo";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
