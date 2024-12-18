@@ -41,8 +41,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th :rowspan="projectType === 'pb' ? (edgeShotType === '2' || edgeShotType ==='3') ? 4 : 3 : 2">PBS Analysis Values</th>
-<!--          <th :rowspan="projectType === 'pb' ? 3 : 2">PBS Analysis Values</th>-->
+          <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
@@ -70,7 +69,7 @@
                 @mouseleave="informationFontHover('edgeShotType', 'leave')"
             />
             <Transition>
-              <div v-if="showEdgeShotTypeInfo" class="tutorial-edgeShotType-container">
+              <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
                 <img :src="smearTop" width="400" />
               </div>
             </Transition>
@@ -82,8 +81,20 @@
           </td>
         </tr>
 
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && (edgeShotType === '2' || edgeShotType === '3')">
-          <th class="pos-relative">Edge Shot Count</th>
+        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (edgeShotType === '2' || edgeShotType === '3')">
+          <th class="pos-relative">
+            Edge Shot Count
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="() => informationFontHover('edgeShotCount', 'hover')"
+                @mouseleave="informationFontHover('edgeShotCount', 'leave')"
+            />
+            <Transition>
+              <div v-if="showTutorialImage.edgeShotCount" class="tutorial-edgeShotType-container">
+                <img :src="edgeShotCountImg" width="260" />
+              </div>
+            </Transition>
+          </th>
           <td v-show="edgeShotType === '2'">
             <select v-model='edgeShotCount.LP'>
               <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -116,7 +127,7 @@
                 @mouseleave="informationFontHover('positionMargin', 'leave')"
             />
             <Transition>
-              <div v-show="showPositionMarginTutorialImg" class="tutorial-positionMargin-container">
+              <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
                 <img :src="commonPositionMargin" width="140" />
               </div>
             </Transition>
@@ -402,7 +413,7 @@
 <script setup lang="ts">
 import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive} from "vue";
+import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive, onBeforeMount} from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -431,7 +442,7 @@ import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
-import {EdgeShotType} from "@/common/type/settings";
+import edgeShotCountImg from "@/assets/images/edgeShotCount.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const instance = getCurrentInstance();
@@ -440,7 +451,6 @@ const router = useRouter();
 const showAlert = ref(false);
 const alertType = ref('');
 const showUploadModal = ref(false);
-
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
 const testTypeCd = ref('01');
@@ -512,8 +522,11 @@ const loadingState = ref('');
 const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
-const showEdgeShotTypeInfo = ref(false);
-const showPositionMarginTutorialImg = ref(false);
+const showTutorialImage = reactive({
+  edgeShotType: false,
+  positionMargin: false,
+  edgeShotCount: false,
+})
 const apiUrl = ref('');
 const tooltipVisible = reactive({
   iaRootPath: false,
@@ -525,6 +538,7 @@ const tooltipVisible = reactive({
   upload: false,
   openDownloadSavePath: false,
 })
+const machineVersion = ref<'12a' | '100a'>('12a');
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -536,11 +550,15 @@ instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished'
   }
 })
 
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  machineVersion.value = window.MACHINE_VERSION;
+})
+
 onMounted(async () => {
   getApiUrl();
   await nextTick();
   testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
@@ -766,18 +784,22 @@ const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
 
-const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
+const informationFontHover = (type: 'edgeShotType' | 'positionMargin' | 'edgeShotCount', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
-    showEdgeShotTypeInfo.value = false;
-    showPositionMarginTutorialImg.value = false;
+    showTutorialImage.edgeShotCount = false;
+    showTutorialImage.edgeShotType = false;
+    showTutorialImage.positionMargin = false;
     return;
   }
   switch (type) {
     case 'edgeShotType':
-      showEdgeShotTypeInfo.value = true;
+      showTutorialImage.edgeShotType = true;
       break;
     case 'positionMargin':
-      showPositionMarginTutorialImg.value = true;
+      showTutorialImage.positionMargin = true;
+      break;
+    case 'edgeShotCount':
+      showTutorialImage.edgeShotCount = true;
       break;
     default:
       break;
@@ -1043,6 +1065,14 @@ const handleUploadSelectModalClose = () => {
 
 const tooltipVisibleFunc = (type: 'iaRootPath' | 'nsNbIntegration' | 'alarm' | 'keepPage' | 'downloadSavePath' | 'download' | 'upload' | 'openDownloadSavePath', visible: boolean) => {
   tooltipVisible[type] = visible;
+}
+
+const pbsAnalysisValuesRowIndex = () => {
+  if (projectType.value !== 'pb') return 2;
+  if (machineVersion.value === '100a' && (edgeShotType.value === '2' || edgeShotType.value === '3')) return 4;
+  if (machineVersion.value === '100a') return 3;
+  if (machineVersion.value === '12a') return 3;
+  return 3;
 }
 
 </script>
