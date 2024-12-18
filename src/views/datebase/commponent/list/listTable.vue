@@ -554,16 +554,15 @@ const rowDbClick = async (item) => {
       { fetchPolicy: 'no-cache' }
   );
 
-  watch(result, (newValue) => {
+  watch(result, async (newValue) => {
     if (newValue) {
       console.log('Running Info:', newValue?.getRunningInfoByIdGQL); // 새로운 결과를 로그에 출력
-      store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
-
+      await store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
+      await router.push('/databaseDetail');
     } else {
       console.log('No result');
     }
   });
-  await router.push('/databaseDetail');
 
 }
 

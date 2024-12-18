@@ -363,13 +363,13 @@ watch(
     () => slideData.value,
     async (newVal, oldVal) => {
       if (newVal !== oldVal) {
+        await nextTick();
         console.log('변화 감지:', { newValue: newVal, oldValue: oldVal });
         try {
           showImageGallery.value = false;
           await getNormalRange(); // 함수가 선언된 이후 호출
-          await getDetailRunningInfo();
+          await getDetailRunningInfo(newVal);
           wbcInfo.value = [];
-          await nextTick();
           showImageGallery.value = true;
 
           await getWbcCustomClasses(false, null);
@@ -450,10 +450,10 @@ const handleZoom = () => {
   modalImageHeight.value = `${newSize}px`;
 };
 
-const getDetailRunningInfo = async () => {
+const getDetailRunningInfo = async (newValue: any) => {
   try {
-    selectItems.value = slideData.value;
-    console.log(slideData.value)
+    console.log(newValue)
+    selectItems.value = newValue;
     iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
 
   } catch (e) {
@@ -641,6 +641,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
+
   wbcInfo.value = [];
   try {
     const result = await getWbcCustomClassApi();
@@ -845,7 +846,7 @@ const refreshClass = async (data: any) => {
   showImageGallery.value = false;
 
   cellMarkerIcon.value = false;
-  await getDetailRunningInfo();
+  await getDetailRunningInfo(data);
   showImageGallery.value = true;
   await drawCellMarker(true);
   classCompareShow.value = false;
