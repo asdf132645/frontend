@@ -304,6 +304,7 @@ watch(props.hiddenImages, (newVal) => {
 });
 
 watch(() => props.selectItems, (newSelectItems) => {
+  console.log(newSelectItems);
   const wbcInfo = isObjectEmpty(newSelectItems.wbcInfoAfter) ? newSelectItems.wbcInfoAfwbcInfo.wbcInfo[0] : newSelectItems.wbcInfoAfter;
   updateFirstLastClass(wbcInfo);
 })

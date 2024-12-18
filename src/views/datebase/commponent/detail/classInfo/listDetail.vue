@@ -237,7 +237,7 @@ import {
   watch
 } from "vue";
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
-import {classInfoDetailApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
@@ -340,38 +340,60 @@ const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const changeSlideByLisUpload = ref(false);
 const normalItems = ref<any>([]);
+const slideData = computed(() => store.state.runningModule);
 
 onBeforeMount(async () => {
   isLoading.value = false;
+  showImageGallery.value = false;
   projectType.value = window.PROJECT_TYPE;
 })
 
 onMounted(async () => {
-  await getNormalRange();
-  await getDetailRunningInfo();
-  wbcInfo.value = [];
-
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
-  await getWbcCustomClasses(false, null);
   document.addEventListener('click', handleClickOutside);
-  wbcInfoRefresh.value = true;
-  // 로컬 스토리지 값으로 이미지 셋팅 값들 채워넣기
-  await imgSetLocalStorage();
-
-  cellMarkerIcon.value = false;
-  await drawCellMarker(true);
-  if (projectType.value !== 'bm') {
-    await checkWps();
-  } else {
-    isWpsShow.value = false;
-  }
 });
 
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
 })
+
+watch(
+    () => slideData.value,
+    async (newVal, oldVal) => {
+      if (newVal !== oldVal) {
+        console.log('변화 감지:', { newValue: newVal, oldValue: oldVal });
+        try {
+          showImageGallery.value = false;
+          await getNormalRange(); // 함수가 선언된 이후 호출
+          await getDetailRunningInfo();
+          wbcInfo.value = [];
+          await nextTick();
+          showImageGallery.value = true;
+
+          await getWbcCustomClasses(false, null);
+          wbcInfoRefresh.value = true;
+
+          await imgSetLocalStorage();
+          cellMarkerIcon.value = false;
+          await drawCellMarker(true);
+
+          if (projectType.value !== 'bm') {
+            await checkWps();
+          } else {
+            isWpsShow.value = false;
+          }
+
+        } catch (error) {
+          console.error('비동기 작업 중 에러 발생:', error);
+        }
+      }
+    },
+    { immediate: true }
+);
+
+
 
 watch(imgBrightness, (newVal) => {
   localStorage.setItem('imgBrightness', String(newVal));
@@ -430,11 +452,9 @@ const handleZoom = () => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result = await classInfoDetailApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
-
-    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
-    iaRootPath.value = path;
+    selectItems.value = slideData.value;
+    console.log(slideData.value)
+    iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
 
   } catch (e) {
     console.error(e);
@@ -616,6 +636,7 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
   // 정렬된 배열을 wbcInfo에 할당
   wbcInfo.splice(0, wbcInfo.length, ...newSortArr);
+
 };
 
 
@@ -1621,11 +1642,6 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   });
   // 각 이미지 객체에서 width와 height 속성은 저장 안해도되는 부분이라서 디비에 저장 안함
   clonedWbcInfo.forEach((item: any) => {
-    // item.images.forEach((image: any) => {
-    //   delete image.width;
-    //   delete image.height;
-    //   delete image.filter;
-    // });
     if (projectType.value === 'bm') {
       if (item.title !== 'OT') {
         const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1);
@@ -1664,12 +1680,12 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     wbcInfo.value = clonedWbcInfo;
 
     // originalDb 업데이트
-    const res: any = await classInfoDetailApi(String(selectItems.value?.id));
-    if (res) res.data.wbcInfoAfter = clonedWbcInfo;
+    const res: any = slideData.value;
+    if (res) res.wbcInfoAfter = clonedWbcInfo;
     const { isNormal, classInfo } = checkPbNormalCell(clonedWbcInfo, normalItems.value)
-    res.data.isNormal = isNormal;
-    res.data.abnormalClassInfo = classInfo;
-    originalDbVal = [res.data];
+    res.isNormal = isNormal;
+    res.abnormalClassInfo = classInfo;
+    originalDbVal = [res];
   }
 
   //updateRunningApi 호출
@@ -1853,7 +1869,7 @@ const uploadLisChangeSlide = (hospitalNm: any) => {
   }
 }
 
-const getNormalRange = async () => {
+async function getNormalRange() {
   try {
     const result = await getNormalRangeApi();
     if (result) {

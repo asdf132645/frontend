@@ -64,22 +64,17 @@ import {
   watch
 } from "vue";
 import router from "@/router";
-
-import {ApiResponse} from "@/common/api/httpClient";
 import {
-  classInfoMenuDetailSelectQueryApi,
   clearPcIpState,
-  detailRunningApi,
   pageUpDownRunnIngApi,
   updatePcIpStateApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
-import {defaultBmClassList, defaultWbcClassList} from "@/store/modules/analysis/wbcclassification";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {formatDate} from "@/common/lib/utils/dateUtils";
+import {useGetRunningInfoByIdQuery} from "@/gql";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -88,7 +83,6 @@ const alertMessage = ref('');
 const projectType = ref<any>('bm');
 const selectItems = ref<any>(null);
 const resData = ref<any>([]);
-const wbcInfo = ref<any>([]);
 const instance = getCurrentInstance();
 const store = useStore();
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
@@ -140,11 +134,25 @@ onUnmounted(async () => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result = await classInfoMenuDetailSelectQueryApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
-    await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+    const { result, loading, error } = useGetRunningInfoByIdQuery(
+        { id: Number(selectedSampleId.value) },
+        { fetchPolicy: 'no-cache' }
+    );
 
-    resData.value = result.data;
+    watch(result, async (newValue)  => {
+      if (newValue) {
+        await store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
+        const result = newValue?.getRunningInfoByIdGQL;
+        selectItems.value = result;
+        await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+
+        resData.value = result;
+      } else {
+        console.log('No result');
+      }
+    });
+
+
   } catch (e) {
     console.error(e);
     selectItems.value = null;
@@ -251,9 +259,11 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 
     const req = reqParams.join('&');
     const res = await pageUpDownRunnIngApi(req);
+
     if (res.data !== null) {
       resData.value = res.data;
       await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(res.data.id)});
+      await store.dispatch('runningModule/updateRunningData', res.data);
     }
   } catch (e) {
     console.error(e)

@@ -544,25 +544,25 @@ const rowDbClick = async (item) => {
   if (item.lock_status && item?.pcIp !== myIp.value) {
     return;
   }
-  const runningPayload = {};
-  const { result, loading, error } = useGetRunningInfoByIdQuery(
+
+
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
+  await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
+  await getIpAddress(item);
+  const { result, loading, error } = await useGetRunningInfoByIdQuery(
       { id: Number(item.id) },
       { fetchPolicy: 'no-cache' }
   );
 
   watch(result, (newValue) => {
     if (newValue) {
-      console.log('Running Info:', newValue.getRunningInfoByIdGQL); // 새로운 결과를 로그에 출력
-      store.dispatch('runningModule/updateRunningData', newValue.getRunningInfoByIdGQL);
+      console.log('Running Info:', newValue?.getRunningInfoByIdGQL); // 새로운 결과를 로그에 출력
+      store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
 
     } else {
-      console.log('No result available');
+      console.log('No result');
     }
   });
-
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
-  await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
-  await getIpAddress(item);
   await router.push('/databaseDetail');
 
 }

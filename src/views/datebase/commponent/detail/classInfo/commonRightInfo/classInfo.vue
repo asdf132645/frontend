@@ -221,6 +221,7 @@ import {
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
+import {useGetRunningInfoByIdQuery} from "@/gql";
 
 const router = useRouter();
 
@@ -230,6 +231,8 @@ const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const slideData = computed(() => store.state.runningModule);
+
 const barcodeImg = ref('');
 const userId = ref('');
 const wbcMemo = ref('');
@@ -1102,7 +1105,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
+      await store.dispatch('runningModule/updateRunningData', response?.data[0]);
       if (!noAlert) {
         toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast('Success');
@@ -1150,15 +1153,15 @@ const getOrderClass = async () => {
 
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
-  const filteredItems: any = await classInfoDetailSelectQueryApi(String(selectedSampleId.value));
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.data?.id)});
-  selectItems.value = filteredItems.data;
+  const filteredItems: any = slideData.value;
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.id)});
+  selectItems.value = filteredItems;
   const customClassItems = selectItems.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
   selectItems.value.wbcInfoAfter = newItem;
 
   const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
   let wbcBeforeInfo = removeDuplicatesById(selectItems.value.wbcInfo.wbcInfo[0] || [])
-  let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || filteredItems.data.wbcInfo.wbcInfo[0] || []);
+  let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || filteredItems.wbcInfo.wbcInfo[0] || []);
 
   wbcBeforeInfo = removeDuplicatesById(wbcBeforeInfo);
   wbcAfterInfo = removeDuplicatesById(wbcAfterInfo);
