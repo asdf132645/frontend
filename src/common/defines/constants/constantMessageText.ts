@@ -90,7 +90,7 @@ export const enum MESSAGES {
     SETTING_INFO_ALARM_TIME_KO = '알람 켜기/끄기 & 타이머(초) 선택',
     SETTING_INFO_NS_NB_INTEGRATION_EN = '',
     SETTING_INFO_NS_NB_INTEGRATION_KO = 'ON일 경우 Neutrophil-Segment, Neutrophil-Band 를 Neutrophil로 합쳐서 검사',
-    SETTING_INFO_IA_ROOT_PATH_EN = '',
+    SETTING_INFO_IA_ROOT_PATH_EN = 'Data Save Path',
     SETTING_INFO_IA_ROOT_PATH_KO = '검체 데이터 저장 경로 및 다운로드 진행 시 시작 경로',
     SETTING_INFO_COMMON = '',
     SETTING_INFO_BF_ANALYSIS_VALUES = '',
@@ -99,37 +99,53 @@ export const enum MESSAGES {
     SETTING_INFO_ANALYSIS_TYPE = '',
 }
 
-export const enum MSG_GENERAL {
-    SAVE = 'Save',
-    LEAVE = 'Leave',
-    CANCEL = 'Cancel',
-    CLOSE = 'Close',
-    COPY = 'Copy',
-    MOVE = 'Move',
-    DELETE = 'Delete',
-    UPLOAD = 'Upload',
-    OK = 'OK',
-    SUCCESS = 'Success',
-}
+export const MSG_GENERAL = {
+    SAVE: 'Save',
+    LEAVE: 'Leave',
+    CANCEL: 'Cancel',
+    CLOSE: 'Close',
+    COPY: 'Copy',
+    MOVE: 'Move',
+    DELETE: 'Delete',
+    UPLOAD: 'Upload',
+    OK: 'OK',
+    SUCCESS: 'Success',
+} as const;
 
-export const enum SYSTEM_MSG {
-    PROCESS_ALREADY_RUNNING = 'Process is already running.',
-    STOP_PROCESS = 'Process is terminating.',
-}
+export const MSG = {
+    TOOLTIP: {
+        BARCODE_COPY: 'Copy barcodeNo',
+        MEMO: 'Memo On/Off',
+        CONFIRM: 'Confirm',
+        CLASS_MOVE: 'Class Drag movement Lock/Unlock',
+        LIS_UPLOAD: 'Upload LIS',
+        COUNT_PERCENT: 'Count   Percent',
+        IA_ROOT_PATH: 'Analysis Data Save Path',
+        NS_NB_INTEGRATION: 'Integrate (Neutrophil-Segment & Neutrophil-Band) to Neutrophil',
+        ALARM: 'Alarm & Alarm Timer On/Off',
+        KEEP_PAGE: 'Maintain page state when navigating',
+        DOWNLOAD_SAVE_PATH: 'Download Save Path & Upload Data Path',
+        DOWNLOAD: '1. Select the date for download\n2. Click \'Copy\' to back up the data or \'Move\' to change the storage location.',
+        UPLOAD: 'Select Upload Destination Path',
+        OPEN_DOWNLOAD_SAVE_PATH: 'Open Download Save Path',
 
-export const enum SUCCESS_MSG {
-    SETTING_SAVE = 'Saved successfully',
-    SETTING_UPDATE = 'Updated successfully',
-}
-
-export const enum ERROR_MSG {
-    SETTING_SAVE = 'Save failed',
-    SETTING_UPDATE = 'Update failed',
-    SETTING_NOT_SAVE = 'Setting not saved',
-}
-
-export const enum TOAST_MSG {
-    SUCCESS = 'success',
-    ERROR = 'error',
-    BARCODE_COPIED = 'Barcode Copied',
+    },
+    TOAST: {
+        SUCCESS: 'success',
+        ERROR: 'error',
+        BARCODE_COPIED: 'Barcode Copied',
+    },
+    ERROR: {
+        SETTING_SAVE: 'Save failed',
+        SETTING_UPDATE: 'Update failed',
+        SETTING_NOT_SAVE: 'Setting not saved',
+    },
+    SUCCESS: {
+        SETTING_SAVE: 'Saved successfully',
+        SETTING_UPDATE: 'Updated successfully',
+    },
+    SYSTEM: {
+        PROCESS_ALREADY_RUNNING: 'Process is already running.',
+        STOP_PROCESS: 'Process is terminating.',
+    }
 }

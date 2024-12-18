@@ -117,6 +117,7 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
+const isTcpError = computed(() => store.state.commonModule.isTcpError);
 
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
@@ -207,6 +208,9 @@ watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
+watch(() => isTcpError.value, (newIsTcpError) => {
+  sendBESeverIsTCPError(newIsTcpError);
+})
 
 onBeforeMount(() => {
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
@@ -800,7 +804,8 @@ const cellImgGet = async () => {
         const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
-        sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
+        sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
+        sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
       }
     }
@@ -838,6 +843,14 @@ const hideAlert = () => {
 
 const errorClear = async () => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
+}
+
+const sendBESeverIsTCPError = (newIsTcpError: boolean) => {
+  instance?.appContext.config.globalProperties.$socket.emit('isTCPError', {
+    type: 'SEND_DATA',
+    payload: window.APP_API_BASE_URL,
+    message: newIsTcpError,
+  });
 }
 
 </script>

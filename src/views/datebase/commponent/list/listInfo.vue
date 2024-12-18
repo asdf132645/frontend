@@ -12,7 +12,7 @@
           <li>NS, NB Integration: {{integrationFindNe(selectedItem.wbcInfoAfter)}}</li>
         </ul>
         <div>
-          <img v-show="!barCodeImageShowError" @error="onImageError" :src="pilePath"
+          <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="pilePath"
                style="width: 200px; height: 120px; float:right;"/>
         </div>
       </div>

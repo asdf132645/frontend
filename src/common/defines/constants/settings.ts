@@ -92,11 +92,11 @@ export const EDGE_SHOT_COUNT_LIST_HP = [
 ]
 
 export const POSITION_MARGIN_LIST = [
-    // { value: '-5', text: '-5' },
-    // { value: '-4', text: '-4' },
-    // { value: '-3', text: '-3' },
-    // { value: '-2', text: '-2' },
-    // { value: '-1', text: '-1' },
+    { value: '-5', text: '-5' },
+    { value: '-4', text: '-4' },
+    { value: '-3', text: '-3' },
+    { value: '-2', text: '-2' },
+    { value: '-1', text: '-1' },
     { value: '0', text: '0' },
     { value: '1', text: '1' },
     { value: '2', text: '2' },

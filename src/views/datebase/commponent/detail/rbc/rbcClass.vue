@@ -6,15 +6,27 @@
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
         <li class="pos-relative">
-          <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" v-if="type !== 'report'" />
+          <font-awesome-icon
+              v-if="type !== 'report'"
+              :icon="['fas', 'comment-dots']"
+              @click="memoOpen"
+              @mouseenter="tooltipVisibleFunc('memo', true)"
+              @mouseleave="tooltipVisibleFunc('memo', false)"
+          />
           <div v-if="memoModal" class="memoModal">
             <textarea v-model="memo"></textarea>
             <button class="memoModalBtn" @click="memoChange">OK</button>
             <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
           </div>
+          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
         </li>
-        <li @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
-          <font-awesome-icon :icon="['fas', 'square-check']"/>
+        <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
+          <font-awesome-icon
+              :icon="['fas', 'square-check']"
+              @mouseenter="tooltipVisibleFunc('confirm', true)"
+              @mouseleave="tooltipVisibleFunc('confirm', false)"
+          />
+          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
         </li>
       </ul>
     </div>
@@ -23,9 +35,9 @@
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Category</li>
-            <li @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" class="flex-column cursorPointer">
+            <li @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" class="flex-column cursorPointer" style="padding-top: 6px">
               <span>{{ getCategoryName(category) }}</span>
-              <span style="margin-left: 12px;">
+              <span style="margin-left: 12px; margin-top: 2px;">
                 <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryId !== '05'" />
                 <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryId !== '05'" />
               </span>
@@ -209,7 +221,7 @@
           </li>
         </ul>
         <ul class="degree analysis">
-          <li>{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li style="width: 130px;">{{ pltCount || 0 }} PLT / 1000 RBC</li>
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
@@ -251,13 +263,13 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance, reactive} from 'vue';
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {useRouter} from "vue-router";
 import moment from "moment/moment";
 import SliderBar from "@/components/commonUi/SliderBar.vue";
@@ -272,6 +284,7 @@ import {
   VISIBLE_SHAPE_OPTIONS,
   VISIBLE_SIZE_OPTIONS, VisibleRbcType
 } from "@/common/defines/constants/rbc";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -328,6 +341,10 @@ const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
 const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
+const tooltipVisible = reactive({
+  confirm: false,
+  memo: false,
+})
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -1212,5 +1229,8 @@ const reDegree = async (rbcInfoArray: any) => {
   });
 };
 
+const tooltipVisibleFunc = (type: 'confirm' | 'memo', visible: boolean) => {
+  tooltipVisible[type] = visible;
+}
 
 </script>

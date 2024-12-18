@@ -1020,7 +1020,7 @@ function changeImgBrightness(event: any) {
   wbcInfo.value.forEach((item: any) => {
     item.images.forEach((image: any) => {
       // 각 색상 채널 개별적으로 조절
-      image.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+      image.filter = `opacity(1) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
     });
   });
 }

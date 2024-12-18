@@ -41,8 +41,7 @@
         </tr>
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-<!--          <th :rowspan="projectType === 'pb' ? (edgeShotType === '2' || edgeShotType ==='3') ? 4 : 3 : 2">PBS Analysis Values</th>-->
-          <th :rowspan="projectType === 'pb' ? 3 : 2">PBS Analysis Values</th>
+          <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
           <th>
             Cell Analyzing Count
           </th>
@@ -70,7 +69,7 @@
                 @mouseleave="informationFontHover('edgeShotType', 'leave')"
             />
             <Transition>
-              <div v-if="showEdgeShotTypeInfo" class="tutorial-edgeShotType-container">
+              <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
                 <img :src="smearTop" width="400" />
               </div>
             </Transition>
@@ -82,14 +81,31 @@
           </td>
         </tr>
 
-<!--        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && (edgeShotType === '2' || edgeShotType === '3')">-->
-<!--          <th class="pos-relative">Edge Shot Count</th>-->
-<!--          <td>-->
-<!--            <select v-model='edgeShotCount'>-->
-<!--              <option v-for="type in covertedEdgeShotTypeList(edgeShotType)" :key="type.value" :value="type.value">{{ type.text }}</option>-->
-<!--            </select>-->
-<!--          </td>-->
-<!--        </tr>-->
+        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (edgeShotType === '2' || edgeShotType === '3')">
+          <th class="pos-relative">
+            Edge Shot Count
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="() => informationFontHover('edgeShotCount', 'hover')"
+                @mouseleave="informationFontHover('edgeShotCount', 'leave')"
+            />
+            <Transition>
+              <div v-if="showTutorialImage.edgeShotCount" class="tutorial-edgeShotType-container">
+                <img :src="edgeShotCountImg" width="260" />
+              </div>
+            </Transition>
+          </th>
+          <td v-show="edgeShotType === '2'">
+            <select v-model='edgeShotCount.LP'>
+              <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+          <td v-show="edgeShotType === '3'">
+            <select v-model='edgeShotCount.HP'>
+              <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
         <!--      BF analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
@@ -111,7 +127,7 @@
                 @mouseleave="informationFontHover('positionMargin', 'leave')"
             />
             <Transition>
-              <div v-show="showPositionMarginTutorialImg" class="tutorial-positionMargin-container">
+              <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
                 <img :src="commonPositionMargin" width="140" />
               </div>
             </Transition>
@@ -142,7 +158,13 @@
         <tr>
           <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
             IA Root Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
+                @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
+                @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
           </th>
           <td colspan="2">
             <select v-model='iaRootPath'>
@@ -151,9 +173,14 @@
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             NS/NB Integration
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_NS_NB_INTEGRATION_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
+                @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
           </th>
           <td>
             <font-awesome-icon
@@ -164,9 +191,14 @@
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             Alarm Timer (sec)
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_ALARM_TIME_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('alarm', true)"
+                @mouseleave="tooltipVisibleFunc('alarm', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.ALARM" />
           </th>
           <td>
             <font-awesome-icon
@@ -180,9 +212,14 @@
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
-          <th>
+          <th class="pos-relative">
             Keep Page
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_KEEP_PAGE_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('keepPage', true)"
+                @mouseleave="tooltipVisibleFunc('keepPage', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type="" :message="MSG.TOOLTIP.KEEP_PAGE" />
           </th>
           <td>
             <font-awesome-icon
@@ -202,9 +239,14 @@
         </colgroup>
         <tbody>
         <tr>
-          <th>
+          <th class="pos-relative">
             Download Save Path
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_DOWNLOAD_SAVE_PATH_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('downloadSavePath', true)"
+                @mouseleave="tooltipVisibleFunc('downloadSavePath', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH" />
           </th>
 
           <td>
@@ -212,14 +254,28 @@
               <select v-model='downloadRootPath' class="downloadPath">
                 <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
               </select>
-              <font-awesome-icon :icon="['fas', 'folder-open']" @click="openSourceDrive" class="openDriveIcon" />
+              <div class="pos-relative">
+                <font-awesome-icon
+                    :icon="['fas', 'folder-open']"
+                    @click="openSourceDrive"
+                    class="openDriveIcon"
+                    @mouseenter="tooltipVisibleFunc('openDownloadSavePath', true)"
+                    @mouseleave="tooltipVisibleFunc('openDownloadSavePath', false)"
+                />
+                <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH" />
+              </div>
             </div>
           </td>
         </tr>
         <tr>
-          <th title="Download data from start to end date">
+          <th class="pos-relative">
             Download
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_DOWNLOAD_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('download', true)"
+                @mouseleave="tooltipVisibleFunc('download', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD" />
           </th>
           <td>
             <div class="backupDatePickers">
@@ -230,9 +286,15 @@
           </td>
         </tr>
         <tr>
-          <th>
+          <th class="pos-relative">
             Upload
-            <font-awesome-icon :icon="['fas', 'circle-info']" :title="MESSAGES.SETTING_INFO_UPLOAD_KO" />
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
+                @mouseenter="tooltipVisibleFunc('upload', true)"
+                @mouseleave="tooltipVisibleFunc('upload', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.UPLOAD" />
           </th>
           <td colspan="2">
             <div class="settingUploadContainer">
@@ -351,7 +413,7 @@
 <script setup lang="ts">
 import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import { computed, nextTick, onMounted, ref, watch, getCurrentInstance } from "vue";
+import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive, onBeforeMount} from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -366,7 +428,7 @@ import {
   EDGE_SHOT_COUNT_LIST_LP, EDGE_SHOT_COUNT_LIST_HP
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {
   backUpDateApi,
   downloadPossibleApi,
@@ -380,6 +442,8 @@ import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
+import edgeShotCountImg from "@/assets/images/edgeShotCount.png";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -387,7 +451,6 @@ const router = useRouter();
 const showAlert = ref(false);
 const alertType = ref('');
 const showUploadModal = ref(false);
-
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
 const testTypeCd = ref('01');
@@ -398,7 +461,10 @@ const pltPositionMargin = ref('0');
 const pbsCellAnalyzingCount = ref('100');
 const stitchCount = ref('1');
 const edgeShotType = ref('0');
-const edgeShotCount = ref('1');
+const edgeShotCount = ref({
+  'LP': '1',
+  'HP': '3',
+})
 const bfCellAnalyzingCount = ref('100');
 const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
@@ -456,18 +522,23 @@ const loadingState = ref('');
 const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
-const showEdgeShotTypeInfo = ref(false);
-const showPositionMarginTutorialImg = ref(false);
-const tooltipVisible = ref({
+const showTutorialImage = reactive({
+  edgeShotType: false,
+  positionMargin: false,
+  edgeShotCount: false,
+})
+const apiUrl = ref('');
+const tooltipVisible = reactive({
   iaRootPath: false,
   nsNbIntegration: false,
-  alarmTimer: false,
+  alarm: false,
   keepPage: false,
   downloadSavePath: false,
   download: false,
   upload: false,
+  openDownloadSavePath: false,
 })
-const apiUrl = ref('');
+const machineVersion = ref<'12a' | '100a'>('12a');
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -479,11 +550,15 @@ instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished'
   }
 })
 
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  machineVersion.value = window.MACHINE_VERSION;
+})
+
 onMounted(async () => {
   getApiUrl();
   await nextTick();
   testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
@@ -504,7 +579,8 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     stitchCount: stitchCount.value,
     edgeShotType: edgeShotType.value,
-    edgeShotCount: edgeShotCount.value,
+    edgeShotLPCount: edgeShotCount.value.LP,
+    edgeShotHPCount: edgeShotCount.value.HP,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
     isNsNbIntegration: isNsNbIntegration.value,
@@ -588,7 +664,8 @@ const cellImgGet = async () => {
         stitchCount.value = data.stitchCount;
         bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
         edgeShotType.value = String(data?.edgeShotType);
-        edgeShotCount.value = String(data?.edgeShotCount);
+        edgeShotCount.value.LP = String(data?.edgeShotLPCount);
+        edgeShotCount.value.HP = String(data?.edgeShotHPCount);
         iaRootPath.value = data.iaRootPath;
         downloadRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
         isNsNbIntegration.value = data.isNsNbIntegration;
@@ -609,7 +686,8 @@ const cellImgGet = async () => {
           pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
           stitchCount: data?.stitchCount,
           edgeShotType: data?.edgeShotType,
-          edgeShotCount: data?.edgeShotCount,
+          edgeShotLPCount: data?.edgeShotLPCount,
+          edgeShotHPCount: data?.edgeShotHPCount,
           bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
           iaRootPath: data?.iaRootPath,
           isNsNbIntegration: data?.isNsNbIntegration,
@@ -639,7 +717,8 @@ const cellImgSet = async () => {
     diffPltPositionMargin: pltPositionMargin.value,
     pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
     edgeShotType: edgeShotType.value,
-    edgeShotCount: edgeShotType.value,
+    edgeShotLPCount: edgeShotCount.value.LP,
+    edgeShotHPCount: edgeShotCount.value.HP,
     stitchCount: stitchCount.value,
     bfCellAnalyzingCount: bfCellAnalyzingCount.value,
     iaRootPath: iaRootPath.value,
@@ -677,7 +756,8 @@ const cellImgSet = async () => {
       sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
       sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
       sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
-      sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
+      sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
+      sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('isAlarm', String(data?.isAlarm));
       const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
@@ -704,18 +784,22 @@ const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
 
-const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
+const informationFontHover = (type: 'edgeShotType' | 'positionMargin' | 'edgeShotCount', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
-    showEdgeShotTypeInfo.value = false;
-    showPositionMarginTutorialImg.value = false;
+    showTutorialImage.edgeShotCount = false;
+    showTutorialImage.edgeShotType = false;
+    showTutorialImage.positionMargin = false;
     return;
   }
   switch (type) {
     case 'edgeShotType':
-      showEdgeShotTypeInfo.value = true;
+      showTutorialImage.edgeShotType = true;
       break;
     case 'positionMargin':
-      showPositionMarginTutorialImg.value = true;
+      showTutorialImage.positionMargin = true;
+      break;
+    case 'edgeShotCount':
+      showTutorialImage.edgeShotCount = true;
       break;
     default:
       break;
@@ -979,9 +1063,16 @@ const handleUploadSelectModalClose = () => {
   selectedUploadFile.value = '';
 }
 
-const covertedEdgeShotTypeList = (edgeShotType: string) => {
-  if (edgeShotType === '2') return EDGE_SHOT_COUNT_LIST_LP;
-  else if (edgeShotType === '3') return EDGE_SHOT_COUNT_LIST_HP;
+const tooltipVisibleFunc = (type: 'iaRootPath' | 'nsNbIntegration' | 'alarm' | 'keepPage' | 'downloadSavePath' | 'download' | 'upload' | 'openDownloadSavePath', visible: boolean) => {
+  tooltipVisible[type] = visible;
+}
+
+const pbsAnalysisValuesRowIndex = () => {
+  if (projectType.value !== 'pb') return 2;
+  if (machineVersion.value === '100a' && (edgeShotType.value === '2' || edgeShotType.value === '3')) return 4;
+  if (machineVersion.value === '100a') return 3;
+  if (machineVersion.value === '12a') return 3;
+  return 3;
 }
 
 </script>

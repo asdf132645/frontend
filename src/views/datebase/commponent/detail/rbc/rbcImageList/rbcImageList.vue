@@ -82,8 +82,13 @@
             />
           </div> -->
           <div>
-            <font-awesome-icon :icon="['fas', 'ruler']"/>
-            <span>Ruler</span>
+
+            <div>
+              <font-awesome-icon :icon="['fas', 'ruler']"/>
+              <span>Ruler</span>
+              <font-awesome-icon v-if="activeRuler !== 'None'" @click="handleReCenterRuler" :icon="['fas', 'arrows-to-dot']" class="hoverSizeAction cursorPointer" />
+            </div>
+
             <div class="ruler_box_img_list">
               <button
                   class="tab-ruler-btn_img_list"
@@ -109,10 +114,7 @@
     </div>
     <div class="tiling-viewer_img_list-box_img_list">
       <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else-if="activeTab !== 'malaria' && tileExist"
-           ref="tilingViewerLayer"
-           id="tiling-viewer_img_list" style="width: 100%;"
-           @contextmenu.prevent="rbcClassRightClick"></div>
+      <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer_img_list" @contextmenu.prevent="rbcClassRightClick"></div>
       <div v-else>
         <span>Tile does not exist.</span>
       </div>
@@ -231,6 +233,8 @@ const fileNameResultArr = ref<any>([]);
 const notCanvasClick = ref(false);
 const rbcImagePageNumber = ref(0);
 const imagePageType = ref<'RBC' | 'PLT'>('RBC');
+const zoomRatio = ref(0);
+const maxNumberOfLines = ref(330);
 
 onMounted(async () => {
   rbcImagePageNumber.value = 0;
@@ -637,7 +641,10 @@ const initElement = async () => {
         visibilityRatio: 1.0 // 이미지를 뷰포트에 맞추기 위한 비율 설정
       });
 
-      // 마그니파이어 설정 - 동그라미 줌기능
+
+      const initialMaxZoomLevel = tilesInfo[0]?.maxZoomLevel || 15;
+      viewer.value.viewport.maxZoomLevel = initialMaxZoomLevel;
+
       new OpenSeadragon.MouseTracker({
         element: viewer.value.element,
         moveHandler: function (event) {
@@ -731,13 +738,18 @@ const initElement = async () => {
       })
 
       viewer.value.addHandler('page', async (event: any) => {
-        const notCanvasClick = !fileNameResultArr.value[event.page].includes('RBC_Image');
+        const pageIndex = event.page;
+        const maxZoomLevel = tilesInfo[pageIndex]?.maxZoomLevel || 15;
+        const notCanvasClick = !fileNameResultArr.value[pageIndex].includes('RBC_Image');
+        viewer.value.viewport.maxZoomLevel = maxZoomLevel;
         if (!notCanvasClick) {
           imagePageType.value = 'RBC';
-          rbcImagePageNumber.value = event.page;
-          emits('changeCurrentRbcImagePageNumber', event.page);
+          maxNumberOfLines.value = 330;
+          rbcImagePageNumber.value = pageIndex;
+          emits('changeCurrentRbcImagePageNumber', pageIndex);
         } else {
           imagePageType.value = 'PLT';
+          maxNumberOfLines.value = 1000;
         }
 
         await removeRuler();
@@ -964,8 +976,8 @@ const fetchTilesInfo = async (folderPath: string) => {
               Width: width,
               Height: height
             },
-            maxZoomLevel: fileName.includes('RBC') ? 15 : 50,
-          }
+          },
+          maxZoomLevel: fileName.includes('RBC') ? 15 : 170,
         });
 
         canvasCurrentWitdh.value = width;
@@ -1023,8 +1035,13 @@ const changeImgBrightness = (event: any) => {
   const blue = imageRgb.value[2];
 
   const imageContainer = document.getElementById('tiling-viewer_img_list');
+
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+    imageContainer.style.filter = `
+      opacity(0.9)
+      drop-shadow(0 0 10px rgb(${red}, ${green}, ${blue}))
+      brightness(${brightness}%)
+    `;
   }
 };
 
@@ -1035,13 +1052,16 @@ const changeImageRgb = () => {
   const green = imageRgb.value[1];
   const blue = imageRgb.value[2];
   const brightness = imgBrightness.value;
-
   const imageContainer = document.getElementById('tiling-viewer_img_list');
+  const rgbValue = `rgb(${red}, ${green}, ${blue})`;
 
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(0.9) drop-shadow(0 0 0 rgb(${red}, ${green}, ${blue})) brightness(${brightness}%)`;
+    imageContainer.style.filter = `
+      opacity(0.9)
+      drop-shadow(0 0 0 ${rgbValue})
+      brightness(${brightness}%)
+    `;
   }
-
 }
 
 const rgbReset = () => {
@@ -1050,7 +1070,11 @@ const rgbReset = () => {
 
   const imageContainer = document.getElementById('tiling-viewer_img_list');
   if (imageContainer) {
-    imageContainer.style.filter = `opacity(1) drop-shadow(0 0 0 rgb(0,0,0)) brightness(${brightness}%)`;
+    imageContainer.style.filter = `
+      opacity(0.9)
+      drop-shadow(0 0 10px rgb(0,0,0))
+      brightness(${brightness}%)
+    `;
   }
 };
 
@@ -1075,8 +1099,8 @@ const drawLines = () => {
     const imageWidth = viewer.value.world.getItemAt(0).getContentSize().x;
     const zoom = viewer.value.viewport.getZoom();
 
-    const maxNumberOfLines = 400;
-    const numberOfLines = Math.round(maxNumberOfLines / zoom);
+    // 1칸 당 5μm로 고정
+    const numberOfLines = Math.round(maxNumberOfLines.value / zoom);
 
     const minGap = Math.min(imageWidth, imageHeight) / numberOfLines;
 
@@ -1130,6 +1154,7 @@ const onClickRuler = (ruler: any) => {
 
 const drawRuler = (ruler: any) => {
   const divtilingViewer = document.getElementById('tiling-viewer_img_list');
+  zoomRatio.value = viewer.value.viewport.viewportToImageZoom(viewer.value.viewport.getZoom());
 
   if (divtilingViewer instanceof HTMLElement) {
     const rulerOverlay = document.getElementById('rulerOverlay');
@@ -1140,8 +1165,11 @@ const drawRuler = (ruler: any) => {
     const element = document.createElement('div');
     element.id = 'rulerOverlay';
     element.style.position = 'absolute';
-    element.style.width = rulerWidth.value + 'px';
-    element.style.height = rulerWidth.value + 'px';
+    element.style.display = 'flex';
+    element.style.justifyContent = 'center';
+    element.style.alignItems = 'center';
+    element.style.width = 0;
+    element.style.height = 0;
     element.style.zIndex = '9999999';
 
     if (rulerPos.value.left === 0) {
@@ -1182,7 +1210,7 @@ const drawRuler = (ruler: any) => {
           refreshRuler(element, ++rulerSize.value, ruler);
         }
       } else {
-        if (rulerSize.value > 5) {
+        if (rulerSize.value > 1) {
           refreshRuler(element, --rulerSize.value, ruler);
         }
       }
@@ -1192,9 +1220,7 @@ const drawRuler = (ruler: any) => {
 
     if (parent instanceof HTMLElement) {
       parent.onmousemove = function (e) {
-        if (!isPress) {
-          return;
-        }
+        if (!isPress) return;
 
         rulerPos.value.posX = rulerPos.value.prevPosX - e.clientX;
         rulerPos.value.posY = rulerPos.value.prevPosY - e.clientY;
@@ -1218,29 +1244,27 @@ const removeRuler = async () => {
   await initGetRulerWidthHeight();
 }
 
-const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
+const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
   if (typeof rulerSize === 'object') rulerSize = rulerSize.value;
   if (document.getElementById('rulerTitle') !== null) element.removeChild(document.getElementById('rulerTitle'))
 
-  let zoomRatio = viewer.value.viewport.viewportToImageZoom(viewer.value.viewport.getZoom())
-
   let tmp
   if (imagePageType.value === 'PLT') {
-    tmp = Number(rulerXResolution.value) * zoomRatio;
+    tmp = Number(rulerXResolution.value) * zoomRatio.value;
   } else if (imagePageType.value === 'RBC') {
-    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio;
+    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
   } else {
-    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio;
+    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
   }
 
-  const rSize = rulerSize > 5 ? 1 + (tmp * (rulerSize - 5)) : 1;
+  const rSize = rulerSize > 1 ? 1 + (tmp * (rulerSize - 1)) : 1;
 
   if (imagePageType.value === 'PLT') {
-    rulerWidth.value = (rulerSize * 0.001) / Number(rulerXResolution.value) * zoomRatio * rSize;
+    rulerWidth.value = (rulerSize * 0.001) / Number(rulerXResolution.value) * zoomRatio.value * rSize;
   } else if (imagePageType.value === 'RBC') {
-    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio * rSize;
+    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
   } else {
-    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio * rSize;
+    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
   }
 
   const titleElement = document.createElement('div')
@@ -1248,12 +1272,14 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   titleElement.style.color = '#212121';
   titleElement.style.fontSize = '16px';
   titleElement.style.display = 'flex';
+  titleElement.style.position = 'relative';
   titleElement.style.alignItems = 'center';
   titleElement.style.justifyContent = 'center';
   titleElement.style.flexDirection = 'column';
 
   if (ruler.id === 'line' || ruler === 'Line') {
-    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML =
+        '<div class="rulerTitleWrapper">' + rulerSize + ' μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
         '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
@@ -1262,7 +1288,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     element.appendChild(titleElement)
 
   } else if (ruler.id === 'cross' || ruler === 'Cross') {
-    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + ' μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value +'" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#212121" stroke-width="5%"/>' +
         '<line x1="0%" y1="60%" x2="0%" y2="40%" stroke="#212121" stroke-width="5%"/>' +
@@ -1275,7 +1301,7 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
     element.appendChild(titleElement);
 
   } else if (ruler.id === 'circle' || ruler === 'Circle') {
-    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + 'μm' + '</div>' +
+    titleElement.innerHTML = '<div class="rulerTitleWrapper">' + rulerSize + ' μm' + '</div>' +
         '<svg width="' + rulerWidth.value + '" height="' + rulerWidth.value + '" xmlns="http://www.w3.org/2000/svg" class="rbcRulerDiv">' +
         '<circle cx="50%" cy="50%" r="50%" stroke="#212121" fill="transparent" stroke-width="5%" opacity="1"  />' +
         '</svg>';
@@ -1290,9 +1316,48 @@ const refreshRuler = (element: any, rulerSize: any, ruler: any) => {
   }
 };
 
+const handleReCenterRuler = () => {
+  const rulerOverlay = document.getElementById('rulerOverlay');
+  rulerOverlay.style.transition = `left 0.5s ease-in-out, top 0.5s ease-in-out`;
+  if (!rulerOverlay) return;
+  rulerOverlay.style.left = (viewer.value.container.clientWidth / 2) + 'px';
+  rulerOverlay.style.top = (viewer.value.container.clientHeight / 2) + 'px';
+
+  const handleTransitionEnd = () => {
+    rulerOverlay.style.transition = 'none';
+    rulerOverlay.removeEventListener('transitionend', handleTransitionEnd);
+  }
+
+  rulerOverlay.addEventListener('transitionend', handleTransitionEnd);
+
+  rulerPos.value.prevPosX = rulerOverlay.offsetLeft;
+  rulerPos.value.prevPosY = rulerOverlay.offsetTop;
+  rulerPos.value.left = rulerOverlay.offsetLeft - rulerPos.value.prevPosX;
+  rulerPos.value.top = rulerOverlay.offsetTop - rulerPos.value.prevPosY;
+  handleRulerWidth();
+}
+
+const handleRulerWidth = () => {
+  const isPLT = imagePageType.value === 'PLT';
+  const isRBC = imagePageType.value === 'RBC';
+
+  const baseResolution = isPLT
+    ? Number(rulerXResolution.value)
+    : (Number(rulerXResolution.value) / 10) * 4;
+  const tmp = baseResolution * zoomRatio.value;
+
+  const rSize = rulerSize.value > 5 ? 1 + (tmp * (rulerSize.value - 5)) : 1;
+
+  rulerWidth.value = (rulerSize.value * 0.001) / (baseResolution * zoomRatio.value * rSize);
+}
+
 // Zoom
 const onClickZoom = () => {
   isMagnifyingGlass.value = !isMagnifyingGlass.value;
+  if (!isMagnifyingGlass.value) {
+    const existingMagCanvas = document.getElementById('magCanvas');
+    if (existingMagCanvas) viewer.value.element.removeChild(existingMagCanvas);
+  }
 }
 
 const initGetRulerWidthHeight = async () => {

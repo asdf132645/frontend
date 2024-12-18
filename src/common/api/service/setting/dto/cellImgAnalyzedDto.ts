@@ -8,7 +8,8 @@ export interface CellImgAnalyzedRequest {
     pbsCellAnalyzingCount: string;
     stitchCount: string;
     edgeShotType: number;
-    edgeShotCount: string;
+    edgeShotLPCount: string;
+    edgeShotHPCount: string;
     bfCellAnalyzingCount: string;
     iaRootPath: string;
     isNsNbIntegration: boolean;
@@ -33,7 +34,8 @@ export interface CellImgAnalyzedResponse {
     pbsCellAnalyzingCount: string;
     stitchCount: string;
     edgeShotType: number;
-    edgeShotCount: string;
+    edgeShotLPCount: string;
+    edgeShotHPCount: string;
     bfCellAnalyzingCount: string;
     iaRootPath: string;
     isNsNbIntegration: boolean;

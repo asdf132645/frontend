@@ -40,7 +40,8 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
                     sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
                     sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
                     sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
-                    sessionStorage.setItem('edgeShotCount', String(data?.edgeShotCount));
+                    sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
+                    sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
                     sessionStorage.setItem('iaRootPath', data?.iaRootPath);
                     sessionStorage.setItem('keepPage', String(data?.keepPage));
                     const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage': 'bmKeepPage';

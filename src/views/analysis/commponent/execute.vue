@@ -251,7 +251,6 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
-    const edgeShotCount = sessionStorage.getItem('edgeShotCount') || '1';
     const autoStart = sessionStorage.getItem('autoStart') || 1;
 
     let startAction = tcpReq().embedStatus.startAction;
@@ -272,13 +271,13 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
       })
     }
 
-    if (window.PROJECT_TYPE === 'pb') {
-      if (edgeShotType === '2' || edgeShotType === '3') {
-        const edgeShotCount = sessionStorage.getItem('edgeShotCount') || '1';
-        Object.assign(startAction, {
-          edgeShotCount: edgeShotCount,
-        })
-      }
+    // 2: LowPower | 3: HighPower
+    if (window.PROJECT_TYPE === 'pb' && ['2', '3'].includes(edgeShotType)) {
+      const key = edgeShotType === '2' ? 'edgeShotLPCount' : 'edgeShotHPCount';
+      const defaultCount = edgeShotType === '2' ? '1' : '3';
+      const edgeShotCount = sessionStorage.getItem(key) || defaultCount;
+
+      Object.assign(startAction, { edgeShotCount });
     }
 
 
