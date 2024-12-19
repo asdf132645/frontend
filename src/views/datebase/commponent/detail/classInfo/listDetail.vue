@@ -265,6 +265,7 @@ import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { checkPbNormalCell } from "@/common/lib/utils/changeData";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -279,7 +280,6 @@ const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const selectedSampleId: any = computed(() => store.state.commonModule.selectedSampleId);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
@@ -340,6 +340,7 @@ const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const changeSlideByLisUpload = ref(false);
 const normalItems = ref<any>([]);
 const slideData = computed(() => store.state.runningModule);
+const ipAddress = ref('');
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -365,6 +366,7 @@ watch(
         await nextTick();
         console.log('변화 감지:', { newValue: newVal, oldValue: oldVal });
         try {
+
           showImageGallery.value = false;
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
@@ -451,7 +453,6 @@ const handleZoom = () => {
 
 const getDetailRunningInfo = async (newValue: any) => {
   try {
-    console.log(newValue)
     selectItems.value = newValue;
     iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
 
@@ -640,7 +641,8 @@ const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
 
 
 const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
-
+  const ip = await getDeviceIpApi();
+  ipAddress.value = ip.data;
   wbcInfo.value = [];
   try {
     const result = await getWbcCustomClassApi();
@@ -843,7 +845,6 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 
 const refreshClass = async (data: any) => {
   showImageGallery.value = false;
-
   cellMarkerIcon.value = false;
   await getDetailRunningInfo(data);
   showImageGallery.value = true;
@@ -1685,6 +1686,9 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     const { isNormal, classInfo } = checkPbNormalCell(clonedWbcInfo, normalItems.value)
     res.isNormal = isNormal;
     res.abnormalClassInfo = classInfo;
+    // 실제 락 거는 부분 여기로 변경 함 그래프 ql 로 변경하면서 버그 방지를 위해서 변경
+    res.pcIp = ipAddress.value;
+    res.lock_status = true;
     originalDbVal = [res];
   }
 

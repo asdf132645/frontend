@@ -422,7 +422,6 @@ const rowRightClick = async (item, event) => {
     showSuccessAlert(MESSAGES.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
-
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   rightClickItem.value = item;
   if (Object.keys(item?.wbcInfo).length !== 0) {

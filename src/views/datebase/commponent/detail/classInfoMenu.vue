@@ -166,7 +166,9 @@ const hideAlert = () => {
 };
 
 const deleteConnectionStatus = async () => {
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
+  if(!resData.value.pcIp){
+    await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
+  }
   const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
   const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
   const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
@@ -184,10 +186,12 @@ const upDownBlockAccess = async (selectItems: any) => {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}&dayQuery=${dayQuery}`
+    const req = `oldPcIp=${ipAddress.value}&newEntityId=${resData.value?.id}&newPcIp=${ipAddress.value}&dayQuery=${dayQuery}`;
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
 
     await updatePcIpStateApi(req).then(response => {
+      console.log(ipAddress.value)
+      console.log(response)
       delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
       console.error('3 err', error)
@@ -263,6 +267,10 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 
     if (res.data !== null) {
       resData.value = res.data;
+      const result = await getDeviceIpApi();
+      if(res.data.pcIp !== result.data && res.data.lock_status){
+        return;
+      }
       await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(res.data.id)});
       await store.dispatch('runningModule/updateRunningData', res.data);
     }
@@ -288,7 +296,7 @@ const moveWbc = async (direction: any) => {
     }
   }
 
-  store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
+  await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
   if (timeoutId !== undefined) {
     clearTimeout(timeoutId);
   }
@@ -304,13 +312,15 @@ const moveWbc = async (direction: any) => {
 
 const processNextDbIndex = async (direction: any, id: number) => {
   const res: any = await pageUpDownRunnIng(id, '1', direction);
+  console.log(resData.value)
   if (resData.value?.lock_status) {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';
     return;
+  }else{
+    await handleDataResponse(res?.id, res);
   }
-  await handleDataResponse(res?.id, res);
 };
 
 const handleDataResponse = async (dbId: any, res: any) => {
@@ -323,7 +333,6 @@ const handleDataResponse = async (dbId: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(selectItemsNewVal.id)});
   if ((projectType.value === 'pb' && selectItems.value?.testType === '01' && isActive("/databaseRbc")) || (!keepPage.value || keepPage.value === "false")) {
     pageGo('/databaseDetail');
