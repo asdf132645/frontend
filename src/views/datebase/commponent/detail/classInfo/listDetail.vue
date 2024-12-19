@@ -266,6 +266,8 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { checkPbNormalCell } from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {useUpdateRunningInfoMutation} from "@/gql/mutation";
+import {useGetRunningInfoByIdQuery} from "@/gql/queries";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -1701,6 +1703,20 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+    const updateDto: any = {
+      id : originalDb.id,
+      isNormal: originalDb.isNormal,
+      abnormalClassInfo: originalDb.abnormalClassInfo,
+      pcIp: originalDb.pcIp,
+      lock_status: originalDb.lock_status,
+      wbcInfoAfter: originalDb.wbcInfoAfter,
+    }
+
+    const { mutate, loading, error, onDone} = useUpdateRunningInfoMutation({
+      variables: {
+        updateDto: updateDto// value for 'updateDto'
+      },
+    })
     const response: any = await updateRunningApi({
       userId: Number(userId.value),
       runingInfoDtoItems: originalDb,
