@@ -223,7 +223,7 @@ import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import {useGetRunningInfoByIdQuery} from "@/gql";
+import {useGetRunningInfoByIdQuery} from "@/gql/queries";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -422,7 +422,6 @@ const rowRightClick = async (item, event) => {
     showSuccessAlert(MESSAGES.IDS_ERROR_SELECT_A_TARGET_ITEM);
     return;
   }
-
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   rightClickItem.value = item;
   if (Object.keys(item?.wbcInfo).length !== 0) {
@@ -554,16 +553,14 @@ const rowDbClick = async (item) => {
       { fetchPolicy: 'no-cache' }
   );
 
-  watch(result, (newValue) => {
+  watch(result, async (newValue) => {
     if (newValue) {
-      console.log('Running Info:', newValue?.getRunningInfoByIdGQL); // 새로운 결과를 로그에 출력
-      store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
-
+      await store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
+      await router.push('/databaseDetail');
     } else {
       console.log('No result');
     }
   });
-  await router.push('/databaseDetail');
 
 }
 

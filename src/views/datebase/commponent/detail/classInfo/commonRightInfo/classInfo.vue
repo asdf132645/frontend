@@ -235,7 +235,6 @@ import {createCbcFile, createDirectory, createFile} from "@/common/api/service/f
 import {
   createH17,
   readH7Message,
-  readJsonFile,
   readNoFlagHl7Message
 } from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
@@ -258,7 +257,6 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import {useGetRunningInfoByIdQuery} from "@/gql";
 
 const router = useRouter();
 

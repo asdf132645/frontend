@@ -104,29 +104,29 @@ export const apiConstants = {
         },
         wbcCustomClass: {
             create: {
-                endpoint: 'wbcCustomClass/create',
+                endpoint: 'wbcCustomClass/wbcCustomClassCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'wbcCustomClass/update',
+                endpoint: 'wbcCustomClass/wbcCustomClassUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'wbcCustomClass/get',
+                endpoint: 'wbcCustomClass/wbcCustomClassGet',
                 requiresToken: false,
             }
         },
         wbcHotKeys: {
             create: {
-                endpoint: 'wbcHotKeys/create',
+                endpoint: 'wbcHotKeys/wbcHotKeysCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'wbcHotKeys/update',
+                endpoint: 'wbcHotKeys/wbcHotKeysUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'wbcHotKeys/get',
+                endpoint: 'wbcHotKeys/wbcHotKeysGet',
                 requiresToken: false,
             }
         },
@@ -154,7 +154,7 @@ export const apiConstants = {
                 requiresToken: false,
             },
             get: {
-                endpoint: 'normalRange/get',
+                endpoint: 'normalRange/normalRangeGet',
                 requiresToken: false,
             }
         },
@@ -174,57 +174,57 @@ export const apiConstants = {
         },
         lisCode: {
             create: {
-                endpoint: 'lisCode/create',
+                endpoint: 'lisCode/lisCodeCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'lisCode/update',
+                endpoint: 'lisCode/lisCodeUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'lisCode/get',
+                endpoint: 'lisCode/lisCodeGet',
                 requiresToken: false,
             }
         },
         lisCodeRbc: {
             create: {
-                endpoint: 'lisCodeRbc/create',
+                endpoint: 'lisCodeRbc/lisCodeRbcCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'lisCodeRbc/update',
+                endpoint: 'lisCodeRbc/lisCodeRbcUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'lisCodeRbc/get',
+                endpoint: 'lisCodeRbc/lisCodeRbcGet',
                 requiresToken: false,
             }
         },
         cbcCode: {
             create: {
-                endpoint: 'cbcCode/create',
+                endpoint: 'cbcCode/cbcCodeCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'cbcCode/update',
+                endpoint: 'cbcCode/cbcCodeUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'cbcCode/get',
+                endpoint: 'cbcCode/cbcCodeGet',
                 requiresToken: false,
             }
         },
         filePathSet: {
             create: {
-                endpoint: 'filePathSet/create',
+                endpoint: 'filePathSet/filePathSetCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'filePathSet/update',
+                endpoint: 'filePathSet/filePathSetUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'filePathSet/get',
+                endpoint: 'filePathSet/filePathSetGet',
                 requiresToken: false,
             }
         },
@@ -244,15 +244,15 @@ export const apiConstants = {
         },
         minCount: {
             create: {
-                endpoint: 'minCount/create',
+                endpoint: 'minCount/minCountCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'minCount/update',
+                endpoint: 'minCount/minCountUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'minCount/get',
+                endpoint: 'minCount/minCountGet',
                 requiresToken: false,
             }
         },
@@ -320,15 +320,15 @@ export const apiConstants = {
         },
         classOrder: {
             create: {
-                endpoint: 'classOrders/create',
+                endpoint: 'classOrders/classOrdersCreate',
                 requiresToken: false,
             },
             update: {
-                endpoint: 'classOrders/update',
+                endpoint: 'classOrders/classOrdersUpdate',
                 requiresToken: false,
             },
             get: {
-                endpoint: 'classOrders/get',
+                endpoint: 'classOrders/classOrdersGet',
                 requiresToken: false,
             }
         },

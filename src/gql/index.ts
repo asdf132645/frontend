@@ -16,7 +16,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
 };
 
 export type ClassInfo = {
@@ -32,6 +31,16 @@ export type Coordinates = {
   display?: Maybe<Scalars['String']['output']>;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  updateRunningInfoGQL: Array<RuningInfoEntity>;
+};
+
+
+export type MutationUpdateRunningInfoGqlArgs = {
+  updateDto: UpdateRuningInfoDto;
+};
+
 export type Query = {
   __typename?: 'Query';
   getRunningInfoByIdGQL: RuningInfoEntity;
@@ -42,13 +51,6 @@ export type QueryGetRunningInfoByIdGqlArgs = {
   id: Scalars['Int']['input'];
 };
 
-export type RbcAfterClassInfo = {
-  __typename?: 'RbcAfterClassInfo';
-  categoryId?: Maybe<Scalars['String']['output']>;
-  categoryNm?: Maybe<Scalars['String']['output']>;
-  classInfo?: Maybe<Array<Maybe<RbcAfterClassInfoObj>>>;
-};
-
 export type RbcAfterClassInfoObj = {
   __typename?: 'RbcAfterClassInfoObj';
   classId?: Maybe<Scalars['String']['output']>;
@@ -56,6 +58,13 @@ export type RbcAfterClassInfoObj = {
   degree?: Maybe<Scalars['String']['output']>;
   originalDegree?: Maybe<Scalars['Float']['output']>;
   percent?: Maybe<Scalars['String']['output']>;
+};
+
+export type RbcAfterClassInfos = {
+  __typename?: 'RbcAfterClassInfos';
+  categoryId?: Maybe<Scalars['String']['output']>;
+  categoryNm?: Maybe<Scalars['String']['output']>;
+  classInfo?: Maybe<Array<Maybe<RbcAfterClassInfoObj>>>;
 };
 
 export type RbcClassInfo = {
@@ -98,12 +107,12 @@ export type RuningInfoEntity = {
   patientNm: Scalars['String']['output'];
   pcIp?: Maybe<Scalars['String']['output']>;
   rbcInfo?: Maybe<RbcInfo>;
-  rbcInfoAfter?: Maybe<RbcAfterClassInfo>;
+  rbcInfoAfter?: Maybe<Array<RbcAfterClassInfos>>;
   rbcInfoPosAfter: Array<Scalars['String']['output']>;
   rbcMemo?: Maybe<Scalars['String']['output']>;
   slotId: Scalars['String']['output'];
   slotNo: Scalars['String']['output'];
-  submitOfDate?: Maybe<Scalars['DateTime']['output']>;
+  submitOfDate?: Maybe<Scalars['String']['output']>;
   submitState?: Maybe<Scalars['String']['output']>;
   submitUserId?: Maybe<Scalars['String']['output']>;
   tactTime: Scalars['String']['output'];
@@ -115,13 +124,60 @@ export type RuningInfoEntity = {
   wbcMemo?: Maybe<Scalars['String']['output']>;
 };
 
+export type UpdateRuningInfoDto = {
+  dayQuery: Scalars['String']['input'];
+  runingInfoDtoItems: Array<UpdateRuningInfoDtoItems>;
+  userId: Scalars['Int']['input'];
+};
+
+export type UpdateRuningInfoDtoItems = {
+  abnormalClassInfo?: InputMaybe<Scalars['String']['input']>;
+  analyzedDttm?: InputMaybe<Scalars['String']['input']>;
+  barcodeNo?: InputMaybe<Scalars['String']['input']>;
+  bf_lowPowerPath?: InputMaybe<Array<Scalars['String']['input']>>;
+  birthDay?: InputMaybe<Scalars['String']['input']>;
+  cassetId?: InputMaybe<Scalars['String']['input']>;
+  cbcAge?: InputMaybe<Scalars['String']['input']>;
+  cbcPatientNm?: InputMaybe<Scalars['String']['input']>;
+  cbcPatientNo?: InputMaybe<Scalars['String']['input']>;
+  cbcSex?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<Scalars['String']['input']>;
+  hosName?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  img_drive_root_path?: InputMaybe<Scalars['String']['input']>;
+  isNormal?: InputMaybe<Scalars['String']['input']>;
+  isNsNbIntegration?: InputMaybe<Scalars['String']['input']>;
+  lock_status?: InputMaybe<Scalars['Boolean']['input']>;
+  maxWbcCount?: InputMaybe<Scalars['String']['input']>;
+  orderDttm?: InputMaybe<Scalars['String']['input']>;
+  patientId?: InputMaybe<Scalars['String']['input']>;
+  patientNm?: InputMaybe<Scalars['String']['input']>;
+  pcIp?: InputMaybe<Scalars['String']['input']>;
+  rbcInfo?: InputMaybe<Scalars['String']['input']>;
+  rbcInfoAfter?: InputMaybe<Scalars['String']['input']>;
+  rbcInfoPosAfter?: InputMaybe<Array<Scalars['String']['input']>>;
+  rbcMemo?: InputMaybe<Scalars['String']['input']>;
+  slotId?: InputMaybe<Scalars['String']['input']>;
+  slotNo?: InputMaybe<Scalars['String']['input']>;
+  submitOfDate?: InputMaybe<Scalars['String']['input']>;
+  submitState?: InputMaybe<Scalars['String']['input']>;
+  submitUserId?: InputMaybe<Scalars['String']['input']>;
+  tactTime?: InputMaybe<Scalars['String']['input']>;
+  testType?: InputMaybe<Scalars['String']['input']>;
+  traySlot?: InputMaybe<Scalars['String']['input']>;
+  wbcCount?: InputMaybe<Scalars['String']['input']>;
+  wbcInfo?: InputMaybe<Scalars['String']['input']>;
+  wbcInfoAfter?: InputMaybe<Scalars['String']['input']>;
+  wbcMemo?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type WbcInfo = {
   __typename?: 'WbcInfo';
   count?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   images?: Maybe<Array<Maybe<WbcImages>>>;
   name?: Maybe<Scalars['String']['output']>;
-  percent?: Maybe<Scalars['Int']['output']>;
+  percent?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
 };
 
@@ -139,7 +195,7 @@ export type WbcResponse = {
   __typename?: 'WbcResponse';
   maxWbcCount?: Maybe<Scalars['String']['output']>;
   totalCount?: Maybe<Scalars['String']['output']>;
-  wbcInfo?: Maybe<Array<WbcInfo>>;
+  wbcInfo?: Maybe<Array<Array<WbcInfo>>>;
 };
 
 export type AbnormalClassInfo = {
@@ -163,7 +219,14 @@ export type GetRunningInfoByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, slotId: string, orderDttm: string, testType: string, analyzedDttm: string, tactTime: string, maxWbcCount: string, cassetId: string, isNormal: string, submitState?: string | null, submitOfDate?: any | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: number | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: { __typename?: 'RbcAfterClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, percent?: string | null, originalDegree?: number | null } | null> | null } | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
+export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, slotId: string, orderDttm: string, testType: string, analyzedDttm: string, tactTime: string, maxWbcCount: string, cassetId: string, isNormal: string, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
+
+export type UpdateRunningInfoMutationVariables = Exact<{
+  updateDto: UpdateRuningInfoDto;
+}>;
+
+
+export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, slotId: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, isNormal: string, lock_status?: boolean | null, pcIp?: string | null }> };
 
 
 export const GetRunningInfoByIdDocument = gql`
@@ -294,3 +357,42 @@ export function useGetRunningInfoByIdLazyQuery(variables?: GetRunningInfoByIdQue
   return VueApolloComposable.useLazyQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
 }
 export type GetRunningInfoByIdQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>;
+export const UpdateRunningInfoDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+  updateRunningInfoGQL(updateDto: $updateDto) {
+    id
+    slotId
+    barcodeNo
+    patientId
+    patientNm
+    gender
+    birthDay
+    wbcCount
+    isNormal
+    lock_status
+    pcIp
+  }
+}
+    `;
+
+/**
+ * __useUpdateRunningInfoMutation__
+ *
+ * To run a mutation, you first call `useUpdateRunningInfoMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateRunningInfoMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useUpdateRunningInfoMutation({
+ *   variables: {
+ *     updateDto: // value for 'updateDto'
+ *   },
+ * });
+ */
+export function useUpdateRunningInfoMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(UpdateRunningInfoDocument, options);
+}
+export type UpdateRunningInfoMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>;

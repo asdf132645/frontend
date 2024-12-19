@@ -106,7 +106,7 @@ onMounted(() => {
       {progressNo: 3, progressName: "Step 3", progressPercent: 0},
     ];
   }
-  startFakeDataTest();
+  // startFakeDataTest();
 });
 
 </script>
