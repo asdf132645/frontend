@@ -75,11 +75,21 @@
               <li>
                 <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
               </li>
-              <li class="oliCount" @click="openLayer" :title="'oilCount: ' + (oilCountData || 0)">
-                <font-awesome-icon :icon="['fas', 'droplet']"/>
+              <li class="oliCount pos-relative" @click="openLayer">
+                <font-awesome-icon
+                    :icon="['fas', 'droplet']"
+                    @mouseenter="tooltipVisibleFunc('oilPrime', true)"
+                    @mouseleave="tooltipVisibleFunc('oilPrime', false)"
+                />
+                <Tooltip :isVisible="tooltipVisible.oilPrime" className="mb08" position="bottom" type="" :message="`OilCount: ${oilCountData || 0}`" />
               </li>
-              <li class="storage" :title="'storage: ' + (storagePercentData || 0)">
-                <font-awesome-icon :icon="['fas', 'database']"/>
+              <li class="storage pos-relative">
+                <font-awesome-icon
+                    :icon="['fas', 'database']"
+                    @mouseenter="tooltipVisibleFunc('storage', true)"
+                    @mouseleave="tooltipVisibleFunc('storage', false)"
+                />
+                <Tooltip :isVisible="tooltipVisible.storage" className="mb08" position="bottom" type="" :message="`Storage: ${storagePercentData || 0}`" />
               </li>
 
             </ul>
@@ -157,11 +167,21 @@
 
 <script setup lang="ts">
 import {useRoute} from 'vue-router';
-import {computed, getCurrentInstance, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch
+} from "vue";
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
@@ -177,6 +197,7 @@ import ProgressBar from "@/components/commonUi/ProgressBar.vue";
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import ErrLog from "@/components/commonUi/ErrLog.vue";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -242,15 +263,13 @@ const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const mouseClick = ref(false);
 const mounseLeave = ref(false);
+const tooltipVisible = reactive({
+  oilPrime: false,
+  storage: false,
+})
 
-
-const formattedDate = computed(() => {
-  return currentDate.value;
-});
-
-const formattedTime = computed(() => {
-  return currentTime.value;
-});
+const formattedDate = computed(() => currentDate.value);
+const formattedTime = computed(() => currentTime.value);
 
 const userSetOutToggle = () => {
   userSetOutUl.value = !userSetOutUl.value;
@@ -678,4 +697,9 @@ const errMouseSet = () => {
   ErrLogOpen.value = false;
   mouseClick.value = false;
 }
+
+const tooltipVisibleFunc = (type: 'oilPrime' | 'storage', visible: boolean) => {
+  tooltipVisible[type] = visible;
+}
+
 </script>

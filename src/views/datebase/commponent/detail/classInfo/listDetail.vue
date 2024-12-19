@@ -453,7 +453,6 @@ const handleZoom = () => {
 const getDetailRunningInfo = async () => {
   try {
     selectItems.value = slideData.value;
-    console.log(slideData.value)
     iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
 
   } catch (e) {
