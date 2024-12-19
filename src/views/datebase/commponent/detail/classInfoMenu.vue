@@ -75,7 +75,7 @@ import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {useGetRunningInfoByIdQuery} from "@/gql/runninginfo";
+import {useGetRunningInfoByIdQuery} from "@/gql/queries";
 
 const emits = defineEmits();
 const showAlert = ref(false);
