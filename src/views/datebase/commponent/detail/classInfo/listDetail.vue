@@ -5,15 +5,18 @@
 
   <div class="wbcContent">
     <DetailHeader
+        v-if="slideData"
         :testType="projectType === 'bm' ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
         :barcodeNo="selectItems?.barcodeNo"
         :cbcPatientNo="selectItems?.cbcPatientNo"
-        :patientName="selectItems?.patientName"
         :hospitalName="selectItems?.hosName"
-        :cbcPatientName="selectItems?.cbcPatientNm"
         :cbcSex="selectItems?.cbcSex"
         :cbcAge="selectItems?.cbcAge"
         :analyzedDttm="selectItems?.analyzedDttm"
+        :cbcPatientName="cbcPatientNm"
+        :patientName="patientNm"
+        :slideData="selectItems"
+        @updateSlideDataByCBCData="updateCBCData"
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
@@ -141,7 +144,7 @@
       </div>
       <div>
         <ImageGallery
-            v-if="showImageGallery"
+            v-if="isLoadedSlideData"
             ref="$imageGalleryRef"
             :wbcInfoRefresh="wbcInfoRefresh"
             :wbcInfo="wbcInfo"
@@ -266,6 +269,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { checkPbNormalCell } from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -280,6 +284,8 @@ const moveImgIsBool = computed(() => store.state.commonModule.moveImgIsBool);
 const classInfoSort = computed(() => store.state.commonModule.classInfoSort);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
+const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const draggedItemIndex = ref<any>(null);
 const draggedImageIndex = ref<any>(null);
 const isShiftKeyPressed = ref(false);
@@ -332,7 +338,7 @@ const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
-const showImageGallery = ref(true);
+const isLoadedSlideData = ref(true);
 const isWpsShow = ref(false);
 const blockClicks = ref(false);
 const toastMessage = ref('');
@@ -341,10 +347,12 @@ const changeSlideByLisUpload = ref(false);
 const normalItems = ref<any>([]);
 const slideData = computed(() => store.state.runningModule);
 const ipAddress = ref('');
+const patientNm = ref('');
+const cbcPatientNm = ref('');
 
 onBeforeMount(async () => {
   isLoading.value = false;
-  showImageGallery.value = false;
+  isLoadedSlideData.value = false;
   projectType.value = window.PROJECT_TYPE;
 })
 
@@ -366,12 +374,11 @@ watch(
         await nextTick();
         console.log('변화 감지:', { newValue: newVal, oldValue: oldVal });
         try {
-
-          showImageGallery.value = false;
+          isLoadedSlideData.value = false;
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
           wbcInfo.value = [];
-          showImageGallery.value = true;
+          isLoadedSlideData.value = true;
 
           await getWbcCustomClasses(false, null);
           wbcInfoRefresh.value = true;
@@ -455,7 +462,8 @@ const getDetailRunningInfo = async (newValue: any) => {
   try {
     selectItems.value = newValue;
     iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
-
+    patientNm.value = selectItems.value?.patientNm;
+    cbcPatientNm.value = selectItems.value?.cbcPatientNm;
   } catch (e) {
     console.error(e);
   }
@@ -844,10 +852,10 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 });
 
 const refreshClass = async (data: any) => {
-  showImageGallery.value = false;
+  isLoadedSlideData.value = false;
   cellMarkerIcon.value = false;
   await getDetailRunningInfo(data);
-  showImageGallery.value = true;
+  isLoadedSlideData.value = true;
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
@@ -1729,6 +1737,24 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   }
 }
 
+const resRunningItem = async (updatedRuningInfo: any) => {
+  try {
+    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
+    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
+    const response: any = await updateRunningApi({
+      userId: Number(userModuleDataGet.value.id),
+      runingInfoDtoItems: [updatedRuningInfo],
+      dayQuery: dayQuery,
+    })
+    if (!response) {
+      console.error('백엔드가 디비에 저장 실패함');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 
 function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {
   // 이미지 정보가 없다면 빈 문자열 반환
@@ -1883,6 +1909,31 @@ async function getNormalRange() {
     }
   } catch (e) {
     console.error(e);
+  }
+}
+
+const updateCBCData = async (incomingSlideData: any) => {
+  const path = incomingSlideData?.img_drive_root_path !== '' && incomingSlideData?.img_drive_root_path ? incomingSlideData?.img_drive_root_path : pbiaRootDir.value;
+  const cbcData: any = await initCBCData({
+    barcodeNo: incomingSlideData.barcodeNo,
+    siteCd: siteCd.value,
+    userId: userId.value,
+    deviceSerialNm: deviceSerialNm.value,
+    imageDriveRootPath: path,
+    slotId: incomingSlideData.slotId
+  })
+
+  if (cbcData) {
+    const cbcChangeData = {
+      cbcPatientNm: cbcData?.cbcPatientNm,
+      patientNm: cbcData?.cbcPatientNm
+    }
+
+    const updatedRunningInfo = { ...incomingSlideData, ...cbcChangeData };
+
+    patientNm.value = cbcData?.cbcPatientNm;
+    cbcPatientNm.value = cbcData?.cbcPatientNm;
+    await resRunningItem(updatedRunningInfo);
   }
 }
 

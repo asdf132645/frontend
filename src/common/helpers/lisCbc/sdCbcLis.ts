@@ -77,3 +77,19 @@ export const sdWorklistsAPI = async (date: any) => {
         return {data: null, code: res?.data.code};
     }
 }
+
+export const sdPatientNameGetAPI = async (reqNoList: string[], workDateStart: string, workDateEnd: string) => {
+    const body = {
+        apiKey: 'M0ZGODgyREY4NzUxMkY4RTM0MERDRkMyRkQ1MDM3OEU=',
+        interfaceId: '01',
+        reqNoList: reqNoList ?? [],
+        workDateStart: workDateStart,
+        workDateEnd: workDateEnd,
+    }
+
+    const res = await axios.post(`http://121.169.55.132:8081/api/interface/patnames`, body, {
+        headers: { 'Content-Type': 'application/json' }
+    })
+    if (res?.data.code === 200) return { data: res?.data, code: res?.data.code };
+    return { data: null, code: res?.data.code };
+}

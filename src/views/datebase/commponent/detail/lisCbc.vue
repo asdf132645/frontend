@@ -129,6 +129,7 @@ const firstCbcDatafilename = ref('');
 const datachoice = ref(false);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slip = ref('');
+
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
   cbcFilePathSetArr.value = await getCbcPathData();
@@ -151,6 +152,7 @@ onMounted(async () => {
     await initCbcData(selectItemsVal.value);
   }
 });
+
 const crcCbcDataLoad = async () => {
   await cbcDataProcess();
   if (cbcDataList.value.length === 0) {
@@ -165,10 +167,12 @@ const crcCbcDataLoad = async () => {
   });
   firstCbcDatafilename.value = `${latestFile.split('.')[0]}`;
 }
+
 const cbcListOpen = async () => {
   cbcPopup.value = !cbcPopup.value;
   await cbcDataProcess();
 }
+
 const cbcDataChoice = async (item: string) => {
   datachoice.value = true;
   firstCbcDatafilename.value = `${item.split('.')[0]}`;
@@ -177,9 +181,11 @@ const cbcDataChoice = async (item: string) => {
   await updateCbcData();
   cbcPopup.value = false;
 }
+
 const cbcDataListClose = () => {
   cbcPopup.value = false;
 }
+
 const cbcDataProcess = async () => {
   if (!props.selectItems) {
     return
@@ -194,9 +200,6 @@ const cbcDataProcess = async () => {
   }
   cbcDataList.value = filterCbcDataArr;
 }
-
-// 다양한 날짜 형식을 처리하는 함수
-
 
 const initCbcData = async (newVal: any) => {
   loading.value = true;

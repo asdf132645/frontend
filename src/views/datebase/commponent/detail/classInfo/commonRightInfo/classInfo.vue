@@ -1539,7 +1539,7 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
-const tooltipVisibleFunc = (type: 'barcodeCopy' | 'memo' | 'confirm' | 'classMoveLock' | 'beforeAfter' | 'lisUpload', visible: boolean) => {
+const tooltipVisibleFunc = (type: 'barcodeCopy' | 'memo' | 'confirm' | 'classMoveLock' | 'beforeCountPercent' | 'afterCountPercent' | 'lisUpload', visible: boolean) => {
   tooltipVisible[type] = visible;
 }
 
