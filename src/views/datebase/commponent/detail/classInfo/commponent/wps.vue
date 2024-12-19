@@ -1,5 +1,5 @@
 <template>
-  <div class="wpsDiv main">
+  <div :class="'wpsDiv main ' + (cbcLayer ? 'cbcLayer' : '')">
     <div class="tiling-viewer_img_list-box_img_list" style="border-radius: 4px">
       <div ref="tilingViewerLayer"
            id="tilingViewerImgListWps"
@@ -41,6 +41,7 @@ const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const canvasOverlay = ref<any>(null);

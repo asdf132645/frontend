@@ -610,7 +610,6 @@ const dbDataEditSet = async () => {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', {currentSelectItems: response?.data[0]});
       showSuccessAlert('Success');
       emits('initData');
       closeLayer();

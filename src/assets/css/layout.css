@@ -445,7 +445,7 @@ main.bmComponent {
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-left: 30px;
+    margin-left: 12px;
     border-bottom: 1px solid var(--white-color);
     padding: 12px 0;
     list-style-type: none;
@@ -1364,13 +1364,25 @@ p.loadingText {
 
 .excelDivList {
     position: relative;
-    display: block;
-    width: 6%;
+    display: flex;
+    justify-content: flex-end;
+    width: 20%;
     left: 2%;
     font-size: 1.8rem;
     padding-top: 3px;
     cursor: pointer;
     color: var(--coral-bg-1-color);
+}
+
+.excelIcon {
+    position: relative;
+    display: flex;
+    left: 12%;
+    justify-content: flex-end;
+    padding-top: 3px;
+    cursor: pointer;
+    color: var(--coral-bg-1-color);
+    font-size: 1.8rem;
 }
 
 .darkButton {
@@ -2511,7 +2523,6 @@ ul.wbcImgWrap > li {
     text-align: left;
     padding: 0 10px 10px 10px;
     margin-right: 10px;
-    margin-left: 14px;
     border-radius: 4px;
 
     height: 93%;
@@ -2523,7 +2534,7 @@ ul.wbcImgWrap > li {
 
 .databaseWbcLeft {
     display: inline-block;
-    width: 74%;
+    width: 75%;
     vertical-align: top;
 }
 
@@ -2580,7 +2591,8 @@ ul.cellImgBox input {
 .reportSection.cbcLayer .cbcDiv {
     margin-top: 10px;
     height: 87vh;
-    margin-left: 30px;
+    margin-left: 12px;
+    border-radius: 4px;
 }
 
 .customImgSet.rgb > input {
@@ -2877,8 +2889,9 @@ h3.orderTitle {
 
 .wbcMenu {
     display: inline-block;
-    width: 5%;
+    width: 6%;
     vertical-align: top;
+    height: 92.5vh;
 }
 
 .wbcMenuBottom {
@@ -2889,7 +2902,7 @@ h3.orderTitle {
 
 .wbcContent {
     display: inline-block;
-    width: 95%;
+    width: 94%;
     height: 92.5vh;
     vertical-align: top;
 }
@@ -2996,13 +3009,13 @@ select.selectSizeTitle {
 
 .reportSection {
     display: inline-block;
-    width: 95%;
+    width: 94%;
     min-height: 92.5vh;
 }
 
 .reportDiv {
     width: 100%;
-    padding-left: 1.7%;
+    padding-left: 12px;
     display: flex;
     padding-top: 10px;
     height: 87vh;
@@ -3830,8 +3843,9 @@ button.rollbackButton {
     width: 13%;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
-    margin-left: -14px;
+    margin-left: 8px;
     height: 94%;
+    border-radius: 4px;
     margin-right: 4px;
     position: relative;
 }
@@ -3917,7 +3931,7 @@ button.rollbackButton {
 }
 
 .databaseWbcLeft.cbcLayer {
-    width: 56%;
+    width: 62%;
 }
 
 h1.titleCbc {
@@ -5168,6 +5182,10 @@ ul.wpsDiv.cellImgBox {
     width: 56%;
     vertical-align: top;
     border-radius: 4px;
+}
+
+.wpsDiv.main.cbcLayer {
+    width: 55%;
 }
 
 ul.wpsDiv.cellImgBox .isLowMagnWhether {

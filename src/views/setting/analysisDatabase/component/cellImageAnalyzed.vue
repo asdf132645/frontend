@@ -82,19 +82,7 @@
         </tr>
 
         <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (edgeShotType === '2' || edgeShotType === '3')">
-          <th class="pos-relative">
-            Edge Shot Count
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="() => informationFontHover('edgeShotCount', 'hover')"
-                @mouseleave="informationFontHover('edgeShotCount', 'leave')"
-            />
-            <Transition>
-              <div v-if="showTutorialImage.edgeShotCount" class="tutorial-edgeShotType-container">
-                <img :src="edgeShotCountImg" width="260" />
-              </div>
-            </Transition>
-          </th>
+          <th class="pos-relative">Edge Shot Count</th>
           <td v-show="edgeShotType === '2'">
             <select v-model='edgeShotCount.LP'>
               <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -148,7 +136,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Edge Shot Margin</th>
+          <th>Edge Position Margin</th>
           <td>
             <select v-model='pltPositionMargin'>
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -442,7 +430,6 @@ import {useRouter} from "vue-router";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
-import edgeShotCountImg from "@/assets/images/edgeShotCount.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const instance = getCurrentInstance();
@@ -525,7 +512,6 @@ const selectedUploadFile = ref('');
 const showTutorialImage = reactive({
   edgeShotType: false,
   positionMargin: false,
-  edgeShotCount: false,
 })
 const apiUrl = ref('');
 const tooltipVisible = reactive({
@@ -784,9 +770,8 @@ const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
 };
 
-const informationFontHover = (type: 'edgeShotType' | 'positionMargin' | 'edgeShotCount', hoverStatus: 'hover' | 'leave') => {
+const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
-    showTutorialImage.edgeShotCount = false;
     showTutorialImage.edgeShotType = false;
     showTutorialImage.positionMargin = false;
     return;
@@ -797,9 +782,6 @@ const informationFontHover = (type: 'edgeShotType' | 'positionMargin' | 'edgeSho
       break;
     case 'positionMargin':
       showTutorialImage.positionMargin = true;
-      break;
-    case 'edgeShotCount':
-      showTutorialImage.edgeShotCount = true;
       break;
     default:
       break;

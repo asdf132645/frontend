@@ -22,16 +22,17 @@
           </select>
           <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
           <div class="settingDatePickers">
-            <Datepicker v-model="startDate" @change="updateEndDate"></Datepicker>
+            <Datepicker v-model="startDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>
+          <button class="searchClass" @click="setDateToday">Today</button>
           <button class="searchClass" @click="dateRefresh">Clear</button>
           <button type="button" class="searchClass" @click="search">Search</button>
-          <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass">Patient List</button>
 
-          <div v-if="viewerCheck === 'main'" class="excelDivList">
-            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel"/>
-          </div>
+          <template v-if="viewerCheck !== 'main'">
+            <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] !== siteCd" @click="openCheckList" class="searchClass" style="left: 12%">Patient List</button>
+            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
+          </template>
         </div>
 
 
@@ -255,24 +256,15 @@ async function handleStateVal(data: any) {
   await initDbData();
 }
 
-const updateEndDate = () => {
-  if (startDate.value) {
-    const start = new Date(startDate.value);
-    const end = new Date(start);
-    end.setMonth(start.getMonth() + 1); // 한 달 후로 설정
-    endDate.value = end; // endDate를 업데이트
-  } else {
-    endDate.value = null; // startDate가 없으면 endDate도 초기화
-  }
-};
-
-watch(startDate, updateEndDate);
+const setDateToday = () => {
+  startDate.value = new Date();
+  endDate.value = new Date();
+  search();
+}
 
 // 이벤트 핸들러 함수
 const handleInput = (event: any) => {
-  if (!event.data) {
-    return;
-  }
+  if (!event.data) return;
 
   // 현재 입력 시간
   const currentTime = Date.now();
@@ -314,7 +306,7 @@ const handleInput = (event: any) => {
       previousValue.value = trimmedValue;
     }
 
-    // 버퍼 초기화
+    // search버퍼 초기화
     inputBuffer.value = '';
     search();
   }, bufferDelay);
@@ -412,7 +404,6 @@ const initDbData = async () => {
 }
 
 const selectItem = async (item: any) => {
-  await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: item });
   selectedItem.value = item;
 };
 
@@ -581,7 +572,6 @@ const refresh = () => {
 }
 
 const disableSelectItem = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: {} });
   selectedItem.value = {};
 }
 
@@ -662,7 +652,6 @@ const convertRbcData = async (dataList: any) => {
     const result: any = await detailRunningApi(String(item.id));
     await getRbcDegreeData();
     const data = result.data;
-    await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: data });
     rbcInfoBeforeVal.value = data.rbcInfo.rbcClass;
     rbcInfoAfterVal.value = data.rbcInfoAfter;
     await rbcTotalAndReCount(data);

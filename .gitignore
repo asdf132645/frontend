@@ -24,3 +24,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+graphql.d.ts
+src/graphql/RuningInfoEntity.ts
+src/store/modules/runningDataModule.ts

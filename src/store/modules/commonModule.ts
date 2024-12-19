@@ -62,7 +62,6 @@ export interface CommonState {
     settingType: string;
     isDownloadOrUploading: boolean;
     isRewindingBelt: boolean;
-    currentSelectItems: any;
     isTcpError: boolean;
 }
 
@@ -132,7 +131,6 @@ interface CommonModule {
         setSettingType: (state: CommonState, value: string) => void;
         setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
-        setCurrentSelectItems: (state: CommonState, value: any) => void;
         setIsTcpError: (state: CommonState, value: boolean) => void;
     };
     actions: {
@@ -203,7 +201,6 @@ export const commonModule: CommonModule = {
         settingType: '',
         isDownloadOrUploading: false,
         isRewindingBelt: false,
-        currentSelectItems: {},
         isTcpError: false,
     }),
     mutations: {
@@ -396,9 +393,6 @@ export const commonModule: CommonModule = {
         },
         setIsRewindingBelt(state: CommonState, value: boolean): void {
             state.isRewindingBelt = value;
-        },
-        setCurrentSelectItems(state: CommonState, value: any): void {
-            state.currentSelectItems = value;
         },
         setIsTcpError(state: CommonState, value: boolean): void {
             state.isTcpError = value;
@@ -595,9 +589,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isRewindingBelt')) {
                 commit('setIsRewindingBelt', payload.isRewindingBelt);
-            }
-            if (payload.hasOwnProperty('currentSelectItems')) {
-                commit('setCurrentSelectItems', payload.currentSelectItems);
             }
             if (payload.hasOwnProperty('isTcpError')) {
                 commit('setIsTcpError', payload.isTcpError);

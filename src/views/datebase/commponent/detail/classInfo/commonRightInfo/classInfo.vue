@@ -1502,7 +1502,7 @@ async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
       dayQuery: dayQuery
     })
     if (response) {
-      await store.dispatch('commonModule/setCommonInfo', { currentSelectItems: response?.data[0] });
+      //
     } else {
       console.error('백엔드가 디비에 저장 실패함');
     }
