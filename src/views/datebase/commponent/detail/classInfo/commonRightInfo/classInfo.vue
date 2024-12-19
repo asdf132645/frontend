@@ -235,7 +235,6 @@ import {createCbcFile, createDirectory, createFile} from "@/common/api/service/f
 import {
   createH17,
   readH7Message,
-  readJsonFile,
   readNoFlagHl7Message
 } from "@/common/api/service/fileReader/fileReaderApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";

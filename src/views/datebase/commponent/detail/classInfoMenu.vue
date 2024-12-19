@@ -190,8 +190,6 @@ const upDownBlockAccess = async (selectItems: any) => {
     await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(resData.value?.id)});
 
     await updatePcIpStateApi(req).then(response => {
-      console.log(ipAddress.value)
-      console.log(response)
       delayedEmit('SEND_DATA', 'refreshDb', 300);
     }).catch(error => {
       console.error('3 err', error)
