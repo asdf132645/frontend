@@ -7,10 +7,29 @@ export const UpdateRunningInfoDocument = gql`
         updateRunningInfoGQL(updateDto: $updateDto) {
             id
             isNormal
-            abnormalClassInfo
+            abnormalClassInfo {
+                classNm
+                val
+            }
             pcIp
             lock_status
-            wbcInfoAfter
+            wbcInfoAfter {
+                id
+                name
+                count
+                title
+                images {
+                    coordinates {
+                        display
+                    }
+                    fileName
+                    title
+                    filter
+                    height
+                    width
+                }
+                percent
+            }
         }
     }
 `;
