@@ -54,4 +54,26 @@ export const UpdateRunningInfoDocument = gql`
 export function useUpdateRunningInfoMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(UpdateRunningInfoDocument, options);
 }
+
+export const gqlUpdate = async (originalDb: any) => {
+    const updateDtos = {
+        runingInfoDtoItems: [
+            {
+                id: originalDb[0].id,
+                isNormal: originalDb[0].isNormal,
+                abnormalClassInfo: originalDb[0].abnormalClassInfo,
+                pcIp: originalDb[0].pcIp,
+                lock_status: originalDb[0].lock_status,
+                wbcInfoAfter: originalDb[0].wbcInfoAfter,
+            },
+        ],
+    };
+    const { mutate, loading, error, onDone } = useUpdateRunningInfoMutation({
+        variables: {
+            updateDto: updateDtos, // 수정된 구조
+        },
+    });
+
+    return  await mutate();
+}
 export type UpdateRunningInfoMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>;

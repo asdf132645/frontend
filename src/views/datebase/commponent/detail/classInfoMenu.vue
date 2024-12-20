@@ -75,7 +75,7 @@ import {useRoute} from "vue-router";
 import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {useGetRunningInfoByIdQuery} from "@/gql/queries";
+import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -140,18 +140,22 @@ const getDetailRunningInfo = async () => {
         { fetchPolicy: 'no-cache' }
     );
 
-    watch(result, async (newValue)  => {
+    watch(result, (newValue) => {
       if (newValue) {
-        await store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
+        // newValue가 존재하면 해당 데이터를 처리
+        store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
+
         const result = newValue?.getRunningInfoByIdGQL;
         selectItems.value = result;
-        await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+
+        store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType });
 
         resData.value = result;
       } else {
         console.log('No result');
       }
     });
+
 
 
   } catch (e) {

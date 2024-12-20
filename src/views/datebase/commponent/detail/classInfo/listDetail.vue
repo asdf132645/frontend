@@ -266,8 +266,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { checkPbNormalCell } from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {useUpdateRunningInfoMutation} from "@/gql/mutation";
-import {useGetRunningInfoByIdQuery} from "@/gql/queries";
+import {gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -366,7 +365,6 @@ watch(
     async (newVal, oldVal) => {
       if (newVal !== oldVal) {
         await nextTick();
-        console.log('변화 감지:', { newValue: newVal, oldValue: oldVal });
         try {
 
           showImageGallery.value = false;
@@ -1698,46 +1696,29 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   await updateRunningApiPost(clonedWbcInfo, originalDbVal);
 }
 
+
+
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
     const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const updateDtos = {
-      runingInfoDtoItems: [
-        {
-          id: originalDb[0].id,
-          isNormal: originalDb[0].isNormal,
-          abnormalClassInfo: originalDb[0].abnormalClassInfo,
-          pcIp: originalDb[0].pcIp,
-          lock_status: originalDb[0].lock_status,
-          wbcInfoAfter: originalDb[0].wbcInfoAfter,
-        },
-      ],
-    };
 
-    const { mutate, loading, error, onDone } = useUpdateRunningInfoMutation({
-      variables: {
-        updateDto: updateDtos, // 수정된 구조
-      },
-    });
-
-    await mutate();
-
-
-    const response: any = await updateRunningApi({
-      userId: Number(userId.value),
-      runingInfoDtoItems: originalDb,
-      dayQuery: dayQuery
-    })
-    if (response && response?.data.length !== 0) {
+    const res =  await gqlUpdate(originalDb);
+    //
+    // const response: any = await updateRunningApi({
+    //   userId: Number(userId.value),
+    //   runingInfoDtoItems: originalDb,
+    //   dayQuery: dayQuery
+    // })
+    if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {
         // 다시 불러올경우 셀마킹이 켜있는경우 다시 셀마크 그려주기
         await drawCellMarker(true);
       }
       wbcInfo.value = [];
-      wbcInfo.value = response.data[0].wbcInfoAfter;
+      wbcInfo.value = res?.data?.updateRunningInfoGQL[0].wbcInfoAfter;
 
       const sortArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
       await sortWbcInfo(wbcInfo.value, sortArr);
