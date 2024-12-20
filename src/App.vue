@@ -569,7 +569,7 @@ async function socketData(data: any) {
             fileNm = (prefix === 'NES') ? 'NS' : (prefix === 'NEB') ? 'NB' : prefix;
           }
 
-          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex(elW => elW.title === fileNm);
+          const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => elW.title === fileNm);
 
           if (findWbcIndex !== -1) { // 유효한 인덱스인지 확인
             newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
