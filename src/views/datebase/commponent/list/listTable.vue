@@ -223,7 +223,7 @@ import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import {useGetRunningInfoByIdQuery} from "@/gql/queries";
+import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -548,14 +548,18 @@ const rowDbClick = async (item) => {
   await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
   await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
   await getIpAddress(item);
-  const { result, loading, error } = await useGetRunningInfoByIdQuery(
+  const { result, loading, error } = useGetRunningInfoByIdQuery(
       { id: Number(item.id) },
       { fetchPolicy: 'no-cache' }
   );
 
+// result를 watch하여 변경될 때마다 반응하도록 처리
   watch(result, async (newValue) => {
     if (newValue) {
+      // 쿼리에서 새로운 데이터가 있으면 상태 업데이트
       await store.dispatch('runningModule/updateRunningData', newValue?.getRunningInfoByIdGQL);
+
+      // 페이지 이동
       await router.push('/databaseDetail');
     } else {
       console.log('No result');

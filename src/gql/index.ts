@@ -16,6 +16,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  JSON: { input: any; output: any; }
 };
 
 export type ClassInfo = {
@@ -125,9 +126,9 @@ export type RuningInfoEntity = {
 };
 
 export type UpdateRuningInfoDto = {
-  dayQuery: Scalars['String']['input'];
-  runingInfoDtoItems: Array<UpdateRuningInfoDtoItems>;
-  userId: Scalars['Int']['input'];
+  dayQuery?: InputMaybe<Scalars['String']['input']>;
+  runingInfoDtoItems?: InputMaybe<Array<InputMaybe<UpdateRuningInfoDtoItems>>>;
+  userId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UpdateRuningInfoDtoItems = {
@@ -154,7 +155,7 @@ export type UpdateRuningInfoDtoItems = {
   patientNm?: InputMaybe<Scalars['String']['input']>;
   pcIp?: InputMaybe<Scalars['String']['input']>;
   rbcInfo?: InputMaybe<Scalars['String']['input']>;
-  rbcInfoAfter?: InputMaybe<Scalars['String']['input']>;
+  rbcInfoAfter?: InputMaybe<Scalars['JSON']['input']>;
   rbcInfoPosAfter?: InputMaybe<Array<Scalars['String']['input']>>;
   rbcMemo?: InputMaybe<Scalars['String']['input']>;
   slotId?: InputMaybe<Scalars['String']['input']>;
@@ -167,7 +168,7 @@ export type UpdateRuningInfoDtoItems = {
   traySlot?: InputMaybe<Scalars['String']['input']>;
   wbcCount?: InputMaybe<Scalars['String']['input']>;
   wbcInfo?: InputMaybe<Scalars['String']['input']>;
-  wbcInfoAfter?: InputMaybe<Scalars['String']['input']>;
+  wbcInfoAfter?: InputMaybe<Scalars['JSON']['input']>;
   wbcMemo?: InputMaybe<Scalars['String']['input']>;
 };
 

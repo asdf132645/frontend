@@ -102,7 +102,10 @@ const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
-const parsedDataProps = ref<any>({});
+const parsedDataProps = ref<any>({
+  sysInfo: {},
+  runningInfo: {},
+});
 const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
@@ -340,6 +343,7 @@ async function socketData(data: any) {
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
         break;
       case 'SYSINFO':
+        parsedDataProps.value.sysInfo = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           await store.dispatch('commonModule/setCommonInfo', { isTcpError: true });
@@ -362,7 +366,7 @@ async function socketData(data: any) {
         await runnStart();
         break;
       case 'RUNNING_INFO':
-        parsedDataProps.value = parseDataWarp;
+        parsedDataProps.value.runningInfo = parseDataWarp;
         runningInfoBoolen.value = true;
         await runningInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
