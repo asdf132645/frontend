@@ -257,6 +257,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useRouter} from "vue-router";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import { TooltipClassInfoType } from "@/common/type/tooltipType";
 
 const router = useRouter();
 
@@ -306,7 +307,7 @@ const lisCodeRbcArrApp = ref<any>([]);
 const lisHotKey = ref('');
 const crcConnect = ref(false);
 const isHotKeyPressed = ref(false);
-const tooltipVisible = reactive({
+const tooltipVisible = ref<TooltipClassInfoType>({
   barcodeCopy: false,
   memo: false,
   confirm: false,
@@ -1539,8 +1540,8 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
-const tooltipVisibleFunc = (type: 'barcodeCopy' | 'memo' | 'confirm' | 'classMoveLock' | 'beforeAfter' | 'lisUpload', visible: boolean) => {
-  tooltipVisible[type] = visible;
+const tooltipVisibleFunc = (type: keyof TooltipClassInfoType, visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 const toastPosition = (siteCd: string) => {

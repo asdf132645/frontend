@@ -285,6 +285,7 @@ import {
   VISIBLE_SIZE_OPTIONS, VisibleRbcType
 } from "@/common/defines/constants/rbc";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import { TooltipRbcClassType } from "@/common/type/tooltipType";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -341,7 +342,7 @@ const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
 const rbcResponseOldArr: any = ref([]);
 const rbcImagePageNumber = ref(0);
-const tooltipVisible = reactive({
+const tooltipVisible = ref({
   confirm: false,
   memo: false,
 })
@@ -1228,8 +1229,8 @@ const reDegree = async (rbcInfoArray: any) => {
   });
 };
 
-const tooltipVisibleFunc = (type: 'confirm' | 'memo', visible: boolean) => {
-  tooltipVisible[type] = visible;
+const tooltipVisibleFunc = (type: keyof TooltipRbcClassType, visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 </script>

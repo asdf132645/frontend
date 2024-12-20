@@ -1,22 +1,22 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
     <Execute @initDataChangeText="initDataChangeText"/>
-    <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
-    <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
+    <ProcessInfo :parsedData="props.parsedData.runningInfo" :pb100aCassette="pb100aCassette"/>
+    <orderList :parsedData="props.parsedData.runningInfo" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <RenewalWorking :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
-                    v-if="siteCd === ''"
+    <RenewalWorking :initValData="initValData" :parsedData="props.parsedData.sysInfo" :pb100aCassette="pb100aCassette"
+                    v-if="siteCd === '0000'"
                     class="contentRightChild"/>
-    <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
+    <workingView :initValData="initValData" :parsedData="props.parsedData.sysInfo" :pb100aCassette="pb100aCassette"
                  v-else
                  class="contentRightChild"/>
-    <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen"
+    <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData.runningInfo" v-if="!bmIsBoolen"
                        class="contentRightChild"/>
-    <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen"
+    <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData.runningInfo" :bmIsBoolen="bmIsBoolen"
                        class="contentRightChild"/>
     <div class="contentBottom">
-      <FoundingCells :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
+      <FoundingCells :parsedData="props.parsedData.runningInfo" :pb100aCassette="pb100aCassette"/>
     </div>
   </div>
 </template>
