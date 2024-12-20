@@ -65,7 +65,7 @@
 
 
     </div>
-    <GaugeBar :parsedData="parsedData" v-if="siteCd === '0000'"/>
+    <GaugeBar :parsedDataSysInfo="parsedDataSysInfo" v-if="siteCd === '0000'"/>
     <div class='slideCardWrap' v-if="pbVersion === '12a'">
       <ul class='slideContent'>
         <li v-for="item in slideCardData.INPUT" :key="item.slotNo"
@@ -111,7 +111,7 @@ const commonDataGet = computed(() => store.state.commonModule);
 const initValData = computed(() => store.state.commonModule.initValData);
 const timeDataGet = computed(() => store.state.timeModule);
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
-const props = defineProps(['parsedData', 'pb100aCassette']);
+const props = defineProps(['parsedData', 'pb100aCassette', 'parsedDataSysInfo']);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 
 
@@ -212,7 +212,7 @@ watch([commonDataGet.value], async (newVals: any) => {
 });
 
 watch(
-    () => props.parsedData, // 감시할 데이터
+    () => props.parsedDataSysInfo, // 감시할 데이터
     (newVal, oldVal) => {
       progressData.progressBarText = newVal.progressBarText || '';
       progressData.progressBarPercent = newVal.progressBarPercent || 25;
