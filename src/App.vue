@@ -8,6 +8,7 @@
       <Analysis @classAppUpdateLast="classAppUpdateLast"
                 @rbcAppUpdate="rbcAppUpdate"
                 :parsedData="parsedDataProps"
+                :parsedDataSysInfo="parsedDataSysInfoProps"
                 :isClass="router.currentRoute.value.path === '/'"
                 :startStatus="startStatus"
                 :pb100aCassette="pb100aCassette"
@@ -102,10 +103,8 @@ const classArr = ref<any>([]);
 const rbcArr = ref<any>([]);
 const viewerCheckApp = ref('');
 const projectBm = ref(false);
-const parsedDataProps = ref<any>({
-  sysInfo: {},
-  runningInfo: {},
-});
+const parsedDataProps = ref<any>({});
+const parsedDataSysInfoProps = ref<any>({});
 const startStatus = ref(false);
 const pbVersion = ref<any>('');
 const pb100aCassette = ref<any>('');
@@ -343,7 +342,7 @@ async function socketData(data: any) {
         await store.dispatch('commonModule/setCommonInfo', {rbcReDataCheck: false});
         break;
       case 'SYSINFO':
-        parsedDataProps.value.sysInfo = parseDataWarp;
+        parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           await store.dispatch('commonModule/setCommonInfo', { isTcpError: true });
@@ -366,7 +365,7 @@ async function socketData(data: any) {
         await runnStart();
         break;
       case 'RUNNING_INFO':
-        parsedDataProps.value.runningInfo = parseDataWarp;
+        parsedDataProps.value = parseDataWarp;
         runningInfoBoolen.value = true;
         await runningInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);

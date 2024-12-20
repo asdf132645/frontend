@@ -269,8 +269,8 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { checkPbNormalCell } from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
+import {gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);

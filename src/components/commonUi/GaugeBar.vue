@@ -41,7 +41,7 @@
 import {reactive, watch, onMounted, defineProps} from 'vue';
 
 // Props 정의
-const props = defineProps(['parsedData']);
+const props = defineProps(['parsedDataSysInfo']);
 
 // 내부 상태: parsedData를 복사하여 관리
 const progressData: any = reactive({
@@ -52,7 +52,7 @@ const progressData: any = reactive({
 
 // Props의 parsedData 변경 감지 및 progressData 업데이트
 watch(
-    () => props.parsedData,
+    () => props.parsedDataSysInfo,
     (newData) => {
       if (newData) {
         progressData.progressBarText = newData.progressBarText || '';
