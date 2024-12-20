@@ -431,6 +431,7 @@ import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import { CellImageAnalyzedType } from "@/common/type/tooltipType";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -509,12 +510,12 @@ const loadingState = ref('');
 const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
 const selectedUploadFile = ref('');
-const showTutorialImage = reactive({
+const showTutorialImage = ref({
   edgeShotType: false,
   positionMargin: false,
 })
 const apiUrl = ref('');
-const tooltipVisible = reactive({
+const tooltipVisible = ref({
   iaRootPath: false,
   nsNbIntegration: false,
   alarm: false,
@@ -772,16 +773,16 @@ const toggleKeepPage = () => {
 
 const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
-    showTutorialImage.edgeShotType = false;
-    showTutorialImage.positionMargin = false;
+    showTutorialImage.value.edgeShotType = false;
+    showTutorialImage.value.positionMargin = false;
     return;
   }
   switch (type) {
     case 'edgeShotType':
-      showTutorialImage.edgeShotType = true;
+      showTutorialImage.value.edgeShotType = true;
       break;
     case 'positionMargin':
-      showTutorialImage.positionMargin = true;
+      showTutorialImage.value.positionMargin = true;
       break;
     default:
       break;
@@ -1045,8 +1046,8 @@ const handleUploadSelectModalClose = () => {
   selectedUploadFile.value = '';
 }
 
-const tooltipVisibleFunc = (type: 'iaRootPath' | 'nsNbIntegration' | 'alarm' | 'keepPage' | 'downloadSavePath' | 'download' | 'upload' | 'openDownloadSavePath', visible: boolean) => {
-  tooltipVisible[type] = visible;
+const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 const pbsAnalysisValuesRowIndex = () => {
