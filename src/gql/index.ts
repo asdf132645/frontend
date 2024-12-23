@@ -99,6 +99,7 @@ export type RuningInfoEntity = {
   hosName?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   img_drive_root_path?: Maybe<Scalars['String']['output']>;
+  isAllClassesChecked?: Maybe<Scalars['Boolean']['output']>;
   isNormal: Scalars['String']['output'];
   isNsNbIntegration?: Maybe<Scalars['String']['output']>;
   lock_status?: Maybe<Scalars['Boolean']['output']>;
@@ -132,7 +133,7 @@ export type UpdateRuningInfoDto = {
 };
 
 export type UpdateRuningInfoDtoItems = {
-  abnormalClassInfo?: InputMaybe<Scalars['String']['input']>;
+  abnormalClassInfo?: InputMaybe<Scalars['JSON']['input']>;
   analyzedDttm?: InputMaybe<Scalars['String']['input']>;
   barcodeNo?: InputMaybe<Scalars['String']['input']>;
   bf_lowPowerPath?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -146,6 +147,7 @@ export type UpdateRuningInfoDtoItems = {
   hosName?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   img_drive_root_path?: InputMaybe<Scalars['String']['input']>;
+  isAllClassesChecked?: InputMaybe<Scalars['Boolean']['input']>;
   isNormal?: InputMaybe<Scalars['String']['input']>;
   isNsNbIntegration?: InputMaybe<Scalars['String']['input']>;
   lock_status?: InputMaybe<Scalars['Boolean']['input']>;
@@ -167,7 +169,7 @@ export type UpdateRuningInfoDtoItems = {
   testType?: InputMaybe<Scalars['String']['input']>;
   traySlot?: InputMaybe<Scalars['String']['input']>;
   wbcCount?: InputMaybe<Scalars['String']['input']>;
-  wbcInfo?: InputMaybe<Scalars['String']['input']>;
+  wbcInfo?: InputMaybe<Scalars['JSON']['input']>;
   wbcInfoAfter?: InputMaybe<Scalars['JSON']['input']>;
   wbcMemo?: InputMaybe<Scalars['String']['input']>;
 };
@@ -230,111 +232,6 @@ export type UpdateRunningInfoMutationVariables = Exact<{
 export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, slotId: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, isNormal: string, lock_status?: boolean | null, pcIp?: string | null }> };
 
 
-export const GetRunningInfoByIdDocument = gql`
-    query GetRunningInfoById($id: Int!) {
-  getRunningInfoByIdGQL(id: $id) {
-    id
-    lock_status
-    traySlot
-    slotNo
-    barcodeNo
-    patientId
-    patientNm
-    gender
-    birthDay
-    wbcCount
-    slotId
-    orderDttm
-    testType
-    analyzedDttm
-    tactTime
-    maxWbcCount
-    cassetId
-    isNormal
-    wbcInfo {
-      wbcInfo {
-        id
-        name
-        count
-        title
-        images {
-          coordinates {
-            display
-          }
-          fileName
-          title
-          filter
-          height
-          width
-        }
-        percent
-      }
-      totalCount
-      maxWbcCount
-    }
-    wbcInfoAfter {
-      id
-      name
-      count
-      title
-      images {
-        coordinates {
-          display
-        }
-        fileName
-        title
-        filter
-        height
-        width
-      }
-      percent
-    }
-    rbcInfo {
-      rbcClass {
-        classInfo {
-          classId
-          classNm
-          degree
-          originalDegree
-        }
-        categoryId
-        categoryNm
-      }
-      malariaCount
-      maxRbcCount
-      pltCount
-    }
-    rbcInfoAfter {
-      classInfo {
-        classId
-        classNm
-        degree
-        originalDegree
-        percent
-      }
-      categoryId
-      categoryNm
-    }
-    submitState
-    submitOfDate
-    submitUserId
-    isNsNbIntegration
-    wbcMemo
-    rbcMemo
-    pcIp
-    cbcPatientNo
-    cbcPatientNm
-    cbcSex
-    cbcAge
-    img_drive_root_path
-    hosName
-    abnormalClassInfo {
-      classNm
-      val
-    }
-  }
-}
-    `;
 
 /**
  * __useGetRunningInfoByIdQuery__
@@ -351,13 +248,7 @@ export const GetRunningInfoByIdDocument = gql`
  *   id: // value for 'id'
  * });
  */
-export function useGetRunningInfoByIdQuery(variables: GetRunningInfoByIdQueryVariables | VueCompositionApi.Ref<GetRunningInfoByIdQueryVariables> | ReactiveFunction<GetRunningInfoByIdQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}) {
-  return VueApolloComposable.useQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
-}
-export function useGetRunningInfoByIdLazyQuery(variables?: GetRunningInfoByIdQueryVariables | VueCompositionApi.Ref<GetRunningInfoByIdQueryVariables> | ReactiveFunction<GetRunningInfoByIdQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}) {
-  return VueApolloComposable.useLazyQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
-}
-export type GetRunningInfoByIdQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>;
+
 export const UpdateRunningInfoDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
   updateRunningInfoGQL(updateDto: $updateDto) {

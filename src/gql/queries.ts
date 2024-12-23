@@ -105,6 +105,7 @@ export const GetRunningInfoByIdDocument = gql`
                 classNm
                 val
             }
+            isAllClassesChecked
         }
     }
 `;
