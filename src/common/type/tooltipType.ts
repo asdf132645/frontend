@@ -18,6 +18,7 @@ export interface CellImageAnalyzedType {
     nsNbIntegration: boolean;
     alarm: boolean;
     keepPage: boolean;
+    lisUploadCheckAll: boolean;
     downloadSavePath: boolean;
     download: boolean;
     upload: boolean;

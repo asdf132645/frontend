@@ -80,6 +80,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const store = useStore();
 const router = useRouter();
@@ -168,6 +169,7 @@ const createRbcDegreeData = async () => {
 
     if (result) {
       showSuccessAlert(MESSAGES.settingSaveSuccess);
+      scrollToTop();
       saveHttpType.value = 'put';
     }
   } catch (e) {

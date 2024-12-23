@@ -73,6 +73,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {classArr} from "@/common/api/service/setting/dto/wbcCustomClassDto";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const store = useStore();
 const router = useRouter();
@@ -177,6 +178,7 @@ const saveLisCode = async () => {
 
       if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
         showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        scrollToTop();
         await getImagePrintData();
       } else {
         showErrorAlert(MESSAGES.settingUpdateFailure);
@@ -188,6 +190,7 @@ const saveLisCode = async () => {
 
     if (result && rbcResult && minCountResult) {
       showSuccessAlert(MESSAGES.settingSaveSuccess);
+      scrollToTop();
       saveHttpType.value = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

@@ -6,4 +6,8 @@ const enableScroll = () => {
     document.body.style.overflow = 'auto';
 }
 
-export { disableScroll, enableScroll };
+const scrollToTop = () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+export { disableScroll, enableScroll, scrollToTop };
