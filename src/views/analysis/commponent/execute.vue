@@ -90,7 +90,6 @@ const isRunningState = computed(() => store.state.commonModule.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
-const isTcpError = computed(() => store.state.commonModule.isTcpError);
 const userId = ref('');
 const analysisType = ref();
 const wbcCount = ref();
@@ -359,7 +358,6 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
-  if (isTcpError.value) return;
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
   if (isInit.value === 'Y') {
     showSuccessAlert(MESSAGES.alreadyInitialized);

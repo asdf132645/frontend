@@ -119,7 +119,6 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
-const isTcpError = computed(() => store.state.commonModule.isTcpError);
 
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
@@ -209,10 +208,6 @@ watch(userModuleDataGet.value, (newUserId) => {
   cellImgGet();
   userId.value = newUserId.id;
 });
-
-watch(() => isTcpError.value, (newIsTcpError) => {
-  sendBESeverIsTCPError(newIsTcpError);
-})
 
 onBeforeMount(() => {
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
@@ -345,14 +340,11 @@ async function socketData(data: any) {
         parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
-          await store.dispatch('commonModule/setCommonInfo', { isTcpError: true });
           showCoreErrorAlert(res);
           const isAlarm = sessionStorage.getItem('isAlarm');
           if (isAlarm === 'true') {
             await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
           }
-        } else {
-          await store.dispatch('commonModule/setCommonInfo', { isTcpError: false });
         }
         break;
       case 'INIT':
@@ -846,14 +838,6 @@ const hideAlert = () => {
 
 const errorClear = async () => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
-}
-
-const sendBESeverIsTCPError = (newIsTcpError: boolean) => {
-  instance?.appContext.config.globalProperties.$socket.emit('isTCPError', {
-    type: 'SEND_DATA',
-    payload: window.APP_API_BASE_URL,
-    message: newIsTcpError,
-  });
 }
 
 </script>
