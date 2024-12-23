@@ -28,10 +28,11 @@
               transition: 'width 0.5s ease',
             }"
           ></div>
+          <div class="newProgressNm">
+            {{ step.progressName }}
+          </div>
         </div>
-        <div class="newProgressNm">
-          {{ step.progressName }}
-        </div>
+
       </div>
     </div>
   </div>

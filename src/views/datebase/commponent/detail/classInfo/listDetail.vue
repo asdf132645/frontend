@@ -373,6 +373,11 @@ watch(
     async (newVal, oldVal) => {
       if (newVal !== oldVal) {
         await nextTick();
+        if (projectType.value !== 'bm') {
+          await checkWps(newVal);
+        } else {
+          isWpsShow.value = false;
+        }
         try {
           isLoadedSlideData.value = false;
           await getNormalRange(); // 함수가 선언된 이후 호출
@@ -387,11 +392,7 @@ watch(
           cellMarkerIcon.value = false;
           await drawCellMarker(true);
 
-          if (projectType.value !== 'bm') {
-            await checkWps();
-          } else {
-            isWpsShow.value = false;
-          }
+
 
         } catch (error) {
           console.error('비동기 작업 중 에러 발생:', error);
@@ -434,8 +435,8 @@ const borderOn = () => {
   blockClicks.value = false;
 }
 
-const checkWps = async () => {
-  const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/04_WPS`;
+const checkWps = async (newVal: any) => {
+  const filePath = `${iaRootPath.value}/${newVal?.slotId}/04_WPS`;
 
   const foldersPath = `folderPath=${filePath}`;
   const wpsFolderCheck = await getFolders(foldersPath);
