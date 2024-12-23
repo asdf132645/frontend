@@ -260,11 +260,7 @@ import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipClassInfoType } from "@/common/type/tooltipType";
 
 const router = useRouter();
-const showLISUploadButton = computed(() => {
-  const showLISUploadManual = JSON.parse(sessionStorage.getItem('lisUploadCheckAll') ?? 'false');
-  if (!showLISUploadManual) return true;
-  else return props.isAllClassesChecked;
-});
+const showLISUploadButton = ref(false);
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
@@ -352,6 +348,7 @@ onMounted(async () => {
     cbcCodeList.value = await getCbcCodeList();
   }
   barCodeImageShowError.value = false;
+  showLISUploadButton.value = true;
 })
 
 onUnmounted(() => {
@@ -376,6 +373,15 @@ const handleKeyUp = (event: KeyboardEvent) => {
     isHotKeyPressed.value = false; // 키를 떼면 다시 실행 가능
   }
 };
+
+watch(() => props.isAllClassesChecked, () => {
+  const showLISUploadManual = JSON.parse(sessionStorage.getItem('lisUploadCheckAll') ?? 'false');
+  if (!showLISUploadManual) {
+    showLISUploadButton.value = true;
+  } else {
+    showLISUploadButton.value = props.isAllClassesChecked;
+  }
+})
 
 watch(() => props.isCommitChanged, () => {
   selectItems.value.submitState = 'Submit';
