@@ -12,15 +12,15 @@
             :class="{
             completed: step.progressPercent === 100,
             active: step.progressPercent > 0 && step.progressPercent < 100,
-            waiting: step.progressPercent === 0 && index === progressData.progressArr.length - 1,
+            waiting: step.progressPercent === '' && index === progressData.progressArr.length - 1,
           }"
         >
           <span v-if="step.progressPercent === 100">✔</span>
-          <span v-else>{{ index + 1 }}</span>
+          <span v-else>{{ step.progressNo }}</span>
         </div>
 
         <!-- 선 -->
-        <div v-if="index < progressData.progressArr.length - 1" class="lineGuasge">
+        <div v-if="index < progressData.progressArr.length" class="lineGuasge">
           <div
               class="line-fill"
               :style="{
@@ -28,10 +28,11 @@
               transition: 'width 0.5s ease',
             }"
           ></div>
+          <div class="newProgressNm">
+            {{ step.progressName }}
+          </div>
         </div>
-        <div class="newProgressNm">
-          {{ step.progressName }}
-        </div>
+
       </div>
     </div>
   </div>
@@ -57,6 +58,7 @@ watch(
       if (newData) {
         progressData.progressBarText = newData.progressBarText || '';
         progressData.progressBarPercent = newData.progressBarPercent || 0;
+        console.log(newData.progressArr)
         progressData.progressArr = (newData.progressArr || []).map((step) => ({
           progressNo: step.progressNo,
           progressName: step.progressName,
@@ -64,7 +66,7 @@ watch(
         }));
       }
     },
-    {immediate: true}
+    {immediate: true, deep: true}
 );
 
 // 테스트용 데이터 생성 함수
