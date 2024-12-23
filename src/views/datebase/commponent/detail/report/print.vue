@@ -243,7 +243,7 @@ import {formatDateString} from "@/common/lib/utils/dateUtils";
 import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
+import {disableScroll, enableScroll} from "@/common/lib/utils/scroll";
 import {
   incheonGilPercentChange,
   incheonStMaryPercentChange,

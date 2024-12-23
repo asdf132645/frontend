@@ -40,7 +40,7 @@
         <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
       </li>
       <li
-          v-if="!crcConnect"
+          v-if="!crcConnect && showLISUploadButton"
           @click="lisModalOpen"
           class="pos-relative"
           :class="{'submitted': selectItems?.submitState === 'lisCbc' || lisBtnColor,}"
@@ -223,7 +223,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'type', 'isCommitChanged', 'classCompareShow']);
+const props = defineProps(['wbcInfo', 'selectItems', 'type', 'isCommitChanged', 'classCompareShow', 'isAllClassesChecked']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -260,7 +260,11 @@ import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipClassInfoType } from "@/common/type/tooltipType";
 
 const router = useRouter();
-
+const showLISUploadButton = computed(() => {
+  const showLISUploadManual = JSON.parse(sessionStorage.getItem('lisUploadCheckAll') ?? 'false');
+  if (!showLISUploadManual) return true;
+  else return props.isAllClassesChecked;
+});
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);

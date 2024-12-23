@@ -15,7 +15,11 @@
     </template>
   </ul>
   <template v-if="!classCompareShow">
-    <ul :class="{ wpsDiv: wpsShow, cellImgBox: true }">
+    <ul
+        :class="{ wpsDiv: wpsShow, cellImgBox: true }"
+        ref="scrollContainer"
+        @scroll="handleScroll"
+    >
       <li v-for="(item, itemIndex) in wbcInfoArrChild" :key="item.id" :ref="setRef(item.id)">
         <div v-if="item?.count !== '0' && item?.count !== 0">
           <p class="mt10">
@@ -40,7 +44,7 @@
                 v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
                 @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
             >
-              <div style="position: relative;">
+              <div class="pos-relative">
                 <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
                   <div class="fileTitle" :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
                     {{ replaceFileNamePrefix(image.fileName) }}
@@ -234,6 +238,7 @@ const loading = ref(true);
 const clickableItem = ref<HTMLElement | null>(null);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const scrollContainer = ref(null);
 
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
@@ -286,6 +291,7 @@ const props = defineProps<{
   imageSize: number;
   wpsShow: boolean;
   selectItems: any;
+  isAllClassesChecked: boolean;
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
@@ -349,6 +355,21 @@ watch(
       }
     }
 );
+
+const handleScroll = () => {
+  if (!scrollContainer.value) return;
+
+  const isAtBottom = scrollContainer.value.scrollTop + scrollContainer.value.clientHeight >= scrollContainer.value.scrollHeight;
+  if (isAtBottom && !props.isAllClassesChecked) {
+    // update 필요: isAllClassesChecked에 true 값
+    // update 필요: isAllClassesChecked에 true 값
+    // update 필요: isAllClassesChecked에 true 값
+    // update 필요: isAllClassesChecked에 true 값
+    // update 필요: isAllClassesChecked에 true 값
+    // update 필요: isAllClassesChecked에 true 값
+    emits('allClassesChecked')
+  }
+}
 
 const wpsImgClickInfo = (img: any, item: any) => {
   wpsImgClickInfoData.value = {item: item, img: img};

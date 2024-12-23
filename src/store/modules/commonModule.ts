@@ -62,7 +62,6 @@ export interface CommonState {
     settingType: string;
     isDownloadOrUploading: boolean;
     isRewindingBelt: boolean;
-    isTcpError: boolean;
 }
 
 interface CommonModule {
@@ -131,7 +130,6 @@ interface CommonModule {
         setSettingType: (state: CommonState, value: string) => void;
         setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
-        setIsTcpError: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -201,7 +199,6 @@ export const commonModule: CommonModule = {
         settingType: '',
         isDownloadOrUploading: false,
         isRewindingBelt: false,
-        isTcpError: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -394,9 +391,6 @@ export const commonModule: CommonModule = {
         setIsRewindingBelt(state: CommonState, value: boolean): void {
             state.isRewindingBelt = value;
         },
-        setIsTcpError(state: CommonState, value: boolean): void {
-            state.isTcpError = value;
-        }
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -589,9 +583,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isRewindingBelt')) {
                 commit('setIsRewindingBelt', payload.isRewindingBelt);
-            }
-            if (payload.hasOwnProperty('isTcpError')) {
-                commit('setIsTcpError', payload.isTcpError);
             }
         },
     },

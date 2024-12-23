@@ -25,6 +25,7 @@
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement"
                  @uploadLisChangeSlide="uploadLisChangeSlide"
+                 :isAllClassesChecked="isAllClassesChecked"
       />
     </div>
 
@@ -165,6 +166,7 @@
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
             :imageSize="imageSize"
+            :isAllClassesChecked="isAllClassesChecked"
             :updateWbcInfo="updateWbcInfo"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
@@ -178,6 +180,7 @@
             @onDropCircle="onDropCircle"
             @onDragOverCircle="onDragOverCircle"
             @scrollToElement="scrollToElement"
+            @allClassesChecked="allClassesChecked"
             :cellRef="cellRef"
             @update:cellRef="handleUpdateCellRef"
         />
@@ -262,7 +265,7 @@ import ClassInfo from "@/views/datebase/commponent/detail/classInfo/commonRightI
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import ImageGallery from '@/views/datebase/commponent/detail/classInfo/ImageGallery.vue';
 import Alert from "@/components/commonUi/Alert.vue";
-import {disableScroll, enableScroll} from "@/common/lib/utils/scrollBlock";
+import {disableScroll, enableScroll} from "@/common/lib/utils/scroll";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -350,6 +353,7 @@ const slideData = computed(() => store.state.slideDataModule);
 const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
+const isAllClassesChecked = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -362,6 +366,7 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   document.addEventListener('click', handleClickOutside);
+  isAllClassesChecked.value = false;
 });
 
 onUnmounted(async () => {
@@ -853,6 +858,7 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 });
 
 const refreshClass = async (data: any) => {
+  isAllClassesChecked.value = false;
   isLoadedSlideData.value = false;
   cellMarkerIcon.value = false;
   await getDetailRunningInfo(data);
@@ -1941,6 +1947,10 @@ const updateCBCData = async (incomingSlideData: any) => {
     cbcPatientNm.value = cbcData?.cbcPatientNm;
     await resRunningItem(updatedRunningInfo);
   }
+}
+
+const allClassesChecked = () => {
+  isAllClassesChecked.value = true;
 }
 
 </script>

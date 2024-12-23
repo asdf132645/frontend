@@ -13,306 +13,322 @@
     <div class="loaderForLogin"></div>
     <p class="loadingTextLogin">Loading...</p>
   </div>
-    <div class="settingCellImgAnalyzedContainer">
-      <table class="settingTable">
-        <tbody>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th>Analysis Type</th>
-          <td colspan="2">
-            <select v-model='testTypeCd'>
-              <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
+  <table class="settingTable">
+    <tbody>
+    <tr v-if="viewerCheck !== 'viewer'">
+      <th>Analysis Type</th>
+      <td colspan="2">
+        <select v-model='testTypeCd'>
+          <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
 
-        <tr v-if="viewerCheck !== 'viewer'">
-          <!-- WBC diff analysis values -->
-          <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
+    <tr v-if="viewerCheck !== 'viewer'">
+      <!-- WBC diff analysis values -->
+      <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
 
-          <!-- BM diff analysis values -->
-          <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
-          <th>Cell Analyzing Count</th>
-          <td>
+      <!-- BM diff analysis values -->
+      <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
+      <th>Cell Analyzing Count</th>
+      <td>
 
-            <select v-model='diffCellAnalyzingCount'>
-              <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <!--      PBS analysis values-->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
-          <th>
-            Cell Analyzing Count
-          </th>
-          <td>
-            <select v-model='pbsCellAnalyzingCount'>
-              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th v-if="projectType === 'bm'"></th>
-          <th>Stitch Count</th>
-          <td>
-            <select v-model='stitchCount'>
-              <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th class="pos-relative">
-            Edge Shot Type
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
-                @mouseleave="informationFontHover('edgeShotType', 'leave')"
-            />
-            <Transition>
-              <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
-                <img :src="smearTop" width="400" />
-              </div>
-            </Transition>
-          </th>
-          <td>
-            <select v-model='edgeShotType'>
-              <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
+        <select v-model='diffCellAnalyzingCount'>
+          <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
+    <!--      PBS analysis values-->
+    <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
+      <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
+      <th>
+        Cell Analyzing Count
+      </th>
+      <td>
+        <select v-model='pbsCellAnalyzingCount'>
+          <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
+    <tr v-if="viewerCheck !== 'viewer'">
+      <th v-if="projectType === 'bm'"></th>
+      <th>Stitch Count</th>
+      <td>
+        <select v-model='stitchCount'>
+          <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
+    <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer'">
+      <th class="pos-relative">
+        Edge Shot Type
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
+            @mouseleave="informationFontHover('edgeShotType', 'leave')"
+        />
+        <Transition>
+          <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
+            <img :src="smearTop" width="400" />
+          </div>
+        </Transition>
+      </th>
+      <td>
+        <select v-model='edgeShotType'>
+          <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
 
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (edgeShotType === '2' || edgeShotType === '3')">
-          <th class="pos-relative">Edge Shot Count</th>
-          <td v-show="edgeShotType === '2'">
-            <select v-model='edgeShotCount.LP'>
-              <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-          <td v-show="edgeShotType === '3'">
-            <select v-model='edgeShotCount.HP'>
-              <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
+    <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (edgeShotType === '2' || edgeShotType === '3')">
+      <th class="pos-relative">Edge Shot Count</th>
+      <td v-show="edgeShotType === '2'">
+        <select v-model='edgeShotCount.LP'>
+          <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+      <td v-show="edgeShotType === '3'">
+        <select v-model='edgeShotCount.HP'>
+          <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
 
-        <!--      BF analysis values-->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>BF Analysis Values</th>
-          <th>Cell Analyzing Count</th>
-          <td>
-            <select v-model='bfCellAnalyzingCount'>
-              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
+    <!--      BF analysis values-->
+    <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
+      <th>BF Analysis Values</th>
+      <th>Cell Analyzing Count</th>
+      <td>
+        <select v-model='bfCellAnalyzingCount'>
+          <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
 
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th rowspan="3" class="pos-relative">
-            Common
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="() => informationFontHover('positionMargin', 'hover')"
-                @mouseleave="informationFontHover('positionMargin', 'leave')"
-            />
-            <Transition>
-              <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
-                <img :src="commonPositionMargin" width="140" />
-              </div>
-            </Transition>
-          </th>
-          <th>Wbc Position Margin</th>
-          <td>
-            <select v-model='wbcPositionMargin'>
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Rbc Position Margin</th>
-          <td>
-            <select v-model='rbcPositionMargin'>
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Edge Position Margin</th>
-          <td>
-            <select v-model='pltPositionMargin'>
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
-            IA Root Path
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
-                @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
-                @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
-          </th>
-          <td colspan="2">
-            <select v-model='iaRootPath'>
-              <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th class="pos-relative">
-            NS/NB Integration
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
-                @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
-          </th>
-          <td>
-            <font-awesome-icon
-                :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleNsNbIntegration"
-            />
-          </td>
-        </tr>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th class="pos-relative">
-            Alarm Timer (sec)
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('alarm', true)"
-                @mouseleave="tooltipVisibleFunc('alarm', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.ALARM" />
-          </th>
-          <td>
-            <font-awesome-icon
-                :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleAlarm"
-            />
-          </td>
-          <td>
-            <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
-          </td>
-        </tr>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th class="pos-relative">
-            Keep Page
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('keepPage', true)"
-                @mouseleave="tooltipVisibleFunc('keepPage', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type="" :message="MSG.TOOLTIP.KEEP_PAGE" />
-          </th>
-          <td>
-            <font-awesome-icon
-                :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleKeepPage"
-            />
-          </td>
-        </tr>
-        </tbody>
-      </table>
+    <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
+      <th rowspan="3" class="pos-relative">
+        Common
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="() => informationFontHover('positionMargin', 'hover')"
+            @mouseleave="informationFontHover('positionMargin', 'leave')"
+        />
+        <Transition>
+          <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
+            <img :src="commonPositionMargin" width="140" />
+          </div>
+        </Transition>
+      </th>
+      <th>Wbc Position Margin</th>
+      <td>
+        <select v-model='wbcPositionMargin'>
+          <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
+    <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
+      <th>Rbc Position Margin</th>
+      <td>
+        <select v-model='rbcPositionMargin'>
+          <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
+    <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
+      <th>Edge Position Margin</th>
+      <td>
+        <select v-model='pltPositionMargin'>
+          <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
+        IA Root Path
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
+            @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
+            @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
+      </th>
+      <td colspan="2">
+        <select v-model='iaRootPath'>
+          <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+        </select>
+      </td>
+    </tr>
+    <tr v-if="viewerCheck !== 'viewer'">
+      <th class="pos-relative">
+        NS/NB Integration
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
+            @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
+      </th>
+      <td>
+        <font-awesome-icon
+            :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            class="iconSize"
+            @click="toggleNsNbIntegration"
+        />
+      </td>
+    </tr>
+    <tr v-if="viewerCheck !== 'viewer'">
+      <th class="pos-relative">
+        Alarm Timer (sec)
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('alarm', true)"
+            @mouseleave="tooltipVisibleFunc('alarm', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.ALARM" />
+      </th>
+      <td>
+        <font-awesome-icon
+            :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            class="iconSize"
+            @click="toggleAlarm"
+        />
+      </td>
+      <td>
+        <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
+      </td>
+    </tr>
+    <tr>
+      <th class="pos-relative">
+        Keep Page
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('keepPage', true)"
+            @mouseleave="tooltipVisibleFunc('keepPage', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type="" :message="MSG.TOOLTIP.KEEP_PAGE" />
+      </th>
+      <td>
+        <font-awesome-icon
+            :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            class="iconSize"
+            @click="toggleKeepPage"
+        />
+      </td>
+    </tr>
+    <tr>
+      <th class="pos-relative">
+        LIS Upload Check
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"
+            @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK" />
+      </th>
+      <td>
+        <font-awesome-icon
+            :icon="lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            class="iconSize"
+            @click="toggleLisUploadCheckAll"
+        />
+      </td>
+    </tr>
+    </tbody>
+</table>
 
-      <table class="settingTable auto">
-        <colgroup>
-          <col width="70">
-          <col width="30">
-        </colgroup>
-        <tbody>
-        <tr>
-          <th class="pos-relative">
-            Download Save Path
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('downloadSavePath', true)"
-                @mouseleave="tooltipVisibleFunc('downloadSavePath', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH" />
-          </th>
+  <table class="settingTable auto">
+    <colgroup>
+      <col width="70">
+      <col width="30">
+    </colgroup>
+    <tbody>
+    <tr>
+      <th class="pos-relative">
+        Download Save Path
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('downloadSavePath', true)"
+            @mouseleave="tooltipVisibleFunc('downloadSavePath', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH" />
+      </th>
 
-          <td>
-            <div class="downloadSavePathContainer">
-              <select v-model='downloadRootPath' class="downloadPath">
-                <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
-              </select>
-              <div class="pos-relative">
-                <font-awesome-icon
-                    :icon="['fas', 'folder-open']"
-                    @click="openSourceDrive"
-                    class="openDriveIcon"
-                    @mouseenter="tooltipVisibleFunc('openDownloadSavePath', true)"
-                    @mouseleave="tooltipVisibleFunc('openDownloadSavePath', false)"
-                />
-                <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH" />
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th class="pos-relative">
-            Download
+      <td>
+        <div class="downloadSavePathContainer">
+          <select v-model='downloadRootPath' class="downloadPath">
+            <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
+          </select>
+          <div class="pos-relative">
             <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('download', true)"
-                @mouseleave="tooltipVisibleFunc('download', false)"
+                :icon="['fas', 'folder-open']"
+                @click="openSourceDrive"
+                class="openDriveIcon"
+                @mouseenter="tooltipVisibleFunc('openDownloadSavePath', true)"
+                @mouseleave="tooltipVisibleFunc('openDownloadSavePath', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD" />
-          </th>
-          <td>
-            <div class="backupDatePickers">
-              <Datepicker v-model="backupStartDate"></Datepicker>
-              <Datepicker v-model="backupEndDate"></Datepicker>
-              <button class="backupBtn" @click="createBackup">Download</button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th class="pos-relative">
-            Upload
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
-                @mouseenter="tooltipVisibleFunc('upload', true)"
-                @mouseleave="tooltipVisibleFunc('upload', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.UPLOAD" />
-          </th>
-          <td colspan="2">
-            <div class="settingUploadContainer">
-              <select v-model='uploadRootPath' class="uploadSavePath">
-                <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-              </select>
-              <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>
-            </div>
-          </td>
-        </tr>
+            <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH" />
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th class="pos-relative">
+        Download
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('download', true)"
+            @mouseleave="tooltipVisibleFunc('download', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD" />
+      </th>
+      <td>
+        <div class="backupDatePickers">
+          <Datepicker v-model="backupStartDate"></Datepicker>
+          <Datepicker v-model="backupEndDate"></Datepicker>
+          <button class="backupBtn" @click="createBackup">Download</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th class="pos-relative">
+        Upload
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
+            @mouseenter="tooltipVisibleFunc('upload', true)"
+            @mouseleave="tooltipVisibleFunc('upload', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.UPLOAD" />
+      </th>
+      <td colspan="2">
+        <div class="settingUploadContainer">
+          <select v-model='uploadRootPath' class="uploadSavePath">
+            <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+          </select>
+          <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>
+        </div>
+      </td>
+    </tr>
 
 
-        <!--      나중에 기능 추가 할 부분 자동 백업-->
-        <!--      <tr>-->
-        <!--        <th>Auto Backup</th>-->
-        <!--        <td>-->
-        <!--          <div class="autoDateBox">-->
-        <!--            <select v-model='autoBackUpMonth'>-->
-        <!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
-        <!--                {{ month.value }}-->
-        <!--              </option>-->
-        <!--            </select>-->
-        <!--            <span>Month</span>-->
-        <!--          </div>-->
-        <!--        </td>-->
-        <!--      </tr>-->
-        </tbody>
-      </table>
-      <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
-    </div>
+    <!--      나중에 기능 추가 할 부분 자동 백업-->
+    <!--      <tr>-->
+    <!--        <th>Auto Backup</th>-->
+    <!--        <td>-->
+    <!--          <div class="autoDateBox">-->
+    <!--            <select v-model='autoBackUpMonth'>-->
+    <!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
+    <!--                {{ month.value }}-->
+    <!--              </option>-->
+    <!--            </select>-->
+    <!--            <span>Month</span>-->
+    <!--          </div>-->
+    <!--        </td>-->
+    <!--      </tr>-->
+    </tbody>
+  </table>
+  <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
 
 
   <!-- Upload 확인 모달 -->
@@ -432,6 +448,7 @@ import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { CellImageAnalyzedType } from "@/common/type/tooltipType";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -461,6 +478,7 @@ const isNsNbIntegration = ref(false);
 const isAlarm = ref(false);
 const alarmCount = ref('5');
 const keepPage = ref(false);
+const lisUploadCheckAll = ref(false);
 const backupStartDate = ref(moment().local().toDate());
 const backupEndDate = ref(moment().local().toDate());
 const autoDate = ref([
@@ -520,6 +538,7 @@ const tooltipVisible = ref({
   nsNbIntegration: false,
   alarm: false,
   keepPage: false,
+  lisUploadCheckAll: false,
   downloadSavePath: false,
   download: false,
   upload: false,
@@ -555,7 +574,7 @@ onMounted(async () => {
 });
 
 watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
-  pltPositionMargin, pbsCellAnalyzingCount, edgeShotType, edgeShotCount, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage], async () => {
+  pltPositionMargin, pbsCellAnalyzingCount, edgeShotType, edgeShotCount, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, lisUploadCheckAll], async () => {
   const cellAfterSettingObj = {
     id: cellimgId.value,
     analysisType: testTypeCd.value,
@@ -574,6 +593,7 @@ watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMa
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
+    lisUploadCheckAll: lisUploadCheckAll.value,
   }
 
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
@@ -659,6 +679,7 @@ const cellImgGet = async () => {
         isAlarm.value = data.isAlarm;
         alarmCount.value = data.alarmCount;
         keepPage.value = data.keepPage;
+        lisUploadCheckAll.value = data.lisUploadCheckAll;
         backupStartDate.value = moment(data.backupStartDate).local().toDate();
         backupEndDate.value = moment(data.backupEndDate).local().toDate();
         autoBackUpMonth.value = data?.autoBackUpMonth;
@@ -681,6 +702,7 @@ const cellImgGet = async () => {
           isAlarm: data?.isAlarm,
           alarmCount: data?.alarmCount,
           keepPage: data?.keepPage,
+          lisUploadCheckAll: data?.lisUploadCheckAll,
         }
 
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
@@ -713,6 +735,7 @@ const cellImgSet = async () => {
     isAlarm: isAlarm.value,
     alarmCount: alarmCount.value,
     keepPage: keepPage.value,
+    lisUploadCheckAll: lisUploadCheckAll.value,
     backupPath: downloadRootPath.value,
     backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
     backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
@@ -732,6 +755,7 @@ const cellImgSet = async () => {
     if (result) {
       const text = saveHttpType.value === 'post' ? MESSAGES.settingSaveSuccess : MESSAGES.UPDATE_SUCCESSFULLY;
       showSuccessAlert(text);
+      scrollToTop();
       const data = result?.data;
       await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
       await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
@@ -747,6 +771,7 @@ const cellImgSet = async () => {
       sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('isAlarm', String(data?.isAlarm));
+      sessionStorage.setItem('lisUploadCheckAll', String(data?.lisUploadCheckAll));
       const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
       sessionStorage.setItem(keepPageType, String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
@@ -769,6 +794,10 @@ const toggleAlarm = () => {
 
 const toggleKeepPage = () => {
   keepPage.value = !keepPage.value;
+};
+
+const toggleLisUploadCheckAll = () => {
+  lisUploadCheckAll.value = !lisUploadCheckAll.value;
 };
 
 const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
@@ -820,6 +849,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
       showErrorAlert(result.data);
     } else {
       showSuccessAlert('Upload completed successfully');
+      scrollToTop();
     }
   } catch (e) {
     console.error(e);

@@ -128,6 +128,7 @@ export const MSG = {
         DOWNLOAD: '1. Select the date for download\n2. Click \'Copy\' to back up the data or \'Move\' to change the storage location.',
         UPLOAD: 'Select Upload Destination Path',
         OPEN_DOWNLOAD_SAVE_PATH: 'Open Download Save Path',
+        LIS_UPLOAD_CHECK: 'Show LIS Upload Button after viewing all cell',
 
     },
     TOAST: {

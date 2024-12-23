@@ -2413,10 +2413,6 @@ select.downloadPath {
     width: 60%;
 }
 
-.settingCellImgAnalyzedContainer {
-    max-height: 750px;
-}
-
 select.uploadSavePath {
     margin: 0 -2px 0 12px;
     width: 100%;
