@@ -346,7 +346,7 @@ const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const changeSlideByLisUpload = ref(false);
 const normalItems = ref<any>([]);
-const slideData = computed(() => store.state.runningModule);
+const slideData = computed(() => store.state.slideDataModule);
 const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');

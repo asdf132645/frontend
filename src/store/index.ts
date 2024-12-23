@@ -2,25 +2,20 @@
 import {createStore} from "vuex";
 import {userModule} from "@/store/modules/userModule";
 import {executeModule} from '@/store/modules/analysis/executeModule';
-import {rbcClassificationModule} from '@/store/modules/analysis/rbcClassification';
-import {wbcClassificationModule} from '@/store/modules/analysis/wbcclassification';
 import {workingViewModule} from '@/store/modules/analysis/workingViewModule';
-import { embeddedStatusModule } from '@/store/modules/embeddedStatusModule';
-import { orderListModule } from '@/store/modules/analysis/orderListModule';
-import { runningInfoModule } from '@/store/modules/testPageCommon/ruuningInfo';
+import {embeddedStatusModule} from '@/store/modules/embeddedStatusModule';
+import {orderListModule} from '@/store/modules/analysis/orderListModule';
+import {runningInfoModule} from '@/store/modules/testPageCommon/ruuningInfo';
 import {commonModule} from "@/store/modules/commonModule";
 import {dataBaseSetDataModule} from "@/store/modules/dataBaseSetData/dataBaseSetDataModule";
 import {timeModule} from "@/store/modules/timeModule";
-import runningModule from "@/store/modules/runningDataModule";
-// import createPersistedState from 'vuex-persistedstate';
+import slideDataModule from "@/store/modules/runningDataModule";
 
 
 const store = createStore({
     modules: {
         userModule,
         executeModule,
-        // rbcClassificationModule,
-        // wbcClassificationModule,
         workingViewModule,
         embeddedStatusModule,
         orderListModule,
@@ -28,7 +23,7 @@ const store = createStore({
         commonModule,
         dataBaseSetDataModule,
         timeModule,
-        runningModule,
+        slideDataModule,
     }
 
 });

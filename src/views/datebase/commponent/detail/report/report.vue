@@ -289,6 +289,8 @@ const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterData);
+const slideData = computed(() => store.state.slideDataModule);
+
 const projectBm = ref(false);
 const orderClass = ref<any>([]);
 const isLoading = ref(true);
@@ -353,8 +355,7 @@ onUnmounted(() => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result = await detailRunningApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
+    selectItems.value = slideData.value;
 
     if (
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] ||

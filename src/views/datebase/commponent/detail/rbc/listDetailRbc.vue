@@ -53,6 +53,7 @@ const isLoading = ref(false);
 const allUnCheck = ref(false);
 const notCanvasClickVal = ref(false);
 const currentRbcPageNumber = ref(0);
+const slideData = computed(() => store.state.slideDataModule);
 
 onMounted(async () => {
   isLoading.value = false;
@@ -66,8 +67,7 @@ const initData = async () => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result = await detailRunningApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
+    selectItems.value = slideData.value;
   } catch (e) {
     console.error(e);
     selectItems.value = null;

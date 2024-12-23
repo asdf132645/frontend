@@ -267,7 +267,7 @@ const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-const slideData = computed(() => store.state.runningModule);
+const slideData = computed(() => store.state.slideDataModule);
 
 const barcodeImg = ref('');
 const userId = ref('');
@@ -1152,7 +1152,7 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
       dayQuery: dayQuery,
     })
     if (response) {
-      await store.dispatch('runningModule/updateRunningData', response?.data[0]);
+      await store.dispatch('slideDataModule/updateSlideData', response?.data[0]);
       if (!noAlert) {
         toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast('Success');

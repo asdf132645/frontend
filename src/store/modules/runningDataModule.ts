@@ -1,7 +1,7 @@
 import { Commit } from 'vuex';
 
 // RunningDataState 정의 (변경 없음)
-export interface RunningDataState {
+export interface SlideDataState {
     id?: number;
     lock_status?: boolean;
     traySlot?: string;
@@ -43,55 +43,55 @@ export interface RunningDataState {
 }
 
 // RunningDataModule 정의
-interface RunningDataModule {
+interface SlideDataModule {
     namespaced: true;
-    state: () => RunningDataState;
+    state: () => SlideDataState;
     mutations: {
-        setId(state: RunningDataState, id: number): void;
-        setLockStatus(state: RunningDataState, lockStatus: boolean): void;
-        setTraySlot(state: RunningDataState, traySlot: string): void;
-        setSlotNo(state: RunningDataState, slotNo: string): void;
-        setBarcodeNo(state: RunningDataState, barcodeNo: string): void;
-        setPatientId(state: RunningDataState, patientId: string): void;
-        setPatientNm(state: RunningDataState, patientNm: string): void;
-        setGender(state: RunningDataState, gender: string): void;
-        setBirthDay(state: RunningDataState, birthDay: string): void;
-        setWbcCount(state: RunningDataState, wbcCount: string): void;
-        setSlotId(state: RunningDataState, slotId: string): void;
-        setOrderDttm(state: RunningDataState, orderDttm: string): void;
-        setTestType(state: RunningDataState, testType: string): void;
-        setAnalyzedDttm(state: RunningDataState, analyzedDttm: string): void;
-        setTactTime(state: RunningDataState, tactTime: string): void;
-        setMaxWbcCount(state: RunningDataState, maxWbcCount: string): void;
-        setBfLowPowerPath(state: RunningDataState, bfLowPowerPath: string[]): void;
-        setCassetId(state: RunningDataState, cassetId: string): void;
-        setIsNormal(state: RunningDataState, isNormal: string): void;
-        setWbcInfo(state: RunningDataState, wbcInfo: object): void;
-        setWbcInfoAfter(state: RunningDataState, wbcInfoAfter: object[]): void;
-        setRbcInfo(state: RunningDataState, rbcInfo: object): void;
-        setRbcInfoAfter(state: RunningDataState, rbcInfoAfter: object[]): void;
-        setSubmitState(state: RunningDataState, submitState: string): void;
-        setSubmitOfDate(state: RunningDataState, submitOfDate: Date): void;
-        setSubmitUserId(state: RunningDataState, submitUserId: string): void;
-        setRbcInfoPosAfter(state: RunningDataState, rbcInfoPosAfter: string[]): void;
-        setIsNsNbIntegration(state: RunningDataState, isNsNbIntegration: string): void;
-        setWbcMemo(state: RunningDataState, wbcMemo: string): void;
-        setRbcMemo(state: RunningDataState, rbcMemo: string): void;
-        setPcIp(state: RunningDataState, pcIp: string): void;
-        setCbcPatientNo(state: RunningDataState, cbcPatientNo: string): void;
-        setCbcPatientNm(state: RunningDataState, cbcPatientNm: string): void;
-        setCbcSex(state: RunningDataState, cbcSex: string): void;
-        setCbcAge(state: RunningDataState, cbcAge: string): void;
-        setImgDriveRootPath(state: RunningDataState, imgDriveRootPath: string): void;
-        setHosName(state: RunningDataState, hosName: string): void;
-        setAbnormalClassInfo(state: RunningDataState, abnormalClassInfo: object): void;
+        setId(state: SlideDataState, id: number): void;
+        setLockStatus(state: SlideDataState, lockStatus: boolean): void;
+        setTraySlot(state: SlideDataState, traySlot: string): void;
+        setSlotNo(state: SlideDataState, slotNo: string): void;
+        setBarcodeNo(state: SlideDataState, barcodeNo: string): void;
+        setPatientId(state: SlideDataState, patientId: string): void;
+        setPatientNm(state: SlideDataState, patientNm: string): void;
+        setGender(state: SlideDataState, gender: string): void;
+        setBirthDay(state: SlideDataState, birthDay: string): void;
+        setWbcCount(state: SlideDataState, wbcCount: string): void;
+        setSlotId(state: SlideDataState, slotId: string): void;
+        setOrderDttm(state: SlideDataState, orderDttm: string): void;
+        setTestType(state: SlideDataState, testType: string): void;
+        setAnalyzedDttm(state: SlideDataState, analyzedDttm: string): void;
+        setTactTime(state: SlideDataState, tactTime: string): void;
+        setMaxWbcCount(state: SlideDataState, maxWbcCount: string): void;
+        setBfLowPowerPath(state: SlideDataState, bfLowPowerPath: string[]): void;
+        setCassetId(state: SlideDataState, cassetId: string): void;
+        setIsNormal(state: SlideDataState, isNormal: string): void;
+        setWbcInfo(state: SlideDataState, wbcInfo: object): void;
+        setWbcInfoAfter(state: SlideDataState, wbcInfoAfter: object[]): void;
+        setRbcInfo(state: SlideDataState, rbcInfo: object): void;
+        setRbcInfoAfter(state: SlideDataState, rbcInfoAfter: object[]): void;
+        setSubmitState(state: SlideDataState, submitState: string): void;
+        setSubmitOfDate(state: SlideDataState, submitOfDate: Date): void;
+        setSubmitUserId(state: SlideDataState, submitUserId: string): void;
+        setRbcInfoPosAfter(state: SlideDataState, rbcInfoPosAfter: string[]): void;
+        setIsNsNbIntegration(state: SlideDataState, isNsNbIntegration: string): void;
+        setWbcMemo(state: SlideDataState, wbcMemo: string): void;
+        setRbcMemo(state: SlideDataState, rbcMemo: string): void;
+        setPcIp(state: SlideDataState, pcIp: string): void;
+        setCbcPatientNo(state: SlideDataState, cbcPatientNo: string): void;
+        setCbcPatientNm(state: SlideDataState, cbcPatientNm: string): void;
+        setCbcSex(state: SlideDataState, cbcSex: string): void;
+        setCbcAge(state: SlideDataState, cbcAge: string): void;
+        setImgDriveRootPath(state: SlideDataState, imgDriveRootPath: string): void;
+        setHosName(state: SlideDataState, hosName: string): void;
+        setAbnormalClassInfo(state: SlideDataState, abnormalClassInfo: object): void;
     };
     actions: {
-        updateRunningData({ commit }: { commit: Commit }, payload: any): void;
+        updateSlideData({ commit }: { commit: Commit }, payload: any): void;
     };
 }
 
-export const runningModule: RunningDataModule = {
+export const slideDataModule: SlideDataModule = {
     namespaced: true,
     state: () => ({
         id: undefined,
@@ -250,7 +250,7 @@ export const runningModule: RunningDataModule = {
         },
     },
     actions: {
-        updateRunningData({ commit }, payload) {
+        updateSlideData({ commit }, payload) {
             // 각 필드별로 mutation을 호출하여 상태 업데이트
             commit('setId', payload.id);
             commit('setLockStatus', payload.lock_status);
@@ -294,4 +294,4 @@ export const runningModule: RunningDataModule = {
     },
 };
 
-export default runningModule;
+export default slideDataModule;
