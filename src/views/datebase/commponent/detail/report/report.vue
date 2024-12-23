@@ -376,7 +376,7 @@ const getDetailRunningInfo = async () => {
       wbcInfoAfter.value = selectItems.value?.wbcInfoAfter || [];
     }
 
-    rbcInfo.value = result.data;
+    rbcInfo.value = slideData.value;
 
   } catch (e) {
     console.error(e);

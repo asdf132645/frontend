@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
@@ -40,6 +40,7 @@ import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue"
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
+import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 
 const selectItems = ref<any>({});
 const store = useStore();
@@ -91,12 +92,32 @@ const classInfoArrUpdate = (data: any) => {
 }
 
 const classInfoArrUpdateRe = async (data: any) => {
-  const result: any = await detailRunningApi(String(selectedSampleId.value));
-  selectItems.value = result.data;
-  rbcInfo.value = result.data;
-  let newData: any = [];
-  newData = data;
-  await store.dispatch('commonModule/setCommonInfo', {classInfoArr: newData});
+  const { result, loading, error } = useGetRunningInfoByIdQuery(
+      { id: Number(selectedSampleId.value) },
+      { fetchPolicy: 'no-cache' }
+  );
+
+  watch(result, (newValue) => {
+    if (newValue) {
+      // newValue가 존재하면 해당 데이터를 처리
+      store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
+
+      const result = newValue?.getRunningInfoByIdGQL;
+
+      store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType });
+
+      selectItems.value = result;
+      rbcInfo.value = result;
+      let newData: any = [];
+      newData = data;
+      store.dispatch('commonModule/setCommonInfo', {classInfoArr: newData});
+    } else {
+      console.log('No result');
+    }
+  });
+
+
+
 }
 
 const unChecked = () => {
