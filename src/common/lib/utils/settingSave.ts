@@ -46,6 +46,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
                     sessionStorage.setItem('keepPage', String(data?.keepPage));
                     const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage': 'bmKeepPage';
                     sessionStorage.setItem(keepPageType, String(data?.keepPage));
+                    await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
                     await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
                 }
             } catch (e) {

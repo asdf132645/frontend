@@ -196,7 +196,6 @@ import {
   onBeforeMount,
   onMounted,
   onUnmounted,
-  reactive,
   ref,
   watch
 } from 'vue';
@@ -215,7 +214,7 @@ import {
   updateRunningApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {MESSAGES, MSG, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG } from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {
@@ -260,7 +259,7 @@ import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipClassInfoType } from "@/common/type/tooltipType";
 
 const router = useRouter();
-const showLISUploadButton = ref(false);
+const showLISUploadButton = ref(true);
 const selectItems = ref(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
@@ -268,6 +267,7 @@ const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const slideData = computed(() => store.state.slideDataModule);
+const showLISUploadAfterCheckingAll = computed(() => store.state.commonModule.showLISUploadAfterCheckingAll);
 
 const barcodeImg = ref('');
 const userId = ref('');
@@ -348,7 +348,12 @@ onMounted(async () => {
     cbcCodeList.value = await getCbcCodeList();
   }
   barCodeImageShowError.value = false;
-  showLISUploadButton.value = true;
+
+  // if (!showLISUploadAfterCheckingAll.value) {
+  //   showLISUploadButton.value = true;
+  // } else {
+  //   showLISUploadButton.value = props.isAllClassesChecked;
+  // }
 })
 
 onUnmounted(() => {
@@ -356,32 +361,14 @@ onUnmounted(() => {
   window.removeEventListener('keyup', handleKeyUp);
 })
 
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (router.currentRoute.value.path === '/report') return;
-  const keyName = event.key;
-
-  if (!isHotKeyPressed.value && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
-    event.preventDefault(); // 기본 동작 방지
-    isHotKeyPressed.value = true; // 한 번만 실행되도록 설정
-    uploadLis();
-  }
-};
-
-const handleKeyUp = (event: KeyboardEvent) => {
-  if (router.currentRoute.value.path === '/report') return;
-  if (isHotKeyPressed.value) {
-    isHotKeyPressed.value = false; // 키를 떼면 다시 실행 가능
-  }
-};
-
-watch(() => props.isAllClassesChecked, () => {
-  const showLISUploadManual = JSON.parse(sessionStorage.getItem('lisUploadCheckAll') ?? 'false');
-  if (!showLISUploadManual) {
-    showLISUploadButton.value = true;
-  } else {
-    showLISUploadButton.value = props.isAllClassesChecked;
-  }
-})
+// watch(() => props.isAllClassesChecked, () => {
+//
+//   if (!showLISUploadAfterCheckingAll.value) {
+//     showLISUploadButton.value = true;
+//   } else {
+//     showLISUploadButton.value = props.isAllClassesChecked;
+//   }
+// })
 
 watch(() => props.isCommitChanged, () => {
   selectItems.value.submitState = 'Submit';
@@ -412,6 +399,24 @@ watch(() => props.wbcInfo, (newItem) => {
     }
   }
 });
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (router.currentRoute.value.path === '/report') return;
+  const keyName = event.key;
+
+  if (!isHotKeyPressed.value && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
+    event.preventDefault(); // 기본 동작 방지
+    isHotKeyPressed.value = true; // 한 번만 실행되도록 설정
+    uploadLis();
+  }
+};
+
+const handleKeyUp = (event: KeyboardEvent) => {
+  if (router.currentRoute.value.path === '/report') return;
+  if (isHotKeyPressed.value) {
+    isHotKeyPressed.value = false; // 키를 떼면 다시 실행 가능
+  }
+};
 
 const mountedMethod = async () => {
   if (isObjectEmpty(props.selectItems)) return;

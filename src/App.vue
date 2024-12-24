@@ -798,6 +798,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
         const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
+        await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
         sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
         sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));

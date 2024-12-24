@@ -63,6 +63,7 @@ export interface CommonState {
     isDownloadOrUploading: boolean;
     isRewindingBelt: boolean;
     rbcImagePageNumber: number;
+    showLISUploadAfterCheckingAll: boolean;
 }
 
 interface CommonModule {
@@ -132,6 +133,7 @@ interface CommonModule {
         setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
         setRbcImagePageNumber: (state: CommonState, value: number) => void;
+        setShowLISUploadAfterCheckingAll: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -202,6 +204,7 @@ export const commonModule: CommonModule = {
         isDownloadOrUploading: false,
         isRewindingBelt: false,
         rbcImagePageNumber: 0,
+        showLISUploadAfterCheckingAll: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -396,6 +399,9 @@ export const commonModule: CommonModule = {
         },
         setRbcImagePageNumber(state: CommonState, value: number): void {
             state.rbcImagePageNumber = value;
+        },
+        setShowLISUploadAfterCheckingAll(state: CommonState, value: boolean): void {
+            state.showLISUploadAfterCheckingAll = value;
         }
     },
     actions: {
@@ -592,6 +598,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('rbcImagePageNumber')) {
                 commit('setRbcImagePageNumber', payload.rbcImagePageNumber);
+            }
+            if (payload.hasOwnProperty('showLISUploadAfterCheckingAll')) {
+                commit('setShowLISUploadAfterCheckingAll', payload.showLISUploadAfterCheckingAll);
             }
         },
     },
