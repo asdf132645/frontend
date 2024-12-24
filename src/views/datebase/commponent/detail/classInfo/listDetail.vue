@@ -377,6 +377,7 @@ watch(
     async (newVal, oldVal) => {
       if (newVal !== oldVal) {
         await nextTick();
+        console.log('newVal', newVal);
         if (projectType.value !== 'bm') {
           await checkWps(newVal);
         } else {
@@ -465,8 +466,8 @@ const handleZoom = () => {
 
 const getDetailRunningInfo = async (newValue: any) => {
   try {
-    console.log(selectItems.value);
     selectItems.value = newValue;
+    console.log(newValue);
 
     isAllClassesChecked.value = newValue.value?.isAllClassesChecked;
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
