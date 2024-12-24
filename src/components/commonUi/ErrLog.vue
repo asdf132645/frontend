@@ -10,18 +10,19 @@
       </span>
     </div>
     <ul>
-      <li v-for="(item, idx) in errArr" :key="idx" :class="['errLogLi',item.type.toLowerCase()]">
+      <li v-for="(item, idx) in errArr" :key="idx" :class="['errLogLi', item.type ? item.type.toLowerCase() : '']">
         <div>
           <div class="errLogIco">
-            <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="item.type === 'WARN'" class="warning"/>
+            <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="item.type === 'WARN'"
+                               class="warn"/>
             <font-awesome-icon :icon="['fas', 'triangle-exclamation']" v-if="item.type === 'CRIT'"
-                               class="CRITICAL"/>
+                               class="crit"/>
             <font-awesome-icon :icon="['fas', 'circle-check']" v-if="item.type === 'NOTI'"
-                               class="NOTIFICATION"/>
+                               class="noti"/>
           </div>
         </div>
         <div class="errLogBody">
-          <div class="errLogTitle">
+          <div :class="['errLogTitle', item.type ? item.type.toLowerCase() : '']">
             <span>[ {{ item?.code }} ]</span>
             <span> {{ item?.name }} </span>
           </div>
@@ -42,6 +43,7 @@
 
 <script setup lang="ts">
 import {defineProps} from "vue";
+
 const emit = defineEmits(['closeErrLog', 'errMouseSet']);
 
 const props = defineProps(['errArr', 'ErrLogOpen']);

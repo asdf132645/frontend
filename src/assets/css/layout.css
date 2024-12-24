@@ -541,19 +541,19 @@ li.errLogLi.warning:before {
     margin-right: 5px;
 }
 
-li.errLogLi.warn .errLogIco {
+.errLogIco .warn {
     color: #fca439;
 }
 
-li.errLogLi.crit .errLogIco {
+.errLogIco .crit {
     color: #ff4c00;
 }
 
-li.errLogLi.crit .errLogTitle {
+.errLogTitle.crit {
     color: #ff4c00;
 }
 
-li.errLogLi.warn .errLogTitle {
+.errLogTitle.warn {
     color: #fca439;
 }
 

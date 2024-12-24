@@ -61,7 +61,7 @@
           </div>
           <div class="iconHeaderMenu">
             <ul>
-              <li @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" v-if="siteCd === '0000'">
+              <li @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" v-if="siteCd === '9090'">
                 <font-awesome-icon :icon="['fas', 'circle-exclamation']" />
                 <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
