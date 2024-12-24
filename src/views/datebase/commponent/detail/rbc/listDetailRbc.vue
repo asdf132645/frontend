@@ -19,13 +19,11 @@
                 @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable'
                 :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
                 :notCanvasClickVal="notCanvasClickVal"
-                :currentRbcPageNumber="currentRbcPageNumber"
       />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" @changeCurrentRbcImagePageNumber="changeCurrentRbcImagePageNumber"
-                    :currentRbcPageNumber="currentRbcPageNumber" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
+      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
 </template>
@@ -53,7 +51,6 @@ const selectedSampleId = computed(() => store.state.commonModule.selectedSampleI
 const isLoading = ref(false);
 const allUnCheck = ref(false);
 const notCanvasClickVal = ref(false);
-const currentRbcPageNumber = ref(0);
 const slideData = computed(() => store.state.slideDataModule);
 
 onMounted(async () => {
@@ -84,7 +81,7 @@ const refreshClass = async (data: any) => {
   rbcInfo.value = data;
   selectItems.value = data;
   allCheckClear.value = !allCheckClear.value;
-  currentRbcPageNumber.value = 0;
+  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
 }
 
 const classInfoArrUpdate = (data: any) => {
@@ -126,10 +123,6 @@ const unChecked = () => {
 
 const notCanvasClick = (val: any) => {
   notCanvasClickVal.value = val;
-}
-
-const changeCurrentRbcImagePageNumber = (pageNumber: number) => {
-  currentRbcPageNumber.value = pageNumber;
 }
 
 </script>

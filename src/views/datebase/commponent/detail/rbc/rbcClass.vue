@@ -263,14 +263,16 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance, reactive} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance, nextTick} from 'vue';
+import { useStore } from "vuex";
+import { useRouter} from "vue-router";
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-import {useStore} from "vuex";
+
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
-import {useRouter} from "vue-router";
+
 import moment from "moment/moment";
 import SliderBar from "@/components/commonUi/SliderBar.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
@@ -286,11 +288,12 @@ import {
 } from "@/common/defines/constants/rbc";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipRbcClassType } from "@/common/type/tooltipType";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<string[]>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal', 'currentRbcPageNumber']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
@@ -328,6 +331,7 @@ const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
 const rbcDegreeStandard = ref<any>([]);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
@@ -341,14 +345,13 @@ const submitState = ref('');
 const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
 const rbcResponseOldArr: any = ref([]);
-const rbcImagePageNumber = ref(0);
 const tooltipVisible = ref({
   confirm: false,
   memo: false,
 })
 
 onMounted(async () => {
-  rbcImagePageNumber.value = 0;
+  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
   const { path } = router.currentRoute.value;
   memo.value = props.selectItems?.rbcMemo;
   pltCount.value = props.selectItems?.rbcInfo.pltCount;
@@ -359,6 +362,8 @@ onMounted(async () => {
   except.value = path === '/report';
   rightClickItem.value = [];
   rightClickItemSet();
+  await rbcTotalAndReCount(rbcImagePageNumber.value);
+  await countReAdd();
 });
 
 
@@ -371,8 +376,7 @@ watch(() => props.allCheckClear, (newItem) => {
   classInfoArr.value = [];
 }, {deep: true})
 
-watch(() => props.currentRbcPageNumber, async (newRbcPageNumber) => {
-  rbcImagePageNumber.value = newRbcPageNumber;
+watch(() => rbcImagePageNumber.value, async (newRbcPageNumber) => {
   await rbcTotalAndReCount(newRbcPageNumber);
   await countReAdd();
   await updateRbcInfo();
@@ -536,9 +540,9 @@ const toggleCheckbox = (categoryId: string, classId: string, classNm: string) =>
 
 const rbcTotalAndReCount = async (pageNumber: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const url_new = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems.slotId}_new_${rbcImagePageNumber.value}.json`;
   const response_new = await readJsonFile({fullPath: url_new});
-  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const url_Old = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems.slotId}.json`;
   rbcResponseOldArr.value = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
@@ -798,28 +802,32 @@ const countReAdd = async () => {
     }
   }
 
+  maxRbcCount.value = 0;
   let totalPLT = 0;
   let malariaTotal = 0;
   for (const el of rbcInfoPathAfter.value) {
-    if (el.categoryId === '01') {
-      const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
-      maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
+    if (el.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
+      maxRbcCount.value += Number(el.classInfo.length);
+      // const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
+      // maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
     }
-    if (el.categoryId === '04') {
+    if (el.categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) {
       for (const xel of el.classInfo) {
-        if (xel.classNm === 'Platelet') {
+        if (xel.classId === RBC_CODE_CLASS_ID.OTHERS.PLATELET) {
           totalPLT += 1;
         }
       }
-    } else if (el.categoryId === '05') {
+    } else if (el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
       for (const xel of el.classInfo) {
-        if (xel.classNm === 'Malaria') {
+        if (xel.classId === RBC_CODE_CLASS_ID.INCLUSION_BODY.MALARIA) {
           malariaTotal += 1;
         }
       }
     }
   }
 
+  console.log('totalPLT', totalPLT);
+  console.log('maxRbcCount.value', maxRbcCount.value);
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal;
 };

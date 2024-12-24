@@ -171,6 +171,7 @@ import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/c
 import {sdPatientNameGetAPI, sdWorklistsAPI} from "@/common/helpers/lisCbc/sdCbcLis";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
+import { DIR_NAME } from "@/common/defines/constants/settings";
 
 
 const store = useStore();
@@ -830,9 +831,9 @@ const createRbcJson = async (slotId: string, sendingData: any) => {
 
 const rbcTotalAndReCount = async (selectItem: any) => {
   const path = selectItem?.img_drive_root_path !== '' && selectItem?.img_drive_root_path ? selectItem?.img_drive_root_path : iaRootPath.value;
-  const url_new = `${path}/${selectItem?.slotId}/03_RBC_Classification/${selectItem?.slotId}_new.json`;
+  const url_new = `${path}/${selectItem?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItem?.slotId}_new.json`;
   const response_new = await readJsonFile({fullPath: url_new});
-  const url_Old = `${path}/${selectItem?.slotId}/03_RBC_Classification/${selectItem?.slotId}.json`;
+  const url_Old = `${path}/${selectItem?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItem?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;

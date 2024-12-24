@@ -62,6 +62,7 @@ export interface CommonState {
     settingType: string;
     isDownloadOrUploading: boolean;
     isRewindingBelt: boolean;
+    rbcImagePageNumber: number;
 }
 
 interface CommonModule {
@@ -130,6 +131,7 @@ interface CommonModule {
         setSettingType: (state: CommonState, value: string) => void;
         setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
+        setRbcImagePageNumber: (state: CommonState, value: number) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -199,6 +201,7 @@ export const commonModule: CommonModule = {
         settingType: '',
         isDownloadOrUploading: false,
         isRewindingBelt: false,
+        rbcImagePageNumber: 0,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -391,6 +394,9 @@ export const commonModule: CommonModule = {
         setIsRewindingBelt(state: CommonState, value: boolean): void {
             state.isRewindingBelt = value;
         },
+        setRbcImagePageNumber(state: CommonState, value: number): void {
+            state.rbcImagePageNumber = value;
+        }
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -583,6 +589,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isRewindingBelt')) {
                 commit('setIsRewindingBelt', payload.isRewindingBelt);
+            }
+            if (payload.hasOwnProperty('rbcImagePageNumber')) {
+                commit('setRbcImagePageNumber', payload.rbcImagePageNumber);
             }
         },
     },

@@ -182,7 +182,7 @@ import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore', 'currentRbcPageNumber']);
+const props = defineProps(['rbcInfo', 'selectItems', 'type', 'classInfoArr', 'isBefore']);
 const activeTab = ref('lowMag');
 
 let viewer: any = ref<any>(null);
@@ -227,27 +227,23 @@ const emits = defineEmits();
 const rightClickItem = ref<any>([]);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const classInfoArrNewReData = computed(() => store.state.commonModule.classInfoArr);
+const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
 const notCanvasClick = ref(false);
-const rbcImagePageNumber = ref(0);
 const imagePageType = ref<'RBC' | 'PLT'>('RBC');
 const zoomRatio = ref(0);
 const maxNumberOfLines = ref(330);
 
 onMounted(async () => {
-  rbcImagePageNumber.value = 0;
+  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
   await nextTick();
   await initElement();
   await initGetRulerWidthHeight();
   document.addEventListener('click', closeSelectBox);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
-
-watch(() => props.currentRbcPageNumber, (newPageNumber) => {
-  rbcImagePageNumber.value = newPageNumber;
-})
 
 const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -339,12 +335,12 @@ const removeDiv = async () => {
 
 const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const url = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
+  const url = `${path}/${props.selectItems?.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems?.slotId}_new_${rbcImagePageNumber.value}.json`;
   const response = await readJsonFile({fullPath: url});
   let compareData = [];
 
   if (response.data !== 'not file') {
-    const url = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`;
+    const url = `${path}/${props.selectItems?.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems?.slotId}_new_${rbcImagePageNumber.value}.json`;
     const response = await readJsonFile({fullPath: url});
     compareData = [...response.data, ...jsonData];
   } else {
@@ -356,8 +352,8 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   const compressedData = pako.deflate(utf8Data);
   const blob = new Blob([compressedData], {type: 'application/octet-stream'});
   const formData = new FormData();
-  formData.append('file', blob, `${props.selectItems?.slotId}_new.json`);
-  const filePath = `${path}/${props.selectItems?.slotId}/03_RBC_Classification/${props.selectItems?.slotId}_new.json`
+  formData.append('file', blob, `${props.selectItems?.slotId}_new_${rbcImagePageNumber.value}.json`);
+  const filePath = `${path}/${props.selectItems?.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems?.slotId}_new_${rbcImagePageNumber.value}.json`
   try {
 
     const response = await fetch(`${apiBaseUrl}/jsonReader/upload?filePath=${filePath}`, {
@@ -449,9 +445,9 @@ const hideAlert = () => {
 const rbcMarker = async (newItem: any, imgNum: any) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
 
-  const url_new = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}_new.json`;
+  const url_new = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems.slotId}_new_${rbcImagePageNumber.value}.json`;
   const response_new = await readJsonFile({fullPath: url_new});
-  const url_Old = `${path}/${props.selectItems.slotId}/03_RBC_Classification/${props.selectItems.slotId}.json`;
+  const url_Old = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
@@ -745,8 +741,7 @@ const initElement = async () => {
         if (!notCanvasClick) {
           imagePageType.value = 'RBC';
           maxNumberOfLines.value = 330;
-          rbcImagePageNumber.value = pageIndex;
-          emits('changeCurrentRbcImagePageNumber', pageIndex);
+          await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: pageIndex });
         } else {
           imagePageType.value = 'PLT';
           maxNumberOfLines.value = 1000;
