@@ -466,10 +466,11 @@ const handleZoom = () => {
 
 const getDetailRunningInfo = async (newValue: any) => {
   try {
+    console.log(selectItems.value);
     selectItems.value = newValue;
-    iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path !== null && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
-    patientNm.value = selectItems.value?.patientNm;
-    cbcPatientNm.value = selectItems.value?.cbcPatientNm;
+    iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
+    patientNm.value = newValue?.patientNm;
+    cbcPatientNm.value = newValue?.cbcPatientNm;
   } catch (e) {
     console.error(e);
   }
