@@ -273,7 +273,7 @@ import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { checkPbNormalCell } from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
-import {gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
+import {gqlIsAllClassesCheckedUpdate, gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -366,7 +366,6 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   document.addEventListener('click', handleClickOutside);
-  isAllClassesChecked.value = false;
 });
 
 onUnmounted(async () => {
@@ -468,6 +467,8 @@ const getDetailRunningInfo = async (newValue: any) => {
   try {
     console.log(selectItems.value);
     selectItems.value = newValue;
+
+    isAllClassesChecked.value = newValue.value?.isAllClassesChecked;
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
     patientNm.value = newValue?.patientNm;
     cbcPatientNm.value = newValue?.cbcPatientNm;
@@ -859,7 +860,6 @@ watch(() => classInfoSort.value, async (newItem) => { // 오더클래스부분 �
 });
 
 const refreshClass = async (data: any) => {
-  isAllClassesChecked.value = false;
   isLoadedSlideData.value = false;
   cellMarkerIcon.value = false;
   await getDetailRunningInfo(data);
@@ -1940,8 +1940,12 @@ const updateCBCData = async (incomingSlideData: any) => {
   }
 }
 
-const allClassesChecked = () => {
+const allClassesChecked = async () => {
   isAllClassesChecked.value = true;
+
+  // const result = slideData.value;
+  // result.isAllClassesChecked = true;
+  // await gqlIsAllClassesCheckedUpdate([result]);
 }
 
 </script>

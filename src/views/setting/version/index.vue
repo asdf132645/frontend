@@ -25,13 +25,21 @@ import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
 const isProjectBm = ref(false);
 const projectVersionArr = ref<{key: string, name: string}[]>();
 const engineVersionArr = ref<{key: string, name: string}[]>();
-const deepNetVersion = ref('');
-const coreVersion = ref('');
-const bmSegEngineVersion = ref('');
-const bmCellEngineVersion = ref('');
-const pbSegEngineVersion = ref('');
-const pbWbcEngineVersion = ref('');
-const pbRbcEngineVersion = ref('');
+const swVersion = ref({
+  core: '',
+  deepNet: '',
+})
+const bmEngineVersion = ref({
+  seg: '',
+  cell: '',
+})
+const pbEngineVersion = ref({
+  seg: '',
+  wbc: '',
+  rbcClassify: '',
+  rbcPltCrop: '',
+  singleSeg: ''
+})
 
 onBeforeMount(() => {
   isProjectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
@@ -45,8 +53,8 @@ onMounted(async () => {
 const getEngineVersion = () => {
   // Project Versions
   projectVersionArr.value = [
-    { key: 'Core Version', name: coreVersion.value },
-    { key: 'DeepNet Version', name: deepNetVersion.value },
+    { key: 'Core Version', name: swVersion.value.core },
+    { key: 'DeepNet Version', name: swVersion.value.deepNet },
     { key: 'Web Version', name: window.PROJECT_VERSION },
   ];
 
@@ -54,14 +62,16 @@ const getEngineVersion = () => {
   if (isProjectBm.value) {
 
     engineVersionArr.value = [
-      { key: 'BM SEG Version', name: bmSegEngineVersion.value },
-      { key: 'BM CELL Version', name: bmCellEngineVersion.value },
+      { key: 'BM SEG Version', name: bmEngineVersion.value.seg },
+      { key: 'BM CELL Version', name: bmEngineVersion.value.cell },
     ]
   } else {
     engineVersionArr.value = [
-      { key: 'PB SEG Version', name: pbSegEngineVersion.value },
-      { key: 'PB WBC Version', name: pbWbcEngineVersion.value },
-      { key: 'PB RBC Version', name: pbRbcEngineVersion.value },
+      { key: 'PB SEG Version', name: pbEngineVersion.value.seg },
+      { key: 'PB WBC Version', name: pbEngineVersion.value.wbc },
+      { key: 'PB RBC CLASSIFY Version', name: pbEngineVersion.value.rbcClassify },
+      { key: 'PB RBC PLT CROP Version', name: pbEngineVersion.value.rbcPltCrop },
+      { key: 'PB SINGLE SEG Version', name: pbEngineVersion.value.singleSeg },
     ]
   }
 }
@@ -79,14 +89,19 @@ const setVersions = async () => {
     const pbSegPattern = /PB_SEG_ENGINE\s*=\s*(.+)/;
     const pbWbcPattern = /PB_WBC_ENGINE\s*=\s*(.+)/;
     const pbRbcPattern = /PB_RBC_CLASSIFY\s*=\s*(.+)/;
+    const pbRbcPltCropPattern = /PB_RBC_PLT_CROP\s*=\s*(.+)/;
+    const pbSingleSegPattern = /PB_RBC_SINGLE_SEG\s*=\s*(.+)/;
 
-    deepNetVersion.value = iniFileData.match(tcpVersionPattern)[1] || '';
-    coreVersion.value = iniFileData.match(coreVersionPattern)[1] || '';
-    bmSegEngineVersion.value = iniFileData.match(bmSegPattern)[1] || '';
-    bmCellEngineVersion.value = iniFileData.match(bmCellPattern)[1] || '';
-    pbSegEngineVersion.value = iniFileData.match(pbSegPattern)[1] || '';
-    pbWbcEngineVersion.value = iniFileData.match(pbWbcPattern)[1] || '';
-    pbRbcEngineVersion.value = iniFileData.match(pbRbcPattern)[1] || '';
+
+    swVersion.value.deepNet = iniFileData.match(tcpVersionPattern)[1] || '';
+    swVersion.value.core = iniFileData.match(coreVersionPattern)[1] || '';
+    bmEngineVersion.value.seg = iniFileData.match(bmSegPattern)[1] || '';
+    bmEngineVersion.value.cell = iniFileData.match(bmCellPattern)[1] || '';
+    pbEngineVersion.value.seg = iniFileData.match(pbSegPattern)[1] || '';
+    pbEngineVersion.value.wbc = iniFileData.match(pbWbcPattern)[1] || '';
+    pbEngineVersion.value.rbcClassify = iniFileData.match(pbRbcPattern)[1] || '';
+    pbEngineVersion.value.rbcPltCrop = iniFileData.match(pbRbcPltCropPattern)[1] || '';
+    pbEngineVersion.value.singleSeg = iniFileData.match(pbSingleSegPattern)[1] || '';
   } catch (e) {
     console.error(e);
   }

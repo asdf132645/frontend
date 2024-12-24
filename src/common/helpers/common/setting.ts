@@ -16,6 +16,7 @@ import {
 } from '@/common/api/service/setting/settingApi';
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
 import { defaultCbcList, defaultRbcDegree, LIS_CODE_RBC_OPTION, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
+import { useStore } from "vuex";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
@@ -37,6 +38,7 @@ const defaultCellImgData = {
     isAlarm: false,
     alarmCount: '5',
     keepPage: false,
+    lisUploadCheckAll: false,
     backupPath: '',
     backupStartDate: new Date(),
     backupEndDate: new Date(),
@@ -146,6 +148,7 @@ const defaultComputedValueForCreateRequest = async (initializeType: string) => {
                 isAlarm: defaultCellImgData.isAlarm,
                 alarmCount: defaultCellImgData.alarmCount,
                 keepPage: defaultCellImgData.keepPage,
+                lisUploadCheckAll: defaultCellImgData.lisUploadCheckAll,
                 backupPath: defaultCellImgData.backupPath,
                 backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
                 backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
@@ -186,7 +189,9 @@ const defaultComputedValueForCreateRequest = async (initializeType: string) => {
 }
 
 /** Response를 받은 후 할 작업 정리 함수 */
-const afterResponse = (initializeType: string) => {
+const afterResponse = async (initializeType: string) => {
+    const store = useStore();
+
     switch (initializeType) {
         case 'cellImage':
             sessionStorage.setItem('isNsNbIntegration', defaultCellImgData.isNsNbIntegration ? 'Y' : 'N');
@@ -198,6 +203,7 @@ const afterResponse = (initializeType: string) => {
             sessionStorage.setItem('edgeShotHPCount', String(defaultCellImgData?.edgeShotHPCount));
             sessionStorage.setItem('iaRootPath', String(defaultCellImgData?.iaRootPath));
             sessionStorage.setItem('keepPage', String(defaultCellImgData?.keepPage));
+            await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: defaultCellImgData?.lisUploadCheckAll });
             break;
         default:
             break;

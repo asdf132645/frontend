@@ -216,24 +216,24 @@
         />
       </td>
     </tr>
-    <tr>
-      <th class="pos-relative">
-        LIS Upload Check
-        <font-awesome-icon
-            :icon="['fas', 'circle-info']"
-            @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"
-            @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"
-        />
-        <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK" />
-      </th>
-      <td>
-        <font-awesome-icon
-            :icon="lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-            class="iconSize"
-            @click="toggleLisUploadCheckAll"
-        />
-      </td>
-    </tr>
+<!--    <tr>-->
+<!--      <th class="pos-relative">-->
+<!--        LIS Upload Check-->
+<!--        <font-awesome-icon-->
+<!--            :icon="['fas', 'circle-info']"-->
+<!--            @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"-->
+<!--            @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"-->
+<!--        />-->
+<!--        <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK" />-->
+<!--      </th>-->
+<!--      <td>-->
+<!--        <font-awesome-icon-->
+<!--            :icon="lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"-->
+<!--            class="iconSize"-->
+<!--            @click="toggleLisUploadCheckAll"-->
+<!--        />-->
+<!--      </td>-->
+<!--    </tr>-->
     </tbody>
 </table>
 
@@ -771,10 +771,10 @@ const cellImgSet = async () => {
       sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
       sessionStorage.setItem('iaRootPath', data?.iaRootPath);
       sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-      sessionStorage.setItem('lisUploadCheckAll', String(data?.lisUploadCheckAll));
       const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
       sessionStorage.setItem(keepPageType, String(data?.keepPage));
       await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
+      await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
     }
 
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });

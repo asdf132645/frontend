@@ -151,4 +151,21 @@ export const gqlClassInfoMenuUpdate = async (originalDb: any) => {
 
     return  await mutate();
 }
+
+export const gqlIsAllClassesCheckedUpdate = async (originalDB: any) => {
+    const updateDtos = {
+        runingInfoDtoItems: [
+            {
+                id: originalDB[0].id,
+                isAllClassesChecked: originalDB[0].isAllClassesChecked,
+            }
+        ]
+    };
+    const { mutate, loading, error, onDone } = useUpdateRunningInfoMutation({
+        variables: {
+            updateDto: updateDtos,
+        },
+    });
+    return await mutate();
+}
 export type UpdateRunningInfoMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>;

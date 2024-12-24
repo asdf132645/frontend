@@ -658,6 +658,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
         sessionStorage.setItem('iaRootPath', data?.iaRootPath);
         await store.dispatch('commonModule/setCommonInfo', {iaRootPath: String(data?.iaRootPath)});
+        await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
 
       }
     }
