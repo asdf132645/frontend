@@ -874,7 +874,7 @@ const refreshClass = async (data: any) => {
   await imgSetLocalStorage();
   await nextTick();
   if (projectType.value !== 'bm') {
-    await checkWps();
+    await checkWps(data);
   } else {
     isWpsShow.value = false;
   }
