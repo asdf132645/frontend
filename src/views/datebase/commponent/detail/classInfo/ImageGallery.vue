@@ -271,6 +271,7 @@ type WbcInfo = Item[];
 
 const props = defineProps<{
   wbcInfo: WbcInfo;
+  updateWbcInfo: (newInfo: any) => void;
   classCompareShow: boolean;
   selectedTitle: string;
   hiddenImages: { [key: string]: boolean };
@@ -401,7 +402,6 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   if (!wbcInfo.value || wbcInfo.value.length === 0) {
     return "";
   }
-  console.log('props.slotId', props.slotId)
   const slotId = props.slotId || '';
   const folderPath = `${props.iaRootPath}/${slotId}/${props.projectTypeReturn}/${id}_${title}`;
   let url = '';

@@ -270,7 +270,7 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
-import { checkPbNormalCell } from "@/common/lib/utils/changeData";
+import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
 import {gqlIsAllClassesCheckedUpdate, gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
@@ -359,7 +359,8 @@ onBeforeMount(async () => {
   isLoading.value = false;
   isLoadedSlideData.value = false;
   projectType.value = window.PROJECT_TYPE;
-
+  isLoadedSlideData.value = false;
+  wbcInfoRefresh.value = false;
 })
 
 onMounted(async () => {
@@ -367,20 +368,20 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   document.addEventListener('click', handleClickOutside);
-  isLoadedSlideData.value = false;
+
 });
 
 onUnmounted(async () => {
-  await store.dispatch('slideDataModule/resetSlideData', []);
   document.addEventListener('click', handleClickOutside);
 })
 
 watch(
     () => slideData.value,
     async (newVal, oldVal) => {
-      if (newVal !== oldVal) {
+      if (newVal.id !== oldVal?.id) {
         await nextTick();
         console.log('newVal', newVal);
+        console.log('newVal', oldVal);
 
         if (projectType.value !== 'bm') {
           await checkWps(newVal);
@@ -391,7 +392,7 @@ watch(
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
           isLoadedSlideData.value = false;
-          wbcInfo.value = [];
+          // wbcInfo.value = [];
           isLoadedSlideData.value = true;
 
           await getWbcCustomClasses(false, null);
@@ -402,15 +403,13 @@ watch(
           await drawCellMarker(true);
 
 
-
         } catch (error) {
           console.error('비동기 작업 중 에러 발생:', error);
         }
       }
     },
-    { immediate: true }
+    {immediate: true, deep: true}
 );
-
 
 
 watch(imgBrightness, (newVal) => {
@@ -470,13 +469,14 @@ const handleZoom = () => {
 
 const getDetailRunningInfo = async (newValue: any) => {
   try {
-    selectItems.value = newValue;
     console.log(newValue);
 
     isAllClassesChecked.value = newValue.value?.isAllClassesChecked;
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
     patientNm.value = newValue?.patientNm;
     cbcPatientNm.value = newValue?.cbcPatientNm;
+    selectItems.value = newValue;
+
   } catch (e) {
     console.error(e);
   }
@@ -1704,13 +1704,13 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     // originalDb 업데이트
     const res: any = slideData.value;
     if (res) res.wbcInfoAfter = clonedWbcInfo;
-    const { isNormal, classInfo } = checkPbNormalCell(clonedWbcInfo, normalItems.value)
+    const {isNormal, classInfo} = checkPbNormalCell(clonedWbcInfo, normalItems.value)
     res.isNormal = isNormal;
     res.abnormalClassInfo = classInfo;
     // 실제 락 거는 부분 여기로 변경 함 그래프 ql 로 변경하면서 버그 방지를 위해서 변경
     res.pcIp = ipAddress.value;
     res.lock_status = true;
-    res.submitState = 'checkFirst';
+    res.submitState = res.submitState === '' || !res?.submitState ? 'checkFirst' : res.submitState;
     originalDbVal = [res];
   }
 
@@ -1719,10 +1719,9 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 }
 
 
-
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
-    const res =  await gqlUpdate(originalDb);
+    const res = await gqlUpdate(originalDb);
     if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {
@@ -1938,7 +1937,7 @@ const updateCBCData = async (incomingSlideData: any) => {
       patientNm: cbcData?.cbcPatientNm
     }
 
-    const updatedRunningInfo = { ...incomingSlideData, ...cbcChangeData };
+    const updatedRunningInfo = {...incomingSlideData, ...cbcChangeData};
 
     patientNm.value = cbcData?.cbcPatientNm;
     cbcPatientNm.value = cbcData?.cbcPatientNm;

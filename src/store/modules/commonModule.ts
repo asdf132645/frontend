@@ -64,6 +64,7 @@ export interface CommonState {
     isRewindingBelt: boolean;
     rbcImagePageNumber: number;
     showLISUploadAfterCheckingAll: boolean;
+    slideDataReset: string;
 }
 
 interface CommonModule {
@@ -134,6 +135,7 @@ interface CommonModule {
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
         setRbcImagePageNumber: (state: CommonState, value: number) => void;
         setShowLISUploadAfterCheckingAll: (state: CommonState, value: boolean) => void;
+        setSlideDataReset: (state: CommonState, value: string) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -205,6 +207,7 @@ export const commonModule: CommonModule = {
         isRewindingBelt: false,
         rbcImagePageNumber: 0,
         showLISUploadAfterCheckingAll: false,
+        slideDataReset: '',
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -402,6 +405,9 @@ export const commonModule: CommonModule = {
         },
         setShowLISUploadAfterCheckingAll(state: CommonState, value: boolean): void {
             state.showLISUploadAfterCheckingAll = value;
+        },
+        setSlideDataReset(state: CommonState, value: string): void{
+            state.slideDataReset = value;
         }
     },
     actions: {
@@ -601,6 +607,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('showLISUploadAfterCheckingAll')) {
                 commit('setShowLISUploadAfterCheckingAll', payload.showLISUploadAfterCheckingAll);
+            }
+            if(payload.hasOwnProperty('slideDataReset')){
+                commit('setSlideDataReset', payload.slideDataReset);
             }
         },
     },

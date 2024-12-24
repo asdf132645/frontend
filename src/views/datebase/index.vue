@@ -257,7 +257,6 @@ onMounted(async () => {
 });
 
 async function handleStateVal(data: any) {
-  console.log(data)
   eventTriggered.value = true;
   notStartLoading.value = false;
   await removePageAllDataApi();

@@ -7,18 +7,6 @@ const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const apolloClient = new ApolloClient({
     uri: `${apiBaseUrl}/graphql`,
     cache: new InMemoryCache({
-        typePolicies: {
-            WbcInfoAfter: {
-                fields: {
-                    images: {
-                        // 커스텀 머지 함수
-                        merge(existing = [], incoming) {
-                            return [...existing, ...incoming];
-                        },
-                    },
-                },
-            },
-        },
     }),
 });
 

@@ -389,14 +389,14 @@ watch(() => props.wbcInfo, (newItem) => {
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
     store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
-    if (props.selectItems?.submitState === "") {
-      const result: any = detailRunningApi(String(props.selectItems?.id));
-      const updatedItem = {
-        submitState: 'checkFirst',
-      };
-      const updatedRuningInfo = {...result.data, ...updatedItem}
-      resRunningItem(updatedRuningInfo, true);
-    }
+    // if (props.selectItems?.submitState === "") {
+    //   const result: any = detailRunningApi(String(props.selectItems?.id));
+    //   const updatedItem = {
+    //     submitState: 'checkFirst',
+    //   };
+    //   const updatedRuningInfo = {...result.data, ...updatedItem}
+    //   resRunningItem(updatedRuningInfo, true);
+    // }
   }
 });
 
@@ -432,14 +432,14 @@ const mountedMethod = async () => {
   }
 
   // 첫 진입시
-  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
-    const result: any = await detailRunningApi(String(props.selectItems?.id));
-    const updatedItem = {
-      submitState: 'checkFirst',
-    };
-    const updatedRuningInfo = {...result.data, ...updatedItem}
-    await resRunningItem(updatedRuningInfo, true);
-  }
+  // if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
+  //   const result: any = await detailRunningApi(String(props.selectItems?.id));
+  //   const updatedItem = {
+  //     submitState: 'checkFirst',
+  //   };
+  //   const updatedRuningInfo = {...result.data, ...updatedItem}
+  //   await resRunningItem(updatedRuningInfo, true);
+  // }
 }
 
 const lisModalOpen = () => {
@@ -1216,7 +1216,7 @@ const getOrderClass = async () => {
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
   const filteredItems: any = slideData.value;
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.id)});
+  // await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.id)});
   selectItems.value = filteredItems;
   const customClassItems = selectItems.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
   selectItems.value.wbcInfoAfter = newItem;
@@ -1333,15 +1333,15 @@ const beforeAfterChange = async (newItem: any) => {
     wbcInfoVal.value.push(item);
   }
 
-  if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
-    const result: any = await detailRunningApi(String(props.selectItems?.id));
-    const updatedItem = {
-      submitState: 'checkFirst',
-    };
-
-    const updatedRuningInfo = {...result.data, ...updatedItem}
-    await resRunningItem(updatedRuningInfo, true);
-  }
+  // if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
+  //   const result: any = await detailRunningApi(String(props.selectItems?.id));
+  //   const updatedItem = {
+  //     submitState: '`checkFirst`',
+  //   };
+  //
+  //   const updatedRuningInfo = {...result.data, ...updatedItem}
+  //   await resRunningItem(updatedRuningInfo, true);
+  // }
 }
 
 /** Before, After 이미지들이 같은지 비교 */
