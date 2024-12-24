@@ -1715,17 +1715,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
-    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-
     const res =  await gqlUpdate(originalDb);
-    //
-    // const response: any = await updateRunningApi({
-    //   userId: Number(userId.value),
-    //   runingInfoDtoItems: originalDb,
-    //   dayQuery: dayQuery
-    // })
     if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {

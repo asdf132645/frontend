@@ -1,5 +1,5 @@
 <template>
-  <div class="mt10 listTableImageContainer">
+  <div class="listTableImageContainer">
     <h3 class="mb10 hh3title infoImageTitle">WBC Images</h3>
     <div v-if="allImages.length > 0" class="dbPBImageContainer">
       <template v-for="imageSet in allImages" :key="imageSet.id">

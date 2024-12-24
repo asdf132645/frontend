@@ -20,8 +20,10 @@
             <option value="patientId">Patient ID</option>
             <option value="patientNm">Patient Name</option>
           </select>
-          <input type="text" v-model='searchText' class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
-          <div class="settingDatePickers">
+          <div class="search-container">
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon" />
+            <input type="text" v-model="searchText" placeholder="Search" class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
+          </div>          <div class="settingDatePickers">
             <Datepicker v-model="startDate"></Datepicker>
             <Datepicker v-model="endDate"></Datepicker>
           </div>

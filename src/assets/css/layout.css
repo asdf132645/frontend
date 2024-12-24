@@ -541,12 +541,20 @@ li.errLogLi.warning:before {
     margin-right: 5px;
 }
 
-li.errLogLi.critical .errLogIco {
+li.errLogLi.warn .errLogIco {
+    color: #fca439;
+}
+
+li.errLogLi.crit .errLogIco {
     color: #ff4c00;
 }
 
-li.errLogLi.critical .errLogTitle {
+li.errLogLi.crit .errLogTitle {
     color: #ff4c00;
+}
+
+li.errLogLi.warn .errLogTitle {
+    color: #fca439;
 }
 
 .startBtn.onRecover {
@@ -1823,6 +1831,12 @@ ul.slideContent .outClassDefault {
 
 .orderListWrapper {
     display: flex;
+    justify-content: space-between;
+}
+
+.orderListWrapper div {
+    padding-top: 0 !important;
+    padding-right: 0 !important;
 }
 
 .orderListTableContainer {
@@ -2280,10 +2294,10 @@ table.defaultTable tbody td {
     vertical-align: top;
     text-align: left;
     background: var(--main-bg-2-color);
-    border-radius: 9px;
     margin-left: 8px;
     margin-right: 8px;
     height: 940px;
+    font-size: 0.9rem;
 }
 
 .listBox div {
@@ -2295,7 +2309,6 @@ table.defaultTable tbody td {
     display: inline-block;
     text-align: left;
     background: var(--main-bg-2-color);
-    border-radius: 9px;
 }
 
 .text-center {
@@ -2471,6 +2484,7 @@ ul.wbcInfoDbUl > li {
 .hh3title {
     font-weight: 600;
     border-bottom: 1px solid var(--gray-bg-7-color);
+    padding-bottom: 5px;
 }
 
 .infoImageTitle {
@@ -2881,6 +2895,7 @@ select.stopDivSelect {
 
 h3.orderTitle {
     margin-bottom: 8px;
+    padding-bottom: 5px;
 }
 
 .wbcMenu {
@@ -3576,11 +3591,28 @@ ul.normalItems {
     width: calc(100% / 8);
 }
 
+.search-container {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4D4F5C;
+}
+
+.searchInputBox {
+    width: 100%;
+}
+
 .searchSelect {
     width: 120px !important;
-    padding: 7px;
+    padding: 8px;
     border: 1px solid black;
     border-radius: 5px;
+    vertical-align: text-top;
 }
 
 .moveImgIsBool {
@@ -3596,9 +3628,13 @@ ul.normalItems {
 }
 
 .searchInputBox {
-    padding: 8px;
-    border-radius: 5px;
+    padding: 9px;
     width: 300px;
+    border-radius: 16px;
+    margin-left: 9px;
+    vertical-align: text-top;
+    padding-left: 30px; /* 아이콘을 고려하여 왼쪽 패딩 추가 */
+
 }
 
 .searchBtn {
@@ -5554,11 +5590,10 @@ progress::-moz-progress-bar {
     font-size: 1rem;
     width: 100px;
     transform: translate(0px, -100%);
-    text-shadow:
-            -1px -1px 0 white,
-            1px -1px 0 white,
-            -1px  1px 0 white,
-            1px  1px 0 white;
+    text-shadow: -1px -1px 0 white,
+    1px -1px 0 white,
+    -1px 1px 0 white,
+    1px 1px 0 white;
 }
 
 .newProgressNm {
@@ -5627,6 +5662,7 @@ progress::-moz-progress-bar {
     color: white;
     border-color: lightgray;
 }
+
 .abnormalClassInfoPopup {
     position: absolute;
     min-width: 150px;
@@ -5634,13 +5670,14 @@ progress::-moz-progress-bar {
     z-index: 9;
     text-align: left;
     padding: 0px 10px 10px 10px;
-    border:1px solid #dedede;
+    border: 1px solid #dedede;
     top: 36px;
 }
 
 .abnormalClassInfoPopup div {
     padding-top: 10px;
 }
+
 /* 선 */
 .lineGuasge {
     flex: 1;
@@ -5656,6 +5693,14 @@ progress::-moz-progress-bar {
     background-color: #00c2ff;
     transition: width 0.5s ease;
 }
+
+table.defaultTable.dbDataTable tr th {
+    background: #424349;
+    color: aliceblue;
+    padding: 15px 0px 15px 0px;
+    font-weight: 600;
+}
+
 @media screen and (max-width: 1900px) {
     .contentRight > div[data-v-c20ace0e]:first-child {
         width: 20%;

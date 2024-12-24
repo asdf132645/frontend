@@ -222,16 +222,122 @@ export type GetRunningInfoByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, slotId: string, orderDttm: string, testType: string, analyzedDttm: string, tactTime: string, maxWbcCount: string, cassetId: string, isNormal: string, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
+export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, slotId: string, orderDttm: string, testType: string, analyzedDttm: string, tactTime: string, maxWbcCount: string, cassetId: string, isNormal: string, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, isAllClassesChecked?: boolean | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
 
 export type UpdateRunningInfoMutationVariables = Exact<{
   updateDto: UpdateRuningInfoDto;
 }>;
 
 
-export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, slotId: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, isNormal: string, lock_status?: boolean | null, pcIp?: string | null }> };
+export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, isNormal: string, pcIp?: string | null, lock_status?: boolean | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }> }> };
 
 
+export const GetRunningInfoByIdDocument = gql`
+    query GetRunningInfoById($id: Int!) {
+  getRunningInfoByIdGQL(id: $id) {
+    id
+    lock_status
+    traySlot
+    slotNo
+    barcodeNo
+    patientId
+    patientNm
+    gender
+    birthDay
+    wbcCount
+    slotId
+    orderDttm
+    testType
+    analyzedDttm
+    tactTime
+    maxWbcCount
+    cassetId
+    isNormal
+    wbcInfo {
+      wbcInfo {
+        id
+        name
+        count
+        title
+        images {
+          coordinates {
+            display
+          }
+          fileName
+          title
+          filter
+          height
+          width
+        }
+        percent
+      }
+      totalCount
+      maxWbcCount
+    }
+    wbcInfoAfter {
+      id
+      name
+      count
+      title
+      images {
+        coordinates {
+          display
+        }
+        fileName
+        title
+        filter
+        height
+        width
+      }
+      percent
+    }
+    rbcInfo {
+      rbcClass {
+        classInfo {
+          classId
+          classNm
+          degree
+          originalDegree
+        }
+        categoryId
+        categoryNm
+      }
+      malariaCount
+      maxRbcCount
+      pltCount
+    }
+    rbcInfoAfter {
+      classInfo {
+        classId
+        classNm
+        degree
+        originalDegree
+        percent
+      }
+      categoryId
+      categoryNm
+    }
+    submitState
+    submitOfDate
+    submitUserId
+    isNsNbIntegration
+    wbcMemo
+    rbcMemo
+    pcIp
+    cbcPatientNo
+    cbcPatientNm
+    cbcSex
+    cbcAge
+    img_drive_root_path
+    hosName
+    abnormalClassInfo {
+      classNm
+      val
+    }
+    isAllClassesChecked
+  }
+}
+    `;
 
 /**
  * __useGetRunningInfoByIdQuery__
@@ -248,21 +354,41 @@ export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunning
  *   id: // value for 'id'
  * });
  */
-
+export function useGetRunningInfoByIdQuery(variables: GetRunningInfoByIdQueryVariables | VueCompositionApi.Ref<GetRunningInfoByIdQueryVariables> | ReactiveFunction<GetRunningInfoByIdQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
+}
+export function useGetRunningInfoByIdLazyQuery(variables?: GetRunningInfoByIdQueryVariables | VueCompositionApi.Ref<GetRunningInfoByIdQueryVariables> | ReactiveFunction<GetRunningInfoByIdQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>(GetRunningInfoByIdDocument, variables, options);
+}
+export type GetRunningInfoByIdQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetRunningInfoByIdQuery, GetRunningInfoByIdQueryVariables>;
 export const UpdateRunningInfoDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
   updateRunningInfoGQL(updateDto: $updateDto) {
     id
-    slotId
-    barcodeNo
-    patientId
-    patientNm
-    gender
-    birthDay
-    wbcCount
     isNormal
-    lock_status
+    abnormalClassInfo {
+      classNm
+      val
+    }
     pcIp
+    lock_status
+    wbcInfoAfter {
+      id
+      name
+      count
+      title
+      images {
+        coordinates {
+          display
+        }
+        fileName
+        title
+        filter
+        height
+        width
+      }
+      percent
+    }
   }
 }
     `;

@@ -13,10 +13,10 @@
       <li v-for="(item, idx) in errArr" :key="idx" :class="['errLogLi',item.type.toLowerCase()]">
         <div>
           <div class="errLogIco">
-            <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="item.type === 'WARNING'" class="WARNING"/>
-            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" v-if="item.type === 'CRITICAL'"
+            <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="item.type === 'WARN'" class="warning"/>
+            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" v-if="item.type === 'CRIT'"
                                class="CRITICAL"/>
-            <font-awesome-icon :icon="['fas', 'circle-check']" v-if="item.type === 'NOTIFICATION'"
+            <font-awesome-icon :icon="['fas', 'circle-check']" v-if="item.type === 'NOTI'"
                                class="NOTIFICATION"/>
           </div>
         </div>
