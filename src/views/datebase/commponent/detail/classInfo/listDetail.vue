@@ -359,6 +359,7 @@ onBeforeMount(async () => {
   isLoading.value = false;
   isLoadedSlideData.value = false;
   projectType.value = window.PROJECT_TYPE;
+
 })
 
 onMounted(async () => {
@@ -366,9 +367,11 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   document.addEventListener('click', handleClickOutside);
+  isLoadedSlideData.value = false;
 });
 
 onUnmounted(async () => {
+  await store.dispatch('slideDataModule/resetSlideData', []);
   document.addEventListener('click', handleClickOutside);
 })
 
@@ -378,15 +381,16 @@ watch(
       if (newVal !== oldVal) {
         await nextTick();
         console.log('newVal', newVal);
+
         if (projectType.value !== 'bm') {
           await checkWps(newVal);
         } else {
           isWpsShow.value = false;
         }
         try {
-          isLoadedSlideData.value = false;
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
+          isLoadedSlideData.value = false;
           wbcInfo.value = [];
           isLoadedSlideData.value = true;
 
@@ -1706,6 +1710,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     // 실제 락 거는 부분 여기로 변경 함 그래프 ql 로 변경하면서 버그 방지를 위해서 변경
     res.pcIp = ipAddress.value;
     res.lock_status = true;
+    res.submitState = 'checkFirst';
     originalDbVal = [res];
   }
 

@@ -1,4 +1,44 @@
 import { Commit } from 'vuex';
+export const initialState: SlideDataState = {
+    id: undefined,
+    lock_status: undefined,
+    traySlot: undefined,
+    slotNo: '',
+    barcodeNo: '',
+    patientId: '',
+    patientNm: '',
+    gender: '',
+    birthDay: '',
+    wbcCount: '',
+    slotId: '',
+    orderDttm: '',
+    testType: '',
+    analyzedDttm: '',
+    tactTime: '',
+    maxWbcCount: '',
+    bf_lowPowerPath: [],
+    cassetId: '',
+    isNormal: '',
+    wbcInfo: {},
+    wbcInfoAfter: [],
+    rbcInfo: {},
+    rbcInfoAfter: [],
+    submitState: '',
+    submitOfDate: undefined,
+    submitUserId: '',
+    rbcInfoPosAfter: [],
+    isNsNbIntegration: '',
+    wbcMemo: '',
+    rbcMemo: '',
+    pcIp: '',
+    cbcPatientNo: '',
+    cbcPatientNm: '',
+    cbcSex: '',
+    cbcAge: '',
+    img_drive_root_path: '',
+    hosName: '',
+    abnormalClassInfo: {},
+};
 
 // RunningDataState 정의 (변경 없음)
 export interface SlideDataState {
@@ -85,9 +125,11 @@ interface SlideDataModule {
         setImgDriveRootPath(state: SlideDataState, imgDriveRootPath: string): void;
         setHosName(state: SlideDataState, hosName: string): void;
         setAbnormalClassInfo(state: SlideDataState, abnormalClassInfo: object): void;
+        resetState(state: SlideDataState): void; // 전체 초기화 메서드
     };
     actions: {
         updateSlideData({ commit }: { commit: Commit }, payload: any): void;
+        resetSlideData({ commit }: { commit: Commit }): void; // 상태 초기화 액션 추가
     };
 }
 
@@ -248,6 +290,10 @@ export const slideDataModule: SlideDataModule = {
         setAbnormalClassInfo(state, abnormalClassInfo) {
             state.abnormalClassInfo = abnormalClassInfo;
         },
+        resetState(state) {
+            Object.assign(state, { ...initialState });
+        },
+
     },
     actions: {
         updateSlideData({ commit }, payload) {
@@ -291,6 +337,10 @@ export const slideDataModule: SlideDataModule = {
             commit('setHosName', payload.hosName);
             commit('setAbnormalClassInfo', payload.abnormalClassInfo);
         },
+        resetSlideData({ commit }) {
+            commit('resetState');
+        },
+
     },
 };
 

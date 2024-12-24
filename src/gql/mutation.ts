@@ -115,6 +115,7 @@ export const gqlUpdate = async (originalDb: any) => {
                 pcIp: originalDb[0].pcIp,
                 lock_status: originalDb[0].lock_status,
                 wbcInfoAfter: originalDb[0].wbcInfoAfter,
+                submitState: originalDb[0].submitState,
             },
         ],
     };
