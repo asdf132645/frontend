@@ -868,8 +868,7 @@ const refreshClass = async (data: any) => {
   await drawCellMarker(true);
   classCompareShow.value = false;
   selectItems.value = data;
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
-  iaRootPath.value = path;
+  iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
 
   await getWbcCustomClasses(true, data);
   await imgSetLocalStorage();
