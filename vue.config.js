@@ -29,7 +29,7 @@ module.exports = {
           path.join(__dirname, './public/index.html'),
         ]),
         safelist: {
-          standard: ['body', 'html'], // PurgeCSS에서 안전하게 유지할 클래스들
+          standard: ['body', 'html', /^v-/, /^el-/], // Vue 및 Element UI 같은 클래스 패턴 추가
         },
       }),
       new Dotenv(), // .env 파일 로드를 위한 설정 추가

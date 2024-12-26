@@ -36,7 +36,6 @@ import {useStore} from "vuex";
 import { getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
-import {detailRunningApi} from '@/common/api/service/runningInfo/runningInfoApi';
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 

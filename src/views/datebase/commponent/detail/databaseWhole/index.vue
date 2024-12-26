@@ -22,7 +22,7 @@ import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoAp
 
 const store = useStore()
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-const selectItems = ref(null);
+const selectItems = ref<any>(null);
 const isLoading = ref(false);
 
 const imgRef = ref<HTMLElement | null>(null);

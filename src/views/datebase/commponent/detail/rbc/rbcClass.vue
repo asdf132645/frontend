@@ -267,7 +267,7 @@ import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentIns
 import { useStore } from "vuex";
 import { useRouter} from "vue-router";
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
@@ -332,6 +332,8 @@ const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
+const slideData = computed(() => store.state.slideDataModule);
+
 const rbcDegreeStandard = ref<any>([]);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
@@ -736,16 +738,6 @@ const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
 
 const afterChange = async (newItem?: any) => {
 
-  // if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
-  //   const result: any = await detailRunningApi(String(props.selectItems?.id));
-  //   const updatedItem = {
-  //     submitState: 'checkFirst',
-  //   };
-  //
-  //   const updatedRuningInfo = {...result.data, ...updatedItem }
-  //   await resRunningItem(updatedRuningInfo, false);
-  // }
-
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   let rbcData: any = {};
@@ -766,10 +758,11 @@ const afterChange = async (newItem?: any) => {
 
   // Report 화면에서 RBC Classification 동기화 문제로 추가
   if (props.type === 'report') {
-    const result: any = await detailRunningApi(String(selectedSampleId.value));
-    rbcInfoAfterVal.value = result.data.rbcInfoAfter;
+    rbcInfoAfterVal.value = slideData.value.rbcInfoAfter;
 
-    await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: result.data.rbcInfoAfter});
+    // 아래 처럼 분리해서 사용 x 수정 부탁 rbcInfoAfterData 리포트에서 사용 하는 부분 수정 하세요 잘못된 코드임 무조건 slideData.value 에서 파생되어서 사용하게 만드세요
+    await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: slideData.value.rbcInfoAfter});
+
   }
   await classChange();
 }
@@ -851,23 +844,21 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   // rbcInfoAfterVal 업데이트
   rbcInfoAfterVal.value = rbcInfoAfterData;
 
-  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfterData,
   };
 
-  const updatedRuningInfo = {...result.data, ...updatedItem};
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
   await resRunningItem(updatedRuningInfo, false);
   return;
 }
 
 const updateRbcInfo = async () => {
-  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
     rbcInfoAfter: rbcInfoBeforeVal.value,
   };
 
-  const updatedRuningInfo = {...result.data, ...updatedItem};
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
   await resRunningItem(updatedRuningInfo, false);
 }
 
@@ -981,11 +972,10 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   // rbcInfoAfterVal 업데이트
   rbcInfoAfterVal.value = rbcInfoAfter;
 
-  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
     rbcInfoAfter: rbcInfoAfter,
   };
-  const updatedRuningInfo = {...result.data, ...updatedItem};
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
   await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: rbcInfoAfter});
   await resRunningItem(updatedRuningInfo, false, 'degree');
 
@@ -1001,13 +991,12 @@ const memoCancel = () => {
 }
 
 const memoChange = async () => {
-  const result: any = await detailRunningApi(String(selectedSampleId.value));
 
   const enterAppliedRbcMemo = memo.value.replaceAll('\r\n', '<br>');
   const updatedItem = {
     rbcMemo: enterAppliedRbcMemo,
   };
-  const updatedRuningInfo = {...result.data, ...updatedItem}
+  const updatedRuningInfo = {...slideData.value, ...updatedItem}
   await resRunningItem(updatedRuningInfo, true);
   memoModal.value = false;
 }
@@ -1081,13 +1070,12 @@ const onCommit = async () => {
 
   const localTime = moment().local();
 
-  const result: any = await detailRunningApi(String(selectedSampleId.value));
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
     submitUserId: userModuleDataGet.value.userId,
   };
-  const updatedRuningInfo = {...result.data, ...updatedItem}
+  const updatedRuningInfo = {...slideData.value, ...updatedItem}
   await resRunningItem(updatedRuningInfo);
 
   emits('submitStateChanged', 'Submit');

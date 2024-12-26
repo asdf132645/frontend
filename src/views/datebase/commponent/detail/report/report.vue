@@ -263,7 +263,6 @@ import { formatDateString } from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
-import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
   incheonGilPercentChange,
@@ -287,7 +286,6 @@ const printOnOff = ref(false);
 const rbcInfo = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId)
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterData);
 const slideData = computed(() => store.state.slideDataModule);

@@ -208,11 +208,6 @@ import {
   defaultBmClassList,
   defaultWbcClassList
 } from "@/store/modules/analysis/wbcclassification";
-import {
-  classInfoDetailSelectQueryApi,
-  detailRunningApi,
-  updateRunningApi
-} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {MESSAGES, MSG } from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -257,7 +252,11 @@ import {useRouter} from "vue-router";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipClassInfoType } from "@/common/type/tooltipType";
-import {gqlCBCUpdate, gqlMemoMenuUpdate, gqlUpdate} from "@/gql/mutation";
+import {
+  cbcUpdateMutation,
+  gqlGenericUpdate,
+  memoUpdateMutation, useUpdateRunningInfoMutation
+} from '@/gql/mutation/slideData';
 
 const router = useRouter();
 const showLISUploadButton = ref(true);
@@ -266,9 +265,7 @@ const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const slideData = computed(() => store.state.slideDataModule);
-const showLISUploadAfterCheckingAll = computed(() => store.state.commonModule.showLISUploadAfterCheckingAll);
 
 const barcodeImg = ref('');
 const userId = ref('');
@@ -390,14 +387,6 @@ watch(() => props.wbcInfo, (newItem) => {
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
     store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
-    // if (props.selectItems?.submitState === "") {
-    //   const result: any = detailRunningApi(String(props.selectItems?.id));
-    //   const updatedItem = {
-    //     submitState: 'checkFirst',
-    //   };
-    //   const updatedRuningInfo = {...result.data, ...updatedItem}
-    //   resRunningItem(updatedRuningInfo, true);
-    // }
   }
 });
 
@@ -432,15 +421,6 @@ const mountedMethod = async () => {
     lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }
 
-  // 첫 진입시
-  // if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
-  //   const result: any = await detailRunningApi(String(props.selectItems?.id));
-  //   const updatedItem = {
-  //     submitState: 'checkFirst',
-  //   };
-  //   const updatedRuningInfo = {...result.data, ...updatedItem}
-  //   await resRunningItem(updatedRuningInfo, true);
-  // }
 }
 
 const lisModalOpen = () => {
@@ -516,22 +496,23 @@ const uploadLis = async () => {
       cmcSeoulLisAndCbcDataGet();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
-      inhaDataSendLoad();
+      await inhaDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
-      gilDataSendLoad();
+      await gilDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
       godaeAnamDataSendLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
-      lisLastStep();
+      await uimdTestCbcLisDataGet();
+      // lisLastStep();
       break;
   }
 }
 
-const uimdTestCbcLisDataGet = () => {
+const uimdTestCbcLisDataGet = async () => {
   // 서울 성모 테스트 코드
   const codeList = CbcWbcTestCdList_0002;
   const {wbcInfoAfter} = props.selectItems ?? {};
@@ -625,7 +606,12 @@ const uimdTestCbcLisDataGet = () => {
     };
     lisBtnColor.value = true;
     const updatedRuningInfo = {...slideData.value, ...updatedItem};
-    await gqlCBCUpdate(updatedRuningInfo);
+    await gqlGenericUpdate(cbcUpdateMutation,{
+      id: updatedRuningInfo.id,
+      submitState: updatedRuningInfo.submitState,
+      submitOfDate: updatedRuningInfo.submitOfDate,
+      submitUserId: updatedRuningInfo.submitUserId,
+    });
     await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 
   }).catch(function (err) {
@@ -807,7 +793,12 @@ const cmcSeoulLisAndCbcDataGet = () => {
             };
             lisBtnColor.value = true;
             const updatedRuningInfo = {...slideData.value, ...updatedItem};
-            await gqlCBCUpdate(updatedRuningInfo);
+            await gqlGenericUpdate(cbcUpdateMutation,{
+              id: updatedRuningInfo.id,
+              submitState: updatedRuningInfo.submitState,
+              submitOfDate: updatedRuningInfo.submitOfDate,
+              submitUserId: updatedRuningInfo.submitUserId,
+            });
             await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 
           } else {
@@ -878,7 +869,12 @@ const gilDataSendLoad = async () => {
           lisBtnColor.value = true;
 
           const updatedRuningInfo = {...slideData.value, ...updatedItem};
-          await gqlCBCUpdate(updatedRuningInfo);
+          await gqlGenericUpdate(cbcUpdateMutation,{
+            id: updatedRuningInfo.id,
+            submitState: updatedRuningInfo.submitState,
+            submitOfDate: updatedRuningInfo.submitOfDate,
+            submitUserId: updatedRuningInfo.submitUserId,
+          });
           await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
           emits('uploadLisChangeSlide', HOSPITAL_SITE_CD_BY_NAME['인천길병원']);
 
@@ -1028,7 +1024,13 @@ const lisFileUrlCreate = async (data: any) => {
           submitUserId: userModuleDataGet.value.userId,
         };
         const updatedRuningInfo = {...slideData.value, ...updatedItem};
-        await gqlCBCUpdate(updatedRuningInfo);
+        await gqlGenericUpdate(cbcUpdateMutation,{
+          id: updatedRuningInfo.id,
+          submitState: updatedRuningInfo.submitState,
+          submitOfDate: updatedRuningInfo.submitOfDate,
+          submitUserId: updatedRuningInfo.submitUserId,
+        });
+
         await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
         toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast(MESSAGES.IDS_MSG_SUCCESS);
@@ -1119,7 +1121,13 @@ const onCommit = async () => {
   };
 
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await gqlCBCUpdate(updatedRuningInfo);
+  await gqlGenericUpdate(cbcUpdateMutation,{
+    id: updatedRuningInfo.id,
+    submitState: updatedRuningInfo.submitState,
+    submitOfDate: updatedRuningInfo.submitOfDate,
+    submitUserId: updatedRuningInfo.submitUserId,
+  });
+
   await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
   selectItems.value.submitState = 'Submit';
   emits('submitStateChanged', 'Submit');
@@ -1132,7 +1140,14 @@ const memoChange = async () => {
     wbcMemo: enterAppliedWbcMemo
   }
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  const res = await gqlMemoMenuUpdate(updatedRuningInfo);
+  const res = await gqlGenericUpdate(memoUpdateMutation, {
+    id: updatedRuningInfo.id,
+    wbcMemo: updatedRuningInfo.wbcMemo,
+    rbcMemo: updatedRuningInfo.rbcMemo,
+  });
+
+
+
   if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
     toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast('Success');
@@ -1192,7 +1207,6 @@ const getOrderClass = async () => {
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
   const filteredItems: any = slideData.value;
-  // await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(filteredItems?.id)});
   selectItems.value = filteredItems;
   const customClassItems = selectItems.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
   selectItems.value.wbcInfoAfter = newItem;
@@ -1309,15 +1323,6 @@ const beforeAfterChange = async (newItem: any) => {
     wbcInfoVal.value.push(item);
   }
 
-  // if (props.selectItems?.submitState === "" || !props.selectItems?.submitState) {
-  //   const result: any = await detailRunningApi(String(props.selectItems?.id));
-  //   const updatedItem = {
-  //     submitState: '`checkFirst`',
-  //   };
-  //
-  //   const updatedRuningInfo = {...result.data, ...updatedItem}
-  //   await resRunningItem(updatedRuningInfo, true);
-  // }
 }
 
 /** Before, After 이미지들이 같은지 비교 */
@@ -1467,36 +1472,32 @@ async function updateOriginalDb() {
   });
 
   // originalDb 업데이트
-  const res: any = await detailRunningApi(String(selectedSampleId.value));
-  if (res) {
-    res.data.wbcInfoAfter = clonedWbcInfo;
+
+  if (slideData.value) {
+    slideData.value.wbcInfoAfter = clonedWbcInfo;
   }
 
   await putOrderClassApi(sortArr);
 
   //updateRunningApi 호출
-  await updateRunningApiPost(clonedWbcInfo, [res.data]);
+  await updateRunningApiPost(slideData.value);
 
   emits('classOrderChanged')
   await store.dispatch('commonModule/setCommonInfo', {classInfoSort: []});
 }
 
-async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
-  // 러닝 인포 디비에 다시 재저장
+async function updateRunningApiPost(originalDb: any) {
   try {
-    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
-    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response: any = await updateRunningApi({
-      userId: Number(userId.value),
-      runingInfoDtoItems: originalDb,
-      dayQuery: dayQuery
-    })
-    if (response) {
-      //
-    } else {
-      console.error('백엔드가 디비에 저장 실패함');
-    }
+    await gqlGenericUpdate(useUpdateRunningInfoMutation, {
+      id: originalDb.id,
+      isNormal: originalDb.isNormal,
+      abnormalClassInfo: originalDb.abnormalClassInfo,
+      pcIp: originalDb.pcIp,
+      lock_status: originalDb.lock_status,
+      wbcInfoAfter: originalDb.wbcInfoAfter,
+      submitState: originalDb.submitState,
+    });
+    await store.dispatch('slideDataModule/updateSlideData', originalDb);
   } catch (error) {
     console.error('Error:', error);
   }

@@ -273,7 +273,7 @@ import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
-import {gqlIsAllClassesCheckedUpdate, gqlUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation";
+import {gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -380,7 +380,6 @@ watch(
     async (newVal, oldVal) => {
       if (newVal.id !== oldVal?.id) {
         await nextTick();
-        console.log('newVal', newVal);
 
         if (projectType.value !== 'bm') {
           await checkWps(newVal);
@@ -391,7 +390,7 @@ watch(
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
           isLoadedSlideData.value = false;
-          // wbcInfo.value = [];
+          wbcInfo.value = [];
           isLoadedSlideData.value = true;
 
           await getWbcCustomClasses(false, null);
@@ -468,8 +467,6 @@ const handleZoom = () => {
 
 const getDetailRunningInfo = async (newValue: any) => {
   try {
-    console.log(newValue);
-
     isAllClassesChecked.value = newValue.value?.isAllClassesChecked;
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
     patientNm.value = newValue?.patientNm;
@@ -1720,7 +1717,16 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
-    const res = await gqlUpdate(originalDb[0]);
+    const res = await gqlGenericUpdate(useUpdateRunningInfoMutation, {
+      id: originalDb[0].id,
+      isNormal: originalDb[0].isNormal,
+      abnormalClassInfo: originalDb[0].abnormalClassInfo,
+      pcIp: originalDb[0].pcIp,
+      lock_status: originalDb[0].lock_status,
+      wbcInfoAfter: originalDb[0].wbcInfoAfter,
+      submitState: originalDb[0].submitState,
+    });
+
     if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {
