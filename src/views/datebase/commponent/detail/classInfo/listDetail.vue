@@ -381,7 +381,6 @@ watch(
       if (newVal.id !== oldVal?.id) {
         await nextTick();
         console.log('newVal', newVal);
-        console.log('newVal', oldVal);
 
         if (projectType.value !== 'bm') {
           await checkWps(newVal);
@@ -1721,7 +1720,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
-    const res = await gqlUpdate(originalDb);
+    const res = await gqlUpdate(originalDb[0]);
     if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
       // getWbcCustomClasses(false, null);
       if (cellMarkerIcon.value) {

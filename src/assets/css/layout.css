@@ -522,7 +522,7 @@ li.errLogLi.notification:before {
 
 .errLogTimestamp {
     font-size: 0.7rem;
-    color: #555;
+    color: #acacac;
 }
 
 li.errLogLi.warning:before {
@@ -732,15 +732,16 @@ li.errLogLi.critical:before {
 
 .errLogDiv {
     position: absolute;
-    background: #fff;
+    background: #252525;
     z-index: 9;
-    color: #000;
+    color: #ffffff;
     text-align: left;
     height: 60vh;
     overflow: auto;
     padding: 20px;
     min-width: 500px;
     top: 35px;
+    border: 1px solid;
 }
 
 .lineRenewal {

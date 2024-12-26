@@ -1028,9 +1028,6 @@ const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: 
         await rbcTotalAndReCount(rbcImagePageNumber.value);
         await countReAdd();
         await getRbcDegreeData();
-        // await reDegree(rbcInfoBeforeVal.value);
-        // await reDegree(rbcInfoAfterVal.value);
-        // rightClickItemSet();
       }
       if (alertShow) {
         showSuccessAlert('Success');

@@ -257,6 +257,7 @@ import {useRouter} from "vue-router";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipClassInfoType } from "@/common/type/tooltipType";
+import {gqlCBCUpdate, gqlMemoMenuUpdate, gqlUpdate} from "@/gql/mutation";
 
 const router = useRouter();
 const showLISUploadButton = ref(true);
@@ -616,7 +617,6 @@ const uimdTestCbcLisDataGet = () => {
       })
     }
 
-    const result: any = await detailRunningApi(String(props.selectItems?.id));
     const localTime = moment().local();
     const updatedItem = {
       submitState: 'lisCbc',
@@ -624,8 +624,9 @@ const uimdTestCbcLisDataGet = () => {
       submitUserId: userModuleDataGet.value.userId,
     };
     lisBtnColor.value = true;
-    const updatedRuningInfo = {id: result.data.id, ...updatedItem}
-    await resRunningItem(updatedRuningInfo, true);
+    const updatedRuningInfo = {...slideData.value, ...updatedItem};
+    await gqlCBCUpdate(updatedRuningInfo);
+    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 
   }).catch(function (err) {
     console.error('error.config', err.config)
@@ -799,17 +800,16 @@ const cmcSeoulLisAndCbcDataGet = () => {
           if (resultFlag === 'Y') {
             const localTime = moment().local();
             // lisCbc 등록 후 list 테이블에서 로우 색상 변경 코드
-            const result: any = await detailRunningApi(String(props.selectItems?.id));
             const updatedItem = {
               submitState: 'lisCbc',
               submitOfDate: localTime.format(),
               submitUserId: userModuleDataGet.value.userId,
             };
             lisBtnColor.value = true;
-            const updatedRuningInfo = {...result.data, ...updatedItem}
-            await resRunningItem(updatedRuningInfo, true);
-            toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-            showToast(MESSAGES.IDS_MSG_SUCCESS);
+            const updatedRuningInfo = {...slideData.value, ...updatedItem};
+            await gqlCBCUpdate(updatedRuningInfo);
+            await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+
           } else {
             const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
             const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
@@ -869,8 +869,6 @@ const gilDataSendLoad = async () => {
           await createH17(data);
           toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
           showToast(MESSAGES.IDS_MSG_SUCCESS);
-
-          const result: any = await detailRunningApi(String(props.selectItems?.id));
           const localTime = moment().local();
           const updatedItem = {
             submitState: 'lisCbc',
@@ -878,8 +876,10 @@ const gilDataSendLoad = async () => {
             submitUserId: userModuleDataGet.value.userId,
           };
           lisBtnColor.value = true;
-          const updatedRuningInfo = { id: result.data.id, ...updatedItem }
-          await resRunningItem(updatedRuningInfo, true);
+
+          const updatedRuningInfo = {...slideData.value, ...updatedItem};
+          await gqlCBCUpdate(updatedRuningInfo);
+          await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
           emits('uploadLisChangeSlide', HOSPITAL_SITE_CD_BY_NAME['인천길병원']);
 
         } catch (error: any) {
@@ -1021,16 +1021,15 @@ const lisFileUrlCreate = async (data: any) => {
       const fileRes = await createFile(fileParams);
       if (fileRes) {
         // 실행 정보 업데이트
-        const result: any = await detailRunningApi(String(props.selectItems?.id));
         const localTime = moment().local();
         const updatedItem = {
           submitState: 'lisCbc',
           submitOfDate: localTime.format(),
           submitUserId: userModuleDataGet.value.userId,
         };
-        const updatedRunningInfo = {...result.data, ...updatedItem};
-
-        await resRunningItem(updatedRunningInfo, true);
+        const updatedRuningInfo = {...slideData.value, ...updatedItem};
+        await gqlCBCUpdate(updatedRuningInfo);
+        await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
         toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
         showToast(MESSAGES.IDS_MSG_SUCCESS);
 
@@ -1113,15 +1112,15 @@ const hideConfirm = () => {
 
 const onCommit = async () => {
   const localTime = moment().local();
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
     submitUserId: userModuleDataGet.value.userId,
   };
-  const updatedRuningInfo = {...result.data, ...updatedItem}
-  await resRunningItem(updatedRuningInfo);
 
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
+  await gqlCBCUpdate(updatedRuningInfo);
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
   selectItems.value.submitState = 'Submit';
   emits('submitStateChanged', 'Submit');
 }
@@ -1131,16 +1130,18 @@ const memoChange = async () => {
   const enterAppliedWbcMemo = wbcMemo.value.replaceAll('\r\n', '<br>');
   const updatedItem = {
     wbcMemo: enterAppliedWbcMemo
-  };
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
-  const updatedRuningInfo = {...result.data, ...updatedItem}
-
-  await resRunningItem(updatedRuningInfo);
+  }
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
+  const res = await gqlMemoMenuUpdate(updatedRuningInfo);
+  if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast('Success');
+    wbcMemo.value = updatedRuningInfo.wbcMemo;
+  }
   memoModal.value = false;
 }
 
 const memoOpen = () => {
-  // wbcMemo.value = wbcMemo.value !== '' ? wbcMemo.value : props.selectItems?.wbcMemo;
   memoModal.value = !memoModal.value;
 }
 
@@ -1155,31 +1156,6 @@ const getStringValue = (title: string): string => {
     return title;
   }
 };
-
-const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
-  try {
-    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
-    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response: any = await updateRunningApi({
-      userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [updatedRuningInfo],
-      dayQuery: dayQuery,
-    })
-    if (response) {
-      await store.dispatch('slideDataModule/updateSlideData', response?.data[0]);
-      if (!noAlert) {
-        toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-        showToast('Success');
-      }
-      wbcMemo.value = updatedRuningInfo.wbcMemo;
-    } else {
-      console.error('백엔드가 디비에 저장 실패함');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));

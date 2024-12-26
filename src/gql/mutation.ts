@@ -34,64 +34,23 @@ export const UpdateRunningInfoDocument = gql`
     }
 `;
 
-export const classInfoMenuUpdateDocument = gql`
+export const cbcUpdateDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
         updateRunningInfoGQL(updateDto: $updateDto) {
             id
-            lock_status
-            wbcInfoAfter {
-                id
-                name
-                count
-                title
-                images {
-                    coordinates {
-                        display
-                    }
-                    fileName
-                    title
-                    filter
-                    height
-                    width
-                }
-                percent
-            }
-            wbcInfo {
-                wbcInfo {
-                    id
-                    name
-                    count
-                    title
-                    images {
-                        coordinates {
-                            display
-                        }
-                        fileName
-                        title
-                        filter
-                        height
-                        width
-                    }
-                    percent
-                }
-                totalCount
-                maxWbcCount
-            }
-            testType
-            img_drive_root_path
-            rbcInfoAfter {
-                classInfo {
-                    classId
-                    classNm
-                    degree
-                    originalDegree
-                    percent
-                }
-                categoryId
-                categoryNm
-            }
+            submitState
+            submitOfDate
+            submitUserId
+        }
+    }
+`;
+
+export const memoUpdateDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+        updateRunningInfoGQL(updateDto: $updateDto) {
+            id
             wbcMemo
-            isAllClassesChecked
+            rbcMemo
         }
     }
 `;
@@ -101,21 +60,26 @@ export function useUpdateRunningInfoMutation(options: VueApolloComposable.UseMut
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(UpdateRunningInfoDocument, options);
 }
 
-export function classInfoMenuUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
-    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(classInfoMenuUpdateDocument, options);
+export function cbcUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(cbcUpdateDocument, options);
+}
+
+
+export function memoUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(memoUpdateDocument, options);
 }
 
 export const gqlUpdate = async (originalDb: any) => {
     const updateDtos = {
         runingInfoDtoItems: [
             {
-                id: originalDb[0].id,
-                isNormal: originalDb[0].isNormal,
-                abnormalClassInfo: originalDb[0].abnormalClassInfo,
-                pcIp: originalDb[0].pcIp,
-                lock_status: originalDb[0].lock_status,
-                wbcInfoAfter: originalDb[0].wbcInfoAfter,
-                submitState: originalDb[0].submitState,
+                id: originalDb.id,
+                isNormal: originalDb.isNormal,
+                abnormalClassInfo: originalDb.abnormalClassInfo,
+                pcIp: originalDb.pcIp,
+                lock_status: originalDb.lock_status,
+                wbcInfoAfter: originalDb.wbcInfoAfter,
+                submitState: originalDb.submitState,
             },
         ],
     };
@@ -128,23 +92,18 @@ export const gqlUpdate = async (originalDb: any) => {
     return  await mutate();
 }
 
-export const gqlClassInfoMenuUpdate = async (originalDb: any) => {
+export const gqlCBCUpdate = async (originalDb: any) => {
     const updateDtos = {
         runingInfoDtoItems: [
             {
-                id: originalDb[0].id,
-                isNormal: originalDb[0].lock_status,
-                wbcInfo: originalDb[0].wbcInfo,
-                testType: originalDb[0].testType,
-                img_drive_root_path: originalDb[0].img_drive_root_path,
-                lock_status: originalDb[0].lock_status,
-                wbcMemo: originalDb[0].wbcMemo,
-                wbcInfoAfter: originalDb[0].wbcInfoAfter,
-                rbcInfoAfter: originalDb[0].rbcInfoAfter,
+                id: originalDb.id,
+                submitState: originalDb.submitState,
+                submitOfDate: originalDb.submitOfDate,
+                submitUserId: originalDb.submitUserId,
             },
         ],
     };
-    const { mutate, loading, error, onDone } = useUpdateRunningInfoMutation({
+    const { mutate, loading, error, onDone } = cbcUpdateMutation({
         variables: {
             updateDto: updateDtos, // 수정된 구조
         },
@@ -152,6 +111,26 @@ export const gqlClassInfoMenuUpdate = async (originalDb: any) => {
 
     return  await mutate();
 }
+
+export const gqlMemoMenuUpdate = async (originalDb: any) => {
+    const updateDtos = {
+        runingInfoDtoItems: [
+            {
+                id: originalDb.id,
+                wbcMemo: originalDb.wbcMemo,
+                rbcMemo: originalDb.rbcMemo,
+            },
+        ],
+    };
+    const { mutate, loading, error, onDone } = memoUpdateMutation({
+        variables: {
+            updateDto: updateDtos, // 수정된 구조
+        },
+    });
+
+    return  await mutate();
+}
+
 
 export const gqlIsAllClassesCheckedUpdate = async (originalDB: any) => {
     const updateDtos = {

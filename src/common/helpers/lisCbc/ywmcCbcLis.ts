@@ -3,7 +3,7 @@ import {createCbcFile} from "@/common/api/service/fileSys/fileSysApi";
 import axios from "axios";
 
 export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
-    const url = ` http://128.9.2.30/spo/CpSVL?target_command=ihes.spo.cp.cmd.RetrieveUimdURLCMD&smp_no=${barcodeNo}`;
+    const url = ` http://128.9.1.11/spo/CpSVL?target_command=ihes.spo.cp.cmd.RetrieveUimdURLCMD&smp_no=${barcodeNo}`;
     // const url = ` http://128.9.2.30/spo/CpSVL?target_command=ihes.spo.cp.cmd.RetrieveUimdURLCMD&smp_no=000032237250`;
     const cbcData:any = await axios.get(url);
     // const cbcData: any = (await ywmcCbcCheckApi(req)).data;
