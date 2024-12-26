@@ -8,13 +8,14 @@ import {
     getLisCodeRbcApi, getMinCountApi
 } from "@/common/api/service/setting/settingApi";
 import axios from "axios";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
 import {computed} from "vue";
 import {useStore} from "vuex";
 import moment from "moment/moment";
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
+const slideData = computed(() => store.state.slideDataModule);
 
 export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeList: any, funcType: string) => {
     console.log('인하대 CBC 데이터 받기 - inhaCbc cbcFilePathSetArr', cbcFilePathSetArr);
@@ -312,14 +313,13 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
             // LIS 파일 생성
             await createCbcFile(parmsLisCopy);
             if (selectItems?.id) {
-                const result: any = await detailRunningApi(String(selectItems?.id));
                 const updatedItem = {
                     submitState: 'lisCbc',
                     submitOfDate: localTime.format(),
                     submitUserId: userModuleDataGet.value.userId,
 
                 };
-                const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+                const updatedRuningInfo = {id: slideData.value.id, ...updatedItem}
                 await resRunningItem(updatedRuningInfo, true, id);
             }
 

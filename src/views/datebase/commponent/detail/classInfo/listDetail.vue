@@ -1694,7 +1694,7 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
   if (notWbcAfterSave !== 'notWbcAfterSave') {
     // wbcInfoAfter 업데이트
     selectItems.value.wbcInfoAfter = clonedWbcInfo;
-    await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: selectItems.value?.id})
+
     wbcInfo.value = clonedWbcInfo;
 
     // originalDb 업데이트
