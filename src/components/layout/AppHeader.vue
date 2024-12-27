@@ -61,12 +61,9 @@
           </div>
           <div class="iconHeaderMenu">
             <ul>
-              <li @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" v-if="siteCd === '9090'">
-                <font-awesome-icon :icon="['fas', 'circle-exclamation']" />
-                <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
-              </li>
-              <li class="alarm">
+              <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" >
                 <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
+                <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
               <li>
                 <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
