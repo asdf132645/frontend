@@ -271,7 +271,6 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
         return;
       }
       await store.dispatch('slideDataModule/updateSlideData', res.data);
-      console.log('updaow')
       await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(res.data?.id)});
 
     }

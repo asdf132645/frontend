@@ -433,33 +433,28 @@ const rightClickItemSet = () => {
 }
 
 
-
-
 watch(
-    () => slideData.value,
+    () => slideData.value.id,
     async (newVal, oldVal) => {
-      if (newVal.id !== oldVal?.id) {
-        await nextTick();
-        await rbcTotalAndReCount(rbcImagePageNumber.value);
-        await getRbcDegreeData();
-        await reDegree(rbcInfoBeforeVal.value);
-        pltCount.value = slideData.value?.pltCount;
-        malariaCount.value = slideData.value?.malariaCount;
-        memo.value = slideData.value?.rbcMemo;
-        submitState.value = slideData.value?.submitState;
-        rightClickItemSet();
-        allCheckType.value = {
-          '01': true,
-          '02': true,
-          '03': true,
-          '04': true,
-          '05': true,
-        }
-        await countReAdd();
-
+      await nextTick();
+      await rbcTotalAndReCount(rbcImagePageNumber.value);
+      await getRbcDegreeData();
+      await reDegree(rbcInfoBeforeVal.value);
+      pltCount.value = slideData.value?.pltCount;
+      malariaCount.value = slideData.value?.malariaCount;
+      memo.value = slideData.value?.rbcMemo;
+      submitState.value = slideData.value?.submitState;
+      rightClickItemSet();
+      allCheckType.value = {
+        '01': true,
+        '02': true,
+        '03': true,
+        '04': true,
+        '05': true,
       }
+      await countReAdd();
     },
-    {immediate: true, deep: true}
+    { deep: true}
 );
 
 
