@@ -376,6 +376,7 @@ const tooltipVisible = ref({
 })
 
 onMounted(async () => {
+  await nextTick();
   await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
   const {path} = router.currentRoute.value;
   memo.value = slideData.value?.rbcMemo;
@@ -388,11 +389,8 @@ onMounted(async () => {
   rightClickItem.value = [];
   rightClickItemSet();
   await rbcTotalAndReCount(rbcImagePageNumber.value);
-  await countReAdd();
-  // await afterChange(slideData.value);
   await afterChange(slideData.value);
-
-  // rbcInfoAfterVal.value = slideData.value.rbcInfoAfter;
+  await countReAdd();
 
 });
 
@@ -409,7 +407,6 @@ watch(() => props.allCheckClear, (newItem) => {
 watch(() => rbcImagePageNumber.value, async (newRbcPageNumber) => {
   await rbcTotalAndReCount(newRbcPageNumber);
   await countReAdd();
-  // await updateRbcInfo();
 })
 
 const rightClickItemSet = () => {
@@ -443,11 +440,9 @@ watch(
     async (newVal, oldVal) => {
       if (newVal.id !== oldVal?.id) {
         await nextTick();
-
         await rbcTotalAndReCount(rbcImagePageNumber.value);
-        await countReAdd();
         await getRbcDegreeData();
-        // await reDegree(rbcInfoBeforeVal.value);
+        await reDegree(rbcInfoBeforeVal.value);
         pltCount.value = slideData.value?.pltCount;
         malariaCount.value = slideData.value?.malariaCount;
         memo.value = slideData.value?.rbcMemo;
@@ -460,6 +455,8 @@ watch(
           '04': true,
           '05': true,
         }
+        await countReAdd();
+
       }
     },
     {immediate: true, deep: true}
@@ -760,24 +757,12 @@ const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
 };
 
 const afterChange = async (newItem?: any) => {
-
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   const rbcData: any = slideData.value;
 
   rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
   rbcInfoAfterVal.value = slideData.value?.rbcInfoAfter;
-  // degree가 Before 값과 After 값이 다를 경우
-  // 감도 조절 기능 추가 시 수정 필요
-  // rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
-
-
-  // Report 화면에서 RBC Classification 동기화 문제로 추가
-  // if (props.type === 'report') {
-  //   rbcInfoAfterVal.value = slideData.value.rbcInfoAfter;
-  //   // 아래 처럼 분리해서 사용 x 수정 부탁 rbcInfoAfterData 리포트에서 사용 하는 부분 수정 하세요 잘못된 코드임 무조건 slideData.value 에서 파생되어서 사용하게 만드세요
-  //   await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: slideData.value.rbcInfoAfter});
-  // }
   await classChange();
 }
 

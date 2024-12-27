@@ -355,7 +355,6 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(async () => {
   await nextTick();
-  // await getDetailRunningInfo();
   isLoading.value = false;
   await getOrderClass();
   await initData();
