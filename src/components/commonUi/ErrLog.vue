@@ -10,8 +10,8 @@
       </span>
     </div>
     <ul>
-      <li v-for="(item, idx) in errArr" :key="idx" :class="['errLogLi', item.type ? item.type.toLowerCase() : '']">
-        <template v-if="item.type !== 'DLOG'">
+      <template v-for="(item, idx) in errArr" :key="idx">
+        <li v-if="item.type !== 'DLOG'" :class="['errLogLi', item.type ? item.type.toLowerCase() : '']">
           <div>
             <div class="errLogIco">
               <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="item.type === 'WARN'"
@@ -37,8 +37,9 @@
               {{ item?.timestamp }}
             </div>
           </div>
-        </template>
-      </li>
+        </li>
+      </template>
+
     </ul>
   </div>
 </template>

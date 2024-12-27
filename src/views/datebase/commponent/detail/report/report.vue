@@ -287,7 +287,8 @@ const rbcInfo = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const rbcInfoAfterData = computed(() => store.state.commonModule.rbcInfoAfterData);
+const rbcInfoAfterData = computed(() => store.state.slideDataModule.rbcInfoAfter);
+//  임시로 변경 해둠 다른 페이지에서 호출하고 업데이트 하는 부분 삭제 하세요.
 const slideData = computed(() => store.state.slideDataModule);
 
 const projectBm = ref(false);

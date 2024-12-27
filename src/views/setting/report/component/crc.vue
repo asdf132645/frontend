@@ -12,30 +12,36 @@
         <div v-if="isMasterId(masterId)" class="w30p">
           <div class="flex-align-center-justify-between mb20">
             <span>CRC Default Mode</span>
-            <font-awesome-icon :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" @click="crcDefaultModeOn" />
+            <font-awesome-icon :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
+                               @click="crcDefaultModeOn"/>
           </div>
 
           <div class="flex-align-center-justify-between mb20">
             <span>CRC LIS Two Mode</span>
-            <font-awesome-icon :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" @click="lisTwoModeOn" />
+            <font-awesome-icon :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
+                               @click="lisTwoModeOn"/>
           </div>
 
           <div class="flex-align-center-justify-between mb20">
             <span>CRC Connect</span>
-            <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize" @click="crcConnectOn" />
+            <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
+                               @click="crcConnectOn"/>
           </div>
 
           <div class="flex-column-align-center mt10">
             <span>CRC Remark Select Count</span>
             <div class="flex-center mt10" style="gap: 14px;">
               <label for="crc-remark">Remark</label>
-              <input id="crc-remark" type="checkbox" @change="changeCrcRemarkCount" value="0" :checked="crcRemarkCountArr[0].checked"/>
+              <input id="crc-remark" type="checkbox" @change="changeCrcRemarkCount" value="0"
+                     :checked="crcRemarkCountArr[0].checked"/>
 
               <label for="crc-comment">Comment</label>
-              <input id="crc-comment" type="checkbox" @change="changeCrcRemarkCount" value="1" :checked="crcRemarkCountArr[1].checked"/>
+              <input id="crc-comment" type="checkbox" @change="changeCrcRemarkCount" value="1"
+                     :checked="crcRemarkCountArr[1].checked"/>
 
               <label for="crc-recommendation">Recommendation</label>
-              <input id="crc-recommendation" type="checkbox" @change="changeCrcRemarkCount" value="2" :checked="crcRemarkCountArr[2].checked"/>
+              <input id="crc-recommendation" type="checkbox" @change="changeCrcRemarkCount" value="2"
+                     :checked="crcRemarkCountArr[2].checked"/>
             </div>
 
           </div>
@@ -184,7 +190,7 @@ onMounted(async () => {
     crcRemarkCountArr.value = crcOptionApi.data[0].crcRemarkCount;
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcOptionPutWhether.value = true;
-  }else{
+  } else {
     crcRemarkCountArr.value = [{"checked": false, "name": "remark"}, {
       "checked": false,
       "name": "Comment"
@@ -253,9 +259,10 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
-  if(isMasterId(masterId.value)){
-    if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
-      await updateCrcApi(crcArr.value);
+  const crcOptionApi = await crcOptionGet();
+
+  if (isMasterId(masterId.value)) {
+    if (crcOptionPutWhether.value && crcOptionApi.data.length !== 0) {
       await updateCrcOptionApi({
         id: crcOptionId.value,
         crcMode: crcDefaultMode.value,
@@ -265,7 +272,6 @@ const saveCrcData = async () => {
         lisTwoMode: lisTwoMode.value
       });
     } else {
-      await createCrcApi(crcArr.value);
       await createCrcOptionApi({
         crcMode: crcDefaultMode.value,
         crcConnect: crcConnect.value,
@@ -273,9 +279,13 @@ const saveCrcData = async () => {
         crcPassWord: crcPassWord.value,
         lisTwoMode: lisTwoMode.value
       });
-
     }
-  }else{
+    if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
+      await updateCrcApi(crcArr.value);
+    } else {
+      await createCrcApi(crcArr.value);
+    }
+  } else {
     if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
       await updateCrcApi(crcArr.value);
       await updateCrcOptionApi({
