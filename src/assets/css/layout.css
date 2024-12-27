@@ -3530,6 +3530,10 @@ ul.normalItems {
     display: inline-block;
 }
 
+li.slideStatus {
+    position: relative;
+}
+
 .loginFooter input {
     width: 5%;
     vertical-align: middle;

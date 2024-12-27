@@ -145,7 +145,6 @@ const getDetailRunningInfo = async () => {
 
         // newValue가 존재하면 해당 데이터를 처리
         store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
-        console.log('여기!', newValue?.getRunningInfoByIdGQL)
 
         const result = newValue?.getRunningInfoByIdGQL;
         selectItems.value = result;
