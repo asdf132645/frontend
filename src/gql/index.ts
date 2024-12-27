@@ -86,27 +86,27 @@ export type RbcInfo = {
 export type RuningInfoEntity = {
   __typename?: 'RuningInfoEntity';
   abnormalClassInfo?: Maybe<AbnormalClassInfo>;
-  analyzedDttm: Scalars['String']['output'];
-  barcodeNo: Scalars['String']['output'];
-  bf_lowPowerPath: Array<Scalars['String']['output']>;
-  birthDay: Scalars['String']['output'];
-  cassetId: Scalars['String']['output'];
+  analyzedDttm?: Maybe<Scalars['String']['output']>;
+  barcodeNo?: Maybe<Scalars['String']['output']>;
+  bf_lowPowerPath?: Maybe<Array<Scalars['String']['output']>>;
+  birthDay?: Maybe<Scalars['String']['output']>;
+  cassetId?: Maybe<Scalars['String']['output']>;
   cbcAge?: Maybe<Scalars['String']['output']>;
   cbcPatientNm?: Maybe<Scalars['String']['output']>;
   cbcPatientNo?: Maybe<Scalars['String']['output']>;
   cbcSex?: Maybe<Scalars['String']['output']>;
-  gender: Scalars['String']['output'];
+  gender?: Maybe<Scalars['String']['output']>;
   hosName?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   img_drive_root_path?: Maybe<Scalars['String']['output']>;
   isAllClassesChecked?: Maybe<Scalars['Boolean']['output']>;
-  isNormal: Scalars['String']['output'];
+  isNormal?: Maybe<Scalars['String']['output']>;
   isNsNbIntegration?: Maybe<Scalars['String']['output']>;
   lock_status?: Maybe<Scalars['Boolean']['output']>;
-  maxWbcCount: Scalars['String']['output'];
+  maxWbcCount?: Maybe<Scalars['String']['output']>;
   orderDttm: Scalars['String']['output'];
-  patientId: Scalars['String']['output'];
-  patientNm: Scalars['String']['output'];
+  patientId?: Maybe<Scalars['String']['output']>;
+  patientNm?: Maybe<Scalars['String']['output']>;
   pcIp?: Maybe<Scalars['String']['output']>;
   rbcInfo?: Maybe<RbcInfo>;
   rbcInfoAfter?: Maybe<Array<RbcAfterClassInfos>>;
@@ -117,10 +117,10 @@ export type RuningInfoEntity = {
   submitOfDate?: Maybe<Scalars['String']['output']>;
   submitState?: Maybe<Scalars['String']['output']>;
   submitUserId?: Maybe<Scalars['String']['output']>;
-  tactTime: Scalars['String']['output'];
+  tactTime?: Maybe<Scalars['String']['output']>;
   testType: Scalars['String']['output'];
   traySlot?: Maybe<Scalars['String']['output']>;
-  wbcCount: Scalars['String']['output'];
+  wbcCount?: Maybe<Scalars['String']['output']>;
   wbcInfo?: Maybe<WbcResponse>;
   wbcInfoAfter: Array<WbcInfoAfter>;
   wbcMemo?: Maybe<Scalars['String']['output']>;
@@ -222,14 +222,14 @@ export type GetRunningInfoByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo: string, patientId: string, patientNm: string, gender: string, birthDay: string, wbcCount: string, slotId: string, orderDttm: string, testType: string, analyzedDttm: string, tactTime: string, maxWbcCount: string, cassetId: string, isNormal: string, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, isAllClassesChecked?: boolean | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
+export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo?: string | null, patientId?: string | null, patientNm?: string | null, gender?: string | null, birthDay?: string | null, wbcCount?: string | null, slotId: string, orderDttm: string, testType: string, analyzedDttm?: string | null, tactTime?: string | null, maxWbcCount?: string | null, cassetId?: string | null, isNormal?: string | null, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, isAllClassesChecked?: boolean | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
 
 export type UpdateRunningInfoMutationVariables = Exact<{
   updateDto: UpdateRuningInfoDto;
 }>;
 
 
-export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, isNormal: string, pcIp?: string | null, lock_status?: boolean | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }> }> };
+export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, isNormal?: string | null, pcIp?: string | null, lock_status?: boolean | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }> }> };
 
 
 export const GetRunningInfoByIdDocument = gql`

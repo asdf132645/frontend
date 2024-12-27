@@ -89,7 +89,7 @@ import {computed, defineProps, onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {readFileEUCKR, readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {
   createCbcFile,
   fileSearchApi,
@@ -129,6 +129,7 @@ const firstCbcDatafilename = ref('');
 const datachoice = ref(false);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slip = ref('');
+const slideData = computed(() => store.state.slideDataModule);
 
 watch(props.selectItems, async (newVal) => {
   selectItemsVal.value = newVal;
@@ -255,8 +256,7 @@ const updateCbcData = async () => {
       cbcAge: cbcAge.value,
       hosName: hosName.value
     };
-    const result: any = await detailRunningApi(String(selectedSampleId.value));
-    const updatedRuningInfo = {...result.data, ...req}
+    const updatedRuningInfo = {...slideData.value, ...req}
     await updateRunningApiPost([updatedRuningInfo]);
   }
 }

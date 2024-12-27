@@ -440,8 +440,8 @@ export const getCbcPathData = async () => {
         const result = await getFilePathSetApi();
 
         if (result && result.data) {
-            const data = result.data;
-            cbcFilePathSetArr = data[0].cbcFilePath;
+            const data = result?.data;
+            cbcFilePathSetArr = data[0]?.cbcFilePath;
         }
     } catch (e) {
         console.error(e);

@@ -142,8 +142,10 @@ const getDetailRunningInfo = async () => {
 
     watch(result, (newValue) => {
       if (newValue) {
+
         // newValue가 존재하면 해당 데이터를 처리
         store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
+        console.log('여기!', newValue?.getRunningInfoByIdGQL)
 
         const result = newValue?.getRunningInfoByIdGQL;
         selectItems.value = result;
@@ -270,6 +272,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
         return;
       }
       await store.dispatch('slideDataModule/updateSlideData', res.data);
+      console.log('updaow')
       await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(res.data?.id)});
 
     }

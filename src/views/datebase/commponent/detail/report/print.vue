@@ -240,7 +240,6 @@ import {getImagePrintApi, getOrderClassApi} from "@/common/api/service/setting/s
 import {useStore} from "vuex";
 import pako from 'pako';
 import {formatDateString} from "@/common/lib/utils/dateUtils";
-import {detailRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {basicBmClassList, basicWbcArr} from "@/store/modules/analysis/wbcclassification";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {disableScroll, enableScroll} from "@/common/lib/utils/scroll";
@@ -263,8 +262,9 @@ const printContent = ref(null);
 const wbcInfo = ref([]);
 
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const slideData = computed(() => store.state.slideDataModule);
+
 const selectItems = ref<any>(null);
 const orderClass = ref<any>({});
 
@@ -493,9 +493,8 @@ const getOrderClass = async () => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const result: any = await detailRunningApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
-    wbcInfo.value = result.data.wbcInfoAfter;
+    selectItems.value = slideData.value;
+    wbcInfo.value = slideData.value.wbcInfoAfter;
   } catch (e) {
     console.error(e);
   }

@@ -1,6 +1,6 @@
 <template>
 
-  <ClassInfoMenu @refreshClass="refreshClass" :changeSlideByLisUpload="changeSlideByLisUpload" />
+  <ClassInfoMenu :changeSlideByLisUpload="changeSlideByLisUpload" />
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')" v-if="siteCd !== '0007'">
     <DetailHeader
         :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
@@ -17,7 +17,7 @@
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
       <div class="reportDiv">
         <div class="rbcDiv shadowBox" :class="cbcLayer ? 'rbcDivInReportWithCBC' : ''" v-if="!projectBm && selectItems.testType === '04'">
-          <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" :selectItems="selectItems" type='report'
+          <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report'
                     @submitStateChanged="submitStateChanged" :isCommitChanged="isCommitChanged"/>
         </div>
         <div class="wbcDiv shadowBox">
@@ -252,7 +252,7 @@
 
 
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
-import {computed, onBeforeMount, onMounted, onUnmounted, ref} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
@@ -314,6 +314,25 @@ const crcConnect = ref(false);
 const isContent = ref(false);
 const changeSlideByLisUpload = ref(false);
 
+
+watch(
+    () => slideData.value,
+    async (newVal, oldVal) => {
+      if (newVal.id !== oldVal?.id) {
+        await nextTick();
+
+        await getDetailRunningInfo(newVal);
+        await getOrderClass();
+        await initData(newVal);
+
+        if (!projectBm.value) {
+          await rbcTotalAndReCount();
+        }
+      }
+    },
+    {immediate: true, deep: true}
+);
+
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   const crcOptionApi = await crcOptionGet();
@@ -335,16 +354,18 @@ const handleClickOutside = (event: MouseEvent) => {
 };
 
 onMounted(async () => {
-  await getDetailRunningInfo();
+  await nextTick();
+  // await getDetailRunningInfo();
   isLoading.value = false;
   await getOrderClass();
   await initData();
 
-  if (!projectBm.value) {
-    await rbcTotalAndReCount();
-    await getRbcDegreeData();
-    await reDegree();
-  }
+  // if (!projectBm.value) {
+  //   await rbcTotalAndReCount();
+  //   await getRbcDegreeData();
+  //   await reDegree();
+  // }
+  // 여기 임시로 막아둠 풀고 재수정 요청 바람 After 클릭 후 사용자가 변경 된 상태가 그대로 유지되어야함 현재 코드는 그렇지 않음
   document.addEventListener('click', handleClickOutside);
 
 });
@@ -352,9 +373,9 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
-const getDetailRunningInfo = async () => {
+const getDetailRunningInfo = async (data) => {
   try {
-    selectItems.value = slideData.value;
+    selectItems.value = data;
 
     if (
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] ||
@@ -375,7 +396,6 @@ const getDetailRunningInfo = async () => {
       wbcInfoAfter.value = selectItems.value?.wbcInfoAfter || [];
     }
 
-    rbcInfo.value = slideData.value;
 
   } catch (e) {
     console.error(e);
@@ -587,15 +607,7 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
   return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
 };
 
-const refreshClass = async (data: any) => {
-  await getDetailRunningInfo();
-  await getOrderClass();
-  await initData();
 
-  if (!projectBm.value) {
-    await rbcTotalAndReCount();
-  }
-}
 
 const printClose = () => {
   printOnOff.value = false;
@@ -607,11 +619,6 @@ const printStart = (event: MouseEvent) => {
   event.stopPropagation(); // 이벤트 전파를 막아 handleClickOutside 실행 방지
   printOnOff.value = true;
 };
-
-const pageGo = (path: string) => {
-  router.push(path)
-}
-
 const getOrderClass = async () => {
   try {
     const result = await getOrderClassApi();
@@ -651,7 +658,7 @@ async function initData(data?: any) {
 
   await percentChangeBySiteCd();
 
-  rbcInfo.value = selectItems.value?.rbcInfoAfter && selectItems.value?.rbcInfoAfter.length !== 0 ? selectItems.value?.rbcInfoAfter : selectItems.value?.rbcInfo.rbcClass;
+  rbcInfo.value = data;
 }
 
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {

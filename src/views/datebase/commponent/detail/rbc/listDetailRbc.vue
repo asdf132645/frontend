@@ -16,7 +16,7 @@
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox pos-relative' + (cbcLayer ? ' cbcLayer' : '')">
       <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
-                @classInfoArrUpdateRe="classInfoArrUpdateRe" :selectItems="selectItems" type='listTable'
+                @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
                 :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
                 :notCanvasClickVal="notCanvasClickVal"
       />
@@ -97,7 +97,7 @@ const classInfoArrUpdateRe = async (data: any) => {
     if (newValue) {
       // newValue가 존재하면 해당 데이터를 처리
       store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
-
+      console.log('listDetailRbc', newValue?.getRunningInfoByIdGQL)
       const result = newValue?.getRunningInfoByIdGQL;
 
       store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType });

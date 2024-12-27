@@ -18,10 +18,10 @@ import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftIm
 import TilingViewer from './tilingViewer.vue';
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import { useStore } from "vuex";
-import { detailRunningApi } from "@/common/api/service/runningInfo/runningInfoApi";
 
-const store = useStore()
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
+const store = useStore();
+const slideData = computed(() => store.state.slideDataModule);
+
 const selectItems = ref<any>(null);
 const isLoading = ref(false);
 
@@ -40,12 +40,11 @@ const getDetailRunningInfo = async () => {
 
   try {
     isLoading.value = true;
-    const result = await detailRunningApi(String(selectedSampleId.value));
-    selectItems.value = result.data;
+    selectItems.value = slideData.value;
     isLoading.value = false;
   } catch (e) {
     console.error(e);
-    selectItems.value = null;
+    selectItems.value = [];
     isLoading.value = false;
   }
 }

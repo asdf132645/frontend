@@ -1146,6 +1146,7 @@ const memoChange = async () => {
     rbcMemo: updatedRuningInfo.rbcMemo,
   });
 
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 
 
   if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {

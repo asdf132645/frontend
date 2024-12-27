@@ -18,7 +18,8 @@
             <button class="memoModalBtn" @click="memoChange">OK</button>
             <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
           </div>
-          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
+          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.MEMO"/>
         </li>
         <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
           <font-awesome-icon
@@ -26,7 +27,8 @@
               @mouseenter="tooltipVisibleFunc('confirm', true)"
               @mouseleave="tooltipVisibleFunc('confirm', false)"
           />
-          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
+          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CONFIRM"/>
         </li>
       </ul>
     </div>
@@ -35,11 +37,15 @@
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Category</li>
-            <li @click="toggleAll(allCheckType[category.categoryId], category.categoryId)" class="flex-column cursorPointer" style="padding-top: 6px">
+            <li @click="toggleAll(allCheckType[category?.categoryId], category?.categoryId)"
+                class="flex-column cursorPointer" style="padding-top: 6px">
               <span>{{ getCategoryName(category) }}</span>
               <span style="margin-left: 12px; margin-top: 2px;">
-                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']" color="#29C7CA" v-show="type !== 'report' && !allCheckType[category.categoryId] && category.categoryId !== '05'" />
-                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye-slash']" v-show="type !== 'report' && allCheckType[category.categoryId] && category.categoryId !== '05'" />
+                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']"
+                                   color="#29C7CA"
+                                   v-show="type !== 'report' && !allCheckType[category?.categoryId] && category?.categoryId !== '05'"/>
+                <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye-slash']"
+                                   v-show="type !== 'report' && allCheckType[category?.categoryId] && category?.categoryId !== '05'"/>
               </span>
             </li>
           </ul>
@@ -53,26 +59,33 @@
 
             </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
-                      :key="`${category.categoryId}-${classInfo.classId}`">
-              <li @click="handleClick(category.categoryId, classInfo.classId, classInfo.classNm, category.categoryNm)" class="flex-align-center cursorPointer">
+                      :key="`${category?.categoryId}-${classInfo?.classId}`">
+              <li @click="handleClick(category?.categoryId, classInfo?.classId, classInfo?.classNm, category?.categoryNm)"
+                  class="flex-align-center cursorPointer">
                 <span>{{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
                 <div
-                    v-if="showCheckbox(category.categoryId, classInfo.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
-                  <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
-                  <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font" v-show="!except && !checkedClassIndices.includes(`${category.categoryId}-${classInfo.classId}`)" />
+                    v-if="showCheckbox(category?.categoryId, classInfo?.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
+                  <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA"
+                                     v-show="!except && checkedClassIndices.includes(`${category?.categoryId}-${classInfo?.classId}`)"/>
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font"
+                                     v-show="!except && !checkedClassIndices.includes(`${category?.categoryId}-${classInfo?.classId}`)"/>
                 </div>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+              <li v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '03'">
                 <span>Others</span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'"
-                  @click="handleClick('05', '03', classInfo.classNm, category.categoryNm)"
+              <li v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '05'"
+                  @click="handleClick('05', '03', classInfo?.classNm, category?.categoryNm)"
                   class="flex-align-center"
               >
                 <span>Malaria</span>
                 <div v-if="type !== 'report'">
-                  <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes('05-03')" @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')" />
-                  <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font" v-show="!except && !checkedClassIndices.includes('05-03')" @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')" />
+                  <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA"
+                                     v-show="!except && checkedClassIndices.includes('05-03')"
+                                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')"/>
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font"
+                                     v-show="!except && !checkedClassIndices.includes('05-03')"
+                                     @change="updateClassInfoArr('Malaria', $event.target.checked, '05', '03')"/>
                 </div>
               </li>
             </template>
@@ -89,8 +102,8 @@
             </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category.categoryId}-${classInfo.classId}`">
-              <li v-if="(classInfo.classId !== '01' || category.categoryId === '05') || (rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05')">
-                <span v-if="classInfo.classId !== '01' || category.categoryId === '05'" class="rbcSapn">
+              <li v-if="(classInfo?.classId !== '01' || category?.categoryId === '05') || (rbcInfoAfterVal[innerIndex]?.classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex]?.categoryId === '05')">
+                <span v-if="classInfo?.classId !== '01' || category?.categoryId === '05'" class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
@@ -98,21 +111,21 @@
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
                       }"
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], degreeIndex - 1, false)"
+                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], degreeIndex - 1, false)"
                   />
                 </span>
                 <span
-                    v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex].categoryId === '05'"
+                    v-if="rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.classId !== '01' || rbcInfoAfterVal[innerIndex]?.categoryId === '05'"
                     class="rbcSapnDown"
                 >
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-down']"
                       v-for="degreeIndex in 4" :key="degreeIndex + '-down'"
                       :class="{
-                      'degreeActive': degreeIndex < Number(rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree) + 2 || 0,
-                      'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree) + 1 || 0
+                      'degreeActive': degreeIndex < Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 2 || 0,
+                      'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 1 || 0
                     }"
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], degreeIndex - 1, false)"
+                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], degreeIndex - 1, false)"
                   />
                 </span>
 
@@ -129,24 +142,28 @@
                       class="degreeActive"
                   />
                 </span>
-                <span v-if="rbcInfoAfterVal[innerIndex].classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"
+                <span v-if="rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"
                 >
                   <font-awesome-icon
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex],'0', true)"
+                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex],'0', true)"
                       :icon="['fac', 'half-circle-down']"
                   />
                 </span>
                 <span v-else class="rbcSapnDown">
                   <font-awesome-icon
-                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex].classInfo[classIndex], '1', true) "
+                      @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], '1', true) "
                       :icon="['fac', 'half-circle-down']"
                       class="degreeActive"
                   />
                 </span>
               </li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">-</li>
-              <li v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">-</li>
-              <div v-if="classIndex === category.classInfo.length - 1">
+              <li v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '03'">
+                -
+              </li>
+              <li v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
+                -
+              </li>
+              <div v-if="classIndex === category?.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
                      v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
                   Total
@@ -161,18 +178,22 @@
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">{{ Number(classInfo?.originalDegree) || 0 }}</li>
               <li v-else>-</li>
-              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'">
+              <li class="defaultText"
+                  v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '03'">
                 {{ Number(shapeOthersCount) || 0 }}
               </li>
-              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '05'">
+              <li class="defaultText"
+                  v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '05'">
                 {{ Number(malariaCount) || 0 }}
               </li>
-              <div v-if="classIndex === category.classInfo.length - 1">
-                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline" v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
+              <div v-if="classIndex === category?.classInfo.length - 1">
+                <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
+                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
                   {{ Number(sizeChromiaTotal) || 0 }}
                 </div>
               </div>
-              <div class="underline" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+              <div class="underline"
+                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
                 {{ Number(shapeBodyTotal) || 0 }}
               </div>
             </template>
@@ -185,15 +206,17 @@
                 {{ Number(classInfo?.percent) || 0 }}
               </li>
               <li v-else>-</li>
-              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '03'">
+              <li class="defaultText"
+                  v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '03'">
                 {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
               </li>
-              <li class="defaultText" v-if="classIndex === category.classInfo.length - 1 && rbcInfoAfterVal[innerIndex].categoryId === '05'">
+              <li class="defaultText"
+                  v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
                 {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
               </li>
-              <div v-if="classIndex === category.classInfo.length - 1">
+              <div v-if="classIndex === category?.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
-                     v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId"
+                     v-show="rbcInfoAfterVal[innerIndex]?.categoryId === categoryId"
                 >
                   100%
                 </div>
@@ -215,8 +238,12 @@
           <li @click="handleClick('04', '01', 'Platelet', 'Others')" style="padding-top: 0;" class="flex-align-center">
             <span>Platelet</span>
             <div v-if="type !== 'report'">
-              <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA" v-show="!except && checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
-              <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font" v-show="!except && !checkedClassIndices.includes('04-01')" @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')" />
+              <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA"
+                                 v-show="!except && checkedClassIndices.includes('04-01')"
+                                 @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')"/>
+              <font-awesome-icon :icon="['fas', 'eye-slash']" class="rbc-check-eye-font"
+                                 v-show="!except && !checkedClassIndices.includes('04-01')"
+                                 @change="updateClassInfoArr('Platelet', $event.target.checked, '04', '01')"/>
             </div>
           </li>
         </ul>
@@ -228,15 +255,15 @@
       </div>
     </div>
     <!--  RBC 감도 조절 기능  -->
-<!--        <div class="sensitivityDiv" v-if="type !== 'report'">-->
-<!--          <select v-model="selectedClass" @change="classChange">-->
-<!--            <option v-for="(item) in rightClickItem" :key="item.classNm">-->
-<!--              {{ item.classNm }}-->
-<!--            </option>-->
-<!--          </select>-->
-<!--          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
-<!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
-<!--        </div>-->
+    <!--        <div class="sensitivityDiv" v-if="type !== 'report'">-->
+    <!--          <select v-model="selectedClass" @change="classChange">-->
+    <!--            <option v-for="(item) in rightClickItem" :key="item.classNm">-->
+    <!--              {{ item.classNm }}-->
+    <!--            </option>-->
+    <!--          </select>-->
+    <!--          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
+    <!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
+    <!--        </div>-->
 
     <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
       <textarea class="staticTextArea" v-model="memo"></textarea>
@@ -263,23 +290,19 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, getCurrentInstance, nextTick} from 'vue';
-import { useStore } from "vuex";
-import { useRouter} from "vue-router";
+import {ref, defineProps, watch, onMounted, computed, defineEmits, nextTick} from 'vue';
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
-import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
-
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
-
 import moment from "moment/moment";
-import SliderBar from "@/components/commonUi/SliderBar.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
-import { RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS } from "@/common/defines/constants/dataBase";
+import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
 import {
   VISIBLE_CHROMIA_OPTIONS, VISIBLE_INCLUSION_BODY_OPTIONS, VISIBLE_OTHERS_OPTIONS,
   VISIBLE_RBC_OPTIONS,
@@ -287,13 +310,14 @@ import {
   VISIBLE_SIZE_OPTIONS, VisibleRbcType
 } from "@/common/defines/constants/rbc";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import { TooltipRbcClassType } from "@/common/type/tooltipType";
+import {TooltipRbcClassType} from "@/common/type/tooltipType";
 import {DIR_NAME} from "@/common/defines/constants/settings";
+import {cbcUpdateMutation, gqlGenericUpdate, memoUpdateMutation, rbcUpdateMutation} from "@/gql/mutation/slideData";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<string[]>([]);
-const props = defineProps(['rbcInfo', 'selectItems', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal']);
+const props = defineProps(['rbcInfo', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
@@ -330,7 +354,6 @@ const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
 const slideData = computed(() => store.state.slideDataModule);
 
@@ -353,19 +376,24 @@ const tooltipVisible = ref({
 })
 
 onMounted(async () => {
-  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
-  const { path } = router.currentRoute.value;
-  memo.value = props.selectItems?.rbcMemo;
-  pltCount.value = props.selectItems?.rbcInfo.pltCount;
-  malariaCount.value = props.selectItems?.rbcInfo.malariaCount;
-  memo.value = props.selectItems?.rbcMemo;
-  maxRbcCount.value = props.selectItems?.rbcInfo.maxRbcCount;
-  submitState.value = props.selectItems?.submitState;
+  await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
+  const {path} = router.currentRoute.value;
+  memo.value = slideData.value?.rbcMemo;
+  pltCount.value = slideData.value?.rbcInfo.pltCount;
+  malariaCount.value = slideData.value?.rbcInfo.malariaCount;
+  memo.value = slideData.value?.rbcMemo;
+  maxRbcCount.value = slideData.value?.rbcInfo.maxRbcCount;
+  submitState.value = slideData.value?.submitState;
   except.value = path === '/report';
   rightClickItem.value = [];
   rightClickItemSet();
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   await countReAdd();
+  // await afterChange(slideData.value);
+  await afterChange(slideData.value);
+
+  // rbcInfoAfterVal.value = slideData.value.rbcInfoAfter;
+
 });
 
 
@@ -381,33 +409,15 @@ watch(() => props.allCheckClear, (newItem) => {
 watch(() => rbcImagePageNumber.value, async (newRbcPageNumber) => {
   await rbcTotalAndReCount(newRbcPageNumber);
   await countReAdd();
-  await updateRbcInfo();
+  // await updateRbcInfo();
 })
-
-watch(() => props.selectItems, async (newItem) => {
-  pltCount.value = props.selectItems?.pltCount;
-  malariaCount.value = props.selectItems?.malariaCount;
-  memo.value = props.selectItems?.rbcMemo;
-  submitState.value = props.selectItems?.submitState;
-  await afterChange(newItem);
-  await rbcTotalAndReCount(rbcImagePageNumber.value);
-  rightClickItemSet();
-  allCheckType.value = {
-    '01': true,
-    '02': true,
-    '03': true,
-    '04': true,
-    '05': true,
-  }
-  await updateRbcInfo();
-});
 
 const rightClickItemSet = () => {
   rightClickItem.value = [];
-  if (!props.selectItems?.rbcInfo) {
+  if (!slideData.value?.rbcInfo) {
     return;
   }
-  const processItems = props.selectItems?.rbcInfo.rbcClass || props.selectItems?.rbcInfo;
+  const processItems = slideData.value?.rbcInfo.rbcClass || slideData.value?.rbcInfo;
 
   if (processItems) {
     for (const argument of processItems) {
@@ -426,24 +436,41 @@ const rightClickItemSet = () => {
 }
 
 
-watch(() => props.rbcInfo, async (newItem) => {
-  await afterChange(newItem);
-  await rbcTotalAndReCount(rbcImagePageNumber.value);
-  await countReAdd();
-  await getRbcDegreeData();
-  await reDegree(rbcInfoBeforeVal.value);
-  if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
-    await reDegree(rbcInfoAfterVal.value);
-  }
-  await updateRbcInfo();
-});
+
+
+watch(
+    () => slideData.value,
+    async (newVal, oldVal) => {
+      if (newVal.id !== oldVal?.id) {
+        await nextTick();
+
+        await rbcTotalAndReCount(rbcImagePageNumber.value);
+        await countReAdd();
+        await getRbcDegreeData();
+        // await reDegree(rbcInfoBeforeVal.value);
+        pltCount.value = slideData.value?.pltCount;
+        malariaCount.value = slideData.value?.malariaCount;
+        memo.value = slideData.value?.rbcMemo;
+        submitState.value = slideData.value?.submitState;
+        rightClickItemSet();
+        allCheckType.value = {
+          '01': true,
+          '02': true,
+          '03': true,
+          '04': true,
+          '05': true,
+        }
+      }
+    },
+    {immediate: true, deep: true}
+);
+
 
 watch(() => resetRbcArr, async (newItem) => {
   if (newItem) {
     await store.dispatch('commonModule/setCommonInfo', {resetRbcArr: false});
     await rbcTotalAndReCount(rbcImagePageNumber.value);
     await countReAdd();
-    await updateRbcInfo();
   }
 }, {deep: true})
 
@@ -469,17 +496,15 @@ watch(() => rbcReData, async (newItem) => {
       await rbcTotalAndReCount(rbcImagePageNumber.value);
       await countReAdd();
       await getRbcDegreeData();
-      await reDegree(rbcInfoBeforeVal.value);
-      if(areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value)){
-        await reDegree(rbcInfoAfterVal.value);
-      }
-      await updateRbcInfo();
     }, 1000);
   }
 
 }, {deep: true});
 
-const showCheckbox = (categoryId: string, classId: string, availableClassIds: {categoryId: string; classId: string }[]) => availableClassIds.find((item) => item.categoryId === categoryId && item.classId === classId);
+const showCheckbox = (categoryId: string, classId: string, availableClassIds: {
+  categoryId: string;
+  classId: string
+}[]) => availableClassIds.find((item) => item.categoryId === categoryId && item.classId === classId);
 
 const handleClick = (categoryId: string, classId: string, classNm: string, categoryNm: string) => {
   if (props.notCanvasClickVal) return;
@@ -502,7 +527,7 @@ const toggleCheckbox = (categoryId: string, classId: string, classNm: string) =>
     if (categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) checkedClassIndices.value.push(checkValue);
     else {
       const checkedCategoryIdArr = checkedClassIndices.value.map((item) => item.split('-')[0]);
-      
+
       // Shape 과 InclusionBody는 같은 Total이므로 조건 추가
       const isShapeOrInclusionBodyClicked = checkedCategoryIdArr.some((item) => item === '03' || item === '05') && (categoryId === '03' || categoryId === '05');
 
@@ -511,8 +536,7 @@ const toggleCheckbox = (categoryId: string, classId: string, classNm: string) =>
         if (othersCategoryItems.length > 0) {
           checkedClassIndices.value = [...checkedClassIndices.value, ...othersCategoryItems];
         }
-      }
-      else checkedClassIndices.value.push(checkValue);
+      } else checkedClassIndices.value.push(checkValue);
     }
   }
 
@@ -541,10 +565,10 @@ const toggleCheckbox = (categoryId: string, classId: string, classNm: string) =>
 }
 
 const rbcTotalAndReCount = async (pageNumber: any) => {
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
-  const url_new = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems.slotId}_new_${rbcImagePageNumber.value}.json`;
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const url_new = `${path}/${slideData.value.slotId}/${DIR_NAME.RBC_CLASS}/${slideData.value.slotId}_new_${rbcImagePageNumber.value}.json`;
   const response_new = await readJsonFile({fullPath: url_new});
-  const url_Old = `${path}/${props.selectItems.slotId}/${DIR_NAME.RBC_CLASS}/${props.selectItems.slotId}.json`;
+  const url_Old = `${path}/${slideData.value.slotId}/${DIR_NAME.RBC_CLASS}/${slideData.value.slotId}.json`;
   rbcResponseOldArr.value = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
@@ -577,7 +601,6 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
     else rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-    // console.error('rbcInfoPathAfter.value is not iterable');
     return;
   }
   let total = 0;
@@ -692,7 +715,7 @@ const sensRbcReJsonSend = async () => {
     reqDttm: tcpReq().embedStatus.settings.reqDttm,
     reqUserId: userModuleDataGet.value.userId || '',
     className: selectedClass.value.replace(/\s/g, ''),
-    slotId: props.selectItems?.slotId,
+    slotId: slideData.value?.slotId,
     anyWay: 'true',
   };
   EventBus.publish('childEmitSocketData', payload);
@@ -740,30 +763,21 @@ const afterChange = async (newItem?: any) => {
 
   isBefore.value = false;
   emits('isBeforeUpdate', false);
-  let rbcData: any = {};
-  if (newItem) {
-    rbcData = newItem;
-  } else {
-    rbcData = props.selectItems;
-  }
-
+  const rbcData: any = slideData.value;
 
   rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
-  rbcInfoAfterVal.value = props.selectItems?.rbcInfoAfter ? props.selectItems.rbcInfoAfter : rbcInfoBeforeVal.value;
-
+  rbcInfoAfterVal.value = slideData.value?.rbcInfoAfter;
   // degree가 Before 값과 After 값이 다를 경우
   // 감도 조절 기능 추가 시 수정 필요
-  rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
+  // rbcInfoAfterVal.value = areDegreesIdentical(rbcInfoBeforeVal.value, rbcInfoAfterVal.value) ? rbcInfoBeforeVal.value : rbcInfoAfterVal.value;
 
 
   // Report 화면에서 RBC Classification 동기화 문제로 추가
-  if (props.type === 'report') {
-    rbcInfoAfterVal.value = slideData.value.rbcInfoAfter;
-
-    // 아래 처럼 분리해서 사용 x 수정 부탁 rbcInfoAfterData 리포트에서 사용 하는 부분 수정 하세요 잘못된 코드임 무조건 slideData.value 에서 파생되어서 사용하게 만드세요
-    await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: slideData.value.rbcInfoAfter});
-
-  }
+  // if (props.type === 'report') {
+  //   rbcInfoAfterVal.value = slideData.value.rbcInfoAfter;
+  //   // 아래 처럼 분리해서 사용 x 수정 부탁 rbcInfoAfterData 리포트에서 사용 하는 부분 수정 하세요 잘못된 코드임 무조건 slideData.value 에서 파생되어서 사용하게 만드세요
+  //   await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: slideData.value.rbcInfoAfter});
+  // }
   await classChange();
 }
 
@@ -819,8 +833,6 @@ const countReAdd = async () => {
     }
   }
 
-  console.log('totalPLT', totalPLT);
-  console.log('maxRbcCount.value', maxRbcCount.value);
   pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
   malariaCount.value = malariaTotal;
 };
@@ -849,17 +861,15 @@ const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   };
 
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await resRunningItem(updatedRuningInfo, false);
+
+  // rbc info 업데이트
+  await gqlGenericUpdate(rbcUpdateMutation, {
+    id: updatedRuningInfo.id,
+    rbcInfoAfter: updatedRuningInfo.rbcInfoAfter,
+  });
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+
   return;
-}
-
-const updateRbcInfo = async () => {
-  const updatedItem = {
-    rbcInfoAfter: rbcInfoBeforeVal.value,
-  };
-
-  const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await resRunningItem(updatedRuningInfo, false);
 }
 
 const toggleAll = (allCheck: boolean, categoryId: string) => {
@@ -874,7 +884,7 @@ const toggleAll = (allCheck: boolean, categoryId: string) => {
       ? [...baseClassIds, ...VISIBLE_OTHERS_OPTIONS]  // Others는 total 값에서 제외
       : baseClassIds;
 
-  const allCheckboxes = rbcInfoBeforeVal.value.flatMap((item) => {
+  const allCheckboxes = rbcInfoBeforeVal.value.flatMap((item: any) => {
     const categoryCheckboxes = item.classInfo
         .filter((classInfo: any) => showCheckbox(item.categoryId, classInfo.classId, allClassIds))
         .map((classInfo: any) => ({
@@ -884,13 +894,17 @@ const toggleAll = (allCheck: boolean, categoryId: string) => {
         }));
 
     if (categoryId === item.categoryId && item.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
-      categoryCheckboxes.push({ classNm: 'Malaria', categoryId: '05', classId: '03' });
+      categoryCheckboxes.push({classNm: 'Malaria', categoryId: '05', classId: '03'});
     }
 
     return categoryCheckboxes;
   });
 
-  if (categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) allCheckboxes.push({ classNm: 'Platelet', categoryId: '04', classId: '01'});
+  if (categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) allCheckboxes.push({
+    classNm: 'Platelet',
+    categoryId: '04',
+    classId: '01'
+  });
 
   const categoryClassIdStrArr = allClassIds.map((item) => `${item.categoryId}-${item.classId}`);
   if (allCheck) {
@@ -926,7 +940,7 @@ const toggleAll = (allCheck: boolean, categoryId: string) => {
 const updateClassInfoArr = (classNm: string, isChecked: boolean, categoryId: string, classId: string) => {
   if (props.notCanvasClickVal) return;
 
-  const classItem = { classNm, categoryId, classId };
+  const classItem = {classNm, categoryId, classId};
   if (isChecked) {
     classInfoArr.value.push(classItem)
     classInfoArr.value = classInfoArr.value.filter((item) => checkedClassIndices.value.includes(`${item.categoryId}-${item.classId}`));
@@ -977,8 +991,18 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   };
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
   await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: rbcInfoAfter});
-  await resRunningItem(updatedRuningInfo, false, 'degree');
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 
+  const res = await gqlGenericUpdate(rbcUpdateMutation, {
+    id: updatedRuningInfo.id,
+    rbcInfoAfter: updatedRuningInfo.rbcInfoAfter,
+  });
+
+  if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
+    await rbcTotalAndReCount(rbcImagePageNumber.value);
+    await countReAdd();
+    await getRbcDegreeData();
+  }
 
 };
 
@@ -997,38 +1021,16 @@ const memoChange = async () => {
     rbcMemo: enterAppliedRbcMemo,
   };
   const updatedRuningInfo = {...slideData.value, ...updatedItem}
-  await resRunningItem(updatedRuningInfo, true);
-  memoModal.value = false;
-}
-
-const resRunningItem = async (updatedRuningInfo: any, alertShow?: any, degree?: any) => {
-  try {
-    const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
-    const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-    const response: any = await updateRunningApi({
-      userId: Number(userModuleDataGet.value.id),
-      runingInfoDtoItems: [updatedRuningInfo],
-      dayQuery: dayQuery,
-    })
-
-    if (response) {
-      if(degree === 'degree') {
-        await rbcTotalAndReCount(rbcImagePageNumber.value);
-        await countReAdd();
-        await getRbcDegreeData();
-      }
-      if (alertShow) {
-        showSuccessAlert('Success');
-      }
-      const filteredItems = updatedRuningInfo;
-      memo.value = filteredItems.rbcMemo;
-    } else {
-      console.error('백엔드가 디비에 저장 실패함');
-    }
-  } catch (error) {
-    console.error('Error:', error);
+  const res = await gqlGenericUpdate(memoUpdateMutation, {
+    id: updatedRuningInfo.id,
+    wbcMemo: updatedRuningInfo.wbcMemo,
+    rbcMemo: updatedRuningInfo.rbcMemo,
+  });
+  if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
+    memo.value = updatedRuningInfo.rbcMemo;
+    showSuccessAlert('Success');
   }
+  memoModal.value = false;
 }
 
 const showSuccessAlert = (message: string) => {
@@ -1076,7 +1078,12 @@ const onCommit = async () => {
     submitUserId: userModuleDataGet.value.userId,
   };
   const updatedRuningInfo = {...slideData.value, ...updatedItem}
-  await resRunningItem(updatedRuningInfo);
+  await gqlGenericUpdate(cbcUpdateMutation, {
+    id: updatedRuningInfo.id,
+    submitState: updatedRuningInfo.submitState,
+    submitOfDate: updatedRuningInfo.submitOfDate,
+    submitUserId: updatedRuningInfo.submitUserId,
+  });
 
   emits('submitStateChanged', 'Submit');
 }
@@ -1097,7 +1104,7 @@ const reDegree = async (rbcInfoArray: any) => {
   let totalCount = rbcTotalVal.value;
   let sizeTotal = sizeChromiaTotal.value;
   let chromiaTotal = chromiaTotalTwo.value;
-  if(!Array.isArray(rbcInfoBeforeVal.value)){
+  if (!Array.isArray(rbcInfoBeforeVal.value)) {
     return;
   }
   rbcInfoArray.forEach((rbcCategory: any) => {

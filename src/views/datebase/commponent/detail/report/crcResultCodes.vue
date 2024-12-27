@@ -192,7 +192,7 @@ import Button from "@/components/commonUi/Button.vue";
 import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
-import {detailRunningApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
+import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {cbcDataGet, isAdultNormalCBC, isAutoCBCMatching} from "@/common/helpers/lisCbc";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
@@ -245,6 +245,8 @@ const showDropdown = ref(false);
 const lisHotKey = ref('');
 const lisFilePathSetArr = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const slideData = computed(() => store.state.slideDataModule);
+
 const submitState = ref(false);
 const morphologyMapping: any = ref({
   RBC: {},
@@ -275,7 +277,7 @@ onBeforeMount(async () => {
 
   isContent.value = true;
   if (isContent.value) {
-    const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
+    const saveDataGet: any = await saveDataSlotIdGetApi(props?.selectItems?.slotId);
     const crcSettingData = saveDataGet.data.crcArr;
     const codeVal = saveDataGet.data.code || '';
     const remarkListVal = saveDataGet.data.remarkList || [];
@@ -368,8 +370,8 @@ const dataAutoComputeLoad = async () => {
   if (cbcFilePathSetArr && cbcFilePathSetArr !== '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
     const {cbcData, cbcSex, cbcAge} = await cbcDataGet(props?.selectItems?.barcodeNo, cbcCodeList.value);
     autoNomarlCheck.value = await isAdultNormalCBC(cbcData, props?.selectItems?.wbcInfoAfter, props?.selectItems?.rbcInfoAfter, cbcSex, cbcAge);
-    const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
-    const crcSettingData = saveDataGet.data.crcArr;
+    const saveDataGet = await saveDataSlotIdGetApi(props?.selectItems?.slotId);
+    const crcSettingData = saveDataGet?.data?.crcArr;
     if (!crcSettingData) {
       if (autoNomarlCheck.value.length === 0) {
         selectOption('Normal');
@@ -676,14 +678,13 @@ const lisCommonDataWhether = async (lisFunc: any) => {
 
 const commonSucessLis = async () => {
   if (props.selectItems?.id) {
-    const result: any = await detailRunningApi(String(props.selectItems?.id));
     const localTime = moment().local();
     const updatedItem = {
       submitState: 'lisCbc',
       submitOfDate: localTime.format(),
       submitUserId: userModuleDataGet.value.userId,
     };
-    const updatedRuningInfo = {id: result.data.id, ...updatedItem}
+    const updatedRuningInfo = {id: props.selectItems?.id, ...updatedItem}
     await resRunningItem(updatedRuningInfo, true);
     submitState.value = true;
   }
@@ -886,7 +887,7 @@ const changeCode = async (codeVal: string) => {
 
 // tempSave를 클릭 시 로컬 스토리지에 데이터 저장
 const tempSaveLocalStorage = async () => {
-  const saveDataGet = await saveDataSlotIdGetApi(props.selectItems.slotId);
+  const saveDataGet: any = await saveDataSlotIdGetApi(props.selectItems.slotId);
   const data = {
     slotId: props.selectItems.slotId,
     code: code.value,
@@ -896,7 +897,7 @@ const tempSaveLocalStorage = async () => {
     commentList: commentList.value,
     recoList: recoList.value
   }
-  if (saveDataGet.data.length === 0) {
+  if (saveDataGet?.data.length === 0) {
     await saveDataCreateApi(data);
   } else {
     await saveDataPutDataApi(data);
@@ -949,9 +950,8 @@ const checkTextAreaMaxLength = () => {
 }
 
 const updateCbcDataToDatabase = async ({ cbcPatientNo, cbcPatientNm, cbcSex, cbcAge }: RunningInfoCBCType) => {
-  const result: any = await detailRunningApi(String(props.selectItems?.id));
   const updatedItem = { cbcPatientNo, cbcPatientNm, cbcSex, cbcAge };
-  const updatedRuningInfo = { id: result.data.id, ...updatedItem };
+  const updatedRuningInfo = { id: slideData.value.id, ...updatedItem };
   await resRunningItem(updatedRuningInfo, true);
 }
 
