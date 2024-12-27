@@ -452,6 +452,7 @@ watch(
         '04': true,
         '05': true,
       }
+      await afterChange(slideData.value);
       await countReAdd();
     },
     { deep: true}
