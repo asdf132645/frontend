@@ -544,9 +544,6 @@ const rowDbClick = async (item) => {
     return;
   }
 
-
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: item.id});
-  await store.dispatch('commonModule/setCommonInfo', {clonedRbcInfo: item.rbcInfo.rbcClass});
   await getIpAddress(item);
   const { result, loading, error } = useGetRunningInfoByIdQuery(
       { id: Number(item.id) },

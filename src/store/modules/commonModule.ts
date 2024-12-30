@@ -5,47 +5,29 @@ export interface CommonState {
     startEmbedded: boolean;
     eqStatCd: number;
     isRunningState: boolean;
-    totalCount: string;
-    embeddedNumber: string;
     isCompleteAlarm: boolean;
     isErrorAlarm: boolean;
-    bfSelectFiles: any[];
-    slideProceeding: string;
     totalSlideTime: string;
     iaRootPath: string;
     runningSlotId: string;
-    isRequestInProgress: boolean;
-    startInfoBoolen: boolean;
-    runningInfoBoolen: boolean;
     runningInfoStop: boolean;
     reqArr: any[];
-    resFlag: boolean;
     firstLoading: boolean;
     slotIndex: number;
     viewerCheck: string;
-    runningArr: any;
-    classArr: any[];
-    rbcArr: any[];
-    processInfo: any[];
-    orderList: any[];
     loginSetData: string;
     siteCd: string;
     deviceSerialNm: string;
-    clonedWbcInfo: any[];
-    clonedRbcInfo: any[];
     moveImgIsBool: boolean;
     classInfoSort: any[];
-    chatRunningData: any[];
     cbcLayer: boolean;
     inhaTestCode: string;
     rbcReData: boolean;
     rbcReDataClass: boolean;
-    rbcInfoAfterData: any[];
     resetRbcArr: boolean;
     selectedSampleId: string;
     classInfoArr: any[];
     rbcReDataCheck: boolean;
-    appAlertOpen: boolean;
     dataBasePageReset: boolean;
     resetAnalyzing: boolean;
     testType: string;
@@ -60,7 +42,6 @@ export interface CommonState {
     initValData: boolean;
     enteringRouterPath: string;
     settingType: string;
-    isDownloadOrUploading: boolean;
     isRewindingBelt: boolean;
     rbcImagePageNumber: number;
     showLISUploadAfterCheckingAll: boolean;
@@ -74,49 +55,31 @@ interface CommonModule {
         setStartEmbedded: (state: CommonState, value: boolean) => void;
         setEqStatCd: (state: CommonState, value: number) => void;
         setIsRunningState: (state: CommonState, value: boolean) => void;
-        setTotalCount: (state: CommonState, value: string) => void;
-        setEmbeddedNumber: (state: CommonState, value: string) => void;
         setIsCompleteAlarm: (state: CommonState, value: boolean) => void;
         setIsErrorAlarm: (state: CommonState, value: boolean) => void;
-        setBfSelectFiles: (state: CommonState, value: []) => void;
-        setSlideProceeding: (state: CommonState, value: string) => void;
         setTotalSlideTime: (state: CommonState, value: string) => void;
         setIaRootPath: (state: CommonState, value: string) => void;
         setRunningSlotId: (state: CommonState, value: string) => void;
-        setIsRequestInProgress: (state: CommonState, value: boolean) => void;
-        setStartInfoBoolen: (state: CommonState, value: boolean) => void;
-        setRunningInfoBoolen: (state: CommonState, value: boolean) => void;
         setRunningInfoStop: (state: CommonState, value: boolean) => void;
         setReqArr: (state: CommonState, value: string[]) => void;
         shiftReqArr: (state: CommonState) => void;
         setReqArrPaste: (state: CommonState, value: any[]) => void;
-        setResFlag: (state: CommonState, value: boolean) => void;
         setFirstLoading: (state: CommonState, value: boolean) => void;
         setSlotIndex: (state: CommonState, value: number) => void;
         setViewerCheck: (state: CommonState, value: string) => void;
-        setRunningArr: (state: CommonState, value: any) => void;
-        setClassArr: (state: CommonState, value: any[]) => void;
-        setRbcArr: (state: CommonState, value: any[]) => void;
-        setProcessInfo: (state: CommonState, value: any[]) => void;
-        setOrderList: (state: CommonState, value: any[]) => void;
         setLoginSetData: (state: CommonState, value: string) => void;
         setSiteCd: (state: CommonState, value: string) => void;
         setDeviceSerialNm: (state: CommonState, value: string) => void;
-        setClonedWbcInfo: (state: CommonState, value: any[]) => void;
-        setClonedRbcInfo: (state: CommonState, value: any[]) => void;
         setMoveImgIsBool: (state: CommonState, value: boolean) => void;
         setClassInfoSort: (state: CommonState, value: any[]) => void;
-        setChatRunningData: (state: CommonState, value: any[]) => void;
         setCbcLayer: (state: CommonState, value: boolean) => void;
         setInhaTestCode: (state: CommonState, value: string) => void;
         setRbcReData: (state: CommonState, value: boolean) => void;
         setRbcReDataClass: (state: CommonState, value: boolean) => void;
-        setRbcInfoAfterData: (state: CommonState, value: any[]) => void;
         setResetRbcArr: (state: CommonState, value: boolean) => void;
         setSelectedSampleId: (state: CommonState, value: string) => void;
         setClassInfoArr: (state: CommonState, value: any[]) => void;
         setRbcReDataCheck: (state: CommonState, value: boolean) => void;
-        setAppAlertOpen: (state: CommonState, value: boolean) => void;
         setDataBasePageReset: (state: CommonState, value: boolean) => void;
         setResetAnalyzing: (state: CommonState, value: boolean) => void;
         setTestType: (state: CommonState, value: string) => void;
@@ -131,7 +94,6 @@ interface CommonModule {
         setInitValData: (state: CommonState, value: boolean) => void;
         setEnteringRouterPath: (state: CommonState, value: string) => void;
         setSettingType: (state: CommonState, value: string) => void;
-        setIsDownloadOrUploading: (state: CommonState, value: boolean) => void;
         setIsRewindingBelt: (state: CommonState, value: boolean) => void;
         setRbcImagePageNumber: (state: CommonState, value: number) => void;
         setShowLISUploadAfterCheckingAll: (state: CommonState, value: boolean) => void;
@@ -148,47 +110,29 @@ export const commonModule: CommonModule = {
         startEmbedded: false,
         eqStatCd: 0,
         isRunningState: false,
-        totalCount: '',
-        embeddedNumber: '',
         isCompleteAlarm: false,
         isErrorAlarm: false,
-        bfSelectFiles: [],
-        slideProceeding: '',
         totalSlideTime: '00:00:00',
         iaRootPath: '',
         runningSlotId: '',
-        isRequestInProgress: false,
-        startInfoBoolen: false,
-        runningInfoBoolen: false,
         runningInfoStop: false,
         reqArr: [],
-        resFlag: true,
         firstLoading: false,
         slotIndex: 0,
         viewerCheck: '',
-        runningArr: [],
-        classArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-        rbcArr: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-        processInfo: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-        orderList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
         loginSetData: '',
         siteCd: '',
         deviceSerialNm: '',
-        clonedWbcInfo: [],
-        clonedRbcInfo: [],
         moveImgIsBool: false,
         classInfoSort: [],
-        chatRunningData: [],
         cbcLayer: false,
         inhaTestCode: '',
         rbcReData: false,
         rbcReDataClass: false,
-        rbcInfoAfterData: [],
         resetRbcArr: false,
         selectedSampleId: '',
         classInfoArr:[],
         rbcReDataCheck: false,
-        appAlertOpen: false,
         dataBasePageReset: false,
         resetAnalyzing: false,
         testType: '',
@@ -203,7 +147,6 @@ export const commonModule: CommonModule = {
         initValData: false,
         enteringRouterPath: '',
         settingType: '',
-        isDownloadOrUploading: false,
         isRewindingBelt: false,
         rbcImagePageNumber: 0,
         showLISUploadAfterCheckingAll: false,
@@ -219,23 +162,11 @@ export const commonModule: CommonModule = {
         setIsRunningState(state: CommonState, value: boolean): void {
             state.isRunningState = value;
         },
-        setTotalCount(state: CommonState, value: string): void {
-            state.totalCount = value;
-        },
-        setEmbeddedNumber(state: CommonState, value: string): void {
-            state.embeddedNumber = value;
-        },
         setIsCompleteAlarm(state: CommonState, value: boolean): void {
             state.isCompleteAlarm = value;
         },
         setIsErrorAlarm(state: CommonState, value: boolean): void {
             state.isErrorAlarm = value;
-        },
-        setBfSelectFiles(state: CommonState, value: any[]): void {
-            state.bfSelectFiles = value;
-        },
-        setSlideProceeding(state: CommonState, value: string): void {
-            state.slideProceeding = value;
         },
         setTotalSlideTime(state: CommonState, value: string): void {
             state.totalSlideTime = value;
@@ -245,15 +176,6 @@ export const commonModule: CommonModule = {
         },
         setRunningSlotId(state: CommonState, value: string): void {
             state.runningSlotId = value;
-        },
-        setIsRequestInProgress(state: CommonState, value: boolean): void {
-            state.isRequestInProgress = value;
-        },
-        setStartInfoBoolen(state: CommonState, value: boolean): void {
-            state.startInfoBoolen = value;
-        },
-        setRunningInfoBoolen(state: CommonState, value: boolean): void {
-            state.runningInfoBoolen = value;
         },
         setRunningInfoStop(state: CommonState, value: boolean): void {
             state.runningInfoStop = value;
@@ -270,9 +192,6 @@ export const commonModule: CommonModule = {
         setReqArrPaste(state: CommonState, value: any[]): void {
             state.reqArr = value;
         },
-        setResFlag(state: CommonState, value: boolean): void {
-            state.resFlag = value;
-        },
         setFirstLoading(state: CommonState, value: boolean): void {
             state.firstLoading = value;
         },
@@ -281,21 +200,6 @@ export const commonModule: CommonModule = {
         },
         setViewerCheck(state: CommonState, value: string): void {
             state.viewerCheck = value;
-        },
-        setRunningArr(state: CommonState, value: any[]): void {
-            state.runningArr = value;
-        },
-        setClassArr(state: CommonState, value: any[]): void {
-            state.classArr = value;
-        },
-        setRbcArr(state: CommonState, value: any[]): void {
-            state.rbcArr = value;
-        },
-        setProcessInfo(state: CommonState, value: any[]): void {
-            state.processInfo = value;
-        },
-        setOrderList(state: CommonState, value: any[]): void {
-            state.orderList = value;
         },
         setLoginSetData(state: CommonState, value: string): void {
             state.loginSetData = value;
@@ -306,20 +210,11 @@ export const commonModule: CommonModule = {
         setSiteCd(state: CommonState, value: string): void {
             state.siteCd = value;
         },
-        setClonedWbcInfo(state: CommonState, value: any[]): void {
-            state.clonedWbcInfo = value;
-        },
-        setClonedRbcInfo(state: CommonState, value: any[]): void {
-            state.clonedRbcInfo = value;
-        },
         setMoveImgIsBool(state: CommonState, value: boolean): void {
             state.moveImgIsBool = value;
         },
         setClassInfoSort(state: CommonState, value: any[]): void {
             state.classInfoSort = value;
-        },
-        setChatRunningData(state: CommonState, value: any[]): void {
-            state.chatRunningData = value;
         },
         setSelectedSampleId(state: CommonState, value: string): void {
             state.selectedSampleId = value;
@@ -339,18 +234,11 @@ export const commonModule: CommonModule = {
         setResetRbcArr(state: CommonState, value: boolean): void {
             state.resetRbcArr = value;
         },
-        setRbcInfoAfterData(state: CommonState, value: any[]): void {
-            state.rbcInfoAfterData = value;
-        },
-        // classInfoArr
         setClassInfoArr(state: CommonState, value: any[]): void {
             state.classInfoArr = value;
         },
         setRbcReDataCheck(state: CommonState, value: boolean): void {
             state.rbcReDataCheck = value;
-        },
-        setAppAlertOpen(state: CommonState, value: boolean): void {
-            state.appAlertOpen = value;
         },
         setDataBasePageReset(state: CommonState, value: boolean): void {
             state.dataBasePageReset = value;
@@ -394,9 +282,6 @@ export const commonModule: CommonModule = {
         setSettingType(state: CommonState, value: string): void {
             state.settingType = value;
         },
-        setIsDownloadOrUploading(state: CommonState, value: boolean): void {
-            state.isDownloadOrUploading = value;
-        },
         setIsRewindingBelt(state: CommonState, value: boolean): void {
             state.isRewindingBelt = value;
         },
@@ -423,24 +308,11 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('isRunningState')) {
                 commit('setIsRunningState', payload.isRunningState);
             }
-
-            if (payload.hasOwnProperty('totalCount')) {
-                commit('setTotalCount', payload.totalCount);
-            }
-            if (payload.hasOwnProperty('embeddedNumber')) {
-                commit('setEmbeddedNumber', payload.embeddedNumber);
-            }
             if (payload.hasOwnProperty('isCompleteAlarm')) {
                 commit('setIsCompleteAlarm', payload.isCompleteAlarm);
             }
             if (payload.hasOwnProperty('isErrorAlarm')) {
                 commit('setIsErrorAlarm', payload.isErrorAlarm);
-            }
-            if (payload.hasOwnProperty('bfSelectFiles')) {
-                commit('setBfSelectFiles', payload.bfSelectFiles);
-            }
-            if (payload.hasOwnProperty('slideProceeding')) {
-                commit('setSlideProceeding', payload.slideProceeding);
             }
             if (payload.hasOwnProperty('totalSlideTime')) {
                 commit('setTotalSlideTime', payload.totalSlideTime);
@@ -450,15 +322,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('runningSlotId')) {
                 commit('setRunningSlotId', payload.runningSlotId);
-            }
-            if (payload.hasOwnProperty('isRequestInProgress')) {
-                commit('setIsRequestInProgress', payload.isRequestInProgress);
-            }
-            if (payload.hasOwnProperty('startInfoBoolen')) {
-                commit('setStartInfoBoolen', payload.startInfoBoolen);
-            }
-            if (payload.hasOwnProperty('runningInfoBoolen')) {
-                commit('setRunningInfoBoolen', payload.runningInfoBoolen);
             }
             if (payload.hasOwnProperty('runningInfoStop')) {
                 commit('setRunningInfoStop', payload.runningInfoStop);
@@ -472,9 +335,6 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('reqArrPaste')) {
                 commit('setReqArrPaste', payload.reqArr);
             }
-            if (payload.hasOwnProperty('resFlag')) {
-                commit('setResFlag', payload.resFlag);
-            }
             if (payload.hasOwnProperty('firstLoading')) {
                 commit('setFirstLoading', payload.firstLoading);
             }
@@ -483,21 +343,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('viewerCheck')) {
                 commit('setViewerCheck', payload.viewerCheck);
-            }
-            if (payload.hasOwnProperty('runningArr')) {
-                commit('setRunningArr', payload.runningArr);
-            }
-            if (payload.hasOwnProperty('classArr')) {
-                commit('setClassArr', payload.classArr);
-            }
-            if (payload.hasOwnProperty('rbcArr')) {
-                commit('setRbcArr', payload.rbcArr);
-            }
-            if (payload.hasOwnProperty('processInfo')) {
-                commit('setProcessInfo', payload.processInfo);
-            }
-            if (payload.hasOwnProperty('orderList')) {
-                commit('setOrderList', payload.orderList);
             }
             if (payload.hasOwnProperty('loginSetData')) {
                 commit('setLoginSetData', payload.loginSetData);
@@ -508,20 +353,11 @@ export const commonModule: CommonModule = {
             if (payload.hasOwnProperty('deviceSerialNm')) {
                 commit('setDeviceSerialNm', payload.deviceSerialNm);
             }
-            if (payload.hasOwnProperty('clonedWbcInfo')) {
-                commit('setClonedWbcInfo', payload.clonedWbcInfo);
-            }
-            if (payload.hasOwnProperty('clonedRbcInfo')) {
-                commit('setClonedRbcInfo', payload.clonedRbcInfo);
-            }
             if (payload.hasOwnProperty('moveImgIsBool')) {
                 commit('setMoveImgIsBool', payload.moveImgIsBool)
             }
             if (payload.hasOwnProperty('classInfoSort')) {
                 commit('setClassInfoSort', payload.classInfoSort)
-            }
-            if (payload.hasOwnProperty('chatRunningData')) {
-                commit('setChatRunningData', payload.chatRunningData)
             }
             if (payload.hasOwnProperty('selectedSampleId')) {
                 commit('setSelectedSampleId', payload.selectedSampleId)
@@ -539,9 +375,6 @@ export const commonModule: CommonModule = {
             if(payload.hasOwnProperty('rbcReDataClass')){
                 commit('setRbcReDataClass', payload.rbcReDataClass)
             }
-            if (payload.hasOwnProperty('rbcInfoAfterData')) {
-                commit('setRbcInfoAfterData', payload.rbcInfoAfterData)
-            }
             if(payload.hasOwnProperty('resetRbcArr')) {
                 commit('setResetRbcArr', payload.resetRbcArr)
             }
@@ -550,9 +383,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('rbcReDataCheck')){
                 commit('setRbcReDataCheck', payload.rbcReDataCheck)
-            }
-            if(payload.hasOwnProperty('appAlertOpen')){
-                commit('setAppAlertOpen', payload.appAlertOpen);
             }
             if (payload.hasOwnProperty('dataBasePageReset')){
                 commit('setDataBasePageReset', payload.dataBasePageReset);
@@ -595,9 +425,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('settingType')) {
                 commit('setSettingType', payload.settingType);
-            }
-            if (payload.hasOwnProperty('isDownloadOrUploading')) {
-                commit('setIsDownloadOrUploading', payload.isDownloadOrUploading);
             }
             if (payload.hasOwnProperty('isRewindingBelt')) {
                 commit('setIsRewindingBelt', payload.isRewindingBelt);

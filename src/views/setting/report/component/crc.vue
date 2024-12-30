@@ -149,8 +149,8 @@ import {
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
-import {MASTER_ID} from "@/common/defines/constants/settings";
-import {isAdmin, isMasterId, isUserAdminType} from "@/common/lib/utils/validators";
+import { isMasterId, isUserAdminType } from "@/common/lib/utils/validators";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -229,7 +229,7 @@ const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  scrollToTop();
 };
 const addCrcArr = () => {
   if (crcTitle.value === '' || crcType.value === '') {

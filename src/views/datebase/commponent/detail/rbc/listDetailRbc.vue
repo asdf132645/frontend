@@ -19,6 +19,7 @@
                 @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
                 :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
                 :notCanvasClickVal="notCanvasClickVal"
+                @submitStateChanged="submitStateChanged"
       />
     </div>
 
@@ -26,6 +27,14 @@
       <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
+
+  <ToastNotification
+      v-if="toastMessage"
+      :message="toastMessage"
+      :messageType="toastMessageType"
+      :duration="1500"
+      position='top'
+  />
 </template>
 
 <script setup lang="ts">
@@ -38,6 +47,8 @@ import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue"
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
+import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const selectItems = ref<any>({});
 const store = useStore();
@@ -46,11 +57,12 @@ const classInfoArr = ref<any>([]);
 const allCheckClear = ref<boolean>(false);
 const isBefore = ref(false);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const isLoading = ref(false);
 const allUnCheck = ref(false);
 const notCanvasClickVal = ref(false);
 const slideData = computed(() => store.state.slideDataModule);
+const toastMessage = ref('');
+const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 
 onMounted(async () => {
   isLoading.value = false;
@@ -89,7 +101,7 @@ const classInfoArrUpdate = (data: any) => {
 
 const classInfoArrUpdateRe = async (data: any) => {
   const { result, loading, error } = useGetRunningInfoByIdQuery(
-      { id: Number(selectedSampleId.value) },
+      { id: Number(selectItems.value?.id) },
       { fetchPolicy: 'no-cache' }
   );
 
@@ -122,6 +134,20 @@ const unChecked = () => {
 
 const notCanvasClick = (val: any) => {
   notCanvasClickVal.value = val;
+}
+
+const showToast = (message: string) => {
+  toastMessage.value = message;
+  setTimeout(() => {
+    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
+
+const submitStateChanged = (changedSubmitState: string) => {
+  if (changedSubmitState) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast(MSG_GENERAL.SUCCESS);
+  }
 }
 
 </script>

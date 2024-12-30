@@ -21,7 +21,7 @@
           <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type=""
                    :message="MSG.TOOLTIP.MEMO"/>
         </li>
-        <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': submitState === 'Submit'}">
+        <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': slideData.submitState === 'Submit'}">
           <font-awesome-icon
               :icon="['fas', 'square-check']"
               @mouseenter="tooltipVisibleFunc('confirm', true)"
@@ -107,6 +107,7 @@
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
+                      class="cursorPointer"
                       :class="{
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
                         'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
@@ -121,6 +122,7 @@
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-down']"
                       v-for="degreeIndex in 4" :key="degreeIndex + '-down'"
+                      class="cursorPointer"
                       :class="{
                       'degreeActive': degreeIndex < Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 2 || 0,
                       'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 1 || 0
@@ -134,12 +136,13 @@
                 <span v-if="classInfo.degree === '0'" class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
+                      class="cursorPointer"
                   />
                 </span>
                 <span v-else class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
-                      class="degreeActive"
+                      class="degreeActive cursorPointer"
                   />
                 </span>
                 <span v-if="rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"
@@ -311,13 +314,14 @@ import {
 } from "@/common/defines/constants/rbc";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {TooltipRbcClassType} from "@/common/type/tooltipType";
-import {DIR_NAME} from "@/common/defines/constants/settings";
-import {cbcUpdateMutation, gqlGenericUpdate, memoUpdateMutation, rbcUpdateMutation} from "@/gql/mutation/slideData";
+import { DIR_NAME } from "@/common/defines/constants/settings";
+import { cbcUpdateMutation, gqlGenericUpdate, memoUpdateMutation, rbcUpdateMutation } from "@/gql/mutation/slideData";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
 const checkedClassIndices = ref<string[]>([]);
-const props = defineProps(['rbcInfo', 'type', 'allCheckClear', 'isCommitChanged', 'notCanvasClickVal']);
+const props = defineProps(['rbcInfo', 'type', 'allCheckClear', 'notCanvasClickVal']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
@@ -349,9 +353,9 @@ const allCheckType = ref<Record<string, boolean>>({
   '04': true,
 })
 const rbcInfoPathAfter = ref<any>([]);
+const jsonIsBool = ref(false);
 const rbcTotalVal = ref(0);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const jsonIsBool = ref(false);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
 const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
@@ -360,16 +364,12 @@ const slideData = computed(() => store.state.slideDataModule);
 const rbcDegreeStandard = ref<any>([]);
 const sizeChromiaTotal = ref(0);
 const chromiaTotalTwo = ref(0);
-const bodyTotal = ref(0);
-const shapeTotal = ref(0);
 const shapeBodyTotal = ref(0);
 const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
-const submitState = ref('');
 const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
-const rbcResponseOldArr: any = ref([]);
 const tooltipVisible = ref({
   confirm: false,
   memo: false,
@@ -377,27 +377,19 @@ const tooltipVisible = ref({
 
 onMounted(async () => {
   await nextTick();
-  await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
+  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
   const {path} = router.currentRoute.value;
-  memo.value = slideData.value?.rbcMemo;
   pltCount.value = slideData.value?.rbcInfo.pltCount;
   malariaCount.value = slideData.value?.rbcInfo.malariaCount;
   memo.value = slideData.value?.rbcMemo;
   maxRbcCount.value = slideData.value?.rbcInfo.maxRbcCount;
-  submitState.value = slideData.value?.submitState;
   except.value = path === '/report';
   rightClickItem.value = [];
   rightClickItemSet();
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   await afterChange(slideData.value);
   await countReAdd();
-
 });
-
-
-watch(() => props.isCommitChanged, () => {
-  submitState.value = 'Submit';
-})
 
 watch(() => props.allCheckClear, (newItem) => {
   checkedClassIndices.value = [];
@@ -432,7 +424,6 @@ const rightClickItemSet = () => {
   );
 }
 
-
 watch(
     () => slideData.value.id,
     async (newVal, oldVal) => {
@@ -443,7 +434,6 @@ watch(
       pltCount.value = slideData.value?.pltCount;
       malariaCount.value = slideData.value?.malariaCount;
       memo.value = slideData.value?.rbcMemo;
-      submitState.value = slideData.value?.submitState;
       rightClickItemSet();
       allCheckType.value = {
         '01': true,
@@ -478,7 +468,6 @@ watch(() => props.allCheckClear, () => {
     '05': true,
   }
 }, {deep: true})
-
 
 watch(() => rbcReData, async (newItem) => {
   if (newItem) {
@@ -562,10 +551,10 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
   const url_new = `${path}/${slideData.value.slotId}/${DIR_NAME.RBC_CLASS}/${slideData.value.slotId}_new_${rbcImagePageNumber.value}.json`;
   const response_new = await readJsonFile({fullPath: url_new});
   const url_Old = `${path}/${slideData.value.slotId}/${DIR_NAME.RBC_CLASS}/${slideData.value.slotId}.json`;
-  rbcResponseOldArr.value = await readJsonFile({fullPath: url_Old});
+  const response_old = await readJsonFile({fullPath: url_Old});
   if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
     const newJsonData = response_new?.data;
-    for (const rbcItem of rbcResponseOldArr.value.data[pageNumber].rbcClassList) {
+    for (const rbcItem of response_old.data[pageNumber].rbcClassList) {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
         const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
@@ -588,10 +577,13 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
         }
       }
     }
-    rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
+    rbcInfoPathAfter.value = response_old.data[pageNumber].rbcClassList;
   } else {
-    if (rbcResponseOldArr.value?.data.length === 0 || !rbcResponseOldArr.value?.data[pageNumber]) rbcInfoPathAfter.value = [];
-    else rbcInfoPathAfter.value = rbcResponseOldArr.value?.data[pageNumber].rbcClassList;
+    if (response_old.data.length === 0 || !response_old?.data[pageNumber]) {
+      rbcInfoPathAfter.value = [];
+    } else {
+      rbcInfoPathAfter.value = response_old?.data[pageNumber].rbcClassList;
+    }
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
     return;
@@ -629,15 +621,13 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
   rbcTotalVal.value = Number(total);
   sizeChromiaTotal.value = Number(total);
   chromiaTotalTwo.value = chromiaTotalval;
-  bodyTotal.value = Number(inclusionBody);
-  shapeTotal.value = Number(shapeTotalVal);
   shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
 }
 
 const percentageChange = (count: any, categoryId: string): any => {
   const percentage: any = ((Number(count) / calculateRbcTotalByCategoryId(categoryId)) * 100).toFixed(1);
   if (isNaN(percentage)) return '-';
-  return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage
+  return (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
 }
 
 const calculateRbcTotalByCategoryId = (categoryId: string) => {
@@ -730,40 +720,15 @@ const clickChangeSens = (classNm: string, categoryNm: string, categoryId: string
 
 }
 
-
-const areDegreesIdentical = (arr1: any[], arr2: any[]): boolean => {
-
-  // 배열 항목 비교
-  for (let i = 0; i < arr1.length; i++) {
-    const item1 = arr1[i];
-    const item2 = arr2[i];
-
-    for (let j = 0; j < item1.classInfo.length; j++) {
-      const classInfo1 = item1.classInfo[j];
-      const classInfo2 = item2.classInfo[j];
-
-      // degree 값 비교
-      if (String(classInfo1.degree) !== String(classInfo2.degree)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-};
-
 const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
-  const rbcData: any = slideData.value;
-
-  rbcInfoBeforeVal.value = rbcData.rbcInfo?.rbcClass ? rbcData.rbcInfo.rbcClass : rbcData;
+  rbcInfoBeforeVal.value = slideData.value?.rbcInfo.rbcClass;
   rbcInfoAfterVal.value = slideData.value?.rbcInfoAfter;
   await classChange();
 }
 
 const countReAdd = async () => {
-  // rbcInfoBeforeVal.value와 rbcInfoPathAfter.value가 정의되어 있는지 확인
   if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
     return;
   }
@@ -777,8 +742,6 @@ const countReAdd = async () => {
       let count = 0;
       for (const afterCategory of rbcInfoPathAfter.value) {
         for (const afterClassItem of afterCategory.classInfo) {
-          // 기존 비교
-          // if (afterClassItem.classNm.replace(/\s+/g, '') === classItem.classNm.replace(/\s+/g, '') && afterCategory.categoryId === category.categoryId) {
           if (afterClassItem.classId === classItem.classId && afterCategory.categoryId === category.categoryId) {
             count++;
           }
@@ -796,8 +759,6 @@ const countReAdd = async () => {
   for (const el of rbcInfoPathAfter.value) {
     if (el.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
       maxRbcCount.value += Number(el.classInfo.length);
-      // const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기
-      // maxRbcCount.value = Number(lastElement.replace('S', '')) + 1;
     }
     if (el.categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) {
       for (const xel of el.classInfo) {
@@ -971,7 +932,6 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
     rbcInfoAfter: rbcInfoAfter,
   };
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await store.dispatch('commonModule/setCommonInfo', {rbcInfoAfterData: rbcInfoAfter});
   await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 
   const res = await gqlGenericUpdate(rbcUpdateMutation, {
@@ -1008,6 +968,7 @@ const memoChange = async () => {
     rbcMemo: updatedRuningInfo.rbcMemo,
   });
   if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
+    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
     memo.value = updatedRuningInfo.rbcMemo;
     showSuccessAlert('Success');
   }
@@ -1018,7 +979,7 @@ const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  scrollToTop();
 };
 
 
@@ -1033,7 +994,7 @@ const hideAlert = () => {
 };
 
 const commitConfirmed = () => {
-  if (submitState.value === 'Submit') {
+  if (slideData.value?.submitState === 'Submit') {
     return;
   }
   showConfirm.value = true;
@@ -1050,14 +1011,13 @@ const hideConfirm = () => {
 }
 
 const onCommit = async () => {
-
   const localTime = moment().local();
-
   const updatedItem = {
     submitState: 'Submit',
     submitOfDate: localTime.format(),
     submitUserId: userModuleDataGet.value.userId,
   };
+
   const updatedRuningInfo = {...slideData.value, ...updatedItem}
   await gqlGenericUpdate(cbcUpdateMutation, {
     id: updatedRuningInfo.id,
@@ -1066,6 +1026,8 @@ const onCommit = async () => {
     submitUserId: updatedRuningInfo.submitUserId,
   });
 
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+  slideData.value.submitState = 'Submit';
   emits('submitStateChanged', 'Submit');
 }
 

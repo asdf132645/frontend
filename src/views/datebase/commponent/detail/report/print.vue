@@ -327,7 +327,7 @@ const getShapeOthers = async () => {
 
 const rbcTotalAndReCount = async () => {
   const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
-  const url_new = `${path}/${selectItems.value?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItems.value?.slotId}_new.json`;
+  const url_new = `${path}/${selectItems.value?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItems.value?.slotId}_new_0.json`;
   const response_new = await readJsonFile({fullPath: url_new});
   const url_Old = `${path}/${selectItems.value?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItems.value?.slotId}.json`;
   const response_old = await readJsonFile({fullPath: url_Old});
@@ -336,9 +336,7 @@ const rbcTotalAndReCount = async () => {
     for (const rbcItem of response_old.data[0].rbcClassList) {
       for (const newRbcData of newJsonData) {
         // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
-        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
-            Number(el.index) === Number(newRbcData.index)
-        );
+        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) => el.index === newRbcData.index);
         if (foundElementIndex !== -1) {
           rbcItem.classInfo.splice(foundElementIndex, 1);
         }
@@ -361,7 +359,6 @@ const rbcTotalAndReCount = async () => {
     rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
   }
   if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-    console.error('rbcInfoPathAfter.value is not iterable');
     return;
   }
   let total = 0;
@@ -371,17 +368,15 @@ const rbcTotalAndReCount = async () => {
   shapeOthersCount.value = 0;
 
   rbcInfoPathAfter.value.forEach(el => {
-    const lastIndex = el.classInfo.length > 0 ? el.classInfo[el.classInfo.length - 1].index.replace(/[^\d]/g, '') : '';
-
     switch (el.categoryId) {
       case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
-        total = lastIndex;
+        total = el.classInfo.length;
         break;
       case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
-        chromiaTotalval = lastIndex;
+        chromiaTotalval = el.classInfo.length;
         break;
       case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
-        shapeBodyTotalVal = lastIndex;
+        shapeBodyTotalVal = el.classInfo.length;
 
         for (const classItem of el.classInfo) {
           if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
@@ -390,39 +385,17 @@ const rbcTotalAndReCount = async () => {
         }
         break;
       case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
-        shapeBodyTotalVal2 = lastIndex;
+        shapeBodyTotalVal2 = el.classInfo.length;
         break;
       default:
-        // Handle unexpected categoryId if needed
         break;
     }
   });
 
-  rbcTotalVal.value = Number(total) + 1;
-  sizeChromiaTotal.value = Number(total) + 1;
+  rbcTotalVal.value = Number(total);
+  sizeChromiaTotal.value = Number(total);
   chromiaTotalTwo.value = chromiaTotalval;
-  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2) + 2;
-
-  // selectItems의 originalDegree 초기화
-  selectItems.value.rbcInfoAfter.forEach((category: any) => {
-    category.classInfo.forEach((item: any) => {
-      item.originalDegree = 0;
-    });
-  });
-
-  // rbcInfoPathAfter에서 아이템들 classId와 categoryId를 비교하여 originalDegree 증가시키기
-  rbcInfoPathAfter.value.forEach(pathCategory => {
-    const category = selectItems.value.rbcInfoAfter.find((cat: any) => cat.categoryId === pathCategory.categoryId);
-    if (category) {
-      pathCategory.classInfo.forEach((pathClass: any) => {
-        const classInfo = category.classInfo.find((item: any) => item.classId === pathClass.classId);
-        if (classInfo) {
-          classInfo.originalDegree++;
-        }
-      });
-    }
-  });
-
+  shapeBodyTotal.value = Number(shapeBodyTotalVal) + Number(shapeBodyTotalVal2);
   await countReAdd();
 }
 const hiddenImages = ref<Record<string, boolean>>({});
@@ -451,8 +424,24 @@ const calculateRbcTotalByCategoryId = (categoryId: string) => {
 }
 
 const countReAdd = async () => {
+  for (const category of selectItems.value.rbcInfoAfter) {
+    for (const classItem of category.classInfo) {
+      let count = 0;
+      for (const afterCategory of rbcInfoPathAfter.value) {
+        for (const afterClassItem of afterCategory.classInfo) {
+          if (afterClassItem.classId === classItem.classId && afterCategory.categoryId === category.categoryId) {
+            count++;
+          }
+        }
+      }
+
+      classItem.originalDegree = count;
+      classItem.percent = percentageChange(count, category.categoryId);
+    }
+  }
   let totalPLT = 0;
   let malariaTotal = 0;
+  maxRbcCount.value = 0;
   for (const el of rbcInfoPathAfter.value) {
     if (el.categoryId === '01') {
       const lastElement = el.classInfo[el.classInfo.length - 1].index; // 마지막 요소 가져오기

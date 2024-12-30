@@ -117,7 +117,6 @@ const cbcFilePathSetArr: any = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const cbcCodeList = ref<any>([]);
 const selectItemsVal = ref<any>([]);
 const showAlert = ref(false);

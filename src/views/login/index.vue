@@ -240,7 +240,6 @@ const updateAccount = async (viewerCheck: string) => {
     await document.documentElement.requestFullscreen();
   }
   await store.dispatch('commonModule/setCommonInfo', {loginSetData: ''});
-  await store.dispatch('commonModule/setCommonInfo', {resFlag: false});
 }
 
 const showSuccessAlert = (message: string) => {

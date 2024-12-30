@@ -72,7 +72,6 @@ import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {classArr} from "@/common/api/service/setting/dto/wbcCustomClassDto";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const store = useStore();

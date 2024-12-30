@@ -217,12 +217,12 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'type', 'isCommitChanged', 'classCompareShow', 'isAllClassesChecked']);
+const props = defineProps(['wbcInfo', 'selectItems', 'type', 'classCompareShow', 'isAllClassesChecked']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 import moment from 'moment';
-import {BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD} from "@/common/defines/constants/lis";
+import { BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD } from "@/common/defines/constants/lis";
 import axios from "axios";
 import {xml2json} from "xml-js";
 import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
@@ -368,10 +368,6 @@ onUnmounted(() => {
 //   }
 // })
 
-watch(() => props.isCommitChanged, () => {
-  selectItems.value.submitState = 'Submit';
-})
-
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
@@ -475,6 +471,9 @@ const barcodeCopy = async () => {
 }
 
 const commitConfirmed = () => {
+  if (slideData.value?.submitState === 'Submit') {
+    return;
+  }
   submittedScreen.value = true;
   showConfirm.value = true;
   confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
@@ -1132,7 +1131,6 @@ const onCommit = async () => {
   selectItems.value.submitState = 'Submit';
   emits('submitStateChanged', 'Submit');
 }
-
 
 const memoChange = async () => {
   const enterAppliedWbcMemo = wbcMemo.value.replaceAll('\r\n', '<br>');

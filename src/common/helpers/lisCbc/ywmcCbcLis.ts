@@ -8,15 +8,15 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
     const cbcData:any = await axios.get(url);
     // const cbcData: any = (await ywmcCbcCheckApi(req)).data;
     const cbcWorkList: any = [];
-    console.log(cbcData);
+    console.log(cbcData.data);
     // 최신 날짜 찾기
-    const latestDate = cbcData.reduce((latest: string, item: any) => {
+    const latestDate = cbcData.data.reduce((latest: string, item: any) => {
         return item.exam_ymd_unit > latest ? item.exam_ymd_unit : latest;
-    }, cbcData.exam_ymd_unit);
+    }, cbcData.data[0]?.exam_ymd_unit || '');
 
     // 최신 날짜에 해당하는 데이터만 필터링
-    const latestCbcData = cbcData.filter((item: any) => item.exam_ymd_unit === latestDate);
-    const slip = cbcData.find((el: any) => {return el.slip.trim() === 'H3'}) === undefined ? 'H1' : 'H3';
+    const latestCbcData = cbcData.data.filter((item: any) => item.exam_ymd_unit === latestDate);
+    const slip = cbcData.data.find((el: any) => {return el.slip.trim() === 'H3'}) === undefined ? 'H1' : 'H3';
     latestCbcData.forEach(function (data: any) {
         cbcCodeList.forEach(function (cbcCode: any) {
             if (cbcCode?.classCd === data?.exam_cd.trim()) {
@@ -39,7 +39,7 @@ export const ywmcCbcDataLoad = async (barcodeNo: string, cbcCodeList: any) => {
         data: cbcWorkList,
     };
     await createCbcFile(parms);
-    return { data: cbcWorkList, cbcDataVal: cbcData , slip: slip};
+    return { data: cbcWorkList, cbcDataVal: cbcData.data[0] , slip: slip};
 }
 
 

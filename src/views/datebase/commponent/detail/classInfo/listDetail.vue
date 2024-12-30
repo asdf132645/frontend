@@ -26,6 +26,7 @@
                  @scrollEvent="scrollToElement"
                  @uploadLisChangeSlide="uploadLisChangeSlide"
                  :isAllClassesChecked="isAllClassesChecked"
+                 @submitStateChanged="submitStateChanged"
       />
     </div>
 
@@ -269,7 +270,7 @@ import {disableScroll, enableScroll} from "@/common/lib/utils/scroll";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
@@ -1845,6 +1846,7 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
 
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
+    console.log('destinationFolderInfo', destinationFolderInfo);
     const sourceFolder = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
     const destinationFolder = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     sourceFolders.push(sourceFolder)
@@ -1955,6 +1957,13 @@ const allClassesChecked = async () => {
   // const result = slideData.value;
   // result.isAllClassesChecked = true;
   // await gqlIsAllClassesCheckedUpdate([result]);
+}
+
+const submitStateChanged = (changedSubmitState: string) => {
+  if (changedSubmitState) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast(MSG_GENERAL.SUCCESS);
+  }
 }
 
 </script>

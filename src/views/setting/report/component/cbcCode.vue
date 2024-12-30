@@ -62,6 +62,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const store = useStore();
 const router = useRouter();
@@ -192,7 +193,7 @@ const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
   alertMessage.value = message;
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  scrollToTop();
 };
 
 const showErrorAlert = (message: string) => {

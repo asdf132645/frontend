@@ -42,6 +42,5 @@ const sendMessage = (payload: object) => {
         type: 'SEND_DATA',
         payload: payload
     });
-    // store.dispatch('commonModule/setCommonInfo', {resFlag: false});
 }
 

@@ -52,13 +52,8 @@ import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {useRouter} from "vue-router";
-import {
-  createDeviceInfoApi,
-  getDeviceInfoApi,
-  getDeviceIpApi,
-  putDeviceInfoApi
-} from "@/common/api/service/device/deviceApi";
+import { useRouter } from "vue-router";
+import { getDeviceInfoApi, getDeviceIpApi } from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constants/classArr";
 import Analysis from "@/views/analysis/index.vue";
@@ -419,7 +414,6 @@ async function socketData(data: any) {
 
     async function runnComp() {
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-      await store.dispatch('commonModule/setCommonInfo', {embeddedNumber: String(data?.iCasStat)});
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: false});
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isCompleteAlarm: true}); // 알람을 킨다.
@@ -460,9 +454,6 @@ async function socketData(data: any) {
         // if (iCasStatArr.lastIndexOf("2") === 0) {
         if (iCasStatArr.lastIndexOf("2") !== -1) {
           await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-        }
-        if (data?.iCasStat.indexOf("2") !== -1) {
-          await store.dispatch('commonModule/setCommonInfo', {slideProceeding: data?.iCasStat.indexOf("2")});
         }
 
         if (pbVersion.value === '100a') {
