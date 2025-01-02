@@ -87,7 +87,7 @@ const runningInfoBoolen = ref(false);
 let countingInterStartval: any = null;
 let countingInterRunval: any = null;
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
-const slotIndex = computed(() => store.state.commonModule.slotIndex);
+const slotIndex = ref(0);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const isRewindingBelt = computed(() => store.state.commonModule.isRewindingBelt);
@@ -364,7 +364,7 @@ async function socketData(data: any) {
         await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
         await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+        slotIndex.value = 0;
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         startStatus.value = false;
@@ -378,7 +378,7 @@ async function socketData(data: any) {
         barcodeNum.value = '';
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {isPause: true}); // 일시정지 상태로 변경한다.
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+        slotIndex.value = 0;
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
         startStatus.value = false;
@@ -394,7 +394,7 @@ async function socketData(data: any) {
         runningInfoBoolen.value = true;
         startStatus.value = true;
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+        slotIndex.value = 0;
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         classArr.value = [];
         rbcArr.value = [];
@@ -403,7 +403,7 @@ async function socketData(data: any) {
         barcodeNum.value = '';
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
         await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-        await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+        slotIndex.value = 0;
         await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
         break;
       case 'ERROR_CLEAR':
@@ -418,7 +418,7 @@ async function socketData(data: any) {
       await store.dispatch('commonModule/setCommonInfo', {isRunningState: false}); // 시스템이 돌아가는 상태를 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {isCompleteAlarm: true}); // 알람을 킨다.
       await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
-      await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+      slotIndex.value = 0;
       await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'stop'});// 슬라이드가 끝났으므로 stop을 넣어서 끝낸다.
       await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: false});
@@ -433,7 +433,7 @@ async function socketData(data: any) {
       await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
       await store.dispatch('timeModule/setTimeInfo', {slideTime: '00:00:00'});
       await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: false});
-      await store.dispatch('commonModule/setCommonInfo', {slotIndex: 0});
+      slotIndex.value = 0;
       await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
       await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
       startStatus.value = true;
@@ -489,11 +489,11 @@ async function socketData(data: any) {
           await store.dispatch('commonModule/setCommonInfo', {isRunningState: false});
         } else {
           if (lastCompleteIndex !== slotIndex.value) {
+            slotIndex.value = lastCompleteIndex;
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'afterChange'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotNo);
-            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
-            await store.dispatch('commonModule/setCommonInfo', {slotIndex: lastCompleteIndex})
+            await store.dispatch('commonModule/setCommonInfo', { runningSlotId: currentSlot?.slotId });
           }
         }
         // 데이터 넣는 부분
@@ -635,7 +635,6 @@ async function socketData(data: any) {
       try {
         let result: ApiResponse<void>;
         result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
-
         if (result) {
           if (slotId) {
             console.log('save successful');

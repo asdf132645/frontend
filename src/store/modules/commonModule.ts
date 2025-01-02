@@ -13,7 +13,6 @@ export interface CommonState {
     runningInfoStop: boolean;
     reqArr: any[];
     firstLoading: boolean;
-    slotIndex: number;
     viewerCheck: string;
     loginSetData: string;
     siteCd: string;
@@ -65,7 +64,6 @@ interface CommonModule {
         shiftReqArr: (state: CommonState) => void;
         setReqArrPaste: (state: CommonState, value: any[]) => void;
         setFirstLoading: (state: CommonState, value: boolean) => void;
-        setSlotIndex: (state: CommonState, value: number) => void;
         setViewerCheck: (state: CommonState, value: string) => void;
         setLoginSetData: (state: CommonState, value: string) => void;
         setSiteCd: (state: CommonState, value: string) => void;
@@ -118,7 +116,6 @@ export const commonModule: CommonModule = {
         runningInfoStop: false,
         reqArr: [],
         firstLoading: false,
-        slotIndex: 0,
         viewerCheck: '',
         loginSetData: '',
         siteCd: '',
@@ -194,9 +191,6 @@ export const commonModule: CommonModule = {
         },
         setFirstLoading(state: CommonState, value: boolean): void {
             state.firstLoading = value;
-        },
-        setSlotIndex(state: CommonState, value: number): void {
-            state.slotIndex = value;
         },
         setViewerCheck(state: CommonState, value: string): void {
             state.viewerCheck = value;
@@ -337,9 +331,6 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('firstLoading')) {
                 commit('setFirstLoading', payload.firstLoading);
-            }
-            if (payload.hasOwnProperty('slotIndex')) {
-                commit('setSlotIndex', payload.slotIndex);
             }
             if (payload.hasOwnProperty('viewerCheck')) {
                 commit('setViewerCheck', payload.viewerCheck);

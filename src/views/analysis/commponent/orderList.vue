@@ -34,17 +34,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, ref, watch } from "vue";
+import {computed, defineProps, onBeforeMount, ref, watch} from "vue";
 import { useStore } from "vuex";
 import { stringToDateTime } from "@/common/lib/utils/conversionDataUtils";
 import { formatDateString } from "@/common/lib/utils/dateUtils";
 import { RUNNING_INFO_INTERFACE_CODE } from "@/common/defines/constants/commonCodeList";
-import {HOSPITAL_SITE_CD_BY_NAME} from "../../../common/defines/constants/siteCd";
+import { HOSPITAL_SITE_CD_BY_NAME } from "../../../common/defines/constants/siteCd";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const store = useStore();
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const props = defineProps(['parsedData', 'startStatus', 'pb100aCassette']);
 const dspOrderList = ref<any>([]);
+const machineVersion = ref('12a');
+
+onBeforeMount(() => {
+  machineVersion.value = window.MACHINE_VERSION;
+})
 
 watch(() => props.parsedData, (newVal) => {
       runningInfoGet(newVal);
@@ -70,45 +76,43 @@ const runningInfoGet = async (data: any) => {
     const currentSlot = parsedData?.slotInfo
     if (currentSlot) {
       const barcodeNo = currentSlot.barcodeNo;
-      const existingItemIndex = dspOrderList.value.findIndex((item: any) => item.barcodeId === barcodeNo);
+
+      const existingItemIndex = dspOrderList.value.findIndex((item: any) => item?.barcodeId === barcodeNo);
       const inputCassetteArr = [...parsedData?.iCasStat].filter((id: string) => id !== '0');
+      const dspOrderListLen = dspOrderList.value.length;
+
+      const barcodeIds = dspOrderList.value.map((item: any) => item.barcodeId);
+
       if (existingItemIndex === -1 && barcodeNo !== '') {
-
-        /** 만약 오류가 발생해서 OrderList가 10개 초과일 경우 화면에서 보여주는 OrderList를 10개까지만 보여주는 코드 */
-        if (dspOrderList.value.length > 10) dspOrderList.value = [];
-
-        if (dspOrderList.value && dspOrderList.value.length > 0) {
-          // Core에서 받는 stateCd가 저장되는 타이밍을 잡기 어려워 추가한 stateCd 변경 코드
-          const completedCassetteIndex = inputCassetteArr.lastIndexOf('3');
-          if (completedCassetteIndex !== -1) {
-            dspOrderList.value[completedCassetteIndex].stateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST[3].cdNm;
-          }
+        /** 만약 오류가 발생해서 OrderList가 10(12)개 초과일 경우 화면에서 보여주는 OrderList를 10(12)개까지만 보여주는 코드 */
+        if (isExceedingMaxOrders(machineVersion.value, dspOrderListLen)) {
+          dspOrderList.value = [];
         }
 
-        const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[dspOrderList.value.length]);
-
-        dspOrderList.value.push({
-          barcodeId: barcodeNo,
-          patientName: currentSlot.patientNm,
-          orderDate: stringToDateTime(currentSlot.orderDttm) || 0,
-          analyzedDttm: stringToDateTime(currentSlot.analyzedDttm) || 0,
-          stateCd: stateCdObj?.cdNm,
-        });
+        if (!barcodeIds.includes(barcodeNo)) {
+          const stateCd = findStateCd(dspOrderListLen, inputCassetteArr);
+          dspOrderList.value.push({
+            barcodeId: barcodeNo,
+            patientName: currentSlot.patientNm,
+            orderDate: stringToDateTime(currentSlot.orderDttm) || 0,
+            analyzedDttm: stringToDateTime(currentSlot.analyzedDttm) || 0,
+            stateCd,
+          })
+        }
       } else {
-        // for (const [dspOrderListIndex, orderItem] of dspOrderList.value.entries()) {
-        //   const localStateCd = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[dspOrderListIndex])?.cdNm
-        //   orderItem.stateCd = localStateCd;
-        // }
-        const stateCdObj = RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find((code: {cd: string; cdNm: string}) => code.cd === inputCassetteArr[existingItemIndex]);
-        if (dspOrderList.value && dspOrderList.value.length > 0) {
-          if (dspOrderList.value[existingItemIndex]?.stateCd) {
-            dspOrderList.value[existingItemIndex].stateCd = stateCdObj?.cdNm;
-          }
+        for (const [dspOrderListIdx, orderItem] of dspOrderList.value.entries()) {
+          orderItem.stateCd = findStateCd(dspOrderListIdx, inputCassetteArr);
         }
       }
     }
   }
 }
 
+const isExceedingMaxOrders = (version: string, maxLen: number) => (version === '100a' && maxLen > 10) || (version === '12a' && maxLen > 12);
 
+const findStateCd = (cassetteIndex: number, inputCassetteArr: string []) => {
+  return RUNNING_INFO_INTERFACE_CODE.I_CAS_STAT_ID_LIST.find(
+      (code: { cd: string; cdNm: string }) => code.cd === inputCassetteArr[cassetteIndex]
+  )?.cdNm
+}
 </script>
