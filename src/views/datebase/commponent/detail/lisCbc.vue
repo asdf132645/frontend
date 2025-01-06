@@ -62,7 +62,22 @@
         </tr>
       </table>
     </div>
-
+    <div v-else-if="cbcWorkListForShow.length !== 0" class="cbcDivWarp">
+      <table class="cbcTable">
+        <colgroup>
+          <col width="33%"/>
+          <col width="33%"/>
+          <col width="33%"/>
+        </colgroup>
+        <tr v-for="(cbcItem) in cbcWorkListForShow" :key="cbcItem.id">
+          <td>{{ cbcItem.classNm }}</td>
+          <td>{{ cbcItem.absCount }}</td>
+          <td>
+            {{ cbcItem.count }} {{ cbcItem.unit }}
+          </td>
+        </tr>
+      </table>
+    </div>
     <div v-else-if="cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
         <colgroup>
@@ -106,6 +121,7 @@ import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 const store = useStore();
 const props = defineProps(['selectItems']);
 const cbcWorkList = ref<any>([]);
+const cbcWorkListForShow = ref<any>([]);
 const cbcPatientNo = ref('');
 const cbcPatientNm = ref('');
 const cbcSex = ref('');
@@ -388,13 +404,31 @@ const fileData = async (firstCbcDatafilename: string) => {
     await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
     cbcWorkList.value = [];
+    cbcWorkListForShow.value = [];
     console.log(msg?.data?.segments)
     msg?.data?.segments?.forEach((cbcSegment: any) => {
       if (cbcSegment.name.trim() === 'OBX') {
         cbcCodeList.value.forEach((cbcCode: any) => {
           const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+          const sanitizedClassCd = classCd?.replace(/[^a-zA-Z]/g, '');
+
+          const otherClassItemWithPercent = cbcCodeList.value.filter((item: any) => {
+            const tmpClassCd = item.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+            const sanitizedClassCd2 = tmpClassCd?.replace(/[^a-zA-Z]/g, '');
+            const otherClassUnit = item?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0];
+            return sanitizedClassCd === sanitizedClassCd2 && otherClassUnit === '%';
+          });
+
           const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
           const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
+          const percentCount = otherClassItemWithPercent.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+
+          const showObj = {
+            classNm: cbcCode.fullNm,
+            percentCount: percentCount,
+            absCount: count,
+            unit: unit,
+          };
 
           // 클래스 코드가 일치하는 경우
           if (cbcCode.classCd === classCd) {
@@ -411,12 +445,15 @@ const fileData = async (firstCbcDatafilename: string) => {
                 unit
               };
               cbcWorkList.value.push(obj);
+
+              if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
+                cbcWorkListForShow.value.push(showObj);
+              }
             }
           }
         });
       }
       else if(cbcSegment.name.trim() === 'FLG'){
-        console.log('asas')
         const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
         const obj = {
           classNm: 'FLG',
@@ -424,6 +461,7 @@ const fileData = async (firstCbcDatafilename: string) => {
           unit: '',
         };
         cbcWorkList.value.push(obj);
+        cbcWorkListForShow.value.push(obj);
       }
       else if (cbcSegment.name.trim() === 'PID') {
         cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
