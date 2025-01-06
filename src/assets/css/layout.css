@@ -498,6 +498,8 @@ main.bmComponent {
     font-weight: 200;
     font-family: sans-serif;
     border-right: 1px solid var(--gray-1-color);
+    padding-bottom: 5px;
+    cursor: pointer;
 }
 
 li.errLogLi {
@@ -740,7 +742,7 @@ li.errLogLi.critical:before {
     overflow: auto;
     padding: 20px;
     min-width: 500px;
-    top: 35px;
+    top: 30px;
     border: 1px solid;
 }
 
