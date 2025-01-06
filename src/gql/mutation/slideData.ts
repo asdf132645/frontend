@@ -46,6 +46,15 @@ export const cbcUpdateDocument = gql`
     }
 `;
 
+export const firstCheckUpdateDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+        updateRunningInfoGQL(updateDto: $updateDto) {
+            id
+            submitState
+        }
+    }
+`;
+
 export const memoUpdateDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
         updateRunningInfoGQL(updateDto: $updateDto) {
@@ -166,6 +175,10 @@ export function rbcUpdateMutation(options: VueApolloComposable.UseMutationOption
 
 export function appVueUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(appVueUpdateDocument, options);
+}
+// firstCheckUpdateDocument
+export function firstCheckUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(firstCheckUpdateDocument, options);
 }
 
 type MutationHook = (options: {

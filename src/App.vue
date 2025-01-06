@@ -635,15 +635,15 @@ async function socketData(data: any) {
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
-      console.log(slotId);
+      console.log(runningInfo.slotId);
       try {
-        if (currentSlotId.value === '' || currentSlotId.value !== slotId) {
+        if (currentSlotId.value === '' || currentSlotId.value !== runningInfo.slotId) {
           let result: ApiResponse<void>;
           result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
           if (result) {
-            if (slotId) {
+            if (runningInfo.slotId) {
               console.log('save successful');
-              currentSlotId.value = slotId;
+              currentSlotId.value = runningInfo.slotId;
             }
             delayedEmit('SEND_DATA', 'refreshDb', 300);
           }

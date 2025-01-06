@@ -274,7 +274,7 @@ import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageT
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
-import {gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
+import {firstCheckUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -374,6 +374,7 @@ onMounted(async () => {
 
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
+
 })
 
 watch(
@@ -401,6 +402,12 @@ watch(
           cellMarkerIcon.value = false;
           await drawCellMarker(true);
 
+          if (newVal?.submitState === '' || !newVal?.submitState) {
+            await gqlGenericUpdate(firstCheckUpdateMutation, {
+              id: newVal.id,
+              submitState: 'checkFirst',
+            });
+          }
 
         } catch (error) {
           console.error('비동기 작업 중 에러 발생:', error);
@@ -1717,6 +1724,9 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
 
 async function updateRunningApiPost(wbcInfo: any, originalDb: any) {
   try {
+    if (originalDb.length === 0) {
+      return;
+    }
     const res = await gqlGenericUpdate(useUpdateRunningInfoMutation, {
       id: originalDb[0].id,
       isNormal: originalDb[0].isNormal,
