@@ -4,7 +4,7 @@
     <!--      <font-awesome-icon :icon="['fas', 'circle-xmark']"/>-->
     <!--    </p>-->
     <div class="title">
-      <span>Notifications <span class="errLogNum">{{ errArr.length }}</span></span>
+      <span>Notifications ({{ errArr.length }}) <span class="errLogNum">displayed 24 hours</span> </span>
       <span class="errLogClose" @click="closeNoti">
         <font-awesome-icon :icon="['fas', 'circle-xmark']"/>
       </span>
