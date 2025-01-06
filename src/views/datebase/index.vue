@@ -168,7 +168,7 @@ import Button from "@/components/commonUi/Button.vue";
 import PopupTable from "@/components/commonUi/PopupTable.vue";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
-import {sdPatientNameGetAPI, sdWorklistsAPI} from "@/common/helpers/lisCbc/sdCbcLis";
+import { sdPatientNameGetAPI, sdWorklistsAPI } from "@/common/helpers/lisCbc/sdCbcLis";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
 import { DIR_NAME } from "@/common/defines/constants/settings";
@@ -555,7 +555,7 @@ const getDbData = async (type: string, pageNum?: number) => {
           const { data: patientDataResult, code } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
           if (code === 200) {
             dbGetData.value = dbGetData.value.map((item: any) => {
-              const equalBarcodeData = patientDataResult.data.find((patItem: {no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
+              const equalBarcodeData = patientDataResult.data.find((patItem: { no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
               if (!isObjectEmpty(equalBarcodeData)) {
                 const updatedItem = { ...item, patientNm: equalBarcodeData.patName };
                 return updatedItem;

@@ -199,7 +199,7 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
 import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
-import {lisSendSD} from "@/common/helpers/lisCbc/sdCbcLis";
+import { lisSendSD } from "@/common/helpers/lisCbc/sdCbcLis";
 import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component/autoCBCMatching.vue";
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
@@ -549,10 +549,39 @@ const updateCrcContent = (crcSetData: any, nowCrcData: any) => {
       const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
       if (matchingItem && matchingItem.crcCode) {
         const categoryMapping = morphologyMapping.value[matchingItem.morphologyType];
-
         // 매핑이 존재하고 crcContent의 값이 매핑에 있으면 crcContent 값으로 변경
         if (categoryMapping && categoryMapping[matchingItem.crcCode]) {
           nowItem.crcContent = categoryMapping[matchingItem.crcCode][nowItem.crcContent] || nowItem.crcContent;
+        }
+      }
+    });
+  });
+
+  return nowCrcData;
+};
+
+const updateCrcContent0031 = (crcSetData: any, nowCrcData: any) => {
+  const rbcSixTypes = ['Spheocyte', 'Elliptocyte', 'Tear drop cell', 'Schistocyte', 'Acanthocyte', 'Target cell'];
+  ['plt', 'rbc', 'wbc'].forEach(category => {
+    nowCrcData.crcContent[category].forEach((nowItem: any) => {
+      // text 타입은 변경하지 않고 유지
+      if (nowItem.crcType !== 'select' && nowItem.crcContent !== 'Etc') return;
+      if (nowItem.crcTitle === 'RBC_POIK' && !rbcSixTypes.includes(nowItem.crcContent)) {
+        nowCrcData.crcContent[category].push({
+          crcTitle: 'RBC_POIK_ETC',
+          crcType: 'text',
+          crcContent: nowItem.crcContent,
+        })
+        nowItem.crcContent = '000000';
+      } else {
+        // id 기준으로 crcSetData에서 매칭 항목 찾기
+        const matchingItem = crcSetData.find((setItem: any) => setItem.id === nowItem.id);
+        if (matchingItem && matchingItem.crcCode) {
+          const categoryMapping = morphologyMapping.value[matchingItem.morphologyType];
+          // 매핑이 존재하고 crcContent의 값이 매핑에 있으면 crcContent 값으로 변경
+          if (categoryMapping && categoryMapping[matchingItem.crcCode]) {
+            nowItem.crcContent = categoryMapping[matchingItem.crcCode][nowItem.crcContent] || nowItem.crcContent;
+          }
         }
       }
     });
@@ -593,7 +622,6 @@ const lisStart = async () => {
   typeof remarkList.value[0]?.remarkAllContent === "string"
       ? remarkList.value[0].remarkAllContent.replace(/\n/g, "\r")
       : "";
-  console.log('commentList', commentList.value)
   typeof commentList.value[0]?.remarkAllContent === "string"
       ? commentList.value[0].remarkAllContent.replace(/\n/g, "\r")
       : "";
@@ -607,23 +635,33 @@ const lisStart = async () => {
     crcComment: commentList.value,
     crcRecommendation: recoList.value
   });
-  nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-  nowCrcData = updateCrcContent(crcSetData, nowCrcData);
 
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
+    case '':
+    case '0000':
+      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+      nowCrcData = updateCrcContent0031(crcSetData, nowCrcData);
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
+      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await yamcSendLisUpdate(nowCrcData);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
+      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await yamcSendLisUpdate(nowCrcData);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
+      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     default:
+      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
   }
@@ -684,7 +722,7 @@ const commonSucessLis = async () => {
       submitOfDate: localTime.format(),
       submitUserId: userModuleDataGet.value.userId,
     };
-    const updatedRuningInfo = {id: props.selectItems?.id, ...updatedItem}
+    const updatedRuningInfo = { id: props.selectItems?.id, ...updatedItem };
     await resRunningItem(updatedRuningInfo, true);
     submitState.value = true;
   }
