@@ -217,7 +217,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'selectItems', 'type', 'classCompareShow', 'isAllClassesChecked']);
+const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'isAllClassesChecked']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -260,7 +260,7 @@ import {
 
 const router = useRouter();
 const showLISUploadButton = ref(true);
-const selectItems = ref(props.selectItems);
+const selectItems = ref<any>([]);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
@@ -379,10 +379,10 @@ watch(() => props.wbcInfo, (newItem) => {
   window.addEventListener('keyup', handleKeyUp);
   if (Object.keys(newItem).length !== 0) {
     beforeAfterChange(newItem)
-    wbcMemo.value = props.selectItems?.wbcMemo;
-    const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
-    store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
+    wbcMemo.value = selectItems.value?.wbcMemo;
+    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
+    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
+    store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
   }
 });
 
@@ -405,16 +405,16 @@ const handleKeyUp = (event: KeyboardEvent) => {
 };
 
 const mountedMethod = async () => {
-  if (isObjectEmpty(props.selectItems)) return;
+  if (isObjectEmpty(selectItems.value)) return;
 
   if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
-    await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+    await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
   }
-  wbcMemo.value = props.selectItems?.wbcMemo;
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
-  if (props.selectItems?.submitState) {
-    lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
+  wbcMemo.value = selectItems.value?.wbcMemo;
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
+  if (selectItems.value?.submitState) {
+    lisBtnColor.value = selectItems.value.submitState === 'lisCbc';
   }
 
 }
@@ -461,7 +461,7 @@ const toggleLockEvent = () => {
 
 const barcodeCopy = async () => {
   const textarea = document.createElement('textarea');
-  textarea.value = props.selectItems.barcodeNo;
+  textarea.value = selectItems.value.barcodeNo;
   document.body.appendChild(textarea);
   textarea.select();
   document.execCommand('copy');
@@ -514,7 +514,7 @@ const uploadLis = async () => {
 const uimdTestCbcLisDataGet = async () => {
   // 서울 성모 테스트 코드
   const codeList = CbcWbcTestCdList_0002;
-  const {wbcInfoAfter} = props.selectItems ?? {};
+  const {wbcInfoAfter} = selectItems.value ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/liveTest`, {   // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
@@ -530,7 +530,7 @@ const uimdTestCbcLisDataGet = async () => {
   }).then(async function (resultCbc) {
     // 결과 처리 코드
     const xml = resultCbc.data.trim(); // 불필요한 공백 제거
-    const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
+    const cbcJson = JSON.parse(xml2json(xml, { compact: true }));
     const cbcWorkList = cbcJson.root.spcworklist.worklist;
     const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
@@ -621,7 +621,7 @@ const uimdTestCbcLisDataGet = async () => {
 
 const cmcSeoulLisAndCbcDataGet = () => {
   const codeList = CbcWbcTestCdList_0002;
-  const {barcodeNo, wbcInfoAfter} = props.selectItems ?? {};
+  const {barcodeNo, wbcInfoAfter} = selectItems.value ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
@@ -841,18 +841,18 @@ const gilDataSendLoad = async () => {
       dateTime: getDateTimeStr(),
       security: '',
       messageType: ['ADT', 'R02'],
-      messageControlId: props.selectItems?.barcodeNo,
+      messageControlId: selectItems.value?.barcodeNo,
       processingId: 'P',
       hl7VersionId: '2.5',
       selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: incheonGilPercentChange(props.selectItems?.wbcInfoAfter, props.selectItems?.wbcInfo.totalCount),
+      wbcInfo: incheonGilPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfo.totalCount),
       result: lisCodeWbcArrApp.value,
     };
     const res = await readNoFlagHl7Message(data);
     if (res) {
       if (!lisFilePathSetArr.value.includes("http")) { // file
         const data = {
-          filepath: `${lisFilePathSetArr.value}\\${props.selectItems.barcodeNo}.hl7`,
+          filepath: `${lisFilePathSetArr.value}\\${selectItems.value.barcodeNo}.hl7`,
           msg: res,
         }
         try {
@@ -888,11 +888,11 @@ const gilDataSendLoad = async () => {
 }
 
 const inhaDataSendLoad = async () => {
-  await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+  await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
   const {
     errMessage,
     lisBtnColor: lisBtnColorVal
-  } = await inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, props.selectItems, userModuleDataGet.value.id)
+  } = await inhaDataSend(selectItems.value?.wbcInfoAfter, selectItems.value?.rbcInfoAfter, selectItems.value?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, selectItems.value, userModuleDataGet.value.id)
   if (errMessage !== '') {
     toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast(errMessage);
@@ -913,18 +913,18 @@ const otherDataSend = async () => {
       dateTime: getDateTimeStr(),
       security: '',
       messageType: ['ADT', 'R02'],
-      messageControlId: props.selectItems?.barcodeNo,
+      messageControlId: selectItems.value?.barcodeNo,
       processingId: 'P',
       hl7VersionId: '2.5',
       selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: props.selectItems?.wbcInfoAfter,
+      wbcInfo: selectItems.value?.wbcInfoAfter,
       result: lisCodeWbcArrApp.value,
     };
     const res = await readH7Message(data);
     if (res) {
       if (!lisFilePathSetArr.value.includes("http")) { // file
         const data = {
-          filepath: `${lisFilePathSetArr.value}\\${props.selectItems.barcodeNo}.hl7`,
+          filepath: `${lisFilePathSetArr.value}\\${selectItems.value.barcodeNo}.hl7`,
           msg: res,
         }
         try {
@@ -943,12 +943,12 @@ const otherDataSend = async () => {
 
 
 const goDae = (): string => {
-  let data = `H|\\^&||||||||||P||${props.selectItems?.barcodeNo}\n`;
+  let data = `H|\\^&||||||||||P||${selectItems.value?.barcodeNo}\n`;
   let seq = 0;
   let kumcMergePercent = 0;
   let kumcBandPercent = 0;
   // 누적 백분율 계산
-  props.selectItems?.wbcInfoAfter.forEach((wbcItem: any) => {
+  selectItems.value?.wbcInfoAfter.forEach((wbcItem: any) => {
     if (['02', '03', '04', '10'].includes(wbcItem.id)) {
       kumcMergePercent += Number(wbcItem.percent);
     }
@@ -960,13 +960,13 @@ const goDae = (): string => {
   // 백분율 조정
   if (kumcMergePercent > 0 && kumcBandPercent < 6) {
     const updateItem = (id: string, newPercent: string) => {
-      const item = props.selectItems?.wbcInfoAfter.find((item: any) => item.id === id);
+      const item = selectItems.value?.wbcInfoAfter.find((item: any) => item.id === id);
       if (item) {
         item.percent = newPercent;
       }
     };
 
-    updateItem('71', (Number(props.selectItems?.wbcInfoAfter.find((item: any) => item.id === '71')?.percent) + kumcBandPercent).toString());
+    updateItem('71', (Number(selectItems.value?.wbcInfoAfter.find((item: any) => item.id === '71')?.percent) + kumcBandPercent).toString());
     updateItem('72', '0');
   }
 
@@ -981,7 +981,7 @@ const goDae = (): string => {
   };
 
   lisCodeWbcArr.value.forEach((lisCode: any) => {
-    props.selectItems?.wbcInfoAfter.forEach((wbcItem: any) => {
+    selectItems.value?.wbcInfoAfter.forEach((wbcItem: any) => {
       if (lisCode.IA_CD === wbcItem.id) {
         appendData(lisCode, wbcItem);
       }
@@ -994,7 +994,7 @@ const goDae = (): string => {
 
 const lisFileUrlCreate = async (data: any) => {
   // 파일 경로와 파라미터 설정
-  const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${props.selectItems?.barcodeNo}.txt`;
+  const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems.value?.barcodeNo}.txt`;
   const parmsLisCopy = {filePath, data};
 
   // CBC 파일 생성
@@ -1008,7 +1008,7 @@ const lisFileUrlCreate = async (data: any) => {
     if (fileCreateRes) {
       const fileParams = {
         path: url,
-        filename: `${props.selectItems?.barcodeNo}.lst2msg`,
+        filename: `${selectItems.value?.barcodeNo}.lst2msg`,
         content: data,
       };
 
@@ -1051,7 +1051,7 @@ const lisFileUrlCreate = async (data: any) => {
 
 const sendLisMessage = async (data: any) => {
   const body = {
-    barcodeNo: props.selectItems?.barcodeNo,
+    barcodeNo: selectItems.value?.barcodeNo,
     userId: userModuleDataGet.value.name,
     deviceBarcode: deviceSerialNm.value,
     resultMsg: data,
@@ -1296,8 +1296,8 @@ const beforeAfterChange = async (newItem: any) => {
     wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     wbcInfoBeforeVal.value = incheonStMaryPercentChange(selectItems.value, wbcInfoBeforeVal.value);
   } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.totalCount);
-    wbcInfoBeforeVal.value = incheonGilPercentChange(wbcInfoBeforeVal.value, props.selectItems?.wbcInfo.totalCount);
+    wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, selectItems.value?.wbcInfo.totalCount);
+    wbcInfoBeforeVal.value = incheonGilPercentChange(wbcInfoBeforeVal.value, selectItems.value?.wbcInfo.totalCount);
   }
 
   wbcInfoVal.value = [];
@@ -1456,7 +1456,7 @@ async function updateOriginalDb() {
     } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
       wbcInfoAfterVal.value = incheonStMaryPercentChange(projectType, wbcInfoAfterVal.value);
     } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-      wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, props.selectItems?.wbcInfo.totalCount);
+      wbcInfoAfterVal.value = incheonGilPercentChange(wbcInfoAfterVal.value, selectItems.value?.wbcInfo.totalCount);
     }
   });
 

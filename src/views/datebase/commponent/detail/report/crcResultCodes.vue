@@ -638,10 +638,9 @@ const lisStart = async () => {
 
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-    case '':
-    case '0000':
       nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-      nowCrcData = updateCrcContent0031(crcSetData, nowCrcData);
+      // nowCrcData = updateCrcContent0031(crcSetData, nowCrcData);
+      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:

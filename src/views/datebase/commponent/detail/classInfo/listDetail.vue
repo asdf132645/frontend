@@ -20,7 +20,7 @@
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
-      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" :classCompareShow="classCompareShow"
+      <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :classCompareShow="classCompareShow"
                  type='listTable'
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement"
