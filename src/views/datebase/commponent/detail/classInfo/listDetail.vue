@@ -27,6 +27,7 @@
                  @uploadLisChangeSlide="uploadLisChangeSlide"
                  :isAllClassesChecked="isAllClassesChecked"
                  @submitStateChanged="submitStateChanged"
+                 :selectItems="selectItems"
       />
     </div>
 

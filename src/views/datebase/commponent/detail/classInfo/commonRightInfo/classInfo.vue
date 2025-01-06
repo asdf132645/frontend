@@ -217,7 +217,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'isAllClassesChecked']);
+const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'isAllClassesChecked', 'selectItems']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -260,7 +260,7 @@ import {
 
 const router = useRouter();
 const showLISUploadButton = ref(true);
-const selectItems = ref<any>([]);
+const selectItems = ref<any>(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
@@ -380,10 +380,10 @@ watch(() => props.wbcInfo, async (newItem) => {
   if (Object.keys(newItem).length !== 0) {
     selectItems.value = slideData.value;
     await beforeAfterChange(newItem)
-    wbcMemo.value = selectItems.value?.wbcMemo;
-    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
-    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
-    await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+    wbcMemo.value = props.selectItems?.wbcMemo;
+    const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
+    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
+    await store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
   }
 });
 
@@ -406,16 +406,16 @@ const handleKeyUp = (event: KeyboardEvent) => {
 };
 
 const mountedMethod = async () => {
-  if (isObjectEmpty(selectItems.value)) return;
+  if (isObjectEmpty(props.selectItems)) return;
 
   if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
-    await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
+    await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   }
-  wbcMemo.value = selectItems.value?.wbcMemo;
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
+  wbcMemo.value = props.selectItems?.wbcMemo;
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
   if (selectItems.value?.submitState) {
-    lisBtnColor.value = selectItems.value.submitState === 'lisCbc';
+    lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }
 
 }
@@ -462,7 +462,7 @@ const toggleLockEvent = () => {
 
 const barcodeCopy = async () => {
   const textarea = document.createElement('textarea');
-  textarea.value = selectItems.value.barcodeNo;
+  textarea.value = props.selectItems.barcodeNo;
   document.body.appendChild(textarea);
   textarea.select();
   document.execCommand('copy');
@@ -515,7 +515,7 @@ const uploadLis = async () => {
 const uimdTestCbcLisDataGet = async () => {
   // 서울 성모 테스트 코드
   const codeList = CbcWbcTestCdList_0002;
-  const {wbcInfoAfter} = selectItems.value ?? {};
+  const {wbcInfoAfter} = props.selectItems ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/liveTest`, {   // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
@@ -622,7 +622,7 @@ const uimdTestCbcLisDataGet = async () => {
 
 const cmcSeoulLisAndCbcDataGet = () => {
   const codeList = CbcWbcTestCdList_0002;
-  const {barcodeNo, wbcInfoAfter} = selectItems.value ?? {};
+  const {barcodeNo, wbcInfoAfter} = props.selectItems ?? {};
   let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
   // cbc 결과 조회
   axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
@@ -842,18 +842,18 @@ const gilDataSendLoad = async () => {
       dateTime: getDateTimeStr(),
       security: '',
       messageType: ['ADT', 'R02'],
-      messageControlId: selectItems.value?.barcodeNo,
+      messageControlId: props.selectItems?.barcodeNo,
       processingId: 'P',
       hl7VersionId: '2.5',
       selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: incheonGilPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfo.totalCount),
+      wbcInfo: incheonGilPercentChange(props.selectItems?.wbcInfoAfter, props.selectItems?.wbcInfo.totalCount),
       result: lisCodeWbcArrApp.value,
     };
     const res = await readNoFlagHl7Message(data);
     if (res) {
       if (!lisFilePathSetArr.value.includes("http")) { // file
         const data = {
-          filepath: `${lisFilePathSetArr.value}\\${selectItems.value.barcodeNo}.hl7`,
+          filepath: `${lisFilePathSetArr.value}\\${props.selectItems.barcodeNo}.hl7`,
           msg: res,
         }
         try {
@@ -889,11 +889,11 @@ const gilDataSendLoad = async () => {
 }
 
 const inhaDataSendLoad = async () => {
-  await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
+  await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   const {
     errMessage,
     lisBtnColor: lisBtnColorVal
-  } = await inhaDataSend(selectItems.value?.wbcInfoAfter, selectItems.value?.rbcInfoAfter, selectItems.value?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, selectItems.value, userModuleDataGet.value.id)
+  } = await inhaDataSend(props.selectItems?.wbcInfoAfter, props.selectItems?.rbcInfoAfter, props.selectItems?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, props.selectItems, userModuleDataGet.value.id)
   if (errMessage !== '') {
     toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     showToast(errMessage);
