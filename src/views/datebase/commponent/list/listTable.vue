@@ -46,7 +46,7 @@
           :class="{
             selectedTr: selectedItemId === item.id,
             submittedTr: item.submitState === 'Submit',
-            lisTr: item.submitState === 'lisCbc',
+            lisTr: (item.submitState === 'lisCbc' || item.submitState === 'lis'),
             rock: item.lock_status && item.pcIp !== myIp,
             checkFirst: item.submitState === 'checkFirst',
           }"
