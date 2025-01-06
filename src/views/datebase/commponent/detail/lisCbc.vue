@@ -62,7 +62,7 @@
         </tr>
       </table>
     </div>
-    <div v-else-if="cbcWorkListForShow.length !== 0" class="cbcDivWarp">
+    <div v-else-if="cbcWorkListForShow.length !== 0 || true" class="cbcDivWarp">
       <table class="cbcTable">
         <colgroup>
           <col width="33%"/>
@@ -73,7 +73,7 @@
           <td>{{ cbcItem.classNm }}</td>
           <td>{{ cbcItem.absCount }}</td>
           <td>
-            {{ cbcItem.count }} {{ cbcItem.unit }}
+            {{ cbcItem.percentCount }} {{ cbcItem.unit }}
           </td>
         </tr>
       </table>
@@ -406,29 +406,35 @@ const fileData = async (firstCbcDatafilename: string) => {
     cbcWorkList.value = [];
     cbcWorkListForShow.value = [];
     console.log(msg?.data?.segments)
+    const onlyObx = msg?.data.segments.filter((item: any) => item.name.trim() === 'OBX');
     msg?.data?.segments?.forEach((cbcSegment: any) => {
-      if (cbcSegment.name.trim() === 'OBX') {
+      const segmentName = cbcSegment.name.trim();
+
+      if (segmentName === 'OBX') {
         cbcCodeList.value.forEach((cbcCode: any) => {
           const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
           const sanitizedClassCd = classCd?.replace(/[^a-zA-Z]/g, '');
 
-          const otherClassItemWithPercent = cbcCodeList.value.filter((item: any) => {
+          const percentItem = onlyObx.find((item: any) => {
             const tmpClassCd = item.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
             const sanitizedClassCd2 = tmpClassCd?.replace(/[^a-zA-Z]/g, '');
-            const otherClassUnit = item?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0];
-            return sanitizedClassCd === sanitizedClassCd2 && otherClassUnit === '%';
-          });
+            return sanitizedClassCd === sanitizedClassCd2 && !tmpClassCd.includes('%');
+          })
 
           const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
           const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
-          const percentCount = otherClassItemWithPercent.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-
           const showObj = {
             classNm: cbcCode.fullNm,
-            percentCount: percentCount,
             absCount: count,
             unit: unit,
-          };
+          }
+
+          if (percentItem) {
+            const percentCount = percentItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+            if (unit === '%') {
+              Object.assign(showObj, { percentCount: percentCount });
+            }
+          }
 
           // 클래스 코드가 일치하는 경우
           if (cbcCode.classCd === classCd) {
