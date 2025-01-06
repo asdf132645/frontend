@@ -372,17 +372,18 @@ watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
-watch(() => props.wbcInfo, (newItem) => {
+watch(() => props.wbcInfo, async (newItem) => {
   window.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('keyup', handleKeyUp);
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
   if (Object.keys(newItem).length !== 0) {
-    beforeAfterChange(newItem)
+    selectItems.value = slideData.value;
+    await beforeAfterChange(newItem)
     wbcMemo.value = selectItems.value?.wbcMemo;
     const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
     barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
-    store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+    await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
   }
 });
 
@@ -1205,14 +1206,12 @@ const getOrderClass = async () => {
 
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
-  const filteredItems: any = slideData.value;
-  selectItems.value = filteredItems;
   const customClassItems = selectItems.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
   selectItems.value.wbcInfoAfter = newItem;
 
   const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
   let wbcBeforeInfo = removeDuplicatesById(selectItems.value.wbcInfo.wbcInfo[0] || [])
-  let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || filteredItems.wbcInfo.wbcInfo[0] || []);
+  let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || selectItems.value.wbcInfo.wbcInfo[0] || []);
 
   wbcBeforeInfo = removeDuplicatesById(wbcBeforeInfo);
   wbcAfterInfo = removeDuplicatesById(wbcAfterInfo);
