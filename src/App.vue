@@ -635,6 +635,7 @@ async function socketData(data: any) {
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
+      console.log(slotId);
       try {
         if (currentSlotId.value === '' || currentSlotId.value !== slotId) {
           let result: ApiResponse<void>;
