@@ -43,7 +43,7 @@
           v-if="!crcConnect && showLISUploadButton"
           @click="lisModalOpen"
           class="pos-relative"
-          :class="{'submitted': selectItems?.submitState === 'lisCbc' || lisBtnColor,}"
+          :class="{'submitted': (selectItems?.submitState === 'lisCbc' || selectItems?.submitState === 'lis') || lisBtnColor,}"
           @mouseenter="tooltipVisibleFunc('lisUpload', true)"
           @mouseleave="tooltipVisibleFunc('lisUpload', false)"
       >
