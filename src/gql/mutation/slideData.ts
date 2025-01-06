@@ -75,6 +75,78 @@ export const rbcUpdateDocument = gql`
     }
 `;
 
+export const appVueUpdateDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+        updateRunningInfoGQL(updateDto: $updateDto) {
+            id
+            rbcInfoAfter {
+                classInfo {
+                    classId
+                    classNm
+                    degree
+                    originalDegree
+                    percent
+                }
+                categoryId
+                categoryNm
+            }
+            wbcInfoAfter {
+                id
+                name
+                count
+                title
+                images {
+                    coordinates {
+                        display
+                    }
+                    fileName
+                    title
+                    filter
+                    height
+                    width
+                }
+                percent
+            }
+            wbcInfo {
+                wbcInfo {
+                    id
+                    name
+                    count
+                    title
+                    images {
+                        coordinates {
+                            display
+                        }
+                        fileName
+                        title
+                        filter
+                        height
+                        width
+                    }
+                    percent
+                }
+                totalCount
+                maxWbcCount
+            }
+            rbcInfo {
+                rbcClass {
+                    classInfo {
+                        classId
+                        classNm
+                        degree
+                        originalDegree
+                    }
+                    categoryId
+                    categoryNm
+                }
+                malariaCount
+                maxRbcCount
+                pltCount
+            }
+        }
+    }
+`;
+
 // 뮤테이션 훅 정의
 export function useUpdateRunningInfoMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(UpdateRunningInfoDocument, options);
@@ -90,6 +162,10 @@ export function memoUpdateMutation(options: VueApolloComposable.UseMutationOptio
 
 export function rbcUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(rbcUpdateDocument, options);
+}
+
+export function appVueUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(appVueUpdateDocument, options);
 }
 
 type MutationHook = (options: {

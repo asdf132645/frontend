@@ -52,8 +52,8 @@ import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {ApiResponse} from "@/common/api/httpClient";
 import {createRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import { useRouter } from "vue-router";
-import { getDeviceInfoApi, getDeviceIpApi } from "@/common/api/service/device/deviceApi";
+import {useRouter} from "vue-router";
+import {getDeviceInfoApi, getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import EventBus from "@/eventBus/eventBus";
 import {basicBmClassList, basicWbcArr} from "@/common/defines/constants/classArr";
 import Analysis from "@/views/analysis/index.vue";
@@ -70,6 +70,7 @@ import {
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/store/common";
+import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -114,7 +115,7 @@ const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
-
+const currentSlotId = ref('');
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {
@@ -427,7 +428,7 @@ async function socketData(data: any) {
     }
 
     async function runnStart() {
-      await store.dispatch('commonModule/setCommonInfo', { isRunningState: true });// 실행중이라는 여부를 보낸다
+      await store.dispatch('commonModule/setCommonInfo', {isRunningState: true});// 실행중이라는 여부를 보낸다
       await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'start'}); // 첫 슬라이드가 시작되었음을 알려준다.
       await store.dispatch('commonModule/setCommonInfo', {startEmbedded: 'start',});
       await store.dispatch('timeModule/setTimeInfo', {totalSlideTime: '00:00:00'});
@@ -493,7 +494,7 @@ async function socketData(data: any) {
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'afterChange'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
             await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotNo);
-            await store.dispatch('commonModule/setCommonInfo', { runningSlotId: currentSlot?.slotId });
+            await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
           }
         }
         // 데이터 넣는 부분
@@ -509,11 +510,13 @@ async function socketData(data: any) {
       const completeSlot = params.slotInfo;
       if (completeSlot) {
 
-        completeSlot.userId = userId.value;
-        completeSlot.cassetId = params.cassetId;
-        completeSlot.isNormal = 'Y' // PB 비정상 클래스 체크
+        Object.assign(completeSlot, {
+          userId: userId.value,
+          cassetId: params.cassetId,
+          isNormal: 'Y' // PB 비정상 클래스 체크
+        });
 
-        const { isNormal, classInfo } = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
+        const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
         completeSlot.isNormal = isNormal;
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
@@ -633,14 +636,28 @@ async function socketData(data: any) {
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
       try {
-        let result: ApiResponse<void>;
-        result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
-        if (result) {
-          if (slotId) {
-            console.log('save successful');
+        if (currentSlotId.value === '' || currentSlotId.value !== slotId) {
+          let result: ApiResponse<void>;
+          result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
+          if (result) {
+            if (slotId) {
+              console.log('save successful');
+              currentSlotId.value = slotId;
+            }
+            delayedEmit('SEND_DATA', 'refreshDb', 300);
           }
+        } else {
+          console.log('appVue update')
+          await gqlGenericUpdate(appVueUpdateMutation, {
+            id: runningInfo.id,
+            rbcInfoAfter: runningInfo.rbcInfoAfter,
+            wbcInfoAfter: runningInfo.wbcInfoAfter,
+            wbcInfo: runningInfo.wbcInfo,
+            rbcInfo: runningInfo.rbcInfo
+          });
           delayedEmit('SEND_DATA', 'refreshDb', 300);
         }
+
       } catch (e) {
         console.error(e);
       }
@@ -655,7 +672,7 @@ const getDeviceInfo = async () => {
     const result = await getDeviceInfoApi();
     if (result) {
       sessionStorage.setItem('autoStart', result.data[0]?.autoStart);
-      await store.dispatch('commonModule/setCommonInfo', { siteCd: result.data[0]?.siteCd });
+      await store.dispatch('commonModule/setCommonInfo', {siteCd: result.data[0]?.siteCd});
       localStorage.setItem('siteCd', result.data[0]?.siteCd);
     }
   } catch (err) {
@@ -788,7 +805,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
         const keepPageType = window.PROJECT_TYPE === 'pb' ? 'keepPage' : 'bmKeepPage';
         sessionStorage.setItem(keepPageType, String(data?.keepPage));
-        await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
+        await store.dispatch('commonModule/setCommonInfo', {showLISUploadAfterCheckingAll: data?.lisUploadCheckAll});
         sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
         sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
         sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
@@ -828,7 +845,7 @@ const hideAlert = () => {
 };
 
 const errorClear = async () => {
-  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear });
+  await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear});
 }
 
 </script>
