@@ -477,7 +477,7 @@ async function socketData(data: any) {
               await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
             }
           }
-          await saveTestHistory(data, data?.slotInfo?.slotId);
+          await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
         }
 
@@ -493,7 +493,7 @@ async function socketData(data: any) {
             slotIndex.value = lastCompleteIndex;
             await store.dispatch('runningInfoModule/setChangeSlide', {key: 'changeSlide', value: 'afterChange'});
             await store.dispatch('runningInfoModule/setSlideBoolean', {key: 'slideBoolean', value: true});
-            await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotId);
+            await saveTestHistory(runningArr.value, runningArr.value?.slotInfo?.slotNo);
             await store.dispatch('commonModule/setCommonInfo', {runningSlotId: currentSlot?.slotId});
           }
         }
@@ -635,15 +635,15 @@ async function socketData(data: any) {
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
-      console.log(slotId);
+      console.log(runningInfo.slotId);
       try {
-        if (currentSlotId.value === '' || currentSlotId.value !== slotId) {
+        if (currentSlotId.value === '' || currentSlotId.value !== runningInfo.slotId) {
           let result: ApiResponse<void>;
           result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
           if (result) {
-            if (slotId) {
+            if (runningInfo.slotId) {
               console.log('save successful');
-              currentSlotId.value = slotId;
+              currentSlotId.value = runningInfo.slotId;
             }
             delayedEmit('SEND_DATA', 'refreshDb', 300);
           }
