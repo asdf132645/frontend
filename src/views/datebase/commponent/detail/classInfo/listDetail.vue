@@ -402,13 +402,6 @@ watch(
           cellMarkerIcon.value = false;
           await drawCellMarker(true);
 
-          if (newVal?.submitState === '' || !newVal?.submitState) {
-            await gqlGenericUpdate(firstCheckUpdateMutation, {
-              id: newVal.id,
-              submitState: 'checkFirst',
-            });
-          }
-
         } catch (error) {
           console.error('비동기 작업 중 에러 발생:', error);
         }
