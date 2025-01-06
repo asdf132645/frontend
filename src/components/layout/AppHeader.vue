@@ -62,7 +62,7 @@
           <div class="iconHeaderMenu">
             <ul>
               <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" >
-                <font-awesome-icon :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
+                <font-awesome-icon class="cursorPointer" :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
                 <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
               <li>
@@ -189,7 +189,7 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {logoutApi} from "@/common/api/service/user/userApi";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import axios from "axios";
-import {SOUND_COMPLETE_ALARM, SOUND_ERROR_ALARM} from "@/common/lib/utils/assetUtils";
+import { SOUND_COMPLETE_ALARM, SOUND_ERROR_ALARM } from "@/common/lib/utils/assetUtils";
 import ProgressBar from "@/components/commonUi/ProgressBar.vue";
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
