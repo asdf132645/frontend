@@ -63,18 +63,16 @@
       </table>
     </div>
     <div v-else-if="cbcWorkListForShow.length !== 0 || true" class="cbcDivWarp">
-      <table class="cbcTable">
+      <table class="cbcShowTable">
         <colgroup>
-          <col width="33%"/>
-          <col width="33%"/>
-          <col width="33%"/>
+          <col width="40%" />
+          <col width="40%" />
+          <col width="20%" />
         </colgroup>
         <tr v-for="(cbcItem) in cbcWorkListForShow" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
-          <td>{{ cbcItem.absCount }}</td>
-          <td>
-            {{ cbcItem.percentCount }} {{ cbcItem.unit }}
-          </td>
+          <td>{{ cbcItem.absCount }} {{ cbcItem.absUnit }}</td>
+          <td>{{ cbcItem.percentCount }} {{ cbcItem.unit }}</td>
         </tr>
       </table>
     </div>
@@ -403,85 +401,152 @@ const fileData = async (firstCbcDatafilename: string) => {
     await fileSysCopy(fileParams);
     await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
-    cbcWorkList.value = [];
-    cbcWorkListForShow.value = [];
     console.log(msg?.data?.segments)
-    const onlyObx = msg?.data.segments.filter((item: any) => item.name.trim() === 'OBX');
-    msg?.data?.segments?.forEach((cbcSegment: any) => {
-      const segmentName = cbcSegment.name.trim();
-
-      if (segmentName === 'OBX') {
-        cbcCodeList.value.forEach((cbcCode: any) => {
-          const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-          const sanitizedClassCd = classCd?.replace(/[^a-zA-Z]/g, '');
-
-          const percentItem = onlyObx.find((item: any) => {
-            const tmpClassCd = item.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-            const sanitizedClassCd2 = tmpClassCd?.replace(/[^a-zA-Z]/g, '');
-            return sanitizedClassCd === sanitizedClassCd2 && !tmpClassCd.includes('%');
-          })
-
-          const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-          const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
-          const showObj = {
-            classNm: cbcCode.fullNm,
-            absCount: count,
-            unit: unit,
-          }
-
-          if (percentItem) {
-            const percentCount = percentItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-            if (unit === '%') {
-              Object.assign(showObj, { percentCount: percentCount });
-            }
-          }
-
-          // 클래스 코드가 일치하는 경우
-          if (cbcCode.classCd === classCd) {
-            // 중복 확인: 이미 동일한 classNm이 있는지 확인
-            const isDuplicate = cbcWorkList.value.some(
-                (item: any) => item.classNm === cbcCode.fullNm
-            );
-
-            // 중복이 아닐 경우에만 추가
-            if (!isDuplicate) {
-              const obj = {
-                classNm: cbcCode.fullNm,
-                count: count,
-                unit
-              };
-              cbcWorkList.value.push(obj);
-
-              if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
-                cbcWorkListForShow.value.push(showObj);
-              }
-            }
-          }
-        });
-      }
-      else if(cbcSegment.name.trim() === 'FLG'){
-        const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-        const obj = {
-          classNm: 'FLG',
-          count: flgNm,
-          unit: '',
-        };
-        cbcWorkList.value.push(obj);
-        cbcWorkListForShow.value.push(obj);
-      }
-      else if (cbcSegment.name.trim() === 'PID') {
-        cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
-        cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
-        cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
-        cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
-        hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
-      }
-    });
+    getCBCWorkListFromFileData(msg);
 
     loading.value = false;  // 로딩 상태 종료
   } else {
     console.error(readFileTxtRes.data.message);
     loading.value = false;
+  }
+}
+
+const getCBCWorkListFromFileData = (msg: any) => {
+  cbcWorkList.value = [];
+  cbcWorkListForShow.value = [];
+  const onlyObx = msg?.data.segments.filter((item: any) => item.name.trim() === 'OBX');
+
+  switch (siteCd.value) {
+    case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
+    case '':
+    case '0000':
+      msg?.data?.segments?.forEach((cbcSegment: any) => {
+        const segmentName = cbcSegment.name.trim();
+
+        if (segmentName === 'OBX') {
+          cbcCodeList.value.forEach((cbcCode: any) => {
+            const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+            const sanitizedClassCd = classCd?.replace(/[^a-zA-Z]/g, '');
+
+            const absItem = onlyObx.find((item: any) => {
+              const tmpClassCd = item.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+              const sanitizedClassCd2 = tmpClassCd?.replace(/[^a-zA-Z]/g, '');
+              return sanitizedClassCd === sanitizedClassCd2 && !tmpClassCd.includes('%');
+            })
+
+            // absCount =>
+            const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+            const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
+            const showObj = {
+              classNm: cbcCode.fullNm,
+              unit: unit,
+            }
+
+            if (unit !== '%') {
+              Object.assign(showObj, { absCount: count, absUnit: unit });
+            }
+
+            if (absItem) {
+              const absCount = absItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+              if (unit === '%') {
+                console.log(cbcCode.fullNm, count);
+                Object.assign(showObj, { absCount: absCount, percentCount: count });
+              }
+            }
+
+            // 클래스 코드가 일치하는 경우
+            if (cbcCode.classCd === classCd) {
+              // 중복 확인: 이미 동일한 classNm이 있는지 확인
+              const isDuplicate = cbcWorkList.value.some(
+                  (item: any) => item.classNm === cbcCode.fullNm
+              );
+
+              // 중복이 아닐 경우에만 추가
+              if (!isDuplicate) {
+                const obj = {
+                  classNm: cbcCode.fullNm,
+                  count: count,
+                  unit
+                };
+                cbcWorkList.value.push(obj);
+                cbcWorkListForShow.value.push(showObj);
+              }
+            }
+          });
+        }
+        else if(cbcSegment.name.trim() === 'FLG'){
+          const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+          const obj = {
+            classNm: 'FLG',
+            count: flgNm,
+            unit: '',
+          };
+
+          const showObj = {
+            classNm: 'FLG',
+            absCount: flgNm,
+            unit: '',
+          }
+          cbcWorkList.value.push(obj);
+          cbcWorkListForShow.value.push(showObj);
+        }
+        else if (cbcSegment.name.trim() === 'PID') {
+          cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
+          cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
+          cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
+          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
+          hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
+        }
+      });
+      break;
+
+    default:
+      msg?.data?.segments?.forEach((cbcSegment: any) => {
+        const segmentName = cbcSegment.name.trim();
+
+        if (segmentName === 'OBX') {
+          cbcCodeList.value.forEach((cbcCode: any) => {
+            const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+            const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+            const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
+
+            // 클래스 코드가 일치하는 경우
+            if (cbcCode.classCd === classCd) {
+              // 중복 확인: 이미 동일한 classNm이 있는지 확인
+              const isDuplicate = cbcWorkList.value.some(
+                  (item: any) => item.classNm === cbcCode.fullNm
+              );
+
+              // 중복이 아닐 경우에만 추가
+              if (!isDuplicate) {
+                const obj = {
+                  classNm: cbcCode.fullNm,
+                  count: count,
+                  unit
+                };
+                cbcWorkList.value.push(obj);
+              }
+            }
+          });
+        }
+        else if(cbcSegment.name.trim() === 'FLG'){
+          const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+          const obj = {
+            classNm: 'FLG',
+            count: flgNm,
+            unit: '',
+          };
+          cbcWorkList.value.push(obj);
+        }
+        else if (cbcSegment.name.trim() === 'PID') {
+          cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
+          cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
+          cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
+          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
+          hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
+        }
+      });
+      break;
   }
 }
 

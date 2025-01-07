@@ -291,7 +291,6 @@ const props = defineProps<{
   imageSize: number;
   wpsShow: boolean;
   selectItems: any;
-  isAllClassesChecked: boolean;
 }>();
 const emits = defineEmits();
 const wbcInfoArrChild = ref<any>([]);
@@ -358,15 +357,8 @@ watch(
 
 const handleScroll = () => {
   if (!scrollContainer.value) return;
-
   const isAtBottom = scrollContainer.value.scrollTop + scrollContainer.value.clientHeight >= scrollContainer.value.scrollHeight;
-  if (isAtBottom && !props.isAllClassesChecked) {
-    // update 필요: isAllClassesChecked에 true 값
-    // update 필요: isAllClassesChecked에 true 값
-    // update 필요: isAllClassesChecked에 true 값
-    // update 필요: isAllClassesChecked에 true 값
-    // update 필요: isAllClassesChecked에 true 값
-    // update 필요: isAllClassesChecked에 true 값
+  if (isAtBottom && !props.selectItems.isAllClassesChecked) {
     emits('allClassesChecked')
   }
 }

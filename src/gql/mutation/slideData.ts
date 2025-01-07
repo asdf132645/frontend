@@ -65,6 +65,15 @@ export const memoUpdateDocument = gql`
     }
 `;
 
+export const isAllClassCheckedDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+        updateRunningInfoGQL(updateDto: $updateDto) {
+            id
+            isAllClassesChecked
+        }
+    }
+`;
+
 export const rbcUpdateDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
         updateRunningInfoGQL(updateDto: $updateDto) {
@@ -171,6 +180,10 @@ export function memoUpdateMutation(options: VueApolloComposable.UseMutationOptio
 
 export function rbcUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(rbcUpdateDocument, options);
+}
+
+export function isAllClassCheckedUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(isAllClassCheckedDocument, options);
 }
 
 export function appVueUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {

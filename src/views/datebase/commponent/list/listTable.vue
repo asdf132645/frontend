@@ -637,7 +637,6 @@ const openLayer = () => {
 };
 
 const deleteRow = async (selectedItems) => {
-  console.log('selectedItems', selectedItems);
   try {
     if (selectedItemId.value === '') {
       showErrorAlert(MESSAGES.IDS_ERROR_SELECT_A_TARGET_ITEM);

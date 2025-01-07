@@ -4021,9 +4021,25 @@ table.cbcTable {
     width: 100%;
 }
 
+table.cbcShowTable {
+    border-collapse: collapse;
+    width: 230px;
+    text-align: left;
+    table-layout: fixed;
+    border-spacing: 0;
+}
+
+table.cbcShowTable td {
+    padding: 8px 0 8px 2px;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #dedede;
+    word-wrap: break-word;
+}
+
 .cbcDivWarp {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 80vh;
+    width: 100%;
 }
 
 table.cbcTable td {
@@ -5535,6 +5551,10 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
+}
+
+.tooltip-container > pre {
+    color: white;
 }
 
 .tooltip-pos-top {
