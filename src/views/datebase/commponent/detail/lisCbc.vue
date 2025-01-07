@@ -63,18 +63,16 @@
       </table>
     </div>
     <div v-else-if="cbcWorkListForShow.length !== 0 || true" class="cbcDivWarp">
-      <table class="cbcTable">
+      <table class="cbcShowTable">
         <colgroup>
-          <col width="33%"/>
-          <col width="33%"/>
-          <col width="33%"/>
+          <col width="30%" />
+          <col width="20%" />
+          <col width="40%" />
         </colgroup>
         <tr v-for="(cbcItem) in cbcWorkListForShow" :key="cbcItem.id">
           <td>{{ cbcItem.classNm }}</td>
           <td>{{ cbcItem.absCount }}</td>
-          <td>
-            {{ cbcItem.percentCount }} {{ cbcItem.unit }}
-          </td>
+          <td>{{ cbcItem.percentCount }} {{ cbcItem.unit }}</td>
         </tr>
       </table>
     </div>
@@ -415,7 +413,7 @@ const fileData = async (firstCbcDatafilename: string) => {
           const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
           const sanitizedClassCd = classCd?.replace(/[^a-zA-Z]/g, '');
 
-          const percentItem = onlyObx.find((item: any) => {
+          const absItem = onlyObx.find((item: any) => {
             const tmpClassCd = item.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
             const sanitizedClassCd2 = tmpClassCd?.replace(/[^a-zA-Z]/g, '');
             return sanitizedClassCd === sanitizedClassCd2 && !tmpClassCd.includes('%');
@@ -425,14 +423,16 @@ const fileData = async (firstCbcDatafilename: string) => {
           const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
           const showObj = {
             classNm: cbcCode.fullNm,
-            absCount: count,
+            percentCount: count,
             unit: unit,
           }
 
-          if (percentItem) {
-            const percentCount = percentItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+          if (absItem) {
+            const absCount = absItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
             if (unit === '%') {
-              Object.assign(showObj, { percentCount: percentCount });
+              console.log(cbcCode.fullNm, count);
+              Object.assign(showObj, { absCount: absCount, percentCount: count });
+              console.log('showObj', showObj);
             }
           }
 
@@ -466,8 +466,17 @@ const fileData = async (firstCbcDatafilename: string) => {
           count: flgNm,
           unit: '',
         };
+
+        const showObj = {
+          classNm: 'FLG',
+          absCount: flgNm,
+          unit: '',
+        }
         cbcWorkList.value.push(obj);
-        cbcWorkListForShow.value.push(obj);
+
+        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']) {
+          cbcWorkListForShow.value.push(showObj);
+        }
       }
       else if (cbcSegment.name.trim() === 'PID') {
         cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
@@ -478,6 +487,7 @@ const fileData = async (firstCbcDatafilename: string) => {
       }
     });
 
+    console.log('cbcWorkListForShow', cbcWorkListForShow);
     loading.value = false;  // 로딩 상태 종료
   } else {
     console.error(readFileTxtRes.data.message);
