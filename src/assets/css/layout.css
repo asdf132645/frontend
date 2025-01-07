@@ -4025,6 +4025,7 @@ table.cbcShowTable {
     border-collapse: collapse;
     width: 230px;
     text-align: left;
+    table-layout: fixed;
     border-spacing: 0;
 }
 
