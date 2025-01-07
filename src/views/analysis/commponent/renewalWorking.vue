@@ -65,7 +65,7 @@
 
 
     </div>
-    <GaugeBar :parsedDataSysInfo="parsedDataSysInfo" v-if="siteCd === '0000'"/>
+    <GaugeBar :parsedDataSysInfo="parsedDataSysInfo"/>
     <div class='slideCardWrap' v-if="pbVersion === '12a'">
       <ul class='slideContent'>
         <li v-for="item in slideCardData.INPUT" :key="item.slotNo"
@@ -217,7 +217,6 @@ watch(
       progressData.progressBarText = newVal.progressBarText || '';
       progressData.progressBarPercent = newVal.progressBarPercent || 25;
       // 데이터 변경 시 실행할 코드
-      console.log(newVal)
     },
     {deep: true}
 );
