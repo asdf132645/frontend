@@ -116,6 +116,7 @@ const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
 const currentSlotId = ref('');
+const runningInfoId = ref('');
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {
@@ -640,16 +641,19 @@ async function socketData(data: any) {
           let result: ApiResponse<void>;
           result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
           if (result) {
+            console.log(result)
             if (runningInfo.slotId) {
               console.log('save successful');
               currentSlotId.value = runningInfo.slotId;
+              runningInfoId.value = runningInfo.id;
             }
             delayedEmit('SEND_DATA', 'refreshDb', 300);
           }
         } else {
-          console.log('appVue update');
+          console.log('appVue update')
+
           await gqlGenericUpdate(appVueUpdateMutation, {
-            id: runningInfo.id,
+            id: runningInfoId.value,
             rbcInfoAfter: runningInfo.rbcInfoAfter,
             wbcInfoAfter: runningInfo.wbcInfoAfter,
             wbcInfo: runningInfo.wbcInfo,

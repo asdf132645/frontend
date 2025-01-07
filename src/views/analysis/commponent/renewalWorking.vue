@@ -223,7 +223,6 @@ watch(
 
 watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
   const slotArray = JSON.parse(JSON.stringify(newSlot));
-  console.log('slotArray', slotArray)
   iCasExist.value = slotArray[0]?.runningInfo?.iCasExist;
   oCasExist.value = slotArray[0]?.runningInfo?.oCasExist;
   if (slotArray[0].changeSlideState?.changeSlide.value === 'start' && slotArray[0].slideBooleanState?.slideIs.value === true) {

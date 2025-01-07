@@ -5652,9 +5652,11 @@ table.defaultTable.dbDataTable tr th {
 
 /* 전체 프로그레스바 */
 .progress-bar-guage {
-    width: 100%;
-    max-width: 600px;
-    margin: 30px 0px 15px 0px;
+    width: 81%;
+    max-width: 571px;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -5668,7 +5670,6 @@ table.defaultTable.dbDataTable tr th {
 .steps-container {
     width: 100%;
     display: flex;
-    cursor: grab;
     justify-content: center; /* 변경: 중앙 정렬 */
 }
 
@@ -5688,8 +5689,8 @@ table.defaultTable.dbDataTable tr th {
 }
 
 .circleChild {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     border: 2px solid lightgray;
     background-color: white;
@@ -5746,9 +5747,9 @@ table.defaultTable.dbDataTable tr th {
     margin-left: 15px;
 }
 
-.circleGuage.waitingStep .circleChild, .circleGuage.completedStep .circleChild {
-    width: 30px;
-    height: 30px;
+.circleGuage.active .circleChild {
+    width: 40px;
+    height: 40px;
 }
 
 .circleGuage.completedStep > .circleChild {
