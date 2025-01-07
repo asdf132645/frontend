@@ -27,9 +27,15 @@
               <span>[ {{ item?.code }} ]</span>
               <span> {{ item?.name }} </span>
             </div>
-            <div class="arrLogDesc">{{ item?.desc }}</div>
-            <div class="arrLogDesc">{{ item?.soln }}</div>
-            <div class="errLogTimestamp">{{ item?.timestamp }}</div>
+            <div class="arrLogDesc">
+              Description: {{ item?.desc }}
+            </div>
+            <div class="arrLogDesc">
+              Solution: {{ item?.soln }}
+            </div>
+            <div class="errLogTimestamp">
+              {{ item?.timestamp }}
+            </div>
           </div>
         </li>
       </template>
