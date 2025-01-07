@@ -326,7 +326,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   await nextTick();
   await dataAutoComputeLoad();
-  submitState.value = props.selectItems?.submitState === 'lisCbc' || props.selectItems?.submitState === 'Submit';
+  submitState.value =  props.selectItems?.submitState.includes('lis') || props.selectItems?.submitState === 'Submit';
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원'] || siteCd.value) {
     const {data, cbcDataVal, slip} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
     ywmcSlip.value = slip;
