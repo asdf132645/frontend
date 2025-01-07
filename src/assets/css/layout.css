@@ -5553,6 +5553,10 @@ progress::-moz-progress-bar {
     box-shadow: 2px 2px 2px var(--black-color);
 }
 
+.tooltip-container > pre {
+    color: white;
+}
+
 .tooltip-pos-top {
     bottom: 100%;
     left: 50%;

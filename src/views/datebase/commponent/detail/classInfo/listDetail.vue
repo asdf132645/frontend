@@ -25,9 +25,9 @@
                  @nextPage="nextPage"
                  @scrollEvent="scrollToElement"
                  @uploadLisChangeSlide="uploadLisChangeSlide"
-                 :isAllClassesChecked="isAllClassesChecked"
                  @submitStateChanged="submitStateChanged"
                  :selectItems="selectItems"
+                 :checkedAllClass="checkedAllClass"
       />
     </div>
 
@@ -168,7 +168,6 @@
             :isBorderChanged="isBorderChanged"
             :isSelected="isSelected"
             :imageSize="imageSize"
-            :isAllClassesChecked="isAllClassesChecked"
             :updateWbcInfo="updateWbcInfo"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
@@ -275,7 +274,12 @@ import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageT
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
-import {firstCheckUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
+import {
+  gqlGenericUpdate,
+  isAllClassCheckedUpdateMutation,
+  rbcUpdateMutation,
+  useUpdateRunningInfoMutation
+} from "@/gql/mutation/slideData";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -355,7 +359,7 @@ const slideData = computed(() => store.state.slideDataModule);
 const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
-const isAllClassesChecked = ref(false);
+const checkedAllClass = ref(false);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -468,8 +472,8 @@ const handleZoom = () => {
 };
 
 const getDetailRunningInfo = async (newValue: any) => {
+  console.log('newValue', newValue);
   try {
-    isAllClassesChecked.value = newValue.value?.isAllClassesChecked;
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
     patientNm.value = newValue?.patientNm;
     cbcPatientNm.value = newValue?.cbcPatientNm;
@@ -1956,11 +1960,14 @@ const updateCBCData = async (incomingSlideData: any) => {
 }
 
 const allClassesChecked = async () => {
-  isAllClassesChecked.value = true;
+  checkedAllClass.value = !checkedAllClass.value;
+  const updatedRuningInfo = { ...slideData.value, isAllClassesChecked: true };
+  await gqlGenericUpdate(isAllClassCheckedUpdateMutation, {
+    id: slideData.value.id,
+    isAllClassesChecked: true,
+  });
 
-  // const result = slideData.value;
-  // result.isAllClassesChecked = true;
-  // await gqlIsAllClassesCheckedUpdate([result]);
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 }
 
 const submitStateChanged = (changedSubmitState: string) => {

@@ -217,7 +217,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'isAllClassesChecked', 'selectItems']);
+const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'selectItems', 'checkedAllClass']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -266,6 +266,7 @@ const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const slideData = computed(() => store.state.slideDataModule);
+const showLISUploadAfterCheckingAll = computed(() => store.state.commonModule.showLISUploadAfterCheckingAll);
 
 const barcodeImg = ref('');
 const userId = ref('');
@@ -318,6 +319,7 @@ const tooltipVisible = ref<TooltipClassInfoType>({
 onBeforeMount(async () => {
   barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
+
   const crcOptionApi = await crcOptionGet();
   if (crcOptionApi.data.length !== 0) {
     crcConnect.value = crcOptionApi.data[0].crcConnect;
@@ -346,27 +348,12 @@ onMounted(async () => {
     cbcCodeList.value = await getCbcCodeList();
   }
   barCodeImageShowError.value = false;
-
-  // if (!showLISUploadAfterCheckingAll.value) {
-  //   showLISUploadButton.value = true;
-  // } else {
-  //   showLISUploadButton.value = props.isAllClassesChecked;
-  // }
 })
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('keyup', handleKeyUp);
 })
-
-// watch(() => props.isAllClassesChecked, () => {
-//
-//   if (!showLISUploadAfterCheckingAll.value) {
-//     showLISUploadButton.value = true;
-//   } else {
-//     showLISUploadButton.value = props.isAllClassesChecked;
-//   }
-// })
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
@@ -377,6 +364,7 @@ watch(() => props.wbcInfo, async (newItem) => {
   window.removeEventListener('keyup', handleKeyUp);
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
+  setShowLISButton();
   if (Object.keys(newItem).length !== 0) {
     selectItems.value = slideData.value;
     await beforeAfterChange(newItem)
@@ -386,6 +374,18 @@ watch(() => props.wbcInfo, async (newItem) => {
     await store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
   }
 });
+
+watch(() => props.checkedAllClass, () => {
+  showLISUploadButton.value = true;
+})
+
+const setShowLISButton = () => {
+  if (!showLISUploadAfterCheckingAll.value) {
+    showLISUploadButton.value = true;
+  } else {
+    showLISUploadButton.value = slideData.value.submitState.includes('lis') || slideData.value.isAllClassesChecked;
+  }
+}
 
 const handleKeyDown = (event: KeyboardEvent) => {
   if (router.currentRoute.value.path === '/report') return;

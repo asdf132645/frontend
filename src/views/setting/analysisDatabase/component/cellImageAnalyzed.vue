@@ -216,24 +216,24 @@
         />
       </td>
     </tr>
-<!--    <tr>-->
-<!--      <th class="pos-relative">-->
-<!--        LIS Upload Check-->
-<!--        <font-awesome-icon-->
-<!--            :icon="['fas', 'circle-info']"-->
-<!--            @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"-->
-<!--            @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"-->
-<!--        />-->
-<!--        <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK" />-->
-<!--      </th>-->
-<!--      <td>-->
-<!--        <font-awesome-icon-->
-<!--            :icon="lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"-->
-<!--            class="iconSize"-->
-<!--            @click="toggleLisUploadCheckAll"-->
-<!--        />-->
-<!--      </td>-->
-<!--    </tr>-->
+    <tr>
+      <th class="pos-relative">
+        LIS Upload Check
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"
+            @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK" />
+      </th>
+      <td>
+        <font-awesome-icon
+            :icon="lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+            class="iconSize"
+            @click="toggleLisUploadCheckAll"
+        />
+      </td>
+    </tr>
     </tbody>
 </table>
 

@@ -38,6 +38,7 @@ export const initialState: SlideDataState = {
     img_drive_root_path: '',
     hosName: '',
     abnormalClassInfo: {},
+    isAllClassesChecked: false,
 };
 
 // RunningDataState 정의 (변경 없음)
@@ -80,6 +81,7 @@ export interface SlideDataState {
     img_drive_root_path?: string;
     hosName?: string;
     abnormalClassInfo?: object;
+    isAllClassesChecked?: boolean;
 }
 
 // RunningDataModule 정의
@@ -125,6 +127,7 @@ interface SlideDataModule {
         setImgDriveRootPath(state: SlideDataState, imgDriveRootPath: string): void;
         setHosName(state: SlideDataState, hosName: string): void;
         setAbnormalClassInfo(state: SlideDataState, abnormalClassInfo: object): void;
+        setIsAllClassesChecked(state: SlideDataState, isAllClassesChecked: boolean): void;
         resetState(state: SlideDataState): void; // 전체 초기화 메서드
     };
     actions: {
@@ -174,6 +177,7 @@ export const slideDataModule: SlideDataModule = {
         img_drive_root_path: '',
         hosName: '',
         abnormalClassInfo: {},
+        isAllClassesChecked: false,
     }),
     mutations: {
         setId(state, id) {
@@ -290,6 +294,9 @@ export const slideDataModule: SlideDataModule = {
         setAbnormalClassInfo(state, abnormalClassInfo) {
             state.abnormalClassInfo = abnormalClassInfo;
         },
+        setIsAllClassesChecked(state, isAllClassesChecked) {
+            state.isAllClassesChecked = isAllClassesChecked;
+        },
         resetState(state) {
             Object.assign(state, { ...initialState });
         },
@@ -336,6 +343,7 @@ export const slideDataModule: SlideDataModule = {
             commit('setImgDriveRootPath', payload.img_drive_root_path);
             commit('setHosName', payload.hosName);
             commit('setAbnormalClassInfo', payload.abnormalClassInfo);
+            commit('setIsAllClassesChecked', payload.isAllClassesChecked);
         },
         resetSlideData({ commit }) {
             commit('resetState');
