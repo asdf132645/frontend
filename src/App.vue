@@ -635,7 +635,6 @@ async function socketData(data: any) {
     }
 
     async function saveRunningInfo(runningInfo: any, slotId: any, last: any) {
-      console.log(runningInfo.slotId);
       try {
         if (currentSlotId.value === '' || currentSlotId.value !== runningInfo.slotId) {
           let result: ApiResponse<void>;
@@ -648,7 +647,7 @@ async function socketData(data: any) {
             delayedEmit('SEND_DATA', 'refreshDb', 300);
           }
         } else {
-          console.log('appVue update')
+          console.log('appVue update');
           await gqlGenericUpdate(appVueUpdateMutation, {
             id: runningInfo.id,
             rbcInfoAfter: runningInfo.rbcInfoAfter,
