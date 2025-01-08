@@ -19,6 +19,16 @@
           </p>
           <p>{{ projectType === 'bm' ? 'BM CELL' : 'WBC' }}</p>
         </li>
+        <li
+            :class="{ onRight: isActive('/databasePlt') }"
+            @click="pageGo('/databasePlt')"
+            v-if="projectType !== 'bm'"
+        >
+          <p class="menuIco">
+            <font-awesome-icon :icon="['fas', 'certificate']"/>
+          </p>
+          <p>Plt</p>
+        </li>
         <li v-if="!isLoading" :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'clipboard']"/>
@@ -135,9 +145,9 @@ onUnmounted(async () => {
 
 const getDetailRunningInfo = async () => {
   try {
-    const { result, loading, error } = useGetRunningInfoByIdQuery(
-        { id: Number(selectedSampleId.value) },
-        { fetchPolicy: 'no-cache' }
+    const {result, loading, error} = useGetRunningInfoByIdQuery(
+        {id: Number(selectedSampleId.value)},
+        {fetchPolicy: 'no-cache'}
     );
 
     watch(result, (newValue) => {
@@ -149,14 +159,13 @@ const getDetailRunningInfo = async () => {
         const result = newValue?.getRunningInfoByIdGQL;
         selectItems.value = result;
 
-        store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType });
+        store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
 
         resData.value = result;
       } else {
         console.log('No result');
       }
     });
-
 
 
   } catch (e) {
@@ -267,7 +276,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
     if (res.data !== null) {
       resData.value = res.data;
       const result = await getDeviceIpApi();
-      if(res.data.pcIp !== result.data && res.data.lock_status){
+      if (res.data.pcIp !== result.data && res.data.lock_status) {
         return;
       }
       await store.dispatch('slideDataModule/updateSlideData', res.data);
@@ -317,7 +326,7 @@ const processNextDbIndex = async (direction: any, id: number) => {
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';
     return;
-  }else{
+  } else {
     await handleDataResponse(res?.id, res);
   }
 };

@@ -6,6 +6,7 @@ import loginView from '@/views/login/index.vue';
 import setting from '@/views/setting/index.vue'
 import Database from '@/views/datebase/index.vue';
 import DatabaseRbc from '@/views/datebase/commponent/detail/rbc/listDetailRbc.vue';
+import DatabasePlt from '@/views/datebase/commponent/detail/plt/listDetailPlt.vue'
 import Report from '@/views/datebase/commponent/detail/report/report.vue';
 import databaseDetail from '@/views/datebase/commponent/detail/classInfo/listDetail.vue';
 import DatabaseWhole from '@/views/datebase/commponent/detail/databaseWhole/index.vue';
@@ -60,6 +61,11 @@ const router = createRouter({
             path: '/databaseRbc',
             name: 'databaseRbc',
             component: DatabaseRbc,
+        },
+        {
+            path: '/databasePlt',
+            name: 'databasePlt',
+            component: DatabasePlt,
         },
         {
             path: '/report',

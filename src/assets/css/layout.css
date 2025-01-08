@@ -5848,6 +5848,18 @@ button.gbArrowButton.left {
     background: none!important;
 }
 
+.plt.databaseWbcLeft {
+    width: 98.5%;
+}
+
+.plt.databaseWbcLeft.cbcLayer {
+    width: 86%;
+}
+
+.btn-container_img_list.plt {
+    justify-content: flex-end;
+}
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

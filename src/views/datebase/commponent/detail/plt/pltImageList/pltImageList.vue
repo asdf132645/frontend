@@ -1,20 +1,6 @@
 <template>
   <div class="rbc-container imgList">
-    <div class="btn-container_img_list">
-      <div>
-        <button
-            @click="toggleViewer('lowMag')"
-            class="tab-btn_img_list"
-            :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"
-        >Low magnification
-        </button>
-        <button
-            @click="toggleViewer('malaria')"
-            class="tab-btn_img_list"
-            :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"
-        >Malaria
-        </button>
-      </div>
+    <div class="btn-container_img_list plt">
       <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
         <button class="darkButton" @click="imgSetOpen" v-show="activeTab !== 'malaria'">IMG Setting</button>
         <div class="imgSet_img_list" v-show="imgSet_img_list">
@@ -73,16 +59,7 @@
                 @click="onClickGrid"
             />
           </div>
-          <!-- <div>
-            <font-awesome-icon :icon="['fas', 'crop']"/>
-            <span>Crop</span>
-            <font-awesome-icon
-              :icon="isCrop? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              @click="onClickCrop"
-            />
-          </div> -->
           <div>
-
             <div>
               <font-awesome-icon :icon="['fas', 'ruler']"/>
               <span>Ruler</span>
@@ -114,8 +91,7 @@
       </div>
     </div>
     <div class="tiling-viewer_img_list-box_img_list">
-      <Malaria v-if="activeTab === 'malaria'" :selectItems="selectItems"/>
-      <div v-else-if="activeTab !== 'malaria' && tileExist" ref="tilingViewerLayer" id="tiling-viewer_img_list"
+      <div v-if="tileExist" ref="tilingViewerLayer" id="tiling-viewer_img_list"
            @contextmenu.prevent="rbcClassRightClick"></div>
       <div v-else>
         <span>Tile does not exist.</span>
@@ -210,7 +186,6 @@ const rulerPos = ref({
 });
 const rulerSize = ref(5);
 const rulerWidth = ref(0);
-const viewBoxWH = ref(150);
 const tilingViewerLayer = ref(null);
 const tileExist = ref(true);
 const newItemClassInfoArr = ref<any>([]);
@@ -945,9 +920,10 @@ const fetchTilesInfo = async (folderPath: string) => {
     const tilesInfo = [];
     fileNameResultArr.value = [];
     for (const fileName of fileNames) {
-      const keywords = ['zPLT_Image', 'files'];
-      const notPlt = keywords.every(keyword => fileName.includes(keyword));
-      if (fileName.endsWith('_files') && !notPlt) {
+      const keywords = ['RBC_Image', 'files'];
+      const notRbc = keywords.every(keyword => fileName.includes(keyword));
+
+      if (fileName.endsWith('_files') && !notRbc) {
 
         const fileNameResult = extractSubStringBeforeFiles(fileName);
         fileNameResultArr.value.push(fileNameResult)
