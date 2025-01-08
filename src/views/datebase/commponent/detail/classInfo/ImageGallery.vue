@@ -357,7 +357,7 @@ watch(
 
 const handleScroll = () => {
   if (!scrollContainer.value) return;
-  const isAtBottom = scrollContainer.value.scrollTop + scrollContainer.value.clientHeight >= scrollContainer.value.scrollHeight;
+  const isAtBottom = scrollContainer.value.scrollTop + scrollContainer.value.clientHeight + 50 >= scrollContainer.value.scrollHeight;
   if (isAtBottom && !props.selectItems.isAllClassesChecked) {
     emits('allClassesChecked')
   }
