@@ -534,13 +534,14 @@ li.errLogLi.warning:before {
 }
 
 .errLogTitle {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
 .errLogIco {
     margin-right: 5px;
+    font-size: 1rem;
 }
 
 .errLogIco .warn {
@@ -5693,10 +5694,6 @@ table.defaultTable.dbDataTable tr th {
     justify-content: center; /* 변경: 중앙 정렬 */
 }
 
-.steps-container:active {
-    cursor: grabbing;
-}
-
 /* 동그라미 */
 .circleGuage {
     width: 50px;
@@ -5732,18 +5729,19 @@ table.defaultTable.dbDataTable tr th {
 .circleGuage.active .circleChild {
     background-color: #ffffff;
     color: black;
-    border-color: #00c2ff;
+    /*border-color: #00c2ff;*/
 }
-
+.circleGuage.waitingStep {
+    background: none!important;
+}
 .circleGuage.waiting .circleChild {
     background-color: lightgray;
     color: white;
     border-color: lightgray;
 }
 
-
-.steps-container:active {
-    cursor: grabbing;
+.circleGuage.completedStep {
+    background: none !important;
 }
 
 .steps {

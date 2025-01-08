@@ -1,7 +1,7 @@
 <template>
   <div class="errLogDiv">
     <div class="title">
-      <span>Notifications <span class="errLogNum">displayed 24 hours</span> </span>
+      <span>Notifications <span class="errLogNum">in 24 hours</span> </span>
       <span class="errLogClose" @click="closeNoti">
         <font-awesome-icon :icon="['fas', 'circle-xmark']"/>
       </span>

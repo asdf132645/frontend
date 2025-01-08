@@ -15,6 +15,9 @@
           <!-- 동그라미 -->
           <div
               class="circleGuage"
+              :style="{
+              background: `conic-gradient(#00c2ff ${step.progressPercent}%, #e0e0e0 ${step.progressPercent}% 100%)`
+            }"
               :class="{
               completedStep: step.progressPercent === 100,
               active: step.progressPercent > 0 && step.progressPercent < 100,
@@ -39,14 +42,14 @@
         @click="moveStep('prev')"
         :disabled="activeStepIndex === 0"
     >
-      <font-awesome-icon :icon="['fas', 'caret-left']" />
+      <font-awesome-icon :icon="['fas', 'caret-left']"/>
     </button>
     <button
         class="gbArrowButton right"
         @click="moveStep('next')"
         :disabled="activeStepIndex === progressData.progressArr.length - 1"
     >
-      <font-awesome-icon :icon="['fas', 'caret-right']" />
+      <font-awesome-icon :icon="['fas', 'caret-right']"/>
     </button>
   </div>
   <div class="bottomDot">
@@ -84,7 +87,6 @@ watch(
     (newData) => {
       if (newData) {
         const newArr = newData.progressArr || [];
-        console.log(JSON.stringify(newArr))
         const validArr = newArr.filter((step: any) => step.progressName.trim() !== "");
 
         const existingNos = progressData.progressArr.map((step: any) => step.progressNo);
@@ -97,7 +99,6 @@ watch(
 
         const isSame = JSON.stringify(sameDataArr) === JSON.stringify(newArr2);
         if (isSame) {
-          console.log('same')
           return;
         }
 
@@ -112,25 +113,26 @@ watch(
           });
         }
 
-        validArr.forEach((step: any) => {
-          if (step.progressNo === 0 || step.progressName === '') {
-            return;
-          }
-          const existingStepIndex = progressData.progressArr.findIndex(
-              (existing: any) => existing.progressNo === step.progressNo
-          );
-
-          if (existingStepIndex !== -1) {
-            progressData.progressArr[existingStepIndex].progressName = step.progressName;
-            progressData.progressArr[existingStepIndex].progressPercent = step.progressPercent;
-          } else {
-            progressData.progressArr.push({
-              progressNo: step.progressNo,
-              progressName: step.progressName,
-              progressPercent: step.progressPercent,
-            });
-          }
-        });
+        progressData.progressArr = validArr;
+        // validArr.forEach((step: any) => {
+        //   if (step.progressNo === 0 || step.progressName === '') {
+        //     return;
+        //   }
+        //   const existingStepIndex = progressData.progressArr.findIndex(
+        //       (existing: any) => existing.progressNo === step.progressNo
+        //   );
+        //
+        //   if (existingStepIndex !== -1) {
+        //     progressData.progressArr[existingStepIndex].progressName = step.progressName;
+        //     progressData.progressArr[existingStepIndex].progressPercent = step.progressPercent;
+        //   } else {
+        //     progressData.progressArr.push({
+        //       progressNo: step.progressNo,
+        //       progressName: step.progressName,
+        //       progressPercent: step.progressPercent,
+        //     });
+        //   }
+        // });
 
         progressData.progressArr.sort((a: any, b: any) => a.progressNo - b.progressNo);
 
@@ -218,6 +220,6 @@ onMounted(() => {
   //       {progressNo: 2, progressName: "Step 2", progressPercent: 0},
   //   );
   // }
-  // startFakeDataTest();
+  startFakeDataTest();
 });
 </script>
