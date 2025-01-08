@@ -1,17 +1,15 @@
 <template>
   <div class="errLogDiv">
-    <!--    <p class="errLogClose">-->
-    <!--      <font-awesome-icon :icon="['fas', 'circle-xmark']"/>-->
-    <!--    </p>-->
     <div class="title">
       <span>Notifications <span class="errLogNum">displayed 24 hours</span> </span>
       <span class="errLogClose" @click="closeNoti">
         <font-awesome-icon :icon="['fas', 'circle-xmark']"/>
       </span>
     </div>
-    <ul>
+    <ul v-if="errArr.length !== 0">
       <template v-for="(item, idx) in errArr" :key="idx">
-        <li v-if="item.type !== 'DLOG' && item.type !== ''" :class="['errLogLi', item.type ? item.type.toLowerCase() : '']">
+        <li v-if="item.type !== 'DLOG' && item.type !== ''"
+            :class="['errLogLi', item.type ? item.type.toLowerCase() : '']">
           <div>
             <div class="errLogIco">
               <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="item.type === 'WARN'"
@@ -27,10 +25,10 @@
               <span>[ {{ item?.code }} ]</span>
               <span> {{ item?.name }} </span>
             </div>
-            <div class="arrLogDesc">
-              Description: {{ item?.desc }}
+            <div class="arrLogDesc" v-show="item?.desc !== ''">
+              <span v-show="item?.soln !== ''">Description:</span> {{ item?.desc }}
             </div>
-            <div class="arrLogDesc">
+            <div class="arrLogDesc" v-show="item?.soln !== ''">
               Solution: {{ item?.soln }}
             </div>
             <div class="errLogTimestamp">
@@ -39,8 +37,10 @@
           </div>
         </li>
       </template>
-
     </ul>
+    <div v-else class="notiLoading">
+      Loading...
+    </div>
   </div>
 </template>
 

@@ -744,6 +744,7 @@ li.errLogLi.critical:before {
     min-width: 500px;
     top: 30px;
     border: 1px solid;
+    cursor: default;
 }
 
 .lineRenewal {
@@ -819,6 +820,7 @@ span.errLogNum {
 
 .arrLogDesc {
     padding-bottom: 5px;
+    font-size: 0.9rem;
 }
 
 .contentLeft > div {
@@ -5675,15 +5677,13 @@ table.defaultTable.dbDataTable tr th {
     width: 81%;
     max-width: 571px;
     margin: auto;
-    margin-top: 30px;
-    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     font-family: Arial, sans-serif;
     justify-content: center;
     overflow: hidden;
-    min-height: 74px;
+    min-height: 102px;
 }
 
 /* 각 단계 컨테이너 */
@@ -5776,6 +5776,83 @@ table.defaultTable.dbDataTable tr th {
     background: #1c1d1e;
     color: #00c2ff;
     border: 2px solid #00c2ff;
+}
+
+.arrow-buttons {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-around;
+    position: relative;
+}
+
+button.gbArrowButton.right {
+    top: -72px;
+    right: -17px;
+}
+
+.gbArrowButton {
+    color: #ccc;
+    border: none;
+    padding: 10px;
+    margin: 0 10px;
+    font-size: 3rem;
+    cursor: pointer;
+    background: none;
+    position: absolute;
+    opacity: 0.8;
+}
+
+.gbArrowButton:hover {
+    opacity: 1;
+}
+
+button.gbArrowButton.left {
+    top: -72px;
+    left: -15px;
+}
+
+.gbArrowButton:disabled {
+    color: #cccccc4a;
+    cursor: not-allowed;
+}
+
+.bottomDot {
+    margin-top: 10px;
+}
+
+.bottomDot .dot {
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 0.6rem;
+    color: #ccc;
+    transition: color 0.3s ease;
+}
+
+.bottomDot .dot.active {
+    color: #007bff;
+}
+
+.bottomDot .dot:hover {
+    color: #555;
+}
+
+.notiLoading {
+    font-size: 50px;
+    color: #9bfa9f;
+    animation: bounce 0.6s infinite;
+    margin: auto;
+    text-align: center;
+    padding-top: 41%;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
 }
 
 @media screen and (max-width: 1900px) {

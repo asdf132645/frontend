@@ -288,6 +288,9 @@ const errLogOn = async () => {
 
 }
 const errLogLoad = async () => {
+  if (errArr.value.length !== 0){
+    return
+  }
   const folderPath = `folderPath=${rootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
   const res = await errLogsReadApi(folderPath);
   if(res.code === 200){
@@ -674,6 +677,7 @@ const showToast = (message: string) => {
 
 const closeErrLog = () => {
   ErrLogOpen.value = false;
+  errArr.value = [];
 }
 
 const openErrLogOver = async () => {
@@ -686,6 +690,7 @@ const closeErrLogLeave = () => {
   if (mouseClick.value){
     return;
   }
+  errArr.value = [];
   mounseLeave.value = false;
   ErrLogOpen.value = false;
 }

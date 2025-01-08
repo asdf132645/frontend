@@ -33,7 +33,7 @@
       </div>
     </div>
   </div>
-  <div class="arrow-buttons">
+  <div class="arrow-buttons" v-if="progressData.progressArr.length !== 0">
     <button
         class="gbArrowButton left"
         @click="moveStep('prev')"
@@ -48,6 +48,16 @@
     >
       <font-awesome-icon :icon="['fas', 'caret-right']" />
     </button>
+  </div>
+  <div class="bottomDot">
+    <font-awesome-icon
+        :icon="['fas', idx === activeStepIndex ? 'circle' : 'circle']"
+        v-for="(item, idx) in progressData.progressArr"
+        :key="idx"
+        @click="setStep(idx)"
+        class="dot"
+        :class="{ active: idx === activeStepIndex }"
+    />
   </div>
 </template>
 
@@ -66,11 +76,7 @@ const progressData: any = reactive({
 
 // 활성화된 단계 및 스크롤 상태
 const activeStepIndex = ref(0);
-let isDragging = false;
-let dragStartX = 0;
-let dragDeltaX = 0;
 const stepWidth = 80; // 각 Step의 넓이(px)
-const dragSpeed = 0.3; // 드래그 속도 조절 (0.1 ~ 1.0 사이)
 
 // Props의 parsedData 변경 감지 및 progressData 업데이트
 watch(
@@ -157,6 +163,11 @@ const moveStep = (direction: 'prev' | 'next') => {
     activeStepIndex.value++;
   }
 };
+const setStep = (stepIndex: number) => {
+  if (stepIndex >= 0 && stepIndex < progressData.progressArr.length) {
+    activeStepIndex.value = stepIndex;
+  }
+};
 
 // 테스트용 데이터 생성 함수
 const startFakeDataTest = () => {
@@ -198,51 +209,15 @@ const startFakeDataTest = () => {
 };
 
 onMounted(() => {
-  if (progressData.progressArr.length === 0) {
-    progressData.progressArr.push(
-        {progressNo: 1, progressName: "Step 1", progressPercent: 0},
-        {progressNo: 2, progressName: "Step 2", progressPercent: 0},
-        {progressNo: 3, progressName: "Step 3", progressPercent: 0}
-    );
-  }
+  // if (progressData.progressArr.length === 0) {
+  //   progressData.progressArr.push(
+  //       {progressNo: 1, progressName: "Step 1", progressPercent: 0},
+  //       {progressNo: 2, progressName: "Step 2", progressPercent: 0},
+  //       {progressNo: 3, progressName: "Step 3", progressPercent: 0},
+  //       {progressNo: 1, progressName: "Step 1", progressPercent: 0},
+  //       {progressNo: 2, progressName: "Step 2", progressPercent: 0},
+  //   );
+  // }
   // startFakeDataTest();
 });
 </script>
-
-<style scoped>
-.arrow-buttons {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-around;
-  position: relative;
-}
-button.gbArrowButton.right {
-  top: -72px;
-  right: -17px;
-}
-.gbArrowButton {
-  color: #ccc;
-  border: none;
-  padding: 10px;
-  margin: 0 10px;
-  font-size: 3rem;
-  cursor: pointer;
-  background: none;
-  position: absolute;
-  opacity: 0.8;
-}
-
-.gbArrowButton:hover {
-  opacity: 1;
-}
-
-button.gbArrowButton.left {
-  top: -72px;
-  left: -15px;
-}
-.gbArrowButton:disabled {
-  color: #cccccc4a;
-  cursor: not-allowed;
-}
-</style>
