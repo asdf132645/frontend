@@ -22,6 +22,7 @@
               completedStep: step.progressPercent === 100,
               active: step.progressPercent > 0 && step.progressPercent < 100,
               waitingStep: step.progressPercent === 0 && index > activeStepIndex,
+              notStart: step.progressPercent === 0,
             }"
           >
             <div class="circleChild">
@@ -79,83 +80,76 @@ const progressData: any = reactive({
 
 // 활성화된 단계 및 스크롤 상태
 const activeStepIndex = ref(0);
+const activeStepIndexPrev = ref(0);
 const stepWidth = 80; // 각 Step의 넓이(px)
 
 // Props의 parsedData 변경 감지 및 progressData 업데이트
 watch(
     () => props.parsedDataSysInfo,
     (newData) => {
-      if (newData) {
-        const newArr = newData.progressArr || [];
-        const validArr = newArr.filter((step: any) => step.progressName.trim() !== "");
+      if (!newData) return;
 
-        const existingNos = progressData.progressArr.map((step: any) => step.progressNo);
+      // 새로운 데이터의 progress 배열
+      const newProgressList = newData.progressArr || [];
+      const validProgressList = newProgressList.filter((item: any) => item.progressName.trim() !== "");
 
-        const sameDataArr = newData?.progressArr?.filter((el: any) => el.progressName !== '') || [];
-        const sameDataArrNo = sameDataArr[0]?.progressNo;
+      // 기존 데이터의 progressNo 리스트
+      const existingProgressNos = progressData.progressArr.map((item: any) => item.progressNo);
 
-        const newArr2 = progressData?.progressArr?.filter((el: any) => el.progressNo >= sameDataArrNo) || [];
-        const newNos = validArr.map((step: any) => step.progressNo);
+      // 변경이 필요한 데이터만 필터링
+      const updatedSteps = validProgressList.filter((newStep: any) => {
+        const existingStep = progressData.progressArr.find(
+            (step: any) => step.progressNo === newStep.progressNo
+        );
+        return (
+            !existingStep ||
+            existingStep.progressName !== newStep.progressName ||
+            existingStep.progressPercent !== newStep.progressPercent
+        );
+      });
 
-        const isSame = JSON.stringify(sameDataArr) === JSON.stringify(newArr2);
-        if (isSame) {
-          return;
-        }
-
-        if (newNos.map((no) => !existingNos.includes(no))) {
-          progressData.progressArr.forEach((step: any) => {
-            if (step.progressNo === 0 || step.progressName === '') {
-              return;
-            }
-            if (existingNos.includes(step.progressNo)) {
-              step.progressPercent = 100;
-            }
-          });
-        }
-
-        progressData.progressArr = validArr;
-        // validArr.forEach((step: any) => {
-        //   if (step.progressNo === 0 || step.progressName === '') {
-        //     return;
-        //   }
-        //   const existingStepIndex = progressData.progressArr.findIndex(
-        //       (existing: any) => existing.progressNo === step.progressNo
-        //   );
-        //
-        //   if (existingStepIndex !== -1) {
-        //     progressData.progressArr[existingStepIndex].progressName = step.progressName;
-        //     progressData.progressArr[existingStepIndex].progressPercent = step.progressPercent;
-        //   } else {
-        //     progressData.progressArr.push({
-        //       progressNo: step.progressNo,
-        //       progressName: step.progressName,
-        //       progressPercent: step.progressPercent,
-        //     });
-        //   }
-        // });
-
-        progressData.progressArr.sort((a: any, b: any) => a.progressNo - b.progressNo);
-
-        const inProgressIndex = progressData.progressArr.findIndex(
-            (step: any) => step.progressPercent > 0 && step.progressPercent < 100
+      // 기존 progressData.progressArr 업데이트
+      updatedSteps.forEach((newStep: any) => {
+        const existingIndex = progressData.progressArr.findIndex(
+            (step: any) => step.progressNo === newStep.progressNo
         );
 
-        const inProgressNum = progressData.progressArr.find(
-            (step: any) => step.progressPercent > 0 && step.progressPercent < 100
-        );
-        if (inProgressNum?.progressNo === (inProgressIndex + 1)) {
-          return;
-        }
-
-        if (inProgressIndex !== -1) {
-          activeStepIndex.value = inProgressIndex;
+        if (existingIndex !== -1) {
+          progressData.progressArr[existingIndex] = {...progressData.progressArr[existingIndex], ...newStep};
         } else {
-          activeStepIndex.value = progressData.progressArr.length - 1;
+          progressData.progressArr.push(newStep);
         }
+      });
+
+      // 정렬
+      progressData.progressArr.sort((a: any, b: any) => a.progressNo - b.progressNo);
+      const pbpNum = Number(newData?.progressBarPercent);
+      if (pbpNum === 100 || pbpNum === 0) {
+        return;
       }
+
+      // 진행 중인 단계 찾기
+      const inProgressIndex = progressData.progressArr.findLastIndex(
+          (step: any) => step.progressPercent === 100
+      );
+      const inPIdx = inProgressIndex + 1;
+
+      if(activeStepIndexPrev.value === inPIdx){
+        return;
+      }
+      if (inProgressIndex !== -1) {
+          activeStepIndex.value = inPIdx;
+          activeStepIndexPrev.value = inPIdx;
+      } else {
+        activeStepIndex.value = 0;
+        activeStepIndexPrev.value = 0;
+      }
+
+
     },
     {immediate: true, deep: true}
 );
+
 
 // Step 이동 함수
 const moveStep = (direction: 'prev' | 'next') => {
@@ -220,6 +214,6 @@ onMounted(() => {
   //       {progressNo: 2, progressName: "Step 2", progressPercent: 0},
   //   );
   // }
-  startFakeDataTest();
+  // startFakeDataTest();
 });
 </script>

@@ -5844,6 +5844,10 @@ button.gbArrowButton.left {
     padding-top: 41%;
 }
 
+.circleGuage.notStart {
+    background: none!important;
+}
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

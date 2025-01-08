@@ -13,6 +13,16 @@
           </p>
           <p>{{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}</p>
         </li>
+        <li
+            :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"
+            @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')"
+            v-if="projectType !== 'pb' || (testType === '04' && projectType === 'pb')"
+        >
+          <p class="menuIco">
+            <font-awesome-icon :icon="['fas', 'virus']"/>
+          </p>
+          <p>{{ projectType === 'bm' ? 'WHOLE' : 'RBC' }}</p>
+        </li>
         <li :class='{ "onRight": isActive("/databaseDetail") }' @click="pageGo('/databaseDetail')">
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'disease']"/>
