@@ -318,6 +318,7 @@ const drawBoxAllCanvas = async (findWbcClass: any) => {
     overlayDiv.style.position = 'absolute'; // 위치 설정
     overlayDiv.style.width = `${boxWidth}%`; // 뷰포트에 비례한 너비
     overlayDiv.style.height = `${boxHeight}%`; // 뷰포트에 비례한 높이
+    overlayDiv.style.cursor = 'pointer';
 
     // 이미지 좌표를 뷰포트 좌표로 변환
     const overlayRect = viewer.value.viewport.imageToViewportRectangle(boxX1, boxY1, Number(boxWidth), Number(boxHeight));

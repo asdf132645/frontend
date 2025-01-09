@@ -281,6 +281,7 @@ import {
   rbcUpdateMutation,
   useUpdateRunningInfoMutation
 } from "@/gql/mutation/slideData";
+import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -361,6 +362,7 @@ const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
 const checkedAllClass = ref(false);
+const { imageRefs  } = useImageRefs();
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -1335,6 +1337,15 @@ function isSelected(image: any) {
 const wpsIsSelected = (selectedImg: any) => {
   selectedClickImages.value = [];
   selectedClickImages.value.push(selectedImg);
+  console.log(JSON.stringify(selectedImg))
+  const targetElement = imageRefs.value[selectedImg?.uniqueKey];
+  if (targetElement) {
+    targetElement.scrollIntoView({
+      behavior: 'smooth', // 부드러운 스크롤
+      block: 'center', // 화면 중앙으로 정렬
+    });
+  }
+
   wbcReset.value = true;
   nextTick()
   wbcReset.value = false;
