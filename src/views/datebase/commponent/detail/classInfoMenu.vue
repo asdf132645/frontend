@@ -143,7 +143,6 @@ onBeforeMount(async () => {
   for (const fileName of fileNames) {
     const keywords = ['zPLT_Image', 'files'];
     const notRbc = keywords.every(keyword => fileName.includes(keyword));
-    console.log(notRbc);
     if(notRbc){
       pltOnOff.value = true;
     }
