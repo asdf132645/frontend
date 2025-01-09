@@ -965,25 +965,6 @@ const extractSubStringBeforeFiles = (str: string) => {
 }
 
 
-// Low magnification and Malaria tab
-const toggleViewer = (viewerType: string) => {
-  switch (viewerType) {
-    case 'lowMag':
-      activeTab.value = 'lowMag';
-      break;
-    case 'malaria':
-      activeTab.value = 'malaria';
-      imgSet_img_list.value = false;
-      break;
-  }
-
-  if (activeTab.value !== 'malaria') {
-    initElement();
-    emits('notCanvasClick', false);
-  }
-};
-
-
 // Img setting
 const imgSetOpen = () => {
   imgSet_img_list.value = !imgSet_img_list.value;

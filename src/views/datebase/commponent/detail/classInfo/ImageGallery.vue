@@ -75,7 +75,9 @@
       </li>
     </ul>
     <Wps v-if="wpsShow" :wpsImgClickInfoData="wpsImgClickInfoData" :slotId="slotId" :selectItems="selectItems"
-         :iaRootPath="iaRootPath" @borderDel="() => $emit('borderDel')" @borderOn="() => $emit('borderOn')"/>
+         :iaRootPath="iaRootPath" @borderDel="() => $emit('borderDel')" @borderOn="() => $emit('borderOn')"
+         @wpsIsSelected="wpsIsSelected"
+    />
   </template>
   <!--  클래스 단일 비교 부분 -->
   <div v-else-if="classCompareShow" class="divCompare">
@@ -387,6 +389,17 @@ const handleImageLoad = (itemIndex: any) => {
     loading.value = true;
   }
 
+}
+
+const wpsIsSelected = (box: any) => {
+//
+  for (const el of wbcInfoArrChild.value) {
+    for (const img of el.images) {
+      if (img.fileName.split('_').slice(2).join('_') === box.FILE_NM){
+        emits('imgWpsIsSelect', img)
+      }
+    }
+  }
 }
 
 function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {

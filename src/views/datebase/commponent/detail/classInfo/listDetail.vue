@@ -169,6 +169,7 @@
             :isSelected="isSelected"
             :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
+            @imgWpsIsSelect="wpsIsSelected"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
             @borderDel="borderDel"
@@ -472,7 +473,6 @@ const handleZoom = () => {
 };
 
 const getDetailRunningInfo = async (newValue: any) => {
-  console.log('newValue', newValue);
   try {
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
     patientNm.value = newValue?.patientNm;
@@ -1328,7 +1328,16 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
 
 function isSelected(image: any) {
   const imageFileName = image.fileName;
-  return selectedClickImages.value.some((selectedImage: any) => selectedImage.fileName === imageFileName);
+  const returnVal = selectedClickImages.value.some((selectedImage: any) => selectedImage.fileName === imageFileName);
+  return returnVal;
+}
+
+const wpsIsSelected = (selectedImg: any) => {
+  selectedClickImages.value = [];
+  selectedClickImages.value.push(selectedImg);
+  wbcReset.value = true;
+  nextTick()
+  wbcReset.value = false;
 }
 
 const isLowMagnWhether = async (image: any) => {
@@ -1961,7 +1970,7 @@ const updateCBCData = async (incomingSlideData: any) => {
 
 const allClassesChecked = async () => {
   checkedAllClass.value = !checkedAllClass.value;
-  const updatedRuningInfo = { ...slideData.value, isAllClassesChecked: true };
+  const updatedRuningInfo = {...slideData.value, isAllClassesChecked: true};
   await gqlGenericUpdate(isAllClassCheckedUpdateMutation, {
     id: slideData.value.id,
     isAllClassesChecked: true,
