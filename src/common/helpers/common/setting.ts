@@ -42,7 +42,6 @@ const defaultCellImgData = {
     backupPath: '',
     backupStartDate: new Date(),
     backupEndDate: new Date(),
-    userId: '', // 사용자 ID 기본값
 };
 
 

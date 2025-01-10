@@ -469,14 +469,9 @@ async function socketData(data: any) {
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          if (pbVersion.value !== '100a') {
-            await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-            await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-          } else {
-            if (data?.workingDone === 'Y') {
-              await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-              await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
-            }
+          if (data?.workingDone === 'Y') {
+            await store.dispatch('commonModule/setCommonInfo', { reqArr: tcpReq().embedStatus.runIngComp });
+            await store.dispatch('commonModule/setCommonInfo', { runningInfoStop: true });
           }
           await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;

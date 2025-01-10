@@ -132,8 +132,12 @@ export const MSG = {
 
     },
     TOAST: {
-        SUCCESS: 'success',
-        ERROR: 'error',
+        UPDATE_SUCCESS: 'Updated Successfully',
+        SAVE_SUCCESS: 'Saved Successfully',
+        UPDATE_FAIL: 'Update Failed',
+        SAVE_FAIL: 'Save Failed',
+        SUCCESS: 'Success',
+        ERROR: 'Error',
         BARCODE_COPIED: 'Barcode Copied',
     },
     ERROR: {

@@ -20,9 +20,9 @@
       </template>
     </div>
 
-    <div class="tab-content">
+<!--    <div class="tab-content">-->
       <component :is="activeTabComponent" />
-    </div>
+<!--    </div>-->
   </div>
 
   <Confirm

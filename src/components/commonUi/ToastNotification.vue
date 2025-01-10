@@ -19,7 +19,7 @@ const props = defineProps({
   },
   position: {
     type: String,
-    default: 'bottom-right', // 기본 위치: 우측 하단
+    default: 'center', // 기본 위치: 중앙
   },
   messageType: {
     type: String,
