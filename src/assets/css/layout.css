@@ -912,7 +912,7 @@ p.startStopP {
 }
 
 .stopDiv > select {
-    margin-top: 0px;
+    /*margin-top: 0px;*/
     border-radius: 5px;
 }
 

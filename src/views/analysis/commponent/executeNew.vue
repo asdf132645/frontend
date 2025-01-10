@@ -1,40 +1,91 @@
 <template>
   <div class="execute">
-    <div class='startDiv'>
-      <select v-model="analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
-        <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
-      </select>
-      <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
-        <font-awesome-icon
-            :icon="['fas', 'circle-play']"
-            :class="{ 'startBtn': true, [btnStatus]: true }"
-        />
-      </p>
-      <p class="startStopP" v-else @click="toggleStartStop('stop')">
-        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
-      </p>
-    </div>
-
-    <div class="stopDiv">
-      <select v-model="wbcCount" :disabled="isRunningState">
-        <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
-      </select>
-
-      <select class="mt5" v-model="stitchCount" :disabled="isRunningState">
-        <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">{{ option.text }}</option>
-      </select>
-
-      <div class="flex-justify-between">
-        <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
-          <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal" />
-        </div>
-
-        <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }" style="width: 100%;">
-          <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
-        </div>
+    <template v-if="siteCd === '9090'">
+      <div class='startDiv'>
+        <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
+          <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
+        </select>
+        <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
+          <font-awesome-icon
+              :icon="['fas', 'circle-play']"
+              :class="{ 'startBtn': true, [btnStatus]: true }"
+          />
+        </p>
+        <p class="startStopP" v-else @click="toggleStartStop('stop')">
+          <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
+        </p>
       </div>
 
-    </div>
+      <div class="stopDiv">
+        <select v-model="cellInfo.wbcCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+          <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
+        </select>
+        <select class="stopDivSelect" style="margin-top: 5px;" v-model="cellInfo.stitchCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+          <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
+            {{ option.text }}
+          </option>
+        </select>
+
+        <div class="flex-justify-between">
+          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
+            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal" />
+          </div>
+
+          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }" style="width: 100%;">
+            <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
+          </div>
+        </div>
+
+      </div>
+    </template>
+
+    <template v-else>
+      <div class='startDiv'>
+        <select :disabled="isRunningState" @change="handleChangeCellInfo">
+          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ cellItem.presetNm + ' Preset' }}</option>
+        </select>
+
+        <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
+          <font-awesome-icon
+              :icon="['fas', 'circle-play']"
+              :class="{ 'startBtn': true, [btnStatus]: true }"
+          />
+        </p>
+        <p class="startStopP" v-else @click="toggleStartStop('stop')">
+          <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
+        </p>
+      </div>
+
+      <div class="stopDiv">
+        <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
+          <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
+        </select>
+
+        <div class="flex-align-center mt5">
+          <select v-model="cellInfo.wbcCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+            <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
+          </select>
+          <select class="stopDivSelect" v-model="cellInfo.stitchCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+            <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+
+
+        <div class="flex-justify-between">
+          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
+            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal" />
+          </div>
+
+          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }" style="width: 100%;">
+            <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
+          </div>
+        </div>
+
+      </div>
+    </template>
+
   </div>
   <Alert
       v-if="showAlert"
@@ -65,20 +116,22 @@ import {
 } from '@/common/defines/constants/analysis';
 import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
-import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
+import {getCellImgApi, getRunInfoApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import {testBmTypeList, testTypeList, wbcRunningCount} from "@/common/defines/constants/settings";
+import { testBmTypeList, testTypeList } from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
-import router from "@/router";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
+import moment from "moment/moment";
 
 
 const store = useStore();
 const embeddedStatusJobCmd = computed(() => store.state.embeddedStatusModule);
 const userModuleDataGet = computed(() => store.state.userModule);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const cellImageAnalyzedData = computed(() => store.state.commonModule.cellImageAnalyzedData);
 const projectType = ref('pb');
 const countType = ref<any>([]);
 
@@ -89,11 +142,7 @@ const isRunningState = computed(() => store.state.commonModule.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
-const isTcpError = computed(() => store.state.commonModule.isTcpError);
 const userId = ref('');
-const analysisType = ref();
-const wbcCount = ref();
-const stitchCount = ref();
 const bfSelectFiles = ref([]);
 const commonDataGet = computed(() => store.state.commonModule);
 const showStopBtn = ref(false);
@@ -109,6 +158,22 @@ const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
 const is100A = ref(false);
+const cellInfo = ref({
+  id: '1',
+  analysisType: '01',
+  wbcCount: '100',
+  diffWbcPositionMargin: '0',
+  diffRbcPositionMargin: '0',
+  diffPltPositionMargin: '0',
+  stitchCount: '1',
+  edgeShotType: '0',
+  edgeShotCount: {
+    LP: '1',
+    HP: '3',
+  },
+  presetChecked: false,
+  presetNm: '1',
+})
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -207,6 +272,13 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   }
 });
 
+watch(() => cellImageAnalyzedData.value, () => {
+  const currentPreset = cellImageAnalyzedData.value.filter(item => item.presetChecked)[0];
+
+  if (currentPreset) {
+    setCellInfo(currentPreset);
+  }
+})
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: any) => {
@@ -219,10 +291,10 @@ const sendSearchCardCount = () => {
     jobCmd: 'SEARCH_CARD_COUNT',
     reqUserId: userId.value,
     reqDttm: reqDttm,
-    testType: analysisType.value,
+    testType: cellInfo.value.analysisType,
   }
   tcpReq().embedStatus.searchCardCount.reqUserId = userId.value;
-  tcpReq().embedStatus.searchCardCount.testType = analysisType.value;
+  tcpReq().embedStatus.searchCardCount.testType = cellInfo.value.analysisType;
   EventBus.publish('childEmitSocketData', req);
 }
 
@@ -250,13 +322,13 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
-    const autoStart = sessionStorage.getItem('autoStart') || 1;
+    const autoStart = JSON.parse(sessionStorage.getItem('autoStart')) || 1;
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
-      testType: analysisType.value,
-      wbcCount: filteredWbcCount.value || wbcCount.value,
-      stitchCount: stitchCount.value,
+      testType: cellInfo.value.analysisType,
+      wbcCount: filteredWbcCount.value || cellInfo.value.wbcCount,
+      stitchCount: cellInfo.value.stitchCount,
       reqUserId: userId.value,
       rbcPositionMargin: rbcPositionMargin || '0',
       wbcPositionMargin: wbcPositionMargin || '0',
@@ -297,11 +369,11 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
           "testType": '02',
           "stainType": "01",
           "userInputStainType": "",
-          "analysisType": analysisType.value,
+          "analysisType": cellInfo.value.analysisType,
           "bmSamplingSide": "01",
-          "cellCount": wbcCount.value,
+          "cellCount": cellInfo.value.wbcCount,
           "department": "s",
-          "stitchCount": stitchCount.value,
+          "stitchCount": cellInfo.value.stitchCount,
         }],
         "runningMode": "00",
         "positionMargin": "0"
@@ -358,7 +430,6 @@ const handleOkConfirm = () => {
 }
 
 const sendInit = () => { // 장비 초기화 진행
-  if (isTcpError.value) return;
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
   if (isInit.value === 'Y') {
     showSuccessAlert(MESSAGES.alreadyInitialized);
@@ -389,24 +460,10 @@ const cellImgGet = async () => {
     if (result) {
       if (result?.data) {
         const data = result.data;
-        analysisType.value = data.analysisType;
-        await store.dispatch('commonModule/setCommonInfo', { analysisType: analysisType.value });
-        if (window.PROJECT_TYPE === 'bm') {
-          wbcCount.value = data.diffCellAnalyzingCount;
-        } else {
-          switch (analysisType.value) {
-            case '01':
-              wbcCount.value = data.diffCellAnalyzingCount;
-              break;
-            case '04':
-              wbcCount.value = data.pbsCellAnalyzingCount;
-              break;
-            default:
-              wbcCount.value = data.bfCellAnalyzingCount;
-          }
-        }
+        setCellInfo(data);
+        await store.dispatch('commonModule/setCommonInfo', { analysisType: data.analysisType });
 
-        stitchCount.value = data.stitchCount
+
       }
     }
 
@@ -426,7 +483,7 @@ const setWbcRunningCount = async () => {
       const runCountData = runCountResult.data;
 
       if (runCountData && runCountData?.length > 0) {
-        const filteredRunCountData: any = runCountData.filter(data => data.min <= wbcCount.value && wbcCount.value <= data.max)[0];
+        const filteredRunCountData: any = runCountData.filter(data => data.min <= cellInfo.value.wbcCount && cellInfo.value.wbcCount <= data.max)[0];
         if (filteredRunCountData.wbcTargetCount) {
           filteredWbcCount.value = filteredRunCountData.wbcTargetCount;
         }
@@ -435,6 +492,62 @@ const setWbcRunningCount = async () => {
   } catch (e) {
     console.error(e);
   }
+}
+
+const setWbcCount = (data) => {
+  if (window.PROJECT_TYPE === 'bm') {
+    return data.diffCellAnalyzingCount;
+  }
+
+  switch (cellInfo.value.analysisType) {
+    case '01':
+      return data.diffCellAnalyzingCount;
+    case '04':
+      return data.pbsCellAnalyzingCount;
+    default:
+      return data.bfCellAnalyzingCount;
+  }
+}
+
+const handleChangeCellInfo = async (event) => {
+  const selectedCellId = String(event.target.value);
+  const selectedCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) === selectedCellId)[0];
+  const restCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) !== selectedCellId);
+  const requestItem = { ...selectedCellInfo, presetChecked: true };
+  try {
+    for (const resetItem of restCellInfo) {
+      const restRequestItem = { ...resetItem, presetChecked: false };
+      await putCellImgApi(restRequestItem, String(restRequestItem.id));
+    }
+    await putCellImgApi(requestItem, String(requestItem.id));
+  } catch (error) {
+    console.error(error);
+  }
+
+  const currentPreset = cellImageAnalyzedData.value.filter(item => String(item.id) === selectedCellId)[0];
+  if (currentPreset) {
+    setCellInfo(currentPreset);
+  }
+}
+
+const setCellInfo = (data: any) => {
+  console.log("DATA", data);
+  cellInfo.value.analysisType = data.analysisType;
+  cellInfo.value.id = data.id;
+  cellInfo.value.wbcCount = setWbcCount(data);
+  cellInfo.value.diffWbcPositionMargin = data.diffWbcPositionMargin;
+  cellInfo.value.diffRbcPositionMargin = data.diffRbcPositionMargin;
+  cellInfo.value.diffPltPositionMargin = data.diffPltPositionMargin;
+  cellInfo.value.stitchCount = data.stitchCount;
+  cellInfo.value.edgeShotType = data.edgeShotType;
+  cellInfo.value.edgeShotCount.LP = data.edgeShotLPCount;
+  cellInfo.value.edgeShotCount.HP = data.edgeShotHPCount;
+  sessionStorage.setItem('wbcPositionMargin', data.diffWbcPositionMargin);
+  sessionStorage.setItem('rbcPositionMargin', data.diffRbcPositionMargin);
+  sessionStorage.setItem('pltPositionMargin', data.diffPltPositionMargin);
+  sessionStorage.setItem('edgeShotType', data.edgeShotType || '0');
+  sessionStorage.setItem('edgeShotLPCount', data.edgeShotLPCount);
+  sessionStorage.setItem('edgeShotHPCount', data.edgeShotHPCount);
 }
 
 const getDeviceInfo = async () => {
