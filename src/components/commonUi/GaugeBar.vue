@@ -87,11 +87,19 @@ const stepWidth = 80; // 각 Step의 넓이(px)
 watch(
     () => props.parsedDataSysInfo,
     (newData) => {
-      if (!newData) return;
+      if (!newData || !newData.progressArr) return;
+
+
 
       // 새로운 데이터의 progress 배열
       const newProgressList = newData.progressArr || [];
       const validProgressList = newProgressList.filter((item: any) => item.progressName.trim() !== "");
+      if(progressData.progressArr.length !== 0){
+        if(newProgressList[0]?.progressName !== progressData.progressArr[0].progressName){
+          progressData.progressArr = [];
+        }
+      }
+
 
       // 기존 데이터의 progressNo 리스트
       const existingProgressNos = progressData.progressArr.map((item: any) => item.progressNo);
@@ -108,6 +116,7 @@ watch(
         );
       });
 
+
       // 기존 progressData.progressArr 업데이트
       updatedSteps.forEach((newStep: any) => {
         const existingIndex = progressData.progressArr.findIndex(
@@ -123,16 +132,16 @@ watch(
 
       // 정렬
       progressData.progressArr.sort((a: any, b: any) => a.progressNo - b.progressNo);
-      const pbpNum = Number(newData?.progressBarPercent);
-      if (pbpNum === 100 || pbpNum === 0) {
-        return;
-      }
+      // const pbpNum = Number(newData?.progressBarPercent);
+      // if (pbpNum === 100 || pbpNum === 0) {
+      //   return;
+      // }
 
       // 진행 중인 단계 찾기
       const inProgressIndex = progressData.progressArr.findLastIndex(
-          (step: any) => step.progressPercent === 100
+          (step: any) => step.progressPercent < 100 && step.progressPercent > 0
       );
-      const inPIdx = inProgressIndex + 1;
+      const inPIdx = inProgressIndex;
 
       if(activeStepIndexPrev.value === inPIdx){
         return;
@@ -140,9 +149,6 @@ watch(
       if (inProgressIndex !== -1) {
           activeStepIndex.value = inPIdx;
           activeStepIndexPrev.value = inPIdx;
-      } else {
-        activeStepIndex.value = 0;
-        activeStepIndexPrev.value = 0;
       }
 
 

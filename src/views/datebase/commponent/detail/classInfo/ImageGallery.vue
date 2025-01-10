@@ -44,7 +44,7 @@
                 v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
                 @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
             >
-              <div class="pos-relative">
+              <div class="pos-relative" :ref="(el) => setImageRef(image.uniqueKey, el)">
                 <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
                   <div class="fileTitle" :style="{ fontSize: imageSize ? (parseInt(imageSize) / 6) + 'px' : '15px' }">
                     {{ replaceFileNamePrefix(image.fileName) }}
@@ -75,7 +75,9 @@
       </li>
     </ul>
     <Wps v-if="wpsShow" :wpsImgClickInfoData="wpsImgClickInfoData" :slotId="slotId" :selectItems="selectItems"
-         :iaRootPath="iaRootPath" @borderDel="() => $emit('borderDel')" @borderOn="() => $emit('borderOn')"/>
+         :iaRootPath="iaRootPath" @borderDel="() => $emit('borderDel')" @borderOn="() => $emit('borderOn')"
+         @wpsIsSelected="wpsIsSelected"
+    />
   </template>
   <!--  클래스 단일 비교 부분 -->
   <div v-else-if="classCompareShow" class="divCompare">
@@ -224,6 +226,7 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -239,7 +242,7 @@ const clickableItem = ref<HTMLElement | null>(null);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const scrollContainer = ref(null);
-
+const { setImageRef } = useImageRefs();
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
   if (targetElement) {
@@ -354,7 +357,6 @@ watch(
       }
     }
 );
-
 const handleScroll = () => {
   if (!scrollContainer.value) return;
   const isAtBottom = scrollContainer.value.scrollTop + scrollContainer.value.clientHeight + 50 >= scrollContainer.value.scrollHeight;
@@ -387,6 +389,16 @@ const handleImageLoad = (itemIndex: any) => {
     loading.value = true;
   }
 
+}
+
+const wpsIsSelected = (box: any) => {
+  for (const el of wbcInfoArrChild.value) {
+    for (const img of el.images) {
+      if (img.fileName.split('_').slice(2).join('_') === box.FILE_NM){
+        emits('imgWpsIsSelect', img)
+      }
+    }
+  }
 }
 
 function getImageUrl(imageName: any, id: string, title: string, highImg: string, findAfterArr?: boolean): string {

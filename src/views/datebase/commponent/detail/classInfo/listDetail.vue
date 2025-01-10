@@ -169,6 +169,7 @@
             :isSelected="isSelected"
             :imageSize="imageSize"
             :updateWbcInfo="updateWbcInfo"
+            @imgWpsIsSelect="wpsIsSelected"
             @allCheckChange="allCheckChange"
             @selectImage="selectImage"
             @borderDel="borderDel"
@@ -280,6 +281,7 @@ import {
   rbcUpdateMutation,
   useUpdateRunningInfoMutation
 } from "@/gql/mutation/slideData";
+import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -360,6 +362,7 @@ const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
 const checkedAllClass = ref(false);
+const { imageRefs  } = useImageRefs();
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -472,7 +475,6 @@ const handleZoom = () => {
 };
 
 const getDetailRunningInfo = async (newValue: any) => {
-  console.log('newValue', newValue);
   try {
     iaRootPath.value = newValue?.img_drive_root_path !== '' && newValue?.img_drive_root_path !== null && newValue?.img_drive_root_path ? newValue?.img_drive_root_path : store.state.commonModule.iaRootPath;
     patientNm.value = newValue?.patientNm;
@@ -1328,7 +1330,25 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
 
 function isSelected(image: any) {
   const imageFileName = image.fileName;
-  return selectedClickImages.value.some((selectedImage: any) => selectedImage.fileName === imageFileName);
+  const returnVal = selectedClickImages.value.some((selectedImage: any) => selectedImage.fileName === imageFileName);
+  return returnVal;
+}
+
+const wpsIsSelected = (selectedImg: any) => {
+  selectedClickImages.value = [];
+  selectedClickImages.value.push(selectedImg);
+  console.log(JSON.stringify(selectedImg))
+  const targetElement = imageRefs.value[selectedImg?.uniqueKey];
+  if (targetElement) {
+    targetElement.scrollIntoView({
+      behavior: 'smooth', // 부드러운 스크롤
+      block: 'center', // 화면 중앙으로 정렬
+    });
+  }
+
+  wbcReset.value = true;
+  nextTick()
+  wbcReset.value = false;
 }
 
 const isLowMagnWhether = async (image: any) => {
@@ -1961,7 +1981,7 @@ const updateCBCData = async (incomingSlideData: any) => {
 
 const allClassesChecked = async () => {
   checkedAllClass.value = !checkedAllClass.value;
-  const updatedRuningInfo = { ...slideData.value, isAllClassesChecked: true };
+  const updatedRuningInfo = {...slideData.value, isAllClassesChecked: true};
   await gqlGenericUpdate(isAllClassCheckedUpdateMutation, {
     id: slideData.value.id,
     isAllClassesChecked: true,

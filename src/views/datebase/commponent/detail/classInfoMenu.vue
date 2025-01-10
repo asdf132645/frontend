@@ -22,7 +22,7 @@
         <li
             :class="{ onRight: isActive('/databasePlt') }"
             @click="pageGo('/databasePlt')"
-            v-if="projectType !== 'bm'"
+            v-if="projectType !== 'bm' && pltOnOff"
         >
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'certificate']"/>
@@ -86,6 +86,7 @@ import {getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -111,6 +112,11 @@ let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const testType = computed(() => store.state.commonModule.testType);
 const dbListDataFirstNum = computed(() => store.state.commonModule.dbListDataFirstNum);
 const dbListDataLastNum = computed(() => store.state.commonModule.dbListDataLastNum);
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const slideData = computed(() => store.state.slideDataModule);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
+const pltOnOff = ref(false);
 
 watch(props.isNext, (newVal) => {
   if (newVal) {
@@ -126,8 +132,23 @@ onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
   isLoading.value = false;
+  pltOnOff.value = false;
   const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
   keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
+  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+  const response = await fetch(url);
+  const fileNames = await response.json();
+  for (const fileName of fileNames) {
+    const keywords = ['zPLT_Image', 'files'];
+    const notRbc = keywords.every(keyword => fileName.includes(keyword));
+    if(notRbc){
+      pltOnOff.value = true;
+    }
+
+  }
+
 })
 
 onMounted(async () => {

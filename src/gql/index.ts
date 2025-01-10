@@ -156,7 +156,7 @@ export type UpdateRuningInfoDtoItems = {
   patientId?: InputMaybe<Scalars['String']['input']>;
   patientNm?: InputMaybe<Scalars['String']['input']>;
   pcIp?: InputMaybe<Scalars['String']['input']>;
-  rbcInfo?: InputMaybe<Scalars['String']['input']>;
+  rbcInfo?: InputMaybe<Scalars['JSON']['input']>;
   rbcInfoAfter?: InputMaybe<Scalars['JSON']['input']>;
   rbcInfoPosAfter?: InputMaybe<Array<Scalars['String']['input']>>;
   rbcMemo?: InputMaybe<Scalars['String']['input']>;

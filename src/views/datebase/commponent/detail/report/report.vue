@@ -327,7 +327,6 @@ watch(
 
           slideData.value.rbcInfoAfter = rbcInfoData.value;
 
-          console.log('slideData', slideData.value);
         }
       }
     },

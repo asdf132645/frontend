@@ -53,12 +53,11 @@ const localSlotId = ref('');
 let isZoomed = ref(true);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
-const emit = defineEmits(['borderDel', 'borderOn']);
+const emit = defineEmits(['borderDel', 'borderOn', 'wpsIsSelected']);
 let currentOverlay: HTMLElement | null = null;
 const imgType = ref('');
 
 watch(() => props.wpsImgClickInfoData, async (newVal) => {
-
   // slotId가 변경된 경우
   if (localSlotId.value !== props.slotId) {
     const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path
@@ -106,16 +105,11 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
         adjustNavBar(x1, x2, y1, y2);
 
         // drawBoxOnCanvas 호출
-        const boxX1 = Number(currentClass.POSX1);
-        const boxY1 = Number(currentClass.POSY1);
-        const boxX2 = Number(currentClass.POSX2);
-        const boxY2 = Number(currentClass.POSY2);
+        const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(currentClass);
 
-        const boxWidth = boxX2 - boxX1;
-        const boxHeight = boxY2 - boxY1;
         emit('borderOn');
         wps.value = newVal;
-        await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
+        await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
       } else {
         toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
         showToast('Selected image does not have corresponding coordinates.');
@@ -235,33 +229,62 @@ const wpsInitElement = async () => {
       viewer.value.viewport.fitBounds(zoomRect);
 
       adjustNavBar(findWbcClass.value[0].x1, findWbcClass.value[0].x2, findWbcClass.value[0].y1, findWbcClass.value[0].y2);
-    });
-
-    isZoomed.value = false;
-
-    viewer.value.addHandler('animation', async () => {
       // FILE_NM
       const extracted = props.wpsImgClickInfoData.img.fileName.split('_').slice(2).join('_');
       const findWbcClassVal = findWbcClass.value.find((el: any) => {
         return el.FILE_NM === extracted
       })
       if (findWbcClassVal) {
-        const boxX1 = Number(findWbcClassVal.POSX1); // 박스의 시작 X 좌표
-        const boxY1 = Number(findWbcClassVal.POSY1); // 박스의 시작 Y 좌표
-        const boxX2 = Number(findWbcClassVal.POSX2); // 박스의 시작 X 좌표
-        const boxY2 = Number(findWbcClassVal.POSY2); // 박스의 시작 Y 좌표
-
-        const boxWidth = Number(boxX2) - Number(boxX1);// 박스의 너비
-        const boxHeight = Number(boxY2) - Number(boxY1); // 박스의 높이
-
-        await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight);
+        const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(findWbcClassVal);
+        drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
 
       }
     });
+    viewer.value.addHandler('canvas-click', function (event) {
+      // OpenSeadragon의 좌표를 캔버스 좌표로 변환
+      const webPoint = event.position; // 클릭 위치 (뷰어의 웹 좌표)
+      const viewportPoint = viewer.value.viewport.pointFromPixel(webPoint); // 뷰포트 좌표
+      const imagePoint = viewer.value.viewport.viewportToImageCoordinates(viewportPoint); // 이미지 좌표
+
+      // 클릭 좌표
+      const clickX = imagePoint.x;
+      const clickY = imagePoint.y;
+
+      // 박스 클릭 확인
+      findWbcClass.value.forEach((box) => {
+        const { POSX1, POSY1, POSX2, POSY2 } = box;
+        const boxX1F = Number(POSX1);
+        const boxY1F = Number(POSY1);
+        const boxX2F = Number(POSX2);
+        const boxY2F = Number(POSY2);
+
+        if (clickX >= boxX1F && clickX <= boxX2F && clickY >= boxY1F && clickY <= boxY2F) {
+          const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(box);
+          drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
+          emit('wpsIsSelected', box);
+        }
+      });
+    });
+
+
+    isZoomed.value = false;
+
 
   } catch (e) {
     console.error("Error initializing viewer:", e);
   }
+}
+
+const boxCoordinateReturn = (box: any) => {
+  const boxX1 = Number(box.POSX1); // 박스의 시작 X 좌표
+  const boxY1 = Number(box.POSY1); // 박스의 시작 Y 좌표
+  const boxX2 = Number(box.POSX2); // 박스의 시작 X 좌표
+  const boxY2 = Number(box.POSY2); // 박스의 시작 Y 좌표
+
+  const boxWidth = Number(boxX2) - Number(boxX1);// 박스의 너비
+  const boxHeight = Number(boxY2) - Number(boxY1); // 박스의 높이
+
+  return { boxX1, boxY1, boxWidth, boxHeight }
 }
 
 const zoomToBox = (x: any, y: any, width: any, height: any) => {
@@ -286,30 +309,40 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
   isZoomed.value = true;  // 줌 설정 후 플래그를 true로 설정해야 줌이 계속 실행되지 않음
 };
 
-let currentBox: { x: number; y: number; width: number; height: number } | null = null;
+const drawBoxAllCanvas = async (findWbcClass: any) => {
+  for (const el of findWbcClass) {
+    const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(el);
 
+    const overlayDiv = document.createElement('div');
+    overlayDiv.style.border = '2px solid red'; // 박스 스타일
+    overlayDiv.style.position = 'absolute'; // 위치 설정
+    overlayDiv.style.width = `${boxWidth}%`; // 뷰포트에 비례한 너비
+    overlayDiv.style.height = `${boxHeight}%`; // 뷰포트에 비례한 높이
+    overlayDiv.style.cursor = 'pointer';
 
-const drawBoxOnCanvas = async (x: number, y: number, width: number, height: number) => {
-  // 새 박스가 기존 박스와 동일하면 작업 생략
-  // if (
-  //     currentBox &&
-  //     currentBox.x === x &&
-  //     currentBox.y === y &&
-  //     currentBox.width === width &&
-  //     currentBox.height === height
-  // ) {
-  //   return;
-  // }
+    // 이미지 좌표를 뷰포트 좌표로 변환
+    const overlayRect = viewer.value.viewport.imageToViewportRectangle(boxX1, boxY1, Number(boxWidth), Number(boxHeight));
+
+    // 오버레이 추가
+    viewer.value.addOverlay({
+      element: overlayDiv,
+      location: overlayRect,
+    });
+  }
+//
+}
+
+const drawBoxOnCanvas = async (x: number, y: number, width: number, height: number, findWbcClass: any) => {
   if (!viewer.value) return;
   // 이전 오버레이 삭제
   if (currentOverlay) {
     viewer.value.removeOverlay(currentOverlay);
     currentOverlay = null;
   }
-
+  await drawBoxAllCanvas(findWbcClass);
   // 새로운 오버레이 생성
   const overlayDiv = document.createElement('div');
-  overlayDiv.style.border = '2px solid red'; // 박스 스타일
+  overlayDiv.style.border = '2px solid #20eaa7'; // 박스 스타일
   overlayDiv.style.position = 'absolute'; // 위치 설정
   overlayDiv.style.width = `${width}%`; // 뷰포트에 비례한 너비
   overlayDiv.style.height = `${height}%`; // 뷰포트에 비례한 높이
@@ -330,6 +363,7 @@ const drawBoxOnCanvas = async (x: number, y: number, width: number, height: numb
   // 박스에 맞춰 줌
   zoomToBox(x, y, width, height);
 };
+
 
 const fetchTilesInfo = async (folderPath: string) => {
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
