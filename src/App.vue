@@ -71,6 +71,7 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/store/common";
 import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
+import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -117,6 +118,7 @@ const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
 const currentSlotId = ref('');
 const runningInfoId = ref('');
+const errArr = ref<any>([]);
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {
@@ -287,6 +289,7 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
+  await errLogLoad();
 });
 
 onBeforeUnmount(async () => {
@@ -337,6 +340,7 @@ async function socketData(data: any) {
         parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
+
           showCoreErrorAlert(res);
           const isAlarm = sessionStorage.getItem('isAlarm');
           if (isAlarm === 'true') {
@@ -636,19 +640,14 @@ async function socketData(data: any) {
           let result: ApiResponse<void>;
           result = await createRunningApi({userId: Number(userId.value), runingInfoDtoItems: runningInfo});
           if (result) {
-            console.log(result)
             if (runningInfo.slotId) {
               console.log('save successful');
               currentSlotId.value = result?.data?.slotId;
               runningInfoId.value = result?.data?.id;
-              console.log(runningInfo)
-              console.log(result?.data?.id)
             }
             delayedEmit('SEND_DATA', 'refreshDb', 300);
           }
         } else {
-          console.log('appVue update')
-          console.log(runningInfoId.value)
           await gqlGenericUpdate(appVueUpdateMutation, {
             id: runningInfoId.value,
             rbcInfoAfter: runningInfo.rbcInfoAfter,
@@ -845,6 +844,37 @@ const hideAlert = () => {
 
 const errorClear = async () => {
   await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.errorClear});
+}
+
+
+const errLogLoad = async () => {
+  const folderPath = `folderPath=${pbiaRootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
+  const res = await errLogsReadApi(folderPath);
+  if(res.code === 200){
+    let newArr = [];
+
+    // 날짜별로 들어옴 다중 포문 쓴 이유
+    for (const date in res.data) {
+      const entries = res.data[date];
+
+      for (const el of entries) {
+        const fullTimestamp = `${date} ${el.timestamp}`; // 날짜 합치기 용도
+        if (el.E_TYPE !== 'DEV_INFO'){
+          newArr.push({
+            timestamp: fullTimestamp,
+            code: el?.E_CODE,
+            type: el?.E_TYPE,
+            desc: el?.E_DESC,
+            soln: el?.E_SOLN,
+            name: el?.E_NAME,
+          });
+        }
+      }
+    }
+
+    errArr.value = newArr;
+    console.log(errArr.value)
+  }
 }
 
 </script>
