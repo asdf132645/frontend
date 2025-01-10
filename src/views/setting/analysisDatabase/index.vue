@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
+import NewCellImageAnalyzed from "@/views/setting/analysisDatabase/component/newCellImageAnalyzed.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
 import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
 import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'

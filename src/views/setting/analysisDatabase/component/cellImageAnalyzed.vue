@@ -21,7 +21,7 @@
         <tr v-if="viewerCheck !== 'viewer'">
           <th>Analysis Type</th>
           <td colspan="2">
-            <select v-model='cellInfo.testTypeCd'>
+            <select v-model='testTypeCd'>
               <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -36,7 +36,7 @@
           <th>Cell Analyzing Count</th>
           <td>
 
-            <select v-model='cellInfo.diffCellAnalyzingCount'>
+            <select v-model='diffCellAnalyzingCount'>
               <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -48,7 +48,7 @@
             Cell Analyzing Count
           </th>
           <td>
-            <select v-model='cellInfo.pbsCellAnalyzingCount'>
+            <select v-model='pbsCellAnalyzingCount'>
               <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -57,7 +57,7 @@
           <th v-if="projectType === 'bm'"></th>
           <th>Stitch Count</th>
           <td>
-            <select v-model='cellInfo.stitchCount'>
+            <select v-model='stitchCount'>
               <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -77,21 +77,21 @@
             </Transition>
           </th>
           <td>
-            <select v-model='cellInfo.edgeShotType'>
+            <select v-model='edgeShotType'>
               <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
         </tr>
 
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (cellInfo.edgeShotType === '2' || cellInfo.edgeShotType === '3')">
+        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (edgeShotType === '2' || edgeShotType === '3')">
           <th class="pos-relative">Edge Shot Count</th>
-          <td v-show="cellInfo.edgeShotType === '2'">
-            <select v-model='cellInfo.edgeShotCount.LP'>
+          <td v-show="edgeShotType === '2'">
+            <select v-model='edgeShotCount.LP'>
               <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
-          <td v-show="cellInfo.edgeShotType === '3'">
-            <select v-model='cellInfo.edgeShotCount.HP'>
+          <td v-show="edgeShotType === '3'">
+            <select v-model='edgeShotCount.HP'>
               <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -102,7 +102,7 @@
           <th>BF Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
-            <select v-model='cellInfo.bfCellAnalyzingCount'>
+            <select v-model='bfCellAnalyzingCount'>
               <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -124,7 +124,7 @@
           </th>
           <th>Wbc Position Margin</th>
           <td>
-            <select v-model='cellInfo.diffWbcPositionMargin'>
+            <select v-model='wbcPositionMargin'>
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -132,7 +132,7 @@
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>Rbc Position Margin</th>
           <td>
-            <select v-model='cellInfo.diffRbcPositionMargin'>
+            <select v-model='rbcPositionMargin'>
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -140,7 +140,7 @@
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th>Edge Position Margin</th>
           <td>
-            <select v-model='cellInfo.diffPltPositionMargin'>
+            <select v-model='pltPositionMargin'>
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -157,7 +157,7 @@
             <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
           </th>
           <td colspan="2">
-            <select v-model='cellInfo.iaRootPath'>
+            <select v-model='iaRootPath'>
               <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
             </select>
           </td>
@@ -174,7 +174,7 @@
           </th>
           <td>
             <font-awesome-icon
-                :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                :icon="isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
                 @click="toggleNsNbIntegration"
             />
@@ -192,13 +192,13 @@
           </th>
           <td>
             <font-awesome-icon
-                :icon="cellInfo.isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                :icon="isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
                 @click="toggleAlarm"
             />
           </td>
           <td>
-            <input type="text" v-model='cellInfo.alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
+            <input type="text" v-model='alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
           </td>
         </tr>
         <tr>
@@ -213,7 +213,7 @@
           </th>
           <td>
             <font-awesome-icon
-                :icon="cellInfo.keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                :icon="keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
                 @click="toggleKeepPage"
             />
@@ -231,7 +231,7 @@
           </th>
           <td>
             <font-awesome-icon
-                :icon="cellInfo.lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                :icon="lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
                 class="iconSize"
                 @click="toggleLisUploadCheckAll"
             />
@@ -287,8 +287,8 @@
           </th>
           <td>
             <div class="backupDatePickers">
-              <Datepicker v-model="cellInfo.backupStartDate" :week-starts-on="0"></Datepicker>
-              <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0"></Datepicker>
+              <Datepicker v-model="backupStartDate"></Datepicker>
+              <Datepicker v-model="backupEndDate"></Datepicker>
               <button class="backupBtn" @click="createBackup">Download</button>
             </div>
           </td>
@@ -320,7 +320,7 @@
         <!--        <th>Auto Backup</th>-->
         <!--        <td>-->
         <!--          <div class="autoDateBox">-->
-        <!--            <select v-model='cellInfo.autoBackUpMonth'>-->
+        <!--            <select v-model='autoBackUpMonth'>-->
         <!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
         <!--                {{ month.value }}-->
         <!--              </option>-->
@@ -333,48 +333,7 @@
       </table>
       <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
     </div>
-
-    <aside class="cellImgAnalyzed-aside-container">
-      <h1>Preset</h1>
-
-      <div class="presetButtonGroup-container">
-        <div v-for="cellItem in allCellInfo"
-             :key="cellItem.id"
-             class="preset-container">
-          <div class="preset-item">
-            <input
-                :id="String(cellItem.id)"
-                type="radio"
-                name="cellIdGroup"
-                :checked="String(cellInfo.cellImgId) === String(cellItem.id)"
-                @click="handleChangeCellId(cellItem.id)" />
-            <label v-if="!editingItem || editingItem.id !== cellItem.id" :for="String(cellItem.id)">{{ cellItem.presetNm }}</label>
-            <input
-                v-else
-                type="text"
-                v-model="editingItem.name"
-                @keydown.enter="saveEdit(cellItem.id)"
-                @keydown.esc="cancelEdit"
-                class="edit-preset-input"
-            />
-          </div>
-          <button
-              class="delete-preset-btn"
-              @click.stop="handleDeletePreset(cellItem.id)"
-              v-if="allCellInfo.length > 1">×</button>
-          <button
-              v-if="cellItem.id == cellInfo.cellImgId"
-              class="edit-preset-btn"
-              @click.stop="handleEditPresetName(cellItem)"
-          >
-            <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-          </button>
-        </div>
-        <button v-if="allCellInfo.length < 5" class="add-preset-btn" @click="handleCreatePreset">+</button>
-      </div>
-    </aside>
   </div>
-
 
 
   <!-- Upload 확인 모달 -->
@@ -459,22 +418,9 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-
-  <ToastNotification
-      v-if="toastInfo.message"
-      :message="toastInfo.message"
-      :messageType="toastInfo.messageType"
-      :duration="1500"
-  />
 </template>
 <script setup lang="ts">
-import {
-  createCellImgApi,
-  deleteCellImgApi, getCellImgAllApi,
-  getCellImgApi,
-  getDrivesApi,
-  putCellImgApi
-} from "@/common/api/service/setting/settingApi";
+import { createCellImgApi, getCellImgApi, getDrivesApi, putCellImgApi } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
 import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive, onBeforeMount} from "vue";
 import {useStore} from "vuex";
@@ -508,10 +454,6 @@ import smearTop from "@/assets/images/smearTop.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { CellImageAnalyzedType } from "@/common/type/tooltipType";
 import {scrollToTop} from "@/common/lib/utils/scroll";
-import {isObjectEmpty} from "@/common/lib/utils/validators";
-import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
-import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -521,9 +463,29 @@ const alertType = ref('');
 const showUploadModal = ref(false);
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
-const currentPresetId = ref(1);
+const testTypeCd = ref('01');
+const diffCellAnalyzingCount = ref('100');
+const wbcPositionMargin = ref('0');
+const rbcPositionMargin = ref('0');
+const pltPositionMargin = ref('0');
+const pbsCellAnalyzingCount = ref('100');
+const stitchCount = ref('1');
+const edgeShotType = ref('0');
+const edgeShotCount = ref({
+  'LP': '1',
+  'HP': '3',
+})
+const bfCellAnalyzingCount = ref('100');
+const iaRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
 const uploadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
+const isNsNbIntegration = ref(false);
+const isAlarm = ref(false);
+const alarmCount = ref('5');
+const keepPage = ref(false);
+const lisUploadCheckAll = ref(false);
+const backupStartDate = ref(moment().local().toDate());
+const backupEndDate = ref(moment().local().toDate());
 const autoDate = ref([
   {value: 'Not selected'},
   {value: 1},
@@ -539,9 +501,12 @@ const autoDate = ref([
   {value: 11},
   {value: 12}
 ]);
+const autoBackUpMonth = ref('Not selected');
 const saveHttpType = ref('');
 const drive = ref<any>([]);
 const backupDrive = ref<any>([]);
+const cellimgId = ref('');
+
 const projectType = ref('pb');
 const testTypeArr = ref<any>([]);
 const uploadSlotIdObj = ref({duplicated: [], nonDuplicated: []});
@@ -553,7 +518,6 @@ const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
-const siteCd = computed(() => store.state.commonModule.siteCd);
 const isRestoring = ref(false);
 const isDownloading = ref(false);
 const isLoadingProgressBar = ref(false);
@@ -586,42 +550,6 @@ const tooltipVisible = ref({
   openDownloadSavePath: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
-const currentCellId = ref(0);
-const currentEditingCellId = ref(0);
-const allCellInfo = ref<CellImgAnalyzedResponse[]>([]);
-const cellInfo = ref({
-  cellImgId: '',
-  testTypeCd: '01',
-  diffCellAnalyzingCount: '100',
-  diffWbcPositionMargin: '0',
-  diffRbcPositionMargin: '0',
-  diffPltPositionMargin: '0',
-  pbsCellAnalyzingCount: '100',
-  bfCellAnalyzingCount: '100',
-  stitchCount: '1',
-  edgeShotType: '0',
-  edgeShotCount: {
-    LP: '1',
-    HP: '3',
-  },
-  iaRootPath: window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
-  isNsNbIntegration: false,
-  isAlarm: false,
-  alarmCount: '5',
-  keepPage: false,
-  lisUploadCheckAll: false,
-  backupPath: '',
-  backupStartDate: moment().local().toDate(),
-  backupEndDate: moment().local().toDate(),
-  autoBackUpMonth: 'Not selected',
-  presetChecked: false,
-  presetNm: '1',
-})
-const toastInfo = ref({
-  message: '',
-  messageType: MESSAGES.TOAST_MSG_SUCCESS,
-})
-const editingItem = ref<any>(null);
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -640,41 +568,36 @@ onBeforeMount(() => {
 onMounted(async () => {
   getApiUrl();
   await nextTick();
-  cellInfo.value.testTypeCd = window.PROJECT_TYPE === 'bm' ? '02' : '01';
+  testTypeCd.value = window.PROJECT_TYPE === 'bm' ? '02' : '01';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
 
   await cellImgGet();
   await driveGet();
-  await cellImgGetAll();
 });
 
-watch([cellInfo.value.testTypeCd, cellInfo.value.diffCellAnalyzingCount, cellInfo.value.diffWbcPositionMargin, cellInfo.value.diffRbcPositionMargin,
-  cellInfo.value.diffPltPositionMargin, cellInfo.value.pbsCellAnalyzingCount, cellInfo.value.edgeShotType, cellInfo.value.edgeShotCount, cellInfo.value.stitchCount, cellInfo.value.bfCellAnalyzingCount, cellInfo.value.iaRootPath, cellInfo.value.isNsNbIntegration,
-  cellInfo.value.isAlarm,
-  cellInfo.value.alarmCount,
-  cellInfo.value.keepPage,
-  cellInfo.value.lisUploadCheckAll,], async () => {
+watch([testTypeCd, diffCellAnalyzingCount, diffCellAnalyzingCount, wbcPositionMargin, rbcPositionMargin,
+  pltPositionMargin, pbsCellAnalyzingCount, edgeShotType, edgeShotCount, stitchCount, bfCellAnalyzingCount, iaRootPath, isNsNbIntegration, isAlarm, alarmCount, keepPage, lisUploadCheckAll], async () => {
   const cellAfterSettingObj = {
-    id: cellInfo.value.cellImgId,
-    analysisType: cellInfo.value.testTypeCd,
-    diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
-    diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
-    diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
-    diffPltPositionMargin: cellInfo.value.diffPltPositionMargin,
-    pbsCellAnalyzingCount: cellInfo.value.pbsCellAnalyzingCount,
-    stitchCount: cellInfo.value.stitchCount,
-    edgeShotType: cellInfo.value.edgeShotType,
-    edgeShotLPCount: cellInfo.value.edgeShotCount.LP,
-    edgeShotHPCount: cellInfo.value.edgeShotCount.HP,
-    bfCellAnalyzingCount: cellInfo.value.bfCellAnalyzingCount,
-    iaRootPath: cellInfo.value.iaRootPath,
-    isNsNbIntegration: cellInfo.value.isNsNbIntegration,
-    isAlarm: cellInfo.value.isAlarm,
-    alarmCount: cellInfo.value.alarmCount,
-    keepPage: cellInfo.value.keepPage,
-    lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
+    id: cellimgId.value,
+    analysisType: testTypeCd.value,
+    diffCellAnalyzingCount: diffCellAnalyzingCount.value,
+    diffWbcPositionMargin: wbcPositionMargin.value,
+    diffRbcPositionMargin: rbcPositionMargin.value,
+    diffPltPositionMargin: pltPositionMargin.value,
+    pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
+    stitchCount: stitchCount.value,
+    edgeShotType: edgeShotType.value,
+    edgeShotLPCount: edgeShotCount.value.LP,
+    edgeShotHPCount: edgeShotCount.value.HP,
+    bfCellAnalyzingCount: bfCellAnalyzingCount.value,
+    iaRootPath: iaRootPath.value,
+    isNsNbIntegration: isNsNbIntegration.value,
+    isAlarm: isAlarm.value,
+    alarmCount: alarmCount.value,
+    keepPage: keepPage.value,
+    lisUploadCheckAll: lisUploadCheckAll.value,
   }
 
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
@@ -695,7 +618,7 @@ const getApiUrl = () => {
 const filterNumbersOnly = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const filteredValue = input.value.replace(/[^0-9]/g, '');
-  cellInfo.value.alarmCount = filteredValue.trim();
+  alarmCount.value = filteredValue.trim();
 };
 
 const driveGet = async () => {
@@ -742,34 +665,31 @@ const cellImgGet = async () => {
 
         const data = result.data;
 
-        currentCellId.value = data.id;
-        cellInfo.value.cellImgId = String(data.id);
-        cellInfo.value.testTypeCd = data.analysisType;
-        cellInfo.value.diffCellAnalyzingCount = data.diffCellAnalyzingCount;
-        cellInfo.value.diffWbcPositionMargin = data.diffWbcPositionMargin;
-        cellInfo.value.diffRbcPositionMargin = data.diffRbcPositionMargin;
-        cellInfo.value.diffPltPositionMargin = data.diffPltPositionMargin;
-        cellInfo.value.pbsCellAnalyzingCount = data.pbsCellAnalyzingCount;
-        cellInfo.value.stitchCount = data.stitchCount;
-        cellInfo.value.bfCellAnalyzingCount = data.bfCellAnalyzingCount;
-        cellInfo.value.edgeShotType = String(data?.edgeShotType);
-        cellInfo.value.edgeShotCount.LP = String(data?.edgeShotLPCount);
-        cellInfo.value.edgeShotCount.HP = String(data?.edgeShotHPCount);
-        cellInfo.value.iaRootPath = data.iaRootPath;
+        cellimgId.value = String(data.id);
+        testTypeCd.value = data.analysisType;
+        diffCellAnalyzingCount.value = data.diffCellAnalyzingCount;
+        wbcPositionMargin.value = data.diffWbcPositionMargin;
+        rbcPositionMargin.value = data.diffRbcPositionMargin;
+        pltPositionMargin.value = data.diffPltPositionMargin;
+        pbsCellAnalyzingCount.value = data.pbsCellAnalyzingCount;
+        stitchCount.value = data.stitchCount;
+        bfCellAnalyzingCount.value = data.bfCellAnalyzingCount;
+        edgeShotType.value = String(data?.edgeShotType);
+        edgeShotCount.value.LP = String(data?.edgeShotLPCount);
+        edgeShotCount.value.HP = String(data?.edgeShotHPCount);
+        iaRootPath.value = data.iaRootPath;
         downloadRootPath.value = data.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
-        cellInfo.value.isNsNbIntegration = data.isNsNbIntegration;
-        cellInfo.value.isAlarm = data.isAlarm;
-        cellInfo.value.alarmCount = data.alarmCount;
-        cellInfo.value.keepPage = data.keepPage;
-        cellInfo.value.lisUploadCheckAll = data.lisUploadCheckAll;
-        cellInfo.value.backupStartDate = moment(data.backupStartDate).local().toDate();
-        cellInfo.value.backupEndDate = moment(data.backupEndDate).local().toDate();
-        cellInfo.value.autoBackUpMonth = data?.autoBackUpMonth;
-        cellInfo.value.presetNm = data?.presetNm;
-        cellInfo.value.presetChecked = data?.presetChecked;
+        isNsNbIntegration.value = data.isNsNbIntegration;
+        isAlarm.value = data.isAlarm;
+        alarmCount.value = data.alarmCount;
+        keepPage.value = data.keepPage;
+        lisUploadCheckAll.value = data.lisUploadCheckAll;
+        backupStartDate.value = moment(data.backupStartDate).local().toDate();
+        backupEndDate.value = moment(data.backupEndDate).local().toDate();
+        autoBackUpMonth.value = data?.autoBackUpMonth;
 
         const cellBeforeSettingObj = {
-          id: data?.id,
+          id: cellimgId.value,
           analysisType: data?.analysisType,
           diffCellAnalyzingCount: data?.diffCellAnalyzingCount,
           diffWbcPositionMargin: data?.diffWbcPositionMargin,
@@ -787,86 +707,58 @@ const cellImgGet = async () => {
           alarmCount: data?.alarmCount,
           keepPage: data?.keepPage,
           lisUploadCheckAll: data?.lisUploadCheckAll,
-          presetChecked: data?.presetChecked,
-          presetNm: data?.presetNm,
         }
 
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
         await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
         await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
+
     }
   } catch (e) {
+
     console.error(e);
   }
 }
 
 const cellImgSet = async () => {
   const cellImgSet = {
-    analysisType: cellInfo.value.testTypeCd,
-    diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
-    diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
-    diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
-    diffPltPositionMargin: cellInfo.value.diffPltPositionMargin,
-    pbsCellAnalyzingCount: cellInfo.value.pbsCellAnalyzingCount,
-    edgeShotType: cellInfo.value.edgeShotType,
-    edgeShotLPCount: cellInfo.value.edgeShotCount.LP,
-    edgeShotHPCount: cellInfo.value.edgeShotCount.HP,
-    stitchCount: cellInfo.value.stitchCount,
-    bfCellAnalyzingCount: cellInfo.value.bfCellAnalyzingCount,
-    iaRootPath: cellInfo.value.iaRootPath,
-    isNsNbIntegration: cellInfo.value.isNsNbIntegration,
-    isAlarm: cellInfo.value.isAlarm,
-    alarmCount: cellInfo.value.alarmCount,
-    keepPage: cellInfo.value.keepPage,
-    lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
-    backupPath: cellInfo.value.backupPath,
-    backupStartDate: moment(cellInfo.value.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(cellInfo.value.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    autoBackUpMonth: cellInfo.value.autoBackUpMonth,
-    autoBackUpStartDate: cellInfo.value.autoBackUpMonth !== 'Not selected' ? moment(new Date()).local().toDate().toISOString().split('T')[0] : null,
-    presetChecked: true,
-    presetNm: cellInfo.value.presetNm,
-
+    analysisType: testTypeCd.value,
+    diffCellAnalyzingCount: diffCellAnalyzingCount.value,
+    diffWbcPositionMargin: wbcPositionMargin.value,
+    diffRbcPositionMargin: rbcPositionMargin.value,
+    diffPltPositionMargin: pltPositionMargin.value,
+    pbsCellAnalyzingCount: pbsCellAnalyzingCount.value,
+    edgeShotType: edgeShotType.value,
+    edgeShotLPCount: edgeShotCount.value.LP,
+    edgeShotHPCount: edgeShotCount.value.HP,
+    stitchCount: stitchCount.value,
+    bfCellAnalyzingCount: bfCellAnalyzingCount.value,
+    iaRootPath: iaRootPath.value,
+    isNsNbIntegration: isNsNbIntegration.value,
+    isAlarm: isAlarm.value,
+    alarmCount: alarmCount.value,
+    keepPage: keepPage.value,
+    lisUploadCheckAll: lisUploadCheckAll.value,
+    backupPath: downloadRootPath.value,
+    backupStartDate: moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+    backupEndDate: moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0],
+    autoBackUpMonth: autoBackUpMonth.value,
+    autoBackUpStartDate: autoBackUpMonth.value !== 'Not selected' ? moment(new Date()).local().toDate().toISOString().split('T')[0]:null,
   }
+
   try {
+
     let result: any = {};
     if (saveHttpType.value === 'post') {
       result = await createCellImgApi(cellImgSet);
     } else {
-
-      const requestAllCellInfo = allCellInfo.value.map((item) => {
-        if (String(item.id) === String(cellInfo.value.cellImgId)) {
-          return { ...item, presetChecked: true };
-        } else {
-          return { ...item, presetChecked: false };
-        }
-      })
-
-      const allCellImgResult = await getCellImgAllApi();
-      if (allCellImgResult.data) {
-        const allCellImgIds = allCellImgResult.data.filter(item => item.id);
-
-
-        for (const requestCellInfo of requestAllCellInfo) {
-          console.log('allCellImgIds', allCellImgIds);
-          console.log('requestCellInfo.id', requestCellInfo.id);
-          if (allCellImgIds.includes(requestCellInfo.id)) {
-            await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
-          } else {
-            await createCellImgApi(requestCellInfo);
-          }
-
-        }
-      }
-
-
+      result = await putCellImgApi(cellImgSet, cellimgId.value);
     }
 
     if (result) {
-      toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-      showToast(MSG.TOAST.UPDATE_SUCCESS);
-      await cellImgGetAll();
+      const text = saveHttpType.value === 'post' ? MESSAGES.settingSaveSuccess : MESSAGES.UPDATE_SUCCESSFULLY;
+      showSuccessAlert(text);
       scrollToTop();
       const data = result?.data;
       await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
@@ -893,25 +785,23 @@ const cellImgSet = async () => {
     await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
     console.error(e);
-    toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
-    showToast(MSG.TOAST.UPDATE_FAIL);
   }
 }
 
 const toggleNsNbIntegration = () => {
-  cellInfo.value.isNsNbIntegration = !cellInfo.value.isNsNbIntegration;
+  isNsNbIntegration.value = !isNsNbIntegration.value;
 };
 
 const toggleAlarm = () => {
-  cellInfo.value.isAlarm = !cellInfo.value.isAlarm;
+  isAlarm.value = !isAlarm.value;
 };
 
 const toggleKeepPage = () => {
-  cellInfo.value.keepPage = !cellInfo.value.keepPage;
+  keepPage.value = !keepPage.value;
 };
 
 const toggleLisUploadCheckAll = () => {
-  cellInfo.value.lisUploadCheckAll = !cellInfo.value.lisUploadCheckAll;
+  lisUploadCheckAll.value = !lisUploadCheckAll.value;
 };
 
 const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
@@ -1059,12 +949,12 @@ const downloadDtoObj = (downloadType: 'move' | 'copy') => {
   const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
   const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
   const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
-  const sendingDownloadStartDate = moment(cellInfo.value.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0];
-  const sendingDownloadEndDate = moment(cellInfo.value.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingDownloadStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingDownloadEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
   const downloadDto = {
     startDate: sendingDownloadStartDate, // 백업 시작일
     endDate: sendingDownloadEndDate, // 백업 종료일
-    originDownloadPath: `${cellInfo.value.iaRootPath}`, //이미지가 있는 경로 옮겨져야 하는 폴더 위치
+    originDownloadPath: `${iaRootPath.value}`, //이미지가 있는 경로 옮겨져야 하는 폴더 위치
     destinationDownloadPath: downloadRootPath.value, // 백업 경로
     projectType: projectType.value,
     dayQuery,
@@ -1082,8 +972,8 @@ const createBackup = async () => {
     return
   }
 
-  const sendingDownloadStartDate = moment(cellInfo.value.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0];
-  const sendingDownloadEndDate = moment(cellInfo.value.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingDownloadStartDate = moment(backupStartDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
+  const sendingDownloadEndDate = moment(backupEndDate.value).add(1, 'day').local().toDate().toISOString().split('T')[0];
 
   if (!moment(sendingDownloadStartDate).isSameOrBefore(sendingDownloadEndDate)) {
     showErrorAlert('Please check the date');
@@ -1093,7 +983,7 @@ const createBackup = async () => {
   downloadDto.value = {
     startDate: sendingDownloadStartDate, // 백업 시작일
     endDate: sendingDownloadEndDate, // 백업 종료일
-    originDownloadPath: `${cellInfo.value.iaRootPath}`, //이미지가 있는 경로 옮겨져야 하는 폴더 위치
+    originDownloadPath: `${iaRootPath.value}`, //이미지가 있는 경로 옮겨져야 하는 폴더 위치
     destinationDownloadPath: downloadRootPath.value, // 백업 경로
     projectType: projectType.value,
   };
@@ -1189,143 +1079,10 @@ const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean)
 
 const pbsAnalysisValuesRowIndex = () => {
   if (projectType.value !== 'pb') return 2;
-  if (machineVersion.value === '100a' && (cellInfo.value.edgeShotType === '2' || cellInfo.value.edgeShotType === '3')) return 4;
+  if (machineVersion.value === '100a' && (edgeShotType.value === '2' || edgeShotType.value === '3')) return 4;
   if (machineVersion.value === '100a') return 3;
   if (machineVersion.value === '12a') return 3;
   return 3;
 }
-
-const handleChangeCellId = (cellId: number) => {
-  console.log('cellId', cellId);
-  const selectedCellInfo = allCellInfo.value.filter((item) => item.id === cellId)[0];
-  if (selectedCellInfo) {
-    cellInfo.value.cellImgId = String(selectedCellInfo.id);
-    cellInfo.value.testTypeCd = selectedCellInfo.analysisType;
-    cellInfo.value.diffCellAnalyzingCount = selectedCellInfo.diffCellAnalyzingCount;
-    cellInfo.value.diffWbcPositionMargin = selectedCellInfo.diffWbcPositionMargin;
-    cellInfo.value.diffRbcPositionMargin = selectedCellInfo.diffRbcPositionMargin;
-    cellInfo.value.diffPltPositionMargin = selectedCellInfo.diffPltPositionMargin;
-    cellInfo.value.pbsCellAnalyzingCount = selectedCellInfo.pbsCellAnalyzingCount;
-    cellInfo.value.bfCellAnalyzingCount = selectedCellInfo.bfCellAnalyzingCount;
-    cellInfo.value.stitchCount = selectedCellInfo.stitchCount;
-    cellInfo.value.edgeShotType = String(selectedCellInfo?.edgeShotType);
-    cellInfo.value.edgeShotCount.LP = String(selectedCellInfo?.edgeShotLPCount);
-    cellInfo.value.edgeShotCount.HP = String(selectedCellInfo?.edgeShotHPCount);
-    cellInfo.value.iaRootPath = selectedCellInfo.iaRootPath;
-    downloadRootPath.value = selectedCellInfo.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
-    cellInfo.value.isNsNbIntegration = selectedCellInfo.isNsNbIntegration;
-    cellInfo.value.isAlarm = selectedCellInfo.isAlarm;
-    cellInfo.value.alarmCount = selectedCellInfo.alarmCount;
-    cellInfo.value.keepPage = selectedCellInfo.keepPage;
-    cellInfo.value.lisUploadCheckAll = selectedCellInfo.lisUploadCheckAll;
-    cellInfo.value.backupStartDate = moment(selectedCellInfo.backupStartDate).local().toDate();
-    cellInfo.value.backupEndDate = moment(selectedCellInfo.backupEndDate).local().toDate();
-    cellInfo.value.autoBackUpMonth = selectedCellInfo?.autoBackUpMonth;
-    cellInfo.value.presetChecked = selectedCellInfo?.presetChecked;
-    cellInfo.value.presetNm = selectedCellInfo?.presetNm;
-  }
-}
-
-const handleCreatePreset = async () => {
-
-  const defaultCellImgData = {
-    analysisType: projectType.value === 'bm' ? '02' : '01',
-    diffCellAnalyzingCount: projectType.value === 'bm' ? '500':'100',
-    diffWbcPositionMargin: '0',
-    diffRbcPositionMargin: '0',
-    diffPltPositionMargin: '0',
-    pbsCellAnalyzingCount: '100',
-    stitchCount: '1',
-    edgeShotType: '0',
-    edgeShotLPCount: '1',
-    edgeShotHPCount: '3',
-    bfCellAnalyzingCount: '100',
-    iaRootPath: projectType.value === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
-    isNsNbIntegration: false,
-    isAlarm: false,
-    alarmCount: '5',
-    keepPage: false,
-    lisUploadCheckAll: false,
-    backupPath: '',
-    backupStartDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
-    presetChecked: false,
-    presetNm: 'preset name',
-  };
-
-  allCellInfo.value.push(defaultCellImgData);
-
-  // try {
-  //   const result = await createCellImgApi(defaultCellImgData);
-  //   if (result.data) {
-  //     currentPresetId.value = result.data?.id;
-  //     allCellInfo.value.push(result.data);
-  //   }
-  //
-  // } catch (error) {
-  //   console.error(error);
-  // }
-}
-
-const handleDeletePreset = async (selectedCellId: number) => {
-  console.log(selectedCellId);
-  try {
-    const result = deleteCellImgApi({ id: String(selectedCellId) });
-    allCellInfo.value = allCellInfo.value.filter((item) => String(item.id) !== String(selectedCellId));
-    await handleChangeCellId(allCellInfo.value[0].id);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const handleEditPresetName = async (selectedCellItem: any) => {
-  editingItem.value = { id: selectedCellItem.id, name: selectedCellItem.presetNm };
-  if (currentEditingCellId.value === selectedCellItem.id) {
-    currentEditingCellId.value = undefined;
-  }
-  currentEditingCellId.value = selectedCellItem.id;
-}
-
-const cancelEdit = () => {
-  editingItem.value = undefined;
-}
-
-const saveEdit = async (currentCellId: number) => {
-  const cellItem = allCellInfo.value.filter((item) => item.id === currentCellId);
-  const requestItem = { ...cellItem, presetNm: editingItem.value.name };
-  try {
-    await putCellImgApi(requestItem, String(currentCellId));
-
-    allCellInfo.value = allCellInfo.value.map((item) => {
-      if (item.id === currentCellId) return { ...item, presetNm: editingItem.value.name };
-      return item;
-    })
-    await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value });
-    editingItem.value = undefined;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-const cellImgGetAll = async () => {
-  try {
-    const result = await getCellImgAllApi();
-    if (result?.data && !isObjectEmpty(result?.data)) {
-      allCellInfo.value = result.data;
-      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value });
-
-    }
-  } catch (error) {
-    console.error(error);
-    allCellInfo.value = [];
-  }
-}
-
-const showToast = (message: string) => {
-  toastInfo.value.message = message;
-  setTimeout(() => {
-    toastInfo.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
-};
 
 </script>
