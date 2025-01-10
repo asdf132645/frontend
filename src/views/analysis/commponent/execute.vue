@@ -19,7 +19,7 @@
       <select v-model="wbcCount" :disabled="isRunningState || (analysisType === '05')">
         <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
       </select>
-      <select class="stopDivSelect" v-model="stitchCount" :disabled="isRunningState || (analysisType === '05')">
+      <select class="stopDivSelect" style="margin-top: 5px;" v-model="stitchCount" :disabled="isRunningState || (analysisType === '05')">
         <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
           {{ option.text }}
         </option>

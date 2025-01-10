@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-  <div v-show="moveImgIsBool" class="moveImgIsBool"> Loading...</div>
+<!--  <div v-show="moveImgIsBool" class="moveImgIsBool"> Loading...</div>-->
   <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"
                  :changeSlideByLisUpload="changeSlideByLisUpload"/>
 
@@ -137,7 +137,7 @@
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
         </button>
-        <button @click="wps" v-if="isWpsShow">
+        <button @click="wps" v-if="isWpsBtnShow">
           <font-awesome-icon :icon="['fas', 'expand']"/>
           WPS
         </button>
@@ -352,7 +352,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const wbcReset = ref(false);
 const isLoadedSlideData = ref(true);
-const isWpsShow = ref(false);
+const isWpsBtnShow = ref(false);
 const blockClicks = ref(false);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
@@ -392,10 +392,10 @@ watch(
       if (newVal.id !== oldVal?.id) {
         await nextTick();
 
-        if (projectType.value !== 'bm') {
+        if (projectType.value !== 'bm' && siteCd.value === '9090') {
           await checkWps(newVal);
         } else {
-          isWpsShow.value = false;
+          isWpsBtnShow.value = false;
         }
         try {
           await getNormalRange(); // 함수가 선언된 이후 호출
@@ -457,9 +457,9 @@ const checkWps = async (newVal: any) => {
   const foldersPath = `folderPath=${filePath}`;
   const wpsFolderCheck = await getFolders(foldersPath);
   if (wpsFolderCheck?.code !== 400) {
-    isWpsShow.value = true;
+    isWpsBtnShow.value = true;
   } else {
-    isWpsShow.value = false;
+    isWpsBtnShow.value = false;
     wpsShow.value = false;
   }
 }
@@ -885,7 +885,7 @@ const refreshClass = async (data: any) => {
   if (projectType.value !== 'bm') {
     await checkWps(data);
   } else {
-    isWpsShow.value = false;
+    isWpsBtnShow.value = false;
   }
 }
 
@@ -1338,7 +1338,6 @@ function isSelected(image: any) {
 const wpsIsSelected = (selectedImg: any) => {
   selectedClickImages.value = [];
   selectedClickImages.value.push(selectedImg);
-  console.log(JSON.stringify(selectedImg))
   const targetElement = imageRefs.value[selectedImg?.uniqueKey];
   if (targetElement) {
     targetElement.scrollIntoView({

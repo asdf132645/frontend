@@ -289,8 +289,7 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
-  const aa = await errLogLoad();
-  console.log(aa)
+  await errLogLoad();
 });
 
 onBeforeUnmount(async () => {
@@ -875,7 +874,7 @@ const errLogLoad = async () => {
       }
     }
 
-    errArr.value = newArr[0];
+    errArr.value = newArr;
     console.log(errArr.value)
   }
 }

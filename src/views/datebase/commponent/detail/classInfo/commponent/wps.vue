@@ -109,7 +109,7 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
         emit('borderOn');
         wps.value = newVal;
-        await drawBoxAllCanvas(findWbcClass.value);
+        // await drawBoxAllCanvas(findWbcClass.value);
         await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
 
       } else {
@@ -313,6 +313,7 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
 };
 
 const drawBoxAllCanvas = async (findWbcClass: any) => {
+  console.log('all')
   for (const el of findWbcClass) {
     const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(el);
 
