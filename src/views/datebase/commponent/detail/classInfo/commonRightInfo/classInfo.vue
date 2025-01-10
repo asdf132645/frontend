@@ -175,7 +175,6 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      :position="toastPosition(siteCd)"
   />
   <Confirm
       v-if="showConfirm"
@@ -1532,11 +1531,6 @@ const showToast = (message: string) => {
 
 const tooltipVisibleFunc = (type: keyof TooltipClassInfoType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
-}
-
-const toastPosition = (siteCd: string) => {
-  if (siteCd === '0019') return 'center';
-  return 'top';
 }
 
 </script>

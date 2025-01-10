@@ -1,5 +1,6 @@
 // commonModule.ts
 import {Commit} from 'vuex';
+import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
 
 export interface CommonState {
     startEmbedded: boolean;
@@ -45,6 +46,7 @@ export interface CommonState {
     rbcImagePageNumber: number;
     showLISUploadAfterCheckingAll: boolean;
     slideDataReset: string;
+    cellImageAnalyzedData: CellImgAnalyzedResponse[] | undefined;
 }
 
 interface CommonModule {
@@ -96,6 +98,7 @@ interface CommonModule {
         setRbcImagePageNumber: (state: CommonState, value: number) => void;
         setShowLISUploadAfterCheckingAll: (state: CommonState, value: boolean) => void;
         setSlideDataReset: (state: CommonState, value: string) => void;
+        setCellImageAnalyzedData: (state: CommonState, value: CellImgAnalyzedResponse[]) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -148,6 +151,7 @@ export const commonModule: CommonModule = {
         rbcImagePageNumber: 0,
         showLISUploadAfterCheckingAll: false,
         slideDataReset: '',
+        cellImageAnalyzedData: undefined,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -287,6 +291,9 @@ export const commonModule: CommonModule = {
         },
         setSlideDataReset(state: CommonState, value: string): void{
             state.slideDataReset = value;
+        },
+        setCellImageAnalyzedData(state: CommonState, value: CellImgAnalyzedResponse[] | undefined): void {
+            state.cellImageAnalyzedData = value;
         }
     },
     actions: {
@@ -428,6 +435,9 @@ export const commonModule: CommonModule = {
             }
             if(payload.hasOwnProperty('slideDataReset')){
                 commit('setSlideDataReset', payload.slideDataReset);
+            }
+            if (payload.hasOwnProperty('cellImageAnalyzedData')) {
+                commit('setCellImageAnalyzedData', payload.cellImageAnalyzedData);
             }
         },
     },

@@ -132,7 +132,6 @@
       :message="toastInfo.message"
       :messageType="toastInfo.messageType"
       :duration="1500"
-      position="bottom-right"
   />
 </template>
 
