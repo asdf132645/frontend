@@ -71,6 +71,7 @@ const showConfirm = ref(false);
 const confirmMessage = ref('');
 
 const movingTab = ref('');
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
@@ -110,7 +111,7 @@ const hideAlert = () => {
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
     case 'cellImageAnalyzed':
-      return CellImageAnalyzed;
+      return siteCd.value !== '9090' ? CellImageAnalyzed : NewCellImageAnalyzed;
     case 'rbcDegree':
       return RbcDegree;
     case 'deviceControls':
