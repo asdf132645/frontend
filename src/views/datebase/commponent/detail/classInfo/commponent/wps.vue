@@ -109,7 +109,9 @@ watch(() => props.wpsImgClickInfoData, async (newVal) => {
 
         emit('borderOn');
         wps.value = newVal;
+        await drawBoxAllCanvas(findWbcClass.value);
         await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
+
       } else {
         toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
         showToast('Selected image does not have corresponding coordinates.');
@@ -217,7 +219,7 @@ const wpsInitElement = async () => {
     canvas.id = 'myCanvas';
     canvasOverlay.value = canvas;
 
-    viewer.value.addHandler('open', function (event: any) {
+    viewer.value.addHandler('open', async function (event: any) {
       imgOn.value = true;
 
       // 캔버스 크기를 조정
@@ -236,7 +238,8 @@ const wpsInitElement = async () => {
       })
       if (findWbcClassVal) {
         const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(findWbcClassVal);
-        drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
+        await drawBoxAllCanvas(findWbcClass.value);
+        await drawBoxOnCanvas(boxX1, boxY1, boxWidth, boxHeight, findWbcClass.value);
 
       }
     });
@@ -339,7 +342,6 @@ const drawBoxOnCanvas = async (x: number, y: number, width: number, height: numb
     viewer.value.removeOverlay(currentOverlay);
     currentOverlay = null;
   }
-  await drawBoxAllCanvas(findWbcClass);
   // 새로운 오버레이 생성
   const overlayDiv = document.createElement('div');
   overlayDiv.style.border = '2px solid #20eaa7'; // 박스 스타일

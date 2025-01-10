@@ -1,5 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
+  <div v-show="moveImgIsBool" class="moveImgIsBool"> Loading...</div>
   <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"
                  :changeSlideByLisUpload="changeSlideByLisUpload"/>
 
