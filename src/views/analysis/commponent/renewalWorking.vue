@@ -216,6 +216,7 @@ watch(
     (newVal, oldVal) => {
       progressData.progressBarText = newVal.progressBarText || '';
       progressData.progressBarPercent = newVal.progressBarPercent || 25;
+      dashoffset.value = calculateDashOffset(newVal.progressBarPercent);
       // 데이터 변경 시 실행할 코드
     },
     {deep: true}
@@ -248,8 +249,6 @@ watch([runningInfoModule.value], (newSlot: SlotInfo[]) => {
     if (currentSlot && currentSlot?.stateCd === '03') {
       wbcCount.value = Number(currentSlot.wbcCount);
       maxWbcCount.value = window.PROJECT_TYPE === 'pb' ? Number(currentSlot.maxWbcCount) : Number(currentSlot.cellCount);
-      const percentage = (wbcCount.value / maxWbcCount.value) * 100;
-      dashoffset.value = calculateDashOffset(percentage);
     }
   }
 });

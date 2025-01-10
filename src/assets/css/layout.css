@@ -5630,8 +5630,9 @@ progress::-moz-progress-bar {
 .newProgressNm {
     font-size: 0.8rem;
     position: absolute;
-    left: 5%;
+    left: 0;
     top: 50px;
+    max-width: 70px;
 }
 
 .abnormalClassInfoPopup {
@@ -5748,7 +5749,7 @@ table.defaultTable.dbDataTable tr th {
     display: flex;
     transition: transform 0.3s ease-in-out;
     will-change: transform;
-    width: 290.1px;
+    /*width: 290.1px;*/
 }
 
 .steps.dragging {

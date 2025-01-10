@@ -644,14 +644,16 @@ async function socketData(data: any) {
             console.log(result)
             if (runningInfo.slotId) {
               console.log('save successful');
-              currentSlotId.value = runningInfo.slotId;
-              runningInfoId.value = runningInfo.id;
+              currentSlotId.value = result?.data?.slotId;
+              runningInfoId.value = result?.data?.id;
+              console.log(runningInfo)
+              console.log(result?.data?.id)
             }
             delayedEmit('SEND_DATA', 'refreshDb', 300);
           }
         } else {
           console.log('appVue update')
-
+          console.log(runningInfoId.value)
           await gqlGenericUpdate(appVueUpdateMutation, {
             id: runningInfoId.value,
             rbcInfoAfter: runningInfo.rbcInfoAfter,
