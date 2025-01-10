@@ -1,5 +1,6 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
+<!--    <Preset />-->
     <Execute @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
@@ -33,6 +34,7 @@ import {defineEmits, defineProps, onMounted, ref, onBeforeMount, computed, watch
 import router from "@/router";
 import {useStore} from "vuex";
 import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
+import Preset from "@/views/analysis/commponent/preset.vue";
 
 const emits = defineEmits();
 

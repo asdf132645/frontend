@@ -7,6 +7,7 @@
           :format="dateFormat"
           class="date-picker"
           ref="datepicker"
+          :week-starts-on="0"
       />
       </div>
 

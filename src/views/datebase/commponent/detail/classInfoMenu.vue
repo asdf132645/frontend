@@ -27,7 +27,7 @@
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'certificate']"/>
           </p>
-          <p>Plt</p>
+          <p>PLT</p>
         </li>
         <li v-if="!isLoading" :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
           <p class="menuIco">

@@ -20,30 +20,6 @@
 
         </div>
       </div>
-<!--      <div class="mt20 mb40 rbcClassListArr" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">-->
-<!--        <div class="mb10 fs12">-->
-<!--          {{ category?.categoryNm }}-->
-<!--        </div>-->
-
-<!--        <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">-->
-<!--          <template v-if="classItem.classNm !== 'Normal'">-->
-<!--            <span>-->
-<!--              {{ classItem.classNm }}-->
-<!--            </span>-->
-<!--            <div class="mb10">-->
-<!--              [ {{ `${classItem.degree1} , ${classItem.degree2} , ${classItem.degree3}` }} ]-->
-<!--            </div>-->
-<!--            <div class="mt10">-->
-<!--              <div class='degreeInput mb10'>-->
-<!--                <input type="number" v-model="classItem.degree1"/>-->
-<!--                <input type="number" v-model="classItem.degree2"/>-->
-<!--                <input type="number" v-model="classItem.degree3"/>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </div>-->
-
-<!--      </div>-->
     </div>
     <div class="mt-2 degreeDiv" >
       <button class="saveBtn mb20" @click="onResetDegree">Reset</button>

@@ -8,6 +8,10 @@
     opacity: 0;
 }
 
+.mt5 {
+    margin-top: 5px;
+}
+
 .mt08 {
     margin-top: 8px;
 }
@@ -2890,10 +2894,6 @@ span.wbcClose {
     height: 50px;
     font-size: 2rem;
     cursor: pointer;
-}
-
-select.stopDivSelect {
-    margin-top: 5px;
 }
 
 .lastTestType label input {
@@ -5859,6 +5859,149 @@ button.gbArrowButton.left {
 
 .btn-container_img_list.plt {
     justify-content: flex-end;
+}
+
+.presetButtonGroup-container {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.preset-item {
+    position: relative;
+}
+
+.preset-item input[type="radio"] {
+    display: none;
+}
+
+.preset-item label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 32px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 16px;
+    color: #374151;
+}
+
+.preset-item input[type="radio"]:checked + label {
+    background-color: var(--coral-bg-0-color);
+    border-color: var(--coral-bg-1-color);
+    color: white;
+    font-weight: 600;
+}
+
+.preset-item label:hover {
+    background-color: #eff6ff;
+    border-color: var(--coral-bg-1-color);
+}
+
+.add-preset-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px dashed #d1d5db;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 24px;
+    color: #6b7280;
+}
+
+.add-preset-btn:hover {
+    color: var(--coral-bg-0-color);
+    border-color: var(--coral-bg-1-color);
+}
+
+.delete-preset-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    /*background-color: #ef4444;*/
+    background-color: gray;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.edit-preset-btn {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 20px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: gray;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.preset-container {
+    position: relative;
+}
+
+.preset-container:hover .delete-preset-btn {
+    display: flex;
+}
+
+.preset-container:hover .edit-preset-btn {
+    display: flex;
+}
+
+.delete-preset-btn:hover {
+    background-color: #dc2626;
+}
+
+.edit-preset-btn:hover {
+    background-color: var(--main-bg-7-color)
+}
+
+.cellImgAnalyzed-container {
+    width: 700px;
+}
+
+.cellImgAnalyzed-aside-container {
+    position: absolute;
+    top: 300px;
+    right: 300px;
+}
+
+.cellImgAnalyzed-aside-container > h1 {
+    font-size: 1.2rem;
+
 }
 
 @keyframes bounce {

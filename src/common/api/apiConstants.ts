@@ -87,8 +87,20 @@ export const apiConstants = {
                 endpoint: 'cellImgAnalyzed',
                 requiresToken: false,
             },
+            cellImgGetById: {
+                endpoint: 'cellImgAnalyzed/cellImgGetById',
+                requiresToken: false,
+            },
             cellImgPut: {
                 endpoint: 'cellImgAnalyzed/update',
+                requiresToken: false,
+            },
+            cellImgDelete: {
+                endpoint: 'cellImgAnalyzed/delete',
+                requiresToken: false,
+            },
+            cellImgGetAll: {
+                endpoint: 'cellImgAnalyzed/getAll',
                 requiresToken: false,
             }
         },

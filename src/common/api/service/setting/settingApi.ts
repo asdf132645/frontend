@@ -26,7 +26,7 @@ import {CreateMinCountDto, minCountItem, UpdateMinCountDto} from "@/common/api/s
 
 const httpClient = useHttpClient();
 
-export const createCellImgApi = async (request: any): Promise<ApiResponse<void>> => {
+export const createCellImgApi = async (request: any): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
     return httpClient.httpPost(apiConstants.settings.cellImgAnalyzedPost.cellImgAdd, request);
 };
 
@@ -34,9 +34,21 @@ export const getCellImgApi = async (): Promise<ApiResponse<CellImgAnalyzedRespon
     return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGet);
 };
 
+export const getCellImgByIdApi = async (request: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGetById, request);
+};
+
+export const getCellImgAllApi = async (): Promise<ApiResponse<CellImgAnalyzedResponse[] | undefined>> => {
+    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGetAll);
+}
+
 export const putCellImgApi = async (request: any, id: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
     return httpClient.httpPut(apiConstants.settings.cellImgAnalyzedPost.cellImgPut, request, id);
 };
+
+export const deleteCellImgApi = async (request: { id: string }): Promise<ApiResponse<boolean | undefined>> => {
+    return httpClient.httpDelete(apiConstants.settings.cellImgAnalyzedPost.cellImgDelete, request);
+}
 
 export const createRbcDegreeApi = async (request: RbcDegreeDto): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.rbcDegree.rbcDegreeAdd, request);
