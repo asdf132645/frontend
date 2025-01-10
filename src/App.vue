@@ -717,9 +717,7 @@ const removeDuplicateJobCmd = (reqArr: any) => {
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
-  let autoStart: string | number = sessionStorage.getItem('autoStart') || 1;
-  if (autoStart === 'true') autoStart = 1;
-  else if (autoStart === 'false') autoStart = 0;
+  let autoStart: number = JSON.parse(sessionStorage.getItem('autoStart')) || 1;
 
   if (window.MACHINE_VERSION === '100a') {
     Object.assign(req, {isRewindingBelt: isRewindingBelt.value});

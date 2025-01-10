@@ -42,6 +42,8 @@ const defaultCellImgData = {
     backupPath: '',
     backupStartDate: new Date(),
     backupEndDate: new Date(),
+    presetChecked: true,
+    presetNm: 'preset',
 };
 
 

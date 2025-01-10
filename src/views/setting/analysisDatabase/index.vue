@@ -1,10 +1,9 @@
 <template>
   <div>
     <div class="settingTabSubButtons">
-      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
+      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analysis</button>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
-        <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
         <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
         <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
@@ -17,6 +16,7 @@
         <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
         </button>
+        <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
       </template>
     </div>
 

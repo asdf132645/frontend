@@ -5908,10 +5908,10 @@ button.gbArrowButton.left {
 }
 
 .add-preset-btn {
-    width: 32px;
+    width: 120px;
     height: 32px;
     border: 2px dashed #d1d5db;
-    border-radius: 50%;
+    border-radius: 8px;
     background-color: white;
     display: flex;
     align-items: center;

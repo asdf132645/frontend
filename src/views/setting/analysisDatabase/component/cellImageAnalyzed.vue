@@ -333,34 +333,44 @@
       </table>
       <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
     </div>
-    <aside v-if="siteCd === '9090'" class="cellImgAnalyzed-aside-container">
+
+    <aside class="cellImgAnalyzed-aside-container">
       <h1>Preset</h1>
 
       <div class="presetButtonGroup-container">
-        <div v-for="(cellId, cellIndex) in cellIdArr"
-             :key="cellId"
+        <div v-for="cellItem in allCellInfo"
+             :key="cellItem.id"
              class="preset-container">
           <div class="preset-item">
             <input
-                :id="String(cellId)"
+                :id="String(cellItem.id)"
                 type="radio"
                 name="cellIdGroup"
-                :checked="cellIdArr[0] === cellId"
-                @click="handleChangeCellId(cellId)" />
-            <label :for="String(cellId)">{{ cellIndex + 1}}</label>
+                :checked="String(cellInfo.cellImgId) === String(cellItem.id)"
+                @click="handleChangeCellId(cellItem.id)" />
+            <label v-if="!editingItem || editingItem.id !== cellItem.id" :for="String(cellItem.id)">{{ cellItem.presetNm }}</label>
+            <input
+                v-else
+                type="text"
+                v-model="editingItem.name"
+                @keydown.enter="saveEdit(cellItem.id)"
+                @keydown.esc="cancelEdit"
+                class="edit-preset-input"
+            />
           </div>
           <button
               class="delete-preset-btn"
-              @click.stop="handleDeletePreset(cellId)"
-              v-if="cellIdArr.length > 1">×</button>
-<!--          <button-->
-<!--              class="edit-preset-btn"-->
-<!--              @click.stop="handleEditPresetName(cellId)"-->
-<!--              v-if="cellIdArr.length > 1">-->
-<!--            <font-awesome-icon :icon="['fas', 'pen-to-square']" />-->
-<!--          </button>-->
+              @click.stop="handleDeletePreset(cellItem.id)"
+              v-if="allCellInfo.length > 1">×</button>
+          <button
+              v-if="cellItem.id == cellInfo.cellImgId"
+              class="edit-preset-btn"
+              @click.stop="handleEditPresetName(cellItem)"
+          >
+            <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+          </button>
         </div>
-        <button v-if="cellIdArr.length < 5" class="add-preset-btn" @click="handleCreatePreset">+</button>
+        <button v-if="allCellInfo.length < 5" class="add-preset-btn" @click="handleCreatePreset">+</button>
       </div>
     </aside>
   </div>
@@ -455,7 +465,6 @@
       :message="toastInfo.message"
       :messageType="toastInfo.messageType"
       :duration="1500"
-      position="bottom-right"
   />
 </template>
 <script setup lang="ts">
@@ -577,7 +586,6 @@ const tooltipVisible = ref({
   openDownloadSavePath: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
-const cellIdArr = ref<number[]>([]);
 const currentCellId = ref(0);
 const currentEditingCellId = ref(0);
 const allCellInfo = ref<CellImgAnalyzedResponse[]>([]);
@@ -613,8 +621,7 @@ const toastInfo = ref({
   message: '',
   messageType: MESSAGES.TOAST_MSG_SUCCESS,
 })
-
-
+const editingItem = ref<any>(null);
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -822,18 +829,38 @@ const cellImgSet = async () => {
     presetNm: cellInfo.value.presetNm,
 
   }
-
   try {
     let result: any = {};
     if (saveHttpType.value === 'post') {
       result = await createCellImgApi(cellImgSet);
     } else {
-      const presetCheckedItems = allCellInfo.value.filter((item: any) => item.presetChecked);
-      for (const presetCheckedItem of presetCheckedItems) {
-        const fixedRequest = { ...presetCheckedItem, presetChecked: false };
-        await putCellImgApi(fixedRequest, String(presetCheckedItem.id));
+
+      const requestAllCellInfo = allCellInfo.value.map((item) => {
+        if (String(item.id) === String(cellInfo.value.cellImgId)) {
+          return { ...item, presetChecked: true };
+        } else {
+          return { ...item, presetChecked: false };
+        }
+      })
+
+      const allCellImgResult = await getCellImgAllApi();
+      if (allCellImgResult.data) {
+        const allCellImgIds = allCellImgResult.data.filter(item => item.id);
+
+
+        for (const requestCellInfo of requestAllCellInfo) {
+          console.log('allCellImgIds', allCellImgIds);
+          console.log('requestCellInfo.id', requestCellInfo.id);
+          if (allCellImgIds.includes(requestCellInfo.id)) {
+            await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
+          } else {
+            await createCellImgApi(requestCellInfo);
+          }
+
+        }
       }
-      result = await putCellImgApi(cellImgSet, cellInfo.value.cellImgId);
+
+
     }
 
     if (result) {
@@ -1169,6 +1196,7 @@ const pbsAnalysisValuesRowIndex = () => {
 }
 
 const handleChangeCellId = (cellId: number) => {
+  console.log('cellId', cellId);
   const selectedCellInfo = allCellInfo.value.filter((item) => item.id === cellId)[0];
   if (selectedCellInfo) {
     cellInfo.value.cellImgId = String(selectedCellInfo.id);
@@ -1201,7 +1229,7 @@ const handleChangeCellId = (cellId: number) => {
 const handleCreatePreset = async () => {
 
   const defaultCellImgData = {
-    testTypeCd: projectType.value === 'bm' ? '02' : '01',
+    analysisType: projectType.value === 'bm' ? '02' : '01',
     diffCellAnalyzingCount: projectType.value === 'bm' ? '500':'100',
     diffWbcPositionMargin: '0',
     diffRbcPositionMargin: '0',
@@ -1222,55 +1250,74 @@ const handleCreatePreset = async () => {
     backupStartDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
     backupEndDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
     presetChecked: false,
-    presetNm: '1',
+    presetNm: 'preset name',
   };
 
-  try {
-    const result = await createCellImgApi(defaultCellImgData);
-    if (result.data) {
-      currentPresetId.value = result.data?.id;
-      cellIdArr.value.push(currentPresetId.value);
-    }
+  allCellInfo.value.push(defaultCellImgData);
 
-  } catch (error) {
-    console.error(error);
-  }
+  // try {
+  //   const result = await createCellImgApi(defaultCellImgData);
+  //   if (result.data) {
+  //     currentPresetId.value = result.data?.id;
+  //     allCellInfo.value.push(result.data);
+  //   }
+  //
+  // } catch (error) {
+  //   console.error(error);
+  // }
 }
 
 const handleDeletePreset = async (selectedCellId: number) => {
+  console.log(selectedCellId);
   try {
     const result = deleteCellImgApi({ id: String(selectedCellId) });
     allCellInfo.value = allCellInfo.value.filter((item) => String(item.id) !== String(selectedCellId));
-    cellIdArr.value = cellIdArr.value.filter((id) => String(id) !== String(selectedCellId));
-    await handleChangeCellId(cellIdArr.value[0]);
-    console.log(result);
+    await handleChangeCellId(allCellInfo.value[0].id);
   } catch (error) {
     console.error(error);
   }
 };
 
-const handleEditPresetName = async (selectedCellId: number) => {
-  console.log('currentEditingCellId', currentEditingCellId.value);
-  console.log('selectedCellId', selectedCellId);
-  if (currentEditingCellId.value === selectedCellId) {
+const handleEditPresetName = async (selectedCellItem: any) => {
+  editingItem.value = { id: selectedCellItem.id, name: selectedCellItem.presetNm };
+  if (currentEditingCellId.value === selectedCellItem.id) {
     currentEditingCellId.value = undefined;
   }
-  currentEditingCellId.value = selectedCellId;
+  currentEditingCellId.value = selectedCellItem.id;
+}
 
-  console.log('edit name', selectedCellId);
-  //
+const cancelEdit = () => {
+  editingItem.value = undefined;
+}
+
+const saveEdit = async (currentCellId: number) => {
+  const cellItem = allCellInfo.value.filter((item) => item.id === currentCellId);
+  const requestItem = { ...cellItem, presetNm: editingItem.value.name };
+  try {
+    await putCellImgApi(requestItem, String(currentCellId));
+
+    allCellInfo.value = allCellInfo.value.map((item) => {
+      if (item.id === currentCellId) return { ...item, presetNm: editingItem.value.name };
+      return item;
+    })
+    await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value });
+    editingItem.value = undefined;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const cellImgGetAll = async () => {
   try {
     const result = await getCellImgAllApi();
     if (result?.data && !isObjectEmpty(result?.data)) {
-      cellIdArr.value = result.data.map((item) => item.id);
       allCellInfo.value = result.data;
+      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value });
+
     }
   } catch (error) {
     console.error(error);
-    cellIdArr.value = [];
+    allCellInfo.value = [];
   }
 }
 

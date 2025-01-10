@@ -158,7 +158,6 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="bottom-right"
   />
 </template>
 
@@ -179,7 +178,7 @@ import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
-import {getCellImgApi} from "@/common/api/service/setting/settingApi";
+import {getCellImgAllApi, getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import Confirm from "@/components/commonUi/Confirm.vue";
@@ -195,6 +194,7 @@ import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import ErrLog from "@/components/commonUi/ErrLog.vue";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -363,7 +363,8 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  cellImgGet();
+  await cellImgGet();
+  await cellImgGetAll();
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
 
@@ -385,8 +386,9 @@ onBeforeUnmount(() => {
 })
 
 
-watch(userModuleDataGet.value, (newUserId, oldUserId) => {
-  cellImgGet();
+watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
+  await cellImgGet();
+  await cellImgGetAll();
   userId.value = newUserId.id;
 });
 
@@ -665,6 +667,17 @@ const cellImgGet = async () => {
 
   } catch (e) {
     console.error(e);
+  }
+}
+
+const cellImgGetAll = async () => {
+  try {
+    const result = await getCellImgAllApi();
+    if (result?.data && !isObjectEmpty(result?.data)) {
+      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: result.data });
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
