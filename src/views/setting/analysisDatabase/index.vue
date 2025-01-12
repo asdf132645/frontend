@@ -1,10 +1,9 @@
 <template>
   <div>
     <div class="settingTabSubButtons">
-      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analyzed</button>
+      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analysis</button>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
-        <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
         <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
         <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
@@ -17,6 +16,7 @@
         <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
         </button>
+        <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
       </template>
     </div>
 
@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
+import NewCellImageAnalyzed from "@/views/setting/analysisDatabase/component/newCellImageAnalyzed.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
 import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
 import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'
@@ -71,6 +72,7 @@ const showConfirm = ref(false);
 const confirmMessage = ref('');
 
 const movingTab = ref('');
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
@@ -110,7 +112,7 @@ const hideAlert = () => {
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
     case 'cellImageAnalyzed':
-      return CellImageAnalyzed;
+      return siteCd.value !== '9090' ? CellImageAnalyzed : NewCellImageAnalyzed;
     case 'rbcDegree':
       return RbcDegree;
     case 'deviceControls':

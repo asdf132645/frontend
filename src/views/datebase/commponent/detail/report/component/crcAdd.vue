@@ -97,7 +97,6 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="bottom-right"
   />
   <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
           :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>

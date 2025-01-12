@@ -27,3 +27,7 @@ pnpm-debug.log*
 graphql.d.ts
 src/graphql/RuningInfoEntity.ts
 src/store/modules/runningDataModule.ts
+src/views/setting/analysisDatabase/component/preset.vue
+src/common/lib/utils/useImageRefs.ts
+src/views/datebase/commponent/detail/plt/listDetailPlt.vue
+src/views/datebase/commponent/detail/plt/pltImageList/pltImageList.vue

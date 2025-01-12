@@ -100,7 +100,6 @@
       v-if="toastMessage"
       :message="toastMessage"
       :duration="1500"
-      position="bottom-right"
   />
   <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
                  @passWordClose="passWordClose"/>

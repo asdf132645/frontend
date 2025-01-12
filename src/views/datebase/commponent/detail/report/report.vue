@@ -237,7 +237,6 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position='top'
   />
 </template>
 

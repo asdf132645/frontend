@@ -1,7 +1,8 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
 <!--    <Preset />-->
-    <Execute @initDataChangeText="initDataChangeText"/>
+    <Execute v-if="siteCd ='9090'" @initDataChangeText="initDataChangeText"/>
+    <ExecuteNew v-else @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
@@ -35,6 +36,7 @@ import router from "@/router";
 import {useStore} from "vuex";
 import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
 import Preset from "@/views/analysis/commponent/preset.vue";
+import ExecuteNew from "@/views/analysis/commponent/executeNew.vue";
 
 const emits = defineEmits();
 

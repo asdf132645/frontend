@@ -84,7 +84,6 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="bottom-right"
   />
   <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
 </template>

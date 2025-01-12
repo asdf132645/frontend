@@ -222,7 +222,6 @@
       :message="toastMessage"
       :messageType="toastMessageType"
       :duration="1500"
-      position="bottom-right"
   />
   <Alert
       v-if="showAlert"
