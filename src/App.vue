@@ -72,6 +72,8 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/store/common";
 import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
+import moment from 'moment';
+import 'moment-timezone';
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -289,7 +291,7 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
-  await errLogLoad();
+
 });
 
 onBeforeUnmount(async () => {
@@ -340,8 +342,12 @@ async function socketData(data: any) {
         parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
-
-          showCoreErrorAlert(res);
+          if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
+            const err = await errLogLoad();
+            showCoreErrorAlert(err.desc);
+          } else {
+            showCoreErrorAlert(res);
+          }
           const isAlarm = sessionStorage.getItem('isAlarm');
           if (isAlarm === 'true') {
             await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
@@ -474,8 +480,8 @@ async function socketData(data: any) {
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
           if (data?.workingDone === 'Y') {
-            await store.dispatch('commonModule/setCommonInfo', { reqArr: tcpReq().embedStatus.runIngComp });
-            await store.dispatch('commonModule/setCommonInfo', { runningInfoStop: true });
+            await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+            await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
           }
           await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
@@ -852,10 +858,10 @@ const errorClear = async () => {
 }
 
 
-const errLogLoad = async () => {
-  const folderPath = `folderPath=${pbiaRootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
+const errLogLoad = async (): any => {
+  const folderPath = `folderPath=${pbiaRootDir.value.replace('PBIA_proc', '')}UIMD_Data/Backend_Log`;
   const res = await errLogsReadApi(folderPath);
-  if(res.code === 200){
+  if (res.code === 200) {
     let newArr = [];
 
     // 날짜별로 들어옴 다중 포문 쓴 이유
@@ -864,7 +870,7 @@ const errLogLoad = async () => {
 
       for (const el of entries) {
         const fullTimestamp = `${date} ${el.timestamp}`; // 날짜 합치기 용도
-        if (el.E_TYPE !== 'DEV_INFO'){
+        if (el.E_TYPE !== 'DEV_INFO') {
           newArr.push({
             timestamp: fullTimestamp,
             code: el?.E_CODE,
@@ -877,10 +883,31 @@ const errLogLoad = async () => {
       }
     }
 
-    errArr.value = newArr;
+    return getLatestCriticalError(newArr);
   }
 }
 
+type ErrorObject = {
+  timestamp: string;
+  code: string;
+  type: string;
+  desc: string;
+  soln: string;
+};
+
+
+const getLatestCriticalError = (errArr: ErrorObject[]): ErrorObject | null => {
+  const today = moment().format('YYYY-MM-DD'); // Get today's date in YYYY-MM-DD format
+
+  return (
+      errArr
+          .filter((error) => {
+            const errorDate = moment(error.timestamp).format('YYYY-MM-DD'); // Format timestamp to YYYY-MM-DD
+            return errorDate === today && error.type === 'CRIT';
+          })
+          .sort((a, b) => moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf())[0] || null
+  );
+};
 </script>
 
 <style>
