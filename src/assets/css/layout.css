@@ -851,13 +851,22 @@ h3.titleText {
     margin-bottom: 10px;
 }
 
-.execute {
+.execute-container {
     text-align: center;
     background: var(--white-color);
     padding: 19px;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
+    margin-top: 0px !important;
+}
+
+.execute {
+    text-align: center;
+    background: var(--white-color);
+    padding: 19px;
+    display: flex;
+    justify-content: space-between;
     margin-top: 0px !important;
 }
 
@@ -903,7 +912,7 @@ h3.titleText {
     background: #DEDEDE;
 }
 
-p.startStopP {
+p.startStopP-wrapper {
     width: 40%;
     display: flex;
     justify-content: center;
@@ -915,8 +924,25 @@ p.startStopP {
     border-radius: 5px;
 }
 
-.stopDiv {
+p.startStopP {
+    border: 1px solid var(--white-color);
+    padding: 20px;
+    margin-top: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.startDiv {
+    width: 50%;
+}
+
+.stop-container {
     margin-top: 4px;
+    margin-left: 5px;
+    width: 50%;
+}
+
+.stopDiv {
     margin-left: 5px;
     width: 50%;
 }

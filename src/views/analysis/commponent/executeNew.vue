@@ -1,21 +1,21 @@
 <template>
-  <div class="execute">
+  <div class="execute-container">
     <select :disabled="isRunningState" @change="handleChangeCellInfo">
       <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ cellItem.presetNm }}</option>
     </select>
 
     <div class="flex-justify-between w-full">
-      <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
+      <p class="startStopP-wrapper" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
         <font-awesome-icon
             :icon="['fas', 'circle-play']"
             :class="{ 'startBtn': true, [btnStatus]: true }"
         />
       </p>
-      <p class="startStopP" v-else @click="toggleStartStop('stop')">
+      <p class="startStopP-wrapper" v-else @click="toggleStartStop('stop')">
         <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
       </p>
 
-      <div class="stopDiv">
+      <div class="stop-container">
         <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
           <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
         </select>
