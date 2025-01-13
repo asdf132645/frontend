@@ -716,7 +716,12 @@ const removeDuplicateJobCmd = (reqArr: any) => {
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
-  let autoStart: number = JSON.parse(sessionStorage.getItem('autoStart')) || 1;
+  let autoStart: number = sessionStorage.getItem('autoStart');
+  if (autoStart === 'true') {
+    autoStart = 1;
+  } else if (autoStart === 'false') {
+    autoStart = 0;
+  }
 
   if (window.MACHINE_VERSION === '100a') {
     Object.assign(req, {isRewindingBelt: isRewindingBelt.value});
@@ -873,7 +878,6 @@ const errLogLoad = async () => {
     }
 
     errArr.value = newArr;
-    console.log(errArr.value)
   }
 }
 

@@ -1,60 +1,19 @@
 <template>
   <div class="execute">
-    <template v-if="siteCd === '9090'">
-      <div class='startDiv'>
-        <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
-          <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
-        </select>
-        <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
-          <font-awesome-icon
-              :icon="['fas', 'circle-play']"
-              :class="{ 'startBtn': true, [btnStatus]: true }"
-          />
-        </p>
-        <p class="startStopP" v-else @click="toggleStartStop('stop')">
-          <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
-        </p>
-      </div>
+    <select :disabled="isRunningState" @change="handleChangeCellInfo">
+      <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ cellItem.presetNm }}</option>
+    </select>
 
-      <div class="stopDiv">
-        <select v-model="cellInfo.wbcCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
-          <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
-        </select>
-        <select class="stopDivSelect" style="margin-top: 5px;" v-model="cellInfo.stitchCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
-          <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
-            {{ option.text }}
-          </option>
-        </select>
-
-        <div class="flex-justify-between">
-          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
-            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal" />
-          </div>
-
-          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }" style="width: 100%;">
-            <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
-          </div>
-        </div>
-
-      </div>
-    </template>
-
-    <template v-else>
-      <div class='startDiv'>
-        <select :disabled="isRunningState" @change="handleChangeCellInfo">
-          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ cellItem.presetNm + ' Preset' }}</option>
-        </select>
-
-        <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
-          <font-awesome-icon
-              :icon="['fas', 'circle-play']"
-              :class="{ 'startBtn': true, [btnStatus]: true }"
-          />
-        </p>
-        <p class="startStopP" v-else @click="toggleStartStop('stop')">
-          <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
-        </p>
-      </div>
+    <div class="flex-justify-between w-full">
+      <p class="startStopP" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
+        <font-awesome-icon
+            :icon="['fas', 'circle-play']"
+            :class="{ 'startBtn': true, [btnStatus]: true }"
+        />
+      </p>
+      <p class="startStopP" v-else @click="toggleStartStop('stop')">
+        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
+      </p>
 
       <div class="stopDiv">
         <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
@@ -84,7 +43,7 @@
         </div>
 
       </div>
-    </template>
+    </div>
 
   </div>
   <Alert
@@ -531,7 +490,6 @@ const handleChangeCellInfo = async (event) => {
 }
 
 const setCellInfo = (data: any) => {
-  console.log("DATA", data);
   cellInfo.value.analysisType = data.analysisType;
   cellInfo.value.id = data.id;
   cellInfo.value.wbcCount = setWbcCount(data);

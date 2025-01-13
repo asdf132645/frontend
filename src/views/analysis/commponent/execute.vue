@@ -250,7 +250,12 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
-    const autoStart = sessionStorage.getItem('autoStart') || 1;
+    let autoStart = sessionStorage.getItem('autoStart');
+    if (autoStart === 'true') {
+      autoStart = 1;
+    } else if (autoStart === 'false') {
+      autoStart = 0;
+    }
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {

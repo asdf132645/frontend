@@ -338,7 +338,6 @@ watch(
     () => props.wbcReset,
     async (newVal) => {
       if (newVal) {
-        console.log('ss')
         if (props.wbcInfoRefresh) return;
         wbcInfoArrChild.value = [];
         await nextTick(); // DOM 업데이트 후 실행

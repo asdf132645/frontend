@@ -16,12 +16,39 @@
 
   <div class="flex-center">
     <div class="cellImgAnalyzed-container">
+      <div class="preset-container"></div>
       <table class="settingTable">
         <tbody>
         <tr v-if="viewerCheck !== 'viewer'">
+          <th>Preset</th>
+          <td class="flex-align-center">
+            <select v-if="!editingItem || editingItem.id !== cellInfo.id" @change="handleChangePreset">
+              <option
+                  v-for="cellItem in allCellInfo.clientData"
+                  :key="cellItem.id"
+                  :value="cellItem.id"
+              >{{ cellItem.presetNm }}</option>
+            </select>
+            <input
+                v-else
+                type="text"
+                style="width: 120px;"
+                v-model="editingItem.name"
+                @keydown.enter="changePresetName(cellInfo.id)"
+                @keydown.esc="cancelEdit"
+            />
+            <div class="flex-align-center gap4 ml10">
+              <button v-if="allCellInfo.clientData.length < 3" class="add-preset-btn" @click="handleCreatePreset">+</button>
+              <font-awesome-icon @click="handleEditPresetName" class="hoverSizeAction cursorPointer" :icon="['fas', 'pen-to-square']" />
+              <font-awesome-icon v-if="allCellInfo.clientData.length > 1" @click="handleDeletePreset(cellInfo.id)" class="hoverSizeAction cursorPointer" :icon="['fas', 'trash']"/>
+            </div>
+          </td>
+        </tr>
+
+        <tr v-if="viewerCheck !== 'viewer'">
           <th>Analysis Type</th>
           <td colspan="2">
-            <select v-model='cellInfo.testTypeCd'>
+            <select v-model='cellInfo.analysisType'>
               <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
             </select>
           </td>
@@ -41,6 +68,7 @@
             </select>
           </td>
         </tr>
+
         <!--      PBS analysis values-->
         <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
           <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
@@ -333,46 +361,6 @@
       </table>
       <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
     </div>
-
-    <aside class="cellImgAnalyzed-aside-container">
-      <h1>Preset</h1>
-
-      <div class="presetButtonGroup-container">
-        <div v-for="cellItem in allCellInfo"
-             :key="cellItem.id"
-             class="preset-container">
-          <div class="preset-item">
-            <input
-                :id="String(cellItem.id)"
-                type="radio"
-                name="cellIdGroup"
-                :checked="String(cellInfo.cellImgId) === String(cellItem.id)"
-                @click="handleChangeCellId(cellItem.id)" />
-            <label v-if="!editingItem || editingItem.id !== cellItem.id" :for="String(cellItem.id)">{{ cellItem.presetNm }}</label>
-            <input
-                v-else
-                type="text"
-                v-model="editingItem.name"
-                @keydown.enter="saveEdit(cellItem.id)"
-                @keydown.esc="cancelEdit"
-                class="edit-preset-input"
-            />
-          </div>
-          <button
-              class="delete-preset-btn"
-              @click.stop="handleDeletePreset(cellItem.id)"
-              v-if="allCellInfo.length > 1">×</button>
-          <button
-              v-if="cellItem.id == cellInfo.cellImgId"
-              class="edit-preset-btn"
-              @click.stop="handleEditPresetName(cellItem)"
-          >
-            <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-          </button>
-        </div>
-        <button v-if="allCellInfo.length < 5" class="add-preset-btn" @click="handleCreatePreset">+</button>
-      </div>
-    </aside>
   </div>
 
 
@@ -433,7 +421,7 @@
   <Confirm
       v-if="showConfirm"
       :is-visible="showConfirm"
-      type="setting"
+      :type="confirmType"
       :message="confirmMessage"
       @hide="hideConfirm"
       @okConfirm="handleOkConfirm"
@@ -539,7 +527,6 @@ const autoDate = ref([
   {value: 11},
   {value: 12}
 ]);
-const saveHttpType = ref('');
 const drive = ref<any>([]);
 const backupDrive = ref<any>([]);
 const projectType = ref('pb');
@@ -548,6 +535,7 @@ const uploadSlotIdObj = ref({duplicated: [], nonDuplicated: []});
 const possibleUploadCount = computed(() => uploadSlotIdObj.value?.nonDuplicated && uploadSlotIdObj.value?.nonDuplicated.length);
 const impossibleUploadCount = computed(() => uploadSlotIdObj.value?.duplicated && uploadSlotIdObj.value?.duplicated.length);
 const showConfirm = ref(false);
+const confirmType = ref('setting');
 const confirmMessage = ref('');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
@@ -568,6 +556,7 @@ const deletableDownloadFiles = ref({});
 const loadingState = ref('');
 const showUploadSelectModal = ref(false);
 const possibleUploadFileNames = ref([]);
+const saveHttpType = ref('');
 const selectedUploadFile = ref('');
 const showTutorialImage = ref({
   edgeShotType: false,
@@ -587,11 +576,14 @@ const tooltipVisible = ref({
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
 const currentCellId = ref(0);
-const currentEditingCellId = ref(0);
-const allCellInfo = ref<CellImgAnalyzedResponse[]>([]);
+const curEditCellIndex = ref(0);
+const allCellInfo = ref<{ serverData: CellImgAnalyzedResponse[], clientData: CellImgAnalyzedResponse[] }>({
+  serverData: [],
+  clientData: [],
+});
 const cellInfo = ref({
-  cellImgId: '',
-  testTypeCd: '01',
+  id: '',
+  analysisType: '01',
   diffCellAnalyzingCount: '100',
   diffWbcPositionMargin: '0',
   diffRbcPositionMargin: '0',
@@ -611,8 +603,8 @@ const cellInfo = ref({
   keepPage: false,
   lisUploadCheckAll: false,
   backupPath: '',
-  backupStartDate: moment().local().toDate(),
-  backupEndDate: moment().local().toDate(),
+  backupStartDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
+  backupEndDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
   autoBackUpMonth: 'Not selected',
   presetChecked: false,
   presetNm: '1',
@@ -635,12 +627,12 @@ instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished'
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
   machineVersion.value = window.MACHINE_VERSION;
+  getApiUrl();
 })
 
 onMounted(async () => {
-  getApiUrl();
   await nextTick();
-  cellInfo.value.testTypeCd = window.PROJECT_TYPE === 'bm' ? '02' : '01';
+  cellInfo.value.analysisType = window.PROJECT_TYPE === 'bm' ? '02' : '01';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
@@ -650,15 +642,15 @@ onMounted(async () => {
   await cellImgGetAll();
 });
 
-watch([cellInfo.value.testTypeCd, cellInfo.value.diffCellAnalyzingCount, cellInfo.value.diffWbcPositionMargin, cellInfo.value.diffRbcPositionMargin,
+watch([cellInfo.value.analysisType, cellInfo.value.diffCellAnalyzingCount, cellInfo.value.diffWbcPositionMargin, cellInfo.value.diffRbcPositionMargin,
   cellInfo.value.diffPltPositionMargin, cellInfo.value.pbsCellAnalyzingCount, cellInfo.value.edgeShotType, cellInfo.value.edgeShotCount, cellInfo.value.stitchCount, cellInfo.value.bfCellAnalyzingCount, cellInfo.value.iaRootPath, cellInfo.value.isNsNbIntegration,
   cellInfo.value.isAlarm,
   cellInfo.value.alarmCount,
   cellInfo.value.keepPage,
   cellInfo.value.lisUploadCheckAll,], async () => {
   const cellAfterSettingObj = {
-    id: cellInfo.value.cellImgId,
-    analysisType: cellInfo.value.testTypeCd,
+    id: cellInfo.value.id,
+    analysisType: cellInfo.value.analysisType,
     diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
     diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
     diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
@@ -743,8 +735,8 @@ const cellImgGet = async () => {
         const data = result.data;
 
         currentCellId.value = data.id;
-        cellInfo.value.cellImgId = String(data.id);
-        cellInfo.value.testTypeCd = data.analysisType;
+        cellInfo.value.id = String(data.id);
+        cellInfo.value.analysisType = data.analysisType;
         cellInfo.value.diffCellAnalyzingCount = data.diffCellAnalyzingCount;
         cellInfo.value.diffWbcPositionMargin = data.diffWbcPositionMargin;
         cellInfo.value.diffRbcPositionMargin = data.diffRbcPositionMargin;
@@ -802,92 +794,54 @@ const cellImgGet = async () => {
 }
 
 const cellImgSet = async () => {
-  const cellImgSet = {
-    analysisType: cellInfo.value.testTypeCd,
-    diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
-    diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
-    diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
-    diffPltPositionMargin: cellInfo.value.diffPltPositionMargin,
-    pbsCellAnalyzingCount: cellInfo.value.pbsCellAnalyzingCount,
-    edgeShotType: cellInfo.value.edgeShotType,
-    edgeShotLPCount: cellInfo.value.edgeShotCount.LP,
-    edgeShotHPCount: cellInfo.value.edgeShotCount.HP,
-    stitchCount: cellInfo.value.stitchCount,
-    bfCellAnalyzingCount: cellInfo.value.bfCellAnalyzingCount,
-    iaRootPath: cellInfo.value.iaRootPath,
-    isNsNbIntegration: cellInfo.value.isNsNbIntegration,
-    isAlarm: cellInfo.value.isAlarm,
-    alarmCount: cellInfo.value.alarmCount,
-    keepPage: cellInfo.value.keepPage,
-    lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
-    backupPath: cellInfo.value.backupPath,
-    backupStartDate: moment(cellInfo.value.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(cellInfo.value.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    autoBackUpMonth: cellInfo.value.autoBackUpMonth,
-    autoBackUpStartDate: cellInfo.value.autoBackUpMonth !== 'Not selected' ? moment(new Date()).local().toDate().toISOString().split('T')[0] : null,
-    presetChecked: true,
-    presetNm: cellInfo.value.presetNm,
-
-  }
   try {
-    let result: any = {};
-    if (saveHttpType.value === 'post') {
-      result = await createCellImgApi(cellImgSet);
-    } else {
-
-      const requestAllCellInfo = allCellInfo.value.map((item) => {
-        if (String(item.id) === String(cellInfo.value.cellImgId)) {
-          return { ...item, presetChecked: true };
-        } else {
-          return { ...item, presetChecked: false };
-        }
-      })
-
-      const allCellImgResult = await getCellImgAllApi();
-      if (allCellImgResult.data) {
-        const allCellImgIds = allCellImgResult.data.filter(item => item.id);
-
-
-        for (const requestCellInfo of requestAllCellInfo) {
-          console.log('allCellImgIds', allCellImgIds);
-          console.log('requestCellInfo.id', requestCellInfo.id);
-          if (allCellImgIds.includes(requestCellInfo.id)) {
-            await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
-          } else {
-            await createCellImgApi(requestCellInfo);
-          }
-
-        }
+    const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
+      if (String(item.id) === String(cellInfo.value.id)) {
+        return {
+          ...cellInfo.value,
+          id: Number(cellInfo.value.id),
+          presetChecked: true,
+          backupEndDate: allCellInfo.value.serverData[0].backupEndDate,
+          backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
+        };
+      } else {
+        return { ...item, presetChecked: false };
       }
+    })
+    const allCellImgIds = allCellInfo.value.serverData.map(item => String(item.id));
 
-
+    for (const requestCellInfo of requestAllCellInfo) {
+      if (allCellImgIds.includes(String(requestCellInfo.id))) {
+        await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
+      } else {
+        delete requestCellInfo.id;
+        await createCellImgApi(requestCellInfo);
+      }
     }
 
-    if (result) {
-      toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-      showToast(MSG.TOAST.UPDATE_SUCCESS);
-      await cellImgGetAll();
-      scrollToTop();
-      const data = result?.data;
-      await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
-      await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-        isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
-      });
-      // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
-      sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
-      sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
-      sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
-      sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
-      sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
-      sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
-      sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
-      sessionStorage.setItem('iaRootPath', data?.iaRootPath);
-      sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-      const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
-      sessionStorage.setItem(keepPageType, String(data?.keepPage));
-      await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
-      await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
-    }
+    toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast(MSG.TOAST.UPDATE_SUCCESS);
+    await cellImgGetAll();
+    scrollToTop();
+    const data = allCellInfo.value.serverData.map((item) => String(item.id) === String(cellInfo.value.id));
+    await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
+    await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
+      isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
+    });
+    // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
+    sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
+    sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
+    sessionStorage.setItem('rbcPositionMargin', data?.diffRbcPositionMargin);
+    sessionStorage.setItem('pltPositionMargin', data?.diffPltPositionMargin);
+    sessionStorage.setItem('edgeShotType', String(data?.edgeShotType));
+    sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
+    sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
+    sessionStorage.setItem('iaRootPath', data?.iaRootPath);
+    sessionStorage.setItem('isAlarm', String(data?.isAlarm));
+    const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
+    sessionStorage.setItem(keepPageType, String(data?.keepPage));
+    await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
+    await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
 
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
     await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -997,7 +951,12 @@ const hideConfirm = async () => {
 }
 
 const handleOkConfirm = async () => {
-  await cellImgSet();
+  // 프리셋 삭제
+  if (confirmType.value === 'delete') {
+    await deleteCellImg();
+  } else {
+    await cellImgSet();
+  }
   showConfirm.value = false;
 }
 
@@ -1033,8 +992,6 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
   }
 
   successFileCount.value = 0;
-
-  console.log('downloadDto', downloadDto);
   try {
     handlePolling();
     await backUpDateApi(downloadDto);
@@ -1196,11 +1153,10 @@ const pbsAnalysisValuesRowIndex = () => {
 }
 
 const handleChangeCellId = (cellId: number) => {
-  console.log('cellId', cellId);
-  const selectedCellInfo = allCellInfo.value.filter((item) => item.id === cellId)[0];
+  const selectedCellInfo = allCellInfo.value.clientData.filter((item) => String(item.id) === String(cellId))[0];
   if (selectedCellInfo) {
-    cellInfo.value.cellImgId = String(selectedCellInfo.id);
-    cellInfo.value.testTypeCd = selectedCellInfo.analysisType;
+    cellInfo.value.id = String(selectedCellInfo.id);
+    cellInfo.value.analysisType = selectedCellInfo.analysisType;
     cellInfo.value.diffCellAnalyzingCount = selectedCellInfo.diffCellAnalyzingCount;
     cellInfo.value.diffWbcPositionMargin = selectedCellInfo.diffWbcPositionMargin;
     cellInfo.value.diffRbcPositionMargin = selectedCellInfo.diffRbcPositionMargin;
@@ -1228,7 +1184,10 @@ const handleChangeCellId = (cellId: number) => {
 
 const handleCreatePreset = async () => {
 
+  const nextCellId = Math.max(...allCellInfo.value.clientData.map(item => Number(item.id))) + 1;
+
   const defaultCellImgData = {
+    id: nextCellId,
     analysisType: projectType.value === 'bm' ? '02' : '01',
     diffCellAnalyzingCount: projectType.value === 'bm' ? '500':'100',
     diffWbcPositionMargin: '0',
@@ -1253,71 +1212,75 @@ const handleCreatePreset = async () => {
     presetNm: 'preset name',
   };
 
-  allCellInfo.value.push(defaultCellImgData);
 
-  // try {
-  //   const result = await createCellImgApi(defaultCellImgData);
-  //   if (result.data) {
-  //     currentPresetId.value = result.data?.id;
-  //     allCellInfo.value.push(result.data);
-  //   }
-  //
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  allCellInfo.value.clientData.push(defaultCellImgData);
 }
 
-const handleDeletePreset = async (selectedCellId: number) => {
-  console.log(selectedCellId);
-  try {
-    const result = deleteCellImgApi({ id: String(selectedCellId) });
-    allCellInfo.value = allCellInfo.value.filter((item) => String(item.id) !== String(selectedCellId));
-    await handleChangeCellId(allCellInfo.value[0].id);
-  } catch (error) {
-    console.error(error);
+const handleDeletePreset = async () => {
+  if (allCellInfo.value.clientData.length !== allCellInfo.value.serverData.length) {
+    allCellInfo.value.clientData = allCellInfo.value.clientData.filter((item) => String(item?.id) !== String(cellInfo.value.id));
+    return;
   }
+
+  showConfirm.value = true;
+  confirmMessage.value = `Are you sure you want to delete preset ${cellInfo.value.presetNm}?`;
+  confirmType.value = 'delete';
 };
 
-const handleEditPresetName = async (selectedCellItem: any) => {
-  editingItem.value = { id: selectedCellItem.id, name: selectedCellItem.presetNm };
-  if (currentEditingCellId.value === selectedCellItem.id) {
-    currentEditingCellId.value = undefined;
+const deleteCellImg = async () => {
+  try {
+    await deleteCellImgApi({ id: String(cellInfo.value.id) });
+    await cellImgGetAll();
+    await handleChangeCellId(allCellInfo.value.clientData[0].id);
+    toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast(MSG.TOAST.DELETE_SUCCESS);
+  } catch (error) {
+    console.error(error);
+    toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
+    showToast(MSG.TOAST.DELETE_FAILED);
   }
-  currentEditingCellId.value = selectedCellItem.id;
+}
+
+const handleEditPresetName = async () => {
+  editingItem.value = { id: cellInfo.value.id, name: cellInfo.value.presetNm };
+  if (curEditCellIndex.value === cellInfo.value.id) {
+    curEditCellIndex.value = undefined;
+  }
+  curEditCellIndex.value = cellInfo.value.id;
+}
+
+const handleChangePreset = (event: MouseEvent) => {
+  const currentCellId = event.target.value;
+  handleChangeCellId(currentCellId);
 }
 
 const cancelEdit = () => {
   editingItem.value = undefined;
 }
 
-const saveEdit = async (currentCellId: number) => {
-  const cellItem = allCellInfo.value.filter((item) => item.id === currentCellId);
-  const requestItem = { ...cellItem, presetNm: editingItem.value.name };
-  try {
-    await putCellImgApi(requestItem, String(currentCellId));
+const changePresetName = async (currentCellId: number) => {
 
-    allCellInfo.value = allCellInfo.value.map((item) => {
-      if (item.id === currentCellId) return { ...item, presetNm: editingItem.value.name };
-      return item;
-    })
-    await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value });
-    editingItem.value = undefined;
-  } catch (error) {
-    console.error(error);
-  }
+  allCellInfo.value.clientData = allCellInfo.value.clientData.map((item) => {
+    if (String(item.id) === String(currentCellId)) return { ...item, presetNm: editingItem.value.name };
+    return item;
+  })
+  cellInfo.value.presetNm = editingItem.value.name;
+  editingItem.value = undefined;
 }
 
 const cellImgGetAll = async () => {
   try {
     const result = await getCellImgAllApi();
     if (result?.data && !isObjectEmpty(result?.data)) {
-      allCellInfo.value = result.data;
-      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value });
+      allCellInfo.value.clientData = [...result.data];
+      allCellInfo.value.serverData = [...result.data];
+      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value.serverData });
 
     }
   } catch (error) {
     console.error(error);
-    allCellInfo.value = [];
+    allCellInfo.value.clientData = [];
+    allCellInfo.value.serverData = [];
   }
 }
 

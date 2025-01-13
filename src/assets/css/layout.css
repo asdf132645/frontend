@@ -88,6 +88,10 @@
     padding-top: 6px;
 }
 
+.gap4 {
+    gap: 4px;
+}
+
 .gap14 {
     gap: 14px;
 }
@@ -740,7 +744,7 @@ li.errLogLi.critical:before {
 .errLogDiv {
     position: absolute;
     background: #252525;
-    z-index: 9;
+    z-index: 11;
     color: #ffffff;
     text-align: left;
     height: 60vh;
@@ -853,6 +857,7 @@ h3.titleText {
     padding: 19px;
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
     margin-top: 0px !important;
 }
 
@@ -899,6 +904,10 @@ h3.titleText {
 }
 
 p.startStopP {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 1px solid var(--white-color);
     padding: 20px;
     margin-top: 5px;
@@ -907,6 +916,7 @@ p.startStopP {
 }
 
 .stopDiv {
+    margin-top: 4px;
     margin-left: 5px;
     width: 50%;
 }
@@ -1883,14 +1893,6 @@ p.slideTime {
     font-size: 0.9rem;
 }
 
-.startDiv {
-    width: 50%;
-}
-
-.startDiv > select {
-    width: 100%;
-}
-
 p.startStopP:hover {
     border: 1px solid var(--main-bg-1-color);
     background-color: var(--white-color);
@@ -1903,7 +1905,7 @@ ul.slideContent > p {
 
 ul.processInfoUl > li {
     font-size: 0.9rem;
-    padding: 8px;
+    padding: 4px 0 4px 8px;
     display: flex;
     justify-content: space-between;
 }
@@ -2873,6 +2875,50 @@ ul.wbcInfoFilter {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.wbcModalImageContent-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-bottom: 8px;
+}
+
+.wbcModalImageContent-slideImg {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    left: 400px;
+    top: 250px;
+    z-index: 10;
+    gap: 4px;
+}
+
+.wbcModalImageContent-slideImg > cavnas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+}
+
+.wbcModalImageContent-slideImg-x-text {
+    position: absolute;
+    top: 20px;
+    color: gray;
+    right: 10px;
+}
+
+.wbcModalImageContent-slideImg-y-text {
+    position: absolute;
+    top: 40px;
+    color: gray;
+    right: 10px;
+}
+
+.wbcModalImageContent-slideImg > img {
+    width: 200px;
 }
 
 .wbcModalImageContent > .buttons > button {
@@ -5866,7 +5912,6 @@ button.gbArrowButton.left {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
     gap: 12px;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -5908,10 +5953,10 @@ button.gbArrowButton.left {
 }
 
 .add-preset-btn {
-    width: 120px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border: 2px dashed #d1d5db;
-    border-radius: 8px;
+    border-radius: 50%;
     background-color: white;
     display: flex;
     align-items: center;
@@ -5949,7 +5994,6 @@ button.gbArrowButton.left {
 
 .edit-preset-btn {
     position: absolute;
-    display: flex;
     justify-content: center;
     align-items: center;
     top: 20px;
@@ -5962,23 +6006,19 @@ button.gbArrowButton.left {
     border: none;
     cursor: pointer;
     display: none;
-    align-items: center;
-    justify-content: center;
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 10;
 }
 
 .preset-container {
-    position: relative;
-}
-
-.preset-container:hover .delete-preset-btn {
-    display: flex;
-}
-
-.preset-container:hover .edit-preset-btn {
-    display: flex;
+    position: absolute;
+    left: 20px;
+    width: 660px;
+    height: 220px;
+    border: 1px dotted white;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .delete-preset-btn:hover {
@@ -5990,18 +6030,9 @@ button.gbArrowButton.left {
 }
 
 .cellImgAnalyzed-container {
+    position: relative;
     width: 700px;
-}
-
-.cellImgAnalyzed-aside-container {
-    position: absolute;
-    top: 300px;
-    right: 300px;
-}
-
-.cellImgAnalyzed-aside-container > h1 {
-    font-size: 1.2rem;
-
+    z-index: 2;
 }
 
 @keyframes bounce {

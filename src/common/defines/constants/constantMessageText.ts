@@ -132,6 +132,8 @@ export const MSG = {
 
     },
     TOAST: {
+        DELETE_SUCCESS: 'Deleted Successfully',
+        DELETE_FAILED: 'Deleted Failed',
         UPDATE_SUCCESS: 'Updated Successfully',
         SAVE_SUCCESS: 'Saved Successfully',
         UPDATE_FAIL: 'Update Failed',
