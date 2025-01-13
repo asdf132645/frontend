@@ -12,7 +12,7 @@
           <li>NS, NB Integration: {{integrationFindNe(selectedItem.wbcInfoAfter)}}</li>
         </ul>
         <div>
-          <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="pilePath"
+          <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"
                style="width: 200px; height: 120px; float:right;"/>
         </div>
       </div>
@@ -77,7 +77,7 @@ const props = defineProps(['selectedItem']);
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 
-const pilePath = ref('');
+const barcodeImg = ref('');
 const barCodeImageShowError = ref(false);
 const wbcTotal = ref(0);
 const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM', 'OT'];
@@ -92,9 +92,8 @@ onBeforeMount(() => {
 onMounted(async () => {
   await getClassOrder();
   barCodeImageShowError.value = false;
-  // iaRootPath가 존재하면 getImageUrl 함수 호출
   if (iaRootPath.value) {
-    pilePath.value = getImageUrl('barcode_image.jpg');
+    barcodeImg.value = getImageUrl('barcode_image.jpg');
   }
 });
 
@@ -105,7 +104,7 @@ watch(() => props.selectedItem, (newSelectedItem) => {
   sortClassOrder();
 
   if (iaRootPath.value) {
-    pilePath.value = getImageUrl('barcode_image.jpg', newSelectedItem);
+    barcodeImg.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
 });
 

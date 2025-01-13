@@ -367,16 +367,20 @@ watch(() => props.wbcInfo, async (newItem) => {
   if (Object.keys(newItem).length !== 0) {
     selectItems.value = slideData.value;
     await beforeAfterChange(newItem)
-    wbcMemo.value = props.selectItems?.wbcMemo;
-    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
-    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
-    await store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
+    wbcMemo.value = selectItems.value?.wbcMemo;
+    setBarCodeImage();
+    await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
   }
 });
 
 watch(() => props.checkedAllClass, () => {
   showLISUploadButton.value = true;
 })
+
+const setBarCodeImage = () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
+}
 
 const setShowLISButton = () => {
   if (!showLISUploadAfterCheckingAll.value) {
@@ -411,8 +415,7 @@ const mountedMethod = async () => {
     await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   }
   wbcMemo.value = props.selectItems?.wbcMemo;
-  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
+  setBarCodeImage();
   if (selectItems.value?.submitState) {
     lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }
