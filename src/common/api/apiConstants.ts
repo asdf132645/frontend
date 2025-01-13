@@ -451,6 +451,10 @@ export const apiConstants = {
         errLogsRead:{
             endpoint: 'filesystem/errLogsRead',
             requiresToken: false,
+        },
+        readAllErrorLogs: {
+            endpoint: 'filesystem/readAllErrorLogs',
+            requiresToken: false,
         }
     },
     fileTxtRead: {

@@ -6,7 +6,7 @@
         <font-awesome-icon :icon="['fas', 'circle-xmark']"/>
       </span>
     </div>
-    <ul v-if="errArr.length !== 0">
+    <ul v-if="errArr.length !== 0" class="errLog-wrapper">
       <template v-for="(item, idx) in errArr" :key="idx">
         <li v-if="item.type !== 'DLOG' && item.type !== ''"
             :class="['errLogLi', item.type ? item.type.toLowerCase() : '']">
@@ -22,7 +22,7 @@
           </div>
           <div class="errLogBody">
             <div :class="['errLogTitle', item.type ? item.type.toLowerCase() : '']">
-              <span>[ {{ item?.code }} ]</span>
+              <span>[{{ item?.code }}] </span>
               <span> {{ item?.name }} </span>
             </div>
             <div class="arrLogDesc" v-show="item?.desc !== ''">

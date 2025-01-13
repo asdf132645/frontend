@@ -291,7 +291,6 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
-
 });
 
 onBeforeUnmount(async () => {
@@ -344,7 +343,7 @@ async function socketData(data: any) {
         if (res !== null) {
           if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
             const err = await errLogLoad();
-            showCoreErrorAlert(err.desc);
+            showCoreErrorAlert(err);
           } else {
             showCoreErrorAlert(res);
           }
@@ -849,7 +848,9 @@ const showCoreErrorAlert = (message: string) => {
 }
 
 const hideAlert = () => {
-  if (alertType.value === 'coreError') errorClear();
+  if (alertType.value === 'coreError') {
+    errorClear();
+  }
   showAlert.value = false;
 };
 

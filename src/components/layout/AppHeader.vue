@@ -190,11 +190,12 @@ import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import axios from "axios";
 import { SOUND_COMPLETE_ALARM, SOUND_ERROR_ALARM } from "@/common/lib/utils/assetUtils";
 import ProgressBar from "@/components/commonUi/ProgressBar.vue";
-import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
+import {errLogsReadApi, readAllErrorLogsApi} from "@/common/api/service/fileSys/fileSysApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import ErrLog from "@/components/commonUi/ErrLog.vue";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
+import moment from "moment/moment";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -292,7 +293,7 @@ const errLogLoad = async () => {
     return
   }
   const folderPath = `folderPath=${rootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
-  const res = await errLogsReadApi(folderPath);
+  let res = await errLogsReadApi(folderPath);
   if(res.code === 200){
     if(res?.data?.status === 400){
       toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
@@ -300,6 +301,14 @@ const errLogLoad = async () => {
       return;
     }
     let newArr = [];
+    const isTodayLogLengthOver10 = Object.entries(res.data)[0][1].length > 10;
+
+    if (!isTodayLogLengthOver10) {
+      const nextResult = await errorLogLoadMore();
+      if (nextResult) {
+        res = nextResult;
+      }
+    }
 
     // 날짜별로 들어옴 다중 포문 쓴 이유
     for (const date in res.data) {
@@ -307,6 +316,11 @@ const errLogLoad = async () => {
 
       for (const el of entries) {
         const fullTimestamp = `${date} ${el.timestamp}`; // 날짜 합치기 용도
+        const now = moment();
+        const formattedDate = now.format('YYYY-MM-DD');
+        if (formattedDate !== date && newArr.length > 10) {
+          break;
+        }
         if (el.E_TYPE !== 'DEV_INFO'){
           newArr.push({
             timestamp: fullTimestamp,
@@ -323,6 +337,25 @@ const errLogLoad = async () => {
     errArr.value = newArr;
   }
 }
+
+const errorLogLoadMore = async () => {
+  if (errArr.value.length !== 0) {
+    return
+  }
+  const folderPath = `folderPath=${rootDir.value.replace('PBIA_proc', '')}UIMD_Data/Backend_Log`;
+  const res = await readAllErrorLogsApi(folderPath);
+
+  if (res.code === 200) {
+    if (res?.data?.status === 400) {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast(res?.data?.response.error);
+      return;
+    }
+
+    return res;
+  }
+}
+
 const handleOkConfirm = async () => {
   showConfirm.value = false;
 
@@ -694,6 +727,9 @@ const closeErrLog = () => {
 }
 
 const openErrLogOver = async () => {
+  if (siteCd.value !== '9090') {
+    return;
+  }
   ErrLogOpen.value = true;
   mounseLeave.value = true;
   await errLogLoad();

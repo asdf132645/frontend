@@ -514,7 +514,7 @@ li.errLogLi {
     display: flex;
     justify-content: flex-start;
     border-top: 1px solid #d3d3d3;
-    margin-top: 5px;
+    /*margin-top: 5px;*/
     padding: 15px 0px;
     font-size: 0.8rem;
 }
@@ -531,7 +531,7 @@ li.errLogLi.notification:before {
 }
 
 .errLogTimestamp {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     color: #acacac;
 }
 
@@ -748,12 +748,18 @@ li.errLogLi.critical:before {
     color: #ffffff;
     text-align: left;
     height: 60vh;
-    overflow: auto;
     padding: 20px;
     min-width: 500px;
     top: 30px;
     border: 1px solid;
     cursor: default;
+}
+
+.errLog-wrapper {
+    position: relative;
+    height: 57vh;
+    overflow: auto;
+    min-width: 500px;
 }
 
 .lineRenewal {
@@ -829,7 +835,7 @@ span.errLogNum {
 
 .arrLogDesc {
     padding-bottom: 5px;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .contentLeft > div {

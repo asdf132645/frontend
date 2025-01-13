@@ -48,3 +48,6 @@ export const errLogsReadApi = async (request: any): Promise<ApiResponse<void>> =
     return httpClient.httpGet(apiConstants.filesystem.errLogsRead, `${request}`, true);
 };
 
+    export const readAllErrorLogsApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpGet(apiConstants.filesystem.readAllErrorLogs, request, true);
+}
