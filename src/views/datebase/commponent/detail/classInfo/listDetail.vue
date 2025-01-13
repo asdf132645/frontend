@@ -197,9 +197,18 @@
           </li>
         </ul>
       </div>
+
       <!-- 모달 창 -->
       <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
         <div class="wbc-modal-content" @click="outerClickCloseModal">
+          <div
+              v-if="!isObjectEmpty(wpsJsonData)"
+              class="wbcModalImageContent-slideImg"
+          >
+            <p class="wbcModalImageContent-slideImg-x-text">X: {{ Math.round(wpsJsonData[0].x1 + xyResolution.X * wbcXYPos.posX * 10000) / 10000 }}</p>
+            <p class="wbcModalImageContent-slideImg-y-text">Y: {{ Math.round(wpsJsonData[0].y1 + xyResolution.Y * wbcXYPos.posY * 10000) / 10000 }}</p>
+            <img :src="slidePositionImg" ref="imageRef" />
+          </div>
           <span class="wbcClose" @click="closeModal">&times;</span>
           <div class="wbcModalImageContent">
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
@@ -247,7 +256,7 @@ import {
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {readFileTxt, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
   getBfHotKeysApi, getNormalRangeApi,
   getOrderClassApi,
@@ -282,6 +291,8 @@ import {
   useUpdateRunningInfoMutation
 } from "@/gql/mutation/slideData";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
+import slidePositionImg from "@/assets/images/slide_pos.png";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -362,7 +373,17 @@ const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
 const checkedAllClass = ref(false);
+const xyResolution = ref({
+  X: 0.000573,
+  Y: 0.000560,
+})
 const { imageRefs  } = useImageRefs();
+const wpsJsonData = ref<any>([]);
+const wbcXYPos = ref({
+  posX: '0',
+  posY: '0',
+})
+const imageRef = ref(null);
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -399,6 +420,8 @@ watch(
         try {
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
+          await getXYResolution();
+          await getWPSData();
           isLoadedSlideData.value = false;
           wbcInfo.value = [];
           isLoadedSlideData.value = true;
@@ -809,9 +832,10 @@ function replaceFileNamePrefix(fileName: string) {
 }
 
 
-const openModal = (image: any, item: any) => {
+const openModal = async (image: any, item: any) => {
   modalOpen.value = true;
   selectedImageSrc.value = getImageUrl(image.fileName, item.id, item.title, 'getImageRealTime');
+  await getImageXYPosition(image);
 };
 
 const closeModal = () => {
@@ -872,10 +896,10 @@ const refreshClass = async (data: any) => {
   isLoadedSlideData.value = false;
   cellMarkerIcon.value = false;
   await getDetailRunningInfo(data);
+  await getWPSData();
   isLoadedSlideData.value = true;
   await drawCellMarker(true);
   classCompareShow.value = false;
-  selectItems.value = data;
   iaRootPath.value = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : store.state.commonModule.iaRootPath;
 
   await getWbcCustomClasses(true, data);
@@ -1367,6 +1391,41 @@ const isLowMagnWhether = async (image: any) => {
   }
 }
 
+const getImageXYPosition = (image) => {
+  const extracted = image.fileName.split('_').slice(2).join('_');
+  const foundData = wpsJsonData.value.find((item: any) => item?.FILE_NM && item.FILE_NM === extracted);
+  if (foundData) {}
+  wbcXYPos.value.posX = foundData.POSX1;
+  wbcXYPos.value.posY = foundData.POSY1;
+}
+
+const getWPSData = async () => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path
+      ? selectItems.value?.img_drive_root_path
+      : iaRootPath.value;
+  const url_new = `${path}/${selectItems.value.slotId}/04_WPS/WPS.json`;
+  const response_new = await readJsonFile({ fullPath: url_new });
+  if (response_new.data) {
+    wpsJsonData.value = response_new.data;
+  } else {
+    wpsJsonData.value = [];
+  }
+}
+
+const getXYResolution = async () => {
+  const filePath = 'D:\\UIMD_Data\\Backend_INI'
+  const fileName = window.MACHINE_VERSION === '100a' ? 'Teaching_Config_100A' : 'Teaching_Config';
+  try {
+    const result: any = await readFileTxt(`path=${filePath}&filename=${fileName}`);
+    const iniFileData = result.data.data;
+    const xResolutionPattern = /X_RESOLUTION\s*=\s*(.+)/;
+    const yResolutionPattern = /Y_RESOLUTION\s*=\s*(.+)/;
+    xyResolution.value.X = iniFileData.match(xResolutionPattern)[1] ?? xyResolution.value.X;
+    xyResolution.value.Y = iniFileData.match(yResolutionPattern)[1] ?? xyResolution.value.Y;
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 async function onDrop(targetItemIndex: any) {
   await addToRollbackHistory();
@@ -1873,7 +1932,6 @@ async function rollbackImages(currentWbcInfo: any, prevWbcInfo: any) {
 
   // 이동된 이미지들을 이전 위치로 다시 이동시킴
   for (const index in sourceFolderInfo) {
-    console.log('destinationFolderInfo', destinationFolderInfo);
     const sourceFolder = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${sourceFolderInfo[index].id}_${sourceFolderInfo[index].title}`;
     const destinationFolder = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${destinationFolderInfo[index].id}_${destinationFolderInfo[index].title}`;
     sourceFolders.push(sourceFolder)

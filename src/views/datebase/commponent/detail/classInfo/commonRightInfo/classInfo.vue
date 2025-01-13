@@ -368,8 +368,8 @@ watch(() => props.wbcInfo, async (newItem) => {
     selectItems.value = slideData.value;
     await beforeAfterChange(newItem)
     wbcMemo.value = props.selectItems?.wbcMemo;
-    const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
-    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, props.selectItems?.slotId, DIR_NAME.BARCODE);
+    const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : pbiaRootDir.value;
+    barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, selectItems.value?.slotId, DIR_NAME.BARCODE);
     await store.dispatch('commonModule/setCommonInfo', {testType: props.selectItems.testType});
   }
 });
