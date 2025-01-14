@@ -397,7 +397,12 @@ const handleKeyDown = (event: KeyboardEvent) => {
   if (!isHotKeyPressed.value && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
     event.preventDefault(); // 기본 동작 방지
     isHotKeyPressed.value = true; // 한 번만 실행되도록 설정
-    uploadLis();
+    if (showLISUploadButton.value) {
+      uploadLis();
+    } else {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+      showToast(MESSAGES.TOAST_MSG_LIS_UPLOAD_SCROLL);
+    }
   }
 };
 
