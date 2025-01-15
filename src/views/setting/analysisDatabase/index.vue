@@ -112,7 +112,7 @@ const hideAlert = () => {
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
     case 'cellImageAnalyzed':
-      return siteCd.value !== '9090' ? CellImageAnalyzed : NewCellImageAnalyzed;
+      return siteCd.value === '9090' ? NewCellImageAnalyzed : CellImageAnalyzed;
     case 'rbcDegree':
       return RbcDegree;
     case 'deviceControls':

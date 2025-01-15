@@ -2933,7 +2933,7 @@ ul.wbcInfoFilter {
     flex-direction: column;
     align-items: flex-start;
     position: absolute;
-    left: 400px;
+    left: 1300px;
     top: 250px;
     z-index: 10;
     gap: 4px;
@@ -2946,18 +2946,25 @@ ul.wbcInfoFilter {
     z-index: 100;
 }
 
-.wbcModalImageContent-slideImg-x-text {
+.wbcModalImageContent-slideImg-textBox {
     position: absolute;
+    width: 90px;
+    height: 40px;
+    right: 0;
+}
+
+.wbcModalImageContent-slideImg-x-text {
+    position: relative;
     top: 20px;
     color: gray;
-    right: 10px;
+    text-align: left;
 }
 
 .wbcModalImageContent-slideImg-y-text {
-    position: absolute;
-    top: 40px;
+    position: relative;
+    top: 22px;
     color: gray;
-    right: 10px;
+    text-align: left;
 }
 
 .wbcModalImageContent-slideImg > img {

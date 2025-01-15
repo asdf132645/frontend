@@ -205,8 +205,11 @@
               v-if="!isObjectEmpty(wpsJsonData)"
               class="wbcModalImageContent-slideImg"
           >
-            <p class="wbcModalImageContent-slideImg-x-text">X: {{ Math.round((Number(wpsJsonData[0].x1) + (xyResolution.X * wbcXYPos.posX)) * 10000) / 10000 }}</p>
-            <p class="wbcModalImageContent-slideImg-y-text">Y: {{ Math.round((Number(wpsJsonData[0].y1) + (xyResolution.Y * wbcXYPos.posY)) * 10000) / 10000 }}</p>
+
+            <div class="wbcModalImageContent-slideImg-textBox">
+              <p class="wbcModalImageContent-slideImg-x-text">X: {{ Math.round(Number(wpsJsonData[0].x1) + (xyResolution.X * wbcXYPos.posX)) }} mm</p>
+              <p class="wbcModalImageContent-slideImg-y-text">Y: {{ Math.round(Number(wpsJsonData[0].y1) + (xyResolution.Y * wbcXYPos.posY)) }} mm</p>
+            </div>
             <img :src="slidePositionImg" ref="imageRef" />
           </div>
           <span class="wbcClose" @click="closeModal">&times;</span>
