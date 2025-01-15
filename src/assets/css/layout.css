@@ -222,6 +222,10 @@
     width: fit-content;
 }
 
+.w-quarter {
+    width: 25%;
+}
+
 .w-auto {
     width: auto;
 }

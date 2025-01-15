@@ -323,7 +323,7 @@ async function socketData(data: any) {
     const textDecoder = new TextDecoder('utf-8');
     const stringData = textDecoder.decode(data);
 
-    const parsedData = JSON.parse(stringData);
+    const parsedData = checkDuplicatedJobCmd(stringData);
     const parseDataWarp = parsedData;
 
     if (alertMessage.value === MESSAGES.TCP_DiSCONNECTED) {
@@ -822,6 +822,22 @@ const cellImgGet = async () => {
     }
   } catch (e) {
     console.error(e);
+  }
+}
+
+const checkDuplicatedJobCmd = (stringData: string) => {
+  const splitedStringData = stringData.split('\n');
+  const checkMultipleJsonData = splitedStringData.map((data) => {
+    if (data !== '') return JSON.parse(data);
+    return null;
+  }).filter((item) => item && item.jobCmd).length;
+  if (checkMultipleJsonData < 2) {
+    return JSON.parse(stringData);
+  } else {
+    return splitedStringData.map((data) => {
+      if (data !== '') return JSON.parse(data);
+      return null;
+    }).filter((item) => item && (item.jobCmd !== "SYSINFO" && item.jobCmd !== "RUNNING_INFO"))[0];
   }
 }
 

@@ -924,7 +924,6 @@ const handleDownload = async (downloadType: 'move' | 'copy') => {
 
   successFileCount.value = 0;
 
-  console.log('downloadDto', downloadDto);
   try {
     handlePolling();
     await backUpDateApi(downloadDto);

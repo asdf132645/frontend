@@ -14,10 +14,10 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onBeforeMount } from "vue";
+import { useStore } from "vuex";
 import LeftImgList from "@/views/datebase/commponent/detail/databaseWhole/leftImgList.vue";
 import TilingViewer from './tilingViewer.vue';
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import { useStore } from "vuex";
 
 const store = useStore();
 const slideData = computed(() => store.state.slideDataModule);

@@ -62,7 +62,7 @@
         </tr>
       </table>
     </div>
-    <div v-else-if="cbcWorkListForShow.length !== 0 || true" class="cbcDivWarp">
+    <div v-else-if="cbcWorkListForShow.length !== 0 || siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']" class="cbcDivWarp">
       <table class="cbcShowTable">
         <colgroup>
           <col width="40%" />
@@ -418,8 +418,6 @@ const getCBCWorkListFromFileData = (msg: any) => {
 
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-    case '':
-    case '0000':
       msg?.data?.segments?.forEach((cbcSegment: any) => {
         const segmentName = cbcSegment.name.trim();
 
