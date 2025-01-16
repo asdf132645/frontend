@@ -312,7 +312,6 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
 };
 
 const drawBoxAllCanvas = async (findWbcClass: any) => {
-  console.log('all')
   for (const el of findWbcClass) {
     const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(el);
 

@@ -180,7 +180,7 @@ const getDetailRunningInfo = async () => {
         const result = newValue?.getRunningInfoByIdGQL;
         selectItems.value = result;
 
-        store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
+        store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType});
 
         resData.value = result;
       } else {
@@ -295,6 +295,7 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
     const res = await pageUpDownRunnIngApi(req);
 
     if (res.data !== null) {
+      selectItems.value = res.data;
       resData.value = res.data;
       const result = await getDeviceIpApi();
       if (res.data.pcIp !== result.data && res.data.lock_status) {
