@@ -171,6 +171,9 @@
   <WbcImageSelect v-if="IsWbcImageSelect" :selectItems="selectItems" @closeWbcSelect="closeWbcSelect"
                   @selectWbcImgSend="selectWbcImgSend"
   />
+  <teleport to="body">
+    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff"/>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -204,6 +207,8 @@ import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningInfoDto";
+import {kcch_0033LisSend} from "@/common/helpers/lisCbc/kcch_0033";
+import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.vue";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -263,6 +268,8 @@ const IsWbcImageSelect = ref(false);
 const selectWbcImgArr = ref<any>([]);
 const ywmcSlip = ref('H3');
 const cbcFlag = ref('');
+const kcchOnOff = ref(false);
+const nowCrcDataLis = ref([]);
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
@@ -326,7 +333,7 @@ onMounted(async () => {
   await nextTick();
   await dataAutoComputeLoad();
   submitState.value =  props.selectItems?.submitState.includes('lis') || props.selectItems?.submitState === 'Submit';
-  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원'] || siteCd.value) {
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']) {
     const {data, cbcDataVal, slip} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
     ywmcSlip.value = slip;
     cbcFlag.value = '';
@@ -634,33 +641,26 @@ const lisStart = async () => {
     crcComment: commentList.value,
     crcRecommendation: recoList.value
   });
-
+  nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
+  nowCrcData = updateCrcContent(crcSetData, nowCrcData);
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-      // nowCrcData = updateCrcContent0031(crcSetData, nowCrcData);
-      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
-      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
       await yamcSendLisUpdate(nowCrcData);
+      break;
+    case HOSPITAL_SITE_CD_BY_NAME['원자력병원']:
+      kcchOnOff.value = true;
+      nowCrcDataLis.value = nowCrcData;
       break;
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
-      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
-      await yamcSendLisUpdate(nowCrcData);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
-      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
       break;
     default:
-      nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
-      nowCrcData = updateCrcContent(crcSetData, nowCrcData);
-      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
+      kcchOnOff.value = true;
+      nowCrcDataLis.value = nowCrcData;
       break;
   }
 }
