@@ -3778,7 +3778,7 @@ li.slideStatus {
 /* setting/analysis/database */
 .tab-content {
     width: 700px;
-    margin: 30px auto;
+    margin: 30px auto 0;
 }
 
 .tab-content.crc {
