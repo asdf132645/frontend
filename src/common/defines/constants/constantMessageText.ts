@@ -157,3 +157,7 @@ export const MSG = {
         STOP_PROCESS: 'Process is terminating.',
     }
 }
+
+export enum TOAST {
+    ERROR_LOG_LOAD_FAIL = 'Failed to Load Error log',
+}

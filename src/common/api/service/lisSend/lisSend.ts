@@ -17,3 +17,11 @@ export const ywmcCbcCheckApi = async (request: any): Promise<ApiResponse<void>> 
 export const cbcImgGetApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.lisSend.cbcImgGet, `${request}`, true);
 };
+
+export const htmlToRtfApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.lisSend.rtfConvert, request);
+}
+
+export const rtfSendApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.lisSend.rtfSend, request);
+}

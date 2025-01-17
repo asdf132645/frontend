@@ -6,6 +6,9 @@
     <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
 
     <ul class="leftWbcInfo">
+      <li>
+        <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] && type === 'report' && crcConnect" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
+      </li>
       <li
           class="pos-relative"
           @mouseenter="tooltipVisibleFunc('barcodeCopy', true)"
@@ -216,7 +219,7 @@ import {
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'selectItems', 'checkedAllClass']);
+const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'selectItems', 'checkedAllClass', 'crcConnect']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
@@ -1517,6 +1520,10 @@ const getCustomClass = async () => {
   } catch (e) {
     console.error(e);
   }
+}
+
+const updateCRCMorphology = () => {
+  emits('updateCRCMorphology', true);
 }
 
 const showErrorAlert = (message: string) => {

@@ -55,7 +55,7 @@ import {defaultCbcList, defaultCbcList_0011, settingName} from "@/common/defines
 import { ApiResponse } from "@/common/api/httpClient";
 import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {cbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
+import {CbcCodeItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
@@ -66,7 +66,7 @@ import {scrollToTop} from "@/common/lib/utils/scroll";
 
 const store = useStore();
 const router = useRouter();
-const cbcCodeArr = ref<cbcCodeItem[]>([]);
+const cbcCodeArr = ref<CbcCodeItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
@@ -110,7 +110,7 @@ const saveCbcCode = async () => {
     } else {
       const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
 
-      if (updateResult.data) {
+      if (updateResult?.data) {
         showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
         await getImagePrintData();
       } else {

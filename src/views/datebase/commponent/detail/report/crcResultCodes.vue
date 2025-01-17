@@ -58,7 +58,6 @@
         <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
           Image Select
         </button>
-
       </div>
 
       <!-- RBC 결과 -->
@@ -79,7 +78,11 @@
       <!-- Remark 관련 -->
       <div class="mt20" v-if="remarkCountReturnCode(0) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> Remark</span>
+          <span>
+            <font-awesome-icon :icon="['fas', 'message']"/>
+            Remark
+          </span>
+          <font-awesome-icon class="remarkChange-font" :icon="['fas', 'arrow-up-from-bracket']" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="changeRemark(crcArr, remarkList)" />
           <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
@@ -177,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onBeforeMount, onMounted, ref} from "vue";
+import {computed, nextTick, onBeforeMount, onMounted, ref, watch} from "vue";
 
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import CrcList from "@/views/datebase/commponent/detail/report/component/crcList.vue";
@@ -207,8 +210,9 @@ import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningInfoDto";
-import {kcch_0033LisSend} from "@/common/helpers/lisCbc/kcch_0033";
 import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.vue";
+import {changeMorphologyText, changeRemark} from "@/common/helpers/lisCbc/kcch_0033";
+import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -218,6 +222,9 @@ const props = defineProps({
   },
   selectItems: {
     type: Array
+  },
+  triggerChangeCRCMorphology: {
+    type: Boolean,
   }
 });
 const store = useStore();
@@ -363,10 +370,34 @@ onMounted(async () => {
     }
   } else {
     ywmcSlip.value = 'H3'; // 원주기독에 독단적인 커스텀마이징 때문에 강제적으로 H3 pbs 기준으로 맞춤..
-
   }
-
 });
+
+watch(() => props.triggerChangeCRCMorphology, async () => {
+
+  changeMorphologyText();  // 원자력 병원 CRC 받아온 데이터
+  const data = {
+    code: 'LH101',
+    count: 200,
+  }
+  const sex = 'F';
+  const age = 1;
+  const result = kcchCbcAutoMatching({ data, sex, age });
+  mapResultToCrcArr(result, crcArr.value);
+})
+
+const mapResultToCrcArr = (result: KcchCbcAutoMatchingReturn[], crcArr: any) => {
+  crcArr.forEach((crcItem) => {
+    const matchingItem = result.find(
+        (item) =>
+            item.moType === crcItem.morphologyType && item.title === crcItem.crcTitle
+    );
+    if (matchingItem) {
+      crcItem.val = matchingItem.content;
+    }
+  });
+}
+
 const closeWbcSelect = () => {
   IsWbcImageSelect.value = false;
 }
