@@ -22,6 +22,7 @@
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {useStore} from "vuex";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
@@ -85,7 +86,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
   const slotId = selectedItem.slotId || '';
   const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const folderPath = `${path}/${slotId}/${DIR_NAME.WBC_CLASS}/${id}_${title}`;
   return `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
 }
 

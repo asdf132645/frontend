@@ -587,7 +587,8 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
   const path = selectItems.value.img_drive_root_path !== '' && selectItems.value.img_drive_root_path ? selectItems.value.img_drive_root_path : iaRootPath.value;
   const slotId = selectItems.value.slotId || "";
-  const folderPath = projectType === 'bm' ? `${path}/${slotId}/04_BM_Classification/${id}_${title}` : `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
+  const dirName = projectType === 'bm' ? DIR_NAME.BM_CLASS : DIR_NAME.WBC_CLASS;
+  const folderPath = `${path}/${slotId}/${dirName}/${id}_${title}`;
   return `${apiBaseUrl}/images/print?folder=${folderPath}&imageName=${imageName}`;
 }
 

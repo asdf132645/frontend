@@ -20,8 +20,10 @@ export const sysInfoStore = async (data: any): Promise<any> => {
         await store.dispatch('commonModule/setCommonInfo', deviceInfoData);
         await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', embeddedInfoData);
         return null;
-    }else {
+    } else if (data?.errorLevel === '1' || data?.errorLevel === '2' || data?.errorLevel === '3') {
         return data?.resultMsg;
+    } else {
+        return '';
     }
 };
 

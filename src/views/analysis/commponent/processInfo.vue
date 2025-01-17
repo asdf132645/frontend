@@ -10,7 +10,6 @@
         <span class="proSpan">{{ projectBm ? 'BM CELL Count ' : 'WBC Count ' }} </span>
         <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
       <li>
-        <!--0019 길병원-->
         <template v-if="HOSPITAL_SITE_CD_BY_NAME['인천길병원'] === siteCd">
           <span class="proSpan">Order Date</span>
           <span class="proVal">{{ processInfoItem?.analyzedDttm }}</span>

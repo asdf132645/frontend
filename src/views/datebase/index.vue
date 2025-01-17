@@ -646,7 +646,7 @@ const exportToExcel = async () => {
 }
 
 const excecuteExcel = async () => {
-  const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? '01_WBC_Classification' : '05_BF_Classification';
+  const folderName = checkedSelectedItems.value[0].testType === '01' || checkedSelectedItems.value[0].testType === '04' ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
   const path = selectedItem.value?.img_drive_root_path !== '' && selectedItem.value?.img_drive_root_path ? selectedItem.value?.img_drive_root_path : iaRootPath.value;
   const body = checkedSelectedItems.value.map((checkedItem: any) => {
     return `${path}\\${checkedItem.slotId}\\${folderName}`

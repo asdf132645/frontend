@@ -28,15 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue';
-import RbcImageList from '@/views/datebase/commponent/detail/rbc/rbcImageList/rbcImageList.vue';
-import {useStore} from "vuex";
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from "vuex";
 import { getTestTypeText } from '@/common/lib/utils/conversionDataUtils';
 import ClassInfoMenu from '@/views/datebase/commponent/detail/classInfoMenu.vue';
 import LisCbc from '@/views/datebase/commponent/detail/lisCbc.vue';
 import DetailHeader from '@/views/datebase/commponent/detail/detailHeader.vue';
-import {useGetRunningInfoByIdQuery} from '@/gql/useQueries';
-import {MESSAGES, MSG_GENERAL} from '@/common/defines/constants/constantMessageText';
+import { MESSAGES } from '@/common/defines/constants/constantMessageText';
 import ToastNotification from '@/components/commonUi/ToastNotification.vue';
 import PltImageList from "@/views/datebase/commponent/detail/plt/pltImageList/pltImageList.vue";
 

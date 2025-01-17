@@ -175,6 +175,7 @@
       </div>
     </template>
   </Modal>
+
   <template v-if="siteCd === '9090'">
     <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
               :selectItemWbc="selectItemWbc" @printClose="printClose"/>

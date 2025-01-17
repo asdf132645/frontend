@@ -296,6 +296,7 @@ import {
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import slidePositionImg from "@/assets/images/slide_pos.png";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -1984,9 +1985,9 @@ const handleMoveImages = async () => {
 };
 const projectTypeReturn = (type: string): any => {
   if (type === 'bm') {
-    return '04_BM_Classification';
+    return DIR_NAME.BM_CLASS;
   } else if (type === 'pb') {
-    return '01_WBC_Classification';
+    return DIR_NAME.WBC_CLASS;
   }
 }
 

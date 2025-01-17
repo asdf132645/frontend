@@ -74,6 +74,7 @@ import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} fr
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
+import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -148,16 +149,19 @@ const getIpAddress = async (ip: string) => {
 }
 
 function checkFullscreenStatus() {
-  const {path} = router.currentRoute.value;
+  const { path } = router.currentRoute.value;
   if (path === '/user/login') {
     return;
   }
+
   isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
-  if (!isFullscreen.value) {
-    showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
-  } else {
-    if (alertMessage.value === MESSAGES.FULLSCREEN_SUGGEST) {
-      hideAlert();
+  if (siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    if (!isFullscreen.value) {
+      showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
+    } else {
+      if (alertMessage.value === MESSAGES.FULLSCREEN_SUGGEST) {
+        hideAlert();
+      }
     }
   }
 }
@@ -341,7 +345,7 @@ async function socketData(data: any) {
         parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
-          if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
+          if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a' && res !== '') {
             const err = await errLogLoad();
             showCoreErrorAlert(err);
           } else {
@@ -539,7 +543,7 @@ async function socketData(data: any) {
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
         const path = pbiaRootDir.value;
-        const folderPath = !projectBm.value ? '01_WBC_Classification' : '04_BM_Classification';
+        const folderPath = !projectBm.value ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
         const url_new = `${path}/${completeSlot.slotId}/${folderPath}/${completeSlot.slotId}.json`;
         const response_new = await readJsonFile({fullPath: url_new});
 
@@ -920,20 +924,10 @@ const getLatestCriticalError = (errArr: ErrorObject[]): ErrorObject | null => {
       errArr
           .filter((error) => {
             const errorDate = moment(error.timestamp).format('YYYY-MM-DD'); // Format timestamp to YYYY-MM-DD
-            return errorDate === today && error.type === 'CRIT';
+            return errorDate === today && (error.type !== 'DLOG' && error.type !== '');
           })
           .sort((a, b) => moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf())[0] || null
   );
 };
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #ffffff;
-  width: 100%;
-}
-</style>
+</script>

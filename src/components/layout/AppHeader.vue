@@ -177,7 +177,7 @@ import {
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG, TOAST} from "@/common/defines/constants/constantMessageText";
 import {getCellImgAllApi, getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
@@ -269,6 +269,64 @@ const tooltipVisible = reactive({
 const formattedDate = computed(() => currentDate.value);
 const formattedTime = computed(() => currentTime.value);
 
+onBeforeMount(() => {
+  projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
+  machineVersion.value = window.MACHINE_VERSION;
+})
+
+onMounted(async () => {
+  await cellImgGet();
+  await cellImgGetAll();
+  updateDateTime(); // 초기 시간 설정
+  const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
+
+  // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
+  onBeforeUnmount(() => {
+    clearInterval(timerId);
+  });
+  if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
+    await store.dispatch('userModule/setUserAction', getStoredUser);
+  }
+
+  document.addEventListener('click', closeUserSetBox);
+  window.addEventListener('wheel', preventScroll, {passive: false});
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeUserSetBox);
+  window.removeEventListener('wheel', preventScroll);
+})
+
+watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
+  await cellImgGet();
+  await cellImgGetAll();
+  userId.value = newUserId.id;
+});
+
+watch([embeddedStatusJobCmd.value], async (newVals: any) => {
+  await nextTick();
+  oilCount.value = Number(newVals[0].sysInfo.oilCount);
+  isDoorOpen.value = newVals[0].sysInfo.isDoorOpen;
+  storagePercent.value = Number(newVals[0].sysInfo.storageSize);
+  eqStatCd.value = newVals[0].sysInfo.eqStatCd;
+
+  const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
+  if (machineVersion.value === '100a' && autoStartTimerNumber !== undefined) {
+    autoStartTimer.value = (parseFloat(autoStartTimerNumber) / 5) * 100;
+  }
+
+
+  eqStatCdData.value = eqStatCdChangeVal(newVals[0].sysInfo.eqStatCd);
+  oilCountData.value = oilCountChangeVal();
+  storagePercentData.value = storagePercentChangeVal();
+
+  // 2번 보내는지 확인
+  if (!isStartCountUpdated.value) {
+    await searchCardCount();
+  }
+
+});
+
 const userSetOutToggle = () => {
   userSetOutUl.value = !userSetOutUl.value;
 }
@@ -288,55 +346,68 @@ const errLogOn = async () => {
   await errLogLoad();
 
 }
+
 const errLogLoad = async () => {
   if (errArr.value.length !== 0){
     return
   }
+
   const folderPath = `folderPath=${rootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
   let res = await errLogsReadApi(folderPath);
+
   if(res.code === 200){
     if(res?.data?.status === 400){
       toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
       showToast(res?.data?.response.error);
       return;
     }
-    let newArr = [];
-    const isTodayLogLengthOver10 = Object.entries(res.data)[0][1].length > 10;
 
-    if (!isTodayLogLengthOver10) {
+    const totalLogLength = Object.values(res?.data || {}).reduce((sum, items) => sum + items.length, 0);
+    if (Number(totalLogLength) < 10) {
       const nextResult = await errorLogLoadMore();
       if (nextResult) {
         res = nextResult;
       }
     }
 
-    // 날짜별로 들어옴 다중 포문 쓴 이유
-    for (const date in res.data) {
-      const entries = res.data[date];
-
-      for (const el of entries) {
-        const fullTimestamp = `${date} ${el.timestamp}`; // 날짜 합치기 용도
-        const now = moment();
-        const formattedDate = now.format('YYYY-MM-DD');
-        if (formattedDate !== date && newArr.length > 10) {
-          break;
-        }
-        if (el.E_TYPE !== 'DEV_INFO'){
-          newArr.push({
-            timestamp: fullTimestamp,
-            code: el?.E_CODE,
-            type: el?.E_TYPE,
-            desc: el?.E_DESC,
-            soln: el?.E_SOLN,
-            name: el?.E_NAME,
-          });
-        }
-      }
-    }
-
-    errArr.value = newArr;
+    errArr.value = processLogData(res?.data);
   }
 }
+
+const processLogData = (data: any) => {
+  const newArr = [];
+  const now = moment();
+  const formattedDate = now.format('YYYY-MM-DD');
+
+  if (isObjectEmpty(data)) {
+    return;
+  }
+
+  for (const date in data) {
+    const entries = data[date];
+
+    if (!Array.isArray(entries)) {
+      console.error(`Invalid entries for date: ${date}`);
+      continue;
+    }
+
+    for (const el of entries) {
+      if (formattedDate !== date && newArr.length > 10) break;
+      if (el.E_TYPE !== 'DEV_INFO') {
+        newArr.push({
+          timestamp: `${date} ${el.timestamp}`, // Full timestamp
+          code: el?.E_CODE,
+          type: el?.E_TYPE,
+          desc: el?.E_DESC,
+          soln: el?.E_SOLN,
+          name: el?.E_NAME,
+        });
+      }
+    }
+  }
+
+  return newArr;
+};
 
 const errorLogLoadMore = async () => {
   if (errArr.value.length !== 0) {
@@ -389,65 +460,6 @@ const fullScreen = () => {
     document.exitFullscreen();
   }
 }
-
-onBeforeMount(() => {
-  projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
-  machineVersion.value = window.MACHINE_VERSION;
-})
-
-onMounted(async () => {
-  await cellImgGet();
-  await cellImgGetAll();
-  updateDateTime(); // 초기 시간 설정
-  const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
-
-  // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
-  onBeforeUnmount(() => {
-    clearInterval(timerId);
-  });
-  if (userId.value === '') { // 사용자가 강제 초기화 시킬 시 유저 정보를 다시 세션스토리지에 담아준다.
-    await store.dispatch('userModule/setUserAction', getStoredUser);
-  }
-
-  document.addEventListener('click', closeUserSetBox);
-  window.addEventListener('wheel', preventScroll, {passive: false});
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', closeUserSetBox);
-  window.removeEventListener('wheel', preventScroll);
-})
-
-
-watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
-  await cellImgGet();
-  await cellImgGetAll();
-  userId.value = newUserId.id;
-});
-
-watch([embeddedStatusJobCmd.value], async (newVals: any) => {
-  await nextTick();
-  oilCount.value = Number(newVals[0].sysInfo.oilCount);
-  isDoorOpen.value = newVals[0].sysInfo.isDoorOpen;
-  storagePercent.value = Number(newVals[0].sysInfo.storageSize);
-  eqStatCd.value = newVals[0].sysInfo.eqStatCd;
-
-  const autoStartTimerNumber = newVals[0].sysInfo?.autoStartTimer;
-  if (machineVersion.value === '100a' && autoStartTimerNumber !== undefined) {
-    autoStartTimer.value = (parseFloat(autoStartTimerNumber) / 5) * 100;
-  }
-
-
-  eqStatCdData.value = eqStatCdChangeVal(newVals[0].sysInfo.eqStatCd);
-  oilCountData.value = oilCountChangeVal();
-  storagePercentData.value = storagePercentChangeVal();
-
-  // 2번 보내는지 확인
-  if (!isStartCountUpdated.value) {
-    await searchCardCount();
-  }
-
-});
 
 const preventScroll = (event: any) => {
   if (event.ctrlKey) {

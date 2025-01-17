@@ -1,3 +1,12 @@
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #ffffff;
+    width: 100%;
+}
+
 .v-enter-active,
 .v-leave-active {
     transition: opacity 0.2s ease;
@@ -42,6 +51,10 @@
 
 .mt40 {
     margin-top: 40px;
+}
+
+.mb4 {
+    margin-bottom: 4px;
 }
 
 .mb08 {
@@ -748,7 +761,7 @@ li.errLogLi.critical:before {
 .errLogDiv {
     position: absolute;
     background: #252525;
-    z-index: 11;
+    z-index: 12;
     color: #ffffff;
     text-align: left;
     height: 60vh;
@@ -2573,6 +2586,15 @@ ul.wbcImgWrap > li {
 
 .selected-image {
     outline: solid var(--green-bg-1-color) !important;
+}
+
+.detailHeader-barcodeEdit-font {
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.detailHeader-barcodeEdit-font:hover {
+    transform: scale(1.1);
 }
 
 .context-menu.detail {
@@ -4519,6 +4541,17 @@ p.adminText {
     color: #29c7ca;
 }
 
+.remarkChange-font {
+    background-color: inherit;
+    color: white;
+    cursor: pointer;
+    transform: rotate(180deg);
+}
+
+.remarkChange-font:hover {
+    transform: scale(1.1) rotate(180deg);
+}
+
 button.reSelect {
     position: absolute;
     right: 0;
@@ -6065,8 +6098,8 @@ button.gbArrowButton.left {
     position: absolute;
     left: 20px;
     width: 660px;
-    height: 220px;
-    border: 1px dotted white;
+    height: 232px;
+    border: 1px solid white;
     z-index: 0;
     pointer-events: none;
 }

@@ -234,8 +234,6 @@ const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageN
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
-const notCanvasClick = ref(false);
-const imagePageType = ref<'RBC' | 'PLT'>('RBC');
 const zoomRatio = ref(0);
 const maxNumberOfLines = ref(330);
 
@@ -742,12 +740,8 @@ const initElement = async () => {
         const notCanvasClick = !fileNameResultArr.value[pageIndex].includes('RBC_Image');
         viewer.value.viewport.maxZoomLevel = maxZoomLevel;
         if (!notCanvasClick) {
-          imagePageType.value = 'RBC';
           maxNumberOfLines.value = 330;
           await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: pageIndex});
-        } else {
-          imagePageType.value = 'PLT';
-          maxNumberOfLines.value = 1000;
         }
 
         await removeRuler();
@@ -1236,24 +1230,10 @@ const refreshRuler = (element: HTMLElement, rulerSize: any, ruler: any) => {
   if (typeof rulerSize === 'object') rulerSize = rulerSize.value;
   if (document.getElementById('rulerTitle') !== null) element.removeChild(document.getElementById('rulerTitle'))
 
-  let tmp
-  if (imagePageType.value === 'PLT') {
-    tmp = Number(rulerXResolution.value) * zoomRatio.value;
-  } else if (imagePageType.value === 'RBC') {
-    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
-  } else {
-    tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
-  }
+  const tmp = ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value;
 
   const rSize = rulerSize > 1 ? 1 + (tmp * (rulerSize - 1)) : 1;
-
-  if (imagePageType.value === 'PLT') {
-    rulerWidth.value = (rulerSize * 0.001) / Number(rulerXResolution.value) * zoomRatio.value * rSize;
-  } else if (imagePageType.value === 'RBC') {
-    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
-  } else {
-    rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
-  }
+  rulerWidth.value = (rulerSize * 0.001) / ((Number(rulerXResolution.value) / 10) * 4) * zoomRatio.value * rSize;
 
   const titleElement = document.createElement('div')
   titleElement.id = 'rulerTitle';
@@ -1326,16 +1306,9 @@ const handleReCenterRuler = () => {
 }
 
 const handleRulerWidth = () => {
-  const isPLT = imagePageType.value === 'PLT';
-  const isRBC = imagePageType.value === 'RBC';
-
-  const baseResolution = isPLT
-      ? Number(rulerXResolution.value)
-      : (Number(rulerXResolution.value) / 10) * 4;
+  const baseResolution = (Number(rulerXResolution.value) / 10) * 4;
   const tmp = baseResolution * zoomRatio.value;
-
   const rSize = rulerSize.value > 5 ? 1 + (tmp * (rulerSize.value - 5)) : 1;
-
   rulerWidth.value = (rulerSize.value * 0.001) / (baseResolution * zoomRatio.value * rSize);
 }
 

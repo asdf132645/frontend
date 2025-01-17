@@ -109,6 +109,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {useStore} from "vuex";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo', 'selectWbcImgArr', 'slotId', 'patientNm']);
 const arrDataWbc = ref<any>([]);
@@ -307,9 +308,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
 
 const projectTypeReturn = (type: string): any => {
   if (type === 'bm') {
-    return '04_BM_Classification';
+    return DIR_NAME.BM_CLASS;
   } else if (type === 'pb') {
-    return '01_WBC_Classification';
+    return DIR_NAME.WBC_CLASS;
   }
 }
 </script>
