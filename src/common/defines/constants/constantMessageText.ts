@@ -159,5 +159,6 @@ export const MSG = {
 }
 
 export enum TOAST {
-    ERROR_LOG_LOAD_FAIL = 'Failed to Load Error log',
+    ERROR_LOG_LOAD = 'Failed to Load Error log',
+    ERROR_BARCODE_UPDATE = 'Failed to Update Barcode ID'
 }

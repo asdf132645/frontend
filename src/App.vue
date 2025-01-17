@@ -847,10 +847,6 @@ const checkDuplicatedJobCmd = (stringData: string) => {
   }
 }
 
-const getRbcData = () => {
-  //
-}
-
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';

@@ -31,4 +31,5 @@ const closeLayer = () => {
 onMounted(() => {
   emit('afterOpen'); // 모달이 열린 후에 이벤트를 부모 컴포넌트로 전달
 });
+
 </script>

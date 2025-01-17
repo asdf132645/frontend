@@ -290,7 +290,6 @@ import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
 import {
   gqlGenericUpdate,
   isAllClassCheckedUpdateMutation,
-  rbcUpdateMutation,
   useUpdateRunningInfoMutation
 } from "@/gql/mutation/slideData";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
@@ -883,7 +882,6 @@ const zoomOut = () => {
   zoomValue.value = Number(newWidth);
 
 };
-
 
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;

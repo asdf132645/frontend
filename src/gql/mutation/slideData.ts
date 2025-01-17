@@ -65,6 +65,15 @@ export const memoUpdateDocument = gql`
     }
 `;
 
+export const barcodeNoUpdateDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+        updateRunningInfoGQL(updateDto: $updateDto) {
+            id
+            barcodeNo
+        }
+    }
+`;
+
 export const isAllClassCheckedDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
         updateRunningInfoGQL(updateDto: $updateDto) {
@@ -176,6 +185,10 @@ export function cbcUpdateMutation(options: VueApolloComposable.UseMutationOption
 
 export function memoUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(memoUpdateDocument, options);
+}
+
+export function barcodeNoUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(barcodeNoUpdateDocument, options);
 }
 
 export function rbcUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
