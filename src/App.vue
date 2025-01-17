@@ -345,15 +345,17 @@ async function socketData(data: any) {
         parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
-          if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a' && res !== '') {
-            const err = await errLogLoad();
-            showCoreErrorAlert(err);
-          } else {
-            showCoreErrorAlert(res);
-          }
-          const isAlarm = sessionStorage.getItem('isAlarm');
-          if (isAlarm === 'true') {
-            await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
+          const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
+          if (res !== '') {
+            if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
+              const err = await errLogLoad();
+              showCoreErrorAlert(err);
+            } else {
+              showCoreErrorAlert(res);
+            }
+            if (isAlarm) {
+              await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
+            }
           }
         }
         break;
