@@ -293,6 +293,7 @@ import {
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import slidePositionImg from "@/assets/images/slide_pos.png";
+import {apiUrl} from "@/common/api/apiUrl";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -334,11 +335,10 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('200px');
 const modalImageHeight = ref('200px');
 const imgSet = ref(false);
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
-const instance = getCurrentInstance();
 const projectType = ref<any>('');
 const opacity = ref('0.9');
 const zoomValue = ref(200);
@@ -1867,9 +1867,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   // 타임스탬프 추가
 
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
-    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
-    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 
 

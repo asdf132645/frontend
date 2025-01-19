@@ -112,8 +112,7 @@ let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const testType = computed(() => store.state.commonModule.testType);
 const dbListDataFirstNum = computed(() => store.state.commonModule.dbListDataFirstNum);
 const dbListDataLastNum = computed(() => store.state.commonModule.dbListDataLastNum);
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 const slideData = computed(() => store.state.slideDataModule);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const pltOnOff = ref(false);

@@ -36,11 +36,12 @@
 <script setup lang="ts">
 import {computed, defineProps, onBeforeMount, onMounted, ref} from "vue";
 import {useStore} from "vuex";
+import {apiUrl} from "@/common/api/apiUrl";
 
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const projectType = ref<any>('');
 const store = useStore();
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 
 const props = defineProps(['selectItems']);
 const emit = defineEmits(['closeWbcSelect', 'selectWbcImgSend']);
@@ -105,9 +106,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   // 타임스탬프 추가
 
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
-    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
-    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 
 

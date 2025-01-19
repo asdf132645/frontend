@@ -22,12 +22,12 @@
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {useStore} from "vuex";
+import {apiUrl} from "@/common/api/apiUrl";
 
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
@@ -86,7 +86,7 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   const slotId = selectedItem.slotId || '';
   const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : iaRootPath.value;
   const folderPath = `${path}/${slotId}/01_WBC_Classification/${id}_${title}`;
-  return `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  return `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
 }
 
 function hideImage(id: string, fileName: string) {

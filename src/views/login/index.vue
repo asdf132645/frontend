@@ -66,7 +66,7 @@ const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
-const uimdOpenIp = ref('');
+const uimdOpenIp: any = ref('');
 const progress = ref(0);
 const progressOnOff = ref(false);
 
@@ -209,7 +209,8 @@ const checkIsViewer = async () => {
 const getIpAddress = async (userId: string) => {
   try {
     const result = await getDeviceIpApi();
-    if ((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
+    const  apiUrl = window.LINUX_SERVER_SET ? window.MAIN_API : window.APP_API_BASE_URL;
+    if ((result.data === '1' || (apiUrl && apiUrl.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount('main');
       sessionStorage.setItem('viewerCheck', 'main');

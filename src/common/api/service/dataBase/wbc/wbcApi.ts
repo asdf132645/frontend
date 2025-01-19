@@ -3,9 +3,9 @@ import {apiConstants} from "@/common/api/apiConstants";
 const httpClient = useHttpClient();
 
 export const moveImgPost = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.images.move, request , true);
+    return httpClient.httpGet(apiConstants.images.move, request , true, window.LINUX_SERVER_SET );
 };
 
 export const moveClassImagePost = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpPost(apiConstants.images.moveClassImage, request, '', false, window.VIEWER_CHECK);
+    return httpClient.httpPost(apiConstants.images.moveClassImage, request, '', false, window.LINUX_SERVER_SET );
 };

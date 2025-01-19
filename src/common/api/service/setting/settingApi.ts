@@ -34,9 +34,6 @@ export const getCellImgApi = async (): Promise<ApiResponse<CellImgAnalyzedRespon
     return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGet);
 };
 
-export const getCellImgByIdApi = async (request: string): Promise<ApiResponse<CellImgAnalyzedResponse | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGetById, request);
-};
 
 export const getCellImgAllApi = async (): Promise<ApiResponse<CellImgAnalyzedResponse[] | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.cellImgAnalyzedPost.cellImgGetAll);
@@ -206,7 +203,7 @@ export const getLisCodeApi = async (): Promise<ApiResponse<LisCodeWbcItem[] | un
 
 // --- 드라이브
 export const getDrivesApi = async (): Promise<ApiResponse<any | undefined>> => {
-    return httpClient.httpGet(apiConstants.settings.folder.get);
+    return httpClient.httpGet(apiConstants.settings.folder.get,'',false, window.LINUX_SERVER_SET);
 };
 
 //-- 클래스 정렬

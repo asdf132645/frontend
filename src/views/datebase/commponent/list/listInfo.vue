@@ -240,7 +240,7 @@ const showClassificationNonWbcResults = (classificationResult) => {
 }
 
 
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 
 function getImageUrl(imageName) {
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;

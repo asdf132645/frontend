@@ -3,11 +3,11 @@ import {apiConstants} from "@/common/api/apiConstants";
 const httpClient = useHttpClient();
 
 export const createDeviceInfoApi = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpPost(apiConstants.device.getDeviceInfo.create, request);
+    return httpClient.httpPost(apiConstants.device.getDeviceInfo.create, request, '', false, false);
 }
 
 export const getDeviceInfoApi = async (): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.device.getDeviceInfo.get);
+    return httpClient.httpGet(apiConstants.device.getDeviceInfo.get,'', false, false);
 }
 
 export const putDeviceInfoApi = async (request: any): Promise<ApiResponse<void>> => {

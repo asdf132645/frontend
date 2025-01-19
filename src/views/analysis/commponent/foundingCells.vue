@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import {ref, watch, defineProps, computed} from 'vue';
 import {useStore} from "vuex";
+import {apiUrl} from "@/common/api/apiUrl";
 const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const props = defineProps([ 'parsedData', 'pb100aCassette']);
 const store = useStore();
@@ -81,7 +82,7 @@ function getImageUrl(types: RunningPathItem[] | undefined): string {
   const fileName = types?.path.match(/[^\\]*$/)[0];
 
   // 이미지의 URL 생성
-  const imageUrl = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${fileName}`;
+  const imageUrl = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${fileName}`;
 
   return imageUrl;
 }

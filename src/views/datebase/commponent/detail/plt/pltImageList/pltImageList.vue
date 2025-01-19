@@ -191,8 +191,7 @@ const tileExist = ref(true);
 const newItemClassInfoArr = ref<any>([]);
 
 const store = useStore();
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);
@@ -209,7 +208,6 @@ const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageN
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
-const notCanvasClick = ref(false);
 const imagePageType = ref<'RBC' | 'PLT'>('RBC');
 const zoomRatio = ref(0);
 const maxNumberOfLines = ref(330);

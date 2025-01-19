@@ -109,6 +109,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {lisSendYwmc, ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {useStore} from "vuex";
+import {apiUrl} from "@/common/api/apiUrl";
 
 const props = defineProps(['nowCrcData', 'recoList', 'commentList', 'captureAndConvertOk', 'barcodeNo', 'selectWbcImgArr', 'slotId', 'patientNm']);
 const arrDataWbc = ref<any>([]);
@@ -128,7 +129,7 @@ const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const store = useStore();
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const projectType = ref<any>('');
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 
 
 watch(
@@ -296,9 +297,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   // 타임스탬프 추가
 
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
-    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
-    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 
 

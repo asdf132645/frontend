@@ -74,6 +74,7 @@ import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} fr
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
+import {apiUrl} from "@/common/api/apiUrl";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -256,6 +257,7 @@ onMounted(async () => {
   await getNormalRange();
   await getDeviceInfo();
   startChecking();
+  console.log(apiUrl());
   const result = await getDeviceIpApi();
   ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
 

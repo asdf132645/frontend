@@ -1,6 +1,6 @@
 window.APP_API_BASE_URL='http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
 window.MAIN_API_IP = 'http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
-window.MAIN_API = 'http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
+window.MAIN_API = '192.168.0.43'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
 window.MAIN_WEBSOCKET_IP = 'http://192.168.0.131:3002';  // MultiViewer - 'http://192.168.0.100:3002', Main PC Only - 'http://127.0.0.1:3002'
 window.PROJECT_TYPE='pb';  // pb or bm
 window.PROJECT_VERSION='02.02.003';
@@ -10,4 +10,4 @@ window.MACHINE_VERSION='100a';  // 12a or 100a
 window.FORCE_VIEWER = 'main'; // main or viewer
 window.PORT = '8080';
 window.LINUXSERVERIP = 'http://192.168.0.43:3020';
-window.LINUXSERVER = true;
+window.LINUX_SERVER_SET = false;

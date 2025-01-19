@@ -32,18 +32,6 @@ export const detailRunningApi = async (request: any): Promise<ApiResponse<void>>
     return httpClient.httpGet(apiConstants.settings.runningInfo.detail, `${request}`, false);
 };
 
-export const classInfoDetailApi = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.classInfoDetail, `${request}`, false);
-};
-
-export const classInfoDetailSelectQueryApi = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.classInfoDetailSelectQuery, `${request}`, false);
-};
-
-export const classInfoMenuDetailSelectQueryApi = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.classInfoMenuDetailSelectQuery, `${request}`, false);
-};
-
 export const pageUpDownRunnIngApi = async (req: any): Promise<ApiResponse<any>> => {
     return httpClient.httpGet(apiConstants.settings.runningInfo.pageUpDown, `${req}`, true)
 }

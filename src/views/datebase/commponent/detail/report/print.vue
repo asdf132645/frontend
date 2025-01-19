@@ -255,8 +255,7 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.APP_API_BASE_URL;
 
 const printContent = ref(null);
 const wbcInfo = ref([]);
