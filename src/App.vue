@@ -682,7 +682,7 @@ const getDeviceInfo = async () => {
   try {
     const result = await getDeviceInfoApi();
     if (result) {
-      sessionStorage.setItem('autoStart', result.data[0]?.autoStart);
+      sessionStorage.setItem('autoStart', result.data[0]?.autoStart ?? 'false');
       await store.dispatch('commonModule/setCommonInfo', {siteCd: result.data[0]?.siteCd});
       localStorage.setItem('siteCd', result.data[0]?.siteCd);
     }
