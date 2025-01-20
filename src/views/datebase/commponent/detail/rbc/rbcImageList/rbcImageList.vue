@@ -216,7 +216,7 @@ const tileExist = ref(true);
 const newItemClassInfoArr = ref<any>([]);
 
 const store = useStore();
-const apiBaseUrl = window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);

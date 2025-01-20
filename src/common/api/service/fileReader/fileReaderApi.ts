@@ -7,16 +7,16 @@ export const readJsonFile = async (request: any): Promise<ApiResponse<any | unde
 };
 
 export const readDziFile = async (request: any): Promise<ApiResponse<any | undefined>> => {
-    return httpClient.httpPost(apiConstants.dziReader.get, request);
+    return httpClient.httpPost(apiConstants.dziReader.get, request, '', false, window.LINUX_SERVER_SET);
 }
 
 
 export const readFileTxt = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.fileTxtRead.get, `${request}`, window.LINUX_SERVER_SET );
+    return httpClient.httpGet(apiConstants.fileTxtRead.get, `${request}`, false, window.LINUX_SERVER_SET );
 };
 
 export const readFileEUCKR = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.fileTxtRead.readFileEUCKR, `${request}`, window.LINUX_SERVER_SET );
+    return httpClient.httpGet(apiConstants.fileTxtRead.readFileEUCKR, `${request}`,false, window.LINUX_SERVER_SET );
 };
 
 export const readH7File = async (request: any): Promise<ApiResponse<void>> => {

@@ -41,7 +41,7 @@ import {apiUrl} from "@/common/api/apiUrl";
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const projectType = ref<any>('');
 const store = useStore();
-const apiBaseUrl = window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 
 const props = defineProps(['selectItems']);
 const emit = defineEmits(['closeWbcSelect', 'selectWbcImgSend']);

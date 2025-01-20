@@ -20,7 +20,6 @@
 import {ref, watch, defineProps, computed} from 'vue';
 import {useStore} from "vuex";
 import {apiUrl} from "@/common/api/apiUrl";
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
 const props = defineProps([ 'parsedData', 'pb100aCassette']);
 const store = useStore();
 const changeSlide = computed(() => store.state.runningInfoModule.changeSlideState);

@@ -255,7 +255,7 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
-const apiBaseUrl = window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 
 const printContent = ref(null);
 const wbcInfo = ref([]);

@@ -209,7 +209,7 @@ const checkIsViewer = async () => {
 const getIpAddress = async (userId: string) => {
   try {
     const result = await getDeviceIpApi();
-    const  apiUrl = window.LINUX_SERVER_SET ? window.MAIN_API : window.APP_API_BASE_URL;
+    const  apiUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
     if ((result.data === '1' || (apiUrl && apiUrl.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount('main');

@@ -41,7 +41,7 @@ const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
-const apiBaseUrl = window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const canvasOverlay = ref<any>(null);
 const backgroundImage = ref('');
