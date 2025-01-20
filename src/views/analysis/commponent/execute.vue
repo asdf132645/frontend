@@ -187,8 +187,8 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     isInit: newIsInit,
   } = newEmbeddedStatusJobCmd || {};
 
-  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
-    toggleStartStop('start', 'autoStart');
+  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart) && !isRunningState.value) {
+    toggleStartStop('start');
   }
 
   isPause.value = newIsPause;
@@ -226,7 +226,7 @@ const sendSearchCardCount = () => {
   EventBus.publish('childEmitSocketData', req);
 }
 
-const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
+const toggleStartStop = (action: 'start' | 'stop') => {
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
 
   if (action === 'start') {
@@ -238,7 +238,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
       return;
     }
     // 실행 여부 체크
-    if (isRunningState.value && autoStart !== 'autoStart') {
+    if (isRunningState.value) {
       showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
@@ -250,11 +250,13 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
+
+    let reqAutoStart;
     let autoStart = sessionStorage.getItem('autoStart');
     if (autoStart === 'true') {
-      autoStart = 1;
+      reqAutoStart = 1;
     } else if (autoStart === 'false') {
-      autoStart = 0;
+      reqAutoStart = 0;
     }
 
     let startAction = tcpReq().embedStatus.startAction;
@@ -269,10 +271,8 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
       edgeShotType:  edgeShotType || '0',
     });
 
-    if (is100A.value) {
-      Object.assign(startAction, {
-        autoStart: Number(autoStart),
-      })
+    if (is100A.value && !isRunningState.value) {
+      Object.assign(startAction, { autoStart: Number(reqAutoStart) });
     }
 
     // 2: LowPower | 3: HighPower

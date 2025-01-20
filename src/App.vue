@@ -291,7 +291,7 @@ onMounted(async () => {
           await runInfoPostWebSocket();
         }
       }, 500);
-      await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
+      await store.dispatch('commonModule/setCommonInfo', { firstLoading: true });
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
@@ -727,16 +727,18 @@ const removeDuplicateJobCmd = (reqArr: any) => {
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
-  let autoStart: number = sessionStorage.getItem('autoStart');
+  let reqAutoStart
+  let autoStart = sessionStorage.getItem('autoStart');
   if (autoStart === 'true') {
-    autoStart = 1;
+    reqAutoStart = 1;
   } else if (autoStart === 'false') {
-    autoStart = 0;
+    reqAutoStart = 0;
   }
 
   if (window.MACHINE_VERSION === '100a') {
-    Object.assign(req, {isRewindingBelt: isRewindingBelt.value});
-    Object.assign(req, {autoStart: autoStart});
+    Object.assign(req, { isRewindingBelt: isRewindingBelt.value });
+
+    Object.assign(req, { autoStart: reqAutoStart });
   }
 
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
