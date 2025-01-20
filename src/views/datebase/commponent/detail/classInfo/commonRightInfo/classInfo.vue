@@ -519,7 +519,9 @@ const uploadLis = async () => {
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
       await uimdTestCbcLisDataGet();
-      // lisLastStep();
+      break;
+    default:
+      lisLastStep();
       break;
   }
 }
