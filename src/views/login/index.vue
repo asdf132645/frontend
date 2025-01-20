@@ -71,7 +71,7 @@ const progress = ref(0);
 const progressOnOff = ref(false);
 
 onBeforeMount(async () => {
-  uimdOpenIp.value = window.MAIN_WEBSOCKET_IP;
+  uimdOpenIp.value = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
   forceViewer.value = window.FORCE_VIEWER;
   await checkIsViewer();
 })
@@ -124,7 +124,7 @@ const getDeviceInfoFromTxt = async () => {
   const fileName = 'HW_Config';
   try {
     const result = await readFileTxt(`path=${filePath}&filename=${fileName}`);
-    const iniFileData = result.data.data;
+    const iniFileData = result?.data?.data;
     const deviceBarcodePattern = /DEVICE_SERIAL\s*=\s*(.+)/;
     const siteCdPattern = /SERVICE_SITE\s*=\s*(.+)/;
 

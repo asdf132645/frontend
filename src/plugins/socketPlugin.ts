@@ -7,7 +7,8 @@ declare module '@vue/runtime-core' {
         $socketError: boolean;
     }
 }
-const apiBaseUrl = window.APP_API_BASE_URL;
+
+const apiBaseUrl = window.MAIN_WEBSOCKET_IP || 'http://192.168.0.131:3002';
 
 const socketPlugin: Plugin = {
     install: (app) => {
