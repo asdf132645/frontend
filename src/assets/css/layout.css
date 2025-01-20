@@ -1910,7 +1910,8 @@ ul.slideContent .outClassDefault {
 }
 
 .orderListTableContainer {
-    height: 45.1vh;
+    /*height: 45.1vh;*/
+    height: 47vh;
 }
 
 .orderListTable {
@@ -5777,6 +5778,18 @@ progress::-moz-progress-bar {
 
 .abnormalClassInfoPopup div {
     padding-top: 10px;
+}
+
+.classInfo-barcode-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    height: 209.5px;
+}
+
+.classInfo-barcode-container > img {
+    height: 200px;
 }
 
 /* 선 */

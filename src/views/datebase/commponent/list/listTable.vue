@@ -56,7 +56,6 @@
           style="height: 49px"
           v-bind:data-row-id="item.id"
           @contextmenu.prevent="rowRightClick(item, $event)"
-          title="Double click the row"
       >
         <td style="position: relative;"
             @mouseenter="abnormalClassInfoOpen(true, item.id)"
