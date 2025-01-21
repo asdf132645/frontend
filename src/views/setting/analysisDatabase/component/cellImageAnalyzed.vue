@@ -331,7 +331,7 @@
         <!--      </tr>-->
         </tbody>
       </table>
-      <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
+      <button class="saveBtn" type="button" @click='cellImgSet()'>Save</button>
     </div>
   </div>
 

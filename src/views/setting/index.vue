@@ -41,7 +41,7 @@ import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import { MESSAGES } from "@/common/defines/constants/constantMessageText";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check', 'Version'] as const;
@@ -54,6 +54,7 @@ const alertMessage = ref('');
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const movingTab = ref<typeof tabs[number]>(tabs[0]);

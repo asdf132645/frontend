@@ -22,8 +22,8 @@
       </div>
     </div>
     <div class="mt-2 degreeDiv" >
-      <button class="saveBtn mb20" @click="onResetDegree">Reset</button>
-      <button class="saveBtn mb20" type="button" @click="createRbcDegreeData">Save</button>
+      <button class="saveBtn" @click="onResetDegree">Reset</button>
+      <button class="saveBtn" type="button" @click="createRbcDegreeData">Save</button>
     </div>
   </div>
 

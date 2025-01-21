@@ -74,6 +74,7 @@ import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} fr
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
+import {DIR_NAME} from "@/common/defines/constants/settings";
 import {apiUrl} from "@/common/api/apiUrl";
 
 const showAlert = ref(false);
@@ -149,16 +150,19 @@ const getIpAddress = async (ip: string) => {
 }
 
 function checkFullscreenStatus() {
-  const {path} = router.currentRoute.value;
+  const { path } = router.currentRoute.value;
   if (path === '/user/login') {
     return;
   }
+
   isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
-  if (!isFullscreen.value) {
-    showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
-  } else {
-    if (alertMessage.value === MESSAGES.FULLSCREEN_SUGGEST) {
-      hideAlert();
+  if (siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    if (!isFullscreen.value) {
+      showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
+    } else {
+      if (alertMessage.value === MESSAGES.FULLSCREEN_SUGGEST) {
+        hideAlert();
+      }
     }
   }
 }
@@ -289,7 +293,7 @@ onMounted(async () => {
           await runInfoPostWebSocket();
         }
       }, 500);
-      await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
+      await store.dispatch('commonModule/setCommonInfo', { firstLoading: true });
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
@@ -343,15 +347,17 @@ async function socketData(data: any) {
         parsedDataSysInfoProps.value = parseDataWarp;
         const res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
-          if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
-            const err = await errLogLoad();
-            showCoreErrorAlert(err);
-          } else {
-            showCoreErrorAlert(res);
-          }
-          const isAlarm = sessionStorage.getItem('isAlarm');
-          if (isAlarm === 'true') {
-            await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
+          const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
+          if (res !== '') {
+            if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
+              const err = await errLogLoad();
+              showCoreErrorAlert(err);
+            } else {
+              showCoreErrorAlert(res);
+            }
+            if (isAlarm) {
+              await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
+            }
           }
         }
         break;
@@ -541,7 +547,7 @@ async function socketData(data: any) {
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
         const getDefaultWbcInfoAfter = () => !projectBm.value ? [basicWbcArr] : [basicBmClassList];
         const path = pbiaRootDir.value;
-        const folderPath = !projectBm.value ? '01_WBC_Classification' : '04_BM_Classification';
+        const folderPath = !projectBm.value ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
         const url_new = `${path}/${completeSlot.slotId}/${folderPath}/${completeSlot.slotId}.json`;
         const response_new = await readJsonFile({fullPath: url_new});
 
@@ -678,7 +684,7 @@ const getDeviceInfo = async () => {
   try {
     const result = await getDeviceInfoApi();
     if (result) {
-      sessionStorage.setItem('autoStart', result.data[0]?.autoStart);
+      sessionStorage.setItem('autoStart', result.data[0]?.autoStart ?? 'false');
       await store.dispatch('commonModule/setCommonInfo', {siteCd: result.data[0]?.siteCd});
       localStorage.setItem('siteCd', result.data[0]?.siteCd);
     }
@@ -723,16 +729,18 @@ const removeDuplicateJobCmd = (reqArr: any) => {
 const startSysPostWebSocket = async () => {
   tcpReq().embedStatus.sysInfo.reqUserId = userId.value;
   const req = tcpReq().embedStatus.sysInfo;
-  let autoStart: number = sessionStorage.getItem('autoStart');
+  let reqAutoStart
+  let autoStart = sessionStorage.getItem('autoStart');
   if (autoStart === 'true') {
-    autoStart = 1;
+    reqAutoStart = 1;
   } else if (autoStart === 'false') {
-    autoStart = 0;
+    reqAutoStart = 0;
   }
 
   if (window.MACHINE_VERSION === '100a') {
-    Object.assign(req, {isRewindingBelt: isRewindingBelt.value});
-    Object.assign(req, {autoStart: autoStart});
+    Object.assign(req, { isRewindingBelt: isRewindingBelt.value });
+
+    Object.assign(req, { autoStart: reqAutoStart });
   }
 
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});
@@ -843,10 +851,6 @@ const checkDuplicatedJobCmd = (stringData: string) => {
   }
 }
 
-const getRbcData = () => {
-  //
-}
-
 const showSuccessAlert = async (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
@@ -922,20 +926,10 @@ const getLatestCriticalError = (errArr: ErrorObject[]): ErrorObject | null => {
       errArr
           .filter((error) => {
             const errorDate = moment(error.timestamp).format('YYYY-MM-DD'); // Format timestamp to YYYY-MM-DD
-            return errorDate === today && error.type === 'CRIT';
+            return errorDate === today && (error.type !== 'DLOG' && error.type !== '');
           })
           .sort((a, b) => moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf())[0] || null
   );
 };
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #ffffff;
-  width: 100%;
-}
-</style>
+</script>

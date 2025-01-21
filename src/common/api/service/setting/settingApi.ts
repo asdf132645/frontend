@@ -16,7 +16,7 @@ import {
 import {
     CreateCbcCodeRbcDto,
     CreateLisCodeDto,
-    CreateLisCodeRbcDto, cbcCodeItem,
+    CreateLisCodeRbcDto, CbcCodeItem,
     LisCodeRbcItem, LisCodeWbcItem, UpdateCbcCodeRbcDto,
     UpdateLisCodeDto, UpdateLisCodeRbcDto
 } from "@/common/api/service/setting/dto/lisCodeDto";
@@ -156,7 +156,7 @@ export const updateCbcCodeRbcApi = async (request: UpdateCbcCodeRbcDto): Promise
     return httpClient.httpPut(apiConstants.settings.cbcCode.update, request);
 };
 
-export const getCbcCodeRbcApi = async (): Promise<ApiResponse<cbcCodeItem[] | undefined>> => {
+export const getCbcCodeRbcApi = async (): Promise<ApiResponse<CbcCodeItem[] | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.cbcCode.get);
 };
 // file path set

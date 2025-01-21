@@ -56,7 +56,6 @@
           style="height: 49px"
           v-bind:data-row-id="item.id"
           @contextmenu.prevent="rowRightClick(item, $event)"
-          title="Double click the row"
       >
         <td style="position: relative;"
             @mouseenter="abnormalClassInfoOpen(true, item.id)"
@@ -175,8 +174,15 @@
       </div>
     </template>
   </Modal>
-  <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
-         :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+
+  <template v-if="siteCd === '9090'">
+    <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
+              :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+  </template>
+  <template v-else>
+    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
+           :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+  </template>
 
   <Alert
       v-if="showAlert"
@@ -224,6 +230,7 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
+import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -267,6 +274,7 @@ const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
 const dataBasePageReset = computed(() => store.state.commonModule);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const isCtrlKeyPressed = ref(false);
 const isShiftKeyPressed = ref(false);
 const firstShiftKeyStr = ref('');
@@ -518,7 +526,7 @@ const getIpAddress = async (item) => {
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
 
     await updatePcIpStateApi(req).then(response => {
-      delayedEmit('SEND_DATA', 'refreshDb', 300);
+      delayedEmit('SEND_DATA', 'refreshDb', 100);
     }).catch(error => {
       console.error(error)
     });

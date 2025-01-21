@@ -1,17 +1,32 @@
 <template>
   <div class="topClintInfo">
     <ul>
-      <li>{{ testType }}</li>
-      <li v-if="barcodeNo">{{ barcodeNo }}</li>
-      <li v-if="analyzedDttm">{{ getDateTimeYYYYMMDDHHmmss(analyzedDttm) }}</li>
-      <li v-if="cbcPatientNo">{{ cbcPatientNo }}</li>
+      <li>
+        <span>{{ testType }}</span>
+      </li>
+      <li v-if="barcodeNo">
+        <span>{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
+        <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['인천길병원']" @click="handleModal" :icon="['fas', 'pen-to-square']" />
+      </li>
+      <li v-if="analyzedDttm">
+        <span>{{ getDateTimeYYYYMMDDHHmmss(analyzedDttm) }}</span>
+      </li>
+      <li v-if="cbcPatientNo">
+        <span>{{ cbcPatientNo }}</span>
+      </li>
       <template v-if="cbcPatientName || patientName">
         <li v-if="cbcPatientName">{{ cbcPatientName }}</li>
         <li v-else-if="patientName">{{ patientName }}</li>
       </template>
-      <li v-if="cbcSex">{{ cbcSex }}</li>
-      <li v-if="cbcAge">{{ cbcAge }}</li>
-      <li v-if="hospitalName">{{ hospitalName }}</li>
+      <li v-if="cbcSex">
+        <span>{{ cbcSex }}</span>
+      </li>
+      <li v-if="cbcAge">
+        <span>{{ cbcAge }}</span>
+      </li>
+      <li v-if="hospitalName">
+        <span>{{ hospitalName }}</span>
+      </li>
       <li v-if="slideStatus" class="slideStatus"
           @mouseenter="tooltipVisibleFunc('slideStatus', true)"
           @mouseleave="tooltipVisibleFunc('slideStatus', false)"
@@ -22,44 +37,147 @@
       </li>
     </ul>
   </div>
+
+  <Modal v-if="isModalOpen" @update:closeLayer="closeLayer" width="400">
+    <!-- 헤더 슬롯에 들어갈 내용 -->
+    <template #header>
+      <h2>Edit Barcode ID</h2>
+    </template>
+
+    <!-- 컨텐츠 슬롯에 들어갈 내용 -->
+    <template #content>
+      <div>
+        <ul class="editOrder">
+          <li class="flex-column mr12">
+            <label for="barcode">BARCODE ID</label>
+            <input
+                id="barcode"
+                type="text"
+                v-model="localBarcodeNo"
+                @keydown.enter="handleEditBarcodeNo"
+                placeholder="BARCODE ID"
+                ref="barcodeInput"
+            />
+          </li>
+        </ul>
+      </div>
+      <div class="modalBottom">
+        <button class="alertButton" @click="handleEditBarcodeNo">Save</button>
+      </div>
+    </template>
+  </Modal>
+
+  <ToastNotification
+      v-if="toast.message"
+      :message="toast.message"
+      :messageType="toast.type"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
-import {defineProps, watch, defineEmits, ref, onMounted, computed, onBeforeMount, reactive} from 'vue';
+import {defineProps, watch, defineEmits, ref, onMounted, computed, onBeforeMount, reactive, nextTick} from 'vue';
 import {getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import {DIR_NAME} from "@/common/defines/constants/settings";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import Modal from "@/components/commonUi/modal.vue";
+import {barcodeNoUpdateMutation, gqlGenericUpdate, memoUpdateMutation} from "@/gql/mutation/slideData";
+import {MESSAGES, MSG_GENERAL, TOAST} from "@/common/defines/constants/constantMessageText";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const props = defineProps(['testType', 'barcodeNo', 'cbcPatientNo', 'patientName', 'hospitalName', 'cbcPatientName', 'cbcSex', 'cbcAge', 'analyzedDttm', 'slideData']);
 const emits = defineEmits();
 const store = useStore();
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slideData = computed(() => store.state.slideDataModule);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const projectBm = ref(false);
 const tooltipVisible = reactive({
   slideStatus: false,
 })
 const slideStatus = ref('');
 const slideStatusDesc = ref('');
-watch(() => props.slideData, (newSlideData) => {
-  if (!newSlideData.cbcPatientNm || newSlideData.cbcPatientNm === '' || newSlideData.cbcPatientNm !== newSlideData.patientNm) {
-    emits('updateSlideDataByCBCData', newSlideData);
-  }
+const isModalOpen = ref(false);
+const barcodeInput = ref(null);
+const localBarcodeNo = ref('');
+const toast = ref({
+  message: '',
+  type: MESSAGES.TOAST_MSG_SUCCESS,
 })
+
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
+
 onMounted(async () => {
   const path = pbiaRootDir.value;
-  const folderPath = !projectBm.value ? '01_WBC_Classification' : '04_BM_Classification';
+  const folderPath = !projectBm.value ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
   const url_new = `${path}/${slideData.value.slotId}/${folderPath}/Slide_Condition.json`;
   const response_new = await readJsonFile({fullPath: url_new});
   slideStatus.value = response_new?.data?.condition;
   slideStatusDesc.value = response_new?.data?.description;
+  localBarcodeNo.value = props.barcodeNo;
 })
+
+watch(() => props.slideData, (newSlideData) => {
+  localBarcodeNo.value = newSlideData.barcodeNo;
+  if (!newSlideData.cbcPatientNm || newSlideData.cbcPatientNm === '' || newSlideData.cbcPatientNm !== newSlideData.patientNm) {
+    emits('updateSlideDataByCBCData', newSlideData);
+  }
+});
+
 const tooltipVisibleFunc = (type: 'slideStatus', visible: boolean) => {
   tooltipVisible[type] = visible;
 }
+
+
+const handleModal = async () => {
+  isModalOpen.value = true;
+  await nextTick();
+  if (barcodeInput.value) {
+    barcodeInput.value.focus();
+  }
+
+}
+
+const closeLayer = (val: boolean) => {
+  if (!val) {
+    localBarcodeNo.value = props.barcodeNo;
+  }
+  isModalOpen.value = val;
+  localBarcodeNo.value
+};
+
+const handleEditBarcodeNo = async () => {
+  await nextTick();
+  try {
+    const updatedRuningInfo = { ...slideData.value, barcodeNo: localBarcodeNo.value };
+    const res = await gqlGenericUpdate(barcodeNoUpdateMutation, {
+      id: slideData.value.id,
+      barcodeNo: localBarcodeNo.value,
+    });
+
+    if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
+      toast.value.message = MESSAGES.TOAST_MSG_SUCCESS;
+      showToast(MSG_GENERAL.SUCCESS);
+    }
+    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+  } catch (error) {
+    toast.value.message = MESSAGES.TOAST_MSG_ERROR;
+    showToast(TOAST.ERROR_BARCODE_UPDATE);
+    console.error(error);
+  }
+  isModalOpen.value = false;
+}
+
+const showToast = (message: string) => {
+  toast.value.message = message;
+  setTimeout(() => {
+    toast.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
+  }, 1500); // 5초 후 토스트 메시지 사라짐
+};
 
 </script>

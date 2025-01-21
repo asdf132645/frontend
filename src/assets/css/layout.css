@@ -1,3 +1,12 @@
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #ffffff;
+    width: 100%;
+}
+
 .v-enter-active,
 .v-leave-active {
     transition: opacity 0.2s ease;
@@ -42,6 +51,10 @@
 
 .mt40 {
     margin-top: 40px;
+}
+
+.mb4 {
+    margin-bottom: 4px;
 }
 
 .mb08 {
@@ -748,7 +761,7 @@ li.errLogLi.critical:before {
 .errLogDiv {
     position: absolute;
     background: #252525;
-    z-index: 11;
+    z-index: 12;
     color: #ffffff;
     text-align: left;
     height: 60vh;
@@ -1897,7 +1910,8 @@ ul.slideContent .outClassDefault {
 }
 
 .orderListTableContainer {
-    height: 45.1vh;
+    /*height: 45.1vh;*/
+    height: 47vh;
 }
 
 .orderListTable {
@@ -2575,6 +2589,15 @@ ul.wbcImgWrap > li {
     outline: solid var(--green-bg-1-color) !important;
 }
 
+.detailHeader-barcodeEdit-font {
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.detailHeader-barcodeEdit-font:hover {
+    transform: scale(1.1);
+}
+
 .context-menu.detail {
     /*height: 250px;*/
     /*overflow-y: auto;*/
@@ -2933,7 +2956,7 @@ ul.wbcInfoFilter {
     flex-direction: column;
     align-items: flex-start;
     position: absolute;
-    left: 400px;
+    left: 1300px;
     top: 250px;
     z-index: 10;
     gap: 4px;
@@ -2946,18 +2969,25 @@ ul.wbcInfoFilter {
     z-index: 100;
 }
 
-.wbcModalImageContent-slideImg-x-text {
+.wbcModalImageContent-slideImg-textBox {
     position: absolute;
+    width: 90px;
+    height: 40px;
+    right: 0;
+}
+
+.wbcModalImageContent-slideImg-x-text {
+    position: relative;
     top: 20px;
     color: gray;
-    right: 10px;
+    text-align: left;
 }
 
 .wbcModalImageContent-slideImg-y-text {
-    position: absolute;
-    top: 40px;
+    position: relative;
+    top: 22px;
     color: gray;
-    right: 10px;
+    text-align: left;
 }
 
 .wbcModalImageContent-slideImg > img {
@@ -3749,7 +3779,7 @@ li.slideStatus {
 /* setting/analysis/database */
 .tab-content {
     width: 700px;
-    margin: 30px auto;
+    margin: 30px auto 0;
 }
 
 .tab-content.crc {
@@ -4510,6 +4540,17 @@ p.adminText {
     padding-bottom: 5px;
     text-align: left;
     color: #29c7ca;
+}
+
+.remarkChange-font {
+    background-color: inherit;
+    color: white;
+    cursor: pointer;
+    transform: rotate(180deg);
+}
+
+.remarkChange-font:hover {
+    transform: scale(1.1) rotate(180deg);
 }
 
 button.reSelect {
@@ -5739,6 +5780,18 @@ progress::-moz-progress-bar {
     padding-top: 10px;
 }
 
+.classInfo-barcode-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    height: 209.5px;
+}
+
+.classInfo-barcode-container > img {
+    height: 200px;
+}
+
 /* 선 */
 .lineGuasge {
     flex: 1;
@@ -6058,8 +6111,8 @@ button.gbArrowButton.left {
     position: absolute;
     left: 20px;
     width: 660px;
-    height: 220px;
-    border: 1px dotted white;
+    height: 232px;
+    border: 1px solid white;
     z-index: 0;
     pointer-events: none;
 }

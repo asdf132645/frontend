@@ -141,7 +141,7 @@ const getDeviceInfoFromTxt = async () => {
       await createDeviceInfoApi({ deviceItem: deviceInfoObj });
       sessionStorage.setItem('autoStart', 'true');
     } else {
-      sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart);
+      sessionStorage.setItem('autoStart', deviceData.data[0]?.autoStart ?? 'false');
       await putDeviceInfoApi({ siteCd: siteCd, deviceSerialNm: deviceBarcode });
     }
 

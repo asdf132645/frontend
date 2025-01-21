@@ -36,11 +36,11 @@ export interface UpdateLisCodeRbcDto {
 //cbc
 
 export interface CreateCbcCodeRbcDto {
-    cbcCodeItems: cbcCodeItem[];
+    cbcCodeItems: CbcCodeItem[];
 }
 
 
-export interface cbcCodeItem {
+export interface CbcCodeItem {
     cd: string;
     classCd: string;
     fullNm: string;
@@ -48,5 +48,5 @@ export interface cbcCodeItem {
 }
 
 export interface UpdateCbcCodeRbcDto {
-    cbcCodeItems: cbcCodeItem[];
+    cbcCodeItems: CbcCodeItem[];
 }

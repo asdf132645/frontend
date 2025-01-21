@@ -15,12 +15,23 @@
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox pos-relative' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
-                @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
-                :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
-                :notCanvasClickVal="notCanvasClickVal"
-                @submitStateChanged="submitStateChanged"
-      />
+      <template v-if="siteCd === '9090'">
+        <RbcClassNew :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
+                  @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
+                  :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
+                  :notCanvasClickVal="notCanvasClickVal"
+                  @submitStateChanged="submitStateChanged"
+        />
+      </template>
+      <template v-else>
+        <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
+                  @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
+                  :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
+                  :notCanvasClickVal="notCanvasClickVal"
+                  @submitStateChanged="submitStateChanged"
+        />
+      </template>
+
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
@@ -49,6 +60,7 @@ import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import RbcClassNew from "@/views/datebase/commponent/detail/rbc/rbcClassNew.vue";
 
 const selectItems = ref<any>({});
 const store = useStore();
@@ -57,6 +69,7 @@ const classInfoArr = ref<any>([]);
 const allCheckClear = ref<boolean>(false);
 const isBefore = ref(false);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const isLoading = ref(false);
 const allUnCheck = ref(false);
 const notCanvasClickVal = ref(false);

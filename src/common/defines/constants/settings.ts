@@ -807,6 +807,7 @@ export const DIR_NAME = {
     RBC_IMAGE: '02_RBC_Image',
     BARCODE: '00_Barcode_Image',
     WBC_CLASS: '01_WBC_Classification',
+    BM_CLASS: '04_BM_Classification',
     BF: '02_LowPower_Image',
     BF_HIGH: '03_HighPower_Image',
     BF_CLASS: '05_BF_Classification',

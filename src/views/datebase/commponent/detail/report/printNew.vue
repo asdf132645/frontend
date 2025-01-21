@@ -183,13 +183,13 @@
 
             <th style="text-align: left; padding-top: 30px; font-weight: bold;" v-if="projectType !== 'bm'">non-Wbc</th>
 
-              <template v-for="item in filteredWbcInfo(wbcInfo, 'nonWbc')" :key="item.id">
-                <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
-                  <td style="text-align: left; padding: 5px 0; width: 30%;">{{ item.name }}</td>
-                  <td style="text-align: left; padding: 5px 0; width: 45%;">{{ item.count }}</td>
-                  <td style="text-align: left; padding: 5px 0; width: 25%;">-</td>
-                </tr>
-              </template>
+            <template v-for="item in filteredWbcInfo(wbcInfo, 'nonWbc')" :key="item.id">
+              <tr style="padding-top: 5px; padding-bottom: 15px;" v-if="projectType !== 'bm'">
+                <td style="text-align: left; padding: 5px 0; width: 30%;">{{ item.name }}</td>
+                <td style="text-align: left; padding: 5px 0; width: 45%;">{{ item.count }}</td>
+                <td style="text-align: left; padding: 5px 0; width: 25%;">-</td>
+              </tr>
+            </template>
             <tr style="padding-bottom: 5px;">
               <th style="text-align: left; padding: 15px 0;">Comment</th>
               <td v-show="selectItems?.wbcMemo" colspan="2" style="text-align: left; padding: 5px 0;">
@@ -256,7 +256,8 @@ import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
 
 const projectType = window.PROJECT_TYPE;
 const store = useStore();
-const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
+const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
 
 const printContent = ref(null);
 const wbcInfo = ref([]);

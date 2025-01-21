@@ -1,7 +1,7 @@
 import {getFolders} from "@/common/api/service/fileSys/fileSysApi";
 import {readFileEUCKR, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {getCbcPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {sdCbcAutoMatiching} from "@/common/defines/constants/autoResultCodeMatching";
+import {sdCbcAutoMatching} from "@/common/defines/constants/autoResultCodeMatching";
 
 interface CBCDataItem {
     classNm: string;
@@ -58,7 +58,7 @@ export const parseDateString = (dateString: any) => {
 }
 
 export function isAutoCBCMatching(cbcData: CBCDataItem[], cbcSex: string, cbcAge: string): any {
-    return sdCbcAutoMatiching(cbcData, cbcSex, cbcAge);
+    return sdCbcAutoMatching(cbcData, cbcSex, cbcAge);
 }
 
 export function isAdultNormalCBC(cbcData: CBCDataItem[], wbcInfoAfter: WBCInfoAfter[], rbcInfoAfter: any, cbcSex: string, cbcAge: string): any {

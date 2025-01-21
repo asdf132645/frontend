@@ -22,7 +22,7 @@
         <tr v-if="viewerCheck !== 'viewer'">
           <th>Preset</th>
           <td class="flex-align-center">
-            <select v-if="!editingItem || editingItem.id !== cellInfo.id" @change="handleChangePreset">
+            <select v-if="!editingItem || editingItem.id !== cellInfo.id" @change="handleChangePreset" v-model="cellInfo.id">
               <option
                   v-for="cellItem in allCellInfo.clientData"
                   :key="cellItem.id"
@@ -34,16 +34,17 @@
                 type="text"
                 style="width: 120px;"
                 v-model="editingItem.name"
-                @keydown.enter="changePresetName(cellInfo.id)"
+                @keydown.enter="changePresetName(Number(cellInfo.id))"
                 @keydown.esc="cancelEdit"
             />
             <div class="flex-align-center gap4 ml10">
               <button v-if="allCellInfo.clientData.length < 3" class="add-preset-btn" @click="handleCreatePreset">+</button>
               <font-awesome-icon @click="handleEditPresetName" class="hoverSizeAction cursorPointer" :icon="['fas', 'pen-to-square']" />
-              <font-awesome-icon v-if="allCellInfo.clientData.length > 1" @click="handleDeletePreset(cellInfo.id)" class="hoverSizeAction cursorPointer" :icon="['fas', 'trash']"/>
+              <font-awesome-icon v-if="allCellInfo.clientData.length > 1" @click="handleDeletePreset" class="hoverSizeAction cursorPointer" :icon="['fas', 'trash']"/>
             </div>
           </td>
         </tr>
+        <br />
 
         <tr v-if="viewerCheck !== 'viewer'">
           <th>Analysis Type</th>
@@ -359,7 +360,7 @@
         <!--      </tr>-->
         </tbody>
       </table>
-      <button class="saveBtn mb20" type="button" @click='cellImgSet()'>Save</button>
+      <button class="saveBtn" type="button" @click='cellImgSet()'>Save</button>
     </div>
   </div>
 
@@ -1211,9 +1212,9 @@ const handleCreatePreset = async () => {
     presetChecked: false,
     presetNm: 'preset name',
   };
-
-
   allCellInfo.value.clientData.push(defaultCellImgData);
+
+  handleChangeCellId(nextCellId);
 }
 
 const handleDeletePreset = async () => {
@@ -1243,15 +1244,16 @@ const deleteCellImg = async () => {
 
 const handleEditPresetName = async () => {
   editingItem.value = { id: cellInfo.value.id, name: cellInfo.value.presetNm };
-  if (curEditCellIndex.value === cellInfo.value.id) {
+  if (String(curEditCellIndex.value) === String(cellInfo.value.id)) {
     curEditCellIndex.value = undefined;
   }
-  curEditCellIndex.value = cellInfo.value.id;
+  curEditCellIndex.value = Number(cellInfo.value.id);
 }
 
-const handleChangePreset = (event: MouseEvent) => {
-  const currentCellId = event.target.value;
-  handleChangeCellId(currentCellId);
+const handleChangePreset = (event: Event) => {
+  const target = event.target as HTMLSelectElement;
+  const currentCellId = target.value;
+  handleChangeCellId(Number(currentCellId));
 }
 
 const cancelEdit = () => {

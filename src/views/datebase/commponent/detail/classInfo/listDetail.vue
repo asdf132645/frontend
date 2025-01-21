@@ -1,6 +1,6 @@
 <template>
   <div v-show="moveImgIsBool" class="moveImgIsBool"> Moving image...</div>
-<!--  <div v-show="moveImgIsBool" class="moveImgIsBool"> Loading...</div>-->
+  <!--  <div v-show="moveImgIsBool" class="moveImgIsBool"> Loading...</div>-->
   <ClassInfoMenu @refreshClass="refreshClass" :isNext="isNext" @isNextFalse="isNextFalse"
                  :changeSlideByLisUpload="changeSlideByLisUpload"/>
 
@@ -202,12 +202,19 @@
       <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
         <div class="wbc-modal-content" @click="outerClickCloseModal">
           <div
-              v-if="!isObjectEmpty(wpsJsonData)"
+              v-if="!isObjectEmpty(wpsJsonData) && siteCd === '9090'"
               class="wbcModalImageContent-slideImg"
           >
-            <p class="wbcModalImageContent-slideImg-x-text">X: {{ Math.round((Number(wpsJsonData[0].x1) + (xyResolution.X * wbcXYPos.posX)) * 10000) / 10000 }}</p>
-            <p class="wbcModalImageContent-slideImg-y-text">Y: {{ Math.round((Number(wpsJsonData[0].y1) + (xyResolution.Y * wbcXYPos.posY)) * 10000) / 10000 }}</p>
-            <img :src="slidePositionImg" ref="imageRef" />
+
+            <div class="wbcModalImageContent-slideImg-textBox">
+              <p class="wbcModalImageContent-slideImg-x-text">X:
+                {{ calculatedX }} mm</p>
+              <p class="wbcModalImageContent-slideImg-y-text">Y:
+                {{ calculatedY }} mm</p>
+            </div>
+
+            <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
+            <canvas  ref="canvasRef"></canvas>
           </div>
           <span class="wbcClose" @click="closeModal">&times;</span>
           <div class="wbcModalImageContent">
@@ -287,12 +294,12 @@ import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
 import {
   gqlGenericUpdate,
   isAllClassCheckedUpdateMutation,
-  rbcUpdateMutation,
   useUpdateRunningInfoMutation
 } from "@/gql/mutation/slideData";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import slidePositionImg from "@/assets/images/slide_pos.png";
+import slidePositionImg from "@/assets/images/slide.jpg";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 import {apiUrl} from "@/common/api/apiUrl";
 
 const selectedTitle = ref('');
@@ -377,13 +384,15 @@ const xyResolution = ref({
   X: 0.000573,
   Y: 0.000560,
 })
-const { imageRefs  } = useImageRefs();
+const {imageRefs} = useImageRefs();
 const wpsJsonData = ref<any>([]);
 const wbcXYPos = ref({
   posX: '0',
   posY: '0',
 })
-const imageRef = ref(null);
+const imageRef = ref<HTMLImageElement | null>(null);
+const canvasRef = ref<HTMLCanvasElement | null>(null);
+
 
 onBeforeMount(async () => {
   isLoading.value = false;
@@ -464,6 +473,7 @@ watch(() => moveImgIsBool.value, (currentMoveImgIsBool) => {
     enableScroll();
   }
 })
+
 
 const borderDel = () => {
   blockClicks.value = true;
@@ -880,7 +890,6 @@ const zoomOut = () => {
 
 };
 
-
 watch(userModuleDataGet.value, (newUserId, oldUserId) => {
   userId.value = newUserId.id;
 });
@@ -911,7 +920,87 @@ const refreshClass = async (data: any) => {
     isWpsBtnShow.value = false;
   }
 }
+const calculatedX = computed(() => {
+  const x1 = Number(wpsJsonData.value[0]?.x1 || 0);
+  return Math.round(x1 + xyResolution.value.X * Number(wbcXYPos.value.posX));
+});
 
+const calculatedY = computed(() => {
+  const y1 = Number(wpsJsonData.value[0]?.y1 || 0);
+  return Math.round(y1 + xyResolution.value.Y * Number(wbcXYPos.value.posY));
+});
+
+const drawCanvas = () => {
+  const canvas = canvasRef.value;
+  const img = imageRef.value;
+
+  if (canvas && img) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Set canvas size to match image
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    // Draw the image onto the canvas
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+
+    // Draw dashed lines
+    ctx.setLineDash([5, 5]); // Dash pattern: 5px dash, 5px gap
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(calculatedX.value, 0); // Vertical line
+    ctx.lineTo(calculatedX.value, canvas.height - 209); // Stop at 209px from bottom
+    ctx.moveTo(0, calculatedY.value); // Horizontal line
+    ctx.lineTo(canvas.width, calculatedY.value);
+    ctx.stroke();
+
+    // Draw red circle at the intersection
+    ctx.setLineDash([]); // Reset dash
+    ctx.beginPath();
+    ctx.arc(calculatedX.value, calculatedY.value, 5, 0, 2 * Math.PI); // Circle radius: 5
+    ctx.fillStyle = "red";
+    ctx.fill();
+
+    // Add HTML divs for X and Y values
+    const canvasContainer: any = canvas.parentElement;
+
+    // Remove any existing indicators
+    const oldIndicators = canvasContainer.querySelectorAll(".indicator");
+    oldIndicators.forEach((el) => el.remove());
+
+    // Create X indicator
+    const xIndicator = document.createElement("div");
+    xIndicator.className = "indicator x-indicator";
+    xIndicator.style.position = "absolute";
+    xIndicator.style.left = `${canvas.offsetLeft + calculatedX.value}px`;
+    xIndicator.style.top = `${canvas.offsetTop - 20}px`; // Slightly above the canvas
+    xIndicator.style.color = "black";
+    xIndicator.style.fontSize = "14px";
+    xIndicator.textContent = `X: ${calculatedX.value}`;
+    canvasContainer.appendChild(xIndicator);
+
+    // Create Y indicator
+    const yIndicator = document.createElement("div");
+    yIndicator.className = "indicator y-indicator";
+    yIndicator.style.position = "absolute";
+    yIndicator.style.left = `${canvas.offsetLeft - 50}px`; // Slightly to the left of the canvas
+    yIndicator.style.top = `${canvas.offsetTop + calculatedY.value}px`;
+    yIndicator.style.color = "black";
+    yIndicator.style.fontSize = "14px";
+    yIndicator.textContent = `Y: ${calculatedY.value}`;
+    canvasContainer.appendChild(yIndicator);
+  }
+};
+
+
+
+
+
+
+
+// Re-draw canvas when dependencies change
+watch([calculatedX, calculatedY], drawCanvas);
 const drawCellMarker = async (imgResize?: boolean) => {
   if (!imgResize) {
     cellMarkerIcon.value = !cellMarkerIcon.value
@@ -1391,10 +1480,12 @@ const isLowMagnWhether = async (image: any) => {
   }
 }
 
-const getImageXYPosition = (image) => {
+
+const getImageXYPosition = async (image: any) => {
   const extracted = image.fileName.split('_').slice(2).join('_');
   const foundData = wpsJsonData.value.find((item: any) => item?.FILE_NM && item.FILE_NM === extracted);
-  if (foundData) {}
+  if (foundData) {
+  }
   wbcXYPos.value.posX = foundData.POSX1;
   wbcXYPos.value.posY = foundData.POSY1;
 }
@@ -1404,7 +1495,7 @@ const getWPSData = async () => {
       ? selectItems.value?.img_drive_root_path
       : iaRootPath.value;
   const url_new = `${path}/${selectItems.value.slotId}/04_WPS/WPS.json`;
-  const response_new = await readJsonFile({ fullPath: url_new });
+  const response_new = await readJsonFile({fullPath: url_new});
   if (response_new.data) {
     wpsJsonData.value = response_new.data;
   } else {
@@ -1981,9 +2072,9 @@ const handleMoveImages = async () => {
 };
 const projectTypeReturn = (type: string): any => {
   if (type === 'bm') {
-    return '04_BM_Classification';
+    return DIR_NAME.BM_CLASS;
   } else if (type === 'pb') {
-    return '01_WBC_Classification';
+    return DIR_NAME.WBC_CLASS;
   }
 }
 
