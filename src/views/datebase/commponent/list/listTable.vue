@@ -526,7 +526,7 @@ const getIpAddress = async (item) => {
     const req = `oldPcIp=${ipAddress}&newEntityId=${item.id}&newPcIp=${ipAddress}&dayQuery=${dayQuery}`
 
     await updatePcIpStateApi(req).then(response => {
-      delayedEmit('SEND_DATA', 'refreshDb', 300);
+      delayedEmit('SEND_DATA', 'refreshDb', 100);
     }).catch(error => {
       console.error(error)
     });

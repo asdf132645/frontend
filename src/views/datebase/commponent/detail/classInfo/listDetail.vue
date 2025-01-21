@@ -202,7 +202,7 @@
       <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
         <div class="wbc-modal-content" @click="outerClickCloseModal">
           <div
-              v-if="!isObjectEmpty(wpsJsonData)"
+              v-if="!isObjectEmpty(wpsJsonData) && siteCd === '9090'"
               class="wbcModalImageContent-slideImg"
           >
 

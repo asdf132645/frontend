@@ -401,7 +401,6 @@ const fileData = async (firstCbcDatafilename: string) => {
     await fileSysCopy(fileParams);
     await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
-    console.log(msg?.data?.segments)
     getCBCWorkListFromFileData(msg);
 
     loading.value = false;  // 로딩 상태 종료
