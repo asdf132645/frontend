@@ -32,7 +32,7 @@ export const sdCbcAutoMatching = (data: any, sex: any, age: any) => {
             returnArr.push({code: "NNA, Eosinophilia"});
         }
         if (WBC >= 10.1) {
-            if (PLT <= 451) {
+            if (PLT >= 451) {
                 returnArr.push({code: "NNA, WBC(H), PLT(H)"});
             } else {
                 returnArr.push({code: "NNA, WBC(H)"});
@@ -48,26 +48,26 @@ export const sdCbcAutoMatching = (data: any, sex: any, age: any) => {
         }
     }else {
         // WBC(L)
-        if (WBC < 3.9) {
+        if (WBC <= 3.9) {
             returnArr.push({code: "WBC(L)"});
         }
 
         // WBC(L), PLT(L)
-        if (WBC < 3.9 && PLT < 149) {
+        if (WBC <= 3.9 && PLT <= 149) {
             returnArr.push({code: "WBC(L), PLT(L)"});
         }
 
         // PLT(L)
-        if (PLT < 149) {
+        if (PLT <= 149) {
             returnArr.push({code: "PLT(L)"});
         }
 
         // PLT(H), mild
-        if (PLT > 451) {
+        if (PLT >= 451) {
             returnArr.push({code: "PLT(H), mild"});
         }
         if (WBC >= 10.1) {
-            if (PLT <= 451) {
+            if (PLT >= 451) {
                 returnArr.push({code: "WBC(H), PLT(H)"});
             } else {
                 returnArr.push({code: "WBC(H)"});
@@ -102,9 +102,9 @@ export const sdCbcAutoMatching = (data: any, sex: any, age: any) => {
 
     // Macrocytic anemia
     if (MCV >= 105.1) {
-        if (WBC > 10.1) {
+        if (WBC >= 10.1) {
             returnArr.push({code: "M.A, WBC(H)"});
-        } else if (PLT < 149) {
+        } else if (PLT <= 149) {
             returnArr.push({code: "M.A, PLT(L)"});
         } else {
             returnArr.push({code: "Macrocytic anemia"});
@@ -119,39 +119,39 @@ export const sdCbcAutoMatching = (data: any, sex: any, age: any) => {
     }
 
     // Neutrophilia
-    if (WBC > 10.1 && NEUTRO > 8.51) {
+    if (WBC >= 10.1 && NEUTRO >= 8.51) {
         returnArr.push({code: "Neutrophilia"});
     }
 
     // Lymphocytosis
-    if ((Number(age) > 12 && LYMPHO > 4.01) || (Number(age) <= 12 && LYMPHO > 9.01)) {
+    if ((Number(age) > 12 && LYMPHO >= 4.01) || (Number(age) <= 12 && LYMPHO >= 9.01)) {
         returnArr.push({code: "Lymphocytosis"});
     }
 
     // Lymphocytopenia
-    if (LYMPHO < 1.49) {
+    if (LYMPHO <= 1.49) {
         returnArr.push({code: "Lymphocytopenia"});
     }
 
     // Eosinophilia
-    if (EOSINO > 0.51) {
+    if (EOSINO >= 0.51) {
         returnArr.push({code: "Eosinophilia"});
     }
 
     // Monocytosis
-    if (MONO > 1.1) {
+    if (MONO >= 1.1) {
         returnArr.push({code: "Monocytosis"});
     }
 
     // Pancytopenia
     if ((sex === 'F' && Hb <= 10.9) || (sex === 'M' && Hb <= 12.4)) {
-        if (WBC < 3.9 && PLT < 149) {
+        if (WBC <= 3.9 && PLT <= 149) {
             returnArr.push({code: "Pancytopenia, mild"});
         }
     }
 
     // Chronic inflammation
-    if (WBC > 10.1) {
+    if (WBC >= 10.1) {
         returnArr.push({code: "Chronic inflammation"});
     }
 
