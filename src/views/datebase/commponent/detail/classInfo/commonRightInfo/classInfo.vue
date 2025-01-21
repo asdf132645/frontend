@@ -1,7 +1,10 @@
 <template>
-  <img class="mt10" v-if="type !== 'report' && !barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
-  <div class="mt10" v-else-if="type !== 'report' && barCodeImageShowError" style="height: 209.5px;"></div>
-  <div class="mt10" v-else-if="type !== 'report'" style="height: 209.5px;"></div>
+  <div class="classInfo-barcode-container" v-if="type !== 'report'">
+    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+    <p v-else>Barcode Image is missing</p>
+  </div>
+
+
   <div class="mt10 mb10 flex-justify-between">
     <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
 
@@ -518,8 +521,8 @@ const uploadLis = async () => {
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
-      await uimdTestCbcLisDataGet();
-      // lisLastStep();
+      // await uimdTestCbcLisDataGet();
+      lisLastStep();
       break;
   }
 }
@@ -947,7 +950,8 @@ const otherDataSend = async () => {
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
         }
-      } else { // url
+      }
+      else { // url
         await sendLisMessage(res);
       }
     }

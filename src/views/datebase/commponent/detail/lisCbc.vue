@@ -401,7 +401,6 @@ const fileData = async (firstCbcDatafilename: string) => {
     await fileSysCopy(fileParams);
     await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
-    console.log(msg?.data?.segments)
     getCBCWorkListFromFileData(msg);
 
     loading.value = false;  // 로딩 상태 종료
@@ -447,7 +446,6 @@ const getCBCWorkListFromFileData = (msg: any) => {
             if (absItem) {
               const absCount = absItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
               if (unit === '%') {
-                console.log(cbcCode.fullNm, count);
                 Object.assign(showObj, { absCount: absCount, percentCount: count });
               }
             }
