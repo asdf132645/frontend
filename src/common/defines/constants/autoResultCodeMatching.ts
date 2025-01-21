@@ -3,8 +3,8 @@ interface KcchCbcAutoMatchingProp {
         code: string;
         count: number;
     };
-    sex?: 'M' | 'F';
-    age?: number;
+    sex?: string;
+    age?: string;
 }
 
 export interface KcchCbcAutoMatchingReturn {
@@ -169,8 +169,8 @@ export const kcchCbcAutoMatching = ({ data, sex, age }: KcchCbcAutoMatchingProp)
         },
 
         'LH107': (count: number) => {
-            if (count < 33) return [{ moType: 'RBC', title: 'chromicity', content: 'Hypochromia' }];
-            if (count > 37) return [{ moType: 'RBC', title: 'chromicity', content: 'Hyperchromia' }];
+            if (count < 33) return [{ moType: 'RBC', title: 'chromicity', content: 'Hypochromic' }];
+            if (count > 37) return [{ moType: 'RBC', title: 'chromicity', content: 'Hyperchromic' }];
             return [];
         },
 
@@ -226,7 +226,7 @@ export const kcchCbcAutoMatching = ({ data, sex, age }: KcchCbcAutoMatchingProp)
             return [];
         },
 
-        'LH103': (count: number, sex?: 'M' | 'F', age?: number) => {
+        'LH103': (count: number, sex?: string, age?: number) => {
             const results: KcchCbcAutoMatchingReturn[] = [];
 
             if (sex === 'M') {
@@ -264,6 +264,6 @@ export const kcchCbcAutoMatching = ({ data, sex, age }: KcchCbcAutoMatchingProp)
     };
 
     const criteriaFn = CBC_CRITERIA[code as keyof typeof CBC_CRITERIA];
-    return criteriaFn(count, sex, age);
+    return criteriaFn(count, sex, Number(age));
 };
 

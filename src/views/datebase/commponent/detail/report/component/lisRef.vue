@@ -1,5 +1,5 @@
 <template>
-  <div ref="lisRefHTMLContent">
+  <div ref="lisRefHTMLContent" class="lisRef-container" style="position: absolute;">
     <div>
       <h2>[ PURPOSE OF PBS ]</h2>
       <p>{{ data?.code }}</p>
@@ -29,13 +29,13 @@
 
       <h2>[ SUMMARY OF FINDINGS ]</h2>
       <div v-for="crcItem of data?.crcRemark" :key="crcItem.id">
-        <p>{{ crcItem.remarkAllContent }}</p>
+        <p v-html="convertNewLinesToBr(crcItem.remarkAllContent)"></p>
       </div>
       <br>
 
       <h2>[ OPINION & RECOMMENDATION ]</h2>
-      <div v-for="(crcItem, index) of data?.crcRecommendation" :key="crcItem.id">
-        <p>{{ index + 1 }}. {{ crcItem.remarkAllContent }}</p>
+      <div v-for="crcItem of data?.crcRecommendation" :key="crcItem.id">
+        <p v-html="convertNewLinesToBr(crcItem.remarkAllContent)"></p>
       </div>
 
     </div>
@@ -43,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import { defineProps, nextTick, onMounted, ref } from "vue";
-import {generateCustomRTF, kcch_0033LisSend, kcch_0033RTFConvert} from "@/common/helpers/lisCbc/kcch_0033";
+import { kcch_0033LisSend, kcch_0033RTFConvert } from "@/common/helpers/lisCbc/kcch_0033";
 
 interface CRCContentType {
   crcContent: string;
@@ -70,7 +70,7 @@ interface CRCDataType {
 const data = ref<CRCDataType>();
 const lisRefHTMLContent = ref();
 const rtfContent = ref<any>();
-const props = defineProps(['nowCrcDataLis']);
+const props = defineProps(['nowCrcDataLis', 'selectItems']);
 
 onMounted(async () => {
   data.value = props.nowCrcDataLis;
@@ -90,7 +90,7 @@ const sendRtf = async () => {
   }
 
   try {
-    await kcch_0033LisSend(rtfContent.value);
+    await kcch_0033LisSend({ barcodeNo: props.selectItems.barcodeNo, rtfData: rtfContent.value });
   } catch (error) {
     console.error(error);
   }
@@ -105,6 +105,13 @@ const convertHTMLToRTF = async () => {
     console.error(error);
     rtfContent.value = null;
   }
+}
+
+const convertNewLinesToBr = (text: string) => {
+  if (text) {
+    return text.replaceAll('\n', '<br/>');
+  }
+  return '';
 }
 
 </script>
