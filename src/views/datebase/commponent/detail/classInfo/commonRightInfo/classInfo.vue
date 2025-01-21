@@ -521,7 +521,9 @@ const uploadLis = async () => {
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
-      // await uimdTestCbcLisDataGet();
+      await uimdTestCbcLisDataGet();
+      break;
+    default:
       lisLastStep();
       break;
   }
@@ -950,8 +952,7 @@ const otherDataSend = async () => {
         } catch (error: any) {
           showErrorAlert(error.response.data.message);
         }
-      }
-      else { // url
+      } else { // url
         await sendLisMessage(res);
       }
     }
