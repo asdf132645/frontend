@@ -6,11 +6,11 @@
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <RenewalWorking :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette"
+    <RenewalWorking v-if="siteCd === '9090'" :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette"
                     class="contentRightChild"/>
-<!--    <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"-->
-<!--                 v-else-->
-<!--                 class="contentRightChild"/>-->
+    <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
+                 v-else
+                 class="contentRightChild"/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen"
                        class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen"
