@@ -24,7 +24,7 @@ export const kcch_0033LisSend = async (nowCrcData: HTMLDivElement) => {
 export const kcch_0033RTFConvert = async (htmlData: HTMLElement) => {
     try {
         const requestHTMLData = htmlData.innerHTML;
-        const result = await htmlToRtfApi(requestHTMLData);
+        const result = await htmlToRtfApi({ htmlData: requestHTMLData });
         if (result?.success && result?.data) {
             return result.data;
         }
