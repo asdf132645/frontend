@@ -270,7 +270,7 @@ import {
   getWbcCustomClassApi,
   getWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
-import {deleteRunningApi, fileSysPost, getFolders} from "@/common/api/service/fileSys/fileSysApi";
+import {deleteDeleteFolderApi, fileSysPost, getFolders} from "@/common/api/service/fileSys/fileSysApi";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {
   basicBmClassList,
@@ -717,7 +717,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
             return;
           }
           const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item.customNum}_${item?.abbreviation}`;
-          deleteRunningApi({path: filePath})
+          deleteDeleteFolderApi({path: filePath})
         }
       });
     }
@@ -752,7 +752,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         const findDelData = sortArr.find((dataItems: any) => dataItems.id === item.id);
         if (!findDelData) {
           const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item}_${item?.title}`;
-          deleteRunningApi({path: filePath});
+          deleteDeleteFolderApi({path: filePath});
           itemsToDelete.push(item);
         }
       });

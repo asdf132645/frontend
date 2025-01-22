@@ -121,6 +121,7 @@ const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
 const currentSlotId = ref('');
 const runningInfoId = ref('');
+let intervalId: any;
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {

@@ -21,7 +21,7 @@ export const fileSysExistsFile = async (request: any): Promise<ApiResponse<any |
 export const fileSearchApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpGet(apiConstants.filesystem.fileSearch, `${request}`, true, window.LINUX_SERVER_SET );
 };
-export const deleteRunningApi = async (request: any): Promise<ApiResponse<void>> => {
+export const deleteDeleteFolderApi = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpDelete(apiConstants.filesystem.delete, request, false, window.LINUX_SERVER_SET );
 };
 
