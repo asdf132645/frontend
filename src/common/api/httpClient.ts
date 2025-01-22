@@ -66,6 +66,11 @@ export function useHttpClient() {
                 'Content-Type': 'text/plain',
             }
         }
+        if (contentType === 'application/rtf') {
+            options.headers = {
+                'Content-Type': 'application/rtf',
+            }
+        }
         if (formData) {
             options.headers = {
                 'Content-Type': 'multipart/form-data',

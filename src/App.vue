@@ -370,7 +370,7 @@ async function socketData(data: any) {
         if (res !== null) {
           const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
           if (res !== '') {
-            if (siteCd.value === '9090' && window.MACHINE_VERSION === '100a') {
+            if (siteCd.value === '9090') {
               const err = await errLogLoad();
               showCoreErrorAlert(err);
             } else {

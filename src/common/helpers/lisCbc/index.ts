@@ -169,12 +169,14 @@ export const cbcDataGet = async (barcodeNo: string, cbcCodeList: any) => {
             const sanitizedClassCd = classCd ? classCd.replace(/[^\w\s]/gi, '') : '';
 
             if (cbcSegment.name.trim() === 'OBX') {
-                const obj = {
-                    classNm: sanitizedClassCd,
-                    count: count,
-                    unit: unit
+                if (unit !== '%') {
+                    const obj = {
+                        classNm: sanitizedClassCd,
+                        count: count,
+                        unit: unit
+                    }
+                    cbcData.push(obj)
                 }
-                cbcData.push(obj)
             } else if (cbcSegment.name.trim() === 'PID') {
                 cbcSex = cbcSegment?.fields[6].value[0][0].value[0]
                 cbcAge = cbcSegment?.fields[7].value[0][0].value[0];

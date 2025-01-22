@@ -175,7 +175,7 @@
                   @selectWbcImgSend="selectWbcImgSend"
   />
   <teleport to="body">
-    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff"/>
+    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" />
   </teleport>
 </template>
 
@@ -211,7 +211,7 @@ import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.vue";
-import {changeMorphologyText, changeRemark} from "@/common/helpers/lisCbc/kcch_0033";
+import { changeRemark, kcch_0033GetCBCData } from "@/common/helpers/lisCbc/kcch_0033";
 import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
 
 const crcArr = ref<any>([]);
@@ -257,6 +257,7 @@ const lisHotKey = ref('');
 const lisFilePathSetArr = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const slideData = computed(() => store.state.slideDataModule);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 
 const submitState = ref(false);
 const morphologyMapping: any = ref({
@@ -374,23 +375,33 @@ onMounted(async () => {
 });
 
 watch(() => props.triggerChangeCRCMorphology, async () => {
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
+  const cbcFilePathSetArr = await getCbcPathData();
+  cbcCodeList.value = await getCbcCodeList();
 
-  changeMorphologyText();  // 원자력 병원 CRC 받아온 데이터
-  const data = {
-    code: 'LH101',
-    count: 200,
+  const cbcResult = await kcch_0033GetCBCData({
+    iaRootPath: path,
+    barcodeNo: props.selectItems?.barcodeNo,
+    slotId: props.selectItems?.slotId,
+    cbcFilePathSetArr,
+    cbcCodeList: cbcCodeList.value,
+  }); // 원자력 병원 CRC 받아온 데이터
+
+  if (cbcResult?.resultCBCCode) {
+    const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
+      return kcchCbcAutoMatching({ data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge });
+    }));
+
+    // flatten the array and map to CRC
+    mapResultToCrcArr(autoChangeCodes.flat(), crcArr.value);
   }
-  const sex = 'F';
-  const age = 1;
-  const result = kcchCbcAutoMatching({ data, sex, age });
-  mapResultToCrcArr(result, crcArr.value);
 })
 
 const mapResultToCrcArr = (result: KcchCbcAutoMatchingReturn[], crcArr: any) => {
   crcArr.forEach((crcItem) => {
     const matchingItem = result.find(
         (item) =>
-            item.moType === crcItem.morphologyType && item.title === crcItem.crcTitle
+            item.moType.toUpperCase() === crcItem.morphologyType.toUpperCase() && item.title.toUpperCase() === crcItem.crcTitle.toUpperCase()
     );
     if (matchingItem) {
       crcItem.val = matchingItem.content;
@@ -690,7 +701,6 @@ const lisStart = async () => {
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
       break;
     default:
-      kcchOnOff.value = true;
       nowCrcDataLis.value = nowCrcData;
       break;
   }

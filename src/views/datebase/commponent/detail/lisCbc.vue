@@ -446,7 +446,6 @@ const getCBCWorkListFromFileData = (msg: any) => {
             if (absItem) {
               const absCount = absItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
               if (unit === '%') {
-                console.log(cbcCode.fullNm, count);
                 Object.assign(showObj, { absCount: absCount, percentCount: count });
               }
             }

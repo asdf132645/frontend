@@ -18,14 +18,6 @@ export const apiConstants = {
             endpoint: 'sybase/cbcImgGet',
             requiresToken: false,
         },
-        rtfConvert: {
-            endpoint: 'rtf/convert',
-            requiresToken: false,
-        },
-        rtfSend: {
-            endpoint: 'oracle/send',
-            requiresToken: false,
-        }
     },
     auth: {
         refresh: {
