@@ -687,7 +687,7 @@ const lisStart = async () => {
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value));
+      await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value, props?.selectItems?.patientNm));
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
       await yamcSendLisUpdate(nowCrcData);

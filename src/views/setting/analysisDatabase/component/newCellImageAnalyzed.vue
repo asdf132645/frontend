@@ -577,7 +577,7 @@ const tooltipVisible = ref({
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
 const currentCellId = ref(0);
-const curEditCellIndex = ref(0);
+const curEditCellIndex = ref<undefined | number>(0);
 const allCellInfo = ref<{ serverData: CellImgAnalyzedResponse[], clientData: CellImgAnalyzedResponse[] }>({
   serverData: [],
   clientData: [],
@@ -604,8 +604,10 @@ const cellInfo = ref({
   keepPage: false,
   lisUploadCheckAll: false,
   backupPath: '',
-  backupStartDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
-  backupEndDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
+  // backupStartDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
+  // backupEndDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
+  backupStartDate: new Date(),
+  backupEndDate: new Date(),
   autoBackUpMonth: 'Not selected',
   presetChecked: false,
   presetNm: '1',
@@ -1243,11 +1245,15 @@ const deleteCellImg = async () => {
 }
 
 const handleEditPresetName = async () => {
-  editingItem.value = { id: cellInfo.value.id, name: cellInfo.value.presetNm };
-  if (String(curEditCellIndex.value) === String(cellInfo.value.id)) {
-    curEditCellIndex.value = undefined;
+  if (editingItem.value) {
+    changePresetName(Number(cellInfo.value.id));
+  } else {
+    editingItem.value = { id: cellInfo.value.id, name: cellInfo.value.presetNm };
+    if (String(curEditCellIndex.value) === String(cellInfo.value.id)) {
+      curEditCellIndex.value = undefined;
+    }
+    curEditCellIndex.value = Number(cellInfo.value.id);
   }
-  curEditCellIndex.value = Number(cellInfo.value.id);
 }
 
 const handleChangePreset = (event: Event) => {
