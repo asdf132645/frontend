@@ -196,15 +196,17 @@ const loginUser = async (event?: KeyboardEvent) => {
 const checkIsViewer = async () => {
   try {
     const result = await getDeviceIpApi();
-    if ((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data)))) {
-      isViewer.value = false;
-    } else {
-      isViewer.value = true;
-    }
+    const isLinuxServer = window.LINUX_SERVER_SET;
+    const deviceIp = result.data;
+    const serverIpList = isLinuxServer ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+
+    isViewer.value = !(deviceIp === '1' || (serverIpList && serverIpList.includes(deviceIp)));
+
   } catch (e) {
     console.error(e);
   }
 }
+
 
 const getIpAddress = async (userId: string) => {
   try {

@@ -2074,7 +2074,7 @@ const projectTypeReturn = (type: string): any => {
   if (type === 'bm') {
     return DIR_NAME.BM_CLASS;
   } else if (type === 'pb') {
-    return DIR_NAME.WBC_CLASS;
+    return '01_WBC_Classification';
   }
 }
 

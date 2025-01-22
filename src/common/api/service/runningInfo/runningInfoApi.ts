@@ -4,7 +4,7 @@ import { RuningInfoApiRequest } from "@/common/api/service/runningInfo/dto/runni
 const httpClient = useHttpClient();
 
 export const createRunningApi = async (request: { userId: number; runingInfoDtoItems: any }): Promise<ApiResponse<void>> => {
-    return httpClient.httpPost(apiConstants.settings.runningInfo.create, request);
+    return httpClient.httpPost(apiConstants.settings.runningInfo.create, request, '', false, false);
 };
 
 export const updateRunningApi = async (request: { userId: number; runingInfoDtoItems: any, dayQuery: any }): Promise<ApiResponse<void>> => {
@@ -21,29 +21,29 @@ export const getRunningApi = async (req: RuningInfoApiRequest): Promise<ApiRespo
         .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
         .join('&');
 
-    return httpClient.httpGet(apiConstants.settings.runningInfo.get,`${queryString}`, true);
+    return httpClient.httpGet(apiConstants.settings.runningInfo.get,`${queryString}`, true, false);
 };
 
 export const deleteRunningApi = async (req: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpDelete(apiConstants.settings.runningInfo.delete, req, true);
+    return httpClient.httpDelete(apiConstants.settings.runningInfo.delete, req, true, false);
 };
 
 export const detailRunningApi = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.detail, `${request}`, false);
+    return httpClient.httpGet(apiConstants.settings.runningInfo.detail, `${request}`, false, false);
 };
 
 export const pageUpDownRunnIngApi = async (req: any): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.pageUpDown, `${req}`, true)
+    return httpClient.httpGet(apiConstants.settings.runningInfo.pageUpDown, `${req}`, true, false)
 }
 
 export const updatePcIpStateApi = async (req: any): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.updatePcIpState, `${req}`, true);
+    return httpClient.httpGet(apiConstants.settings.runningInfo.updatePcIpState, `${req}`, true, false);
 }
 
 export const clearPcIpState = async (req: any): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.clearPcIpState, `${req}`, true)
+    return httpClient.httpGet(apiConstants.settings.runningInfo.clearPcIpState, `${req}`, true, false)
 }
 
 export const removePageAllDataApi = async (): Promise<ApiResponse<any>> => {
-    return httpClient.httpGet(apiConstants.settings.runningInfo.removePageAllData, ``, true)
+    return httpClient.httpGet(apiConstants.settings.runningInfo.removePageAllData, ``, true, false)
 }

@@ -196,6 +196,7 @@ import ErrLog from "@/components/commonUi/ErrLog.vue";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import moment from "moment/moment";
+import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -433,6 +434,9 @@ const handleOkConfirm = async () => {
   await logoutApi({userId: userId.value});
   if (clickType.value === 'exit') {
     if (viewerCheck.value === 'main') {
+      // if(){
+      //   await getBrowserExit();
+      // }
       await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
     } else {
       const result = await getDeviceIpApi();
