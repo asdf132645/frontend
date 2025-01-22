@@ -7,7 +7,7 @@
         <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">CBC Code</button>
         <button @click="selectTab('filePathSet')" :class="{ 'active': activeTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
         <button @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
-        <button @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto Result Link</button>
+        <button @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto CBC Link</button>
       </div>
     </div>
 

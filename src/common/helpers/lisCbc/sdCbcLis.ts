@@ -4,7 +4,7 @@ import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import axios from "axios";
 import {cbcFileNameExtract} from "@/common/helpers/lisCbc/index";
 
-export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathSetArr: string) => {
+export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathSetArr: string, patientNm: string) => {
     const fileNm = await cbcFileNameExtract(barcodeNo);
     const path = await getCbcPathData();
     const readFileTxtRes: any = await readFileEUCKR(`path=${path}&filename=${fileNm}`);
@@ -31,7 +31,7 @@ export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathS
         processingId: 'P',
         hl7VersionId: '2.5',
         customData: nowCrcData,
-        pidData: {patientId: patientId, patientName: patientName},
+        pidData: {patientId: patientNm !== '' && patientNm ? patientNm : patientId, patientName: patientName},
     };
     const res = await readCustomH7Message(data);
     if (res) {
