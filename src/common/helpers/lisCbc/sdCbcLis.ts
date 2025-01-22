@@ -31,7 +31,7 @@ export const lisSendSD = async (barcodeNo: string, nowCrcData: any, lisFilePathS
         processingId: 'P',
         hl7VersionId: '2.5',
         customData: nowCrcData,
-        pidData: {patientId: patientNm !== '' && patientNm ? patientNm : patientId, patientName: patientName},
+        pidData: {patientId: barcodeNo, patientName: patientNm !== '' && patientNm ? patientNm : patientName},
     };
     const res = await readCustomH7Message(data);
     if (res) {
