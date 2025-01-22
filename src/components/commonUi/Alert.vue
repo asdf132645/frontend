@@ -7,21 +7,16 @@
 
     <template v-if="typeof message === 'object'">
       <div class="flex-center">
-        <div class="errLogIco mb10">
-          <font-awesome-icon :icon="['fas', 'circle-exclamation']" v-if="message.type === 'WARN'" class="warn"/>
-          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" v-if="message.type === 'CRIT'" class="crit"/>
-          <font-awesome-icon :icon="['fas', 'circle-check']" v-if="message.type === 'NOTI'" class="noti"/>
-        </div>
         <div :class="['errLogTitle', message.type ? message.type.toLowerCase() : '']">
           <span>[{{ message?.code }}] </span>
           <span> {{ message?.name }} </span>
         </div>
       </div>
 
-      <div class="arrLogDesc" v-show="message?.desc !== ''">
+      <div class="arrLogDesc ml20 mb08" v-show="message?.desc !== ''">
         <span v-show="message?.soln !== ''">Description:</span> {{ message?.desc }}
       </div>
-      <div class="arrLogDesc" v-show="message?.soln !== ''">
+      <div class="arrLogDesc ml20" v-show="message?.soln !== ''">
         Solution: {{ message?.soln }}
       </div>
     </template>

@@ -3,23 +3,19 @@
     <div>
       <h2>[ PURPOSE OF PBS ]</h2>
       <p>{{ data?.code }}</p>
-
       <br>
 
       <h2>[ RED BLOOD CELLS ]</h2>
       <div v-for="crcItem of data?.crcContent?.rbc" :key="crcItem.id">
         <p>{{ crcItem.crcTitle }}: {{ crcItem.crcContent }}</p>
-        <p></p>
       </div>
-
       <br>
 
       <h2>[ WHITE BLOOD CELLS ]</h2>
       <div v-for="crcItem of data?.crcContent?.wbc" :key="crcItem.id">
         <p>{{ crcItem.crcTitle }}: {{ crcItem.crcContent }}</p>
-        <p></p>
       </div>
-      <br />
+      <br>
 
       <h2>[ PLATELETS ]</h2>
       <div v-for="crcItem of data?.crcContent?.plt" :key="crcItem.id">
@@ -37,7 +33,6 @@
       <div v-for="crcItem of data?.crcRecommendation" :key="crcItem.id">
         <p v-html="convertNewLinesToBr(crcItem.remarkAllContent)"></p>
       </div>
-
     </div>
   </div>
 </template>
@@ -100,6 +95,7 @@ const convertHTMLToRTF = async () => {
   await nextTick();
   try {
     const result = await kcch_0033RTFConvert(lisRefHTMLContent.value);
+    console.log(result);
     rtfContent.value = result;
   } catch (error) {
     console.error(error);
@@ -109,7 +105,7 @@ const convertHTMLToRTF = async () => {
 
 const convertNewLinesToBr = (text: string) => {
   if (text) {
-    return text.replaceAll('\n', '<br/>');
+    return text.replaceAll('\n', '<br>');
   }
   return '';
 }
