@@ -85,6 +85,10 @@
     margin-left: 10px;
 }
 
+.ml20 {
+    margin-left: 20px;
+}
+
 .mr12 {
     margin-right: 12px;
 }
@@ -853,6 +857,7 @@ span.errLogNum {
 .arrLogDesc {
     padding-bottom: 5px;
     font-size: 1rem;
+    text-align: left;
 }
 
 .contentLeft > div {

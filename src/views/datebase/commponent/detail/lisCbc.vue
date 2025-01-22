@@ -100,7 +100,7 @@
 import {xml2json} from 'xml-js';
 import {computed, defineProps, onMounted, ref, watch} from "vue";
 import axios from "axios";
-import {readFileEUCKR, readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
+import { readFileTxt, readH7File } from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {
@@ -115,6 +115,7 @@ import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {parseDateString} from "@/common/helpers/lisCbc";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
+import { sdCBC } from "@/common/helpers/lisCbc/sdCbcLis";
 
 const store = useStore();
 const props = defineProps(['selectItems']);
@@ -190,8 +191,7 @@ const cbcListOpen = async () => {
 const cbcDataChoice = async (item: string) => {
   datachoice.value = true;
   firstCbcDatafilename.value = `${item.split('.')[0]}`;
-  await crcCbcDataLoad();
-  await commonCbc(`${item.split('.')[0]}`);
+  await sdCbcLoad();
   await updateCbcData();
   cbcPopup.value = false;
 }
@@ -235,8 +235,7 @@ const initCbcData = async (newVal: any) => {
       await inhaCbcLoad(); // 병원 전산팀 url 사용
       break;
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-      await crcCbcDataLoad();
-      await commonCbc(firstCbcDatafilename.value);
+      await sdCbcLoad();
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
       await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
@@ -245,11 +244,10 @@ const initCbcData = async (newVal: any) => {
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
       // await uimdTestUrlSend();
       await crcCbcDataLoad();
-      await commonCbc(firstCbcDatafilename.value);
+      await commonCBC(firstCbcDatafilename.value);
       break;
-      // CBC 공통
     default:
-      await commonCbc(firstCbcDatafilename.value);
+      await commonCBC(firstCbcDatafilename.value);
       break;
   }
   await updateCbcData();
@@ -285,6 +283,44 @@ const cbcYwmcDataMatching = async () => {
   slip.value = slipVal;
 }
 
+const sdCbcLoad = async () => {
+  await crcCbcDataLoad();
+
+  if (cbcFilePathSetArr.value === '') {
+    showErrorAlert(MESSAGES.UPLOAD_PLEASE_CBC);
+    return;
+  }
+
+  const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
+
+  const {
+    loading: loadingVal,
+    cbcPatientNm: cbcPatientNmVal,
+    cbcSex: cbcSexVal,
+    cbcAge: cbcAgeVal,
+    cbcPatientNo: cbcPatientNoVal,
+    hosName: hosNameVal,
+    cbcWorkList: cbcWorkListVal,
+    cbcWorkListForShow: cbcWorkListForShowVal
+  } = await sdCBC({
+    iaRootPath: path,
+    cbcFilePathSetArr: cbcFilePathSetArr.value,
+    slotId: props.selectItems?.slotId,
+    barcodeNo: props.selectItems?.barcodeNo,
+    firstCbcDatafilename: firstCbcDatafilename.value,
+    cbcCodeList: cbcCodeList.value,
+  });
+
+  cbcWorkList.value = cbcWorkListVal;
+  cbcWorkListForShow.value = cbcWorkListForShowVal;
+  cbcPatientNo.value = cbcPatientNoVal;
+  cbcPatientNm.value = cbcPatientNmVal;
+  cbcSex.value = cbcSexVal;
+  cbcAge.value = cbcAgeVal;
+  hosName.value = hosNameVal;
+  loading.value = loadingVal;
+}
+
 const inhaCbcLoad = async () => {
   const {
     cbcWorkList: cbcWorkListVal,
@@ -306,12 +342,12 @@ const inhaCbcLoad = async () => {
   loading.value = loadingVal;
 }
 
-
-const commonCbc = async (firstCbcDatafilename: string) => {
+const commonCBC = async (firstCbcDatafilename: string) => {
   if (cbcFilePathSetArr.value === '') {
     showErrorAlert(MESSAGES.UPLOAD_PLEASE_CBC);
     return;
   }
+
   if (cbcFilePathSetArr.value.includes("http")) { // url
     const params = {
       url: cbcFilePathSetArr.value,
@@ -352,9 +388,11 @@ const commonCbc = async (firstCbcDatafilename: string) => {
       console.error(err.message)
       loading.value = false;
     })
-  } else { // 파일
-    await fileData(firstCbcDatafilename);
   }
+  else { // 파일
+    await commonFileData(firstCbcDatafilename);
+  }
+
   const parms = {
     filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
     data: cbcWorkList.value,
@@ -362,7 +400,7 @@ const commonCbc = async (firstCbcDatafilename: string) => {
   await createCbcFile(parms);
 }
 
-const fileData = async (firstCbcDatafilename: string) => {
+const commonFileData = async (firstCbcDatafilename: string) => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : pbiaRootDir.value;
 
   const fileSysExistsFileParms = {
@@ -387,7 +425,7 @@ const fileData = async (firstCbcDatafilename: string) => {
     fileListName = firstCbcDatafilename;
     filePath = cbcFilePathSetArr.value
   }
-  const readFileTxtRes: any = await readFileEUCKR(`path=${filePath}&filename=${fileListName}`);
+  const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${fileListName}`);
 
   if (readFileTxtRes.data.success) {
     const fileParams = {
@@ -412,138 +450,52 @@ const fileData = async (firstCbcDatafilename: string) => {
 
 const getCBCWorkListFromFileData = (msg: any) => {
   cbcWorkList.value = [];
-  cbcWorkListForShow.value = [];
-  const onlyObx = msg?.data.segments.filter((item: any) => item.name.trim() === 'OBX');
 
-  switch (siteCd.value) {
-    case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
-      msg?.data?.segments?.forEach((cbcSegment: any) => {
-        const segmentName = cbcSegment.name.trim();
+  msg?.data?.segments?.forEach((cbcSegment: any) => {
+    const segmentName = cbcSegment.name.trim();
 
-        if (segmentName === 'OBX') {
-          cbcCodeList.value.forEach((cbcCode: any) => {
-            const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-            const sanitizedClassCd = classCd?.replace(/[^a-zA-Z]/g, '');
+    if (segmentName === 'OBX') {
+      cbcCodeList.value.forEach((cbcCode: any) => {
+        const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+        const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+        const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
 
-            const absItem = onlyObx.find((item: any) => {
-              const tmpClassCd = item.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-              const sanitizedClassCd2 = tmpClassCd?.replace(/[^a-zA-Z]/g, '');
-              return sanitizedClassCd === sanitizedClassCd2 && !tmpClassCd.includes('%');
-            })
+        // 클래스 코드가 일치하는 경우
+        if (cbcCode.classCd === classCd) {
+          // 중복 확인: 이미 동일한 classNm이 있는지 확인
+          const isDuplicate = cbcWorkList.value.some(
+              (item: any) => item.classNm === cbcCode.fullNm
+          );
 
-            // absCount =>
-            const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-            const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
-            const showObj = {
+          // 중복이 아닐 경우에만 추가
+          if (!isDuplicate) {
+            const obj = {
               classNm: cbcCode.fullNm,
-              unit: unit,
-            }
-
-            if (unit !== '%') {
-              Object.assign(showObj, { absCount: count, absUnit: unit });
-            }
-
-            if (absItem) {
-              const absCount = absItem.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-              if (unit === '%') {
-                Object.assign(showObj, { absCount: absCount, percentCount: count });
-              }
-            }
-
-            // 클래스 코드가 일치하는 경우
-            if (cbcCode.classCd === classCd) {
-              // 중복 확인: 이미 동일한 classNm이 있는지 확인
-              const isDuplicate = cbcWorkList.value.some(
-                  (item: any) => item.classNm === cbcCode.fullNm
-              );
-
-              // 중복이 아닐 경우에만 추가
-              if (!isDuplicate) {
-                const obj = {
-                  classNm: cbcCode.fullNm,
-                  count: count,
-                  unit
-                };
-                cbcWorkList.value.push(obj);
-                cbcWorkListForShow.value.push(showObj);
-              }
-            }
-          });
-        }
-        else if(cbcSegment.name.trim() === 'FLG'){
-          const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-          const obj = {
-            classNm: 'FLG',
-            count: flgNm,
-            unit: '',
-          };
-
-          const showObj = {
-            classNm: 'FLG',
-            absCount: flgNm,
-            unit: '',
+              count: count,
+              unit
+            };
+            cbcWorkList.value.push(obj);
           }
-          cbcWorkList.value.push(obj);
-          cbcWorkListForShow.value.push(showObj);
-        }
-        else if (cbcSegment.name.trim() === 'PID') {
-          cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
-          cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
-          cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
-          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
-          hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
         }
       });
-      break;
-
-    default:
-      msg?.data?.segments?.forEach((cbcSegment: any) => {
-        const segmentName = cbcSegment.name.trim();
-
-        if (segmentName === 'OBX') {
-          cbcCodeList.value.forEach((cbcCode: any) => {
-            const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-            const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
-            const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
-
-            // 클래스 코드가 일치하는 경우
-            if (cbcCode.classCd === classCd) {
-              // 중복 확인: 이미 동일한 classNm이 있는지 확인
-              const isDuplicate = cbcWorkList.value.some(
-                  (item: any) => item.classNm === cbcCode.fullNm
-              );
-
-              // 중복이 아닐 경우에만 추가
-              if (!isDuplicate) {
-                const obj = {
-                  classNm: cbcCode.fullNm,
-                  count: count,
-                  unit
-                };
-                cbcWorkList.value.push(obj);
-              }
-            }
-          });
-        }
-        else if(cbcSegment.name.trim() === 'FLG'){
-          const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
-          const obj = {
-            classNm: 'FLG',
-            count: flgNm,
-            unit: '',
-          };
-          cbcWorkList.value.push(obj);
-        }
-        else if (cbcSegment.name.trim() === 'PID') {
-          cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
-          cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
-          cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
-          cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
-          hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
-        }
-      });
-      break;
-  }
+    }
+    else if(cbcSegment.name.trim() === 'FLG'){
+      const flgNm = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+      const obj = {
+        classNm: 'FLG',
+        count: flgNm,
+        unit: '',
+      };
+      cbcWorkList.value.push(obj);
+    }
+    else if (cbcSegment.name.trim() === 'PID') {
+      cbcPatientNo.value = cbcSegment.fields[1].value[0][0].value[0]
+      cbcPatientNm.value = cbcSegment.fields[4].value[0][0].value[0]
+      cbcSex.value = cbcSegment.fields[6].value[0][0].value[0]
+      cbcAge.value = cbcSegment.fields[7].value[0][0].value[0];
+      hosName.value = cbcSegment?.fields[10]?.value[0][0]?.value[0];
+    }
+  });
 }
 
 const uimdTestUrlSend = async () => {
@@ -629,15 +581,15 @@ const kuahGilHosCbc = async () => {
         }
       }
     });
-    const parameter = {
+
+    const parms = {
       filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-      data: cbcWorkList.value,
+      data: cbcWorkList,
     };
-    await createCbcFile(parameter);
+    await createCbcFile(parms);
   }
   loading.value = false;
 }
-
 
 async function updateRunningApiPost(originalDb: any) {
   try {
