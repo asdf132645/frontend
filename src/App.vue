@@ -42,7 +42,7 @@ import {
   onBeforeMount,
 } from 'vue';
 import {useStore} from "vuex";
-import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
+import { tcpReq } from '@/common/defines/constants/tcpRequest/tcpReq';
 import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {
   getCellImgApi,
@@ -568,9 +568,11 @@ async function socketData(data: any) {
           const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => elW.title === fileNm);
 
           if (findWbcIndex !== -1) { // 유효한 인덱스인지 확인
-            newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
-              fileName: el.FILE_NM
-            });
+            if (!newWbcInfo.wbcInfo[0][findWbcIndex].images.find((item) => item?.fileName === el?.FILE_NM) ) {
+              newWbcInfo.wbcInfo[0][findWbcIndex].images.push({
+                fileName: el?.FILE_NM
+              })
+            }
           }
         }
 
