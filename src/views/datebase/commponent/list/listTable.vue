@@ -39,8 +39,8 @@
     </tr>
     </thead>
 
-    <tbody v-if="dbData.length !== 0">
-    <template v-for="(item, idx) in dbData"
+    <tbody v-if="dbGetData.length !== 0">
+    <template v-for="(item, idx) in dbGetData"
               :key="item.id">
       <tr
           :class="{
@@ -114,6 +114,24 @@
     </tr>
     </tbody>
   </table>
+  <!-- 페이지네이션 버튼 -->
+  <div class="paginationDiv" v-if="dbGetData.length !== 0">
+    <!-- 이전/다음 페이지 버튼 -->
+    <div class="pagination">
+      <button @click="handlePrevPage" :disabled="currentPage <= 1">Prev</button>
+      <button
+          v-for="pageNum in totalPages"
+          :key="pageNum"
+          :class="{ active: pageNum === currentPage }"
+          @click="handlePageClick(pageNum)"
+      >
+        {{ pageNum }}
+      </button>
+      <button @click="handleNextPage" :disabled="currentPage >= totalPages">Next</button>
+    </div>
+
+  </div>
+
   <div v-if="contextMenu.visible" :style="{ top: (contextMenu.y - 100) + 'px', left: contextMenu.x + 'px' }"
        class="context-menu">
     <ul>
@@ -232,7 +250,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
 
-const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
+const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents', 'total', 'itemsPerPage']);
 const loadMoreRef = ref(null);
 const emits = defineEmits();
 const selectedItemId = ref('');
@@ -246,7 +264,6 @@ const alertType = ref('');
 const alertMessage = ref('');
 const myIp = ref('');
 const loadingDelay = ref(false);
-const abnormalClassInfoPopup = ref(false);
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmss');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
@@ -285,6 +302,10 @@ const barCodeImageShowError = ref(false);
 const selectedItemsUsedInDelete = ref([]);
 const dbDataFindByIdUsedInDelete = ref([]);
 const popupItemId = ref('');
+const currentPage = ref(1);
+const dbGetData = ref([]);
+
+
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
 })
@@ -301,7 +322,31 @@ onMounted(async () => {
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
-})
+});
+
+
+// 페이지 클릭 시 부모 컴포넌트로 페이지 번호 전달
+const handlePageClick = (pageNum) => {
+  currentPage.value = pageNum;
+  emits('loadMoreData', pageNum); // 부모 컴포넌트에 페이지 번호 전달
+};
+
+// 이전 페이지 클릭
+const handlePrevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+    emits('loadMoreData', currentPage.value);
+  }
+};
+
+// 다음 페이지 클릭
+const handleNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+    emits('loadMoreData', currentPage.value);
+  }
+};
+
 const abnormalClassInfoOpen = (isOpen, itemId) => {
   popupItemId.value = isOpen ? itemId : null;
 }
@@ -342,40 +387,49 @@ watch(
 );
 
 
-watchEffect(async () => {
-  try {
-    if (props.dbData.length > 0) {
-      await nextTick();
-      loadingDelay.value = false;
-      const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+// watchEffect(async () => {
+//   try {
+//     if (props.dbData.length > 0) {
+//       await nextTick();
+//       loadingDelay.value = false;
+//       const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+//
+//       // IntersectionObserver 설정
+//       const observer = new IntersectionObserver(handleIntersection, {
+//         root: null,
+//         rootMargin: '0px',
+//         threshold: 0.5,
+//       });
+//       if (loadMoreRef.value) {
+//         observer.observe(loadMoreRef.value);
+//       }
+//
+//       if (selectedItemId.value === '0' || !selectedItemId.value) {
+//         loadingDelay.value = false;
+//       }
+//
+//       // 데이터베이스 페이지 리셋 상태 확인
+//       if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
+//         // loadingDelay.value = true;
+//         await selectItem(filteredItems[0]);
+//         await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
+//         await removeCheckBox();
+//         return;
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error during watchEffect execution:', error);
+//     loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
+//   }
+// });
+const totalPages = computed(() => {
+  return Math.ceil(props.total / props.itemsPerPage);
+});
 
-      // IntersectionObserver 설정
-      const observer = new IntersectionObserver(handleIntersection, {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.5,
-      });
-      if (loadMoreRef.value) {
-        observer.observe(loadMoreRef.value);
-      }
-
-      if (selectedItemId.value === '0' || !selectedItemId.value) {
-        loadingDelay.value = false;
-      }
-
-      // 데이터베이스 페이지 리셋 상태 확인
-      if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
-        // loadingDelay.value = true;
-        await selectItem(filteredItems[0]);
-        await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
-        await removeCheckBox();
-        return;
-      }
-    }
-  } catch (error) {
-    console.error('Error during watchEffect execution:', error);
-    loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
-  }
+watchEffect(() => {
+  console.log(props.dbData)
+  dbGetData.value = props.dbData; // 부모로부터 전달받은 데이터를 자식에서 사용
+  loadingDelay.value = false; // 데이터 로딩이 끝났으므로 로딩 상태 해제
 });
 
 
@@ -553,9 +607,9 @@ const rowDbClick = async (item) => {
   }
 
   await getIpAddress(item);
-  const { result, loading, error } = useGetRunningInfoByIdQuery(
-      { id: Number(item.id) },
-      { fetchPolicy: 'no-cache' }
+  const {result, loading, error} = useGetRunningInfoByIdQuery(
+      {id: Number(item.id)},
+      {fetchPolicy: 'no-cache'}
   );
 
 // result를 watch하여 변경될 때마다 반응하도록 처리

@@ -6135,7 +6135,16 @@ button.gbArrowButton.left {
     width: 700px;
     z-index: 2;
 }
-
+.pagination button {
+    margin: 0 5px;
+}
+.pagination button.active {
+    font-weight: bold;
+    color: blue;
+}
+.pagination button:disabled {
+    color: gray;
+}
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);
