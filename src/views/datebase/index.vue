@@ -31,10 +31,10 @@
           <button class="searchClass" @click="dateRefresh">Clear</button>
           <button type="button" class="searchClass" @click="search">Search</button>
 
-          <template v-if="viewerCheck === 'main'">
-            <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass" style="left: 12%">Patient List</button>
-            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
-          </template>
+          <div class="search-right-wrapper">
+            <button v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="search-btn">Patient List</button>
+            <font-awesome-icon v-if="viewerCheck === 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
+          </div>
         </div>
 
 
