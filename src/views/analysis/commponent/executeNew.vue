@@ -1,6 +1,6 @@
 <template>
   <div class="execute-container">
-    <select :disabled="isRunningState" @change="handleChangeCellInfo">
+    <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
       <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ cellItem.presetNm }}</option>
     </select>
 
@@ -73,7 +73,7 @@ import {
   STITCH_COUNT_OPTIONS,
   BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import { MESSAGES, MSG } from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
@@ -211,8 +211,8 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     isInit: newIsInit,
   } = newEmbeddedStatusJobCmd || {};
 
-  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
-    toggleStartStop('start', 'autoStart');
+  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart) && !isRunningState.value) {
+    toggleStartStop('start');
   }
 
   isPause.value = newIsPause;
@@ -257,7 +257,7 @@ const sendSearchCardCount = () => {
   EventBus.publish('childEmitSocketData', req);
 }
 
-const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
+const toggleStartStop = (action: 'start' | 'stop') => {
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
 
   if (action === 'start') {
@@ -269,11 +269,11 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
       return;
     }
     // 실행 여부 체크
-    if (isRunningState.value && autoStart !== 'autoStart') {
-      showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
+    if (isRunningState.value) {
+      showSuccessAlert(MSG.SYSTEM.PROCESS_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      confirmMessage.value = MESSAGES.IDS_RECOVER_GRIPPER_CONDITION;
+      confirmMessage.value = MSG.SYSTEM.RECOVER_SYSTEM;
       showConfirm.value = true;
       return;
     }
@@ -281,7 +281,13 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
-    const autoStart = JSON.parse(sessionStorage.getItem('autoStart')) || 1;
+    let reqAutoStart;
+    let autoStart = sessionStorage.getItem('autoStart');
+    if (autoStart === 'true') {
+      reqAutoStart = 1;
+    } else if (autoStart === 'false') {
+      reqAutoStart = 0;
+    }
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
@@ -297,7 +303,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
 
     if (is100A.value) {
       Object.assign(startAction, {
-        autoStart: Number(autoStart),
+        autoStart: Number(reqAutoStart),
       })
     }
 

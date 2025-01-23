@@ -155,6 +155,7 @@ export const MSG = {
     SYSTEM: {
         PROCESS_ALREADY_RUNNING: 'Process is already running.',
         STOP_PROCESS: 'Process is terminating.',
+        RECOVER_SYSTEM: 'Would you like to recover the system?',
     }
 }
 

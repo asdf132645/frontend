@@ -63,7 +63,7 @@ import {
   STITCH_COUNT_OPTIONS,
   BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
@@ -239,10 +239,10 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     }
     // 실행 여부 체크
     if (isRunningState.value) {
-      showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
+      showSuccessAlert(MSG.SYSTEM.PROCESS_ALREADY_RUNNING);
       return;
     } else if (userStop.value) {
-      confirmMessage.value = MESSAGES.IDS_RECOVER_GRIPPER_CONDITION;
+      confirmMessage.value = MSG.SYSTEM.RECOVER_SYSTEM;
       showConfirm.value = true;
       return;
     }

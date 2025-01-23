@@ -1460,7 +1460,6 @@ p.loadingText {
 .excelIcon {
     position: relative;
     display: flex;
-    left: 12%;
     justify-content: flex-end;
     padding-top: 3px;
     cursor: pointer;
@@ -2802,6 +2801,27 @@ ul.orderListUi > li {
 ul.orderListUi > li > img {
     border: 1px solid var(--gray-bg-3-color);
     border-radius: 3px;
+}
+
+.search-right-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    width: 270px;
+    gap: 8px;
+}
+
+.change-check-btn {
+    outline: 2px solid #3498db;
+}
+
+.search-btn {
+    background-color: transparent;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
+    padding: 9px;
+    position: relative;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 button.searchClass {
