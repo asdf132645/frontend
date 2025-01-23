@@ -1,6 +1,6 @@
 import {getDateTimeStr, getDateTimeStrForUI} from "@/common/lib/utils/dateUtils";
 
-export const tcpReq:any = () => {
+export const tcpReq: any = () => {
     const reqDttm = getDateTimeStr(); // 현재 날짜와 시간을 가져오는 함수
     const saveReqDttm = getDateTimeStrForUI();
 

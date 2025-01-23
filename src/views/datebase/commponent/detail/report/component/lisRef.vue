@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { defineProps, nextTick, onMounted, ref } from "vue";
 import { kcch_0033LisSend, kcch_0033RTFConvert } from "@/common/helpers/lisCbc/kcch_0033";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 interface CRCContentType {
   crcContent: string;
@@ -75,7 +76,7 @@ onMounted(async () => {
   }
 
   if (rtfContent.value) {
-    sendRtf();
+    await sendRtf();
   }
 })
 
@@ -95,8 +96,11 @@ const convertHTMLToRTF = async () => {
   await nextTick();
   try {
     const result = await kcch_0033RTFConvert(lisRefHTMLContent.value);
-    console.log(result);
-    rtfContent.value = result;
+    if (!isObjectEmpty(result)) {
+      rtfContent.value = result;
+    } else {
+      rtfContent.value = null;
+    }
   } catch (error) {
     console.error(error);
     rtfContent.value = null;

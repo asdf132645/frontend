@@ -1,10 +1,7 @@
 import {useHttpClient, ApiResponse} from '@/common/api/httpClient';
 import {apiConstants} from '@/common/api/apiConstants';
-import {
-    CellImgAnalyzedRequest,
-    CellImgAnalyzedResponse,
-} from '@/common/api/service/setting/dto/cellImgAnalyzedDto'
-import {RbcDegreeDto, RbcDegreeRes} from "@/common/api/service/setting/dto/rbcDegree";
+import { CellImgAnalyzedResponse } from '@/common/api/service/setting/dto/cellImgAnalyzedDto'
+import { RbcDegreeRequest, RbcDegreeResponse } from "@/common/api/service/setting/dto/rbcDegree";
 import {CreateWbcCustomClassDto, UpdateWbcCustomClassDto} from "@/common/api/service/setting/dto/wbcCustomClassDto";
 import {CreateWbcHotKeysDto, UpdateWbcHotKeysDto} from "@/common/api/service/setting/dto/wbcHotKeysDto";
 import {CreateBfHotKeysDto, UpdateBfHotKeysDto} from "@/common/api/service/setting/dto/bfHotKeysDto";
@@ -23,6 +20,7 @@ import {
 import {CreateFilePathDto, FilePathItem, UpdateFilePathsDto} from "@/common/api/service/setting/dto/filePathSetDto";
 import {CreateRunCountDto, runCountItem, UpdateRunCountDto} from "@/common/api/service/setting/dto/runWbcInfoCountDto";
 import {CreateMinCountDto, minCountItem, UpdateMinCountDto} from "@/common/api/service/setting/dto/minCountDto";
+import {ClassOrderRequest, ClassOrderResponse} from "@/common/api/service/setting/dto/classOrder";
 
 const httpClient = useHttpClient();
 
@@ -50,15 +48,15 @@ export const deleteCellImgApi = async (request: { id: string }): Promise<ApiResp
     return httpClient.httpDelete(apiConstants.settings.cellImgAnalyzedPost.cellImgDelete, request);
 }
 
-export const createRbcDegreeApi = async (request: RbcDegreeDto): Promise<ApiResponse<void>> => {
+export const createRbcDegreeApi = async (request: RbcDegreeRequest[]): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.settings.rbcDegree.rbcDegreeAdd, request);
 };
 
-export const putRbcDegreeApi = async (request: CellImgAnalyzedRequest): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
+export const putRbcDegreeApi = async (request: RbcDegreeRequest[]): Promise<ApiResponse<RbcDegreeResponse | undefined>> => {
     return httpClient.httpPut(apiConstants.settings.rbcDegree.rbcDegree, request);
 };
 
-export const getRbcDegreeApi = async (): Promise<ApiResponse<RbcDegreeRes | undefined>> => {
+export const getRbcDegreeApi = async (): Promise<ApiResponse<RbcDegreeResponse | undefined>> => {
     return httpClient.httpGet(apiConstants.settings.rbcDegree.rbcDegree);
 };
 
@@ -210,15 +208,15 @@ export const getDrivesApi = async (): Promise<ApiResponse<any | undefined>> => {
 };
 
 //-- 클래스 정렬
-export const createOrderClassApi = async (request: any): Promise<ApiResponse<void>> => {
+export const createOrderClassApi = async (request: ClassOrderRequest[]): Promise<ApiResponse<ClassOrderResponse>> => {
     return httpClient.httpPost(apiConstants.settings.classOrder.create, request);
 };
 
-export const getOrderClassApi = async (): Promise<ApiResponse<any>> => {
+export const getOrderClassApi = async (): Promise<ApiResponse<ClassOrderResponse[]>> => {
     return httpClient.httpGet(apiConstants.settings.classOrder.get);
 };
 
-export const putOrderClassApi = async (request: any): Promise<ApiResponse<any>> => {
+export const putOrderClassApi = async (request: ClassOrderRequest): Promise<ApiResponse<ClassOrderResponse[]>> => {
     return httpClient.httpPut(apiConstants.settings.classOrder.update, request);
 };
 

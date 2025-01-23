@@ -108,7 +108,7 @@ const createAccount = async () => {
   }
 
   try {
-    const result: any = await createUser(user);
+    const result = await createUser(user);
     if (result.data?.userId) {
       await showSuccessAlert('registration successful');
       await router.push('/user/login');

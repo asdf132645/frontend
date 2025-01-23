@@ -16,7 +16,7 @@
 
   <div class="flex-center">
     <div class="cellImgAnalyzed-container">
-      <div class="preset-container"></div>
+      <div v-if="viewerCheck === 'main'" class="preset-container"></div>
       <table class="settingTable">
         <tbody>
         <tr v-if="viewerCheck !== 'viewer'">
