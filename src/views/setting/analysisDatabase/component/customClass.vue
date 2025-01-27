@@ -98,7 +98,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
 const getOrderClass = async () => {

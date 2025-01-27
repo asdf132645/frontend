@@ -360,7 +360,7 @@
         <!--      </tr>-->
         </tbody>
       </table>
-      <button class="saveBtn" type="button" @click='cellImgSet()'>Save</button>
+      <button class="saveBtn" :class="changeCheck ? 'change-check-btn' : ''"  type="button" @click='cellImgSet()'>Save</button>
     </div>
   </div>
 
@@ -465,7 +465,7 @@ import {
   putCellImgApi
 } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive, onBeforeMount} from "vue";
+import { computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount } from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -510,7 +510,6 @@ const alertType = ref('');
 const showUploadModal = ref(false);
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
-const currentPresetId = ref(1);
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
 const uploadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const autoDate = ref([
@@ -541,6 +540,8 @@ const confirmMessage = ref('');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isRestoring = ref(false);
@@ -617,6 +618,7 @@ const toastInfo = ref({
   messageType: MESSAGES.TOAST_MSG_SUCCESS,
 })
 const editingItem = ref<any>(null);
+const changeCheck = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -645,12 +647,7 @@ onMounted(async () => {
   await cellImgGetAll();
 });
 
-watch([cellInfo.value.analysisType, cellInfo.value.diffCellAnalyzingCount, cellInfo.value.diffWbcPositionMargin, cellInfo.value.diffRbcPositionMargin,
-  cellInfo.value.diffPltPositionMargin, cellInfo.value.pbsCellAnalyzingCount, cellInfo.value.edgeShotType, cellInfo.value.edgeShotCount, cellInfo.value.stitchCount, cellInfo.value.bfCellAnalyzingCount, cellInfo.value.iaRootPath, cellInfo.value.isNsNbIntegration,
-  cellInfo.value.isAlarm,
-  cellInfo.value.alarmCount,
-  cellInfo.value.keepPage,
-  cellInfo.value.lisUploadCheckAll,], async () => {
+watch(cellInfo.value, async () => {
   const cellAfterSettingObj = {
     id: cellInfo.value.id,
     analysisType: cellInfo.value.analysisType,
@@ -671,12 +668,22 @@ watch([cellInfo.value.analysisType, cellInfo.value.diffCellAnalyzingCount, cellI
     keepPage: cellInfo.value.keepPage,
     lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
   }
+  allCellInfo.value.clientData = allCellInfo.value.clientData.map((item) => {
+    if (String(item.id) === String(cellInfo.value.id)) {
+      return { ...item, ...cellAfterSettingObj };
+    }
+    return item;
+  });
 
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+  if (afterSettingFormattedString.value !== beforeSettingFormattedString.value) {
+    changeCheck.value = true;
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData) });
   if (settingType.value !== settingName.cellImageAnalyzed) {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
   }
-})
+}, { deep: true })
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -723,7 +730,7 @@ const driveGet = async () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
 const cellImgGet = async () => {
@@ -763,32 +770,7 @@ const cellImgGet = async () => {
         cellInfo.value.presetNm = data?.presetNm;
         cellInfo.value.presetChecked = data?.presetChecked;
 
-        const cellBeforeSettingObj = {
-          id: data?.id,
-          analysisType: data?.analysisType,
-          diffCellAnalyzingCount: data?.diffCellAnalyzingCount,
-          diffWbcPositionMargin: data?.diffWbcPositionMargin,
-          diffRbcPositionMargin: data?.diffRbcPositionMargin,
-          diffPltPositionMargin: data?.diffPltPositionMargin,
-          pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
-          stitchCount: data?.stitchCount,
-          edgeShotType: data?.edgeShotType,
-          edgeShotLPCount: data?.edgeShotLPCount,
-          edgeShotHPCount: data?.edgeShotHPCount,
-          bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
-          iaRootPath: data?.iaRootPath,
-          isNsNbIntegration: data?.isNsNbIntegration,
-          isAlarm: data?.isAlarm,
-          alarmCount: data?.alarmCount,
-          keepPage: data?.keepPage,
-          lisUploadCheckAll: data?.lisUploadCheckAll,
-          presetChecked: data?.presetChecked,
-          presetNm: data?.presetNm,
-        }
-
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-        await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
-        await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
     }
   } catch (e) {
@@ -1283,7 +1265,8 @@ const cellImgGetAll = async () => {
       allCellInfo.value.clientData = [...result.data];
       allCellInfo.value.serverData = [...result.data];
       await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value.serverData });
-
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
     }
   } catch (error) {
     console.error(error);

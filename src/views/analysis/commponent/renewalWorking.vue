@@ -215,7 +215,7 @@ watch(
     () => props.parsedDataSysInfo, // 감시할 데이터
     (newVal, oldVal) => {
       progressData.progressBarText = newVal.progressBarText || '';
-      progressData.progressBarPercent = newVal.progressBarPercent || 25;
+      progressData.progressBarPercent = newVal.progressBarPercent || 0;
       dashoffset.value = calculateDashOffset(newVal.progressBarPercent);
       // 데이터 변경 시 실행할 코드
     },

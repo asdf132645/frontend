@@ -65,7 +65,7 @@ const changeTab = (tab: typeof tabs[number]) => {
   movingTab.value = tab;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
-    confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+    confirmMessage.value = MESSAGES.settingNotSaved;
   } else {
     currentTab.value = movingTab.value;
     sessionStorage.setItem('selectedTab', movingTab.value);
