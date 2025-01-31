@@ -360,7 +360,7 @@
         <!--      </tr>-->
         </tbody>
       </table>
-      <button class="saveBtn" :class="changeCheck ? 'change-check-btn' : ''"  type="button" @click='cellImgSet()'>Save</button>
+      <button class="saveBtn" type="button" @click='cellImgSet()'>Save</button>
     </div>
   </div>
 
@@ -618,7 +618,6 @@ const toastInfo = ref({
   messageType: MESSAGES.TOAST_MSG_SUCCESS,
 })
 const editingItem = ref<any>(null);
-const changeCheck = ref(false);
 
 instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
   if (downloadUploadObj?.isFinished) {
@@ -648,38 +647,25 @@ onMounted(async () => {
 });
 
 watch(cellInfo.value, async () => {
-  const cellAfterSettingObj = {
-    id: cellInfo.value.id,
-    analysisType: cellInfo.value.analysisType,
-    diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
-    diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
-    diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
-    diffPltPositionMargin: cellInfo.value.diffPltPositionMargin,
-    pbsCellAnalyzingCount: cellInfo.value.pbsCellAnalyzingCount,
-    stitchCount: cellInfo.value.stitchCount,
-    edgeShotType: cellInfo.value.edgeShotType,
-    edgeShotLPCount: cellInfo.value.edgeShotCount.LP,
-    edgeShotHPCount: cellInfo.value.edgeShotCount.HP,
-    bfCellAnalyzingCount: cellInfo.value.bfCellAnalyzingCount,
-    iaRootPath: cellInfo.value.iaRootPath,
-    isNsNbIntegration: cellInfo.value.isNsNbIntegration,
-    isAlarm: cellInfo.value.isAlarm,
-    alarmCount: cellInfo.value.alarmCount,
-    keepPage: cellInfo.value.keepPage,
-    lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
+  if (isObjectEmpty(allCellInfo.value?.clientData)) {
+    return;
   }
-  allCellInfo.value.clientData = allCellInfo.value.clientData.map((item) => {
+
+  const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
     if (String(item.id) === String(cellInfo.value.id)) {
-      return { ...item, ...cellAfterSettingObj };
+      return {
+        ...cellInfo.value,
+        id: Number(cellInfo.value.id),
+        presetChecked: true,
+        backupEndDate: allCellInfo.value.serverData[0].backupEndDate,
+        backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
+      };
+    } else {
+      return { ...item, presetChecked: false };
     }
-    return item;
-  });
+  })
 
-  if (afterSettingFormattedString.value !== beforeSettingFormattedString.value) {
-    changeCheck.value = true;
-  }
-
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData) });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(requestAllCellInfo) });
   if (settingType.value !== settingName.cellImageAnalyzed) {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
   }
@@ -799,7 +785,9 @@ const cellImgSet = async () => {
       if (allCellImgIds.includes(String(requestCellInfo.id))) {
         await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
       } else {
-        delete requestCellInfo.id;
+        if (requestCellInfo?.id) {
+          delete requestCellInfo.id;
+        }
         await createCellImgApi(requestCellInfo);
       }
     }
@@ -807,8 +795,9 @@ const cellImgSet = async () => {
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG.TOAST.UPDATE_SUCCESS);
     await cellImgGetAll();
+    handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     scrollToTop();
-    const data = allCellInfo.value.serverData.map((item) => String(item.id) === String(cellInfo.value.id));
+    const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
     await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
     await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
       isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
@@ -1216,7 +1205,7 @@ const deleteCellImg = async () => {
   try {
     await deleteCellImgApi({ id: String(cellInfo.value.id) });
     await cellImgGetAll();
-    await handleChangeCellId(allCellInfo.value.clientData[0].id);
+    handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG.TOAST.DELETE_SUCCESS);
   } catch (error) {

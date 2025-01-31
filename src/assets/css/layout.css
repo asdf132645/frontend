@@ -319,6 +319,10 @@
     width: 80%;
 }
 
+.h60 {
+    height: 60px;
+}
+
 .w96-max {
     max-width: 96px;
 }
@@ -2808,10 +2812,6 @@ ul.orderListUi > li > img {
     justify-content: flex-end;
     width: 270px;
     gap: 8px;
-}
-
-.change-check-btn {
-    outline: 2px solid #3498db;
 }
 
 .search-btn {

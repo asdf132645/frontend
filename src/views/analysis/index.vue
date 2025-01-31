@@ -64,8 +64,8 @@ const classInfoUpdate = (data: any) => {
   emits('classAppUpdateLast', data);
 }
 
-const initDataChangeText = (val: any) => {
-  store.dispatch('commonModule/setCommonInfo', {initValData: val});
+const initDataChangeText = async (val: any) => {
+  await store.dispatch('commonModule/setCommonInfo', { initValData: val });
 }
 
 </script>

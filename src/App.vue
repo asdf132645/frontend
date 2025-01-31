@@ -69,7 +69,7 @@ import {
 } from "@/common/helpers/lisCbc/inhaCbcLis";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/store/common";
+import {sysInfoStore, runningInfoStore, sysInfoStoreNew} from "@/common/helpers/common/store/common";
 import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
@@ -295,6 +295,7 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
+  await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
 });
 
 onBeforeUnmount(async () => {
@@ -343,7 +344,12 @@ async function socketData(data: any) {
         break;
       case 'SYSINFO':
         parsedDataSysInfoProps.value = parseDataWarp;
-        const res = await sysInfoStore(parseDataWarp);
+        let res = null;
+        if (siteCd.value === '9090') {
+          res = await sysInfoStoreNew(parseDataWarp);
+        } else {
+          res = await sysInfoStore(parseDataWarp);
+        }
         if (res !== null) {
           const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
           if (res !== '') {
@@ -361,18 +367,21 @@ async function socketData(data: any) {
         break;
       case 'INIT':
         barcodeNum.value = '';
-        await store.dispatch('commonModule/setCommonInfo', {initValData: false});
+        await store.dispatch('commonModule/setCommonInfo', { initValData: false });
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: true });
         sendSettingInfo();
         break;
       case 'START':
         barcodeNum.value = '';
         await runnStart();
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
         break;
       case 'RUNNING_INFO':
         parsedDataProps.value = parseDataWarp;
         runningInfoBoolen.value = true;
         await runningInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -418,10 +427,10 @@ async function socketData(data: any) {
         break;
       case 'RECOVERY':
         barcodeNum.value = '';
-        await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
-        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', { userStop: false });
+        await store.dispatch('commonModule/setCommonInfo', { runningSlotId: '' });
         slotIndex.value = 0;
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
         break;
       case 'ERROR_CLEAR':
         showAlert.value = false;
@@ -773,7 +782,7 @@ const sendSettingInfo = () => {
     isNsNbIntegration: isNsNbIntegrationLocal.value,
   };
 
-  store.dispatch('commonModule/setCommonInfo', {reqArr: req});
+  store.dispatch('commonModule/setCommonInfo', { reqArr: req });
 }
 
 const getNormalRange = async () => {

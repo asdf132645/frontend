@@ -47,6 +47,7 @@ export interface CommonState {
     showLISUploadAfterCheckingAll: boolean;
     slideDataReset: string;
     cellImageAnalyzedData: CellImgAnalyzedResponse[] | undefined;
+    isInitializing: boolean;
 }
 
 interface CommonModule {
@@ -99,6 +100,7 @@ interface CommonModule {
         setShowLISUploadAfterCheckingAll: (state: CommonState, value: boolean) => void;
         setSlideDataReset: (state: CommonState, value: string) => void;
         setCellImageAnalyzedData: (state: CommonState, value: CellImgAnalyzedResponse[]) => void;
+        setIsInitializing: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -152,6 +154,7 @@ export const commonModule: CommonModule = {
         showLISUploadAfterCheckingAll: false,
         slideDataReset: '',
         cellImageAnalyzedData: undefined,
+        isInitializing: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -294,7 +297,10 @@ export const commonModule: CommonModule = {
         },
         setCellImageAnalyzedData(state: CommonState, value: CellImgAnalyzedResponse[] | undefined): void {
             state.cellImageAnalyzedData = value;
-        }
+        },
+        setIsInitializing(state: CommonState, value: boolean): void {
+            state.isInitializing = value;
+        },
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -438,6 +444,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('cellImageAnalyzedData')) {
                 commit('setCellImageAnalyzedData', payload.cellImageAnalyzedData);
+            }
+            if (payload.hasOwnProperty('isInitializing')) {
+                commit('setIsInitializing', payload.isInitializing);
             }
         },
     },
