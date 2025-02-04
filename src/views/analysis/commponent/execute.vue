@@ -240,7 +240,7 @@ const sendSearchCardCount = () => {
 }
 
 const toggleStartStop = (action: 'start' | 'stop') => {
-  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
+  if (viewerCheck.value !== 'main' || window.FORCE_VIEWER !== 'main') return;
 
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
@@ -385,7 +385,7 @@ const handleOkConfirm = async () => {
 
 const sendInit = () => { // 장비 초기화 진행
   if (isTcpError.value) return;
-  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
+  if (viewerCheck.value !== 'main' || window.FORCE_VIEWER !== 'main') return;
   if (isInitializing.value) return;
   if (errorLevel.value === '1' || errorLevel.value === '2') return;
   if (isInit.value === 'Y') {

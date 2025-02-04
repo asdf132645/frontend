@@ -141,6 +141,7 @@ const fixEqStatCd = ref(false);
 const pbVersion = ref<any>('');
 const iCasExist = ref<any>('0');
 const oCasExist = ref<any>('0');
+const viewerType = ref('');
 const progressData = reactive({
   progressBarText: '',
   progressBarPercent: 0,
@@ -285,10 +286,16 @@ watch(
 );
 
 onBeforeMount(() => {
+  viewerType.value = window.FORCE_VIEWER;
   pbVersion.value = window.MACHINE_VERSION;
   slideCardData.value = pbVersion.value === '100a'
       ? JSON.parse(JSON.stringify(SLIDE_CARD_100A))
       : JSON.parse(JSON.stringify(SLIDE_CARD_12A));
+
+  if (viewerType.value === 'exhibition') {
+    progressData.progressBarText = 'INITIALIZE';
+    progressData.progressBarPercent = 0;
+  }
 })
 
 onMounted(() => {

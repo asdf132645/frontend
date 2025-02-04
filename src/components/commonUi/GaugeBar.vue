@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, watch, onMounted, defineProps, ref} from "vue";
+import {reactive, watch, onMounted, defineProps, ref, onBeforeMount} from "vue";
 
 // Props 정의
 const props = defineProps(["parsedDataSysInfo"]);
@@ -82,6 +82,7 @@ const progressData: any = reactive({
 const activeStepIndex = ref(0);
 const activeStepIndexPrev = ref(0);
 const stepWidth = 80; // 각 Step의 넓이(px)
+const viewerType = ref('');
 
 // Props의 parsedData 변경 감지 및 progressData 업데이트
 watch(
@@ -175,11 +176,11 @@ const setStep = (stepIndex: number) => {
 const startFakeDataTest = () => {
   progressData.progressArr = [];
   progressData.progressArr.push(
-      {progressNo: 1, progressName: "Step 1", progressPercent: 0},
-      {progressNo: 2, progressName: "Step 2", progressPercent: 0},
-      {progressNo: 3, progressName: "Step 3", progressPercent: 0},
-      {progressNo: 4, progressName: "Step 4", progressPercent: 0},
-      {progressNo: 5, progressName: "Step 5", progressPercent: 0}
+      {progressNo: 1, progressName: "Initialize Axis1", progressPercent: 0},
+      {progressNo: 2, progressName: "Unload Slide", progressPercent: 0},
+      {progressNo: 3, progressName: "Unload Cassette", progressPercent: 0},
+      {progressNo: 4, progressName: "Initialize Module", progressPercent: 0},
+      {progressNo: 5, progressName: "Initialize Axis2", progressPercent: 0},
   );
 
   let fakePercent = 0;
@@ -210,16 +211,22 @@ const startFakeDataTest = () => {
   }, 500);
 };
 
+onBeforeMount(() => {
+  viewerType.value = window.FORCE_VIEWER;
+})
+
 onMounted(() => {
-  // if (progressData.progressArr.length === 0) {
-  //   progressData.progressArr.push(
-  //       {progressNo: 1, progressName: "Step 1", progressPercent: 0},
-  //       {progressNo: 2, progressName: "Step 2", progressPercent: 0},
-  //       {progressNo: 3, progressName: "Step 3", progressPercent: 0},
-  //       {progressNo: 1, progressName: "Step 1", progressPercent: 0},
-  //       {progressNo: 2, progressName: "Step 2", progressPercent: 0},
-  //   );
-  // }
-  // startFakeDataTest();
+  if (viewerType.value === 'exhibition') {
+    // if (progressData.progressArr.length === 0) {
+    //   progressData.progressArr.push(
+    //       {progressNo: 1, progressName: "Initialize Axis1", progressPercent: 0},
+    //       {progressNo: 2, progressName: "Unload Slide", progressPercent: 0},
+    //       {progressNo: 3, progressName: "Unload Cassette", progressPercent: 0},
+    //       {progressNo: 4, progressName: "Initialize Module", progressPercent: 0},
+    //       {progressNo: 5, progressName: "Initialize Axis2", progressPercent: 0},
+    //   );
+    // }
+    startFakeDataTest();
+  }
 });
 </script>
