@@ -558,6 +558,7 @@ const kuahGilHosCbc = async () => {
     ];
     cbcDataArray = cbcDataArray.split('\n');
 
+    cbcWorkList.value = [];
     cbcDataArray.forEach((cbcData: any) => {
       const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
 
@@ -584,7 +585,7 @@ const kuahGilHosCbc = async () => {
 
     const parms = {
       filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-      data: cbcWorkList,
+      data: cbcWorkList.value,
     };
     await createCbcFile(parms);
   }
