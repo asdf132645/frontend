@@ -34,16 +34,26 @@
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <div class="imgMenuSetDiv">
-        <button type="button" @click="drawCellMarker(false)">
-          <font-awesome-icon
-              :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-          />
+        <button
+            type="button"
+            @click="drawCellMarker(false)"
+            class="pos-relative"
+            @mouseenter="tooltipVisibleFunc('cellMarking', true)"
+            @mouseleave="tooltipVisibleFunc('cellMarking', false)"
+        >
+          <font-awesome-icon :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"/>
           Cell Marking
+          <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_MARKING" />
         </button>
-        <!--size-->
-        <button @click="showSizeControl" class="sizeButton">
+        <button
+            @click="showSizeControl"
+            class="sizeButton pos-relative"
+            @mouseenter="tooltipVisibleFunc('size', true)"
+            @mouseleave="tooltipVisibleFunc('size', false)"
+        >
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
           Size
+          <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_SIZE" />
         </button>
         <div v-show="showSize" class="sizeContainer">
           <div>
@@ -69,9 +79,15 @@
 
         </div>
         <div class="imgSetWrap" ref="imgSetWrap">
-          <button @click="imgSetOpen">
+          <button
+              @click="imgSetOpen"
+              class="pos-relative"
+              @mouseenter="tooltipVisibleFunc('imageSetting', true)"
+              @mouseleave="tooltipVisibleFunc('imageSetting', false)"
+          >
             <font-awesome-icon :icon="['fas', 'gear']"/>
             IMG Setting
+            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_IMG_SETTING" />
           </button>
           <div class="imgSet" v-show="imgSet">
             <div>
@@ -133,17 +149,36 @@
 
           </div>
         </div>
-        <button @click="classCompare">
+        <button
+            @click="classCompare"
+            class="pos-relative"
+            @mouseenter="tooltipVisibleFunc('classCompare', true)"
+            @mouseleave="tooltipVisibleFunc('classCompare', false)"
+        >
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
+          <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_CLASS_COMPARE" />
         </button>
-        <button @click="wps" v-if="isWpsBtnShow">
+        <button
+            @click="wps"
+            v-if="isWpsBtnShow"
+            class="pos-relative"
+            @mouseenter="tooltipVisibleFunc('wps', true)"
+            @mouseleave="tooltipVisibleFunc('wps', false)"
+        >
           <font-awesome-icon :icon="['fas', 'expand']"/>
           WPS
+          <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_WPS" />
         </button>
-        <button @click="rollbackChanges" class="rollbackButton">
+        <button
+            @click="rollbackChanges"
+            class="rollbackButton"
+            @mouseenter="tooltipVisibleFunc('rollback', true)"
+            @mouseleave="tooltipVisibleFunc('rollback', false)"
+        >
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
+          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 18px;'" position="top" type="" :message="MSG.TOOLTIP.CELL_ROLLBACK" />
         </button>
       </div>
       <div>
@@ -257,7 +292,7 @@ import {
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {readFileTxt, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {readDziFile, readFileTxt, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
   getBfHotKeysApi, getNormalRangeApi,
   getOrderClassApi,
@@ -281,7 +316,7 @@ import {disableScroll, enableScroll} from "@/common/lib/utils/scroll";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
@@ -294,6 +329,7 @@ import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import slidePositionImg from "@/assets/images/slide_pos.png";
 import {DIR_NAME} from "@/common/defines/constants/settings";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -374,18 +410,24 @@ const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
 const checkedAllClass = ref(false);
-const xyResolution = ref({
-  X: 0.000573,
-  Y: 0.000560,
-})
 const {imageRefs} = useImageRefs();
 const wpsJsonData = ref<any>([]);
 const wbcXYPos = ref({
+  totalWidth: '0',
+  totalHeight: '0',
   posX: '0',
   posY: '0',
 })
 const imageRef = ref<HTMLImageElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
+const tooltipVisible = ref({
+  cellMarking: false,
+  size: false,
+  imageSetting: false,
+  classCompare: false,
+  wps: false,
+  rollback: false,
+})
 
 
 onBeforeMount(async () => {
@@ -423,7 +465,6 @@ watch(
         try {
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
-          await getXYResolution();
           await getWPSData();
           isLoadedSlideData.value = false;
           wbcInfo.value = [];
@@ -917,12 +958,14 @@ const refreshClass = async (data: any) => {
 }
 const calculatedX = computed(() => {
   const x1 = Number(wpsJsonData.value[0]?.x1 || 0);
-  return Math.round(x1 + xyResolution.value.X * Number(wbcXYPos.value.posX));
+  const x2 = Number(wpsJsonData.value[0]?.x2 || 0)
+  return Math.round(x1 + Number(wbcXYPos.value.posX) / (Number(wbcXYPos.value.totalWidth) / (x2 - x1)));
 });
 
 const calculatedY = computed(() => {
   const y1 = Number(wpsJsonData.value[0]?.y1 || 0);
-  return Math.round(y1 + xyResolution.value.Y * Number(wbcXYPos.value.posY));
+  const y2 = Number(wpsJsonData.value[0]?.y2 || 0)
+  return Math.round(y1 + Number(wbcXYPos.value.posY) / (Number(wbcXYPos.value.totalHeight) / (y2 - y1)));
 });
 
 const drawCanvas = () => {
@@ -964,32 +1007,10 @@ const drawCanvas = () => {
     const oldIndicators = canvasContainer.querySelectorAll(".indicator");
     oldIndicators.forEach((el) => el.remove());
 
-    // // Create X indicator
-    // const xIndicator = document.createElement("div");
-    // xIndicator.className = "indicator x-indicator";
-    // xIndicator.style.position = "absolute";
-    // xIndicator.style.left = `${canvas.offsetLeft + calculatedX.value - 8}px`;
-    // xIndicator.style.top = `${canvas.offsetTop - 20}px`; // Slightly above the canvas
-    // xIndicator.style.color = "white";
-    // xIndicator.style.fontSize = "14px";
-    // xIndicator.textContent = `X: ${calculatedX.value}`;
-    // canvasContainer.appendChild(xIndicator);
-    //
-    // // Create Y indicator
-    // const yIndicator = document.createElement("div");
-    // yIndicator.className = "indicator y-indicator";
-    // yIndicator.style.position = "absolute";
-    // yIndicator.style.left = `${canvas.offsetLeft - 50}px`; // Slightly to the left of the canvas
-    // yIndicator.style.top = `${canvas.offsetTop + calculatedY.value - 8}px`;
-    // yIndicator.style.color = "white";
-    // yIndicator.style.fontSize = "14px";
-    // yIndicator.textContent = `Y: ${calculatedY.value}`;
-    // canvasContainer.appendChild(yIndicator);
-
     const zeroIndicator = document.createElement("div");
     zeroIndicator.className = "indicator y-indicator";
     zeroIndicator.style.position = "absolute";
-    zeroIndicator.style.left = `-32px`;
+    zeroIndicator.style.left = `-14px`;
     zeroIndicator.style.top = `-16px`;
     zeroIndicator.style.color = "white";
     zeroIndicator.style.fontSize = "14px";
@@ -999,7 +1020,7 @@ const drawCanvas = () => {
     const xyIndicator = document.createElement("div");
     xyIndicator.className = "indicator xy-indicator";
     xyIndicator.style.position = "absolute";
-    xyIndicator.style.left = `${calculatedX.value + 8}px`; // Slightly to the left of the canvas
+    xyIndicator.style.left = calculatedX.value + 8 < 200 ? `${calculatedX.value + 8}px` : `${calculatedX.value - 70}px`; // Slightly to the left of the canvas
     xyIndicator.style.top = `${calculatedY.value - 16}px`;
     xyIndicator.style.color = "black";
     xyIndicator.style.fontSize = "14px";
@@ -1516,21 +1537,28 @@ const getWPSData = async () => {
   } else {
     wpsJsonData.value = [];
   }
+
+  const { width, height } = await dziWidthHeight();
+  wbcXYPos.value.totalWidth = width;
+  wbcXYPos.value.totalHeight = height;
 }
 
-const getXYResolution = async () => {
-  const filePath = 'D:\\UIMD_Data\\Backend_INI'
-  const fileName = window.MACHINE_VERSION === '100a' ? 'Teaching_Config_100A' : 'Teaching_Config';
-  try {
-    const result: any = await readFileTxt(`path=${filePath}&filename=${fileName}`);
-    const iniFileData = result.data.data;
-    const xResolutionPattern = /X_RESOLUTION\s*=\s*(.+)/;
-    const yResolutionPattern = /Y_RESOLUTION\s*=\s*(.+)/;
-    xyResolution.value.X = iniFileData.match(xResolutionPattern)[1] ?? xyResolution.value.X;
-    xyResolution.value.Y = iniFileData.match(yResolutionPattern)[1] ?? xyResolution.value.Y;
-  } catch (e) {
-    console.error(e);
-  }
+const dziWidthHeight = async (): Promise<any> => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path
+      ? selectItems.value?.img_drive_root_path
+      : iaRootPath.value;
+  const urlImage = `${path}/${selectItems.value.slotId}/04_WPS/WPS.dzi`;
+  const imageResponse = await readDziFile({filePath: urlImage});
+  return await extractWidthHeightFromDzi(imageResponse);
+}
+
+const extractWidthHeightFromDzi = (xmlString: any): any => {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+  const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
+  const width = sizeElement.getAttribute("Width");
+  const height = sizeElement.getAttribute("Height");
+  return { width: Number(width), height: Number(height) };
 }
 
 async function onDrop(targetItemIndex: any) {
@@ -2158,6 +2186,10 @@ const submitStateChanged = (changedSubmitState: string) => {
     toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG_GENERAL.SUCCESS);
   }
+}
+
+const tooltipVisibleFunc = (type: 'cellMarking' | 'size' | 'imageSetting' | 'classCompare' | 'wps' | 'rollback', visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 </script>

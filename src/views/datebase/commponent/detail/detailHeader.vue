@@ -27,7 +27,7 @@
       <li v-if="hospitalName">
         <span>{{ hospitalName }}</span>
       </li>
-      <li v-if="slideStatus" class="slideStatus"
+      <li v-if="slideStatus && siteCd === '9090'" class="slideStatus"
           @mouseenter="tooltipVisibleFunc('slideStatus', true)"
           @mouseleave="tooltipVisibleFunc('slideStatus', false)"
       >

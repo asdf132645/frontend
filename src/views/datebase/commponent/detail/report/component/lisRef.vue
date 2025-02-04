@@ -1,5 +1,5 @@
 <template>
-  <div ref="lisRefHTMLContent" class="lisRef-container" style="position: absolute;">
+  <div ref="lisRefHTMLContent" class="lisRef-container">
     <div>
       <h2>[ PURPOSE OF PBS ]</h2>
       <p>{{ data?.code }}</p>
@@ -37,7 +37,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, nextTick, onMounted, ref } from "vue";
+import { defineProps, defineEmits, nextTick, onMounted, ref } from "vue";
 import { kcch_0033LisSend, kcch_0033RTFConvert } from "@/common/helpers/lisCbc/kcch_0033";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 
@@ -67,6 +67,7 @@ const data = ref<CRCDataType>();
 const lisRefHTMLContent = ref();
 const rtfContent = ref<any>();
 const props = defineProps(['nowCrcDataLis', 'selectItems']);
+const emits = defineEmits();
 
 onMounted(async () => {
   data.value = props.nowCrcDataLis;
@@ -89,6 +90,8 @@ const sendRtf = async () => {
     await kcch_0033LisSend({ barcodeNo: props.selectItems.barcodeNo, rtfData: rtfContent.value });
   } catch (error) {
     console.error(error);
+  } finally {
+    closeLisRef();
   }
 }
 
@@ -112,6 +115,12 @@ const convertNewLinesToBr = (text: string) => {
     return text.replaceAll('\n', '<br>');
   }
   return '';
+}
+
+const closeLisRef = () => {
+  setTimeout(() => {
+    emits('resetLisRtf');
+  }, 2000);
 }
 
 </script>

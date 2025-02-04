@@ -155,9 +155,13 @@ export const changeRemark = (crcArr: CRCArrType[], remarkList: any) => {
 
         return {
             ...remarkItem,
-            content: [...remarkItem.content, ...matchedContents],
+            content: matchedContents,
         };
     });
+
+    if (remarkList[0] && remarkList[0]?.remarkAllContent) {
+        remarkList[0].remarkAllContent = '';
+    }
 
     for (const remarkItem of updatedRemark) {
         if (remarkItem.content.length > 0) {

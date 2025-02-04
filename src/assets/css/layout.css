@@ -113,6 +113,10 @@
     gap: 14px;
 }
 
+.left20 {
+    left: 20px;
+}
+
 .f18 {
     font-size: 18px;
 }
@@ -900,6 +904,11 @@ h3.titleText {
     display: flex;
     justify-content: space-between;
     margin-top: 0px !important;
+}
+
+.execute-wbcCount-wrapper {
+    width: 88px;
+    margin-left: 2px;
 }
 
 .initBtn {
@@ -3111,6 +3120,7 @@ select.selectSizeTitle {
     padding: 5px;
     max-width: 300px;
     border: 1px solid var(--white-color);
+    z-index: 3;
 }
 
 .sizeContainer div {
@@ -4570,6 +4580,22 @@ p.adminText {
     transform: scale(1.1) rotate(180deg);
 }
 
+.crcResultCodes-commentMatching-btn {
+    position: absolute;
+    right: 120px;
+    background: none;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 5px 10px;
+    top: -12px;
+    cursor: pointer;
+}
+
+.crcResultCodes-commentMatching-btn:hover {
+    background-color: white;
+    color: black;
+}
+
 button.reSelect {
     position: absolute;
     right: 0;
@@ -4579,6 +4605,11 @@ button.reSelect {
     padding: 5px 10px;
     top: -12px;
     cursor: pointer;
+}
+
+button.reSelect:hover {
+    background-color: white;
+    color: black;
 }
 
 .crcPopUpDiv.crcAdd {
@@ -5273,7 +5304,7 @@ input.codeInput {
 .isNotNormalIcon {
     position: absolute;
     top: 6px;
-    left: 16px;
+    left: 10px;
 }
 
 .rbcDegree-span-wrapper {
@@ -6148,6 +6179,15 @@ button.gbArrowButton.left {
     position: relative;
     width: 700px;
     z-index: 2;
+}
+
+.lisRef-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    z-index: 100;
 }
 
 @keyframes bounce {

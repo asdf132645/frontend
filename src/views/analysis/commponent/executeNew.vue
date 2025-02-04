@@ -1,33 +1,25 @@
 <template>
   <div class="execute-container">
-    <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
-      <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}</option>
-    </select>
 
     <div class="flex-justify-between w-full">
       <p class="startStopP-wrapper" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
-        <font-awesome-icon
-            :icon="['fas', 'circle-play']"
-            :class="{ 'startBtn': true, [btnStatus]: true }"
-        />
+        <font-awesome-icon :icon="['fas', 'circle-play']" :class="{ 'startBtn': true, [btnStatus]: true }"/>
       </p>
       <p class="startStopP-wrapper" v-else @click="toggleStartStop('stop')">
         <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
       </p>
 
       <div class="stop-container">
-        <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
-          <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
-        </select>
 
+        <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
+          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}</option>
+        </select>
         <div class="flex-align-center mt5">
-          <select v-model="cellInfo.wbcCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
-            <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
+          <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
+            <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
-          <select class="stopDivSelect" v-model="cellInfo.stitchCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
-            <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
-              {{ option.text }}
-            </option>
+          <select v-model="cellInfo.wbcCount" class="execute-wbcCount-wrapper" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+            <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
 

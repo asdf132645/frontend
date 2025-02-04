@@ -52,10 +52,13 @@
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>
                 </ul>
+                <div class="logOutBox" @click='fullScreen'>
+<!--                  <font-awesome-icon :icon="['fas', 'window-restore']" />-->
+                  FULL SCREEN
+                </div>
                 <div class="logOutBox" @click="exit">
                   EXIT
                 </div>
-                <div class="logOutBox" @click='fullScreen'>FULL SCREEN</div>
               </li>
             </ul>
           </div>
@@ -65,12 +68,30 @@
                 <font-awesome-icon class="cursorPointer" :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
                 <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
-              <li>
-                <font-awesome-icon v-if="isDoorOpen !== 'Y'" :icon="['fas', 'door-closed']"></font-awesome-icon>
-                <font-awesome-icon v-else :icon="['fas', 'door-open']" style="color: red;"/>
+              <li class="pos-relative">
+                <font-awesome-icon
+                    v-if="isDoorOpen !== 'Y'"
+                    :icon="['fas', 'door-closed']"
+                    @mouseenter="tooltipVisibleFunc('drawerStatus', true)"
+                    @mouseleave="tooltipVisibleFunc('drawerStatus', false)"
+                />
+                <font-awesome-icon
+                    v-else
+                    :icon="['fas', 'door-open']"
+                    style="color: red;"
+                    @mouseenter="tooltipVisibleFunc('drawerStatus', true)"
+                    @mouseleave="tooltipVisibleFunc('drawerStatus', false)"
+                />
+                <Tooltip :isVisible="tooltipVisible.drawerStatus" position="bottom" type="" :message="MSG.TOOLTIP.DRAWER_STATUS" />
               </li>
               <li>
-                <font-awesome-icon :icon="eqStatCdData.icon" :class="eqStatCdData.class"/>
+                <font-awesome-icon
+                    :icon="eqStatCdData.icon"
+                    :class="eqStatCdData.class"
+                    @mouseenter="tooltipVisibleFunc('runningStatus', true)"
+                    @mouseleave="tooltipVisibleFunc('runningStatus', false)"
+                />
+                <Tooltip :isVisible="tooltipVisible.runningStatus" position="bottom" type="" :message="MSG.TOOLTIP.RUNNING_STATUS" />
               </li>
               <li class="oliCount pos-relative" @click="openLayer">
                 <font-awesome-icon
@@ -78,7 +99,7 @@
                     @mouseenter="tooltipVisibleFunc('oilPrime', true)"
                     @mouseleave="tooltipVisibleFunc('oilPrime', false)"
                 />
-                <Tooltip :isVisible="tooltipVisible.oilPrime" className="mb08" position="bottom" type="" :message="`OilCount: ${oilCountData || 0}`" />
+                <Tooltip :isVisible="tooltipVisible.oilPrime" position="bottom" type="" :message="`OilCount: ${oilCountData || 0}`" />
               </li>
               <li class="storage pos-relative">
                 <font-awesome-icon
@@ -86,7 +107,7 @@
                     @mouseenter="tooltipVisibleFunc('storage', true)"
                     @mouseleave="tooltipVisibleFunc('storage', false)"
                 />
-                <Tooltip :isVisible="tooltipVisible.storage" className="mb08" position="bottom" type="" :message="`Storage: ${storagePercentData || 0}`" />
+                <Tooltip :isVisible="tooltipVisible.storage" position="bottom" type="" :message="`Storage: ${storagePercentData || 0}`" />
               </li>
 
             </ul>
@@ -261,6 +282,8 @@ const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const mouseClick = ref(false);
 const mounseLeave = ref(false);
 const tooltipVisible = reactive({
+  drawerStatus: false,
+  runningStatus: false,
   oilPrime: false,
   storage: false,
 })
@@ -758,7 +781,7 @@ const errMouseSet = () => {
   mouseClick.value = false;
 }
 
-const tooltipVisibleFunc = (type: 'oilPrime' | 'storage', visible: boolean) => {
+const tooltipVisibleFunc = (type: 'oilPrime' | 'storage' | 'drawerStatus' | 'runningStatus', visible: boolean) => {
   tooltipVisible[type] = visible;
 }
 
