@@ -21,10 +21,10 @@
     </colgroup>
     <thead>
     <tr style="position: sticky; top: 0;">
-      <th>NO</th>
       <th>
         <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
       </th>
+      <th>NO</th>
       <th>Type</th>
       <th>State</th>
       <th>Tray Slot</th>
@@ -57,26 +57,29 @@
           v-bind:data-row-id="item.id"
           @contextmenu.prevent="rowRightClick(item, $event)"
       >
-        <td style="position: relative;"
-            @mouseenter="abnormalClassInfoOpen(true, item.id)"
-            @mouseleave="abnormalClassInfoOpen(false, item.id)"
-        >
-          <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                             v-if="item.isNormal === 'N'"
-          />
-          {{ idx + 1 }}
-          <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
-          <div v-if="popupItemId === item.id && item.isNormal === 'N' && !isObjectEmpty(item.abnormalClassInfo)">
-            <div class="abnormalClassInfoPopup">
-              <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
-                <span>{{ abItem?.classNm }} : {{ abItem?.val }}</span>
+        <td @click="handleCheckboxChange(item)">
+          <div
+              @mouseenter="abnormalClassInfoOpen(true, item.id)"
+              @mouseleave="abnormalClassInfoOpen(false, item.id)"
+              style="position: relative; width: 4px; height: 4px;"
+          >
+            <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                               v-if="item.isNormal === 'N'"
+            />
+
+            <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
+            <div v-if="popupItemId === item.id && item.isNormal === 'N' && !isObjectEmpty(item.abnormalClassInfo)">
+              <div class="abnormalClassInfoPopup">
+                <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
+                  <span>{{ abItem?.classNm }} : {{ abItem?.val }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </td>
-        <td @click="handleCheckboxChange(item)">
+
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
+        <td>{{ idx + 1 }}</td>
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon

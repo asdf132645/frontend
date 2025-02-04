@@ -205,7 +205,6 @@ const getStoredUser = JSON.parse(storedUser || '{}');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const isBlinkingPrime = ref(false);
 let blinkTimeout: ReturnType<typeof setTimeout> | null = null;
-const siteCd = computed(() => store.state.commonModule.siteCd);
 
 const instance = getCurrentInstance();
 const showConfirm = ref(false);
@@ -739,9 +738,6 @@ const closeErrLog = () => {
 }
 
 const openErrLogOver = async () => {
-  if (siteCd.value !== '9090') {
-    return;
-  }
   ErrLogOpen.value = true;
   mounseLeave.value = true;
   await errLogLoad();

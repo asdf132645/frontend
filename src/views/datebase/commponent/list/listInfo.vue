@@ -5,11 +5,14 @@
       <h3 class="orderTitle hh3title">Order Information</h3>
       <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
-          <li>
-            <span class="mb10">Order ID:</span>
-            <span class="mb20">{{ selectedItem?.slotId }}</span>
-          </li>
-          <li>NS, NB Integration: {{integrationFindNe(selectedItem.wbcInfoAfter)}}</li>
+          <li v-if="selectedItem?.testType">Analysis Type: {{ selectedItem?.testType }}</li>
+          <li v-if="selectedItem?.barcodeNo">Barcode ID: {{ selectedItem?.barcodeNo }}</li>
+          <li v-if="selectedItem?.analyzedDttm">Order Date: {{ getDateTimeYYYYMMDDHHmmss(selectedItem?.analyzedDttm) }}</li>
+          <li v-if="selectedItem?.patientNm">Patient Name: {{ selectedItem?.patientNm }}</li>
+          <li v-if="selectedItem?.cbcSex">Sex: {{ selectedItem?.cbcSex }}</li>
+          <li v-if="selectedItem?.cbcAge">Age: {{ selectedItem?.cbcAge }}</li>
+          <li v-if="selectedItem?.hosNm">Hospital: {{ selectedItem?.hosNm }}</li>
+          <li>NS, NB Integration: {{ integrationFindNe(selectedItem.wbcInfoAfter) }}</li>
         </ul>
         <div>
           <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"
@@ -71,6 +74,7 @@ import {
   seoulStMaryPercentChange
 } from "@/common/helpers/common/classPercent";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
+import {getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);

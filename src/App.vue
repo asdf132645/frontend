@@ -345,20 +345,13 @@ async function socketData(data: any) {
       case 'SYSINFO':
         parsedDataSysInfoProps.value = parseDataWarp;
         let res = null;
-        if (siteCd.value === '9090') {
-          res = await sysInfoStoreNew(parseDataWarp);
-        } else {
-          res = await sysInfoStore(parseDataWarp);
-        }
+        res = await sysInfoStoreNew(parseDataWarp);
+        // res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
           if (res !== '') {
-            if (siteCd.value === '9090') {
-              const err = await errLogLoad();
-              showCoreErrorAlert(err);
-            } else {
-              showCoreErrorAlert(res);
-            }
+            const err = await errLogLoad();
+            showCoreErrorAlert(err);
             if (isAlarm) {
               await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
             }

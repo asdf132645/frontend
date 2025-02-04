@@ -6,7 +6,7 @@
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <RenewalWorking v-if="siteCd === '9090'" :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette"
+    <RenewalWorking v-if="!bmIsBoolen && pbVersion === '100a'" :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette"
                     class="contentRightChild"/>
     <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
                  v-else
@@ -53,6 +53,7 @@ onBeforeMount(async () => {
 
   pbVersion.value = window.MACHINE_VERSION;
   bmIsBoolen.value = window.PROJECT_TYPE === 'bm' ? true : false;
+
 });
 
 

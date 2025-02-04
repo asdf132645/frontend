@@ -201,11 +201,7 @@
       <!-- 모달 창 -->
       <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
         <div class="wbc-modal-content" @click="outerClickCloseModal">
-          <div
-              v-if="!isObjectEmpty(wpsJsonData) && siteCd === '9090'"
-              class="wbcModalImageContent-slideImg"
-          >
-
+          <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
             <div class="wbcModalImageContent-slideImg-textBox">
               <p class="wbcModalImageContent-slideImg-x-text">X:
                 {{ calculatedX }} mm</p>

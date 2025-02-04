@@ -150,7 +150,6 @@
             IA Root Path
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
                 @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
                 @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
             />
@@ -298,7 +297,6 @@
             Upload
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
                 @mouseenter="tooltipVisibleFunc('upload', true)"
                 @mouseleave="tooltipVisibleFunc('upload', false)"
             />
