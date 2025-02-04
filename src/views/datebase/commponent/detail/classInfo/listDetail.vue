@@ -199,29 +199,27 @@
       </div>
 
       <!-- 모달 창 -->
-      <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
-        <div class="wbc-modal-content" @click="outerClickCloseModal">
-          <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
-            <div class="wbcModalImageContent-slideImg-textBox">
-              <p class="wbcModalImageContent-slideImg-x-text">X:
-                {{ calculatedX }} mm</p>
-              <p class="wbcModalImageContent-slideImg-y-text">Y:
-                {{ calculatedY }} mm</p>
-            </div>
+      <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel" @click="outerClickCloseModal">
+        <div class="wbc-modal-content">
+          <div class="wbcModal-title-wrapper">
+            <h2>Cell Detail Information</h2>
+            <span class="wbcClose" @click="closeModal">&times;</span>
+          </div>
 
-            <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
-            <canvas  ref="canvasRef"></canvas>
-          </div>
-          <span class="wbcClose" @click="closeModal">&times;</span>
           <div class="wbcModalImageContent">
-            <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
-                 class="modal-image" ref="modalImage"/>
+            <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }" ref="modalImage"/>
           </div>
-          <div class="buttons">
+
+          <div class="wbcModalButton-wrapper">
             <div class="rangeBox">
               <p>{{ ((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
               <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom"/>
             </div>
+          </div>
+
+          <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
+            <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
+            <canvas  ref="canvasRef"></canvas>
           </div>
         </div>
       </div>
@@ -294,7 +292,7 @@ import {
 } from "@/gql/mutation/slideData";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import slidePositionImg from "@/assets/images/slide.jpg";
+import slidePositionImg from "@/assets/images/slide_pos.png";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const selectedTitle = ref('');
@@ -417,7 +415,7 @@ watch(
       if (newVal.id !== oldVal?.id) {
         await nextTick();
 
-        if (projectType.value !== 'bm' && siteCd.value === '9090') {
+        if (projectType.value !== 'bm') {
           await checkWps(newVal);
         } else {
           isWpsBtnShow.value = false;
@@ -849,7 +847,8 @@ const closeModal = () => {
 };
 
 const outerClickCloseModal = (e: any) => {
-  if (e.target.classList.contains('wbc-modal-content')) {
+  console.log('e.target.classList', e.target.classList);
+  if (e.target.classList.contains('wbcModal')) {
     modalOpen.value = false;
   }
 }
@@ -946,7 +945,7 @@ const drawCanvas = () => {
     ctx.strokeStyle = "black";
     ctx.beginPath();
     ctx.moveTo(calculatedX.value, 0); // Vertical line
-    ctx.lineTo(calculatedX.value, canvas.height - 209); // Stop at 209px from bottom
+    ctx.lineTo(calculatedX.value, canvas.height - 189); // Stop at 209px from bottom
     ctx.moveTo(0, calculatedY.value); // Horizontal line
     ctx.lineTo(canvas.width, calculatedY.value);
     ctx.stroke();
@@ -965,27 +964,47 @@ const drawCanvas = () => {
     const oldIndicators = canvasContainer.querySelectorAll(".indicator");
     oldIndicators.forEach((el) => el.remove());
 
-    // Create X indicator
-    const xIndicator = document.createElement("div");
-    xIndicator.className = "indicator x-indicator";
-    xIndicator.style.position = "absolute";
-    xIndicator.style.left = `${canvas.offsetLeft + calculatedX.value}px`;
-    xIndicator.style.top = `${canvas.offsetTop - 20}px`; // Slightly above the canvas
-    xIndicator.style.color = "black";
-    xIndicator.style.fontSize = "14px";
-    xIndicator.textContent = `X: ${calculatedX.value}`;
-    canvasContainer.appendChild(xIndicator);
+    // // Create X indicator
+    // const xIndicator = document.createElement("div");
+    // xIndicator.className = "indicator x-indicator";
+    // xIndicator.style.position = "absolute";
+    // xIndicator.style.left = `${canvas.offsetLeft + calculatedX.value - 8}px`;
+    // xIndicator.style.top = `${canvas.offsetTop - 20}px`; // Slightly above the canvas
+    // xIndicator.style.color = "white";
+    // xIndicator.style.fontSize = "14px";
+    // xIndicator.textContent = `X: ${calculatedX.value}`;
+    // canvasContainer.appendChild(xIndicator);
+    //
+    // // Create Y indicator
+    // const yIndicator = document.createElement("div");
+    // yIndicator.className = "indicator y-indicator";
+    // yIndicator.style.position = "absolute";
+    // yIndicator.style.left = `${canvas.offsetLeft - 50}px`; // Slightly to the left of the canvas
+    // yIndicator.style.top = `${canvas.offsetTop + calculatedY.value - 8}px`;
+    // yIndicator.style.color = "white";
+    // yIndicator.style.fontSize = "14px";
+    // yIndicator.textContent = `Y: ${calculatedY.value}`;
+    // canvasContainer.appendChild(yIndicator);
 
-    // Create Y indicator
-    const yIndicator = document.createElement("div");
-    yIndicator.className = "indicator y-indicator";
-    yIndicator.style.position = "absolute";
-    yIndicator.style.left = `${canvas.offsetLeft - 50}px`; // Slightly to the left of the canvas
-    yIndicator.style.top = `${canvas.offsetTop + calculatedY.value}px`;
-    yIndicator.style.color = "black";
-    yIndicator.style.fontSize = "14px";
-    yIndicator.textContent = `Y: ${calculatedY.value}`;
-    canvasContainer.appendChild(yIndicator);
+    const zeroIndicator = document.createElement("div");
+    zeroIndicator.className = "indicator y-indicator";
+    zeroIndicator.style.position = "absolute";
+    zeroIndicator.style.left = `-32px`;
+    zeroIndicator.style.top = `-16px`;
+    zeroIndicator.style.color = "white";
+    zeroIndicator.style.fontSize = "14px";
+    zeroIndicator.textContent = `(0, 0)`;
+    canvasContainer.appendChild(zeroIndicator);
+
+    const xyIndicator = document.createElement("div");
+    xyIndicator.className = "indicator xy-indicator";
+    xyIndicator.style.position = "absolute";
+    xyIndicator.style.left = `${calculatedX.value + 8}px`; // Slightly to the left of the canvas
+    xyIndicator.style.top = `${calculatedY.value - 16}px`;
+    xyIndicator.style.color = "black";
+    xyIndicator.style.fontSize = "14px";
+    xyIndicator.textContent = `(${calculatedX.value}, ${calculatedY.value})`;
+    canvasContainer.appendChild(xyIndicator);
   }
 };
 
