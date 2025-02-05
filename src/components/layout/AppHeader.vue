@@ -463,7 +463,6 @@ const handleOkConfirm = async () => {
       await axios.get(url);
     }
   } else {
-    sessionStorage.clear();
     await router.push('user/login');
     if (document.fullscreenElement) {
       await document.exitFullscreen();

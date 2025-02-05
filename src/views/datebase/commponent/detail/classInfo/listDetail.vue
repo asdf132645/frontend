@@ -956,17 +956,28 @@ const refreshClass = async (data: any) => {
     isWpsBtnShow.value = false;
   }
 }
+
 const calculatedX = computed(() => {
   const x1 = Number(wpsJsonData.value[0]?.x1 || 0);
   const x2 = Number(wpsJsonData.value[0]?.x2 || 0)
-  return Math.round(x1 + Number(wbcXYPos.value.posX) / (Number(wbcXYPos.value.totalWidth) / (x2 - x1)));
+  const tempX = Math.round(x1 + Number(wbcXYPos.value.posX) / (Number(wbcXYPos.value.totalWidth) / (x2 - x1)))
+  return ((tempX / 256) * 22).toFixed(2);
 });
+
+const realX = computed(() => {
+  return (calculatedX.value / 22) * 256;
+})
 
 const calculatedY = computed(() => {
   const y1 = Number(wpsJsonData.value[0]?.y1 || 0);
   const y2 = Number(wpsJsonData.value[0]?.y2 || 0)
-  return Math.round(y1 + Number(wbcXYPos.value.posY) / (Number(wbcXYPos.value.totalHeight) / (y2 - y1)));
+  const tempY = Math.round(y1 + Number(wbcXYPos.value.posY) / (Number(wbcXYPos.value.totalHeight) / (y2 - y1)))
+  return ((tempY / 746) * 76).toFixed(2);
 });
+
+const realY = computed(() => {
+  return (calculatedY.value / 76) * 746;
+})
 
 const drawCanvas = () => {
   const canvas = canvasRef.value;
@@ -981,22 +992,23 @@ const drawCanvas = () => {
     canvas.height = img.height;
 
     // Draw the image onto the canvas
+    // 22 76
     ctx.drawImage(img, 0, 0, img.width, img.height);
 
     // Draw dashed lines
     ctx.setLineDash([5, 5]); // Dash pattern: 5px dash, 5px gap
     ctx.strokeStyle = "black";
     ctx.beginPath();
-    ctx.moveTo(calculatedX.value, 0); // Vertical line
-    ctx.lineTo(calculatedX.value, canvas.height - 189); // Stop at 209px from bottom
-    ctx.moveTo(0, calculatedY.value); // Horizontal line
-    ctx.lineTo(canvas.width, calculatedY.value);
+    ctx.moveTo(realX.value, 0); // Vertical line
+    ctx.lineTo(realX.value, canvas.height - 200); // Stop at 209px from bottom
+    ctx.moveTo(0, realY.value); // Horizontal line
+    ctx.lineTo(canvas.width, realY.value);
     ctx.stroke();
 
     // Draw red circle at the intersection
     ctx.setLineDash([]); // Reset dash
     ctx.beginPath();
-    ctx.arc(calculatedX.value, calculatedY.value, 5, 0, 2 * Math.PI); // Circle radius: 5
+    ctx.arc(realX.value, realY.value, 5, 0, 2 * Math.PI); // Circle radius: 5
     ctx.fillStyle = "red";
     ctx.fill();
 
@@ -1020,8 +1032,8 @@ const drawCanvas = () => {
     const xyIndicator = document.createElement("div");
     xyIndicator.className = "indicator xy-indicator";
     xyIndicator.style.position = "absolute";
-    xyIndicator.style.left = calculatedX.value + 8 < 200 ? `${calculatedX.value + 8}px` : `${calculatedX.value - 70}px`; // Slightly to the left of the canvas
-    xyIndicator.style.top = `${calculatedY.value - 16}px`;
+    xyIndicator.style.left = calculatedX.value < 12 ? `${realX.value + 8}px` : `${realX.value - 94}px`; // Slightly to the left of the canvas
+    xyIndicator.style.top = `${realY.value - 16}px`;
     xyIndicator.style.color = "black";
     xyIndicator.style.fontSize = "14px";
     xyIndicator.textContent = `(${calculatedX.value}, ${calculatedY.value})`;
