@@ -18,8 +18,7 @@
             <button class="memoModalBtn" @click="memoChange">OK</button>
             <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
           </div>
-          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.MEMO"/>
+          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" :message="MSG.TOOLTIP.MEMO"/>
         </li>
         <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': slideData.submitState === 'Submit'}">
           <font-awesome-icon
@@ -27,8 +26,7 @@
               @mouseenter="tooltipVisibleFunc('confirm', true)"
               @mouseleave="tooltipVisibleFunc('confirm', false)"
           />
-          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CONFIRM"/>
+          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" :message="MSG.TOOLTIP.CONFIRM"/>
         </li>
       </ul>
     </div>

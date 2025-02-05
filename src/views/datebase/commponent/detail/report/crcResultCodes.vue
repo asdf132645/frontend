@@ -35,7 +35,7 @@
           <!-- 검색 입력 필드 -->
           <input
               v-model="searchText"
-              placeholder="code Search"
+              placeholder="Code Search"
               class="autocomplete-input"
               @focus="showDropdown = true"
               @blur="hideDropdownWithDelay"

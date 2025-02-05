@@ -89,6 +89,10 @@
     margin-left: 20px;
 }
 
+.ml40 {
+    margin-left: 40px;
+}
+
 .mr12 {
     margin-right: 12px;
 }
@@ -111,6 +115,10 @@
 
 .gap14 {
     gap: 14px;
+}
+
+.left0 {
+    left: 0;
 }
 
 .left20 {
@@ -608,7 +616,6 @@ li.errLogLi.warning:before {
     align-items: center;
     padding-top: 9px;
     text-align: left;
-    cursor: pointer;
 }
 
 ul.userSetOutUl > li {
@@ -685,7 +692,7 @@ ul.userSetOutUl {
 }
 
 .lastMenu {
-    width: 240px;
+    width: 190px;
     text-align: right;
     position: absolute;
     right: 0;
@@ -780,6 +787,7 @@ li.errLogLi.critical:before {
     padding: 20px;
     min-width: 500px;
     top: 30px;
+    left: -40px;
     border: 1px solid;
     cursor: default;
 }
@@ -2581,7 +2589,7 @@ ul.wbcInfoDbUl > li {
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    padding-top: 20px;
     margin-bottom: 20px;
     overflow-x: auto;
 }
@@ -3909,7 +3917,7 @@ button.rollbackButton {
 
 .iconHeaderMenu {
     position: absolute;
-    right: 265px;
+    right: 220px;
     top: 26px;
 }
 
@@ -5743,6 +5751,7 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
+    transform: translateZ(0);
 }
 
 .tooltip-container > pre {
@@ -5756,13 +5765,13 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-bottom {
-    top: 150%;
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .tooltip-pos-left {
-    right: 150%;
+    right: 100%;
     top: 50%;
     transform: translateY(-50%);
 }
