@@ -241,18 +241,18 @@
             <span class="wbcClose" @click="closeModal">&times;</span>
           </div>
 
-          <div class="wbcModalImageContent">
+          <div :class="siteCd === '9090' ? 'wbcModalImageContent' : 'wbcModalImageContentBefore'">
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }" ref="modalImage"/>
           </div>
 
-          <div class="wbcModalButton-wrapper">
+          <div :class="siteCd == '9090' ? 'wbcModalButton-wrapper' : 'wbcModalButton-wrapperBefore'">
             <div class="rangeBox">
               <p>{{ ((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
               <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom"/>
             </div>
           </div>
 
-          <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
+          <div v-if="!isObjectEmpty(wpsJsonData) && siteCd === '9090'" class="wbcModalImageContent-slideImg">
             <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
             <canvas  ref="canvasRef"></canvas>
           </div>
@@ -465,7 +465,9 @@ watch(
         try {
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
-          await getWPSData();
+          if (siteCd.value === '9090') {
+            await getWPSData();
+          }
           isLoadedSlideData.value = false;
           wbcInfo.value = [];
           isLoadedSlideData.value = true;
@@ -880,6 +882,7 @@ function replaceFileNamePrefix(fileName: string) {
 const openModal = async (image: any, item: any) => {
   modalOpen.value = true;
   selectedImageSrc.value = getImageUrl(image.fileName, item.id, item.title, 'getImageRealTime');
+  if (siteCd.value !== '9090') return;
   await getImageXYPosition(image);
 };
 
@@ -1050,6 +1053,7 @@ const drawCanvas = () => {
 // Re-draw canvas when dependencies change
 watch([calculatedX, calculatedY], drawCanvas);
 const drawCellMarker = async (imgResize?: boolean) => {
+  if (siteCd.value !== '9090') return;
   if (!imgResize) {
     cellMarkerIcon.value = !cellMarkerIcon.value
   }
