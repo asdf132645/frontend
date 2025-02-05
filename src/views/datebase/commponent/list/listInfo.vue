@@ -5,14 +5,38 @@
       <h3 class="orderTitle hh3title">Order Information</h3>
       <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
-          <li v-if="selectedItem?.testType">Analysis Type: {{ selectedItem?.testType }}</li>
-          <li v-if="selectedItem?.barcodeNo">Barcode ID: {{ selectedItem?.barcodeNo }}</li>
-          <li v-if="selectedItem?.analyzedDttm">Order Date: {{ getDateTimeYYYYMMDDHHmmss(selectedItem?.analyzedDttm) }}</li>
-          <li v-if="selectedItem?.patientNm">Patient Name: {{ selectedItem?.patientNm }}</li>
-          <li v-if="selectedItem?.cbcSex">Sex: {{ selectedItem?.cbcSex }}</li>
-          <li v-if="selectedItem?.cbcAge">Age: {{ selectedItem?.cbcAge }}</li>
-          <li v-if="selectedItem?.hosNm">Hospital: {{ selectedItem?.hosNm }}</li>
-          <li>NS, NB Integration: {{ integrationFindNe(selectedItem.wbcInfoAfter) }}</li>
+          <li v-if="selectedItem?.testType">
+            <p>Analysis Type</p>
+            <p>{{ selectedItem?.testType }}</p>
+          </li>
+          <li v-if="selectedItem?.barcodeNo">
+            <p>Barcode ID</p>
+            <p>{{ selectedItem?.barcodeNo }}</p>
+          </li>
+          <li v-if="selectedItem?.analyzedDttm">
+            <p>Analyzed Date</p>
+            <p>{{ getDateTimeYYYYMMDDHHmmss(selectedItem?.analyzedDttm) }}</p>
+          </li>
+          <li v-if="selectedItem?.patientNm">
+            <p>Patient Name</p>
+            <p>{{ selectedItem?.patientNm }}</p>
+          </li>
+          <li v-if="selectedItem?.cbcSex">
+            <p>Sex</p>
+            <p>{{ selectedItem?.cbcSex }}</p>
+          </li>
+          <li v-if="selectedItem?.cbcAge">
+            <p>Age</p>
+            <p>{{ selectedItem?.cbcAge }}</p>
+          </li>
+          <li v-if="selectedItem?.hosNm">
+            <p>Hospital</p>
+            <p>{{ selectedItem?.hosNm }}</p>
+          </li>
+          <li>
+            <p>NS, NB Integration</p>
+            <p>{{ integrationFindNe(selectedItem.wbcInfoAfter) }}</p>
+          </li>
         </ul>
         <div>
           <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"

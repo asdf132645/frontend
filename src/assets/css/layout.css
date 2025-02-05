@@ -2808,8 +2808,18 @@ ul.leftWbcInfo {
 
 }
 
+.orderListUi {
+    width: 270px;
+}
+
 ul.orderListUi > li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+ul.orderListUi > li > p:nth-child(1) {
+    width: 130px;
 }
 
 ul.orderListUi > li > img {

@@ -25,3 +25,15 @@ export interface CellImageAnalyzedType {
     upload: boolean;
     openDownloadSavePath: boolean;
 }
+
+export interface DetailHeaderType {
+    analysisType: boolean;
+    barcodeNo: boolean;
+    analyzedDttm: boolean;
+    patientNo: boolean;
+    patientName: boolean;
+    sex: boolean;
+    age: boolean;
+    hospitalName: boolean;
+    slideStatus: boolean;
+}
