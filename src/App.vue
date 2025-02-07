@@ -70,7 +70,7 @@ import {
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {sysInfoStore, runningInfoStore, sysInfoStoreNew} from "@/common/helpers/common/store/common";
-import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
+import { appVueUpdateMutation, gqlGenericUpdate } from "@/gql/mutation/slideData";
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
@@ -578,7 +578,6 @@ async function socketData(data: any) {
           }
         }
 
-
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
@@ -642,7 +641,11 @@ async function socketData(data: any) {
           isNsNbIntegration: isNsNbIntegrationLocal.value || '',
           wbcMemo: '',
           rbcMemo: '',
-          abnormalClassInfo: classInfo
+          abnormalClassInfo: classInfo,
+          slideCondition: {
+            condition: completeSlot?.condition,
+            desc: '',
+          },
         }
 
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);

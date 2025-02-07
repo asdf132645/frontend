@@ -102,6 +102,18 @@ export const rbcUpdateDocument = gql`
     }
 `;
 
+export const slideConditionUpdateDocument = gql`
+    mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
+        updateRunningInfoGQL(updateDto: $updateDto) {
+            id
+            slideCondition {
+                condition
+                desc
+            }
+        }
+    }
+`;
+
 export const appVueUpdateDocument = gql`
     mutation UpdateRunningInfo($updateDto: UpdateRuningInfoDto!) {
         updateRunningInfoGQL(updateDto: $updateDto) {
@@ -193,6 +205,10 @@ export function barcodeNoUpdateMutation(options: VueApolloComposable.UseMutation
 
 export function rbcUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
     return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(rbcUpdateDocument, options);
+}
+
+export function slideConditionUpdateMutatation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {
+    return VueApolloComposable.useMutation<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>(slideConditionUpdateDocument, options);
 }
 
 export function isAllClassCheckedUpdateMutation(options: VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<UpdateRunningInfoMutation, UpdateRunningInfoMutationVariables>> = {}) {

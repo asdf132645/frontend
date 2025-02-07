@@ -84,14 +84,6 @@
         <span>{{ hospitalName }}</span>
         <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" position="bottom" type="" message='Hospital name' />
       </li>
-      <li v-if="slideStatus && siteCd === '9090'" class="slideStatus"
-          @mouseenter="tooltipVisibleFunc('slideStatus', true)"
-          @mouseleave="tooltipVisibleFunc('slideStatus', false)"
-      >
-        Slide Condition : {{ slideStatus }}
-        <Tooltip :isVisible="tooltipVisible.slideStatus" className="mb08" position="bottom" type=""
-                 :message="`${slideStatusDesc}`"/>
-      </li>
     </ul>
   </div>
 
@@ -162,10 +154,7 @@ const tooltipVisible = ref({
   sex: false,
   age: false,
   hospitalName: false,
-  slideStatus: false
 })
-const slideStatus = ref('');
-const slideStatusDesc = ref('');
 const isModalOpen = ref(false);
 const barcodeInput = ref(null);
 const localBarcodeNo = ref('');
@@ -179,12 +168,6 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  const path = pbiaRootDir.value;
-  const folderPath = !projectBm.value ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
-  const url_new = `${path}/${slideData.value.slotId}/${folderPath}/Slide_Condition.json`;
-  const response_new = await readJsonFile({fullPath: url_new});
-  slideStatus.value = response_new?.data?.condition;
-  slideStatusDesc.value = response_new?.data?.description;
   localBarcodeNo.value = props.barcodeNo;
 })
 

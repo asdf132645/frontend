@@ -25,6 +25,7 @@ export type ClassInfo = {
   classNm?: Maybe<Scalars['String']['output']>;
   degree?: Maybe<Scalars['String']['output']>;
   originalDegree?: Maybe<Scalars['String']['output']>;
+  rbcImageDegreeInfo?: Maybe<Array<RbcDegreeByImageInfoObj>>;
 };
 
 export type Coordinates = {
@@ -50,6 +51,13 @@ export type Query = {
 
 export type QueryGetRunningInfoByIdGqlArgs = {
   id: Scalars['Int']['input'];
+};
+
+export type RbcDegreeByImageInfoObj = {
+  __typename?: 'RBCDegreeByImageInfoObj';
+  degree?: Maybe<Scalars['String']['output']>;
+  imageNo?: Maybe<Scalars['Float']['output']>;
+  originalDegree?: Maybe<Scalars['String']['output']>;
 };
 
 export type RbcAfterClassInfoObj = {

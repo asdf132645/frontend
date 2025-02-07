@@ -59,20 +59,42 @@
       >
         <td @click="handleCheckboxChange(item)">
           <div
-              @mouseenter="abnormalClassInfoOpen(true, item.id)"
-              @mouseleave="abnormalClassInfoOpen(false, item.id)"
+              @mouseenter="abnormalClassInfoOpen(true, item)"
+              @mouseleave="abnormalClassInfoOpen(false, item)"
               style="position: relative; width: 4px; height: 4px;"
           >
-            <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                               v-if="item.isNormal === 'N'"
-            />
-
-            <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
-            <div v-if="popupItemId === item.id && item.isNormal === 'N' && !isObjectEmpty(item.abnormalClassInfo)">
-              <div class="abnormalClassInfoPopup">
-                <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
-                  <span>{{ abItem?.classNm }} : {{ abItem?.val }}</span>
+<!--            <template v-if="siteCd !== '9090'">-->
+<!--              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"-->
+<!--                                 v-if="item.isNormal === 'N'"/>-->
+<!--            </template>-->
+<!--            <template v-else>-->
+              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                 v-if="item?.slideCondition?.condition === 'Bad'"
+              />
+              <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                 v-else-if="item?.isNormal === 'N'"
+              />
+<!--            </template>-->
+            <div v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
+              <div class="slideStatus-container">
+                <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
+                  <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                  <span>{{ slideCondition?.desc }}</span>
                 </div>
+
+                <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+
+                <div v-if="Array.isArray(item?.abnormalClassInfo)" class="slideStatusPopup-wrapper normalRange">
+                  <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
+                  <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo" :key="abnormalIdx">
+                    <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
+                      <span>{{ abItem?.classNm }}</span>
+                      <span>{{ abItem?.val }}</span>
+                      <span>({{ currentAbnormalRange[abnormalIdx]?.min }} - {{ currentAbnormalRange[abnormalIdx]?.max }}) {{ currentAbnormalRange[abnormalIdx]?.unit }}</span>
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -178,14 +200,12 @@
     </template>
   </Modal>
 
-  <template v-if="siteCd === '9090'">
     <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
               :selectItemWbc="selectItemWbc" @printClose="printClose"/>
-  </template>
-  <template v-else>
-    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
-           :selectItemWbc="selectItemWbc" @printClose="printClose"/>
-  </template>
+<!--  <template v-else>-->
+<!--    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"-->
+<!--           :selectItemWbc="selectItemWbc" @printClose="printClose"/>-->
+<!--  </template>-->
 
   <Alert
       v-if="showAlert"
@@ -225,7 +245,7 @@ import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/a
 import {useStore} from "vuex";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
-import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import {getNormalRangeApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
@@ -234,6 +254,8 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
+import {gqlGenericUpdate, slideConditionUpdateMutatation} from "@/gql/mutation/slideData";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);
@@ -256,6 +278,11 @@ const formatDateString = (dateString) => {
 }
 const showConfirm = ref(false);
 const confirmMessage = ref('');
+const slideCondition = ref({
+  condition: '',
+  desc: '',
+})
+const currentAbnormalRange = ref([]);
 
 
 const contextMenu = ref({
@@ -288,6 +315,8 @@ const barCodeImageShowError = ref(false);
 const selectedItemsUsedInDelete = ref([]);
 const dbDataFindByIdUsedInDelete = ref([]);
 const popupItemId = ref('');
+const normalItems = ref([]);
+
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
 })
@@ -301,12 +330,36 @@ onMounted(async () => {
   } catch (e) {
     console.error(e);
   }
+  await getNormalRange();
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 })
-const abnormalClassInfoOpen = (isOpen, itemId) => {
-  popupItemId.value = isOpen ? itemId : null;
+
+const abnormalClassInfoOpen = async (isOpen, item) => {
+  if (!item.slideCondition?.desc) {
+    const slideInfo = await getSlideCondition(item.slotId);
+    const slideInfoObj = {
+      condition: slideInfo?.slideCondition,
+      desc: slideInfo?.slideDescription
+    };
+
+    const updatedRuningInfo = { ...item, slideCondition: slideInfoObj };
+    await gqlGenericUpdate(slideConditionUpdateMutatation, {
+      id: item?.id,
+      slideCondition: slideInfoObj
+    });
+    slideCondition.value.condition = slideInfoObj.condition;
+    slideCondition.value.desc = slideInfoObj.desc;
+    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+  } else {
+    slideCondition.value.condition = item.slideCondition?.condition;
+    slideCondition.value.desc = item.slideCondition?.desc;
+  }
+
+  updateAbnormalRanges(item);
+
+  popupItemId.value = isOpen ? item.id : null;
 }
 
 async function handleKeyDown(event) {
@@ -730,6 +783,53 @@ const showDeleteConfirm = () => {
   resetContextMenu();
   emits('disableSelectItem');
 }
+
+const getSlideCondition = async (slotId) => {
+  const path = pbiaRootDir.value;
+  const folderPath = projectType.value !== 'bm' ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
+  const url_new = `${path}/${slotId}/${folderPath}/Slide_Condition.json`;
+  let slideCondition = '';
+  let slideDescription = '';
+  try {
+    const response_new = await readJsonFile({fullPath: url_new});
+    slideCondition = response_new?.data?.condition;
+    slideDescription = response_new?.data?.description;
+  } catch (err) {
+    console.error(err);
+  }
+
+  return { slideCondition, slideDescription };
+}
+
+const getNormalRange = async () => {
+  try {
+    const result = await getNormalRangeApi();
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        normalItems.value = data;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+const updateAbnormalRanges = (data) => {
+  if (isObjectEmpty(data?.abnormalClassInfo)) {
+    return;
+  }
+
+  currentAbnormalRange.value = data.abnormalClassInfo
+      .map(abnormalItem => normalItems.value.find(normalRange => normalRange.abbreviation === abnormalItem.classNm))
+      .filter(Boolean)
+      .map(normalRange => ({
+        title: normalRange.abbreviation,
+        min: normalRange.min,
+        max: normalRange.max,
+        unit: normalRange.unit,
+      }));
+};
 
 </script>
 
