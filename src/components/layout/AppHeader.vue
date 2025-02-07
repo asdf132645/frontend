@@ -290,6 +290,7 @@ const tooltipVisible = reactive({
 
 const formattedDate = computed(() => currentDate.value);
 const formattedTime = computed(() => currentTime.value);
+const isLoadingErrorLog = ref(false);
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
@@ -370,10 +371,15 @@ const errLogOn = async () => {
 }
 
 const errLogLoad = async () => {
-  if (errArr.value.length !== 0){
-    return
+  if (errArr.value.length !== 0) {
+    return;
   }
 
+  if (isLoadingErrorLog.value) {
+    return;
+  }
+
+  isLoadingErrorLog.value = true;
   const folderPath = `folderPath=${rootDir.value.replace('PBIA_proc','')}UIMD_Data/Backend_Log`;
   let res = await errLogsReadApi(folderPath);
 
@@ -394,6 +400,7 @@ const errLogLoad = async () => {
 
     errArr.value = processLogData(res?.data);
   }
+  isLoadingErrorLog.value = false;
 }
 
 const processLogData = (data: any) => {
@@ -669,6 +676,7 @@ const onReset = () => {
   Object.assign(settings, {
     oilCount,
     isOilReset: 'Y',
+    pbiaRootDir: rootDir.value,
     // uiVersion: 'uimd-pb-comm_v3',
     userId: '',
     isNsNbIntegration: isNsNbIntegration.value || '',
