@@ -811,7 +811,7 @@ export const DIR_NAME = {
     BF: '02_LowPower_Image',
     BF_HIGH: '03_HighPower_Image',
     BF_CLASS: '05_BF_Classification',
-    IA_ROOT_PATH: 'D:/ia_proc',
+    IA_ROOT_PATH: 'D:/IA_Proc',
 }
 
 export const settingName = {

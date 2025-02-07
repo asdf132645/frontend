@@ -240,6 +240,10 @@ const initCbcData = async (newVal: any) => {
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
       await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
       break;
+    case HOSPITAL_SITE_CD_BY_NAME['원자력병원']:
+      await crcCbcDataLoad();
+      await commonCBC(firstCbcDatafilename.value);
+      break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
       // await uimdTestUrlSend();
@@ -437,7 +441,7 @@ const commonFileData = async (firstCbcDatafilename: string) => {
       keyword: props.selectItems?.barcodeNo
     }
     await fileSysCopy(fileParams);
-    await fileSysClean(fileSysCleanParams);
+    // await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
     getCBCWorkListFromFileData(msg);
 

@@ -183,32 +183,32 @@ const startFakeDataTest = () => {
       {progressNo: 5, progressName: "Initialize Axis2", progressPercent: 0},
   );
 
-  let fakePercent = 0;
-  const interval = setInterval(() => {
-    if (fakePercent > 100) {
-      clearInterval(interval);
-    } else {
-      progressData.progressBarText = `테스트 진행 중 (${fakePercent}%)`;
-      progressData.progressBarPercent = fakePercent;
-
-      progressData.progressArr.forEach((step: any, index: any) => {
-        const stepStart = index * 33.33;
-        const stepEnd = (index + 1) * 33.33;
-
-        if (fakePercent >= stepEnd) {
-          step.progressPercent = 100;
-          activeStepIndex.value = Math.min(index + 1, progressData.progressArr.length - 1);
-        } else if (fakePercent > stepStart) {
-          step.progressPercent = ((fakePercent - stepStart) / (stepEnd - stepStart)) * 100;
-          activeStepIndex.value = index;
-        } else {
-          step.progressPercent = 0;
-        }
-      });
-
-      fakePercent += 5;
-    }
-  }, 500);
+  // let fakePercent = 0;
+  // const interval = setInterval(() => {
+  //   if (fakePercent > 100) {
+  //     clearInterval(interval);
+  //   } else {
+  //     progressData.progressBarText = `테스트 진행 중 (${fakePercent}%)`;
+  //     progressData.progressBarPercent = fakePercent;
+  //
+  //     progressData.progressArr.forEach((step: any, index: any) => {
+  //       const stepStart = index * 33.33;
+  //       const stepEnd = (index + 1) * 33.33;
+  //
+  //       if (fakePercent >= stepEnd) {
+  //         step.progressPercent = 100;
+  //         activeStepIndex.value = Math.min(index + 1, progressData.progressArr.length - 1);
+  //       } else if (fakePercent > stepStart) {
+  //         step.progressPercent = ((fakePercent - stepStart) / (stepEnd - stepStart)) * 100;
+  //         activeStepIndex.value = index;
+  //       } else {
+  //         step.progressPercent = 0;
+  //       }
+  //     });
+  //
+  //     fakePercent += 5;
+  //   }
+  // }, 500);
 };
 
 onBeforeMount(() => {

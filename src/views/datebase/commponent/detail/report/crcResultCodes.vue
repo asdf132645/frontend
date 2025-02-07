@@ -84,14 +84,14 @@
           </span>
 
           <button
-              class="crcResultCodes-commentMatching-btn"
+              class="reSelect"
               v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']"
-              @click="changeRemark(crcArr, remarkList)"
+              @click="createSummary"
           >
-            Comment Match
+            Create Summary
           </button>
 
-          <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
+          <button v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['원자력병원']" class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -289,6 +289,11 @@ const ywmcSlip = ref('H3');
 const cbcFlag = ref('');
 const kcchOnOff = ref(false);
 const nowCrcDataLis = ref([]);
+const createdSummary = ref<any>({
+  RBC: [],
+  WBC: [],
+  PLT: [],
+});
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
@@ -386,27 +391,50 @@ onMounted(async () => {
 });
 
 watch(() => props.triggerChangeCRCMorphology, async () => {
+  await initCbcData0033();
+})
+
+const initCbcData0033 = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const cbcFilePathSetArr = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
 
-  const cbcResult = await kcch_0033GetCBCData({
-    iaRootPath: path,
-    barcodeNo: props.selectItems?.barcodeNo,
-    slotId: props.selectItems?.slotId,
-    cbcFilePathSetArr,
-    cbcCodeList: cbcCodeList.value,
-  }); // 원자력 병원 CRC 받아온 데이터
+  try {
+    const cbcResult = await kcch_0033GetCBCData({
+      iaRootPath: path,
+      barcodeNo: props.selectItems?.barcodeNo,
+      slotId: props.selectItems?.slotId,
+      cbcFilePathSetArr,
+      cbcCodeList: cbcCodeList.value,
+    }); // 원자력 병원 CRC 받아온 데이터
 
-  if (cbcResult?.resultCBCCode) {
-    const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
-      return kcchCbcAutoMatching({ data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge });
-    }));
 
-    // flatten the array and map to CRC
-    mapResultToCrcArr(autoChangeCodes.flat(), crcArr.value);
+    if (cbcResult?.resultCBCCode) {
+      const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
+        return kcchCbcAutoMatching({ data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge });
+      }));
+
+      const flattedAutoChangeCodes = autoChangeCodes.flat();
+
+      for (const item of flattedAutoChangeCodes) {
+        createdSummary.value[item.moType].push({
+          moType: item.moType,
+          title: item.title,
+          content: item.content,
+        });
+      }
+
+      mapResultToCrcArr(autoChangeCodes.flat(), crcArr.value);
+    }
+
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast('Successfully Applied');
+  } catch (err) {
+    console.error(err);
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast('Failed to Apply');
   }
-})
+}
 
 const mapResultToCrcArr = (result: KcchCbcAutoMatchingReturn[], crcArr: any) => {
   crcArr.forEach((crcItem) => {
@@ -1044,6 +1072,11 @@ const updateCbcDataToDatabase = async ({ cbcPatientNo, cbcPatientNm, cbcSex, cbc
   const updatedItem = { cbcPatientNo, cbcPatientNm, cbcSex, cbcAge };
   const updatedRuningInfo = { id: slideData.value.id, ...updatedItem };
   await resRunningItem(updatedRuningInfo, true);
+}
+
+const createSummary = () => {
+  changeRemark(crcArr.value, createdSummary.value, remarkList.value)
+
 }
 
 </script>
