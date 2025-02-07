@@ -241,18 +241,18 @@
             <span class="wbcClose" @click="closeModal">&times;</span>
           </div>
 
-          <div :class="siteCd === '9090' ? 'wbcModalImageContent' : 'wbcModalImageContentBefore'">
+          <div :class="!isObjectEmpty(wpsJsonData) ? 'wbcModalImageContent' : 'wbcModalImageContentBefore'">
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }" ref="modalImage"/>
           </div>
 
-          <div :class="siteCd == '9090' ? 'wbcModalButton-wrapper' : 'wbcModalButton-wrapperBefore'">
+          <div :class="!isObjectEmpty(wpsJsonData) ? 'wbcModalButton-wrapper' : 'wbcModalButton-wrapperBefore'">
             <div class="rangeBox">
               <p>{{ ((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
               <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom"/>
             </div>
           </div>
 
-          <div v-if="!isObjectEmpty(wpsJsonData) && siteCd === '9090'" class="wbcModalImageContent-slideImg">
+          <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
             <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
             <canvas  ref="canvasRef"></canvas>
           </div>
@@ -465,9 +465,7 @@ watch(
         try {
           await getNormalRange(); // 함수가 선언된 이후 호출
           await getDetailRunningInfo(newVal);
-          if (siteCd.value === '9090') {
-            await getWPSData();
-          }
+          await getWPSData();
           isLoadedSlideData.value = false;
           wbcInfo.value = [];
           isLoadedSlideData.value = true;
@@ -882,7 +880,6 @@ function replaceFileNamePrefix(fileName: string) {
 const openModal = async (image: any, item: any) => {
   modalOpen.value = true;
   selectedImageSrc.value = getImageUrl(image.fileName, item.id, item.title, 'getImageRealTime');
-  if (siteCd.value !== '9090') return;
   await getImageXYPosition(image);
 };
 
@@ -961,6 +958,10 @@ const refreshClass = async (data: any) => {
 }
 
 const calculatedX = computed(() => {
+  if (isObjectEmpty(wpsJsonData)) {
+    return;
+  }
+
   const x1 = Number(wpsJsonData.value[0]?.x1 || 0);
   const x2 = Number(wpsJsonData.value[0]?.x2 || 0)
   const tempX = Math.round(x1 + Number(wbcXYPos.value.posX) / (Number(wbcXYPos.value.totalWidth) / (x2 - x1)))
@@ -972,6 +973,10 @@ const realX = computed(() => {
 })
 
 const calculatedY = computed(() => {
+  if (isObjectEmpty(wpsJsonData)) {
+    return;
+  }
+
   const y1 = Number(wpsJsonData.value[0]?.y1 || 0);
   const y2 = Number(wpsJsonData.value[0]?.y2 || 0)
   const tempY = Math.round(y1 + Number(wbcXYPos.value.posY) / (Number(wbcXYPos.value.totalHeight) / (y2 - y1)))
@@ -1053,7 +1058,6 @@ const drawCanvas = () => {
 // Re-draw canvas when dependencies change
 watch([calculatedX, calculatedY], drawCanvas);
 const drawCellMarker = async (imgResize?: boolean) => {
-  if (siteCd.value !== '9090') return;
   if (!imgResize) {
     cellMarkerIcon.value = !cellMarkerIcon.value
   }
@@ -1537,9 +1541,9 @@ const getImageXYPosition = async (image: any) => {
   const extracted = image.fileName.split('_').slice(2).join('_');
   const foundData = wpsJsonData.value.find((item: any) => item?.FILE_NM && item.FILE_NM === extracted);
   if (foundData) {
+    wbcXYPos.value.posX = foundData.POSX1;
+    wbcXYPos.value.posY = foundData.POSY1;
   }
-  wbcXYPos.value.posX = foundData.POSX1;
-  wbcXYPos.value.posY = foundData.POSY1;
 }
 
 const getWPSData = async () => {
@@ -1547,16 +1551,20 @@ const getWPSData = async () => {
       ? selectItems.value?.img_drive_root_path
       : iaRootPath.value;
   const url_new = `${path}/${selectItems.value.slotId}/04_WPS/WPS.json`;
-  const response_new = await readJsonFile({fullPath: url_new});
-  if (response_new.data) {
-    wpsJsonData.value = response_new.data;
-  } else {
+  try {
+    const response_new = await readJsonFile({fullPath: url_new});
+    if (response_new.data) {
+      wpsJsonData.value = response_new.data;
+    } else {
+      wpsJsonData.value = [];
+    }
+    const { width, height } = await dziWidthHeight();
+    wbcXYPos.value.totalWidth = width;
+    wbcXYPos.value.totalHeight = height;
+  } catch (err) {
+    console.error(err);
     wpsJsonData.value = [];
   }
-
-  const { width, height } = await dziWidthHeight();
-  wbcXYPos.value.totalWidth = width;
-  wbcXYPos.value.totalHeight = height;
 }
 
 const dziWidthHeight = async (): Promise<any> => {
