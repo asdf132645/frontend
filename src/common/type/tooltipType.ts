@@ -6,6 +6,7 @@ export interface TooltipClassInfoType {
     beforeCountPercent: boolean;
     afterCountPercent: boolean;
     lisUpload: boolean;
+    cbcToResultCodes: boolean;
 }
 
 export interface TooltipRbcClassType {
@@ -23,4 +24,16 @@ export interface CellImageAnalyzedType {
     download: boolean;
     upload: boolean;
     openDownloadSavePath: boolean;
+}
+
+export interface DetailHeaderType {
+    analysisType: boolean;
+    barcodeNo: boolean;
+    analyzedDttm: boolean;
+    patientNo: boolean;
+    patientName: boolean;
+    sex: boolean;
+    age: boolean;
+    hospitalName: boolean;
+    slideStatus: boolean;
 }

@@ -35,7 +35,7 @@
           <!-- 검색 입력 필드 -->
           <input
               v-model="searchText"
-              placeholder="code Search"
+              placeholder="Code Search"
               class="autocomplete-input"
               @focus="showDropdown = true"
               @blur="hideDropdownWithDelay"
@@ -80,9 +80,17 @@
         <div class="crcDivTitle">
           <span>
             <font-awesome-icon :icon="['fas', 'message']"/>
-            Remark
+            {{ siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] ? 'Summary of findings' : 'Remark' }}
           </span>
-          <font-awesome-icon class="remarkChange-font" :icon="['fas', 'arrow-up-from-bracket']" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="changeRemark(crcArr, remarkList)" />
+
+          <button
+              class="crcResultCodes-commentMatching-btn"
+              v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']"
+              @click="changeRemark(crcArr, remarkList)"
+          >
+            Comment Match
+          </button>
+
           <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
         </div>
 
@@ -109,7 +117,10 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(2) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> Recommendation </span>
+          <span>
+            <font-awesome-icon :icon="['fas', 'message']"/>
+            {{ siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] ? 'Opinion & Recommendation' : 'Recommendation' }}
+          </span>
           <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
         </div>
 
@@ -175,7 +186,7 @@
                   @selectWbcImgSend="selectWbcImgSend"
   />
   <teleport to="body">
-    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" />
+    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" @resetLisRtf="resetLisRtf" />
   </teleport>
 </template>
 
@@ -450,7 +461,10 @@ const captureAndConvert = async () => {
 }
 const resetBool = () => {
   captureAndConvertOk.value = false;
+}
 
+const resetLisRtf = () => {
+  kcchOnOff.value = false;
 }
 
 const selectOption = (selectedCode: string) => {

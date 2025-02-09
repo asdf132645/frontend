@@ -72,7 +72,7 @@ const selectTab = (tabName: string) => {
   movingTab.value = tabName;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
-    confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+    confirmMessage.value = MESSAGES.settingNotSaved;
   } else {
     activeTab.value = movingTab.value;
   }

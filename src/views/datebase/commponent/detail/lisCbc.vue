@@ -191,7 +191,7 @@ const cbcListOpen = async () => {
 const cbcDataChoice = async (item: string) => {
   datachoice.value = true;
   firstCbcDatafilename.value = `${item.split('.')[0]}`;
-  await sdCbcLoad();
+  await sdCbcLoad(firstCbcDatafilename.value);
   await updateCbcData();
   cbcPopup.value = false;
 }
@@ -283,7 +283,7 @@ const cbcYwmcDataMatching = async () => {
   slip.value = slipVal;
 }
 
-const sdCbcLoad = async () => {
+const sdCbcLoad = async (firstCbcDatafilenameProps?: string) => {
   await crcCbcDataLoad();
 
   if (cbcFilePathSetArr.value === '') {
@@ -307,7 +307,7 @@ const sdCbcLoad = async () => {
     cbcFilePathSetArr: cbcFilePathSetArr.value,
     slotId: props.selectItems?.slotId,
     barcodeNo: props.selectItems?.barcodeNo,
-    firstCbcDatafilename: firstCbcDatafilename.value,
+    firstCbcDatafilename: firstCbcDatafilenameProps ?? firstCbcDatafilename.value,
     cbcCodeList: cbcCodeList.value,
   });
 
@@ -558,6 +558,7 @@ const kuahGilHosCbc = async () => {
     ];
     cbcDataArray = cbcDataArray.split('\n');
 
+    cbcWorkList.value = [];
     cbcDataArray.forEach((cbcData: any) => {
       const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
 
@@ -584,7 +585,7 @@ const kuahGilHosCbc = async () => {
 
     const parms = {
       filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-      data: cbcWorkList,
+      data: cbcWorkList.value,
     };
     await createCbcFile(parms);
   }

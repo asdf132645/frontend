@@ -127,7 +127,6 @@ export const sdCBC = async ({ iaRootPath, cbcFilePathSetArr, slotId, barcodeNo, 
         keyword: barcodeNo
     };
 
-
     const isExistsFile = await fileSysExistsFile(fileSysExistsFileParms);
     if (isExistsFile.data === "NoFile") {
         const fileSearchApiPram = `directoryPath=${iaRootPath}\\${slotId}&searchString=${barcodeNo}`

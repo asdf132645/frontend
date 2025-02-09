@@ -1,1 +1,0 @@
-export type EdgeShotType = '0' | '1' | '2' | '3';

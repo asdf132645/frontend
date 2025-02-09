@@ -5,7 +5,7 @@ import { CreateUser, loginUser, UserResponse } from '@/common/api/service/user/d
 // Create an instance of the http client
 const httpClient = useHttpClient();
 
-export const createUser = async (request: CreateUser): Promise<ApiResponse<void>> => {
+export const createUser = async (request: CreateUser): Promise<ApiResponse<UserResponse | undefined>> => {
     return httpClient.httpPost(apiConstants.user.register, request);
 };
 

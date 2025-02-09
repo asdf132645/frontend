@@ -16,7 +16,7 @@
 
   <div class="flex-center">
     <div class="cellImgAnalyzed-container">
-      <div class="preset-container"></div>
+      <div v-if="viewerCheck === 'main'" class="preset-container"></div>
       <table class="settingTable">
         <tbody>
         <tr v-if="viewerCheck !== 'viewer'">
@@ -179,7 +179,6 @@
             IA Root Path
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
                 @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
                 @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
             />
@@ -327,7 +326,6 @@
             Upload
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
                 @mouseenter="tooltipVisibleFunc('upload', true)"
                 @mouseleave="tooltipVisibleFunc('upload', false)"
             />
@@ -465,7 +463,7 @@ import {
   putCellImgApi
 } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive, onBeforeMount} from "vue";
+import { computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount } from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -510,7 +508,6 @@ const alertType = ref('');
 const showUploadModal = ref(false);
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
-const currentPresetId = ref(1);
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
 const uploadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const autoDate = ref([
@@ -541,6 +538,8 @@ const confirmMessage = ref('');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isRestoring = ref(false);
@@ -645,38 +644,30 @@ onMounted(async () => {
   await cellImgGetAll();
 });
 
-watch([cellInfo.value.analysisType, cellInfo.value.diffCellAnalyzingCount, cellInfo.value.diffWbcPositionMargin, cellInfo.value.diffRbcPositionMargin,
-  cellInfo.value.diffPltPositionMargin, cellInfo.value.pbsCellAnalyzingCount, cellInfo.value.edgeShotType, cellInfo.value.edgeShotCount, cellInfo.value.stitchCount, cellInfo.value.bfCellAnalyzingCount, cellInfo.value.iaRootPath, cellInfo.value.isNsNbIntegration,
-  cellInfo.value.isAlarm,
-  cellInfo.value.alarmCount,
-  cellInfo.value.keepPage,
-  cellInfo.value.lisUploadCheckAll,], async () => {
-  const cellAfterSettingObj = {
-    id: cellInfo.value.id,
-    analysisType: cellInfo.value.analysisType,
-    diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
-    diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
-    diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
-    diffPltPositionMargin: cellInfo.value.diffPltPositionMargin,
-    pbsCellAnalyzingCount: cellInfo.value.pbsCellAnalyzingCount,
-    stitchCount: cellInfo.value.stitchCount,
-    edgeShotType: cellInfo.value.edgeShotType,
-    edgeShotLPCount: cellInfo.value.edgeShotCount.LP,
-    edgeShotHPCount: cellInfo.value.edgeShotCount.HP,
-    bfCellAnalyzingCount: cellInfo.value.bfCellAnalyzingCount,
-    iaRootPath: cellInfo.value.iaRootPath,
-    isNsNbIntegration: cellInfo.value.isNsNbIntegration,
-    isAlarm: cellInfo.value.isAlarm,
-    alarmCount: cellInfo.value.alarmCount,
-    keepPage: cellInfo.value.keepPage,
-    lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
+watch(cellInfo.value, async () => {
+  if (isObjectEmpty(allCellInfo.value?.clientData)) {
+    return;
   }
 
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+  const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
+    if (String(item.id) === String(cellInfo.value.id)) {
+      return {
+        ...cellInfo.value,
+        id: Number(cellInfo.value.id),
+        presetChecked: true,
+        backupEndDate: allCellInfo.value.serverData[0].backupEndDate,
+        backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
+      };
+    } else {
+      return { ...item, presetChecked: false };
+    }
+  })
+
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(requestAllCellInfo) });
   if (settingType.value !== settingName.cellImageAnalyzed) {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
   }
-})
+}, { deep: true })
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -723,7 +714,7 @@ const driveGet = async () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
 const cellImgGet = async () => {
@@ -763,32 +754,7 @@ const cellImgGet = async () => {
         cellInfo.value.presetNm = data?.presetNm;
         cellInfo.value.presetChecked = data?.presetChecked;
 
-        const cellBeforeSettingObj = {
-          id: data?.id,
-          analysisType: data?.analysisType,
-          diffCellAnalyzingCount: data?.diffCellAnalyzingCount,
-          diffWbcPositionMargin: data?.diffWbcPositionMargin,
-          diffRbcPositionMargin: data?.diffRbcPositionMargin,
-          diffPltPositionMargin: data?.diffPltPositionMargin,
-          pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
-          stitchCount: data?.stitchCount,
-          edgeShotType: data?.edgeShotType,
-          edgeShotLPCount: data?.edgeShotLPCount,
-          edgeShotHPCount: data?.edgeShotHPCount,
-          bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
-          iaRootPath: data?.iaRootPath,
-          isNsNbIntegration: data?.isNsNbIntegration,
-          isAlarm: data?.isAlarm,
-          alarmCount: data?.alarmCount,
-          keepPage: data?.keepPage,
-          lisUploadCheckAll: data?.lisUploadCheckAll,
-          presetChecked: data?.presetChecked,
-          presetNm: data?.presetNm,
-        }
-
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-        await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
-        await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
     }
   } catch (e) {
@@ -817,7 +783,9 @@ const cellImgSet = async () => {
       if (allCellImgIds.includes(String(requestCellInfo.id))) {
         await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
       } else {
-        delete requestCellInfo.id;
+        if (requestCellInfo?.id) {
+          delete requestCellInfo.id;
+        }
         await createCellImgApi(requestCellInfo);
       }
     }
@@ -825,8 +793,9 @@ const cellImgSet = async () => {
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG.TOAST.UPDATE_SUCCESS);
     await cellImgGetAll();
+    handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     scrollToTop();
-    const data = allCellInfo.value.serverData.map((item) => String(item.id) === String(cellInfo.value.id));
+    const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
     await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
     await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
       isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
@@ -1234,7 +1203,7 @@ const deleteCellImg = async () => {
   try {
     await deleteCellImgApi({ id: String(cellInfo.value.id) });
     await cellImgGetAll();
-    await handleChangeCellId(allCellInfo.value.clientData[0].id);
+    handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG.TOAST.DELETE_SUCCESS);
   } catch (error) {
@@ -1283,7 +1252,8 @@ const cellImgGetAll = async () => {
       allCellInfo.value.clientData = [...result.data];
       allCellInfo.value.serverData = [...result.data];
       await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value.serverData });
-
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
     }
   } catch (error) {
     console.error(error);

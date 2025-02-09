@@ -1,33 +1,25 @@
 <template>
   <div class="execute-container">
-    <select :disabled="isRunningState" @change="handleChangeCellInfo">
-      <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ cellItem.presetNm }}</option>
-    </select>
 
     <div class="flex-justify-between w-full">
       <p class="startStopP-wrapper" v-if="showStopBtn" @click="isInit === 'Y' && toggleStartStop('start')">
-        <font-awesome-icon
-            :icon="['fas', 'circle-play']"
-            :class="{ 'startBtn': true, [btnStatus]: true }"
-        />
+        <font-awesome-icon :icon="['fas', 'circle-play']" :class="{ 'startBtn': true, [btnStatus]: true }"/>
       </p>
       <p class="startStopP-wrapper" v-else @click="toggleStartStop('stop')">
         <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
       </p>
 
       <div class="stop-container">
-        <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
-          <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
-        </select>
 
+        <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
+          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}</option>
+        </select>
         <div class="flex-align-center mt5">
-          <select v-model="cellInfo.wbcCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
-            <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
+          <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
+            <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
-          <select class="stopDivSelect" v-model="cellInfo.stitchCount" :disabled="isRunningState || (cellInfo.analysisType === '05')">
-            <option v-for="option in STITCH_COUNT_OPTIONS" :key="option.value" :value="option.value">
-              {{ option.text }}
-            </option>
+          <select v-model="cellInfo.wbcCount" class="execute-wbcCount-wrapper" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+            <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
 
@@ -73,7 +65,7 @@ import {
   STITCH_COUNT_OPTIONS,
   BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import { MESSAGES, MSG } from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
@@ -82,8 +74,6 @@ import { testBmTypeList, testTypeList } from "@/common/defines/constants/setting
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
-import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
-import moment from "moment/moment";
 
 
 const store = useStore();
@@ -101,6 +91,7 @@ const isRunningState = computed(() => store.state.commonModule.isRunningState);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
+const isInitializing = computed(() => store.state.commonModule.isInitializing);
 const userId = ref('');
 const bfSelectFiles = ref([]);
 const commonDataGet = computed(() => store.state.commonModule);
@@ -117,6 +108,7 @@ const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
 const is100A = ref(false);
+const errorLevel = ref('0');
 const cellInfo = ref({
   id: '1',
   analysisType: '01',
@@ -133,6 +125,18 @@ const cellInfo = ref({
   presetChecked: false,
   presetNm: '1',
 })
+const isPresetChanged = ref(false);
+const isRecovering = ref(false);
+
+onBeforeMount(() => {
+  is100A.value = window.MACHINE_VERSION === '100a';
+  isRecovering.value = false;
+})
+
+onMounted(async () => {
+  await initDataExecute();
+});
+
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -141,35 +145,6 @@ watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   userId.value = newUserId.id;
   await initDataExecute();
 });
-
-onBeforeMount(() => {
-  is100A.value = window.MACHINE_VERSION === '100a';
-})
-
-onMounted(async () => {
-  await initDataExecute();
-});
-
-const initDataExecute = async () => {
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
-  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
-
-  countType.value = window.PROJECT_TYPE === 'bm' ? BM_COUNT_OPTIONS : WBC_COUNT_OPTIONS
-  // userId.value = getStoredUser.id;
-
-  await nextTick();
-  await cellImgGet();
-  await getDeviceInfo();
-  await setWbcRunningCount();
-  await initData();
-  if (isRunningState.value) {
-    btnStatus.value = 'isRunning';
-    showStopBtn.value = false;
-  } else {
-    btnStatus.value = 'start';
-    showStopBtn.value = true;
-  }
-}
 
 watch(commonDataGet.value, (value) => {
   if (value.loginSetData === '') {
@@ -198,21 +173,26 @@ watch([runInfo.value], async (newVals) => {
   }
 })
 
-
 // 스토어 변경 감시
 watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   const [newEmbeddedStatusJobCmd] = newVals;
-
   await nextTick();
+
   const {
     isPause: newIsPause,
     userStop: newUserStop,
     isRecoveryRun: newIsRecoveryRun,
     isInit: newIsInit,
+    errorLevel: newErrorLevel,
   } = newEmbeddedStatusJobCmd || {};
+  errorLevel.value = newErrorLevel;
 
-  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart)) {
-    toggleStartStop('start', 'autoStart');
+  if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart) && !isRunningState.value) {
+    toggleStartStop('start');
+  }
+
+  if (isInit.value === 'Y') {
+    await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
   }
 
   isPause.value = newIsPause;
@@ -222,12 +202,15 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
+    isRecovering.value = false;
   } else if (userStop.value && !isRecoveryRun.value) {
     btnStatus.value = 'onRecover';
   } else if (isInit.value === 'N' || isInit.value === '') {
     btnStatus.value = 'isInit';
+    isRecovering.value = false;
   } else {
     btnStatus.value = 'start';
+    isRecovering.value = false;
   }
 });
 
@@ -238,6 +221,46 @@ watch(() => cellImageAnalyzedData.value, () => {
     setCellInfo(currentPreset);
   }
 })
+
+watch(() => cellInfo.value, (newCellInfo) => {
+  if (!newCellInfo) {
+    return;
+  }
+
+  const currentCellInfo = cellImageAnalyzedData.value.find(item => item?.id === newCellInfo.id);
+  if (!currentCellInfo) {
+    isPresetChanged.value = true;
+  } else {
+    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0; // null/undefined 방지
+    const isMatching =
+        currentCellInfo.analysisType === newCellInfo.analysisType &&
+        currentWbcCount === (newCellInfo.wbcCount ?? 0) && // null/undefined 방지
+        currentCellInfo.stitchCount === newCellInfo.stitchCount;
+
+    isPresetChanged.value = !isMatching;
+  }
+}, { deep: true })
+
+const initDataExecute = async () => {
+  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+  testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
+
+  countType.value = window.PROJECT_TYPE === 'bm' ? BM_COUNT_OPTIONS : WBC_COUNT_OPTIONS
+  // userId.value = getStoredUser.id;
+
+  await nextTick();
+  await cellImgGet();
+  await getDeviceInfo();
+  await setWbcRunningCount();
+  await initData();
+  if (isRunningState.value) {
+    btnStatus.value = 'isRunning';
+    showStopBtn.value = false;
+  } else {
+    btnStatus.value = 'start';
+    showStopBtn.value = true;
+  }
+}
 
 //웹소켓으로 백엔드에 전송
 const emitSocketData = async (type: string, payload: any) => {
@@ -257,31 +280,46 @@ const sendSearchCardCount = () => {
   EventBus.publish('childEmitSocketData', req);
 }
 
-const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
-  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
+const toggleStartStop = (action: 'start' | 'stop') => {
+  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') {
+    return;
+  }
 
   if (action === 'start') {
-    if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
-
-      tcpReq().embedStatus.restart.bfSelectFiles = bfSelectFiles.value;
-      tcpReq().embedStatus.restart.reqUserId = userId.value;
-      emitSocketData('SEND_DATA', tcpReq().embedStatus.restart);
+    // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
+    if (isPause.value) {
+      handlePauseState(bfSelectFiles.value, userId.value);
       return;
     }
+
     // 실행 여부 체크
-    if (isRunningState.value && autoStart !== 'autoStart') {
-      showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
+    if (isRunningState.value) {
+      showSuccessAlert(MSG.SYSTEM.PROCESS_ALREADY_RUNNING);
       return;
-    } else if (userStop.value) {
-      confirmMessage.value = MESSAGES.IDS_RECOVER_GRIPPER_CONDITION;
+    }
+
+    if (isRecovering.value) {
+      showSuccessAlert(MSG.SYSTEM.RECOVERY_PROGRESS);
+      return;
+    }
+
+    if (userStop.value) {
+      confirmMessage.value = MSG.SYSTEM.RECOVER_SYSTEM;
       showConfirm.value = true;
       return;
     }
+
     const rbcPositionMargin = sessionStorage.getItem('rbcPositionMargin');
     const wbcPositionMargin = sessionStorage.getItem('wbcPositionMargin');
     const pltPositionMargin = sessionStorage.getItem('pltPositionMargin');
     const edgeShotType = sessionStorage.getItem('edgeShotType') || '0';
-    const autoStart = JSON.parse(sessionStorage.getItem('autoStart')) || 1;
+    let reqAutoStart;
+    let autoStart = sessionStorage.getItem('autoStart');
+    if (autoStart === 'true') {
+      reqAutoStart = 1;
+    } else if (autoStart === 'false') {
+      reqAutoStart = 0;
+    }
 
     let startAction = tcpReq().embedStatus.startAction;
     Object.assign(startAction, {
@@ -297,7 +335,7 @@ const toggleStartStop = (action: 'start' | 'stop', autoStart = '') => {
 
     if (is100A.value) {
       Object.assign(startAction, {
-        autoStart: Number(autoStart),
+        autoStart: Number(reqAutoStart),
       })
     }
 
@@ -368,12 +406,6 @@ const showSuccessAlert = (message: string) => {
   alertMessage.value = message;
 };
 
-const showErrorALert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-}
-
 const hideAlert = () => {
   showAlert.value = false;
 };
@@ -382,14 +414,17 @@ const hideConfirm = () => {
   showConfirm.value = false;
 }
 
-const handleOkConfirm = () => {
+const handleOkConfirm = async () => {
   showConfirm.value = false;
   tcpReq().embedStatus.recovery.reqUserId = userId.value;
-  emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
+  await emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
+  isRecovering.value = true;
 }
 
 const sendInit = () => { // 장비 초기화 진행
   if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
+  if (errorLevel.value === '1' || errorLevel.value === '2') return;
+  if (isInitializing.value) return;
   if (isInit.value === 'Y') {
     showSuccessAlert(MESSAGES.alreadyInitialized);
     return;
@@ -468,10 +503,10 @@ const setWbcCount = (data) => {
   }
 }
 
-const handleChangeCellInfo = async (event) => {
-  const selectedCellId = String(event.target.value);
-  const selectedCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) === selectedCellId)[0];
-  const restCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) !== selectedCellId);
+const handleChangeCellInfo = async (event: Event) => {
+  const selectedCellId = event.target as HTMLSelectElement;
+  const selectedCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) === selectedCellId.value)[0];
+  const restCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) !== selectedCellId.value);
   const requestItem = { ...selectedCellInfo, presetChecked: true };
   try {
     for (const resetItem of restCellInfo) {
@@ -483,10 +518,16 @@ const handleChangeCellInfo = async (event) => {
     console.error(error);
   }
 
-  const currentPreset = cellImageAnalyzedData.value.filter(item => String(item.id) === selectedCellId)[0];
+  const currentPreset = cellImageAnalyzedData.value.filter(item => String(item.id) === selectedCellId.value)[0];
   if (currentPreset) {
     setCellInfo(currentPreset);
   }
+}
+
+const handlePauseState = (bfSelectFiles: any, userId: string) => {
+  tcpReq().embedStatus.restart.bfSelectFiles = bfSelectFiles;
+  tcpReq().embedStatus.restart.reqUserId = userId;
+  emitSocketData('SEND_DATA', tcpReq().embedStatus.restart);
 }
 
 const setCellInfo = (data: any) => {

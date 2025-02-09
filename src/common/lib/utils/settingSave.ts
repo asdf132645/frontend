@@ -15,6 +15,7 @@ import {
     updateWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
 import store from "@/store/index";
+import {RbcDegreeRequest} from "@/common/api/service/setting/dto/rbcDegree";
 
 export const settingUpdate = async (settingType: string, settingUpdatingData: any) => {
     if (!settingType || !settingUpdatingData) return;
@@ -56,7 +57,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
 
         case settingName.rbcDegree:
             try {
-                const rbcDegreeList: any = [];
+                const rbcDegreeList: RbcDegreeRequest[] = [];
                 settingUpdatingData.forEach((category: any) => {
                     category.classInfo.forEach((classItem: any) => {
                         rbcDegreeList.push({

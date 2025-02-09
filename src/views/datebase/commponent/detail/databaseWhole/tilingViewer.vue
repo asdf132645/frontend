@@ -23,7 +23,7 @@ const newImgHeight = ref('');
 const newImgWidth = ref('');
 const viewerHeight = ref('85vh'); // 기본값 설정
 
-let viewer:any = null;
+let viewer: any = null;
 
 onMounted(async () => {
   const urlImage = `PMC_Result`;

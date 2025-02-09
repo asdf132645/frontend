@@ -9,8 +9,13 @@
     <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
 
     <ul class="leftWbcInfo">
-      <li>
+      <li
+          class="pos-relative"
+          @mouseenter="tooltipVisibleFunc('cbcToResultCodes', true)"
+          @mouseleave="tooltipVisibleFunc('cbcToResultCodes', false)"
+      >
         <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] && type === 'report' && crcConnect" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
       </li>
       <li
           class="pos-relative"
@@ -320,6 +325,7 @@ const tooltipVisible = ref<TooltipClassInfoType>({
   beforeCountPercent: false,
   afterCountPercent: false,
   lisUpload: false,
+  cbcToResultCodes: false,
 })
 
 onBeforeMount(async () => {

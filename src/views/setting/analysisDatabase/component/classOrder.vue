@@ -51,10 +51,11 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
+import { ClassOrderRequest } from "@/common/api/service/setting/dto/classOrder";
 
 const store = useStore();
 const router = useRouter();
-const wbcInfoChangeVal = ref<any>([]);
+const wbcInfoChangeVal = ref<ClassOrderRequest[]>([]);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
 const saveHttpType = ref('');
@@ -89,7 +90,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
 const getWbcCustomClasses = async () => {

@@ -89,6 +89,10 @@
     margin-left: 20px;
 }
 
+.ml40 {
+    margin-left: 40px;
+}
+
 .mr12 {
     margin-right: 12px;
 }
@@ -111,6 +115,14 @@
 
 .gap14 {
     gap: 14px;
+}
+
+.left0 {
+    left: 0;
+}
+
+.left20 {
+    left: 20px;
 }
 
 .f18 {
@@ -317,6 +329,10 @@
 
 .w80p {
     width: 80%;
+}
+
+.h60 {
+    height: 60px;
 }
 
 .w96-max {
@@ -600,7 +616,6 @@ li.errLogLi.warning:before {
     align-items: center;
     padding-top: 9px;
     text-align: left;
-    cursor: pointer;
 }
 
 ul.userSetOutUl > li {
@@ -677,7 +692,7 @@ ul.userSetOutUl {
 }
 
 .lastMenu {
-    width: 240px;
+    width: 190px;
     text-align: right;
     position: absolute;
     right: 0;
@@ -772,6 +787,7 @@ li.errLogLi.critical:before {
     padding: 20px;
     min-width: 500px;
     top: 30px;
+    left: -40px;
     border: 1px solid;
     cursor: default;
 }
@@ -896,6 +912,11 @@ h3.titleText {
     display: flex;
     justify-content: space-between;
     margin-top: 0px !important;
+}
+
+.execute-wbcCount-wrapper {
+    width: 88px;
+    margin-left: 2px;
 }
 
 .initBtn {
@@ -1460,7 +1481,6 @@ p.loadingText {
 .excelIcon {
     position: relative;
     display: flex;
-    left: 12%;
     justify-content: flex-end;
     padding-top: 3px;
     cursor: pointer;
@@ -2569,7 +2589,7 @@ ul.wbcInfoDbUl > li {
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    padding-top: 20px;
     margin-bottom: 20px;
     overflow-x: auto;
 }
@@ -2577,6 +2597,7 @@ ul.wbcInfoDbUl {
 ul.wbcInfoDbUl .circle {
     padding-top: 13px;
     cursor: pointer;
+    position: relative;
 }
 
 ul.wbcImgWrap > li {
@@ -2795,13 +2816,40 @@ ul.leftWbcInfo {
 
 }
 
+.orderListUi {
+    width: 270px;
+}
+
 ul.orderListUi > li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+ul.orderListUi > li > p:nth-child(1) {
+    width: 130px;
 }
 
 ul.orderListUi > li > img {
     border: 1px solid var(--gray-bg-3-color);
     border-radius: 3px;
+}
+
+.search-right-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    width: 270px;
+    gap: 8px;
+}
+
+.search-btn {
+    background-color: transparent;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
+    padding: 9px;
+    position: relative;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 button.searchClass {
@@ -2934,26 +2982,47 @@ ul.wbcInfoFilter {
     position: fixed;
     z-index: 999;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    left: 0;
-    background: rgb(49 49 49 / 88%);
+    background: rgb(0 0 0 / 60%);
     /*padding-top: 10%;*/
+}
+
+.wbcModal-title-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.wbcModal-title-wrapper > h2 {
+    margin: 28px 0 0 28px;
+    font-size: 1.4rem;
+}
+
+.wbc-modal-content {
+    position: relative;
+    width: 1104px;
+    height: 826px;
+    top: 50%;
+    left: 50%;
+    border-radius: 8px;
+    transform: translate(-50%, -50%);
+    background-color: var(--main-bg-2-color);
 }
 
 .wbcModalImageContent {
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 30%;
     transform: translate(-50%, -50%);
 }
 
-.wbcModalImageContent-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    margin-bottom: 8px;
+.wbcModalImageContentBefore {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .wbcModalImageContent-slideImg {
@@ -2961,8 +3030,8 @@ ul.wbcInfoFilter {
     flex-direction: column;
     align-items: flex-start;
     position: absolute;
-    left: 1300px;
-    top: 250px;
+    right: 100px;
+    top: 50px;
     z-index: 10;
     gap: 4px;
 }
@@ -2972,27 +3041,6 @@ ul.wbcInfoFilter {
     width: 100%;
     height: 100%;
     z-index: 100;
-}
-
-.wbcModalImageContent-slideImg-textBox {
-    position: absolute;
-    width: 90px;
-    height: 40px;
-    right: 0;
-}
-
-.wbcModalImageContent-slideImg-x-text {
-    position: relative;
-    top: 20px;
-    color: gray;
-    text-align: left;
-}
-
-.wbcModalImageContent-slideImg-y-text {
-    position: relative;
-    top: 22px;
-    color: gray;
-    text-align: left;
 }
 
 .wbcModalImageContent-slideImg > img {
@@ -3006,9 +3054,9 @@ ul.wbcInfoFilter {
 
 span.wbcClose {
     position: absolute;
-    top: 0;
+    top: 10px;
     color: var(--white-color);
-    font-size: 4rem;
+    font-size: 3rem;
     right: 20px;
     cursor: pointer;
 }
@@ -3089,6 +3137,7 @@ select.selectSizeTitle {
     padding: 5px;
     max-width: 300px;
     border: 1px solid var(--white-color);
+    z-index: 3;
 }
 
 .sizeContainer div {
@@ -3867,7 +3916,7 @@ button.rollbackButton {
 
 .iconHeaderMenu {
     position: absolute;
-    right: 265px;
+    right: 220px;
     top: 26px;
 }
 
@@ -3944,16 +3993,19 @@ button.rollbackButton {
     font-size: 20px;
 }
 
-.wbcModalImageContent .buttons {
+.wbcModalButton-wrapper {
     position: absolute;
-    left: 38%;
-    bottom: -58%;
+    left: 0;
+    transform: translateX(-20%);
+    bottom: 52px;
+    width: 100%;
 }
 
-.wbc-modal-content .buttons {
+.wbcModalButton-wrapperBefore {
     position: absolute;
-    left: 0%;
-    bottom: 92px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 52px;
     width: 100%;
 }
 
@@ -3979,11 +4031,6 @@ button.rollbackButton {
 .cursorPointer.userBox:hover {
     background: #fff;
     color: #000;
-}
-
-.wbc-modal-content {
-    position: relative;
-    height: 100%;
 }
 
 .blinkColor {
@@ -4558,6 +4605,22 @@ p.adminText {
     transform: scale(1.1) rotate(180deg);
 }
 
+.crcResultCodes-commentMatching-btn {
+    position: absolute;
+    right: 120px;
+    background: none;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 5px 10px;
+    top: -12px;
+    cursor: pointer;
+}
+
+.crcResultCodes-commentMatching-btn:hover {
+    background-color: white;
+    color: black;
+}
+
 button.reSelect {
     position: absolute;
     right: 0;
@@ -4567,6 +4630,11 @@ button.reSelect {
     padding: 5px 10px;
     top: -12px;
     cursor: pointer;
+}
+
+button.reSelect:hover {
+    background-color: white;
+    color: black;
 }
 
 .crcPopUpDiv.crcAdd {
@@ -5260,7 +5328,8 @@ input.codeInput {
 
 .isNotNormalIcon {
     position: absolute;
-    left: 16px;
+    top: 6px;
+    left: 10px;
 }
 
 .rbcDegree-span-wrapper {
@@ -5689,6 +5758,7 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
+    transform: translateZ(0);
 }
 
 .tooltip-container > pre {
@@ -5702,13 +5772,13 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-bottom {
-    top: 150%;
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .tooltip-pos-left {
-    right: 150%;
+    right: 100%;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -5776,9 +5846,10 @@ progress::-moz-progress-bar {
     background: #1b1b1b;
     z-index: 9;
     text-align: left;
-    padding: 0px 10px 10px 10px;
+    padding: 0 10px 10px 10px;
     border: 1px solid #dedede;
-    top: 36px;
+    top: 4px;
+    left: 36px;
 }
 
 .abnormalClassInfoPopup div {
@@ -6134,6 +6205,15 @@ button.gbArrowButton.left {
     position: relative;
     width: 700px;
     z-index: 2;
+}
+
+.lisRef-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    z-index: 100;
 }
 
 @keyframes bounce {

@@ -86,7 +86,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 const handleKeyDown = (event: KeyboardEvent, index: number) => {
   const allowedKeys = /^[a-zA-Z0-9]$|F[1-9]|F1[0-2]/; // 알파벳 대소문자, 숫자 및 F1~F12 키 패턴

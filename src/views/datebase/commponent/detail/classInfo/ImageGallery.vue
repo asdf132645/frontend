@@ -7,7 +7,10 @@
     <template v-for="(item) in wbcInfoArrChild" :key="item.id">
       <li @click="scrollToElement(item.id)" v-if="siteCd !== '0006' && item?.title !== 'SM'"
           @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
-        <div class="circle" :title="item.name">
+        <div
+            class="circle"
+            :title="item.name"
+        >
           <p>{{ item?.title }}</p>
           <p>{{ item?.count }}</p>
         </div>
@@ -224,7 +227,7 @@ import Wps from "@/views/datebase/commponent/detail/classInfo/commponent/wps.vue
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {apiUrl} from "@/common/api/apiUrl";
 
@@ -302,9 +305,9 @@ const firstClass = ref('Metamyelocyte');
 const lastClass = ref('Myelocyte');
 const previousFirstClass = ref('Metamyelocyte');
 const previousLastClass = ref('Myelocyte');
-
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 const wpsImgClickInfoData = ref<any>({});
+const tooltipVisible = ref({ classCircle: false });
 
 watch(props.hiddenImages, (newVal) => {
   hiddenImages.value = {...newVal};
@@ -460,5 +463,9 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+
+const tooltipVisibleFunc = (type: 'classCircle', visible: boolean) => {
+  tooltipVisible.value[type] = visible;
+}
 
 </script>

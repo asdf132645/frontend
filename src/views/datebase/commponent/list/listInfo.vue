@@ -5,11 +5,38 @@
       <h3 class="orderTitle hh3title">Order Information</h3>
       <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
-          <li>
-            <span class="mb10">Order ID:</span>
-            <span class="mb20">{{ selectedItem?.slotId }}</span>
+          <li v-if="selectedItem?.testType">
+            <p>Analysis Type</p>
+            <p>{{ selectedItem?.testType }}</p>
           </li>
-          <li>NS, NB Integration: {{integrationFindNe(selectedItem.wbcInfoAfter)}}</li>
+          <li v-if="selectedItem?.barcodeNo">
+            <p>Barcode ID</p>
+            <p>{{ selectedItem?.barcodeNo }}</p>
+          </li>
+          <li v-if="selectedItem?.analyzedDttm">
+            <p>Analyzed Date</p>
+            <p>{{ getDateTimeYYYYMMDDHHmmss(selectedItem?.analyzedDttm) }}</p>
+          </li>
+          <li v-if="selectedItem?.patientNm">
+            <p>Patient Name</p>
+            <p>{{ selectedItem?.patientNm }}</p>
+          </li>
+          <li v-if="selectedItem?.cbcSex">
+            <p>Sex</p>
+            <p>{{ selectedItem?.cbcSex }}</p>
+          </li>
+          <li v-if="selectedItem?.cbcAge">
+            <p>Age</p>
+            <p>{{ selectedItem?.cbcAge }}</p>
+          </li>
+          <li v-if="selectedItem?.hosNm">
+            <p>Hospital</p>
+            <p>{{ selectedItem?.hosNm }}</p>
+          </li>
+          <li>
+            <p>NS, NB Integration</p>
+            <p>{{ integrationFindNe(selectedItem.wbcInfoAfter) }}</p>
+          </li>
         </ul>
         <div>
           <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"
@@ -71,6 +98,7 @@ import {
   seoulStMaryPercentChange
 } from "@/common/helpers/common/classPercent";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
+import {getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);

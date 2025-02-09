@@ -22,7 +22,7 @@
         <thead>
         <tr>
           <th></th>
-          <th>Name</th>
+          <th>Code</th>
           <th>Content</th>
           <th>Action</th>
         </tr>

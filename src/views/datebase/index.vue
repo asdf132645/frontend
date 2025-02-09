@@ -31,10 +31,10 @@
           <button class="searchClass" @click="dateRefresh">Clear</button>
           <button type="button" class="searchClass" @click="search">Search</button>
 
-          <template v-if="viewerCheck === 'main'">
-            <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass" style="left: 12%">Patient List</button>
-            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
-          </template>
+          <div class="search-right-wrapper">
+            <button v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="search-btn">Patient List</button>
+            <font-awesome-icon v-if="viewerCheck === 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
+          </div>
         </div>
 
 
@@ -546,29 +546,7 @@ const getDbData = async (type: string, pageNum?: number) => {
       }
     }
 
-    if (HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd.value) {
-      if (dbGetData.value.length > 0) {
-        const barcodeNoList = dbGetData.value.map((item: any) => item.barcodeNo) ?? [];
-        const formatedStartDate = moment(startDate.value).format('YYYY-MM-DD');
-        const formatedEndDate = moment(endDate.value).format('YYYY-MM-DD');
-        try {
-          const { data: patientDataResult, code } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
-          if (code === 200) {
-            dbGetData.value = dbGetData.value.map((item: any) => {
-              const equalBarcodeData = patientDataResult.data.find((patItem: { no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
-              if (!isObjectEmpty(equalBarcodeData)) {
-                const updatedItem = { ...item, patientNm: equalBarcodeData.patName };
-                return updatedItem;
-              } else {
-                return item;
-              }
-            })
-          }
-        } catch (error) {
-          console.error(`SD 환자정보 조회 실패: ${error}`);
-        }
-      }
-    }
+    await getDbDataAfterFunc();
 
     if (dbGetData.value.length > 0) {
       const {path} = router.currentRoute.value;
@@ -1125,6 +1103,32 @@ const dateRefresh = () => {
 
 const checkListItem = (items: any) => {
   checkedSelectedItems.value = items;
+}
+
+const getDbDataAfterFunc = async () => {
+  if (HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd.value) {
+    if (dbGetData.value.length > 0) {
+      const barcodeNoList = dbGetData.value.map((item: any) => item.barcodeNo) ?? [];
+      const formatedStartDate = moment(startDate.value).format('YYYY-MM-DD');
+      const formatedEndDate = moment(endDate.value).format('YYYY-MM-DD');
+      try {
+        const { data: patientDataResult, code } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
+        if (code === 200 && !isObjectEmpty(patientDataResult.data)) {
+          dbGetData.value = dbGetData.value.map((item: any) => {
+            const equalBarcodeData = patientDataResult.data.find((patItem: { no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
+            if (!isObjectEmpty(equalBarcodeData)) {
+              const updatedItem = { ...item, patientNm: equalBarcodeData.patName };
+              return updatedItem;
+            } else {
+              return item;
+            }
+          })
+        }
+      } catch (error) {
+        console.error(`SD 환자정보 조회 실패: ${error}`);
+      }
+    }
+  }
 }
 
 </script>
