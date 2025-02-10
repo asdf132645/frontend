@@ -47,7 +47,7 @@
               <li class="lastLiM">
                 <div class="cursorPointer userBox" @click="userSetOutToggle">
                   <font-awesome-icon :icon="['fas', 'circle-user']"/>
-                  {{ userModuleDataGet.userId }}
+                  <p>{{ userModuleDataGet.userId }}</p>
                 </div>
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>

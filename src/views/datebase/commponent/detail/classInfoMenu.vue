@@ -12,22 +12,21 @@
             <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']" v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'" />
             <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']" v-else-if="slideData?.isNormal === 'N'" />
           </p>
-
           <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
-            <div class="classInfoMenu-error-wrapper" v-if="slideData?.slideCondition && slideData.slideCondition?.condition === 'Bad'">
+            <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
               <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-              <p>{{ slideData?.slideCondition.desc }}</p>
+              <p>{{ slideCondition?.desc }}</p>
             </div>
 
-            <hr v-if="slideData?.slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+            <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
 
             <div v-if="Array.isArray(slideData?.abnormalClassInfo)" class="classInfoMenu-error-wrapper normalRange mt08">
               <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
               <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo" :key="abnormalIdx">
                 <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
                   <span>{{ abItem?.classNm }}</span>
-                  <span>{{ abItem?.val }}</span>
-                  <span>({{ currentAbnormalRange[abnormalIdx]?.min }} - {{ currentAbnormalRange[abnormalIdx]?.max }}) {{ currentAbnormalRange[abnormalIdx]?.unit }}</span>
+                  <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                  <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
                 </p>
               </div>
             </div>
@@ -119,8 +118,9 @@ import { useGetRunningInfoByIdQuery } from "@/gql/useQueries";
 import { DIR_NAME } from "@/common/defines/constants/settings";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import { gqlGenericUpdate, slideConditionUpdateMutatation } from "@/gql/mutation/slideData";
+import { gqlGenericUpdate, slideConditionUpdateMutation } from "@/gql/mutation/slideData";
 import { isObjectEmpty } from "@/common/lib/utils/validators";
+import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -155,6 +155,10 @@ const slideData = computed(() => store.state.slideDataModule);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const pltOnOff = ref(false);
 const isErrorContainerOpen = ref(false);
+const slideCondition = ref({
+  condition: '',
+  desc: '',
+})
 
 watch(props.isNext, (newVal) => {
   if (newVal) {
@@ -170,21 +174,9 @@ onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
   isLoading.value = false;
-  pltOnOff.value = false;
   const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
   keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
-  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
-  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
-  const response = await fetch(url);
-  const fileNames = await response.json();
-  for (const fileName of fileNames) {
-    const keywords = ['zPLT_Image', 'files'];
-    const notRbc = keywords.every(keyword => fileName.includes(keyword));
-    if(notRbc){
-      pltOnOff.value = true;
-    }
-  }
+  await checkHasPltInfo();
 })
 
 onMounted(async () => {
@@ -404,6 +396,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   emits('refreshClass', selectItemsNewVal);
   pageMoveDeleteStop.value = true;
   await upDownBlockAccess(selectItemsNewVal);
+  await checkHasPltInfo();
 };
 
 const isActive = (path: string) => {
@@ -416,10 +409,15 @@ const lisCbcClick = () => {
 }
 
 const showErrorContainer = async (show: boolean) => {
+  if (!show) {
+    isErrorContainerOpen.value = show;
+    return;
+  }
+
   await getNormalRange();
   updateAbnormalRanges(slideData.value);
 
-  if (slideData.value?.slideCondition && !slideData.value?.slideCondition?.desc) {
+  if (slideData.value?.slideCondition?.desc) {
     const slideInfo = await getSlideCondition(slideData.value?.slotId);
     const slideInfoObj = {
       condition: slideInfo?.slideCondition,
@@ -427,13 +425,17 @@ const showErrorContainer = async (show: boolean) => {
     };
 
     const updatedRuningInfo = { ...slideData.value, slideCondition: slideInfoObj };
-    await gqlGenericUpdate(slideConditionUpdateMutatation, {
+    await gqlGenericUpdate(slideConditionUpdateMutation, {
       id: slideData.value?.id,
       slideCondition: slideInfoObj
     });
+    slideCondition.value.condition = slideInfoObj.condition;
+    slideCondition.value.desc = slideInfoObj.desc;
     await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+  } else {
+    slideCondition.value.condition = slideData.value?.slideCondition?.condition;
+    slideCondition.value.desc = slideData.value?.slideCondition?.desc;
   }
-
   isErrorContainerOpen.value = show;
 }
 
@@ -468,14 +470,10 @@ const getNormalRange = async () => {
 }
 
 const updateAbnormalRanges = (data: any) => {
-  console.log('data?.abnormalClassInfo', data?.abnormalClassInfo);
-  console.log('selectItems', selectItems.value);
   if (isObjectEmpty(data?.abnormalClassInfo) || !Array.isArray(data?.abnormalClassInfo)) {
     return;
   }
 
-  console.log('normalItems.value', normalItems.value);
-console.log('data.abnormalClassInfo, data.abnormalClassInfo)', data.abnormalClassInfo);
   currentAbnormalRange.value = data.abnormalClassInfo
       .map((abnormalItem: any) => normalItems.value.find(normalRange => normalRange?.abbreviation === abnormalItem.classNm))
       .filter(Boolean)
@@ -486,7 +484,43 @@ console.log('data.abnormalClassInfo, data.abnormalClassInfo)', data.abnormalClas
         unit: normalRange.unit,
       }));
 
-  console.log('currentAbnormalRange', currentAbnormalRange);
 };
+
+const handleAbnormalRange = (countVal: string, min: number, max: number, unit: string) => {
+  const numericValue = parseFloat(countVal.match(/[\d.]+/)?.[0] || "0");
+  const formattedMin = unit === "%" ? min.toFixed(2) : min;
+  const formattedMax = unit === "%" ? max.toFixed(2) : max;
+
+  if (numericValue < min) return `< ${formattedMin} ${unit}`;
+  if (numericValue > max) return `> ${formattedMax} ${unit}`;
+  return '';
+}
+
+const handleAbnormalValue = (value: string) => {
+  return value.replace('[', '').replace(']', '');
+}
+
+const checkHasPltInfo = async () => {
+  pltOnOff.value = false;
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
+  const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
+
+  try {
+    const response = await fetch(url);
+    const fileNames = await response.json();
+    for (const fileName of fileNames) {
+      const keywords = ['zPLT_Image', 'files'];
+      const notRbc = keywords.every(keyword => fileName.includes(keyword));
+      if(notRbc){
+        pltOnOff.value = true;
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    pltOnOff.value = false;
+  }
+
+}
 
 </script>

@@ -89,8 +89,8 @@
                   <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo" :key="abnormalIdx">
                     <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
                       <span>{{ abItem?.classNm }}</span>
-                      <span>{{ abItem?.val }}</span>
-                      <span>({{ currentAbnormalRange[abnormalIdx]?.min }} - {{ currentAbnormalRange[abnormalIdx]?.max }}) {{ currentAbnormalRange[abnormalIdx]?.unit }}</span>
+                      <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                      <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
                     </p>
                   </div>
                 </div>
@@ -254,7 +254,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
-import {gqlGenericUpdate, slideConditionUpdateMutatation} from "@/gql/mutation/slideData";
+import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/slideData";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
@@ -337,6 +337,11 @@ onMounted(async () => {
 })
 
 const abnormalClassInfoOpen = async (isOpen, item) => {
+  if (!isOpen) {
+    popupItemId.value = isOpen ? item.id : null;
+    return;
+  }
+
   if (!item.slideCondition?.desc) {
     const slideInfo = await getSlideCondition(item.slotId);
     const slideInfoObj = {
@@ -345,7 +350,7 @@ const abnormalClassInfoOpen = async (isOpen, item) => {
     };
 
     const updatedRuningInfo = { ...item, slideCondition: slideInfoObj };
-    await gqlGenericUpdate(slideConditionUpdateMutatation, {
+    await gqlGenericUpdate(slideConditionUpdateMutation, {
       id: item?.id,
       slideCondition: slideInfoObj
     });
@@ -618,6 +623,7 @@ const rowDbClick = async (item) => {
   watch(result, async (newValue) => {
     if (newValue) {
       // 쿼리에서 새로운 데이터가 있으면 상태 업데이트
+      console.log('제발', newValue?.getRunningInfoByIdGQL);
       await store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
 
       // 페이지 이동
@@ -830,6 +836,20 @@ const updateAbnormalRanges = (data) => {
         unit: normalRange.unit,
       }));
 };
+
+const handleAbnormalRange = (countVal, min, max, unit) => {
+  const numericValue = parseFloat(countVal.match(/[\d.]+/)?.[0] || "0");
+  const formattedMin = unit === "%" ? min.toFixed(2) : min;
+  const formattedMax = unit === "%" ? max.toFixed(2) : max;
+
+  if (numericValue < min) return `< ${formattedMin} ${unit}`;
+  if (numericValue > max) return `> ${formattedMax} ${unit}`;
+  return '';
+}
+
+const handleAbnormalValue = (value) => {
+  return value.replace('[', '').replace(']', '');
+}
 
 </script>
 

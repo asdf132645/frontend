@@ -692,7 +692,7 @@ ul.userSetOutUl {
 }
 
 .lastMenu {
-    width: 190px;
+    width: 240px;
     text-align: right;
     position: absolute;
     right: 0;
@@ -787,7 +787,6 @@ li.errLogLi.critical:before {
     padding: 20px;
     min-width: 500px;
     top: 30px;
-    left: -40px;
     border: 1px solid;
     cursor: default;
 }
@@ -809,7 +808,6 @@ p.renewal.slideTime1 {
     color: #b0b0b0;
     margin-bottom: 10px;
 }
-
 
 p.renewalTotalTime {
     font-size: 1.6rem;
@@ -3921,7 +3919,7 @@ button.rollbackButton {
 
 .iconHeaderMenu {
     position: absolute;
-    right: 220px;
+    right: 265px;
     top: 26px;
 }
 
@@ -4024,8 +4022,11 @@ button.rollbackButton {
     border-radius: 5px;
     padding: 5px;
     font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    line-height: initial;
 }
-
 
 .bigFont {
     font-size: xxx-large;
@@ -4181,11 +4182,13 @@ li.cbcLi {
     font-size: 1.2rem;
     margin-bottom: 10px;
     border-bottom: 1px solid white;
+    z-index: 100;
 }
 
 .classInfoMenu-noWarning-container {
     position: relative;
     height: 30px;
+    border-bottom: 1px solid white;
 }
 
 .classInfoMenu-error-container {
@@ -4207,6 +4210,7 @@ li.cbcLi {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    text-align: left;
     margin-top: 12px;
 }
 

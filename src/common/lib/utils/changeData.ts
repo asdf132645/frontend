@@ -28,7 +28,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                         percent = (neutrophilCount / totalCount) * 100;
                         if (percent < range.min || percent > range.max) {
                             resultObj.isNormal = 'N';
-                            resultObj.classInfo.push({ classNm: `NE`, val: `[${percent.toFixed(2)}] %` });
+                            resultObj.classInfo.push({ classNm: `NE`, val: `${percent.toFixed(2)} %` });
                         } else {
                             // console.log(`SET [NE] NORMAL : ${wbcItem.title}`);
                         }
@@ -38,7 +38,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                         if (range.unit === 'Count') {
                             if (Number(wbcItem.count) < range.min || Number(wbcItem.count) > range.max) {
                                 resultObj.isNormal = 'N';
-                                resultObj.classInfo.push({classNm: `${wbcItem.title}`, val:`[${wbcItem.count}] Count`});
+                                resultObj.classInfo.push({classNm: `${wbcItem.title}`, val:`${wbcItem.count} Count`});
                             }
                         } else {
                             let percent = 0;
@@ -46,7 +46,7 @@ export const checkPbNormalCell = (wbcInfo: any, norMalRange: any) => {
                             if (percent < range.min || percent > range.max) {
                                 // console.log(`SET Abnormal : ${wbcItem.title}`);
                                 resultObj.isNormal = 'N';
-                                resultObj.classInfo.push({classNm: `${wbcItem.title}`, val:`[${percent.toFixed(2)}] %`});
+                                resultObj.classInfo.push({classNm: `${wbcItem.title}`, val:`${percent.toFixed(2)} %`});
                             } else {
                                 // console.log(`SET NORMAL : ${wbcItem.title}`);
                             }
