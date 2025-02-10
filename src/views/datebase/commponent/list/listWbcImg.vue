@@ -64,17 +64,19 @@ function createAllImages(): void {
   if (Object.keys(props.selectedItem?.wbcInfo).length === 0) {
     return;
   }
+
   allImages.value = props.selectedItem?.wbcInfo?.wbcInfo[0]?.reduce((acc: any, item: any) => {
-    if (item.images && item.images.length > 0) {
+    if (item.images?.length) {
+      const uniqueImages = Array.from(new Map(item.images.map(img => [img.fileName, img])).values()); // 중복 제거
+
       acc.push({
         id: item.id,
-        images: item.images,
+        images: uniqueImages,
         title: item.title,
       });
     }
     return acc;
   }, []) || [];
-
 }
 
 function getImageUrl(imageName: any, id: string, title: string): string {
