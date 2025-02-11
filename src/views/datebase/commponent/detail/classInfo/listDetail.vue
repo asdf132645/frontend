@@ -43,7 +43,8 @@
         >
           <font-awesome-icon :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"/>
           Cell Marking
-          <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_MARKING" />
+          <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_MARKING"/>
         </button>
         <button
             @click="showSizeControl"
@@ -53,7 +54,8 @@
         >
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
           Size
-          <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_SIZE" />
+          <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_SIZE"/>
         </button>
         <div v-show="showSize" class="sizeContainer">
           <div>
@@ -87,7 +89,8 @@
           >
             <font-awesome-icon :icon="['fas', 'gear']"/>
             IMG Setting
-            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_IMG_SETTING" />
+            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
           </button>
           <div class="imgSet" v-show="imgSet">
             <div>
@@ -157,7 +160,8 @@
         >
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
-          <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_CLASS_COMPARE" />
+          <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_CLASS_COMPARE"/>
         </button>
         <button
             @click="wps"
@@ -168,7 +172,8 @@
         >
           <font-awesome-icon :icon="['fas', 'expand']"/>
           WPS
-          <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CELL_WPS" />
+          <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_WPS"/>
         </button>
         <button
             @click="rollbackChanges"
@@ -178,12 +183,13 @@
         >
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
-          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 18px;'" position="top" type="" :message="MSG.TOOLTIP.CELL_ROLLBACK" />
+          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 18px;'" position="top"
+                   type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
         </button>
       </div>
       <div>
         <ImageGallery
-            v-if="isLoadedSlideData"
+            v-if="isLoadedSlideData && router.currentRoute.value.fullPath === '/databaseDetail'"
             ref="$imageGalleryRef"
             :wbcInfoRefresh="wbcInfoRefresh"
             :wbcInfo="wbcInfo"
@@ -242,7 +248,8 @@
           </div>
 
           <div :class="!isObjectEmpty(wpsJsonData) ? 'wbcModalImageContent' : 'wbcModalImageContentBefore'">
-            <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }" ref="modalImage"/>
+            <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
+                 ref="modalImage"/>
           </div>
 
           <div :class="!isObjectEmpty(wpsJsonData) ? 'wbcModalButton-wrapper' : 'wbcModalButton-wrapperBefore'">
@@ -254,7 +261,7 @@
 
           <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
             <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
-            <canvas  ref="canvasRef"></canvas>
+            <canvas ref="canvasRef"></canvas>
           </div>
         </div>
       </div>
@@ -330,6 +337,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import slidePositionImg from "@/assets/images/slide_pos.png";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import router from "@/router";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -412,6 +420,8 @@ const cbcPatientNm = ref('');
 const checkedAllClass = ref(false);
 const {imageRefs} = useImageRefs();
 const wpsJsonData = ref<any>([]);
+let abortController = new AbortController();
+
 const wbcXYPos = ref({
   totalWidth: '0',
   totalHeight: '0',
@@ -463,19 +473,22 @@ watch(
           isWpsBtnShow.value = false;
         }
         try {
-          await getNormalRange(); // 함수가 선언된 이후 호출
-          await getDetailRunningInfo(newVal);
-          await getWPSData();
-          isLoadedSlideData.value = false;
-          wbcInfo.value = [];
-          isLoadedSlideData.value = true;
+          if (router.currentRoute.value.fullPath === '/databaseDetail') {
 
-          await getWbcCustomClasses(false, null);
-          wbcInfoRefresh.value = true;
+            await getNormalRange(); // 함수가 선언된 이후 호출
+            await getDetailRunningInfo(newVal);
+            await getWPSData();
+            isLoadedSlideData.value = false;
+            wbcInfo.value = [];
+            isLoadedSlideData.value = true;
 
-          await imgSetLocalStorage();
-          cellMarkerIcon.value = false;
-          await drawCellMarker(true);
+            await getWbcCustomClasses(false, null);
+            wbcInfoRefresh.value = true;
+
+            await imgSetLocalStorage();
+            cellMarkerIcon.value = false;
+            await drawCellMarker(true);
+          }
 
         } catch (error) {
           console.error('비동기 작업 중 에러 발생:', error);
@@ -1050,11 +1063,6 @@ const drawCanvas = () => {
 };
 
 
-
-
-
-
-
 // Re-draw canvas when dependencies change
 watch([calculatedX, calculatedY], drawCanvas);
 const drawCellMarker = async (imgResize?: boolean) => {
@@ -1558,7 +1566,7 @@ const getWPSData = async () => {
     } else {
       wpsJsonData.value = [];
     }
-    const { width, height } = await dziWidthHeight();
+    const {width, height} = await dziWidthHeight();
     wbcXYPos.value.totalWidth = width;
     wbcXYPos.value.totalHeight = height;
   } catch (err) {
@@ -1582,7 +1590,7 @@ const extractWidthHeightFromDzi = (xmlString: any): any => {
   const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
   const width = sizeElement.getAttribute("Width");
   const height = sizeElement.getAttribute("Height");
-  return { width: Number(width), height: Number(height) };
+  return {width: Number(width), height: Number(height)};
 }
 
 async function onDrop(targetItemIndex: any) {

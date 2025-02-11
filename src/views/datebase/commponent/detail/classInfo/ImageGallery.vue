@@ -230,6 +230,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import router from "@/router";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -381,6 +382,10 @@ const updateFirstLastClass = (wbcInfo: any) => {
 }
 
 const handleImageLoad = (itemIndex: any) => {
+  if(router.currentRoute.value.fullPath !== '/databaseDetail'){
+    console.log('ss')
+    return;
+  }
   emits('update:cellRef', cellRef);
   classImgChange('first', null);
   classImgChange('last', null);
