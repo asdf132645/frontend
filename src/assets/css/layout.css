@@ -3613,7 +3613,7 @@ ul.normalItems {
 }
 
 .resultInformationContainer {
-    height: 380px;
+    height: 341px;
 }
 
 .listTableImageContainer {
@@ -3661,8 +3661,8 @@ ul.normalItems {
 }
 
 .dbPBImageContainer {
-    overflow-y: auto;
-    max-height: 23.5vh;
+    overflow-y: hidden;
+    max-height: 27.5vh;
 }
 
 .dbBMImageContainer {
@@ -6313,6 +6313,27 @@ button.gbArrowButton.left {
     transform: translate(-50%, -50%);
     background-color: white;
     z-index: 100;
+}
+
+.listWbcImg-pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.listWbcImg-pagination-controls button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+.listWbcImg-pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 @keyframes bounce {
