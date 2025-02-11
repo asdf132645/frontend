@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="settingTabSubButtons">
-      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analysis</button>
+      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">
+        {{ siteCd === '9090' ? 'Analysis' : 'Cell Image Analysis' }}
+      </button>
+      <button v-if="siteCd === '9090'" @click="activateTab('etc')" :class="{ 'active': activeTab === 'etc' }" >Etc</button>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
         <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
@@ -47,7 +50,8 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
-import NewCellImageAnalyzed from "@/views/setting/analysisDatabase/component/newCellImageAnalyzed.vue";
+import NewAnalysis from "@/views/setting/analysisDatabase/component/newAnalysis.vue";
+import Etc from "@/views/setting/analysisDatabase/component/etc.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
 import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
 import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'
@@ -112,7 +116,9 @@ const hideAlert = () => {
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
     case 'cellImageAnalyzed':
-      return siteCd.value === '9090' ? NewCellImageAnalyzed : CellImageAnalyzed;
+      return siteCd.value === '9090' ? NewAnalysis : CellImageAnalyzed;
+    case 'etc':
+      return Etc;
     case 'rbcDegree':
       return RbcDegree;
     case 'deviceControls':

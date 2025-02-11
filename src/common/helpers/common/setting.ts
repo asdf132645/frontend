@@ -1,4 +1,4 @@
-import {reactive, ref} from 'vue';
+import { computed, reactive, ref } from 'vue';
 import {
     getCellImgApi,
     createCellImgApi,
@@ -12,16 +12,17 @@ import {
     createCbcCodeRbcApi,
     createLisCodeWbcApi,
     createLisCodeRbcApi,
-    getLisCodeWbcApi, getLisCodeRbcApi
+    getLisCodeWbcApi, getLisCodeRbcApi, getCellImgAllApi
 } from '@/common/api/service/setting/settingApi';
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
 import { defaultCbcList, defaultRbcDegree, LIS_CODE_RBC_OPTION, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
 import { useStore } from "vuex";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
 const projectType = window.PROJECT_TYPE === 'bm';
-const defaultCellImgData = {
+export const defaultCellImgData = {
     testTypeCd: projectType ? '02' : '01',
     diffCellAnalyzingCount: projectType ? '500':'100',
     diffWbcPositionMargin: '0',
@@ -43,7 +44,6 @@ const defaultCellImgData = {
     backupStartDate: new Date(),
     backupEndDate: new Date(),
     presetChecked: true,
-    presetNm: 'preset',
 };
 
 
@@ -77,6 +77,10 @@ const settingsConstant = ref<any>({
         'getRequest': getCellImgApi,
         'createRequest': createCellImgApi,
     },
+    'analysis': {
+        'getRequest': getCellImgApi,
+        'createRequest': createCellImgApi,
+    },
     'normalRange': {
         'sendingForm': 'normalRangeItems',
         'defaultItem': normalRange,
@@ -95,13 +99,37 @@ const settingsConstant = ref<any>({
 
 /** 로그인 시 Setting 값 설정 함수 */
 export const initializeAllSettings = async () => {
+    const store = useStore();
+    console.log('store', store)
+    // const siteCd = computed(() => store.state.commonModule.siteCd);
+    const siteCd = '9090'
     await firstGetSettings('cellImage');
+    if (siteCd === '9090') {
+        await testFirstGetSettings('analysis');
+    }
     await firstGetSettings('orderClass');
     await firstGetSettings('rbcDegree');
     await firstGetSettings('lisCodeWbc')
     await firstGetSettings('lisCodeRbc')
     await firstGetSettings('cbcCode')
     await firstGetSettings('normalRange')
+}
+
+const testFirstGetSettings = async (initializeType: string) => {
+    if (initializeType === 'analysis') {
+        try {
+            const result: any = await getCellImgAllApi();
+            const data = result?.data || [];
+            if (!isObjectEmpty(data)) {
+                const defaultItem = { ...data[0] };
+                delete defaultItem.id;
+                const createCount = Math.max(0, 3 - data.length);
+                await Promise.all(Array(createCount).fill(null).map(() => createCellImgApi(defaultItem)));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 }
 
 const firstGetSettings = async (initializeType: string) => {

@@ -917,6 +917,25 @@ h3.titleText {
     margin-left: 2px;
 }
 
+.execute-preset-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.execute-preset-btn {
+    width: 30%;
+    border: 1px solid white;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.execute-preset-active-btn {
+    color: black;
+    background-color: white;
+}
+
 .initBtn {
     background: var(--main-bg-8-color);
     color: var(--white-color);
@@ -6282,16 +6301,6 @@ button.gbArrowButton.left {
     z-index: 10;
 }
 
-.preset-container {
-    position: absolute;
-    left: 20px;
-    width: 660px;
-    height: 232px;
-    border: 1px solid white;
-    z-index: 0;
-    pointer-events: none;
-}
-
 .delete-preset-btn:hover {
     background-color: #dc2626;
 }
@@ -6304,6 +6313,35 @@ button.gbArrowButton.left {
     position: relative;
     width: 700px;
     z-index: 2;
+}
+
+.analysis-preset-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.analysis-preset-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+.analysis-preset-btn:hover {
+    background-color: white;
+    color: black;
+}
+
+.analysis-preset-active-btn {
+    background-color: white;
+    color: black;
 }
 
 .lisRef-container {

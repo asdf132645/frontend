@@ -10,10 +10,11 @@
       </p>
 
       <div class="stop-container">
-
-        <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
-          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}</option>
-        </select>
+        <div class="execute-preset-wrapper">
+          <div @click="handleChangePresetNm('1')" class="execute-preset-btn" :class="currentPresetNm === '1' && 'execute-preset-active-btn'">1</div>
+          <div @click="handleChangePresetNm('2')" class="execute-preset-btn" :class="currentPresetNm === '2' && 'execute-preset-active-btn'">2</div>
+          <div @click="handleChangePresetNm('3')" class="execute-preset-btn" :class="currentPresetNm === '3' && 'execute-preset-active-btn'">3</div>
+        </div>
         <div class="flex-align-center mt5">
           <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
             <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
@@ -123,8 +124,8 @@ const cellInfo = ref({
     HP: '3',
   },
   presetChecked: false,
-  presetNm: '1',
 })
+const currentPresetNm = ref('1');
 const isPresetChanged = ref(false);
 const isRecovering = ref(false);
 
@@ -137,6 +138,11 @@ onMounted(async () => {
   await initDataExecute();
 });
 
+watch(() => isPresetChanged.value, (newIsPresetChanged) => {
+  if (newIsPresetChanged) {
+    currentPresetNm.value = '0';
+  }
+})
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -501,6 +507,32 @@ const setWbcCount = (data) => {
     default:
       return data.bfCellAnalyzingCount;
   }
+}
+
+const handleChangePresetNm = async (presetNm: '1' | '2' | '3') => {
+  if (isRunningState.value) {
+    return;
+  }
+
+  const selectedCellInfo = cellImageAnalyzedData.value[Number(presetNm) - 1];
+  const restCellInfo = cellImageAnalyzedData.value[Number(presetNm) - 1];
+  const requestItem = { ...selectedCellInfo, presetChecked: true };
+  try {
+    for (const resetItem of restCellInfo) {
+      const restRequestItem = { ...resetItem, presetChecked: false };
+      await putCellImgApi(restRequestItem, String(restRequestItem?.id));
+    }
+    await putCellImgApi(requestItem, String(requestItem?.id));
+  } catch (error) {
+    console.error(error);
+  }
+
+  const currentPreset = cellImageAnalyzedData.value[Number(presetNm) - 1];
+  if (currentPreset) {
+    setCellInfo(currentPreset);
+  }
+
+  currentPresetNm.value = presetNm;
 }
 
 const handleChangeCellInfo = async (event: Event) => {
