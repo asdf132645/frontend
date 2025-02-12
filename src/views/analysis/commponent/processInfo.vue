@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="titleText">Processing Information </h3>
-    <ul :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['TEST']], 'disable') ? 'processInfoUl' : 'processInfo-wrapper'">
+    <ul class='processInfoUl'>
       <li><span class="proSpan">Cassette No</span> <span class="proVal">{{ processInfoItem?.cassetteNo }}</span></li>
       <li><span class="proSpan">Barcode ID</span> <span class="proVal">{{ processInfoItem?.barcodeId }}</span></li>
       <li><span class="proSpan">Patient ID</span> <span class="proVal">{{ processInfoItem?.patientId }}</span></li>

@@ -1984,13 +1984,6 @@ ul.processInfoUl > li {
     justify-content: space-between;
 }
 
-ul.processInfo-wrapper > li {
-    font-size: 0.9rem;
-    padding: 4px 0 4px 8px;
-    display: flex;
-    justify-content: space-between;
-}
-
 .contentRightChild {
     height: 68vh;
 }
