@@ -80,7 +80,7 @@
         <div class="crcDivTitle">
           <span>
             <font-awesome-icon :icon="['fas', 'message']"/>
-            {{ siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] ? 'Summary of findings' : 'Remark' }}
+            {{ setCrcTitles(siteCd, 'remark') }}
           </span>
 
           <button
@@ -91,7 +91,10 @@
             Create Summary
           </button>
 
-          <button v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['원자력병원']" class="reSelect" @click="openSelect('remark')">Remark Select</button>
+          <button v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['원자력병원']" class="reSelect" @click="openSelect('remark')">
+            {{ setCrcTitles(siteCd, 'recommendation') }}
+            Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -104,8 +107,11 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(1) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> Comment </span>
-          <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> {{ setCrcTitles(siteCd, 'comment') }} </span>
+          <button class="reSelect" @click="openSelect('comment')">
+            {{ setCrcTitles(siteCd, 'comment') }}
+            Select
+          </button>
         </div>
 
         <div class="remarkUlList">
@@ -119,9 +125,12 @@
         <div class="crcDivTitle">
           <span>
             <font-awesome-icon :icon="['fas', 'message']"/>
-            {{ siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] ? 'Opinion & Recommendation' : 'Recommendation' }}
+            {{ setCrcTitles(siteCd, 'recommendation') }}
           </span>
-          <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
+          <button class="reSelect" @click="openSelect('recommendation')">
+            {{ setCrcTitles(siteCd, 'recommendation') }}
+            Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -147,7 +156,7 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh" v-if="activeTab === 2"/>
+    <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh" v-if="activeTab === 2"/>
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
@@ -224,6 +233,7 @@ import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningIn
 import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.vue";
 import { changeRemark, kcch_0033GetCBCData } from "@/common/helpers/lisCbc/kcch_0033";
 import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
+import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 
 const crcArr = ref<any>([]);
 const props = defineProps({

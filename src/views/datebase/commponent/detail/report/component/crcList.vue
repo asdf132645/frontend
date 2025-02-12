@@ -62,16 +62,16 @@
           </div>
 
           <!-- Remark 출력 -->
-          <div class="mt10" v-if="item.crcRemark && item.crcRemark.length > 0">
-            <span class="smCrcTitle">Remark</span>
+          <div class="mt10" v-if="item.crcRemark && item.crcRemark.length > 0 && crcVisibleTitle.remark">
+            <span class="smCrcTitle">{{ setCrcTitles(siteCd, 'remark') }}</span>
             <pre class="pre-wrap" v-for="remark in item.crcRemark" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
           </div>
-          <div class="mt10" v-if="item.crcComment && item.crcComment.length > 0">
-            <span class="smCrcTitle">Comment</span>
+          <div class="mt10" v-if="item.crcComment && item.crcComment.length > 0 && crcVisibleTitle.comment">
+            <span class="smCrcTitle">{{ setCrcTitles(siteCd, 'comment') }}</span>
             <pre class="pre-wrap" v-for="remark in item.crcComment" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
           </div>
-          <div class="mt10" v-if="item.crcRecommendation && item.crcRecommendation.length > 0">
-            <span class="smCrcTitle">Recommendation</span>
+          <div class="mt10" v-if="item.crcRecommendation && item.crcRecommendation.length > 0 && crcVisibleTitle.recommendation">
+            <span class="smCrcTitle">{{ setCrcTitles(siteCd, 'recommendation') }}</span>
             <pre class="pre-wrap" v-for="remark in item.crcRecommendation" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
           </div>
         </div>
@@ -108,12 +108,14 @@
 
 <script setup lang="ts">
 import {crcDataGet, updateCrcDataApi, deleteCrcDataApi} from "@/common/api/service/setting/settingApi";
-import {ref, onMounted, nextTick, onBeforeMount} from "vue";
+import {ref, onMounted, nextTick, onBeforeMount, computed} from "vue";
 import CrcAdd from "@/views/datebase/commponent/detail/report/component/crcAdd.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
+import {useStore} from "vuex";
 
 // Props 받기
 const props = defineProps({
@@ -123,9 +125,13 @@ const props = defineProps({
   },
   crcPassWord: {
     type: String,
+  },
+  crcRemarkCount: {
+    type: Array,
   }
 });
 
+const store = useStore();
 const emit = defineEmits(['refresh']);
 const showConfirm = ref(false);
 const confirmMessage = ref('');
@@ -133,6 +139,7 @@ const delType = ref('');
 const itemId = ref(0);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 // CrcAdd 열기/닫기 상태
 const isCrcAdd = ref(false);
@@ -148,9 +155,15 @@ const addEditType = ref('');
 const crcPassWordVal = ref('');
 const passWordPass = ref(false);
 const passLayout = ref(false);
+const crcVisibleTitle = ref({
+  remark: true,
+  comment: true,
+  recommendation: true,
+})
 
 onBeforeMount(async () => {
   crcPassWordVal.value = props.crcPassWord || '';
+  setRemarkTitleVisible();
 })
 
 // 컴포넌트가 마운트될 때 API 호출 후 데이터 설정
@@ -158,6 +171,7 @@ onMounted(async () => {
   await nextTick();
   await loadCrcData();
 });
+
 const hideConfirm = async () => {
   showConfirm.value = false;
 }
@@ -285,5 +299,22 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+
+const setRemarkTitleVisible = () => {
+  if (!props.crcRemarkCount) {
+    return;
+  }
+
+  const remarkMap = props.crcRemarkCount.reduce((acc: Record<string, boolean>, item: any) => {
+    if (["remark", "Comment", "Recommendation"].includes(item.name)) {
+      acc[item.name.toLowerCase()] = item.checked;
+    }
+    return acc;
+  }, {});
+
+  crcVisibleTitle.value.remark = remarkMap?.remark || false;
+  crcVisibleTitle.value.comment = remarkMap?.comment || false;
+  crcVisibleTitle.value.recommendation = remarkMap?.recommendation || false;
+}
 
 </script>

@@ -172,6 +172,7 @@ import { sdPatientNameGetAPI, sdWorklistsAPI } from "@/common/helpers/lisCbc/sdC
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
 import { DIR_NAME } from "@/common/defines/constants/settings";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 
 
 const store = useStore();
@@ -233,6 +234,7 @@ const workList = ref({});
 const previousValue = ref('');
 let lastInputTime = Date.now();
 const isBarcodeScannerInput = { value: false };
+const myip = ref('');
 
 
 onBeforeMount(async () => {
@@ -253,10 +255,23 @@ onMounted(async () => {
   notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
   document.addEventListener('keydown', handleGlobalKeydown);
+  myip.value = await getDeviceIpApi();
 
 });
 
 async function handleStateVal(data: any) {
+  if (data?.payload !== 'refreshDb') {
+    const match = data.match(/(\d+\.\d+\.\d+\.\d+)/);
+
+    const extractedIP = match ? match[1] : null;
+
+    if (extractedIP && extractedIP === myip.value.data) {
+      return;
+    }
+  }
+
+
+
   eventTriggered.value = true;
   notStartLoading.value = false;
   await removePageAllDataApi();

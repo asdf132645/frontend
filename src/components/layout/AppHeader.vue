@@ -217,6 +217,8 @@ import ErrLog from "@/components/commonUi/ErrLog.vue";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import moment from "moment/moment";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -256,6 +258,7 @@ const analysisType = computed(() => store.state.commonModule.analysisType);
 const isCompleteAlarm = computed(() => store.state.commonModule.isCompleteAlarm);
 const isErrorAlarm = computed(() => store.state.commonModule.isErrorAlarm);
 const rootDir = computed(() => store.state.commonModule.iaRootPath);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 const isErrorAlarmRunning = ref(false);
 const isCompleteAlarmRunning = ref(false);
@@ -361,6 +364,14 @@ const updateDateTime = () => {
 };
 
 const errLogOn = async () => {
+  if (
+      !visibleBySite(siteCd.value, [
+      HOSPITAL_SITE_CD_BY_NAME['TEST'],
+      HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+      ], 'enable')) {
+    return;
+  }
   mouseClick.value = !mouseClick.value;
   if(mounseLeave.value){
     return
@@ -768,12 +779,29 @@ const closeErrLog = () => {
 }
 
 const openErrLogOver = async () => {
+  if (
+      !visibleBySite(siteCd.value, [
+        HOSPITAL_SITE_CD_BY_NAME['TEST'],
+        HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+      ], 'enable')) {
+    return;
+  }
   ErrLogOpen.value = true;
   mounseLeave.value = true;
   await errLogLoad();
 }
 
 const closeErrLogLeave = () => {
+  if (
+      !visibleBySite(siteCd.value, [
+        HOSPITAL_SITE_CD_BY_NAME['TEST'],
+        HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+      ], 'enable')) {
+    return;
+  }
+
   if (mouseClick.value){
     return;
   }
