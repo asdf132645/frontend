@@ -364,11 +364,14 @@ const updateDateTime = () => {
 };
 
 const errLogOn = async () => {
-  if (visibleBySite(siteCd.value, [
+  if (
+      !visibleBySite(siteCd.value, [
       HOSPITAL_SITE_CD_BY_NAME['TEST'],
       HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
-    HOSPITAL_SITE_CD_BY_NAME['UIMD'],
-  ], 'enable'))
+        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+      ], 'enable')) {
+    return;
+  }
   mouseClick.value = !mouseClick.value;
   if(mounseLeave.value){
     return
@@ -776,12 +779,29 @@ const closeErrLog = () => {
 }
 
 const openErrLogOver = async () => {
+  if (
+      !visibleBySite(siteCd.value, [
+        HOSPITAL_SITE_CD_BY_NAME['TEST'],
+        HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+      ], 'enable')) {
+    return;
+  }
   ErrLogOpen.value = true;
   mounseLeave.value = true;
   await errLogLoad();
 }
 
 const closeErrLogLeave = () => {
+  if (
+      !visibleBySite(siteCd.value, [
+        HOSPITAL_SITE_CD_BY_NAME['TEST'],
+        HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+      ], 'enable')) {
+    return;
+  }
+
   if (mouseClick.value){
     return;
   }

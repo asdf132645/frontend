@@ -260,13 +260,16 @@ onMounted(async () => {
 });
 
 async function handleStateVal(data: any) {
-  const match = data.match(/(\d+\.\d+\.\d+\.\d+)/);
+  if (data?.payload !== 'refreshDb') {
+    const match = data.match(/(\d+\.\d+\.\d+\.\d+)/);
 
-  const extractedIP = match ? match[1] : null;
+    const extractedIP = match ? match[1] : null;
 
-  if (extractedIP && extractedIP === myip.value.data) {
-    return;
+    if (extractedIP && extractedIP === myip.value.data) {
+      return;
+    }
   }
+
 
 
   eventTriggered.value = true;

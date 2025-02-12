@@ -2,7 +2,7 @@
   <div class="wbcMenu">
     <ul>
       <template v-if="['bm', 'pb'].includes(projectType)">
-        <template v-if="siteCd !== '9090'">
+        <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
           <li
               v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
               class="classInfoMenu-warning-container"
@@ -124,6 +124,8 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import { gqlGenericUpdate, slideConditionUpdateMutation } from "@/gql/mutation/slideData";
 import { isObjectEmpty } from "@/common/lib/utils/validators";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const emits = defineEmits();
 const showAlert = ref(false);
