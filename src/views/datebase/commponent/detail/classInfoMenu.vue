@@ -2,37 +2,40 @@
   <div class="wbcMenu">
     <ul>
       <template v-if="['bm', 'pb'].includes(projectType)">
-        <li
-            v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
-            class="classInfoMenu-warning-container"
-            @mouseenter="showErrorContainer(true)"
-            @mouseleave="showErrorContainer(false)"
-        >
-          <p class="menuIco">
-            <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']" v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'" />
-            <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']" v-else-if="slideData?.isNormal === 'N'" />
-          </p>
-          <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
-            <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
-              <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-              <p>{{ slideCondition?.desc }}</p>
-            </div>
+        <template v-if="siteCd !== '9090'">
+          <li
+              v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
+              class="classInfoMenu-warning-container"
+              @mouseenter="showErrorContainer(true)"
+              @mouseleave="showErrorContainer(false)"
+          >
+            <p class="menuIco">
+              <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']" v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'" />
+              <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']" v-else-if="slideData?.isNormal === 'N'" />
+            </p>
+            <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
+              <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
+                <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                <p>{{ slideCondition?.desc }}</p>
+              </div>
 
-            <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+              <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
 
-            <div v-if="Array.isArray(slideData?.abnormalClassInfo)" class="classInfoMenu-error-wrapper normalRange mt08">
-              <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
-              <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo" :key="abnormalIdx">
-                <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
-                  <span>{{ abItem?.classNm }}</span>
-                  <span>{{ handleAbnormalValue(abItem?.val) }}</span>
-                  <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
-                </p>
+              <div v-if="Array.isArray(slideData?.abnormalClassInfo)" class="classInfoMenu-error-wrapper normalRange mt08">
+                <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
+                <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo" :key="abnormalIdx">
+                  <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
+                    <span>{{ abItem?.classNm }}</span>
+                    <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                    <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </li>
-        <li v-else class="classInfoMenu-noWarning-container"></li>
+          </li>
+          <li v-else class="classInfoMenu-noWarning-container"></li>
+        </template>
+
         <li
             :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"
             @click="pageGo(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc')"

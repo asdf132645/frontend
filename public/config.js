@@ -1,11 +1,11 @@
-window.APP_API_BASE_URL='http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
-window.MAIN_API_IP = 'http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
-window.MAIN_API = 'http://192.168.0.131:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
-window.MAIN_WEBSOCKET_IP = 'http://192.168.0.131:3002';  // MultiViewer - 'http://192.168.0.100:3002', Main PC Only - 'http://127.0.0.1:3002'
+window.APP_API_BASE_URL='http://192.168.0.101:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
+window.MAIN_API_IP = 'http://192.168.0.101:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
+window.MAIN_API = 'http://192.168.0.101:80/api'; // MultiViewer - 'http://192.168.0.100:80/api',   Main PC Only - 'http://127.0.0.1:3002'
+window.MAIN_WEBSOCKET_IP = 'http://192.168.0.101:3002';  // MultiViewer - 'http://192.168.0.100:3002', Main PC Only - 'http://127.0.0.1:3002'
 window.PROJECT_TYPE='pb';  // pb or bm
-window.PROJECT_VERSION='02.02.010';
+window.PROJECT_VERSION='02.02.011';
 window.WEB_BACKEND_VERSION='0.0.94v';
-window.WEB_FRONTEND_VERSION='0.3.04v';
+window.WEB_FRONTEND_VERSION='0.3.07v';
 window.MACHINE_VERSION='100a';  // 12a or 100a
 window.FORCE_VIEWER = 'main'; // main or viewer or exhibition
 window.PORT = '8080';

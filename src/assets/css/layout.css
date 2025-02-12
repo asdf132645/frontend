@@ -3843,6 +3843,14 @@ li.slideStatus {
     width: 1050px;
 }
 
+label.crc-setting-title {
+    width: 160px;
+}
+
+.crc-setting-title-input {
+    width: 12px;
+}
+
 button.rollbackButton {
     position: absolute;
     right: -20px;

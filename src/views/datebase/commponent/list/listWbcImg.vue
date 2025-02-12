@@ -72,19 +72,27 @@ function createAllImages() {
 function extractImagesWithInfo(wbcData) {
   if (!wbcData || !Array.isArray(wbcData)) return [];
 
-  return wbcData.flatMap(({id, name, count, title, images}) =>
-      images.map(image => ({
-        id,
-        name,
-        count,
-        title,
-        fileName: image.fileName,
-        width: image.width,
-        height: image.height,
-        filter: image.filter,
-        coordinates: image.coordinates
-      }))
-  );
+  const fileNameSet = new Set();
+
+  return wbcData.reduce((acc, { id, name, count, title, images }) => {
+    images.forEach(image => {
+      if (!fileNameSet.has(image.fileName)) {
+        fileNameSet.add(image.fileName);
+        acc.push({
+          id,
+          name,
+          count,
+          title,
+          fileName: image.fileName,
+          width: image.width,
+          height: image.height,
+          filter: image.filter,
+          coordinates: image.coordinates
+        });
+      }
+    });
+    return acc;
+  }, []);
 }
 
 const groupImagesByPage = (allImages: any, itemsPerPage = 8) => {

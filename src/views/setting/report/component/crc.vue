@@ -31,17 +31,25 @@
           <div class="flex-column-align-center mt10">
             <span>CRC Remark Select Count</span>
             <div class="flex-center mt10" style="gap: 14px;">
-              <label for="crc-remark">Remark</label>
-              <input id="crc-remark" type="checkbox" @change="changeCrcRemarkCount" value="0"
-                     :checked="crcRemarkCountArr[0].checked"/>
+              <div class="flex-align-center">
+                <label class="crc-setting-title" for="crc-remark">{{ setCrcTitles(siteCd, 'remark') }}</label>
+                <input class="crc-setting-title-input" id="crc-remark" type="checkbox" @change="changeCrcRemarkCount" value="0"
+                       :checked="crcRemarkCountArr[0].checked"/>
+              </div>
 
-              <label for="crc-comment">Comment</label>
-              <input id="crc-comment" type="checkbox" @change="changeCrcRemarkCount" value="1"
-                     :checked="crcRemarkCountArr[1].checked"/>
+              <div class="flex-align-center">
+                <label class="crc-setting-title" for="crc-comment">{{ setCrcTitles(siteCd, 'comment') }}</label>
+                <input class="crc-setting-title-input" id="crc-comment" type="checkbox" @change="changeCrcRemarkCount" value="1"
+                       :checked="crcRemarkCountArr[1].checked"/>
+              </div>
 
-              <label for="crc-recommendation">Recommendation</label>
-              <input id="crc-recommendation" type="checkbox" @change="changeCrcRemarkCount" value="2"
-                     :checked="crcRemarkCountArr[2].checked"/>
+              <div class="flex-align-center">
+                <label class="crc-setting-title" for="crc-recommendation">{{ setCrcTitles(siteCd, 'recommendation') }}</label>
+                <input class="crc-setting-title-input" id="crc-recommendation" type="checkbox" @change="changeCrcRemarkCount" value="2"
+                       :checked="crcRemarkCountArr[2].checked"/>
+              </div>
+
+
             </div>
 
           </div>
@@ -151,6 +159,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import { isMasterId, isUserAdminType } from "@/common/lib/utils/validators";
 import {scrollToTop} from "@/common/lib/utils/scroll";
+import {setCrcTitles} from "../../../../common/helpers/crc/crcContent";
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -176,6 +185,7 @@ const crcPassWord = ref('');
 const store = useStore();
 const masterId = computed(() => store.state.userModule.userId);
 const userType = computed(() => store.state.userModule.userType);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 
 onMounted(async () => {
   await nextTick()

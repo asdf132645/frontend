@@ -11,3 +11,17 @@ export const getCrcContentMaxLength = (siteCd: HospitalSiteCodesType, type: 'rem
             return 1000;
     }
 }
+
+export const setCrcTitles = (siteCd: HospitalSiteCodesType, title: 'remark' | 'comment' | 'recommendation') => {
+    switch (siteCd) {
+        case '0033':
+            if (title === 'remark') return 'Summary of findings';
+            if (title === 'recommendation') return 'Opinion & Recommendation';
+            return 'Comment'
+        default:
+            if (title === 'remark') return 'Remark';
+            if (title === 'comment') return 'Comment';
+            if (title === 'recommendation') return 'Recommendation';
+            return title;
+    }
+}

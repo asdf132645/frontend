@@ -63,29 +63,32 @@
               @mouseleave="abnormalClassInfoOpen(false, item)"
               style="position: relative; width: 4px; height: 4px;"
           >
-<!--            <template v-if="siteCd !== '9090'">-->
-<!--              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"-->
-<!--                                 v-if="item.isNormal === 'N'"/>-->
-<!--            </template>-->
-<!--            <template v-else>-->
+            <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'disable')">
+              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                 v-if="item.isNormal === 'N'"/>
+            </template>
+            <template v-else>
               <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
                                  v-if="item?.slideCondition?.condition === 'Bad'"
               />
               <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
                                  v-else-if="item?.isNormal === 'N'"
               />
-<!--            </template>-->
+            </template>
             <div v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
               <div class="slideStatus-container">
-                <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
-                  <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-                  <span>{{ slideCondition?.desc }}</span>
-                </div>
+                <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'disable')">
+                  <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
+                    <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                    <span>{{ slideCondition?.desc }}</span>
+                  </div>
 
-                <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+                  <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+                </template>
+
 
                 <div v-if="Array.isArray(item?.abnormalClassInfo)" class="slideStatusPopup-wrapper normalRange">
-                  <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
+                  <h1 class="slideStatusPopup-title" :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'disable') ? 'icon-yellow-color' : ''">Out of Normal Range</h1>
                   <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo" :key="abnormalIdx">
                     <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
                       <span>{{ abItem?.classNm }}</span>
@@ -256,6 +259,8 @@ import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
 import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/slideData";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
 const loadMoreRef = ref(null);

@@ -63,7 +63,9 @@
       </table>
 
       <div class="mt20 remarkBottomFix">
-        <p class="text-left fs10 fw-bold mb10">Add New {{ typeToText(type) }}</p>
+        <p class="text-left fs10 fw-bold mb10">
+          Add New {{ setCrcTitles(siteCd, typeToText(type)) }}
+        </p>
         <div class="remarkBottomBtnGroup mb10">
           <div class="flex-justify-between">
             <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
@@ -108,6 +110,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import { useStore } from "vuex";
+import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
 
 const props = defineProps({
   crcDefaultMode: {
@@ -344,14 +347,14 @@ const cancelEdit = () => {
   editIndex.value = null;
 };
 
-const typeToText = (type: string) => {
+const typeToText = (type: 'reco' | 'comment' | 'remark'): 'recommendation' | 'comment' | 'remark' => {
   switch (type) {
     case 'reco':
-      return 'Recommendation';
+      return 'recommendation';
     case 'comment':
-      return 'Comment';
+      return 'comment';
     case 'remark':
-      return 'Remark';
+      return 'remark';
   }
 }
 

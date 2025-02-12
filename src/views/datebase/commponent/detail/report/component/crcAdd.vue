@@ -36,8 +36,11 @@
       <!-- Remark 관련 -->
       <div class="mt20" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
-          <span>Remark</span>
-          <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
+          <span> {{ setCrcTitles(siteCd, 'remark') }} </span>
+          <button class="reSelect" @click="openSelect('remark')">
+            {{ setCrcTitles(siteCd, 'remark') }}
+            Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -53,8 +56,10 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(1)">
         <div class="crcDivTitle">
-          <span> Comment </span>
-          <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
+          <span> {{ setCrcTitles(siteCd, 'comment') }} </span>
+          <button class="reSelect" @click="openSelect('comment')">
+            {{ setCrcTitles(siteCd, 'comment') }} Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -70,8 +75,10 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
-          <span> Recommendation </span>
-          <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
+          <span> {{ setCrcTitles(siteCd, 'recommendation') }} </span>
+          <button class="reSelect" @click="openSelect('recommendation')">
+            {{ setCrcTitles(siteCd, 'recommendation') }} Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -144,8 +151,11 @@ import {
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
+import {useStore} from "vuex";
 
 const emit = defineEmits(['closeIsCrcAdd', 'refresh']);
+const store = useStore();
 
 const crcDataArr = ref<any>({
   code: '',
@@ -157,7 +167,7 @@ const crcDataArr = ref<any>({
   crcRemark: [],
   crcRecommendation: [],
 });
-
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const showAlert = ref(false);

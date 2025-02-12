@@ -35,6 +35,7 @@ import {useStore} from "vuex";
 import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
 import Preset from "@/views/analysis/commponent/preset.vue";
 import ExecuteNew from "@/views/analysis/commponent/executeNew.vue";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 const emits = defineEmits();
 
