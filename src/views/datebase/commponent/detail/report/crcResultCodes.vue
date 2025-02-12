@@ -1041,11 +1041,12 @@ const tempSaveDataEmpty = async () => {
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
   cbcFlag.value = '';
-  recoList.value = [];
-  remarkList.value = [];
-  commentList.value = [];
+  recoList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
+  remarkList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
+  commentList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
   code.value = '';
   searchText.value = '';
+  createdSummary.value = { RBC: [], WBC: [], PLT: [] };
   toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data empty to storage')
 }

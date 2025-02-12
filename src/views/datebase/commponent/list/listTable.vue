@@ -628,7 +628,6 @@ const rowDbClick = async (item) => {
   watch(result, async (newValue) => {
     if (newValue) {
       // 쿼리에서 새로운 데이터가 있으면 상태 업데이트
-      console.log('제발', newValue?.getRunningInfoByIdGQL);
       await store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
 
       // 페이지 이동

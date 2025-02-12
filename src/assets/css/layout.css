@@ -3680,6 +3680,11 @@ ul.normalItems {
 }
 
 .dbPBImageContainer {
+    overflow-y: auto;
+    max-height: 27.5vh;
+}
+
+.dbImageContainer {
     overflow-y: hidden;
     max-height: 27.5vh;
 }

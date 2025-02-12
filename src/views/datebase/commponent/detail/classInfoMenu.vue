@@ -422,7 +422,7 @@ const showErrorContainer = async (show: boolean) => {
   await getNormalRange();
   updateAbnormalRanges(slideData.value);
 
-  if (slideData.value?.slideCondition?.desc) {
+  if (!slideData.value?.slideCondition?.desc) {
     const slideInfo = await getSlideCondition(slideData.value?.slotId);
     const slideInfoObj = {
       condition: slideInfo?.slideCondition,
