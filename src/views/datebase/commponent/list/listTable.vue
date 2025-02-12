@@ -108,7 +108,7 @@
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon
-              :icon="['fas', `${!item?.lock_status ? 'lock-open' : 'lock' }`]"
+              :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
           />
         </td>
         <td> {{ item?.traySlot }}</td>
@@ -121,7 +121,7 @@
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
           <font-awesome-icon
-              v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status"
+              v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status || item.pcIp === myIp"
               :icon="['fas', 'pen-to-square']"
               @click="editData(item)"/>
         </td>
