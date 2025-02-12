@@ -6,11 +6,14 @@
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <RenewalWorking v-if="!bmIsBoolen && pbVersion === '100a'" :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette"
-                    class="contentRightChild"/>
-    <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
-                 v-else
-                 class="contentRightChild"/>
+    <RenewalWorking
+        v-if="visibleBySite(siteCd, [
+            HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+            HOSPITAL_SITE_CD_BY_NAME['TEST'],
+            HOSPITAL_SITE_CD_BY_NAME['원자력병원']
+            ], 'enable') && (!bmIsBoolen && pbVersion === '100a')"
+        :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette" class="contentRightChild"/>
+    <workingView v-else :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild"/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen"
                        class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen"
@@ -36,6 +39,7 @@ import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
 import Preset from "@/views/analysis/commponent/preset.vue";
 import ExecuteNew from "@/views/analysis/commponent/executeNew.vue";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const emits = defineEmits();
 
