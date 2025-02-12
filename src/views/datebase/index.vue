@@ -118,7 +118,7 @@
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <template v-if="!visibleBySite(siteCd, [
+      <template v-if="visibleBySite(siteCd, [
           HOSPITAL_SITE_CD_BY_NAME['UIMD'],
           HOSPITAL_SITE_CD_BY_NAME['TEST'],
           HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
