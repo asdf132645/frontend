@@ -351,7 +351,11 @@ async function socketData(data: any) {
           const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
           if (res !== '') {
             const err = await errLogLoad();
-            showCoreErrorAlert(err);
+            if (!err || typeof err !== 'object') {
+              showCoreErrorAlert(res);
+            } else {
+              showCoreErrorAlert(err);
+            }
             if (isAlarm) {
               await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
             }
