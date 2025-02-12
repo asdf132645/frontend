@@ -118,8 +118,20 @@
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <ListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+      <template v-if="!visibleBySite(siteCd, [
+          HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+          HOSPITAL_SITE_CD_BY_NAME['TEST'],
+          HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+          HOSPITAL_SITE_CD_BY_NAME['인천길병원'],
+      ], 'enable')">
+        <NewListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+        <NewListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+      </template>
+      <template v-else>
+        <ListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+        <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+      </template>
+
     </div>
   </div>
 
@@ -139,7 +151,10 @@
 
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
+import NewListWbcImg from "@/views/datebase/commponent/list/newListWbcImg.vue";
+import NewListBmImg from "@/views/datebase/commponent/list/newListBmImg.vue";
 import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
+import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 import {
   computed,
   getCurrentInstance,
@@ -156,7 +171,6 @@ import {
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
-import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
@@ -173,6 +187,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
 import { DIR_NAME } from "@/common/defines/constants/settings";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 
 const store = useStore();
