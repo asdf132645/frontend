@@ -1,7 +1,7 @@
 <template>
   <div class="listTableImageContainer">
-    <h3 class="mb10 hh3title infoImageTitle mt10">WBC Images</h3>
-    <div v-if="allImages.length > 0" class="dbPBImageContainer">
+    <h3 class="mb10 hh3title infoImageTitle mt10">{{ projectName() }} Images</h3>
+    <div v-if="allImages.length > 0" class="dbWBCImageContainer">
       <template v-for="imageSet in allImages" :key="imageSet.id">
         <img
             v-for="image in imageSet.images"
@@ -20,19 +20,23 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, ref, watch} from 'vue';
-import {useStore} from "vuex";
+import {computed, defineProps, onBeforeMount, onMounted, ref, watch} from 'vue';
+import {useStore} from 'vuex';
 import {DIR_NAME} from "@/common/defines/constants/settings";
 
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
-const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
+const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
-
+const apiBaseUrl = computed(() => viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL);
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
+const projectType = ref('');
 const selectedImage = ref('');
+
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
+})
 
 onMounted(() => {
   allImages.value = [];
@@ -42,8 +46,11 @@ onMounted(() => {
 watch(() => props.selectedItem, () => {
   allImages.value = [];
   createAllImages();
-},{deep: true});
+}, { deep: true });
 
+const isSelectedImage = (selectImageText: string) => {
+  return selectedImage.value === selectImageText;
+}
 
 const clickImage = (selectImageText: string) => {
   if (selectedImage.value === selectImageText) {
@@ -51,10 +58,6 @@ const clickImage = (selectImageText: string) => {
   } else {
     selectedImage.value = selectImageText
   }
-}
-
-const isSelectedImage = (selectImageText: string) => {
-  return selectedImage.value === selectImageText;
 }
 
 function createAllImages(): void {
@@ -77,24 +80,31 @@ function createAllImages(): void {
     }
     return acc;
   }, []) || [];
-
-
 }
 
 function getImageUrl(imageName: any, id: string, title: string): string {
   const { selectedItem } = props;
-  // 이미지 정보가 없다면 빈 문자열 반환
+
   if (!selectedItem?.wbcInfo?.wbcInfo || selectedItem?.wbcInfo?.wbcInfo.length === 0) {
     return '';
   }
 
   const slotId = selectedItem.slotId || '';
   const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${slotId}/${DIR_NAME.WBC_CLASS}/${id}_${title}`;
-  return `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  if (projectType.value === 'pb') {
+    const folderPath = `${path}/${slotId}/${DIR_NAME.WBC_CLASS}/${id}_${title}`;
+    return `${apiBaseUrl.value}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  } else {
+    const folderPath = `${path}/${slotId}/${DIR_NAME.BM_CLASS}/${id}_${title}`;
+    return `${apiBaseUrl.value}/images?folder=${folderPath}&imageName=${imageName}`;
+  }
 }
 
 function hideImage(id: string, fileName: string) {
   hiddenImages.value[`${id}-${fileName}`] = true;
+}
+
+const projectName = () => {
+  return projectType.value === 'pb' ? 'WBC' : 'BM';
 }
 </script>

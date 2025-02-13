@@ -1,13 +1,15 @@
 <template>
-  <div class="mt30 listTableImageContainer">
-    <h3 class="mb10 hh3title infoImageTitle mt10">BM Images</h3>
-    <div v-if="currntVue.length > 0" class="dbImageContainer">
+  <div class="listTableImageContainer">
+    <h3 class="mb10 hh3title infoImageTitle mt10">{{ projectName() }} Images</h3>
+    <div v-if="!isObjectEmpty(currntVue) && currntVue.length > 0" class="dbImageContainer">
       <template v-for="(image) in currntVue" :key="image.fileName">
         <img
             class="dbRightImages"
+            :class="['dbRightImages', {'selected-image': isSelectedImage(`${image.id}-${image.fileName}`)}]"
             :src="getImageUrl(image.fileName, image.id, image.title)"
             @error="hideImage(image.id, image.fileName)"
             v-show="!hiddenImages[`${image.id}-${image.fileName}`]"
+            @click="clickImage(`${image.id}-${image.fileName}`)"
         />
       </template>
       <div class="listWbcImg-pagination-controls">
@@ -25,27 +27,40 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, ref, watch} from 'vue';
-import {useStore} from 'vuex';
+import {computed, defineProps, onBeforeMount, onMounted, ref, watch} from 'vue';
+import {useStore} from "vuex";
+import {DIR_NAME} from "@/common/defines/constants/settings";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
-const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
+const iaRootPath = ref(store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = computed(() => viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL);
+
 const allImages = ref<any>([]);
-const hiddenImages = ref<{ [key: string]: boolean }>({});
+const hiddenImages = ref({});
+const selectedImage = ref('');
 const currentPage = ref(1);
 const imagesPerPage = 8;
 const currntVue = ref<any>([]);
+const projectType = ref('');
+
+const totalPages = computed(() => Math.ceil(allImages.value.length / imagesPerPage));
+
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
+})
+
 onMounted(() => {
+  allImages.value = [];
   createAllImages();
 });
 
 watch(() => props.selectedItem, () => {
+  allImages.value = [];
   createAllImages();
-});
-const totalPages = computed(() => Math.ceil(allImages.value.length / imagesPerPage));
+}, { deep: true });
 
 function createAllImages() {
   if (!props.selectedItem?.wbcInfo || !props.selectedItem.wbcInfo.wbcInfo?.length) {
@@ -87,8 +102,8 @@ function extractImagesWithInfo(wbcData) {
   }, []);
 }
 
-const groupImagesByPage = (allImages, itemsPerPage = 8) => {
-  return allImages.reduce((acc, item, index) => {
+const groupImagesByPage = (allImages: any, itemsPerPage = 8) => {
+  return allImages.reduce((acc: any, item: any, index: any) => {
     const pageIndex = Math.floor(index / itemsPerPage);
     if (!acc[pageIndex]) acc[pageIndex] = [];
 
@@ -97,6 +112,7 @@ const groupImagesByPage = (allImages, itemsPerPage = 8) => {
     return acc;
   }, []);
 };
+
 
 function getImageUrl(imageName: any, id: string, title: string): string {
   const { selectedItem } = props;
@@ -107,8 +123,13 @@ function getImageUrl(imageName: any, id: string, title: string): string {
 
   const slotId = selectedItem.slotId || '';
   const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${slotId}/04_BM_Classification/${id}_${title}`;
-  return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+  if (projectType.value === 'pb') {
+    const folderPath = `${path}/${slotId}/${DIR_NAME.WBC_CLASS}/${id}_${title}`;
+    return `${apiBaseUrl.value}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+  } else {
+    const folderPath = `${path}/${slotId}/${DIR_NAME.BM_CLASS}/${id}_${title}`;
+    return `${apiBaseUrl.value}/images?folder=${folderPath}&imageName=${imageName}`;
+  }
 }
 
 function hideImage(id: string, fileName: string) {
@@ -127,4 +148,16 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
   currntVue.value = groupImagesByPage(allImages.value)[currentPage.value];
 };
+
+const clickImage = (selectImageText: string) => {
+  selectedImage.value = selectedImage.value === selectImageText ? '' : selectImageText;
+};
+
+const isSelectedImage = (selectImageText: string) => {
+  return selectedImage.value === selectImageText;
+}
+
+const projectName = () => {
+  return projectType.value === 'pb' ? 'WBC' : 'BM';
+}
 </script>

@@ -61,19 +61,19 @@
           <div
               @mouseenter="abnormalClassInfoOpen(true, item)"
               @mouseleave="abnormalClassInfoOpen(false, item)"
-              style="position: relative; width: 4px; height: 4px;"
+              class="listTable-abnormalIcon-wrapper"
           >
             <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
               <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
                                  v-if="item?.slideCondition?.condition === 'Bad'"
               />
               <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                 v-else-if="item?.isNormal === 'N'"
+                                 v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
               />
             </template>
             <template v-else>
               <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                 v-if="item.isNormal === 'N'"/>
+                                 v-if="item.isNormal === 'N' && projectType === 'pb'"/>
             </template>
             <div v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
               <div class="slideStatus-container">
@@ -87,7 +87,7 @@
                 </template>
 
 
-                <div v-if="Array.isArray(item?.abnormalClassInfo)" class="slideStatusPopup-wrapper normalRange">
+                <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'" class="slideStatusPopup-wrapper normalRange">
                   <h1 class="slideStatusPopup-title" :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">Out of Normal Range</h1>
                   <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo" :key="abnormalIdx">
                     <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">

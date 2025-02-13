@@ -47,8 +47,7 @@
     <div class="resultInformationContainer" style="padding-top: 0;">
       <h3 class="mt20 mb10 hh3title">Result Information</h3>
       <ul class="resInfoTopContainer">
-        <li v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || projectType === 'bm'">
-          <div class="resInfoContainer">
+        <div v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || projectType === 'bm'" class="resInfoContainer">
             <li class="resInfoWrapper mb10">
               <p>Class</p>
               <p>Count</p>
@@ -77,7 +76,6 @@
               </li>
             </template>
           </div>
-        </li>
       </ul>
     </div>
   </div>
