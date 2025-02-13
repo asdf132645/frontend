@@ -6,8 +6,8 @@
           <li
               v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
               class="classInfoMenu-warning-container"
-              @mouseenter="showErrorContainer(true)"
-              @mouseleave="showErrorContainer(false)"
+              @mouseover="showErrorContainer(true)"
+              @mouseout="showErrorContainer(false)"
           >
             <p class="menuIco">
               <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']" v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'" />
@@ -177,6 +177,7 @@ watch(() => props.changeSlideByLisUpload, (newVal) => {
 onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
+  await getNormalRange();
   isLoading.value = false;
   const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
   keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
@@ -418,7 +419,6 @@ const showErrorContainer = async (show: boolean) => {
     return;
   }
 
-  await getNormalRange();
   updateAbnormalRanges(slideData.value);
 
   if (!slideData.value?.slideCondition?.desc) {
