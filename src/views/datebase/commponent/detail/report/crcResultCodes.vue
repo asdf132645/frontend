@@ -83,16 +83,16 @@
             {{ setCrcTitles(siteCd, 'remark') }}
           </span>
 
-          <button
-              class="reSelect"
-              v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']"
-              @click="createSummary"
-          >
-            Create Summary
-          </button>
+<!--          <button-->
+<!--              class="reSelect"-->
+<!--              v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']"-->
+<!--              @click="createSummary"-->
+<!--          >-->
+<!--            Create Summary-->
+<!--          </button>-->
 
-          <button v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['원자력병원']" class="reSelect" @click="openSelect('remark')">
-            {{ setCrcTitles(siteCd, 'recommendation') }}
+          <button class="reSelect" @click="openSelect('remark')">
+            {{ setCrcTitles(siteCd, 'remark') }}
             Select
           </button>
         </div>
