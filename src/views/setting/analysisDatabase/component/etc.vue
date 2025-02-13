@@ -20,6 +20,24 @@
         <tbody>
         <tr v-if="viewerCheck !== 'viewer'">
           <th class="pos-relative">
+            NS/NB Integration
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
+                @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
+          </th>
+          <td>
+            <font-awesome-icon
+                :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="toggleNsNbIntegration"
+            />
+          </td>
+        </tr>
+        <tr v-if="viewerCheck !== 'viewer'">
+          <th class="pos-relative">
             Alarm Timer (sec)
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
@@ -382,6 +400,7 @@ const tooltipVisible = ref({
   download: false,
   upload: false,
   openDownloadSavePath: false,
+  nsNbIntegration: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
 const currentCellId = ref(0);

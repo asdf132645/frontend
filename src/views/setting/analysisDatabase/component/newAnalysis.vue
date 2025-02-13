@@ -10,172 +10,152 @@
             @click="handlePresetChange(String(num))"
             :class="{ 'analysis-preset-active-btn': String(currentPresetNm) === String(num) }"
         >
-          <p>Preset {{ num }}</p>
+          <p>{{ num }}</p>
         </div>
       </div>
       <table class="settingTable">
         <tbody>
           <tr v-if="viewerCheck !== 'viewer'">
-            <th>Analysis Type</th>
+            <th class="analysis-setting-subTitle">Analysis Type</th>
             <td colspan="2">
-              <select v-model='cellInfo.analysisType'>
+              <select v-model="cellInfo.analysisType">
                 <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
               </select>
             </td>
           </tr>
 
-          <tr v-if="viewerCheck !== 'viewer'">
-            <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
+        <!-- WBC / BM Diff Analysis -->
+        <tr v-if="viewerCheck !== 'viewer' && (projectType === 'bm' || (projectType === 'pb' && cellInfo.analysisType === '01'))">
+          <th>{{ projectType === 'pb' ? 'WBC' : 'BM' }} Diff Analysis Values</th>
+          <th>Cell Analyzing Count</th>
+          <td>
+            <select v-model="cellInfo.diffCellAnalyzingCount">
+              <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-            <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
-            <th>Cell Analyzing Count</th>
-            <td>
+        <!-- PBS Analysis -->
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && cellInfo.analysisType === '04'">
+          <th rowspan="2">PBS Analysis Values</th>
+          <th>Cell Analyzing Count</th>
+          <td>
+            <select v-model="cellInfo.pbsCellAnalyzingCount">
+              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && cellInfo.analysisType === '04'">
+          <th>Stitch Count</th>
+          <td>
+            <select v-model="cellInfo.stitchCount">
+              <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-              <select v-model='cellInfo.diffCellAnalyzingCount'>
-                <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
+        <!-- Edge Shot Type -->
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && cellInfo.analysisType === '04'">
+          <th class="pos-relative">
+            Edge Shot Type
+            <font-awesome-icon :icon="['fas', 'circle-info']"
+                               @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
+                               @mouseleave="informationFontHover('edgeShotType', 'leave')"
+            />
+            <Transition>
+              <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
+                <img :src="smearTop" width="400" />
+              </div>
+            </Transition>
+          </th>
+          <td colspan="2">
+            <select v-model="cellInfo.edgeShotType">
+              <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-          <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-            <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
-            <th>
-              Cell Analyzing Count
-            </th>
-            <td>
-              <select v-model='cellInfo.pbsCellAnalyzingCount'>
-                <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
-          <tr v-if="viewerCheck !== 'viewer'">
-            <th v-if="projectType === 'bm'"></th>
-            <th>Stitch Count</th>
-            <td>
-              <select v-model='cellInfo.stitchCount'>
-                <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
-          <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer'">
-            <th class="pos-relative">
-              Edge Shot Type
-              <font-awesome-icon
-                  :icon="['fas', 'circle-info']"
-                  @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
-                  @mouseleave="informationFontHover('edgeShotType', 'leave')"
-              />
-              <Transition>
-                <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
-                  <img :src="smearTop" width="400" />
-                </div>
-              </Transition>
-            </th>
-            <td>
-              <select v-model='cellInfo.edgeShotType'>
-                <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
+        <!-- Edge Shot Count -->
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && ['2', '3'].includes(cellInfo.edgeShotType)">
+          <th class="pos-relative">Edge Shot Count</th>
+          <td>
+            <select v-if="cellInfo.edgeShotType === '2'" v-model="cellInfo.edgeShotLPCount">
+              <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+            <select v-if="cellInfo.edgeShotType === '3'" v-model="cellInfo.edgeShotHPCount">
+              <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-          <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (cellInfo.edgeShotType === '2' || cellInfo.edgeShotType === '3')">
-            <th class="pos-relative">Edge Shot Count</th>
-            <td v-show="cellInfo.edgeShotType === '2'">
-              <select v-model='cellInfo.edgeShotCount.LP'>
-                <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-            <td v-show="cellInfo.edgeShotType === '3'">
-              <select v-model='cellInfo.edgeShotCount.HP'>
-                <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
+        <!-- BF Analysis -->
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && visibleBySite(siteCd, ['9090', '0000'], 'disable')">
+          <th>BF Analysis Values</th>
+          <th>Cell Analyzing Count</th>
+          <td>
+            <select v-model="cellInfo.bfCellAnalyzingCount">
+              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-          <!--      BF analysis values-->
-          <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-            <th>BF Analysis Values</th>
-            <th>Cell Analyzing Count</th>
-            <td>
-              <select v-model='cellInfo.bfCellAnalyzingCount'>
-                <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
+        <!-- Common Analysis -->
+        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && ['01', '04'].includes(cellInfo.analysisType)">
+          <th :rowspan="pbsAnalysisValuesRowIndex(cellInfo.analysisType)" class="pos-relative">
+            Common
+            <font-awesome-icon :icon="['fas', 'circle-info']"
+                               @mouseenter="() => informationFontHover('positionMargin', 'hover')"
+                               @mouseleave="informationFontHover('positionMargin', 'leave')"
+            />
+            <Transition>
+              <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
+                <img :src="commonPositionMargin" width="140" />
+              </div>
+            </Transition>
+          </th>
+          <th>Wbc Position Margin</th>
+          <td>
+            <select v-model="cellInfo.diffWbcPositionMargin">
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
+          <th>Rbc Position Margin</th>
+          <td>
+            <select v-model="cellInfo.diffRbcPositionMargin">
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
+          <th>Edge Position Margin</th>
+          <td>
+            <select v-model="cellInfo.diffPltPositionMargin">
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
-          <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-            <th rowspan="3" class="pos-relative">
-              Common
-              <font-awesome-icon
-                  :icon="['fas', 'circle-info']"
-                  @mouseenter="() => informationFontHover('positionMargin', 'hover')"
-                  @mouseleave="informationFontHover('positionMargin', 'leave')"
-              />
-              <Transition>
-                <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
-                  <img :src="commonPositionMargin" width="140" />
-                </div>
-              </Transition>
-            </th>
-            <th>Wbc Position Margin</th>
-            <td>
-              <select v-model='cellInfo.diffWbcPositionMargin'>
-                <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
-          <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-            <th>Rbc Position Margin</th>
-            <td>
-              <select v-model='cellInfo.diffRbcPositionMargin'>
-                <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
-          <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-            <th>Edge Position Margin</th>
-            <td>
-              <select v-model='cellInfo.diffPltPositionMargin'>
-                <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
-              IA Root Path
-              <font-awesome-icon
-                  :icon="['fas', 'circle-info']"
-                  @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
-                  @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
-              />
-              <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
-            </th>
-            <td colspan="2">
-              <select v-model='cellInfo.iaRootPath'>
-                <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-              </select>
-            </td>
-          </tr>
-          <tr v-if="viewerCheck !== 'viewer'">
-            <th class="pos-relative">
-              NS/NB Integration
-              <font-awesome-icon
-                  :icon="['fas', 'circle-info']"
-                  @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
-                  @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
-              />
-              <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
-            </th>
-            <td>
-              <font-awesome-icon
-                  :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                  class="iconSize"
-                  @click="toggleNsNbIntegration"
-              />
-            </td>
-          </tr>
+        <!-- IA Root Path -->
+        <tr>
+          <th class="pos-relative" colspan="1">
+            IA Root Path
+            <font-awesome-icon :icon="['fas', 'circle-info']"
+                               @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
+                               @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
+          </th>
+          <td colspan="2">
+            <select v-model="cellInfo.iaRootPath" disabled>
+              <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+            </select>
+          </td>
+        </tr>
         </tbody>
       </table>
+
       <button class="saveBtn" type="button" @click='cellImgSet()'>Save</button>
     </div>
   </div>
@@ -238,6 +218,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import { defaultCellImgData } from "@/common/helpers/common/setting";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -268,6 +249,7 @@ const testTypeArr = ref<any>([]);
 const showConfirm = ref(false);
 const confirmType = ref('setting');
 const confirmMessage = ref('');
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
@@ -293,7 +275,6 @@ const tooltipVisible = ref({
   openDownloadSavePath: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
-const currentCellId = ref(0);
 const allCellInfo = ref<{ serverData: CellImgAnalyzedResponse[], clientData: CellImgAnalyzedResponse[] }>({
   serverData: [],
   clientData: [],
@@ -309,10 +290,8 @@ const cellInfo = ref({
   bfCellAnalyzingCount: '100',
   stitchCount: '1',
   edgeShotType: '0',
-  edgeShotCount: {
-    LP: '1',
-    HP: '3',
-  },
+  edgeShotLPCount: '1',
+  edgeShotHPCount: '3',
   iaRootPath: window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
   isNsNbIntegration: false,
   autoBackUpMonth: 'Not selected',
@@ -339,6 +318,8 @@ onMounted(async () => {
   await cellImgGet();
   await driveGet();
   await cellImgGetAll();
+
+  currentPresetNm.value = String(allCellInfo.value.clientData.findIndex((item) => item?.presetChecked) + 1);
 });
 
 watch(cellInfo.value, async () => {
@@ -348,15 +329,9 @@ watch(cellInfo.value, async () => {
 
   const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
     if (String(item.id) === String(cellInfo.value.id)) {
-      return {
-        ...cellInfo.value,
-        id: Number(cellInfo.value.id),
-        presetChecked: true,
-        backupEndDate: allCellInfo.value.serverData[0].backupEndDate,
-        backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
-      };
+      return { ...item, ...cellInfo.value, edgeShotType: Number(cellInfo.value.edgeShotType) };
     } else {
-      return { ...item, presetChecked: false };
+      return { ...item };
     }
   })
 
@@ -374,12 +349,6 @@ const getApiUrl = () => {
   const tmp = window.APP_API_BASE_URL.split(':');
   apiUrl.value = `${tmp[0]}:${tmp[1]}`;
 }
-
-const filterNumbersOnly = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const filteredValue = input.value.replace(/[^0-9]/g, '');
-  cellInfo.value.alarmCount = filteredValue.trim();
-};
 
 const driveGet = async () => {
   try {
@@ -431,11 +400,6 @@ const handlePresetChange = (presetNm: '1' | '2' | '3') => {
       edgeShotHPCount: defaultCellImgData.edgeShotHPCount,
       bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
       iaRootPath: defaultCellImgData.iaRootPath,
-      isNsNbIntegration: sessionStorage.getItem('isNsNbIntegration'),
-      isAlarm: defaultCellImgData.isAlarm,
-      alarmCount: defaultCellImgData.alarmCount,
-      keepPage: defaultCellImgData.keepPage,
-      lisUploadCheckAll: defaultCellImgData.lisUploadCheckAll,
       backupPath: defaultCellImgData.backupPath,
       backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
       backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
@@ -449,7 +413,7 @@ const handlePresetChange = (presetNm: '1' | '2' | '3') => {
   }
 
   if (selectedCellInfo) {
-    cellInfo.value.id = String(selectedCellInfo?.id);
+    cellInfo.value.id = selectedCellInfo?.id;
     cellInfo.value.analysisType = selectedCellInfo.analysisType;
     cellInfo.value.diffCellAnalyzingCount = selectedCellInfo.diffCellAnalyzingCount;
     cellInfo.value.diffWbcPositionMargin = selectedCellInfo.diffWbcPositionMargin;
@@ -459,10 +423,9 @@ const handlePresetChange = (presetNm: '1' | '2' | '3') => {
     cellInfo.value.bfCellAnalyzingCount = selectedCellInfo.bfCellAnalyzingCount;
     cellInfo.value.stitchCount = selectedCellInfo.stitchCount;
     cellInfo.value.edgeShotType = String(selectedCellInfo?.edgeShotType);
-    cellInfo.value.edgeShotCount.LP = String(selectedCellInfo?.edgeShotLPCount);
-    cellInfo.value.edgeShotCount.HP = String(selectedCellInfo?.edgeShotHPCount);
+    cellInfo.value.edgeShotLPCount = String(selectedCellInfo?.edgeShotLPCount);
+    cellInfo.value.edgeShotHPCount = String(selectedCellInfo?.edgeShotHPCount);
     cellInfo.value.iaRootPath = selectedCellInfo.iaRootPath;
-    cellInfo.value.isNsNbIntegration = selectedCellInfo.isNsNbIntegration;
     cellInfo.value.autoBackUpMonth = selectedCellInfo?.autoBackUpMonth;
     cellInfo.value.presetChecked = selectedCellInfo?.presetChecked;
   }
@@ -479,8 +442,7 @@ const cellImgGet = async () => {
 
         const data = result.data;
 
-        currentCellId.value = data.id;
-        cellInfo.value.id = String(data.id);
+        cellInfo.value.id = data.id;
         cellInfo.value.analysisType = data.analysisType;
         cellInfo.value.diffCellAnalyzingCount = data.diffCellAnalyzingCount;
         cellInfo.value.diffWbcPositionMargin = data.diffWbcPositionMargin;
@@ -490,10 +452,9 @@ const cellImgGet = async () => {
         cellInfo.value.stitchCount = data.stitchCount;
         cellInfo.value.bfCellAnalyzingCount = data.bfCellAnalyzingCount;
         cellInfo.value.edgeShotType = String(data?.edgeShotType);
-        cellInfo.value.edgeShotCount.LP = String(data?.edgeShotLPCount);
-        cellInfo.value.edgeShotCount.HP = String(data?.edgeShotHPCount);
+        cellInfo.value.edgeShotLPCount = String(data?.edgeShotLPCount);
+        cellInfo.value.edgeShotHPCount = String(data?.edgeShotHPCount);
         cellInfo.value.iaRootPath = data.iaRootPath;
-        cellInfo.value.isNsNbIntegration = data.isNsNbIntegration;
         cellInfo.value.presetChecked = data?.presetChecked;
       }
     }
@@ -532,9 +493,7 @@ const cellImgSet = async () => {
     scrollToTop();
     const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
     await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
-    await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
-      isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
-    });
+
     // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
     sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
     sessionStorage.setItem('wbcPositionMargin', data?.diffWbcPositionMargin);
@@ -555,10 +514,6 @@ const cellImgSet = async () => {
     showToast(MSG.TOAST.UPDATE_FAIL);
   }
 }
-
-const toggleNsNbIntegration = () => {
-  cellInfo.value.isNsNbIntegration = !cellInfo.value.isNsNbIntegration;
-};
 
 const informationFontHover = (type: 'edgeShotType' | 'positionMargin', hoverStatus: 'hover' | 'leave') => {
   if (hoverStatus === 'leave') {
@@ -615,11 +570,9 @@ const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean)
   tooltipVisible.value[type] = visible;
 }
 
-const pbsAnalysisValuesRowIndex = () => {
-  if (projectType.value !== 'pb') return 2;
-  if (machineVersion.value === '100a' && (cellInfo.value.edgeShotType === '2' || cellInfo.value.edgeShotType === '3')) return 4;
-  if (machineVersion.value === '100a') return 3;
-  if (machineVersion.value === '12a') return 3;
+const pbsAnalysisValuesRowIndex = (analysisType: string) => {
+  if (analysisType === '01') return 1;
+  if (analysisType === '04') return 3;
   return 3;
 }
 
@@ -636,8 +589,8 @@ const handleChangeCellId = (cellId: number) => {
     cellInfo.value.bfCellAnalyzingCount = selectedCellInfo.bfCellAnalyzingCount;
     cellInfo.value.stitchCount = selectedCellInfo.stitchCount;
     cellInfo.value.edgeShotType = String(selectedCellInfo?.edgeShotType);
-    cellInfo.value.edgeShotCount.LP = String(selectedCellInfo?.edgeShotLPCount);
-    cellInfo.value.edgeShotCount.HP = String(selectedCellInfo?.edgeShotHPCount);
+    cellInfo.value.edgeShotLPCount = String(selectedCellInfo?.edgeShotLPCount);
+    cellInfo.value.edgeShotHPCount = String(selectedCellInfo?.edgeShotHPCount);
     cellInfo.value.iaRootPath = selectedCellInfo.iaRootPath;
     cellInfo.value.isNsNbIntegration = selectedCellInfo.isNsNbIntegration;
     cellInfo.value.autoBackUpMonth = selectedCellInfo?.autoBackUpMonth;
@@ -657,12 +610,6 @@ const deleteCellImg = async () => {
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
     showToast(MSG.TOAST.DELETE_FAILED);
   }
-}
-
-const handleChangePreset = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  const currentCellId = target.value;
-  handleChangeCellId(Number(currentCellId));
 }
 
 const cellImgGetAll = async () => {

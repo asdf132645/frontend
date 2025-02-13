@@ -14,7 +14,7 @@
         <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
         </button>
-        <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
+        <button v-if="projectType === 'pb' && visibleBySite(siteCd, ['9090', '0000'], 'disable')" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
         <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
         <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
@@ -65,6 +65,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 const store = useStore();
 const activeTab = ref('cellImageAnalyzed');

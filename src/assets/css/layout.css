@@ -178,6 +178,11 @@
     justify-content: space-between;
 }
 
+.flex-justify-around {
+    display: flex;
+    justify-content: space-around;
+}
+
 .flex-center {
     display: flex;
     justify-content: center;
@@ -918,17 +923,64 @@ h3.titleText {
 }
 
 .execute-preset-wrapper {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
 }
 
+.execute-preset-helper-wrapper {
+    position: absolute;
+    top: 0;
+    background: var(--main-bg-2-color);
+    left: 240px;
+    z-index: 2;
+    border-radius: 4px;
+    width: 380px;
+    box-shadow: 2px 2px 2px var(--black-color);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border: 1px solid var(--main-bg-7-color);
+}
+
+.execute-preset-helper-wrapper > h1 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+
+.execute-preset-helper-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.execute-preset-helper-content > p {
+    display: inline-block;
+    text-align: left;
+    width: 100%;
+}
+
+.execute-preset-helper-content > p > span {
+    display: inline-block;
+    width: 200px;
+}
+
 .execute-preset-btn {
-    width: 30%;
     border: 1px solid white;
     gap: 4px;
     cursor: pointer;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .execute-preset-active-btn {
@@ -1150,6 +1202,19 @@ table.settingTable {
 
 table.settingTable select {
     padding: 6px;
+}
+
+.analysis-setting-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+}
+
+.analysis-setting-subTitle {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 200px;
 }
 
 button.saveBtn, .defaultBtn {
@@ -2265,7 +2330,7 @@ li.activeTab {
 }
 
 table.settingTable td, table.settingTable th {
-    height: 45px;
+    height: 40px;
     font-size: 1rem;
 }
 
@@ -3629,11 +3694,18 @@ ul.normalItems {
 }
 
 .listTableImageContainer {
+    height: 358px;
     overflow-y: hidden;
 }
 
+.listTable-abnormalIcon-wrapper {
+    position: relative;
+    width: 4px;
+    height: 4px;
+}
+
 .resInfoTopContainer {
-    max-height: 380px;
+    max-height: 340px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -3672,19 +3744,16 @@ ul.normalItems {
     width: 150px;
 }
 
-.dbPBImageContainer {
+.dbWBCImageContainer {
+    position: relative;
     overflow-y: auto;
     max-height: 27.5vh;
 }
 
 .dbImageContainer {
+    position: relative;
     overflow-y: hidden;
-    max-height: 27.5vh;
-}
-
-.dbBMImageContainer {
-    overflow-y: auto;
-    max-height: 21vh;
+    height: 294px;
 }
 
 .dbRightImages {
@@ -5799,7 +5868,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 140px;
+    left: 640px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
@@ -5812,13 +5881,12 @@ progress::-moz-progress-bar {
 .tutorial-positionMargin-container {
     position: absolute;
     top: 0;
-    left: 90px;
+    left: 640px;
     z-index: 10;
     background-color: var(--main-gray-color);
     padding: 4px;
     border-radius: 4px;
     box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);
-
 }
 
 .tooltip-container {
@@ -6333,9 +6401,9 @@ button.gbArrowButton.left {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 120px;
-    height: 24px;
-    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     border: 1px solid white;
     cursor: pointer;
 }
@@ -6360,6 +6428,10 @@ button.gbArrowButton.left {
 }
 
 .listWbcImg-pagination-controls {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;

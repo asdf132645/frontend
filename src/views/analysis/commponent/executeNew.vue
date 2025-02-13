@@ -11,9 +11,60 @@
 
       <div class="stop-container">
         <div class="execute-preset-wrapper">
-          <div @click="handleChangePresetNm('1')" class="execute-preset-btn" :class="currentPresetNm === '1' && 'execute-preset-active-btn'">1</div>
-          <div @click="handleChangePresetNm('2')" class="execute-preset-btn" :class="currentPresetNm === '2' && 'execute-preset-active-btn'">2</div>
-          <div @click="handleChangePresetNm('3')" class="execute-preset-btn" :class="currentPresetNm === '3' && 'execute-preset-active-btn'">3</div>
+          <div class="flex-justify-around w-full">
+            <div
+                v-for="num in ['1', '2', '3']"
+                :key="num"
+                class="execute-preset-btn"
+                :class="{ 'execute-preset-active-btn': String(currentPresetNm) === num }"
+                @mouseenter="showPresetHelper(num, 'hover')"
+                @mouseleave="showPresetHelper(num, 'leave')"
+                @click="handleChangePresetNm(String(num))"
+            >
+              {{ num }}
+            </div>
+          </div>
+
+
+          <div v-if="isPresetHelperOpen.isOpen"  class="execute-preset-helper-wrapper">
+            <h1>Analysis Setting</h1>
+
+            <div class="execute-preset-helper-content">
+              <p>
+                <span>Analysis Type</span>
+                {{ presetHelperCellInfo?.analysisType }}
+              </p>
+              <p>
+                <span>EdgeShotType</span>
+                {{ presetHelperCellInfo?.edgeShotType }}
+              </p>
+              <p v-if="presetHelperCellInfo?.edgeShotCount">
+                <span>EdgeShotCount</span>
+                {{ presetHelperCellInfo?.edgeShotCount }}
+              </p>
+              <p>
+                <span>StitchCount</span>
+                {{ presetHelperCellInfo?.stitchCount }}
+              </p>
+              <p>
+                <span>WBC count</span>
+                {{ presetHelperCellInfo?.wbcCount }}
+              </p>
+              <p>
+                <span>WBC Position Margin</span>
+                {{ presetHelperCellInfo?.diffWbcPositionMargin }}
+              </p>
+              <p>
+                <span>RBC Position Margin</span>
+                {{ presetHelperCellInfo?.diffRbcPositionMargin }}
+              </p>
+              <p>
+                <span>Edge Position Margin</span>
+                {{ presetHelperCellInfo?.diffPltPositionMargin }}
+              </p>
+            </div>
+          </div>
+
         </div>
         <div class="flex-align-center mt5">
           <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
@@ -61,11 +112,7 @@
 import {ref, computed, watch, onMounted, nextTick, defineEmits, onBeforeMount} from "vue";
 
 import {useStore} from "vuex";
-import {
-  WBC_COUNT_OPTIONS,
-  STITCH_COUNT_OPTIONS,
-  BM_COUNT_OPTIONS
-} from '@/common/defines/constants/analysis';
+import { WBC_COUNT_OPTIONS, BM_COUNT_OPTIONS } from '@/common/defines/constants/analysis';
 import { MESSAGES, MSG } from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
@@ -125,9 +172,23 @@ const cellInfo = ref({
   },
   presetChecked: false,
 })
+const presetHelperCellInfo = ref({
+  analysisType: '01',
+  wbcCount: '100',
+  stitchCount: '1',
+  edgeShotType: '0',
+  edgeShotCount: '1',
+  diffWbcPositionMargin: '0',
+  diffRbcPositionMargin: '0',
+  diffPltPositionMargin: '0',
+})
 const currentPresetNm = ref('1');
 const isPresetChanged = ref(false);
 const isRecovering = ref(false);
+const isPresetHelperOpen = ref({
+  isOpen: false,
+  presetNm: '1',
+})
 
 onBeforeMount(() => {
   is100A.value = window.MACHINE_VERSION === '100a';
@@ -221,19 +282,22 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 });
 
 watch(() => cellImageAnalyzedData.value, () => {
-  const currentPreset = cellImageAnalyzedData.value.filter(item => item.presetChecked)[0];
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  const currentPreset = allCellData.filter(item => item.presetChecked)[0];
+  setPresetName();
 
   if (currentPreset) {
     setCellInfo(currentPreset);
   }
-})
+}, { deep: true })
 
 watch(() => cellInfo.value, (newCellInfo) => {
   if (!newCellInfo) {
     return;
   }
 
-  const currentCellInfo = cellImageAnalyzedData.value.find(item => item?.id === newCellInfo.id);
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  const currentCellInfo = allCellData.find(item => item?.id === newCellInfo.id);
   if (!currentCellInfo) {
     isPresetChanged.value = true;
   } else {
@@ -266,6 +330,8 @@ const initDataExecute = async () => {
     btnStatus.value = 'start';
     showStopBtn.value = true;
   }
+
+  setPresetName();
 }
 
 //웹소켓으로 백엔드에 전송
@@ -499,7 +565,7 @@ const setWbcCount = (data) => {
     return data.diffCellAnalyzingCount;
   }
 
-  switch (cellInfo.value.analysisType) {
+  switch (data.analysisType) {
     case '01':
       return data.diffCellAnalyzingCount;
     case '04':
@@ -509,51 +575,33 @@ const setWbcCount = (data) => {
   }
 }
 
-const handleChangePresetNm = async (presetNm: '1' | '2' | '3') => {
+const handleChangePresetNm = async (presetNm: string) => {
   if (isRunningState.value) {
     return;
   }
 
-  const selectedCellInfo = cellImageAnalyzedData.value[Number(presetNm) - 1];
-  const restCellInfo = cellImageAnalyzedData.value[Number(presetNm) - 1];
-  const requestItem = { ...selectedCellInfo, presetChecked: true };
-  try {
-    for (const resetItem of restCellInfo) {
-      const restRequestItem = { ...resetItem, presetChecked: false };
-      await putCellImgApi(restRequestItem, String(restRequestItem?.id));
-    }
-    await putCellImgApi(requestItem, String(requestItem?.id));
-  } catch (error) {
-    console.error(error);
+  currentPresetNm.value = Number(presetNm);
+  const selectedIndex = Number(presetNm) - 1;
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  const selectedCellInfo = allCellData[selectedIndex];
+
+  if (!selectedCellInfo) {
+    return;
   }
 
-  const currentPreset = cellImageAnalyzedData.value[Number(presetNm) - 1];
-  if (currentPreset) {
-    setCellInfo(currentPreset);
-  }
+  // 프리셋 버튼을 눌러서 우선순위를 높이기 위해서 밑의 주석 처리를 풀어야 함
+  // const requestItem = { ...selectedCellInfo, presetChecked: true };
+  // const restRequests = allCellData
+  //     .filter((_: any, index: number) => index !== selectedIndex)
+  //     .map((item: any) => putCellImgApi({ ...item, presetChecked: false }, String(item.id)));
+  //
+  // try {
+  //   await Promise.all([...restRequests, putCellImgApi(requestItem, String(requestItem.id))]);
+  // } catch (error) {
+  //   console.error(error);
+  // }
 
-  currentPresetNm.value = presetNm;
-}
-
-const handleChangeCellInfo = async (event: Event) => {
-  const selectedCellId = event.target as HTMLSelectElement;
-  const selectedCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) === selectedCellId.value)[0];
-  const restCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) !== selectedCellId.value);
-  const requestItem = { ...selectedCellInfo, presetChecked: true };
-  try {
-    for (const resetItem of restCellInfo) {
-      const restRequestItem = { ...resetItem, presetChecked: false };
-      await putCellImgApi(restRequestItem, String(restRequestItem.id));
-    }
-    await putCellImgApi(requestItem, String(requestItem.id));
-  } catch (error) {
-    console.error(error);
-  }
-
-  const currentPreset = cellImageAnalyzedData.value.filter(item => String(item.id) === selectedCellId.value)[0];
-  if (currentPreset) {
-    setCellInfo(currentPreset);
-  }
+  setCellInfo(selectedCellInfo);
 }
 
 const handlePauseState = (bfSelectFiles: any, userId: string) => {
@@ -587,6 +635,67 @@ const getDeviceInfo = async () => {
     siteCd.value = deviceData.data.siteCd;
   } catch (e) {
     console.error(e);
+  }
+}
+
+const showPresetHelper = (currentPresetNm: string, status: 'hover' | 'leave') => {
+  isPresetHelperOpen.value.isOpen = status === 'hover';
+  if (status === 'hover') {
+    isPresetHelperOpen.value.presetNm = currentPresetNm;
+    setPresetHelperData(currentPresetNm);
+  }
+}
+
+const setPresetHelperData = (currentPresetNm: string) => {
+  const selectedIndex = Number(currentPresetNm) - 1;
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  const currentPresetHelperData = allCellData[selectedIndex];
+
+  if (!currentPresetHelperData) {
+    return;
+  }
+
+  const analysisData = testTypeArr.value.find((item) => item?.value === currentPresetHelperData?.analysisType);
+  if (analysisData) {
+    presetHelperCellInfo.value.analysisType = analysisData?.text;
+  }
+  presetHelperCellInfo.value.wbcCount = setWbcCount(currentPresetHelperData);
+  presetHelperCellInfo.value.edgeShotType = setEdgeShotType(currentPresetHelperData);
+  presetHelperCellInfo.value.edgeShotCount = setEdgeShotCount(currentPresetHelperData)
+  presetHelperCellInfo.value.diffWbcPositionMargin = currentPresetHelperData?.diffWbcPositionMargin;
+  presetHelperCellInfo.value.diffRbcPositionMargin = currentPresetHelperData?.diffRbcPositionMargin;
+  presetHelperCellInfo.value.diffPltPositionMargin = currentPresetHelperData?.diffPltPositionMargin;
+}
+
+const setEdgeShotType = (data: any) => {
+  switch (String(data.edgeShotType)) {
+    case '0':
+      return 'None';
+    case '1':
+      return 'Smear Top';
+    case '2':
+      return 'Smear Top + Low Power Side';
+    case '3':
+      return 'Smear Top + High Power Side';
+    default:
+      return '';
+  }
+}
+
+const setEdgeShotCount = (data: any) => {
+  if (String(data.edgeShotType) === '1') {
+    return data.edgeShotLPCount;
+  } else if (String(data.edgeShotType) === '2') {
+    return data.edgeShotHPCount;
+  } else {
+    return '';
+  }
+}
+
+const setPresetName = () => {
+  if (cellImageAnalyzedData.value) {
+    const presetCheckedIndex = cellImageAnalyzedData.value.findIndex((item) => item.presetChecked);
+    currentPresetNm.value = String(Number(presetCheckedIndex) + 1);
   }
 }
 
