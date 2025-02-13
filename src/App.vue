@@ -227,7 +227,7 @@ window.addEventListener('beforeunload', async function (event: any) {
 });
 
 
-const leave = async (event: any) => {
+const leave = async (event) => {
   event.preventDefault();
   if (!ipMatches.value) {
     const result = await getDeviceIpApi();
@@ -534,7 +534,8 @@ async function socketData(data: any) {
         });
 
         const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
-        completeSlot.isNormal = isNormal;
+        completeSlot.isNormal = projectBm.value ? 'Y' : isNormal;  // 현재 BM에서는 Normal Range가 없으므로 모두 정상으로 표시
+
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);

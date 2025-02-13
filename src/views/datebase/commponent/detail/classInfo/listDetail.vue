@@ -1950,7 +1950,12 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     const res: any = slideData.value;
     if (res) res.wbcInfoAfter = clonedWbcInfo;
     const {isNormal, classInfo} = checkPbNormalCell(clonedWbcInfo, normalItems.value)
-    res.isNormal = isNormal;
+    if (projectType.value === 'bm') {
+      // 현재 BM은 Normal Range가 없습니다.
+      res.isNormal = 'Y';
+    } else {
+      res.isNormal = isNormal;
+    }
     res.abnormalClassInfo = classInfo;
     // 실제 락 거는 부분 여기로 변경 함 그래프 ql 로 변경하면서 버그 방지를 위해서 변경
     res.pcIp = ipAddress.value;

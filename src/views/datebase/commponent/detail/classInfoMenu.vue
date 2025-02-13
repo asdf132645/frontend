@@ -11,7 +11,7 @@
           >
             <p class="menuIco">
               <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']" v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'" />
-              <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']" v-else-if="slideData?.isNormal === 'N'" />
+              <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']" v-else-if="slideData?.isNormal === 'N' && projectType === 'pb'" />
             </p>
             <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
               <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
@@ -21,7 +21,7 @@
 
               <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
 
-              <div v-if="Array.isArray(slideData?.abnormalClassInfo)" class="classInfoMenu-error-wrapper normalRange mt08">
+              <div v-if="Array.isArray(slideData?.abnormalClassInfo) && projectType === 'pb'" class="classInfoMenu-error-wrapper normalRange mt08">
                 <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
                 <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo" :key="abnormalIdx">
                   <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
@@ -123,7 +123,6 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import { gqlGenericUpdate, slideConditionUpdateMutation } from "@/gql/mutation/slideData";
 import { isObjectEmpty } from "@/common/lib/utils/validators";
-import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
@@ -506,6 +505,10 @@ const handleAbnormalValue = (value: string) => {
 }
 
 const checkHasPltInfo = async () => {
+  if (projectType.value !== 'pb') {
+    return;
+  }
+
   pltOnOff.value = false;
   const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
   const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
