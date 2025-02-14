@@ -433,7 +433,7 @@ const initDbData = async () => {
       }
       return item;
     })
-    await getDbData('search');
+    await getDbData('mounted', page.value);
   } else {
     await getDbData('mounted', 1);
   }
@@ -443,7 +443,8 @@ const selectItem = async (item: any) => {
   selectedItem.value = item;
 };
 
-const saveLastSearchParams = () => {
+const saveLastSearchParams = async () => {
+
   const lastSearchParams = {
     page: page.value,
     prevPage: prevPage.value,
@@ -512,7 +513,7 @@ const getDbData = async (type: string, pageNum?: number) => {
 
   try {
     const result = await getRunningApi(requestData);
-    saveLastSearchParams();
+
 
     if (page.value === 1 && result.data.data.length === 0) {
       loadingDelayParents.value = false;
@@ -577,7 +578,6 @@ const getDbData = async (type: string, pageNum?: number) => {
 
       }
     }
-
     await getDbDataAfterFunc();
 
     if (dbGetData.value.length > 0) {
@@ -588,6 +588,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         await store.dispatch('commonModule/setCommonInfo', {dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
       }
     }
+    await saveLastSearchParams();
 
   } catch (e) {
     console.error(e);

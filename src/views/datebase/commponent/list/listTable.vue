@@ -145,7 +145,7 @@
   <!-- 페이지네이션 버튼 -->
   <div class="paginationDiv" v-if="dbGetData.length !== 0 && totalPages > 0">
     <div class="pagination">
-      <button @click="handlePrevPage" :disabled="currentPage <= 1">Prev</button>
+      <button @click="handlePrevPage" :disabled="currentPage <= 1"><font-awesome-icon :icon="['fas', 'caret-left']" /></button>
       <button
           v-for="pageNum in totalPages"
           :key="pageNum"
@@ -154,7 +154,9 @@
       >
         {{ pageNum }}
       </button>
-      <button @click="handleNextPage" :disabled="currentPage >= totalPages">Next</button>
+      <button @click="handleNextPage" :disabled="currentPage >= totalPages">
+        <font-awesome-icon :icon="['fas', 'caret-right']" />
+      </button>
     </div>
   </div>
 
@@ -358,6 +360,11 @@ onMounted(async () => {
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
+  const lastSearchParams = loadLastSearchParams();
+
+  if (!isObjectEmpty(lastSearchParams)) {
+    currentPage.value = lastSearchParams.page;
+  }
 });
 
 
@@ -908,5 +915,10 @@ const handleAbnormalValue = (value) => {
   return value.replace('[', '').replace(']', '');
 }
 
+
+const loadLastSearchParams = () => {
+  const storedSearchParams = sessionStorage.getItem('lastSearchParams');
+  return storedSearchParams ? JSON.parse(storedSearchParams) : {};
+};
 </script>
 
