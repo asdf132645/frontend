@@ -6,36 +6,84 @@
         <font-awesome-icon :icon="['fas', 'circle-play']" :class="{ 'startBtn': true, [btnStatus]: true }"/>
       </p>
       <p class="startStopP-wrapper" v-else @click="toggleStartStop('stop')">
-        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn'/>
+        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
       </p>
 
       <div class="stop-container">
+        <div class="execute-preset-wrapper">
+          <div class="flex-justify-around w-full">
+            <div
+                v-for="num in ['1', '2', '3']"
+                :key="num"
+                class="execute-preset-btn"
+                :class="{ 'execute-preset-active-btn': String(currentPresetNm) === num }"
+                @mouseenter="showPresetHelper(num, 'hover')"
+                @mouseleave="showPresetHelper(num, 'leave')"
+                @click="handleChangePresetNm(String(num))"
+            >
+              {{ num }}
+            </div>
+          </div>
 
-        <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
-          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">
-            {{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}
-          </option>
-        </select>
+
+          <div v-if="isPresetHelperOpen.isOpen && !isObjectEmpty(presetHelperCellInfo)"  class="execute-preset-helper-wrapper">
+            <h1>Analysis Setting</h1>
+            <hr class="w-full mb08" />
+
+            <ul class="execute-preset-helper-content">
+              <li v-if="presetHelperCellInfo?.analysisType">
+                <span>Analysis Type</span>
+                {{ presetHelperCellInfo?.analysisType }}
+              </li>
+              <li v-if="presetHelperCellInfo?.edgeShotType">
+                <span>Edge Shot Type</span>
+                {{ presetHelperCellInfo?.edgeShotType }}
+              </li>
+              <li v-if="presetHelperCellInfo?.edgeShotCount">
+                <span>Edge Shot Count</span>
+                {{ presetHelperCellInfo?.edgeShotCount }}
+              </li>
+              <li v-if="presetHelperCellInfo?.stitchCount">
+                <span>Stitch Count</span>
+                {{ presetHelperCellInfo?.stitchCount }}
+              </li>
+              <li v-if="presetHelperCellInfo?.wbcCount">
+                <span>WBC Count</span>
+                {{ presetHelperCellInfo?.wbcCount }}
+              </li>
+              <li v-if="presetHelperCellInfo?.diffWbcPositionMargin">
+                <span>WBC Position Margin</span>
+                {{ presetHelperCellInfo?.diffWbcPositionMargin }}
+              </li>
+              <li v-if="presetHelperCellInfo?.diffRbcPositionMargin">
+                <span>RBC Position Margin</span>
+                {{ presetHelperCellInfo?.diffRbcPositionMargin }}
+              </li>
+              <li v-if="presetHelperCellInfo?.diffPltPositionMargin">
+                <span>Edge Position Margin</span>
+                {{ presetHelperCellInfo?.diffPltPositionMargin }}
+              </li>
+            </ul>
+          </div>
+
+        </div>
         <div class="flex-align-center mt5">
           <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
             <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
-          <select v-model="cellInfo.wbcCount" class="execute-wbcCount-wrapper"
-                  :disabled="isRunningState || (cellInfo.analysisType === '05')">
+          <select v-model="cellInfo.wbcCount" class="execute-wbcCount-wrapper" :disabled="isRunningState || (cellInfo.analysisType === '05')">
             <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
 
 
         <div class="flex-justify-between">
-          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)"
-               @mouseup="sendRewindBelt(false)">
-            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal"/>
+          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
+            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal" />
           </div>
 
-          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }"
-               style="width: 100%;">
-            <span> {{ isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
+          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }" style="width: 100%;">
+            <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
           </div>
         </div>
 
@@ -65,20 +113,17 @@
 import {ref, computed, watch, onMounted, nextTick, defineEmits, onBeforeMount} from "vue";
 
 import {useStore} from "vuex";
-import {
-  WBC_COUNT_OPTIONS,
-  STITCH_COUNT_OPTIONS,
-  BM_COUNT_OPTIONS
-} from '@/common/defines/constants/analysis';
-import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
+import { WBC_COUNT_OPTIONS, BM_COUNT_OPTIONS } from '@/common/defines/constants/analysis';
+import { MESSAGES, MSG } from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import {testBmTypeList, testTypeList} from "@/common/defines/constants/settings";
+import { testBmTypeList, testTypeList } from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 
 const store = useStore();
@@ -128,10 +173,16 @@ const cellInfo = ref({
     HP: '3',
   },
   presetChecked: false,
-  presetNm: '1',
 })
+const presetHelperCellInfo = ref({});
+const presetHelperCellInfoForShow = ref([]);
+const currentPresetNm = ref('1');
 const isPresetChanged = ref(false);
 const isRecovering = ref(false);
+const isPresetHelperOpen = ref({
+  isOpen: false,
+  presetNm: '1',
+})
 
 onBeforeMount(() => {
   is100A.value = window.MACHINE_VERSION === '100a';
@@ -142,6 +193,11 @@ onMounted(async () => {
   await initDataExecute();
 });
 
+watch(() => isPresetChanged.value, (newIsPresetChanged) => {
+  if (newIsPresetChanged) {
+    currentPresetNm.value = '0';
+  }
+})
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -156,17 +212,17 @@ watch(commonDataGet.value, (value) => {
     initDataExecute();
     store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
   }
-  if (value.resetAnalyzing) {
+  if(value.resetAnalyzing){
     cellImgGet();
     store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: false});
   }
-}, {deep: true});
+},{deep: true});
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
   const [newRunInfo] = newVals;
 
-  const {bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
+  const { bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
   bfSelectFiles.value = newBfSelectFiles;
 
   if (isRunningState.value) {
@@ -197,7 +253,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   }
 
   if (isInit.value === 'Y') {
-    await store.dispatch('commonModule/setCommonInfo', {isInitializing: false});
+    await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
   }
 
   isPause.value = newIsPause;
@@ -220,31 +276,22 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 });
 
 watch(() => cellImageAnalyzedData.value, () => {
-  const currentPreset = cellImageAnalyzedData.value.filter(item => item.presetChecked)[0];
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  const currentPreset = allCellData.filter(item => item.presetChecked)[0];
+  setPresetName();
 
   if (currentPreset) {
     setCellInfo(currentPreset);
   }
-})
+}, { deep: true })
 
 watch(() => cellInfo.value, (newCellInfo) => {
   if (!newCellInfo) {
     return;
   }
 
-  const currentCellInfo = cellImageAnalyzedData.value.find(item => item?.id === newCellInfo.id);
-  if (!currentCellInfo) {
-    isPresetChanged.value = true;
-  } else {
-    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0; // null/undefined 방지
-    const isMatching =
-        currentCellInfo.analysisType === newCellInfo.analysisType &&
-        currentWbcCount === (newCellInfo.wbcCount ?? 0) && // null/undefined 방지
-        currentCellInfo.stitchCount === newCellInfo.stitchCount;
-
-    isPresetChanged.value = !isMatching;
-  }
-}, {deep: true})
+  checkAnalysisSettingChanged(newCellInfo);
+}, { deep: true })
 
 const initDataExecute = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
@@ -265,6 +312,8 @@ const initDataExecute = async () => {
     btnStatus.value = 'start';
     showStopBtn.value = true;
   }
+
+  setPresetName();
 }
 
 //웹소켓으로 백엔드에 전송
@@ -335,7 +384,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       rbcPositionMargin: rbcPositionMargin || '0',
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
-      edgeShotType: edgeShotType || '0',
+      edgeShotType:  edgeShotType || '0',
     });
 
     if (is100A.value) {
@@ -350,7 +399,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       const defaultCount = edgeShotType === '2' ? '1' : '3';
       const edgeShotCount = sessionStorage.getItem(key) || defaultCount;
 
-      Object.assign(startAction, {edgeShotCount});
+      Object.assign(startAction, { edgeShotCount });
     }
 
 
@@ -441,11 +490,11 @@ const sendInit = () => { // 장비 초기화 진행
 }
 
 const sendRewindBelt = async (isRewindingBelt: boolean) => {
-  await store.dispatch('commonModule/setCommonInfo', {isRewindingBelt: isRewindingBelt});
+  await store.dispatch('commonModule/setCommonInfo', { isRewindingBelt: isRewindingBelt });
 }
 
 const initData = async () => {
-  const newObj = {...embeddedStatusJobCmd.value}
+  const newObj = {...embeddedStatusJobCmd.value }
   isInit.value = newObj.isInit;
   isPause.value = newObj.isPause;
   userStop.value = newObj.userStop;
@@ -460,12 +509,9 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
         setCellInfo(data);
-        await store.dispatch('commonModule/setCommonInfo', {analysisType: data.analysisType});
-
-
+        await store.dispatch('commonModule/setCommonInfo', { analysisType: data.analysisType });
       }
     }
-
   } catch (e) {
     console.error(e);
   }
@@ -498,7 +544,7 @@ const setWbcCount = (data) => {
     return data.diffCellAnalyzingCount;
   }
 
-  switch (cellInfo.value.analysisType) {
+  switch (data.analysisType) {
     case '01':
       return data.diffCellAnalyzingCount;
     case '04':
@@ -508,25 +554,33 @@ const setWbcCount = (data) => {
   }
 }
 
-const handleChangeCellInfo = async (event: Event) => {
-  const selectedCellId = event.target as HTMLSelectElement;
-  const selectedCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) === selectedCellId.value)[0];
-  const restCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) !== selectedCellId.value);
-  const requestItem = {...selectedCellInfo, presetChecked: true};
-  try {
-    for (const resetItem of restCellInfo) {
-      const restRequestItem = {...resetItem, presetChecked: false};
-      await putCellImgApi(restRequestItem, String(restRequestItem.id));
-    }
-    await putCellImgApi(requestItem, String(requestItem.id));
-  } catch (error) {
-    console.error(error);
+const handleChangePresetNm = async (presetNm: string) => {
+  if (isRunningState.value) {
+    return;
   }
 
-  const currentPreset = cellImageAnalyzedData.value.filter(item => String(item.id) === selectedCellId.value)[0];
-  if (currentPreset) {
-    setCellInfo(currentPreset);
+  currentPresetNm.value = Number(presetNm);
+  const selectedIndex = Number(presetNm) - 1;
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  const selectedCellInfo = allCellData[selectedIndex];
+
+  if (!selectedCellInfo) {
+    return;
   }
+
+  // 프리셋 버튼을 눌러서 우선순위를 높이기 위해서 밑의 주석 처리를 풀어야 함
+  // const requestItem = { ...selectedCellInfo, presetChecked: true };
+  // const restRequests = allCellData
+  //     .filter((_: any, index: number) => index !== selectedIndex)
+  //     .map((item: any) => putCellImgApi({ ...item, presetChecked: false }, String(item.id)));
+  //
+  // try {
+  //   await Promise.all([...restRequests, putCellImgApi(requestItem, String(requestItem.id))]);
+  // } catch (error) {
+  //   console.error(error);
+  // }
+
+  setCellInfo(selectedCellInfo);
 }
 
 const handlePauseState = (bfSelectFiles: any, userId: string) => {
@@ -536,16 +590,20 @@ const handlePauseState = (bfSelectFiles: any, userId: string) => {
 }
 
 const setCellInfo = (data: any) => {
-  cellInfo.value.analysisType = data.analysisType;
-  cellInfo.value.id = data.id;
-  cellInfo.value.wbcCount = setWbcCount(data);
-  cellInfo.value.diffWbcPositionMargin = data.diffWbcPositionMargin;
-  cellInfo.value.diffRbcPositionMargin = data.diffRbcPositionMargin;
-  cellInfo.value.diffPltPositionMargin = data.diffPltPositionMargin;
-  cellInfo.value.stitchCount = data.stitchCount;
-  cellInfo.value.edgeShotType = data.edgeShotType;
-  cellInfo.value.edgeShotCount.LP = data.edgeShotLPCount;
-  cellInfo.value.edgeShotCount.HP = data.edgeShotHPCount;
+  Object.assign(cellInfo.value, {
+    analysisType: data.analysisType,
+    id: data.id,
+    wbcCount: setWbcCount(data),
+    diffWbcPositionMargin: data.diffWbcPositionMargin,
+    diffRbcPositionMargin: data.diffRbcPositionMargin,
+    diffPltPositionMargin: data.diffPltPositionMargin,
+    stitchCount: data.stitchCount,
+    edgeShotType: data.edgeShotType,
+    edgeShotCount: {
+      LP: data.edgeShotLPCount,
+      HP: data.edgeShotHPCount,
+    },
+  });
   sessionStorage.setItem('wbcPositionMargin', data.diffWbcPositionMargin);
   sessionStorage.setItem('rbcPositionMargin', data.diffRbcPositionMargin);
   sessionStorage.setItem('pltPositionMargin', data.diffPltPositionMargin);
@@ -560,6 +618,122 @@ const getDeviceInfo = async () => {
     siteCd.value = deviceData.data.siteCd;
   } catch (e) {
     console.error(e);
+  }
+}
+
+const showPresetHelper = (currentPresetNm: string, status: 'hover' | 'leave') => {
+  isPresetHelperOpen.value.isOpen = status === 'hover';
+  if (status === 'hover') {
+    isPresetHelperOpen.value.presetNm = currentPresetNm;
+    setPresetHelperData(currentPresetNm);
+  }
+}
+
+const setPresetHelperData = (currentPresetNm: string) => {
+  const selectedIndex = Number(currentPresetNm) - 1;
+  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+
+  if (selectedIndex < 0) {
+    return;
+  }
+
+  const currentPresetHelperData = allCellData[selectedIndex];
+
+  if (!currentPresetHelperData) {
+    return;
+  }
+
+  const analysisData = testTypeArr.value.find((item) => item?.value === currentPresetHelperData?.analysisType);
+
+  presetHelperCellInfo.value = {
+    analysisType: analysisData?.text || '',
+  };
+
+  if (projectType.value === 'pb') {
+    switch (currentPresetHelperData?.analysisType) {
+      case '05':  // Quality Check
+        break;
+      case '01':  // Diff
+        Object.assign(presetHelperCellInfo.value, {
+          wbcCount: setWbcCount(currentPresetHelperData),
+          diffWbcPositionMargin: currentPresetHelperData.diffWbcPositionMargin,
+        });
+        break;
+      case '04':  // PBS
+        Object.assign(presetHelperCellInfo.value, {
+          wbcCount: setWbcCount(currentPresetHelperData),
+          edgeShotType: setEdgeShotType(currentPresetHelperData),
+          stitchCount: currentPresetHelperData.stitchCount,
+          diffWbcPositionMargin: currentPresetHelperData.diffWbcPositionMargin,
+          diffRbcPositionMargin: currentPresetHelperData.diffRbcPositionMargin,
+          diffPltPositionMargin: currentPresetHelperData.diffPltPositionMargin,
+        });
+
+        if (currentPresetHelperData?.edgeShotType === '1' || currentPresetHelperData?.edgeShotType === '2') {
+          Object.assign(presetHelperCellInfo.value, { edgeShotCount: setEdgeShotCount(currentPresetHelperData) });
+        }
+        break;
+    }
+  } else {
+    Object.assign(presetHelperCellInfo.value, {
+      wbcCount: setWbcCount(currentPresetHelperData),
+      edgeShotType: setEdgeShotType(currentPresetHelperData),
+      stitchCount: currentPresetHelperData.stitchCount,
+      diffWbcPositionMargin: currentPresetHelperData.diffWbcPositionMargin,
+      diffRbcPositionMargin: currentPresetHelperData.diffRbcPositionMargin,
+      diffPltPositionMargin: currentPresetHelperData.diffPltPositionMargin,
+    });
+  }
+}
+
+const setEdgeShotType = (data: any) => {
+  switch (String(data.edgeShotType)) {
+    case '0':
+      return 'None';
+    case '1':
+      return 'Smear Top';
+    case '2':
+      return 'Smear Top + Low Power Side';
+    case '3':
+      return 'Smear Top + High Power Side';
+    default:
+      return '';
+  }
+}
+
+const setEdgeShotCount = (data: any) => {
+  if (String(data.edgeShotType) === '2') {
+    return data.edgeShotLPCount;
+  } else if (String(data.edgeShotType) === '3') {
+    return data.edgeShotHPCount;
+  } else {
+    return '';
+  }
+}
+
+const setPresetName = () => {
+  if (cellImageAnalyzedData.value) {
+    const presetCheckedIndex = cellImageAnalyzedData.value.findIndex((item) => item.presetChecked);
+    currentPresetNm.value = presetCheckedIndex === -1 ? '1' : String(Number(presetCheckedIndex) + 1);
+  }
+}
+
+const checkAnalysisSettingChanged = (newCellInfo) => {
+  const localCellImageAnalyzedData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  if (isObjectEmpty(localCellImageAnalyzedData)) {
+    return;
+  }
+  const currentCellInfo = localCellImageAnalyzedData.find(item => item?.id === newCellInfo.id);
+  if (!currentCellInfo) {
+    isPresetChanged.value = true;
+  } else {
+    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0;
+    const isMatching =
+        currentCellInfo.analysisType === newCellInfo.analysisType &&
+        currentWbcCount === (newCellInfo.wbcCount ?? 0) &&
+        currentCellInfo.stitchCount === newCellInfo.stitchCount;
+
+    isPresetChanged.value = !isMatching;
   }
 }
 
