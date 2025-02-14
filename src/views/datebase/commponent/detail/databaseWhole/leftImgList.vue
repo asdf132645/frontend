@@ -238,15 +238,40 @@ const openInViewer = async (imageUrl: string, type: string, bmOldData: any, inde
 
   viewerSmall.addHandler('canvas-click', (event: any) => {
     event.preventDefaultAction = true;
+
+    if (!viewerSmall) {
+      return;
+    }
+
+    const viewportPoint = viewerSmall.viewport.pointFromPixel(event.position);
+    const tiledImage = viewerSmall.world.getItemAt(0);
+
+    if (!tiledImage) {
+      console.log('이미지가 없습니다.');
+      return;
+    }
+
+    const imagePoint = tiledImage.viewportToImageCoordinates(viewportPoint);
+    const imageWidth = tiledImage.getContentSize().x;
+    const imageHeight = tiledImage.getContentSize().y;
+
+    if (
+        imagePoint.x >= 0 && imagePoint.x <= imageWidth &&
+        imagePoint.y >= 0 && imagePoint.y <= imageHeight
+    ) {
+    } else {
+      closeViewer();
+    }
   })
 
 };
 
 const closeViewer = () => {
   if (viewerSmall) {
-    viewerSmall.destroy();
+    viewerSmall.removeHandler('canvas-click');
+    viewerSmall.removeHandler('open');
+    // viewerSmall.destroy();
 
-    // // viewerSmall 요소를 제거하여 닫기
     const viewerElement = document.getElementById('viewerSmall');
     if (viewerElement) {
       viewerElement.innerHTML = '';  // 뷰어 요소의 내용을 비워서 닫기
@@ -254,11 +279,9 @@ const closeViewer = () => {
       viewerElement.style.height = `0`;
       viewerElement.style.width = `0`;
 
-      // 클릭 이벤트 리스너 제거
       viewerElement.removeEventListener('click', closeViewer);
     }
 
-    // viewerSmall 변수를 null로 설정
     viewerSmall = null;
     buttonOfen.value = false;
   }
