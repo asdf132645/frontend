@@ -84,7 +84,7 @@ export const kcch_0033GetCBCData = async ({ iaRootPath, cbcFilePathSetArr, barco
             keyword: barcodeNo
         }
         await fileSysCopy(fileParams);
-        await fileSysClean(fileSysCleanParams);
+        // await fileSysClean(fileSysCleanParams);
         const msg: any = await readH7File(readFileTxtRes.data.data);
 
         msg?.data?.segments?.forEach((cbcSegment: any) => {
@@ -131,54 +131,107 @@ export const kcch_0033GetCBCData = async ({ iaRootPath, cbcFilePathSetArr, barco
     }
 }
 
-export const changeRemark = (crcArr: CRCArrType[], remarkList: any) => {
-    const defaultRemark: any = [
-        { moType: 'RBC', content: [] },
-        { moType: 'WBC', content: [] },
-        { moType: 'PLT', content: [] },
-    ];
+export const changeRemark = (crcArr: any, createdSummary: any, remarkList: any) => {
+    const defaultCBCRemark: Record<string, any[]> = { RBC: [], WBC: [], PLT: [] };
 
+    // 중복 제거: RBC, WBC, PLT 처리 루프 통합
+    for (const key of Object.keys(defaultCBCRemark)) {
+        for (const item of createdSummary[key] || []) {
+            if (!defaultCBCRemark[key].some(cbcItem => cbcItem.title === item.title && cbcItem.content === item.content)) {
+                defaultCBCRemark[key].push({ title: item.title, content: item.content });
+            }
+        }
+    }
+
+    // remarkContentArr 생성 및 필터링
     const remarkContentArr = crcArr
-        .map((crcItem) =>
-            kcchCbcCommentAutoMatching({
-                moType: crcItem?.morphologyType,
-                title: crcItem?.crcTitle,
-                val: crcItem?.val,
-            })
-        )
+        .map((crcItem: any) => kcchCbcCommentAutoMatching({
+            moType: crcItem?.morphologyType,
+            title: crcItem?.crcTitle,
+            val: crcItem?.val,
+        }))
         .filter(Boolean);
 
-    const updatedRemark = defaultRemark.map((remarkItem: any) => {
-        const matchedContents = remarkContentArr
-            .filter((remarkContentItem: any) => remarkContentItem.moType === remarkItem.moType)
-            .map((remarkContentItem: any) => remarkContentItem.value);
+    // remarkContentArr의 항목을 defaultCBCRemark에 업데이트
+    for (const remarkItem of remarkContentArr) {
+        const category = defaultCBCRemark[remarkItem.moType] || [];
 
-        return {
-            ...remarkItem,
-            content: [...remarkItem.content, ...matchedContents],
-        };
-    });
+        const existingItem = category.find(categoryItem => categoryItem.title === remarkItem.title);
 
-    for (const remarkItem of updatedRemark) {
-        if (remarkItem.content.length > 0) {
-            if (remarkList[0]) {
-                if (remarkList[0]?.remarkAllContent === '') {
-                    remarkList[0].remarkAllContent = remarkList[0]?.remarkAllContent + `${remarkItem.moType}: ${remarkItem.content.join(', ')}`
-                } else {
-                    remarkList[0].remarkAllContent = remarkList[0]?.remarkAllContent + `\n\n${remarkItem.moType}: ${remarkItem.content.join(', ')}`
-                }
+        if (existingItem) {
+            existingItem.content = remarkItem.value;
+        } else {
+            category.push({ title: remarkItem.title, content: remarkItem.value });
+        }
+    }
+
+    if (remarkList[0] && remarkList[0]?.remarkAllContent) {
+        remarkList[0].remarkAllContent = '';
+    }
+
+    // remarkAllContent 문자열 생성 최적화
+    for (const [key, value] of Object.entries(defaultCBCRemark)) {
+        if (Array.isArray(value)) {
+            const contentValue = value.map(item => item.content).filter(Boolean);
+            if (contentValue.length > 0 && remarkList[0]) {
+                remarkList[0].remarkAllContent += (remarkList[0].remarkAllContent ? `\n` : '') + `${key}: ${contentValue.join(', ')}`;
             }
         }
     }
 }
 
 export const kcchCbcCommentAutoMatching = ({ moType, title, val }: { moType: string; title: string; val?: string }) => {
+    // content: 매칭에 사용하는 값, value: 종합결과 코드 Summary of findings에 보여줄 값
     const MAP_CBC_COMMENTS = [
         { moType: 'RBC', title: 'Size', content: 'Microcytic', value: 'Microcytic' },
         { moType: 'RBC', title: 'Size', content: 'Macrocytic', value: 'Macrocytic' },
+        { moType: 'RBC', title: 'Size', content: 'Normocytic', value: '' },
         { moType: 'RBC', title: 'Anisocytosis', content: '유', value: 'anemia with anisocytosis' },
+        { moType: 'RBC', title: 'Anisocytosis', content: '무', value: '' },
+        { moType: 'RBC', title: 'Polychromasia', content: '+', value: '' },
+        { moType: 'RBC', title: 'Polychromasia', content: '-', value: '' },
+        { moType: 'RBC', title: 'Inclusion', content: '+', value: '' },
+        { moType: 'RBC', title: 'Inclusion', content: '-', value: '' },
+        { moType: 'RBC', title: 'RBC shape (2)', content: 'None', value: '' },
+        { moType: 'RBC', title: 'RBC shape (2)', content: 'target cells', value: '' },
+        { moType: 'RBC', title: 'RBC shape (2)', content: 'stomatocytes', value: '' },
+        { moType: 'RBC', title: 'RBC shape (2)', content: 'burr cells', value: '' },
+        { moType: 'RBC', title: 'RBC shape (2)', content: 'acanthocytes', value: '' },
         { moType: 'RBC', title: 'chromicity', content: 'Hypochromic', value: 'hypochromic' },
         { moType: 'RBC', title: 'chromicity', content: 'Hyperchromic', value: 'hyperchromic' },
+        { moType: 'RBC', title: 'chromicity', content: 'Normochromic', value: '' },
+        { moType: 'RBC', title: 'Poikilocytosis', content: '+', value: '' },
+        { moType: 'RBC', title: 'Poikilocytosis', content: '-', value: '' },
+        { moType: 'RBC', title: 'Rouleaux formation', content: '+', value: '' },
+        { moType: 'RBC', title: 'Rouleaux formation', content: '-', value: '' },
+        { moType: 'RBC', title: 'RBC shape (1)', content: 'None', value: '' },
+        { moType: 'RBC', title: 'RBC shape (1)', content: 'tear drop cells', value: '' },
+        { moType: 'RBC', title: 'RBC shape (1)', content: 'spherocytes', value: '' },
+        { moType: 'RBC', title: 'RBC shape (1)', content: 'schistocytes', value: '' },
+        { moType: 'RBC', title: 'RBC shape (1)', content: 'elliptocytes', value: '' },
+        { moType: 'WBC', title: 'Number', content: 'normal', value: '' },
+        { moType: 'WBC', title: 'Toxic granulation', content: '+', value: '' },
+        { moType: 'WBC', title: 'Toxic granulation', content: '-', value: '' },
+        { moType: 'WBC', title: 'Hypogranulation', content: '+', value: '' },
+        { moType: 'WBC', title: 'Hypogranulation', content: '-', value: '' },
+        { moType: 'WBC', title: 'Vacuolation', content: '+', value: '' },
+        { moType: 'WBC', title: 'Vacuolation', content: '-', value: '' },
+        { moType: 'WBC', title: 'Segmentation', content: 'none', value: '' },
+        { moType: 'WBC', title: 'Segmentation', content: 'adequate', value: '' },
+        { moType: 'WBC', title: 'Segmentation', content: 'hyposegmented', value: '' },
+        { moType: 'WBC', title: 'Segmentation', content: 'hypersegmented', value: '' },
+        { moType: 'WBC', title: 'Atypical lymphocytes', content: '+', value: '' },
+        { moType: 'WBC', title: 'Atypical lymphocytes', content: '-', value: '' },
+        { moType: 'WBC', title: 'Abnormal lymphocyte', content: '+', value: '' },
+        { moType: 'WBC', title: 'Abnormal lymphocyte', content: '-', value: '' },
+        { moType: 'WBC', title: 'blasts', content: 'None', value: '' },
+        { moType: 'WBC', title: 'blasts', content: 'blasts', value: '' },
+        { moType: 'PLT', title: 'Number', content: 'normal', value: '' },
+        { moType: 'PLT', title: 'Giant platelet', content: '+', value: '' },
+        { moType: 'PLT', title: 'Giant platelet', content: '-', value: '' },
+        { moType: 'PLT', title: 'Other findings', content: 'None', value: '' },
+        { moType: 'PLT', title: 'Other findings', content: 'hypogranular platelet', value: '' },
+        { moType: 'PLT', title: 'Other findings', content: 'platelet clumping', value: '' },
         { moType: 'RBC', title: '', content: 'Erythrocytosis', value: 'erythrocytosis' },
         { moType: 'WBC', title: '', content: 'Neutrophillia', value: 'Neutrophillia' },
         { moType: 'WBC', title: '', content: 'Neutropenia', value: 'Neutropenia' },
@@ -202,6 +255,9 @@ export const kcchCbcCommentAutoMatching = ({ moType, title, val }: { moType: str
     ]
 
     return MAP_CBC_COMMENTS.find((item) => {
-        if (item.moType === moType && item.title === title && item.content === val) return item.value;
+        if (item.moType === moType && item.title === title && item.content === val) return {
+            title: item.title,
+            content: item.value
+        };
     })
 }

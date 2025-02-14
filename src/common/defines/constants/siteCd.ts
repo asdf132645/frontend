@@ -1,6 +1,7 @@
 export const HOSPITAL_SITE_CD_BY_NAME = {
     'UIMD': '0000',
     'NONE': '',
+    'TEST': '9090',
     '서울성모병원': '0002',
     '스타고': '0003',
     '이원의료재단': '0004',

@@ -21,10 +21,10 @@
     </colgroup>
     <thead>
     <tr style="position: sticky; top: 0;">
-      <th>NO</th>
       <th>
         <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
       </th>
+      <th>NO</th>
       <th>Type</th>
       <th>State</th>
       <th>Tray Slot</th>
@@ -57,30 +57,58 @@
           v-bind:data-row-id="item.id"
           @contextmenu.prevent="rowRightClick(item, $event)"
       >
-        <td style="position: relative;"
-            @mouseenter="abnormalClassInfoOpen(true, item.id)"
-            @mouseleave="abnormalClassInfoOpen(false, item.id)"
-        >
-          <font-awesome-icon class="red isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                             v-if="item.isNormal === 'N'"
-          />
-          {{ idx + 1 }}
-          <!-- 현재 itemId와 popupItemId가 일치하면 팝업 표시 -->
-          <div v-if="popupItemId === item.id && item.isNormal === 'N' && !isObjectEmpty(item.abnormalClassInfo)">
-            <div class="abnormalClassInfoPopup">
-              <div v-for="(abItem, idx) in item.abnormalClassInfo" :key="idx">
-                <span>{{ abItem?.classNm }} : {{ abItem?.val }}</span>
+        <td @click="handleCheckboxChange(item)">
+          <div
+              @mouseenter="abnormalClassInfoOpen(true, item)"
+              @mouseleave="abnormalClassInfoOpen(false, item)"
+              class="listTable-abnormalIcon-wrapper"
+          >
+            <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                 v-if="item?.slideCondition?.condition === 'Bad'"
+              />
+              <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                 v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
+              />
+            </template>
+            <template v-else>
+              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                 v-if="item.isNormal === 'N' && projectType === 'pb'"/>
+            </template>
+            <div v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
+              <div class="slideStatus-container">
+                <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+                  <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
+                    <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                    <span>{{ slideCondition?.desc }}</span>
+                  </div>
+
+                  <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+                </template>
+
+
+                <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'" class="slideStatusPopup-wrapper normalRange">
+                  <h1 class="slideStatusPopup-title" :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">Out of Normal Range</h1>
+                  <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo" :key="abnormalIdx">
+                    <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
+                      <span>{{ abItem?.classNm }}</span>
+                      <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                      <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
-        </td>
-        <td @click="handleCheckboxChange(item)">
+
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
+        <td>{{ idx + 1 }}</td>
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon
-              :icon="['fas', `${!item?.lock_status ? 'lock-open' : 'lock' }`]"
+              :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
           />
         </td>
         <td> {{ item?.traySlot }}</td>
@@ -93,7 +121,7 @@
         <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
         <td>
           <font-awesome-icon
-              v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status"
+              v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status || item.pcIp === myIp"
               :icon="['fas', 'pen-to-square']"
               @click="editData(item)"/>
         </td>
@@ -193,14 +221,12 @@
     </template>
   </Modal>
 
-  <template v-if="siteCd === '9090'">
     <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
               :selectItemWbc="selectItemWbc" @printClose="printClose"/>
-  </template>
-  <template v-else>
-    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
-           :selectItemWbc="selectItemWbc" @printClose="printClose"/>
-  </template>
+<!--  <template v-else>-->
+<!--    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"-->
+<!--           :selectItemWbc="selectItemWbc" @printClose="printClose"/>-->
+<!--  </template>-->
 
   <Alert
       v-if="showAlert"
@@ -240,7 +266,7 @@ import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/a
 import {useStore} from "vuex";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
-import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import {getNormalRangeApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
@@ -249,6 +275,10 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
+import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/slideData";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents', 'total', 'itemsPerPage']);
 const loadMoreRef = ref(null);
@@ -270,6 +300,11 @@ const formatDateString = (dateString) => {
 }
 const showConfirm = ref(false);
 const confirmMessage = ref('');
+const slideCondition = ref({
+  condition: '',
+  desc: '',
+})
+const currentAbnormalRange = ref([]);
 
 
 const contextMenu = ref({
@@ -306,6 +341,8 @@ const currentPage = ref(1);
 const dbGetData = ref([]);
 
 
+const normalItems = ref([]);
+
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
 })
@@ -319,6 +356,7 @@ onMounted(async () => {
   } catch (e) {
     console.error(e);
   }
+  await getNormalRange();
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -347,8 +385,37 @@ const handleNextPage = () => {
   }
 };
 
-const abnormalClassInfoOpen = (isOpen, itemId) => {
-  popupItemId.value = isOpen ? itemId : null;
+
+const abnormalClassInfoOpen = async (isOpen, item) => {
+  if (!isOpen) {
+    popupItemId.value = isOpen ? item.id : null;
+    return;
+  }
+
+  console.log('item', item);
+  if (!item.slideCondition?.desc) {
+    const slideInfo = await getSlideCondition(item.slotId);
+    const slideInfoObj = {
+      condition: slideInfo?.slideCondition,
+      desc: slideInfo?.slideDescription
+    };
+
+    const updatedRuningInfo = { ...item, slideCondition: slideInfoObj };
+    await gqlGenericUpdate(slideConditionUpdateMutation, {
+      id: item?.id,
+      slideCondition: slideInfoObj
+    });
+    slideCondition.value.condition = slideInfoObj.condition;
+    slideCondition.value.desc = slideInfoObj.desc;
+    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+  } else {
+    slideCondition.value.condition = item.slideCondition?.condition;
+    slideCondition.value.desc = item.slideCondition?.desc;
+  }
+
+  updateAbnormalRanges(item);
+
+  popupItemId.value = isOpen ? item.id : null;
 }
 
 async function handleKeyDown(event) {
@@ -780,6 +847,67 @@ const showDeleteConfirm = () => {
   if (isObjectEmpty(selectedItemsUsedInDelete.value)) selectedItemsUsedInDelete.value = [dbDataFindByIdUsedInDelete.value];
   resetContextMenu();
   emits('disableSelectItem');
+}
+
+const getSlideCondition = async (slotId) => {
+  const path = pbiaRootDir.value;
+  const folderPath = projectType.value !== 'bm' ? DIR_NAME.WBC_CLASS : DIR_NAME.BM_CLASS;
+  const url_new = `${path}/${slotId}/${folderPath}/Slide_Condition.json`;
+  let slideCondition = '';
+  let slideDescription = '';
+  try {
+    const response_new = await readJsonFile({fullPath: url_new});
+    slideCondition = response_new?.data?.condition;
+    slideDescription = response_new?.data?.description;
+  } catch (err) {
+    console.error(err);
+  }
+
+  return { slideCondition, slideDescription };
+}
+
+const getNormalRange = async () => {
+  try {
+    const result = await getNormalRangeApi();
+    if (result) {
+      if (result?.data) {
+        const data = result.data;
+        normalItems.value = data;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+const updateAbnormalRanges = (data) => {
+  if (isObjectEmpty(data?.abnormalClassInfo) || (!Array.isArray(data?.abnormalClassInfo) && !data.abnormalClassInfo?.classNm)) {
+    return;
+  }
+
+  currentAbnormalRange.value = data.abnormalClassInfo
+      .map(abnormalItem => normalItems.value.find(normalRange => normalRange.abbreviation === abnormalItem.classNm))
+      .filter(Boolean)
+      .map(normalRange => ({
+        title: normalRange.abbreviation,
+        min: normalRange.min,
+        max: normalRange.max,
+        unit: normalRange.unit,
+      }));
+};
+
+const handleAbnormalRange = (countVal, min, max, unit) => {
+  const numericValue = parseFloat(countVal.match(/[\d.]+/)?.[0] || "0");
+  const formattedMin = unit === "%" ? min.toFixed(2) : min;
+  const formattedMax = unit === "%" ? max.toFixed(2) : max;
+
+  if (numericValue < min) return `< ${formattedMin} ${unit}`;
+  if (numericValue > max) return `> ${formattedMax} ${unit}`;
+  return '';
+}
+
+const handleAbnormalValue = (value) => {
+  return value.replace('[', '').replace(']', '');
 }
 
 </script>

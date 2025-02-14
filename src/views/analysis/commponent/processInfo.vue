@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="titleText">Processing Information </h3>
-    <ul :class="siteCd !== '9090' ? 'processInfoUl' : 'processInfo-wrapper'">
+    <ul class='processInfoUl'>
       <li><span class="proSpan">Cassette No</span> <span class="proVal">{{ processInfoItem?.cassetteNo }}</span></li>
       <li><span class="proSpan">Barcode ID</span> <span class="proVal">{{ processInfoItem?.barcodeId }}</span></li>
       <li><span class="proSpan">Patient ID</span> <span class="proVal">{{ processInfoItem?.patientId }}</span></li>
@@ -10,7 +10,7 @@
         <span class="proSpan">{{ projectBm ? 'BM CELL Count ' : 'WBC Count ' }} </span>
         <span class="proVal">{{ processInfoItem?.wbcCount }}</span></li>
       <li>
-        <template v-if="HOSPITAL_SITE_CD_BY_NAME['인천길병원'] === siteCd">
+        <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['인천길병원']], 'enable')">
           <span class="proSpan">Order Date</span>
           <span class="proVal">{{ processInfoItem?.analyzedDttm }}</span>
         </template>
@@ -39,6 +39,7 @@ import {useStore} from "vuex";
 import {stringToDateTime} from "@/common/lib/utils/conversionDataUtils";
 import process from "process";
 import {HOSPITAL_SITE_CD_BY_NAME} from "../../../common/defines/constants/siteCd";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 const props = defineProps([ 'parsedData']);
 
 // 스토어

@@ -106,6 +106,10 @@ export const GetRunningInfoByIdDocument = gql`
                 val
             }
             isAllClassesChecked
+            slideCondition {
+                condition
+                desc
+            }
         }
     }
 `;

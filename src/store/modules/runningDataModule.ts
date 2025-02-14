@@ -37,7 +37,7 @@ export const initialState: SlideDataState = {
     cbcAge: '',
     img_drive_root_path: '',
     hosName: '',
-    abnormalClassInfo: {},
+    abnormalClassInfo: [],
     isAllClassesChecked: false,
 };
 
@@ -82,6 +82,7 @@ export interface SlideDataState {
     hosName?: string;
     abnormalClassInfo?: object;
     isAllClassesChecked?: boolean;
+    slideCondition?: object;
 }
 
 // RunningDataModule 정의
@@ -128,6 +129,7 @@ interface SlideDataModule {
         setHosName(state: SlideDataState, hosName: string): void;
         setAbnormalClassInfo(state: SlideDataState, abnormalClassInfo: object): void;
         setIsAllClassesChecked(state: SlideDataState, isAllClassesChecked: boolean): void;
+        setSlideCondition(state: SlideDataState, slideCondition: object): void;
         resetState(state: SlideDataState): void; // 전체 초기화 메서드
     };
     actions: {
@@ -176,8 +178,9 @@ export const slideDataModule: SlideDataModule = {
         cbcAge: '',
         img_drive_root_path: '',
         hosName: '',
-        abnormalClassInfo: {},
+        abnormalClassInfo: [],
         isAllClassesChecked: false,
+        slideCondition: {},
     }),
     mutations: {
         setId(state, id) {
@@ -297,6 +300,9 @@ export const slideDataModule: SlideDataModule = {
         setIsAllClassesChecked(state, isAllClassesChecked) {
             state.isAllClassesChecked = isAllClassesChecked;
         },
+        setSlideCondition(state, slideCondition) {
+            state.slideCondition = slideCondition;
+        },
         resetState(state) {
             Object.assign(state, { ...initialState });
         },
@@ -344,6 +350,7 @@ export const slideDataModule: SlideDataModule = {
             commit('setHosName', payload.hosName);
             commit('setAbnormalClassInfo', payload.abnormalClassInfo);
             commit('setIsAllClassesChecked', payload.isAllClassesChecked);
+            commit('setSlideCondition', payload.slideCondition);
         },
         resetSlideData({ commit }) {
             commit('resetState');

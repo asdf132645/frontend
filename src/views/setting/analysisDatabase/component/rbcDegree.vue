@@ -57,6 +57,7 @@ import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {scrollToTop} from "@/common/lib/utils/scroll";
+import {RbcDegreeRequest} from "@/common/api/service/setting/dto/rbcDegree";
 
 const store = useStore();
 const router = useRouter();
@@ -89,7 +90,7 @@ watch(() => settingChangedChecker.value, () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
 const combindDegree = async () => {
@@ -119,7 +120,7 @@ const onResetDegree = () => {
 };
 
 const createRbcDegreeData = async () => {
-  const rbcDegreeList: any = [];
+  const rbcDegreeList: RbcDegreeRequest[] = [];
 
   rbcClassListArr.value.forEach((category: any) => {
     category.classInfo.forEach((classItem: any) => {

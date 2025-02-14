@@ -16,181 +16,8 @@
 
   <div class="flex-center">
     <div class="cellImgAnalyzed-container">
-      <div class="preset-container"></div>
       <table class="settingTable">
         <tbody>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th>Preset</th>
-          <td class="flex-align-center">
-            <select v-if="!editingItem || editingItem.id !== cellInfo.id" @change="handleChangePreset" v-model="cellInfo.id">
-              <option
-                  v-for="cellItem in allCellInfo.clientData"
-                  :key="cellItem.id"
-                  :value="cellItem.id"
-              >{{ cellItem.presetNm }}</option>
-            </select>
-            <input
-                v-else
-                type="text"
-                style="width: 120px;"
-                v-model="editingItem.name"
-                @keydown.enter="changePresetName(Number(cellInfo.id))"
-                @keydown.esc="cancelEdit"
-            />
-            <div class="flex-align-center gap4 ml10">
-              <button v-if="allCellInfo.clientData.length < 3" class="add-preset-btn" @click="handleCreatePreset">+</button>
-              <font-awesome-icon @click="handleEditPresetName" class="hoverSizeAction cursorPointer" :icon="['fas', 'pen-to-square']" />
-              <font-awesome-icon v-if="allCellInfo.clientData.length > 1" @click="handleDeletePreset" class="hoverSizeAction cursorPointer" :icon="['fas', 'trash']"/>
-            </div>
-          </td>
-        </tr>
-        <br />
-
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th>Analysis Type</th>
-          <td colspan="2">
-            <select v-model='cellInfo.analysisType'>
-              <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-
-        <tr v-if="viewerCheck !== 'viewer'">
-          <!-- WBC diff analysis values -->
-          <th rowspan="1" v-if="projectType === 'pb'">WBC Diff Analysis Values</th>
-
-          <!-- BM diff analysis values -->
-          <th v-if="projectType === 'bm'">BM Diff Analysis Values</th>
-          <th>Cell Analyzing Count</th>
-          <td>
-
-            <select v-model='cellInfo.diffCellAnalyzingCount'>
-              <option v-for="type in analysisVal" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-
-        <!--      PBS analysis values-->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th :rowspan="pbsAnalysisValuesRowIndex()">PBS Analysis Values</th>
-          <th>
-            Cell Analyzing Count
-          </th>
-          <td>
-            <select v-model='cellInfo.pbsCellAnalyzingCount'>
-              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th v-if="projectType === 'bm'"></th>
-          <th>Stitch Count</th>
-          <td>
-            <select v-model='cellInfo.stitchCount'>
-              <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th class="pos-relative">
-            Edge Shot Type
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
-                @mouseleave="informationFontHover('edgeShotType', 'leave')"
-            />
-            <Transition>
-              <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
-                <img :src="smearTop" width="400" />
-              </div>
-            </Transition>
-          </th>
-          <td>
-            <select v-model='cellInfo.edgeShotType'>
-              <option v-for="type in edgeShotTypeList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-
-        <tr v-show="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && (cellInfo.edgeShotType === '2' || cellInfo.edgeShotType === '3')">
-          <th class="pos-relative">Edge Shot Count</th>
-          <td v-show="cellInfo.edgeShotType === '2'">
-            <select v-model='cellInfo.edgeShotCount.LP'>
-              <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-          <td v-show="cellInfo.edgeShotType === '3'">
-            <select v-model='cellInfo.edgeShotCount.HP'>
-              <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-
-        <!--      BF analysis values-->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>BF Analysis Values</th>
-          <th>Cell Analyzing Count</th>
-          <td>
-            <select v-model='cellInfo.bfCellAnalyzingCount'>
-              <option v-for="type in AnalysisList" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th rowspan="3" class="pos-relative">
-            Common
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseenter="() => informationFontHover('positionMargin', 'hover')"
-                @mouseleave="informationFontHover('positionMargin', 'leave')"
-            />
-            <Transition>
-              <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
-                <img :src="commonPositionMargin" width="140" />
-              </div>
-            </Transition>
-          </th>
-          <th>Wbc Position Margin</th>
-          <td>
-            <select v-model='cellInfo.diffWbcPositionMargin'>
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Rbc Position Margin</th>
-          <td>
-            <select v-model='cellInfo.diffRbcPositionMargin'>
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer'">
-          <th>Edge Position Margin</th>
-          <td>
-            <select v-model='cellInfo.diffPltPositionMargin'>
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th :style="viewerCheck === 'viewer' && 'width: 214px;'" class="pos-relative">
-            IA Root Path
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_IA_ROOT_PATH_KO"
-                @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
-                @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
-          </th>
-          <td colspan="2">
-            <select v-model='cellInfo.iaRootPath'>
-              <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-            </select>
-          </td>
-        </tr>
         <tr v-if="viewerCheck !== 'viewer'">
           <th class="pos-relative">
             NS/NB Integration
@@ -327,7 +154,6 @@
             Upload
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                :title="MESSAGES.SETTING_INFO_UPLOAD_KO"
                 @mouseenter="tooltipVisibleFunc('upload', true)"
                 @mouseleave="tooltipVisibleFunc('upload', false)"
             />
@@ -465,7 +291,7 @@ import {
   putCellImgApi
 } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, reactive, onBeforeMount} from "vue";
+import { computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount } from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -510,7 +336,6 @@ const alertType = ref('');
 const showUploadModal = ref(false);
 const alertMessage = ref('');
 const analysisVal = ref<any>([]);
-const currentPresetId = ref(1);
 const downloadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
 const uploadRootPath = ref(window.PROJECT_TYPE === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc');
 const autoDate = ref([
@@ -541,6 +366,8 @@ const confirmMessage = ref('');
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isRestoring = ref(false);
@@ -566,7 +393,6 @@ const showTutorialImage = ref({
 const apiUrl = ref('');
 const tooltipVisible = ref({
   iaRootPath: false,
-  nsNbIntegration: false,
   alarm: false,
   keepPage: false,
   lisUploadCheckAll: false,
@@ -574,14 +400,15 @@ const tooltipVisible = ref({
   download: false,
   upload: false,
   openDownloadSavePath: false,
+  nsNbIntegration: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
 const currentCellId = ref(0);
-const curEditCellIndex = ref<undefined | number>(0);
 const allCellInfo = ref<{ serverData: CellImgAnalyzedResponse[], clientData: CellImgAnalyzedResponse[] }>({
   serverData: [],
   clientData: [],
 });
+
 const cellInfo = ref({
   id: '',
   analysisType: '01',
@@ -610,7 +437,6 @@ const cellInfo = ref({
   backupEndDate: new Date(),
   autoBackUpMonth: 'Not selected',
   presetChecked: false,
-  presetNm: '1',
 })
 const toastInfo = ref({
   message: '',
@@ -645,38 +471,30 @@ onMounted(async () => {
   await cellImgGetAll();
 });
 
-watch([cellInfo.value.analysisType, cellInfo.value.diffCellAnalyzingCount, cellInfo.value.diffWbcPositionMargin, cellInfo.value.diffRbcPositionMargin,
-  cellInfo.value.diffPltPositionMargin, cellInfo.value.pbsCellAnalyzingCount, cellInfo.value.edgeShotType, cellInfo.value.edgeShotCount, cellInfo.value.stitchCount, cellInfo.value.bfCellAnalyzingCount, cellInfo.value.iaRootPath, cellInfo.value.isNsNbIntegration,
-  cellInfo.value.isAlarm,
-  cellInfo.value.alarmCount,
-  cellInfo.value.keepPage,
-  cellInfo.value.lisUploadCheckAll,], async () => {
-  const cellAfterSettingObj = {
-    id: cellInfo.value.id,
-    analysisType: cellInfo.value.analysisType,
-    diffCellAnalyzingCount: cellInfo.value.diffCellAnalyzingCount,
-    diffWbcPositionMargin: cellInfo.value.diffWbcPositionMargin,
-    diffRbcPositionMargin: cellInfo.value.diffRbcPositionMargin,
-    diffPltPositionMargin: cellInfo.value.diffPltPositionMargin,
-    pbsCellAnalyzingCount: cellInfo.value.pbsCellAnalyzingCount,
-    stitchCount: cellInfo.value.stitchCount,
-    edgeShotType: cellInfo.value.edgeShotType,
-    edgeShotLPCount: cellInfo.value.edgeShotCount.LP,
-    edgeShotHPCount: cellInfo.value.edgeShotCount.HP,
-    bfCellAnalyzingCount: cellInfo.value.bfCellAnalyzingCount,
-    iaRootPath: cellInfo.value.iaRootPath,
-    isNsNbIntegration: cellInfo.value.isNsNbIntegration,
-    isAlarm: cellInfo.value.isAlarm,
-    alarmCount: cellInfo.value.alarmCount,
-    keepPage: cellInfo.value.keepPage,
-    lisUploadCheckAll: cellInfo.value.lisUploadCheckAll,
+watch(cellInfo.value, async () => {
+  if (isObjectEmpty(allCellInfo.value?.clientData)) {
+    return;
   }
 
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(cellAfterSettingObj)});
+  const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
+    if (String(item.id) === String(cellInfo.value.id)) {
+      return {
+        ...cellInfo.value,
+        id: Number(cellInfo.value.id),
+        presetChecked: true,
+        backupEndDate: allCellInfo.value.serverData[0].backupEndDate,
+        backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
+      };
+    } else {
+      return { ...item, presetChecked: false };
+    }
+  })
+
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(requestAllCellInfo) });
   if (settingType.value !== settingName.cellImageAnalyzed) {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
   }
-})
+}, { deep: true })
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -723,7 +541,7 @@ const driveGet = async () => {
 
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
-  confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+  confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
 const cellImgGet = async () => {
@@ -763,32 +581,7 @@ const cellImgGet = async () => {
         cellInfo.value.presetNm = data?.presetNm;
         cellInfo.value.presetChecked = data?.presetChecked;
 
-        const cellBeforeSettingObj = {
-          id: data?.id,
-          analysisType: data?.analysisType,
-          diffCellAnalyzingCount: data?.diffCellAnalyzingCount,
-          diffWbcPositionMargin: data?.diffWbcPositionMargin,
-          diffRbcPositionMargin: data?.diffRbcPositionMargin,
-          diffPltPositionMargin: data?.diffPltPositionMargin,
-          pbsCellAnalyzingCount: data?.pbsCellAnalyzingCount,
-          stitchCount: data?.stitchCount,
-          edgeShotType: data?.edgeShotType,
-          edgeShotLPCount: data?.edgeShotLPCount,
-          edgeShotHPCount: data?.edgeShotHPCount,
-          bfCellAnalyzingCount: data?.bfCellAnalyzingCount,
-          iaRootPath: data?.iaRootPath,
-          isNsNbIntegration: data?.isNsNbIntegration,
-          isAlarm: data?.isAlarm,
-          alarmCount: data?.alarmCount,
-          keepPage: data?.keepPage,
-          lisUploadCheckAll: data?.lisUploadCheckAll,
-          presetChecked: data?.presetChecked,
-          presetNm: data?.presetNm,
-        }
-
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-        await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
-        await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cellBeforeSettingObj) });
       }
     }
   } catch (e) {
@@ -817,7 +610,9 @@ const cellImgSet = async () => {
       if (allCellImgIds.includes(String(requestCellInfo.id))) {
         await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
       } else {
-        delete requestCellInfo.id;
+        if (requestCellInfo?.id) {
+          delete requestCellInfo.id;
+        }
         await createCellImgApi(requestCellInfo);
       }
     }
@@ -825,8 +620,9 @@ const cellImgSet = async () => {
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG.TOAST.UPDATE_SUCCESS);
     await cellImgGetAll();
+    handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     scrollToTop();
-    const data = allCellInfo.value.serverData.map((item) => String(item.id) === String(cellInfo.value.id));
+    const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
     await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
     await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
       isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
@@ -1147,32 +943,11 @@ const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean)
   tooltipVisible.value[type] = visible;
 }
 
-const pbsAnalysisValuesRowIndex = () => {
-  if (projectType.value !== 'pb') return 2;
-  if (machineVersion.value === '100a' && (cellInfo.value.edgeShotType === '2' || cellInfo.value.edgeShotType === '3')) return 4;
-  if (machineVersion.value === '100a') return 3;
-  if (machineVersion.value === '12a') return 3;
-  return 3;
-}
-
 const handleChangeCellId = (cellId: number) => {
   const selectedCellInfo = allCellInfo.value.clientData.filter((item) => String(item.id) === String(cellId))[0];
   if (selectedCellInfo) {
-    cellInfo.value.id = String(selectedCellInfo.id);
-    cellInfo.value.analysisType = selectedCellInfo.analysisType;
-    cellInfo.value.diffCellAnalyzingCount = selectedCellInfo.diffCellAnalyzingCount;
-    cellInfo.value.diffWbcPositionMargin = selectedCellInfo.diffWbcPositionMargin;
-    cellInfo.value.diffRbcPositionMargin = selectedCellInfo.diffRbcPositionMargin;
-    cellInfo.value.diffPltPositionMargin = selectedCellInfo.diffPltPositionMargin;
-    cellInfo.value.pbsCellAnalyzingCount = selectedCellInfo.pbsCellAnalyzingCount;
-    cellInfo.value.bfCellAnalyzingCount = selectedCellInfo.bfCellAnalyzingCount;
-    cellInfo.value.stitchCount = selectedCellInfo.stitchCount;
-    cellInfo.value.edgeShotType = String(selectedCellInfo?.edgeShotType);
-    cellInfo.value.edgeShotCount.LP = String(selectedCellInfo?.edgeShotLPCount);
-    cellInfo.value.edgeShotCount.HP = String(selectedCellInfo?.edgeShotHPCount);
     cellInfo.value.iaRootPath = selectedCellInfo.iaRootPath;
     downloadRootPath.value = selectedCellInfo.backupPath || (window.PROJECT_TYPE === 'bm' ? 'D:\\UIMD_BM_backup' : 'D:\\UIMD_PB_backup');
-    cellInfo.value.isNsNbIntegration = selectedCellInfo.isNsNbIntegration;
     cellInfo.value.isAlarm = selectedCellInfo.isAlarm;
     cellInfo.value.alarmCount = selectedCellInfo.alarmCount;
     cellInfo.value.keepPage = selectedCellInfo.keepPage;
@@ -1185,56 +960,11 @@ const handleChangeCellId = (cellId: number) => {
   }
 }
 
-const handleCreatePreset = async () => {
-
-  const nextCellId = Math.max(...allCellInfo.value.clientData.map(item => Number(item.id))) + 1;
-
-  const defaultCellImgData = {
-    id: nextCellId,
-    analysisType: projectType.value === 'bm' ? '02' : '01',
-    diffCellAnalyzingCount: projectType.value === 'bm' ? '500':'100',
-    diffWbcPositionMargin: '0',
-    diffRbcPositionMargin: '0',
-    diffPltPositionMargin: '0',
-    pbsCellAnalyzingCount: '100',
-    stitchCount: '1',
-    edgeShotType: '0',
-    edgeShotLPCount: '1',
-    edgeShotHPCount: '3',
-    bfCellAnalyzingCount: '100',
-    iaRootPath: projectType.value === 'bm' ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
-    isNsNbIntegration: false,
-    isAlarm: false,
-    alarmCount: '5',
-    keepPage: false,
-    lisUploadCheckAll: false,
-    backupPath: '',
-    backupStartDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(new Date()).local().toDate().toISOString().split('T')[0],
-    presetChecked: false,
-    presetNm: 'preset name',
-  };
-  allCellInfo.value.clientData.push(defaultCellImgData);
-
-  handleChangeCellId(nextCellId);
-}
-
-const handleDeletePreset = async () => {
-  if (allCellInfo.value.clientData.length !== allCellInfo.value.serverData.length) {
-    allCellInfo.value.clientData = allCellInfo.value.clientData.filter((item) => String(item?.id) !== String(cellInfo.value.id));
-    return;
-  }
-
-  showConfirm.value = true;
-  confirmMessage.value = `Are you sure you want to delete preset ${cellInfo.value.presetNm}?`;
-  confirmType.value = 'delete';
-};
-
 const deleteCellImg = async () => {
   try {
     await deleteCellImgApi({ id: String(cellInfo.value.id) });
     await cellImgGetAll();
-    await handleChangeCellId(allCellInfo.value.clientData[0].id);
+    handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG.TOAST.DELETE_SUCCESS);
   } catch (error) {
@@ -1244,38 +974,6 @@ const deleteCellImg = async () => {
   }
 }
 
-const handleEditPresetName = async () => {
-  if (editingItem.value) {
-    changePresetName(Number(cellInfo.value.id));
-  } else {
-    editingItem.value = { id: cellInfo.value.id, name: cellInfo.value.presetNm };
-    if (String(curEditCellIndex.value) === String(cellInfo.value.id)) {
-      curEditCellIndex.value = undefined;
-    }
-    curEditCellIndex.value = Number(cellInfo.value.id);
-  }
-}
-
-const handleChangePreset = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  const currentCellId = target.value;
-  handleChangeCellId(Number(currentCellId));
-}
-
-const cancelEdit = () => {
-  editingItem.value = undefined;
-}
-
-const changePresetName = async (currentCellId: number) => {
-
-  allCellInfo.value.clientData = allCellInfo.value.clientData.map((item) => {
-    if (String(item.id) === String(currentCellId)) return { ...item, presetNm: editingItem.value.name };
-    return item;
-  })
-  cellInfo.value.presetNm = editingItem.value.name;
-  editingItem.value = undefined;
-}
-
 const cellImgGetAll = async () => {
   try {
     const result = await getCellImgAllApi();
@@ -1283,7 +981,8 @@ const cellImgGetAll = async () => {
       allCellInfo.value.clientData = [...result.data];
       allCellInfo.value.serverData = [...result.data];
       await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value.serverData });
-
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
     }
   } catch (error) {
     console.error(error);

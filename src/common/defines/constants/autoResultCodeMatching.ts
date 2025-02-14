@@ -230,12 +230,12 @@ export const kcchCbcAutoMatching = ({ data, sex, age }: KcchCbcAutoMatchingProp)
             const results: KcchCbcAutoMatchingReturn[] = [];
 
             if (sex === 'M') {
-                if (count < 13) results.push({ moType: 'RBC', title: '', content: 'Anemia' });
+                if (count < 13) results.push({ moType: 'RBC', title: 'hb', content: 'Anemia' });
                 if (count > 16.5) results.push({ moType: 'RBC', title: '', content: 'Erythrocytosis' });
                 if (count >= 16.5) results.push({ moType: 'RBC', title: 'hb', content: 'Erythrocytosis' });
             }
             if (sex === 'F') {
-                if (count < 12) results.push({ moType: 'RBC', title: '', content: 'Anemia' });
+                if (count < 12) results.push({ moType: 'RBC', title: 'hb', content: 'Anemia' });
                 if (count > 16) results.push({ moType: 'RBC', title: '', content: 'Erythrocytosis' });
                 if (count >= 16) results.push({ moType: 'RBC', title: 'hb', content: 'Erythrocytosis' });
             }

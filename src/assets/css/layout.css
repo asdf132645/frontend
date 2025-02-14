@@ -89,6 +89,10 @@
     margin-left: 20px;
 }
 
+.ml40 {
+    margin-left: 40px;
+}
+
 .mr12 {
     margin-right: 12px;
 }
@@ -111,6 +115,14 @@
 
 .gap14 {
     gap: 14px;
+}
+
+.left0 {
+    left: 0;
+}
+
+.left20 {
+    left: 20px;
 }
 
 .f18 {
@@ -164,6 +176,11 @@
 .flex-justify-between {
     display: flex;
     justify-content: space-between;
+}
+
+.flex-justify-around {
+    display: flex;
+    justify-content: space-around;
 }
 
 .flex-center {
@@ -317,6 +334,10 @@
 
 .w80p {
     width: 80%;
+}
+
+.h60 {
+    height: 60px;
 }
 
 .w96-max {
@@ -600,7 +621,6 @@ li.errLogLi.warning:before {
     align-items: center;
     padding-top: 9px;
     text-align: left;
-    cursor: pointer;
 }
 
 ul.userSetOutUl > li {
@@ -794,7 +814,6 @@ p.renewal.slideTime1 {
     margin-bottom: 10px;
 }
 
-
 p.renewalTotalTime {
     font-size: 1.6rem;
     margin-bottom: 5px;
@@ -898,6 +917,85 @@ h3.titleText {
     margin-top: 0px !important;
 }
 
+.execute-wbcCount-wrapper {
+    width: 88px;
+    margin-left: 2px;
+}
+
+.execute-preset-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.execute-preset-helper-wrapper {
+    position: absolute;
+    top: 0;
+    background: var(--main-bg-2-color);
+    left: 240px;
+    z-index: 2;
+    border-radius: 4px;
+    width: 380px;
+    box-shadow: 2px 2px 2px var(--black-color);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border: 1px solid var(--main-bg-7-color);
+}
+
+.execute-preset-helper-wrapper > h1 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.execute-preset-helper-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.execute-preset-helper-content > li {
+    display: inline-block;
+    text-align: left;
+    width: 100%;
+}
+
+.execute-preset-helper-content > li > span {
+    display: inline-block;
+    width: 200px;
+}
+
+.execute-preset-btn {
+    border: 1px solid white;
+    gap: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 72px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.execute-preset-btn:hover {
+    background-color: var(--main-bg-7-color);
+}
+
+.execute-preset-active-btn {
+    color: black;
+    background-color: white;
+}
+
+.execute-preset-active-btn:hover {
+    background-color: white;
+}
+
 .initBtn {
     background: var(--main-bg-8-color);
     color: var(--white-color);
@@ -965,6 +1063,7 @@ p.startStopP {
 }
 
 .stop-container {
+    position: relative;
     margin-top: 4px;
     margin-left: 5px;
     width: 50%;
@@ -1111,6 +1210,19 @@ table.settingTable {
 
 table.settingTable select {
     padding: 6px;
+}
+
+.analysis-setting-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+}
+
+.analysis-setting-subTitle {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 200px;
 }
 
 button.saveBtn, .defaultBtn {
@@ -1460,7 +1572,6 @@ p.loadingText {
 .excelIcon {
     position: relative;
     display: flex;
-    left: 12%;
     justify-content: flex-end;
     padding-top: 3px;
     cursor: pointer;
@@ -1965,13 +2076,6 @@ ul.processInfoUl > li {
     justify-content: space-between;
 }
 
-ul.processInfo-wrapper > li {
-    font-size: 0.9rem;
-    padding: 4px 0 4px 8px;
-    display: flex;
-    justify-content: space-between;
-}
-
 .contentRightChild {
     height: 68vh;
 }
@@ -2234,7 +2338,7 @@ li.activeTab {
 }
 
 table.settingTable td, table.settingTable th {
-    height: 45px;
+    height: 40px;
     font-size: 1rem;
 }
 
@@ -2569,7 +2673,7 @@ ul.wbcInfoDbUl > li {
 ul.wbcInfoDbUl {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    padding-top: 20px;
     margin-bottom: 20px;
     overflow-x: auto;
 }
@@ -2577,6 +2681,7 @@ ul.wbcInfoDbUl {
 ul.wbcInfoDbUl .circle {
     padding-top: 13px;
     cursor: pointer;
+    position: relative;
 }
 
 ul.wbcImgWrap > li {
@@ -2664,8 +2769,12 @@ ul.cellImgBox::-webkit-scrollbar-thumb:hover {
     border-radius: 4px;
 }
 
-.red {
-    color: #b00505;
+.icon-red-color {
+    color: red;
+}
+
+.icon-yellow-color {
+    color: yellow;
 }
 
 .wbcClassScroll {
@@ -2795,13 +2904,40 @@ ul.leftWbcInfo {
 
 }
 
+.orderListUi {
+    width: 270px;
+}
+
 ul.orderListUi > li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+ul.orderListUi > li > p:nth-child(1) {
+    width: 130px;
 }
 
 ul.orderListUi > li > img {
     border: 1px solid var(--gray-bg-3-color);
     border-radius: 3px;
+}
+
+.search-right-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    width: 270px;
+    gap: 8px;
+}
+
+.search-btn {
+    background-color: transparent;
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
+    padding: 9px;
+    position: relative;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 button.searchClass {
@@ -2934,26 +3070,47 @@ ul.wbcInfoFilter {
     position: fixed;
     z-index: 999;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    left: 0;
-    background: rgb(49 49 49 / 88%);
+    background: rgb(0 0 0 / 60%);
     /*padding-top: 10%;*/
+}
+
+.wbcModal-title-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.wbcModal-title-wrapper > h2 {
+    margin: 28px 0 0 28px;
+    font-size: 1.4rem;
+}
+
+.wbc-modal-content {
+    position: relative;
+    width: 1104px;
+    height: 826px;
+    top: 50%;
+    left: 50%;
+    border-radius: 8px;
+    transform: translate(-50%, -50%);
+    background-color: var(--main-bg-2-color);
 }
 
 .wbcModalImageContent {
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 30%;
     transform: translate(-50%, -50%);
 }
 
-.wbcModalImageContent-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    margin-bottom: 8px;
+.wbcModalImageContentBefore {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .wbcModalImageContent-slideImg {
@@ -2961,8 +3118,8 @@ ul.wbcInfoFilter {
     flex-direction: column;
     align-items: flex-start;
     position: absolute;
-    left: 1300px;
-    top: 250px;
+    right: 100px;
+    top: 50px;
     z-index: 10;
     gap: 4px;
 }
@@ -2972,27 +3129,6 @@ ul.wbcInfoFilter {
     width: 100%;
     height: 100%;
     z-index: 100;
-}
-
-.wbcModalImageContent-slideImg-textBox {
-    position: absolute;
-    width: 90px;
-    height: 40px;
-    right: 0;
-}
-
-.wbcModalImageContent-slideImg-x-text {
-    position: relative;
-    top: 20px;
-    color: gray;
-    text-align: left;
-}
-
-.wbcModalImageContent-slideImg-y-text {
-    position: relative;
-    top: 22px;
-    color: gray;
-    text-align: left;
 }
 
 .wbcModalImageContent-slideImg > img {
@@ -3006,9 +3142,9 @@ ul.wbcInfoFilter {
 
 span.wbcClose {
     position: absolute;
-    top: 0;
+    top: 10px;
     color: var(--white-color);
-    font-size: 4rem;
+    font-size: 3rem;
     right: 20px;
     cursor: pointer;
 }
@@ -3089,6 +3225,7 @@ select.selectSizeTitle {
     padding: 5px;
     max-width: 300px;
     border: 1px solid var(--white-color);
+    z-index: 3;
 }
 
 .sizeContainer div {
@@ -3145,7 +3282,7 @@ select.selectSizeTitle {
 
 .wbcMenu ul {
     position: absolute;
-    margin-top: 20px;
+    margin-top: 12px;
     width: 6%;
 }
 
@@ -3561,15 +3698,22 @@ ul.normalItems {
 }
 
 .resultInformationContainer {
-    height: 380px;
+    height: 341px;
 }
 
 .listTableImageContainer {
+    height: 358px;
     overflow-y: hidden;
 }
 
+.listTable-abnormalIcon-wrapper {
+    position: relative;
+    width: 4px;
+    height: 4px;
+}
+
 .resInfoTopContainer {
-    max-height: 380px;
+    max-height: 340px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -3608,14 +3752,16 @@ ul.normalItems {
     width: 150px;
 }
 
-.dbPBImageContainer {
+.dbWBCImageContainer {
+    position: relative;
     overflow-y: auto;
-    max-height: 23.5vh;
+    max-height: 27.5vh;
 }
 
-.dbBMImageContainer {
-    overflow-y: auto;
-    max-height: 21vh;
+.dbImageContainer {
+    position: relative;
+    overflow-y: hidden;
+    height: 294px;
 }
 
 .dbRightImages {
@@ -3791,6 +3937,14 @@ li.slideStatus {
     width: 1050px;
 }
 
+label.crc-setting-title {
+    width: 160px;
+}
+
+.crc-setting-title-input {
+    width: 12px;
+}
+
 button.rollbackButton {
     position: absolute;
     right: -20px;
@@ -3944,16 +4098,19 @@ button.rollbackButton {
     font-size: 20px;
 }
 
-.wbcModalImageContent .buttons {
+.wbcModalButton-wrapper {
     position: absolute;
-    left: 38%;
-    bottom: -58%;
+    left: 0;
+    transform: translateX(-20%);
+    bottom: 52px;
+    width: 100%;
 }
 
-.wbc-modal-content .buttons {
+.wbcModalButton-wrapperBefore {
     position: absolute;
-    left: 0%;
-    bottom: 92px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 52px;
     width: 100%;
 }
 
@@ -3967,8 +4124,11 @@ button.rollbackButton {
     border-radius: 5px;
     padding: 5px;
     font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    line-height: initial;
 }
-
 
 .bigFont {
     font-size: xxx-large;
@@ -3979,11 +4139,6 @@ button.rollbackButton {
 .cursorPointer.userBox:hover {
     background: #fff;
     color: #000;
-}
-
-.wbc-modal-content {
-    position: relative;
-    height: 100%;
 }
 
 .blinkColor {
@@ -4122,6 +4277,53 @@ li.cbcLi {
 .cbcLi svg {
     font-size: 1.2rem;
     margin-bottom: 10px;
+}
+
+.classInfoMenu-warning-container {
+    position: relative;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    border-bottom: 1px solid white;
+    z-index: 100;
+}
+
+.classInfoMenu-noWarning-container {
+    position: relative;
+    height: 30px;
+    border-bottom: 1px solid white;
+    cursor: default !important;
+}
+
+.classInfoMenu-error-container {
+    position: absolute;
+    z-index: 3;
+    top: -8px;
+    left: 120px;
+    min-width: 240px;
+    background-color: var(--main-bg-2-color);
+    border-radius: 4px;
+    padding: 0 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+}
+
+.classInfoMenu-error-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    margin-top: 12px;
+}
+
+.classInfoMenu-error-wrapper.normalRange {
+    margin-top: 4px;
+}
+
+.classInfoMenu-error-wrapper > h1 {
+    font-size: 0.9rem;
+    font-weight: bold;
 }
 
 p.menuIco {
@@ -4558,6 +4760,22 @@ p.adminText {
     transform: scale(1.1) rotate(180deg);
 }
 
+.crcResultCodes-commentMatching-btn {
+    position: absolute;
+    right: 120px;
+    background: none;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 5px 10px;
+    top: -12px;
+    cursor: pointer;
+}
+
+.crcResultCodes-commentMatching-btn:hover {
+    background-color: white;
+    color: black;
+}
+
 button.reSelect {
     position: absolute;
     right: 0;
@@ -4567,6 +4785,11 @@ button.reSelect {
     padding: 5px 10px;
     top: -12px;
     cursor: pointer;
+}
+
+button.reSelect:hover {
+    background-color: white;
+    color: black;
 }
 
 .crcPopUpDiv.crcAdd {
@@ -5260,7 +5483,8 @@ input.codeInput {
 
 .isNotNormalIcon {
     position: absolute;
-    left: 16px;
+    top: 6px;
+    left: 10px;
 }
 
 .rbcDegree-span-wrapper {
@@ -5653,7 +5877,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 140px;
+    left: 640px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
@@ -5666,13 +5890,12 @@ progress::-moz-progress-bar {
 .tutorial-positionMargin-container {
     position: absolute;
     top: 0;
-    left: 90px;
+    left: 640px;
     z-index: 10;
     background-color: var(--main-gray-color);
     padding: 4px;
     border-radius: 4px;
     box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);
-
 }
 
 .tooltip-container {
@@ -5689,6 +5912,7 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
+    transform: translateZ(0);
 }
 
 .tooltip-container > pre {
@@ -5702,13 +5926,13 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-bottom {
-    top: 150%;
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .tooltip-pos-left {
-    right: 150%;
+    right: 100%;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -5770,19 +5994,67 @@ progress::-moz-progress-bar {
     max-width: 70px;
 }
 
-.abnormalClassInfoPopup {
+.slideStatus-container {
     position: absolute;
-    min-width: 150px;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
     background: #1b1b1b;
     z-index: 9;
     text-align: left;
-    padding: 0px 10px 10px 10px;
+    padding: 0 10px 10px 10px;
     border: 1px solid #dedede;
-    top: 36px;
+    top: 4px;
+    left: 36px;
+    color: white;
 }
 
-.abnormalClassInfoPopup div {
-    padding-top: 10px;
+
+.slideStatusPopup-title {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.slideStatusPopup-line {
+    width: 100%;
+}
+
+.slideStatusPopup-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 12px;
+}
+
+.slideStatusPopup-wrapper.normalRange {
+    margin-top: 4px;
+}
+
+.slideStatusPopup-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2px;
+}
+
+.slideStatusPopup-normal-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.slideStatusPopup-normal-wrapper > span:nth-child(1) {
+    width: 32px;
+}
+
+.slideStatusPopup-normal-wrapper > span:nth-child(2) {
+    width: 100px;
+}
+
+.slideStatusPopup-normal-wrapper > span:nth-child(3) {
+    color: #818181;
 }
 
 .classInfo-barcode-container {
@@ -6112,16 +6384,6 @@ button.gbArrowButton.left {
     z-index: 10;
 }
 
-.preset-container {
-    position: absolute;
-    left: 20px;
-    width: 660px;
-    height: 232px;
-    border: 1px solid white;
-    z-index: 0;
-    pointer-events: none;
-}
-
 .delete-preset-btn:hover {
     background-color: #dc2626;
 }
@@ -6135,16 +6397,70 @@ button.gbArrowButton.left {
     width: 700px;
     z-index: 2;
 }
-.pagination button {
+
+.analysis-preset-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.analysis-preset-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 72px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+.analysis-preset-btn:hover {
+    background-color: white;
+    color: black;
+}
+
+.analysis-preset-active-btn {
+    background-color: white;
+    color: black;
+}
+
+.lisRef-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    z-index: 100;
+}
+
+.listWbcImg-pagination-controls {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.listWbcImg-pagination-controls button {
     margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: none;
+    cursor: pointer;
+    color: #fff;
 }
-.pagination button.active {
-    font-weight: bold;
-    color: blue;
+
+.listWbcImg-pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
-.pagination button:disabled {
-    color: gray;
-}
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

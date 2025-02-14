@@ -11,3 +11,7 @@ export const getCrcContentMaxLength = (siteCd: HospitalSiteCodesType, type: 'rem
             return 1000;
     }
 }
+
+export const setCrcTitles = (siteCd: HospitalSiteCodesType, title: string) => {
+    return title;
+}

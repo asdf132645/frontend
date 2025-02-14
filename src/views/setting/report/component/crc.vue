@@ -9,7 +9,7 @@
           </div>
         </div>
 
-        <div v-if="isMasterId(masterId)" class="w30p">
+        <div v-if="isMasterId(masterId)" class="">
           <div class="flex-align-center-justify-between mb20">
             <span>CRC Default Mode</span>
             <font-awesome-icon :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
@@ -31,17 +31,33 @@
           <div class="flex-column-align-center mt10">
             <span>CRC Remark Select Count</span>
             <div class="flex-center mt10" style="gap: 14px;">
-              <label for="crc-remark">Remark</label>
-              <input id="crc-remark" type="checkbox" @change="changeCrcRemarkCount" value="0"
-                     :checked="crcRemarkCountArr[0].checked"/>
+              <div class="flex-align-center">
+<!--                <label class="crc-setting-title" for="crc-remark">{{ setCrcTitles(siteCd, remarkTxt) }}</label>-->
+                <input class="crc-setting-title" v-model="remarkTxt"/>
+                <input class="crc-setting-title-input" id="crc-remark" type="checkbox" @change="changeCrcRemarkCount"
+                       value="0"
+                       :checked="crcRemarkCountArr[0].checked"/>
+              </div>
 
-              <label for="crc-comment">Comment</label>
-              <input id="crc-comment" type="checkbox" @change="changeCrcRemarkCount" value="1"
-                     :checked="crcRemarkCountArr[1].checked"/>
+              <div class="flex-align-center">
+<!--                <label class="crc-setting-title" for="crc-comment">{{ setCrcTitles(siteCd, commentTxt) }}</label>-->
+                <input class="crc-setting-title" v-model="commentTxt"/>
+                <input class="crc-setting-title-input" id="crc-comment" type="checkbox" @change="changeCrcRemarkCount"
+                       value="1"
+                       :checked="crcRemarkCountArr[1].checked"/>
+              </div>
 
-              <label for="crc-recommendation">Recommendation</label>
-              <input id="crc-recommendation" type="checkbox" @change="changeCrcRemarkCount" value="2"
-                     :checked="crcRemarkCountArr[2].checked"/>
+              <div class="flex-align-center">
+<!--                <label class="crc-setting-title" for="crc-recommendation">{{-->
+<!--                    setCrcTitles(siteCd, recommendationTxt)-->
+<!--                  }}</label>-->
+                <input class="crc-setting-title" v-model="recommendationTxt"/>
+                <input class="crc-setting-title-input" id="crc-recommendation" type="checkbox"
+                       @change="changeCrcRemarkCount" value="2"
+                       :checked="crcRemarkCountArr[2].checked"/>
+              </div>
+
+
             </div>
 
           </div>
@@ -149,8 +165,10 @@ import {
 import CrcCompontent from "@/components/commonUi/crcCompontent.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
-import { isMasterId, isUserAdminType } from "@/common/lib/utils/validators";
+import {isMasterId, isUserAdminType} from "@/common/lib/utils/validators";
 import {scrollToTop} from "@/common/lib/utils/scroll";
+import {setCrcTitles} from "../../../../common/helpers/crc/crcContent";
+import Button from "@/components/commonUi/Button.vue";
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -168,7 +186,7 @@ const lisTwoMode = ref(false);
 const crcConnect = ref(false);
 const crcOptionPutWhether = ref(false);
 const crcOptionId = ref(0);
-const crcRemarkCountArr = ref<any[]>([{"checked": false, "name": "remark"}, {
+const crcRemarkCountArr = ref<any[]>([{"checked": false, "name": "Remark"}, {
   "checked": false,
   "name": "Comment"
 }, {"checked": false, "name": "Recommendation"}]);
@@ -176,6 +194,11 @@ const crcPassWord = ref('');
 const store = useStore();
 const masterId = computed(() => store.state.userModule.userId);
 const userType = computed(() => store.state.userModule.userType);
+const siteCd = computed(() => store.state.commonModule.siteCd);
+
+const remarkTxt = ref('Remark');
+const commentTxt = ref('Comment');
+const recommendationTxt = ref('Recommendation');
 
 onMounted(async () => {
   await nextTick()
@@ -183,18 +206,34 @@ onMounted(async () => {
   const crcOptionApi = await crcOptionGet();
 
   if (crcOptionApi.data.length !== 0) {
-    crcDefaultMode.value = crcOptionApi.data[0].crcMode;
-    lisTwoMode.value = crcOptionApi.data[0]?.lisTwoMode;
-    crcConnect.value = crcOptionApi.data[0].crcConnect;
-    crcOptionId.value = crcOptionApi.data[0].id;
-    crcRemarkCountArr.value = crcOptionApi.data[0].crcRemarkCount;
+    const crcData = crcOptionApi.data[0];
+
+    crcDefaultMode.value = crcData.crcMode;
+    lisTwoMode.value = crcData?.lisTwoMode;
+    crcConnect.value = crcData.crcConnect;
+    crcOptionId.value = crcData.id;
+    crcRemarkCountArr.value = crcData.crcRemarkCount;
+
+    if (crcRemarkCountArr.value.length >= 3) {
+      [remarkTxt.value, commentTxt.value, recommendationTxt.value] = crcRemarkCountArr.value.map(item => item.name);
+    }
+
+
+    const updatedItems = crcRemarkCountArr.value.map(item => {
+      if (item.name === "remark") {
+        return { ...item, name: "R" + item.name.slice(1) };
+      }
+      return item;
+    });
+    crcRemarkCountArr.value = updatedItems;
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcOptionPutWhether.value = true;
   } else {
-    crcRemarkCountArr.value = [{"checked": false, "name": "remark"}, {
-      "checked": false,
-      "name": "Comment"
-    }, {"checked": false, "name": "Recommendation"}]
+    crcRemarkCountArr.value = [
+      {"checked": false, "name": remarkTxt.value},
+      { "checked": false, "name": commentTxt.value},
+      {"checked": false, "name": recommendationTxt.value}
+    ]
   }
 
   isToggle.value = true;
@@ -207,7 +246,7 @@ onMounted(async () => {
 const nameChange = (name: string) => {
   switch (name) {
     case '0' :
-      return 'remark';
+      return 'Remark';
     case '1':
       return 'Comment';
     case '2':
@@ -263,6 +302,11 @@ const saveCrcData = async () => {
 
   if (isMasterId(masterId.value)) {
     if (crcOptionPutWhether.value && crcOptionApi.data.length !== 0) {
+      [remarkTxt.value, commentTxt.value, recommendationTxt.value].forEach((value, index) => {
+        if (crcRemarkCountArr.value[index]) {
+          crcRemarkCountArr.value[index].name = value;
+        }
+      });
       await updateCrcOptionApi({
         id: crcOptionId.value,
         crcMode: crcDefaultMode.value,

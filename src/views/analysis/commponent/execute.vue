@@ -63,7 +63,7 @@ import {
   STITCH_COUNT_OPTIONS,
   BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
@@ -86,6 +86,7 @@ const runInfo = computed(() => store.state.commonModule);
 const executeState = computed(() => store.state.executeModule);
 const isPause = ref(runInfo.value?.isPause);
 const isRunningState = computed(() => store.state.commonModule.isRunningState);
+const isInitializing = computed(() => store.state.commonModule.isInitializing);
 const userStop = ref(embeddedStatusJobCmd.value?.userStop);
 const isRecoveryRun = ref(embeddedStatusJobCmd.value?.isRecoveryRun);
 const isInit = ref(embeddedStatusJobCmd.value?.isInit);
@@ -109,6 +110,8 @@ const confirmMessage = ref('');
 const siteCd = ref('');
 const filteredWbcCount = ref<any>();
 const is100A = ref(false);
+const errorLevel = ref('0');
+const isRecovering = ref(false);
 
 watch(userModuleDataGet.value, async (newUserId, oldUserId) => {
   if (newUserId.id === '') {
@@ -123,6 +126,7 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  isRecovering.value = false;
   await initDataExecute();
 });
 
@@ -185,10 +189,16 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
     userStop: newUserStop,
     isRecoveryRun: newIsRecoveryRun,
     isInit: newIsInit,
+    errorLevel: newErrorLevel,
   } = newEmbeddedStatusJobCmd || {};
+  errorLevel.value = newErrorLevel;
 
   if (is100A.value && Number(newEmbeddedStatusJobCmd.sysInfo.autoStart) && !isRunningState.value) {
     toggleStartStop('start');
+  }
+
+  if (isInit.value === 'Y') {
+    await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
   }
 
   isPause.value = newIsPause;
@@ -198,12 +208,15 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
 
   if (isPause.value) {
     btnStatus.value = 'isPause';
+    isRecovering.value = false;
   } else if (userStop.value && !isRecoveryRun.value) {
     btnStatus.value = 'onRecover';
   } else if (isInit.value === 'N' || isInit.value === '') {
     btnStatus.value = 'isInit';
+    isRecovering.value = false;
   } else {
     btnStatus.value = 'start';
+    isRecovering.value = false;
   }
 });
 
@@ -227,7 +240,7 @@ const sendSearchCardCount = () => {
 }
 
 const toggleStartStop = (action: 'start' | 'stop') => {
-  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
+  if (viewerCheck.value !== 'main' || window.FORCE_VIEWER !== 'main') return;
 
   if (action === 'start') {
     if (isPause.value) { // 일시정지인 상태일 경우 임베디드에게 상태값을 알려준다.
@@ -239,10 +252,17 @@ const toggleStartStop = (action: 'start' | 'stop') => {
     }
     // 실행 여부 체크
     if (isRunningState.value) {
-      showSuccessAlert(MESSAGES.IDS_ERROR_ALREADY_RUNNING);
+      showSuccessAlert(MSG.SYSTEM.PROCESS_ALREADY_RUNNING);
       return;
-    } else if (userStop.value) {
-      confirmMessage.value = MESSAGES.IDS_RECOVER_GRIPPER_CONDITION;
+    }
+
+    if (isRecovering.value) {
+      showSuccessAlert(MSG.SYSTEM.RECOVERY_PROGRESS);
+      return;
+    }
+
+    if (userStop.value) {
+      confirmMessage.value = MSG.SYSTEM.RECOVER_SYSTEM;
       showConfirm.value = true;
       return;
     }
@@ -356,15 +376,18 @@ const hideConfirm = () => {
   showConfirm.value = false;
 }
 
-const handleOkConfirm = () => {
+const handleOkConfirm = async () => {
   showConfirm.value = false;
   tcpReq().embedStatus.recovery.reqUserId = userId.value;
-  emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
+  await emitSocketData('SEND_DATA', tcpReq().embedStatus.recovery);
+  isRecovering.value = true;
 }
 
 const sendInit = () => { // 장비 초기화 진행
   if (isTcpError.value) return;
-  if (viewerCheck.value !== 'main' && window.FORCE_VIEWER !== 'main') return;
+  if (viewerCheck.value !== 'main' || window.FORCE_VIEWER !== 'main') return;
+  if (isInitializing.value) return;
+  if (errorLevel.value === '1' || errorLevel.value === '2') return;
   if (isInit.value === 'Y') {
     showSuccessAlert(MESSAGES.alreadyInitialized);
     return;

@@ -333,7 +333,7 @@ watch(
         await getOrderClass();
         await initData(newVal);
 
-        if (!projectBm.value) {
+        if (!projectBm.value && slideData.value.testType === '04') {
           await rbcTotalAndReCount();
           rbcInfoData.value = isObjectEmpty(slideData.value?.rbcInfoAfter) ? slideData.value?.rbcInfo.rbcClass : slideData.value?.rbcInfoAfter;
           await countReAdd();
@@ -348,16 +348,17 @@ watch(
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
-  const crcOptionApi = await crcOptionGet();
-  if (crcOptionApi.data.length !== 0) {
-    crcConnect.value = crcOptionApi.data[0].crcConnect;
+  if (!projectBm.value) {
+    const crcOptionApi = await crcOptionGet();
+    if (crcOptionApi.data.length !== 0) {
+      crcConnect.value = crcOptionApi.data[0].crcConnect;
+    }
+    const result = (await crcGet());
+    if (result.code === 200) {
+      isContent.value = true;
+      crcData.value = result.data;
+    }
   }
-  const result = (await crcGet());
-  if (result.code === 200) {
-    isContent.value = true;
-    crcData.value = result.data;
-  }
-
 })
 
 const handleClickOutside = (event: MouseEvent) => {

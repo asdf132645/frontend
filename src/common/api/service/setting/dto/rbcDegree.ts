@@ -1,37 +1,21 @@
 // src/rbcDegree/dto/rbcDegree.dto.ts
-export interface RbcDegreeDto {
-    categories: CategoryDto[];
-}
 
-export interface CategoryDto {
+export interface RbcDegreeResponse {
     categoryId: string;
     categoryNm: string;
     classId: string;
     classNm: string;
-    degree: string;
+    degree1: string;
+    degree2: string;
+    degree3: string;
 }
 
-export interface UpdateRbcDegreeDto {
-    degree: string;
-}
-
-export interface ClassItem {
-    id: number;
+export interface RbcDegreeRequest {
     categoryId: string;
     categoryNm: string;
     classId: string;
     classNm: string;
-    degree: string;
-    degreeId: number;
-}
-
-export interface RbcDegreeRes {
-    categories: Category[];
-    id?: number;
-}
-
-export interface Category {
-    categoryId: string;
-    categoryNm: string;
-    classInfo: ClassItem[];
+    degree1: string;
+    degree2: string;
+    degree3: string;
 }

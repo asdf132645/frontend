@@ -31,10 +31,10 @@
           <button class="searchClass" @click="dateRefresh">Clear</button>
           <button type="button" class="searchClass" @click="search">Search</button>
 
-          <template v-if="viewerCheck === 'main'">
-            <button v-show="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="searchClass" style="left: 12%">Patient List</button>
-            <font-awesome-icon :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
-          </template>
+          <div class="search-right-wrapper">
+            <button v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="search-btn">Patient List</button>
+            <font-awesome-icon v-if="viewerCheck === 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
+          </div>
         </div>
 
 
@@ -113,15 +113,23 @@
             @disableSelectItem="disableSelectItem"
             :selectedItemIdFalse="selectedItemIdFalse"
             :notStartLoading='notStartLoading'
-            :total="total"
-            :itemsPerPage="15"
         />
       </keep-alive>
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <ListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+      <template v-if="visibleBySite(siteCd, [
+          HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+          HOSPITAL_SITE_CD_BY_NAME['TEST'],
+          HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+          HOSPITAL_SITE_CD_BY_NAME['인천길병원'],
+      ], 'enable')">
+        <NewListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
+      </template>
+      <template v-else>
+        <ListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
+      </template>
+
     </div>
   </div>
 
@@ -141,7 +149,8 @@
 
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
-import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
+import NewListImg from "@/views/datebase/commponent/list/newListImg.vue";
+import ListImg from "@/views/datebase/commponent/list/listImg.vue";
 import {
   computed,
   getCurrentInstance,
@@ -158,7 +167,6 @@ import {
 import moment from "moment/moment";
 import Datepicker from "vue3-datepicker";
 import {formatDate} from "@/common/lib/utils/dateUtils";
-import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
@@ -174,6 +182,8 @@ import { sdPatientNameGetAPI, sdWorklistsAPI } from "@/common/helpers/lisCbc/sdC
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
 import { DIR_NAME } from "@/common/defines/constants/settings";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 
 const store = useStore();
@@ -235,7 +245,8 @@ const workList = ref({});
 const previousValue = ref('');
 let lastInputTime = Date.now();
 const isBarcodeScannerInput = { value: false };
-const total = ref(0);
+const myip = ref('');
+
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
@@ -255,10 +266,23 @@ onMounted(async () => {
   notStartLoading.value = true;
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
   document.addEventListener('keydown', handleGlobalKeydown);
+  myip.value = await getDeviceIpApi();
 
 });
 
 async function handleStateVal(data: any) {
+  if (data?.payload !== 'refreshDb') {
+    const match = data.match(/(\d+\.\d+\.\d+\.\d+)/);
+
+    const extractedIP = match ? match[1] : null;
+
+    if (extractedIP && extractedIP === myip.value.data) {
+      return;
+    }
+  }
+
+
+
   eventTriggered.value = true;
   notStartLoading.value = false;
   await removePageAllDataApi();
@@ -439,7 +463,7 @@ const loadLastSearchParams = () => {
 };
 
 const getDbData = async (type: string, pageNum?: number) => {
-  dbGetData.value = [];
+
   if (type === 'search') {
     checkedSelectedItems.value = [];
     selectedItemIdFalse.value = true;
@@ -459,7 +483,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   }
   const requestData: any = {
     page: type !== 'mounted' ? pageChange : Number(pageNum),
-    pageSize: 15,
+    pageSize: 20,
     startDay: searchText.value === '' ? formatDate(startDate.value) : '',
     endDay: searchText.value === '' ? formatDate(endDate.value) : '',
     barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
@@ -495,7 +519,6 @@ const getDbData = async (type: string, pageNum?: number) => {
       prevDataPage.value = requestData.page;
       reqDataPrev.value = requestData;
       const newData = result.data.data;
-      total.value = result.data.total;
       if (newData.length === 0) {
         if (page.value === 1) {
           page.value = 1;
@@ -549,29 +572,7 @@ const getDbData = async (type: string, pageNum?: number) => {
       }
     }
 
-    if (HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd.value) {
-      if (dbGetData.value.length > 0) {
-        const barcodeNoList = dbGetData.value.map((item: any) => item.barcodeNo) ?? [];
-        const formatedStartDate = moment(startDate.value).format('YYYY-MM-DD');
-        const formatedEndDate = moment(endDate.value).format('YYYY-MM-DD');
-        try {
-          const { data: patientDataResult, code } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
-          if (code === 200) {
-            dbGetData.value = dbGetData.value.map((item: any) => {
-              const equalBarcodeData = patientDataResult.data.find((patItem: { no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
-              if (!isObjectEmpty(equalBarcodeData)) {
-                const updatedItem = { ...item, patientNm: equalBarcodeData.patName };
-                return updatedItem;
-              } else {
-                return item;
-              }
-            })
-          }
-        } catch (error) {
-          console.error(`SD 환자정보 조회 실패: ${error}`);
-        }
-      }
-    }
+    await getDbDataAfterFunc();
 
     if (dbGetData.value.length > 0) {
       const {path} = router.currentRoute.value;
@@ -610,9 +611,8 @@ const disableSelectItem = async () => {
   selectedItem.value = {};
 }
 
-const loadMoreData = async (pageNum: any) => {
-  console.log(pageNum)
-  page.value = pageNum;
+const loadMoreData = async () => {
+  page.value += 1;
   await getDbData('loadMoreData');
 };
 
@@ -1129,6 +1129,32 @@ const dateRefresh = () => {
 
 const checkListItem = (items: any) => {
   checkedSelectedItems.value = items;
+}
+
+const getDbDataAfterFunc = async () => {
+  if (HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd.value) {
+    if (dbGetData.value.length > 0) {
+      const barcodeNoList = dbGetData.value.map((item: any) => item.barcodeNo) ?? [];
+      const formatedStartDate = moment(startDate.value).format('YYYY-MM-DD');
+      const formatedEndDate = moment(endDate.value).format('YYYY-MM-DD');
+      try {
+        const { data: patientDataResult, code } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
+        if (code === 200 && !isObjectEmpty(patientDataResult.data)) {
+          dbGetData.value = dbGetData.value.map((item: any) => {
+            const equalBarcodeData = patientDataResult.data.find((patItem: { no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
+            if (!isObjectEmpty(equalBarcodeData)) {
+              const updatedItem = { ...item, patientNm: equalBarcodeData.patName };
+              return updatedItem;
+            } else {
+              return item;
+            }
+          })
+        }
+      } catch (error) {
+        console.error(`SD 환자정보 조회 실패: ${error}`);
+      }
+    }
+  }
 }
 
 </script>

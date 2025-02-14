@@ -42,7 +42,7 @@ import {
   onBeforeMount,
 } from 'vue';
 import {useStore} from "vuex";
-import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
+import { tcpReq } from '@/common/defines/constants/tcpRequest/tcpReq';
 import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import {
   getCellImgApi,
@@ -69,8 +69,8 @@ import {
 } from "@/common/helpers/lisCbc/inhaCbcLis";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {sysInfoStore, runningInfoStore} from "@/common/helpers/common/store/common";
-import {appVueUpdateMutation, gqlGenericUpdate, useUpdateRunningInfoMutation} from "@/gql/mutation/slideData";
+import {sysInfoStore, runningInfoStore, sysInfoStoreNew} from "@/common/helpers/common/store/common";
+import { appVueUpdateMutation, gqlGenericUpdate } from "@/gql/mutation/slideData";
 import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
@@ -227,7 +227,7 @@ window.addEventListener('beforeunload', async function (event: any) {
 });
 
 
-const leave = async (event: any) => {
+const leave = async (event) => {
   event.preventDefault();
   if (!ipMatches.value) {
     const result = await getDeviceIpApi();
@@ -295,6 +295,7 @@ onMounted(async () => {
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
+  await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
 });
 
 onBeforeUnmount(async () => {
@@ -315,7 +316,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 });
 
 async function socketData(data: any) {
-  if (commonDataGet.value.viewerCheck !== 'main') {
+  if (commonDataGet.value.viewerCheck !== 'main' || window.FORCE_VIEWER !== 'main') {
     return;
   }
   deleteData.value = false;
@@ -343,15 +344,17 @@ async function socketData(data: any) {
         break;
       case 'SYSINFO':
         parsedDataSysInfoProps.value = parseDataWarp;
-        const res = await sysInfoStore(parseDataWarp);
+        let res = null;
+        res = await sysInfoStoreNew(parseDataWarp);
+        // res = await sysInfoStore(parseDataWarp);
         if (res !== null) {
           const isAlarm = sessionStorage.getItem('isAlarm') === 'true';
           if (res !== '') {
-            if (siteCd.value === '9090') {
-              const err = await errLogLoad();
-              showCoreErrorAlert(err);
-            } else {
+            const err = await errLogLoad();
+            if (!err || typeof err !== 'object') {
               showCoreErrorAlert(res);
+            } else {
+              showCoreErrorAlert(err);
             }
             if (isAlarm) {
               await store.dispatch('commonModule/setCommonInfo', {isErrorAlarm: true}); // 오류 알람을 킨다.
@@ -361,18 +364,21 @@ async function socketData(data: any) {
         break;
       case 'INIT':
         barcodeNum.value = '';
-        await store.dispatch('commonModule/setCommonInfo', {initValData: false});
+        await store.dispatch('commonModule/setCommonInfo', { initValData: false });
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: true });
         sendSettingInfo();
         break;
       case 'START':
         barcodeNum.value = '';
         await runnStart();
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
         break;
       case 'RUNNING_INFO':
         parsedDataProps.value = parseDataWarp;
         runningInfoBoolen.value = true;
         await runningInfoStore(parseDataWarp);
         await runningInfoCheckStore(parseDataWarp);
+        await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
         break;
       case 'STOP':
         console.log('stop!=--------------------------')
@@ -418,10 +424,10 @@ async function socketData(data: any) {
         break;
       case 'RECOVERY':
         barcodeNum.value = '';
-        await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', {userStop: false});
-        await store.dispatch('commonModule/setCommonInfo', {runningSlotId: ''});
+        await store.dispatch('embeddedStatusModule/setEmbeddedStatusInfo', { userStop: false });
+        await store.dispatch('commonModule/setCommonInfo', { runningSlotId: '' });
         slotIndex.value = 0;
-        await store.dispatch('commonModule/setCommonInfo', {runningArr: []});
+        await store.dispatch('commonModule/setCommonInfo', { runningArr: [] });
         break;
       case 'ERROR_CLEAR':
         showAlert.value = false;
@@ -528,7 +534,8 @@ async function socketData(data: any) {
         });
 
         const {isNormal, classInfo} = checkPbNormalCell(completeSlot.wbcInfo, normalItems.value);
-        completeSlot.isNormal = isNormal;
+        completeSlot.isNormal = projectBm.value ? 'Y' : isNormal;  // 현재 BM에서는 Normal Range가 없으므로 모두 정상으로 표시
+
 
         const classElements = classArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
         const rbcArrElements = rbcArr.value.filter((element: any) => element?.slotId === completeSlot.slotId);
@@ -568,12 +575,13 @@ async function socketData(data: any) {
           const findWbcIndex = newWbcInfo?.wbcInfo[0].findIndex((elW: any) => elW.title === fileNm);
 
           if (findWbcIndex !== -1) { // 유효한 인덱스인지 확인
-            newWbcInfo?.wbcInfo[0][findWbcIndex].images.push({
-              fileName: el.FILE_NM
-            });
+            if (!newWbcInfo.wbcInfo[0][findWbcIndex].images.find((item) => item?.fileName === el?.FILE_NM) ) {
+              newWbcInfo.wbcInfo[0][findWbcIndex].images.push({
+                fileName: el?.FILE_NM
+              })
+            }
           }
         }
-
 
         const updateWbcInfo = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfo() : newWbcInfo;
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
@@ -638,7 +646,11 @@ async function socketData(data: any) {
           isNsNbIntegration: isNsNbIntegrationLocal.value || '',
           wbcMemo: '',
           rbcMemo: '',
-          abnormalClassInfo: classInfo
+          abnormalClassInfo: classInfo,
+          slideCondition: {
+            condition: completeSlot?.condition,
+            desc: '',
+          },
         }
 
         await saveRunningInfo(newObj, slotId, lastCompleteIndex);
@@ -771,7 +783,7 @@ const sendSettingInfo = () => {
     isNsNbIntegration: isNsNbIntegrationLocal.value,
   };
 
-  store.dispatch('commonModule/setCommonInfo', {reqArr: req});
+  store.dispatch('commonModule/setCommonInfo', { reqArr: req });
 }
 
 const getNormalRange = async () => {

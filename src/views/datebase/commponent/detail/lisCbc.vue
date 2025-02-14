@@ -191,7 +191,7 @@ const cbcListOpen = async () => {
 const cbcDataChoice = async (item: string) => {
   datachoice.value = true;
   firstCbcDatafilename.value = `${item.split('.')[0]}`;
-  await sdCbcLoad();
+  await sdCbcLoad(firstCbcDatafilename.value);
   await updateCbcData();
   cbcPopup.value = false;
 }
@@ -240,6 +240,10 @@ const initCbcData = async (newVal: any) => {
     case HOSPITAL_SITE_CD_BY_NAME['원주기독병원']:
       await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
       break;
+    case HOSPITAL_SITE_CD_BY_NAME['원자력병원']:
+      await crcCbcDataLoad();
+      await commonCBC(firstCbcDatafilename.value);
+      break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
       // await uimdTestUrlSend();
@@ -283,7 +287,7 @@ const cbcYwmcDataMatching = async () => {
   slip.value = slipVal;
 }
 
-const sdCbcLoad = async () => {
+const sdCbcLoad = async (firstCbcDatafilenameProps?: string) => {
   await crcCbcDataLoad();
 
   if (cbcFilePathSetArr.value === '') {
@@ -307,7 +311,7 @@ const sdCbcLoad = async () => {
     cbcFilePathSetArr: cbcFilePathSetArr.value,
     slotId: props.selectItems?.slotId,
     barcodeNo: props.selectItems?.barcodeNo,
-    firstCbcDatafilename: firstCbcDatafilename.value,
+    firstCbcDatafilename: firstCbcDatafilenameProps ?? firstCbcDatafilename.value,
     cbcCodeList: cbcCodeList.value,
   });
 
@@ -437,7 +441,7 @@ const commonFileData = async (firstCbcDatafilename: string) => {
       keyword: props.selectItems?.barcodeNo
     }
     await fileSysCopy(fileParams);
-    await fileSysClean(fileSysCleanParams);
+    // await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
     getCBCWorkListFromFileData(msg);
 
@@ -558,6 +562,7 @@ const kuahGilHosCbc = async () => {
     ];
     cbcDataArray = cbcDataArray.split('\n');
 
+    cbcWorkList.value = [];
     cbcDataArray.forEach((cbcData: any) => {
       const [title, value] = cbcData.split('\t').map((item: any) => item.trim());
 
@@ -584,7 +589,7 @@ const kuahGilHosCbc = async () => {
 
     const parms = {
       filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${props.selectItems?.barcodeNo}.txt`,
-      data: cbcWorkList,
+      data: cbcWorkList.value,
     };
     await createCbcFile(parms);
   }

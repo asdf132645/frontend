@@ -28,5 +28,5 @@ export interface User {
     userType: string;
     subscriptionDate: string;
     latestDate: string;
-    [key: string]:any;
+    [key: string]: any;
 }

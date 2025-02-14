@@ -1,16 +1,19 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <Execute v-if="siteCd !== '9090'" @initDataChangeText="initDataChangeText"/>
-    <ExecuteNew v-else @initDataChangeText="initDataChangeText"/>
+    <ExecuteNew v-if="siteCd === '9090'" @initDataChangeText="initDataChangeText"/>
+    <Execute v-else @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
-    <RenewalWorking v-if="siteCd === '9090'" :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette"
-                    class="contentRightChild"/>
-    <workingView :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
-                 v-else
-                 class="contentRightChild"/>
+    <RenewalWorking
+        v-if="visibleBySite(siteCd, [
+            HOSPITAL_SITE_CD_BY_NAME['UIMD'],
+            HOSPITAL_SITE_CD_BY_NAME['TEST'],
+            HOSPITAL_SITE_CD_BY_NAME['원자력병원']
+            ], 'enable') && (!bmIsBoolen && pbVersion === '100a')"
+        :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette" class="contentRightChild"/>
+    <workingView v-else :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild"/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen"
                        class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen"
@@ -35,6 +38,8 @@ import {useStore} from "vuex";
 import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
 import Preset from "@/views/analysis/commponent/preset.vue";
 import ExecuteNew from "@/views/analysis/commponent/executeNew.vue";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const emits = defineEmits();
 
@@ -53,6 +58,7 @@ onBeforeMount(async () => {
 
   pbVersion.value = window.MACHINE_VERSION;
   bmIsBoolen.value = window.PROJECT_TYPE === 'bm' ? true : false;
+
 });
 
 
@@ -64,8 +70,8 @@ const classInfoUpdate = (data: any) => {
   emits('classAppUpdateLast', data);
 }
 
-const initDataChangeText = (val: any) => {
-  store.dispatch('commonModule/setCommonInfo', {initValData: val});
+const initDataChangeText = async (val: any) => {
+  await store.dispatch('commonModule/setCommonInfo', { initValData: val });
 }
 
 </script>

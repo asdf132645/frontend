@@ -34,16 +34,28 @@
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <div class="imgMenuSetDiv">
-        <button type="button" @click="drawCellMarker(false)">
-          <font-awesome-icon
-              :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-          />
+        <button
+            type="button"
+            @click="drawCellMarker(false)"
+            class="pos-relative"
+            @mouseenter="tooltipVisibleFunc('cellMarking', true)"
+            @mouseleave="tooltipVisibleFunc('cellMarking', false)"
+        >
+          <font-awesome-icon :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"/>
           Cell Marking
+          <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_MARKING"/>
         </button>
-        <!--size-->
-        <button @click="showSizeControl" class="sizeButton">
+        <button
+            @click="showSizeControl"
+            class="sizeButton pos-relative"
+            @mouseenter="tooltipVisibleFunc('size', true)"
+            @mouseleave="tooltipVisibleFunc('size', false)"
+        >
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
           Size
+          <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_SIZE"/>
         </button>
         <div v-show="showSize" class="sizeContainer">
           <div>
@@ -69,9 +81,16 @@
 
         </div>
         <div class="imgSetWrap" ref="imgSetWrap">
-          <button @click="imgSetOpen">
+          <button
+              @click="imgSetOpen"
+              class="pos-relative"
+              @mouseenter="tooltipVisibleFunc('imageSetting', true)"
+              @mouseleave="tooltipVisibleFunc('imageSetting', false)"
+          >
             <font-awesome-icon :icon="['fas', 'gear']"/>
             IMG Setting
+            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
           </button>
           <div class="imgSet" v-show="imgSet">
             <div>
@@ -133,22 +152,44 @@
 
           </div>
         </div>
-        <button @click="classCompare">
+        <button
+            @click="classCompare"
+            class="pos-relative"
+            @mouseenter="tooltipVisibleFunc('classCompare', true)"
+            @mouseleave="tooltipVisibleFunc('classCompare', false)"
+        >
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
+          <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_CLASS_COMPARE"/>
         </button>
-        <button @click="wps" v-if="isWpsBtnShow">
+        <button
+            @click="wps"
+            v-if="isWpsBtnShow"
+            class="pos-relative"
+            @mouseenter="tooltipVisibleFunc('wps', true)"
+            @mouseleave="tooltipVisibleFunc('wps', false)"
+        >
           <font-awesome-icon :icon="['fas', 'expand']"/>
           WPS
+          <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CELL_WPS"/>
         </button>
-        <button @click="rollbackChanges" class="rollbackButton">
+        <button
+            @click="rollbackChanges"
+            class="rollbackButton"
+            @mouseenter="tooltipVisibleFunc('rollback', true)"
+            @mouseleave="tooltipVisibleFunc('rollback', false)"
+        >
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
+          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 18px;'" position="top"
+                   type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
         </button>
       </div>
       <div>
         <ImageGallery
-            v-if="isLoadedSlideData"
+            v-if="isLoadedSlideData && router.currentRoute.value.fullPath === '/databaseDetail'"
             ref="$imageGalleryRef"
             :wbcInfoRefresh="wbcInfoRefresh"
             :wbcInfo="wbcInfo"
@@ -199,33 +240,28 @@
       </div>
 
       <!-- 모달 창 -->
-      <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel">
-        <div class="wbc-modal-content" @click="outerClickCloseModal">
-          <div
-              v-if="!isObjectEmpty(wpsJsonData) && siteCd === '9090'"
-              class="wbcModalImageContent-slideImg"
-          >
-
-            <div class="wbcModalImageContent-slideImg-textBox">
-              <p class="wbcModalImageContent-slideImg-x-text">X:
-                {{ calculatedX }} mm</p>
-              <p class="wbcModalImageContent-slideImg-y-text">Y:
-                {{ calculatedY }} mm</p>
-            </div>
-
-            <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
-            <canvas  ref="canvasRef"></canvas>
+      <div class="wbcModal" v-show="modalOpen" @wheel="handleWheel" @click="outerClickCloseModal">
+        <div class="wbc-modal-content">
+          <div class="wbcModal-title-wrapper">
+            <h2>Cell Detail Information</h2>
+            <span class="wbcClose" @click="closeModal">&times;</span>
           </div>
-          <span class="wbcClose" @click="closeModal">&times;</span>
-          <div class="wbcModalImageContent">
+
+          <div :class="!isObjectEmpty(wpsJsonData) ? 'wbcModalImageContent' : 'wbcModalImageContentBefore'">
             <img :src="selectedImageSrc" :style="{ width: modalImageWidth, height: modalImageHeight }"
-                 class="modal-image" ref="modalImage"/>
+                 ref="modalImage"/>
           </div>
-          <div class="buttons">
+
+          <div :class="!isObjectEmpty(wpsJsonData) ? 'wbcModalButton-wrapper' : 'wbcModalButton-wrapperBefore'">
             <div class="rangeBox">
               <p>{{ ((zoomValue - 200) / 400 * 100).toFixed(0) }} %</p>
               <input type="range" min="200" max="600" v-model="zoomValue" @input="handleZoom"/>
             </div>
+          </div>
+
+          <div v-if="!isObjectEmpty(wpsJsonData)" class="wbcModalImageContent-slideImg">
+            <img :src="slidePositionImg" ref="imageRef" @load="drawCanvas" style="display: none"/>
+            <canvas ref="canvasRef"></canvas>
           </div>
         </div>
       </div>
@@ -263,7 +299,7 @@ import {
 import {moveClassImagePost} from "@/common/api/service/dataBase/wbc/wbcApi";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
-import {readFileTxt, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {readDziFile, readFileTxt, readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
   getBfHotKeysApi, getNormalRangeApi,
   getOrderClassApi,
@@ -287,7 +323,7 @@ import {disableScroll, enableScroll} from "@/common/lib/utils/scroll";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import {checkPbNormalCell} from "@/common/lib/utils/changeData";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {initCBCData} from "@/common/helpers/lisCbc/initCBC";
@@ -298,8 +334,10 @@ import {
 } from "@/gql/mutation/slideData";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import slidePositionImg from "@/assets/images/slide.jpg";
+import slidePositionImg from "@/assets/images/slide_pos.png";
 import {DIR_NAME} from "@/common/defines/constants/settings";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
+import router from "@/router";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -380,18 +418,26 @@ const ipAddress = ref('');
 const patientNm = ref('');
 const cbcPatientNm = ref('');
 const checkedAllClass = ref(false);
-const xyResolution = ref({
-  X: 0.000573,
-  Y: 0.000560,
-})
 const {imageRefs} = useImageRefs();
 const wpsJsonData = ref<any>([]);
+let abortController = new AbortController();
+
 const wbcXYPos = ref({
+  totalWidth: '0',
+  totalHeight: '0',
   posX: '0',
   posY: '0',
 })
 const imageRef = ref<HTMLImageElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
+const tooltipVisible = ref({
+  cellMarking: false,
+  size: false,
+  imageSetting: false,
+  classCompare: false,
+  wps: false,
+  rollback: false,
+})
 
 
 onBeforeMount(async () => {
@@ -421,26 +467,28 @@ watch(
       if (newVal.id !== oldVal?.id) {
         await nextTick();
 
-        if (projectType.value !== 'bm' && siteCd.value === '9090') {
+        if (projectType.value !== 'bm') {
           await checkWps(newVal);
         } else {
           isWpsBtnShow.value = false;
         }
         try {
-          await getNormalRange(); // 함수가 선언된 이후 호출
-          await getDetailRunningInfo(newVal);
-          await getXYResolution();
-          await getWPSData();
-          isLoadedSlideData.value = false;
-          wbcInfo.value = [];
-          isLoadedSlideData.value = true;
+          if (router.currentRoute.value.fullPath === '/databaseDetail') {
 
-          await getWbcCustomClasses(false, null);
-          wbcInfoRefresh.value = true;
+            await getNormalRange(); // 함수가 선언된 이후 호출
+            await getDetailRunningInfo(newVal);
+            await getWPSData();
+            isLoadedSlideData.value = false;
+            wbcInfo.value = [];
+            isLoadedSlideData.value = true;
 
-          await imgSetLocalStorage();
-          cellMarkerIcon.value = false;
-          await drawCellMarker(true);
+            await getWbcCustomClasses(false, null);
+            wbcInfoRefresh.value = true;
+
+            await imgSetLocalStorage();
+            cellMarkerIcon.value = false;
+            await drawCellMarker(true);
+          }
 
         } catch (error) {
           console.error('비동기 작업 중 에러 발생:', error);
@@ -853,7 +901,8 @@ const closeModal = () => {
 };
 
 const outerClickCloseModal = (e: any) => {
-  if (e.target.classList.contains('wbc-modal-content')) {
+  console.log('e.target.classList', e.target.classList);
+  if (e.target.classList.contains('wbcModal')) {
     modalOpen.value = false;
   }
 }
@@ -920,15 +969,36 @@ const refreshClass = async (data: any) => {
     isWpsBtnShow.value = false;
   }
 }
+
 const calculatedX = computed(() => {
+  if (isObjectEmpty(wpsJsonData)) {
+    return;
+  }
+
   const x1 = Number(wpsJsonData.value[0]?.x1 || 0);
-  return Math.round(x1 + xyResolution.value.X * Number(wbcXYPos.value.posX));
+  const x2 = Number(wpsJsonData.value[0]?.x2 || 0)
+  const tempX = Math.round(x1 + Number(wbcXYPos.value.posX) / (Number(wbcXYPos.value.totalWidth) / (x2 - x1)))
+  return ((tempX / 256) * 22).toFixed(2);
 });
 
+const realX = computed(() => {
+  return (calculatedX.value / 22) * 256;
+})
+
 const calculatedY = computed(() => {
+  if (isObjectEmpty(wpsJsonData)) {
+    return;
+  }
+
   const y1 = Number(wpsJsonData.value[0]?.y1 || 0);
-  return Math.round(y1 + xyResolution.value.Y * Number(wbcXYPos.value.posY));
+  const y2 = Number(wpsJsonData.value[0]?.y2 || 0)
+  const tempY = Math.round(y1 + Number(wbcXYPos.value.posY) / (Number(wbcXYPos.value.totalHeight) / (y2 - y1)))
+  return ((tempY / 746) * 76).toFixed(2);
 });
+
+const realY = computed(() => {
+  return (calculatedY.value / 76) * 746;
+})
 
 const drawCanvas = () => {
   const canvas = canvasRef.value;
@@ -943,22 +1013,23 @@ const drawCanvas = () => {
     canvas.height = img.height;
 
     // Draw the image onto the canvas
+    // 22 76
     ctx.drawImage(img, 0, 0, img.width, img.height);
 
     // Draw dashed lines
     ctx.setLineDash([5, 5]); // Dash pattern: 5px dash, 5px gap
     ctx.strokeStyle = "black";
     ctx.beginPath();
-    ctx.moveTo(calculatedX.value, 0); // Vertical line
-    ctx.lineTo(calculatedX.value, canvas.height - 209); // Stop at 209px from bottom
-    ctx.moveTo(0, calculatedY.value); // Horizontal line
-    ctx.lineTo(canvas.width, calculatedY.value);
+    ctx.moveTo(realX.value, 0); // Vertical line
+    ctx.lineTo(realX.value, canvas.height - 200); // Stop at 209px from bottom
+    ctx.moveTo(0, realY.value); // Horizontal line
+    ctx.lineTo(canvas.width, realY.value);
     ctx.stroke();
 
     // Draw red circle at the intersection
     ctx.setLineDash([]); // Reset dash
     ctx.beginPath();
-    ctx.arc(calculatedX.value, calculatedY.value, 5, 0, 2 * Math.PI); // Circle radius: 5
+    ctx.arc(realX.value, realY.value, 5, 0, 2 * Math.PI); // Circle radius: 5
     ctx.fillStyle = "red";
     ctx.fill();
 
@@ -969,34 +1040,27 @@ const drawCanvas = () => {
     const oldIndicators = canvasContainer.querySelectorAll(".indicator");
     oldIndicators.forEach((el) => el.remove());
 
-    // Create X indicator
-    const xIndicator = document.createElement("div");
-    xIndicator.className = "indicator x-indicator";
-    xIndicator.style.position = "absolute";
-    xIndicator.style.left = `${canvas.offsetLeft + calculatedX.value}px`;
-    xIndicator.style.top = `${canvas.offsetTop - 20}px`; // Slightly above the canvas
-    xIndicator.style.color = "black";
-    xIndicator.style.fontSize = "14px";
-    xIndicator.textContent = `X: ${calculatedX.value}`;
-    canvasContainer.appendChild(xIndicator);
+    const zeroIndicator = document.createElement("div");
+    zeroIndicator.className = "indicator y-indicator";
+    zeroIndicator.style.position = "absolute";
+    zeroIndicator.style.left = `-14px`;
+    zeroIndicator.style.top = `-16px`;
+    zeroIndicator.style.color = "white";
+    zeroIndicator.style.fontSize = "14px";
+    zeroIndicator.textContent = `(0, 0)`;
+    canvasContainer.appendChild(zeroIndicator);
 
-    // Create Y indicator
-    const yIndicator = document.createElement("div");
-    yIndicator.className = "indicator y-indicator";
-    yIndicator.style.position = "absolute";
-    yIndicator.style.left = `${canvas.offsetLeft - 50}px`; // Slightly to the left of the canvas
-    yIndicator.style.top = `${canvas.offsetTop + calculatedY.value}px`;
-    yIndicator.style.color = "black";
-    yIndicator.style.fontSize = "14px";
-    yIndicator.textContent = `Y: ${calculatedY.value}`;
-    canvasContainer.appendChild(yIndicator);
+    const xyIndicator = document.createElement("div");
+    xyIndicator.className = "indicator xy-indicator";
+    xyIndicator.style.position = "absolute";
+    xyIndicator.style.left = calculatedX.value < 12 ? `${realX.value + 8}px` : `${realX.value - 94}px`; // Slightly to the left of the canvas
+    xyIndicator.style.top = `${realY.value - 16}px`;
+    xyIndicator.style.color = "black";
+    xyIndicator.style.fontSize = "14px";
+    xyIndicator.textContent = `(${calculatedX.value}, ${calculatedY.value})`;
+    canvasContainer.appendChild(xyIndicator);
   }
 };
-
-
-
-
-
 
 
 // Re-draw canvas when dependencies change
@@ -1485,9 +1549,9 @@ const getImageXYPosition = async (image: any) => {
   const extracted = image.fileName.split('_').slice(2).join('_');
   const foundData = wpsJsonData.value.find((item: any) => item?.FILE_NM && item.FILE_NM === extracted);
   if (foundData) {
+    wbcXYPos.value.posX = foundData.POSX1;
+    wbcXYPos.value.posY = foundData.POSY1;
   }
-  wbcXYPos.value.posX = foundData.POSX1;
-  wbcXYPos.value.posY = foundData.POSY1;
 }
 
 const getWPSData = async () => {
@@ -1495,27 +1559,38 @@ const getWPSData = async () => {
       ? selectItems.value?.img_drive_root_path
       : iaRootPath.value;
   const url_new = `${path}/${selectItems.value.slotId}/04_WPS/WPS.json`;
-  const response_new = await readJsonFile({fullPath: url_new});
-  if (response_new.data) {
-    wpsJsonData.value = response_new.data;
-  } else {
+  try {
+    const response_new = await readJsonFile({fullPath: url_new});
+    if (response_new.data) {
+      wpsJsonData.value = response_new.data;
+    } else {
+      wpsJsonData.value = [];
+    }
+    const {width, height} = await dziWidthHeight();
+    wbcXYPos.value.totalWidth = width;
+    wbcXYPos.value.totalHeight = height;
+  } catch (err) {
+    console.error(err);
     wpsJsonData.value = [];
   }
 }
 
-const getXYResolution = async () => {
-  const filePath = 'D:\\UIMD_Data\\Backend_INI'
-  const fileName = window.MACHINE_VERSION === '100a' ? 'Teaching_Config_100A' : 'Teaching_Config';
-  try {
-    const result: any = await readFileTxt(`path=${filePath}&filename=${fileName}`);
-    const iniFileData = result.data.data;
-    const xResolutionPattern = /X_RESOLUTION\s*=\s*(.+)/;
-    const yResolutionPattern = /Y_RESOLUTION\s*=\s*(.+)/;
-    xyResolution.value.X = iniFileData.match(xResolutionPattern)[1] ?? xyResolution.value.X;
-    xyResolution.value.Y = iniFileData.match(yResolutionPattern)[1] ?? xyResolution.value.Y;
-  } catch (e) {
-    console.error(e);
-  }
+const dziWidthHeight = async (): Promise<any> => {
+  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path
+      ? selectItems.value?.img_drive_root_path
+      : iaRootPath.value;
+  const urlImage = `${path}/${selectItems.value.slotId}/04_WPS/WPS.dzi`;
+  const imageResponse = await readDziFile({filePath: urlImage});
+  return await extractWidthHeightFromDzi(imageResponse);
+}
+
+const extractWidthHeightFromDzi = (xmlString: any): any => {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+  const sizeElement = xmlDoc.getElementsByTagName("Size")[0];
+  const width = sizeElement.getAttribute("Width");
+  const height = sizeElement.getAttribute("Height");
+  return {width: Number(width), height: Number(height)};
 }
 
 async function onDrop(targetItemIndex: any) {
@@ -1875,7 +1950,12 @@ async function updateOriginalDb(notWbcAfterSave?: string) {
     const res: any = slideData.value;
     if (res) res.wbcInfoAfter = clonedWbcInfo;
     const {isNormal, classInfo} = checkPbNormalCell(clonedWbcInfo, normalItems.value)
-    res.isNormal = isNormal;
+    if (projectType.value === 'bm') {
+      // 현재 BM은 Normal Range가 없습니다.
+      res.isNormal = 'Y';
+    } else {
+      res.isNormal = isNormal;
+    }
     res.abnormalClassInfo = classInfo;
     // 실제 락 거는 부분 여기로 변경 함 그래프 ql 로 변경하면서 버그 방지를 위해서 변경
     res.pcIp = ipAddress.value;
@@ -2143,6 +2223,10 @@ const submitStateChanged = (changedSubmitState: string) => {
     toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
     showToast(MSG_GENERAL.SUCCESS);
   }
+}
+
+const tooltipVisibleFunc = (type: 'cellMarking' | 'size' | 'imageSetting' | 'classCompare' | 'wps' | 'rollback', visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 </script>

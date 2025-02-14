@@ -35,7 +35,7 @@
           <!-- 검색 입력 필드 -->
           <input
               v-model="searchText"
-              placeholder="code Search"
+              placeholder="Code Search"
               class="autocomplete-input"
               @focus="showDropdown = true"
               @blur="hideDropdownWithDelay"
@@ -80,10 +80,21 @@
         <div class="crcDivTitle">
           <span>
             <font-awesome-icon :icon="['fas', 'message']"/>
-            Remark
+            {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
           </span>
-          <font-awesome-icon class="remarkChange-font" :icon="['fas', 'arrow-up-from-bracket']" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="changeRemark(crcArr, remarkList)" />
-          <button class="reSelect" @click="openSelect('remark')">Remark Select</button>
+
+<!--          <button-->
+<!--              class="reSelect"-->
+<!--              v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']"-->
+<!--              @click="createSummary"-->
+<!--          >-->
+<!--            Create Summary-->
+<!--          </button>-->
+
+          <button class="reSelect" @click="openSelect('remark')">
+            {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
+            Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -96,8 +107,11 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(1) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> Comment </span>
-          <button class="reSelect" @click="openSelect('comment')">Comment Select</button>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} </span>
+          <button class="reSelect" @click="openSelect('comment')">
+            {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }}
+            Select
+          </button>
         </div>
 
         <div class="remarkUlList">
@@ -109,8 +123,14 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(2) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> Recommendation </span>
-          <button class="reSelect" @click="openSelect('recommendation')">Recommendation Select</button>
+          <span>
+            <font-awesome-icon :icon="['fas', 'message']"/>
+            {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }}
+          </span>
+          <button class="reSelect" @click="openSelect('recommendation')">
+            {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }}
+            Select
+          </button>
         </div>
 
         <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
@@ -136,7 +156,7 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <CrcList :crcPassWord="crcPassWord" :crcArr="crcArr" @refresh="pageRefresh" v-if="activeTab === 2"/>
+    <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh" v-if="activeTab === 2"/>
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
@@ -175,7 +195,7 @@
                   @selectWbcImgSend="selectWbcImgSend"
   />
   <teleport to="body">
-    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" />
+    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" @resetLisRtf="resetLisRtf" />
   </teleport>
 </template>
 
@@ -213,6 +233,7 @@ import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningIn
 import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.vue";
 import { changeRemark, kcch_0033GetCBCData } from "@/common/helpers/lisCbc/kcch_0033";
 import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
+import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -278,6 +299,11 @@ const ywmcSlip = ref('H3');
 const cbcFlag = ref('');
 const kcchOnOff = ref(false);
 const nowCrcDataLis = ref([]);
+const createdSummary = ref<any>({
+  RBC: [],
+  WBC: [],
+  PLT: [],
+});
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
@@ -375,27 +401,50 @@ onMounted(async () => {
 });
 
 watch(() => props.triggerChangeCRCMorphology, async () => {
+  await initCbcData0033();
+})
+
+const initCbcData0033 = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const cbcFilePathSetArr = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
 
-  const cbcResult = await kcch_0033GetCBCData({
-    iaRootPath: path,
-    barcodeNo: props.selectItems?.barcodeNo,
-    slotId: props.selectItems?.slotId,
-    cbcFilePathSetArr,
-    cbcCodeList: cbcCodeList.value,
-  }); // 원자력 병원 CRC 받아온 데이터
+  try {
+    const cbcResult = await kcch_0033GetCBCData({
+      iaRootPath: path,
+      barcodeNo: props.selectItems?.barcodeNo,
+      slotId: props.selectItems?.slotId,
+      cbcFilePathSetArr,
+      cbcCodeList: cbcCodeList.value,
+    }); // 원자력 병원 CRC 받아온 데이터
 
-  if (cbcResult?.resultCBCCode) {
-    const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
-      return kcchCbcAutoMatching({ data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge });
-    }));
 
-    // flatten the array and map to CRC
-    mapResultToCrcArr(autoChangeCodes.flat(), crcArr.value);
+    if (cbcResult?.resultCBCCode) {
+      const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
+        return kcchCbcAutoMatching({ data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge });
+      }));
+
+      const flattedAutoChangeCodes = autoChangeCodes.flat();
+
+      for (const item of flattedAutoChangeCodes) {
+        createdSummary.value[item.moType].push({
+          moType: item.moType,
+          title: item.title,
+          content: item.content,
+        });
+      }
+
+      mapResultToCrcArr(autoChangeCodes.flat(), crcArr.value);
+    }
+
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast('Successfully Applied');
+  } catch (err) {
+    console.error(err);
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast('Failed to Apply');
   }
-})
+}
 
 const mapResultToCrcArr = (result: KcchCbcAutoMatchingReturn[], crcArr: any) => {
   crcArr.forEach((crcItem) => {
@@ -450,7 +499,10 @@ const captureAndConvert = async () => {
 }
 const resetBool = () => {
   captureAndConvertOk.value = false;
+}
 
+const resetLisRtf = () => {
+  kcchOnOff.value = false;
 }
 
 const selectOption = (selectedCode: string) => {
@@ -989,11 +1041,12 @@ const tempSaveDataEmpty = async () => {
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
   cbcFlag.value = '';
-  recoList.value = [];
-  remarkList.value = [];
-  commentList.value = [];
+  recoList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
+  remarkList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
+  commentList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
   code.value = '';
   searchText.value = '';
+  createdSummary.value = { RBC: [], WBC: [], PLT: [] };
   toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data empty to storage')
 }
@@ -1030,6 +1083,11 @@ const updateCbcDataToDatabase = async ({ cbcPatientNo, cbcPatientNm, cbcSex, cbc
   const updatedItem = { cbcPatientNo, cbcPatientNm, cbcSex, cbcAge };
   const updatedRuningInfo = { id: slideData.value.id, ...updatedItem };
   await resRunningItem(updatedRuningInfo, true);
+}
+
+const createSummary = () => {
+  changeRemark(crcArr.value, createdSummary.value, remarkList.value)
+
 }
 
 </script>

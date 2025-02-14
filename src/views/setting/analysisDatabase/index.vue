@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="settingTabSubButtons">
-      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Cell Image Analysis</button>
+      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">
+        {{ siteCd === '9090' ? 'Analysis' : 'Cell Image Analysis' }}
+      </button>
+      <button v-if="siteCd === '9090'" @click="activateTab('etc')" :class="{ 'active': activeTab === 'etc' }" >Etc</button>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
         <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
@@ -11,7 +14,7 @@
         <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
         </button>
-        <button v-if="projectType === 'pb'" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
+        <button v-if="projectType === 'pb' && visibleBySite(siteCd, ['9090', '0000'], 'disable')" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
         <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
         <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
@@ -47,7 +50,8 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
-import NewCellImageAnalyzed from "@/views/setting/analysisDatabase/component/newCellImageAnalyzed.vue";
+import NewAnalysis from "@/views/setting/analysisDatabase/component/newAnalysis.vue";
+import Etc from "@/views/setting/analysisDatabase/component/etc.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
 import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
 import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'
@@ -61,6 +65,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 const store = useStore();
 const activeTab = ref('cellImageAnalyzed');
@@ -87,7 +92,7 @@ const activateTab = (tabName: string) => {
   movingTab.value = tabName;
   if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
     showConfirm.value = true;
-    confirmMessage.value = `${settingType.value} ${MESSAGES.settingNotSaved}`;
+    confirmMessage.value = MESSAGES.settingNotSaved;
   } else {
     activeTab.value = movingTab.value;
   }
@@ -112,7 +117,9 @@ const hideAlert = () => {
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
     case 'cellImageAnalyzed':
-      return siteCd.value === '9090' ? NewCellImageAnalyzed : CellImageAnalyzed;
+      return siteCd.value === '9090' ? NewAnalysis : CellImageAnalyzed;
+    case 'etc':
+      return Etc;
     case 'rbcDegree':
       return RbcDegree;
     case 'deviceControls':

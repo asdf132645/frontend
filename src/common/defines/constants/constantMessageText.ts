@@ -115,6 +115,9 @@ export const MSG_GENERAL = {
 
 export const MSG = {
     TOOLTIP: {
+        DRAWER_STATUS: 'Device drawer door status',
+        RUNNING_STATUS: 'Device operation status',
+        CBC_TO_RESULTCODES: 'Apply CBC & UIMD data to Result Codes',
         BARCODE_COPY: 'Copy barcodeNo',
         MEMO: 'Memo On/Off',
         CONFIRM: 'Confirm',
@@ -130,7 +133,12 @@ export const MSG = {
         UPLOAD: 'Select Upload Destination Path',
         OPEN_DOWNLOAD_SAVE_PATH: 'Open Download Save Path',
         LIS_UPLOAD_CHECK: 'Show LIS Upload Button after viewing all cell',
-
+        CELL_MARKING: 'Mark the center of the cell',
+        CELL_SIZE: 'Resize cell image',
+        CELL_IMG_SETTING: 'Modify image brightness and rgb',
+        CELL_CLASS_COMPARE: 'Compare two WBC classes',
+        CELL_WPS: 'Switch WBC Positioning System mode',
+        CELL_ROLLBACK: 'Rollback cell movement',
     },
     TOAST: {
         DELETE_SUCCESS: 'Deleted Successfully',
@@ -155,6 +163,8 @@ export const MSG = {
     SYSTEM: {
         PROCESS_ALREADY_RUNNING: 'Process is already running.',
         STOP_PROCESS: 'Process is terminating.',
+        RECOVER_SYSTEM: 'Would you like to recover the system?',
+        RECOVERY_PROGRESS: 'Already Recovering',
     }
 }
 
