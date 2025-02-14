@@ -80,7 +80,7 @@
         <div class="crcDivTitle">
           <span>
             <font-awesome-icon :icon="['fas', 'message']"/>
-            {{ setCrcTitles(siteCd, 'remark') }}
+            {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
           </span>
 
 <!--          <button-->
@@ -92,7 +92,7 @@
 <!--          </button>-->
 
           <button class="reSelect" @click="openSelect('remark')">
-            {{ setCrcTitles(siteCd, 'remark') }}
+            {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
             Select
           </button>
         </div>
@@ -107,9 +107,9 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(1) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> {{ setCrcTitles(siteCd, 'comment') }} </span>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} </span>
           <button class="reSelect" @click="openSelect('comment')">
-            {{ setCrcTitles(siteCd, 'comment') }}
+            {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }}
             Select
           </button>
         </div>
@@ -125,10 +125,10 @@
         <div class="crcDivTitle">
           <span>
             <font-awesome-icon :icon="['fas', 'message']"/>
-            {{ setCrcTitles(siteCd, 'recommendation') }}
+            {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }}
           </span>
           <button class="reSelect" @click="openSelect('recommendation')">
-            {{ setCrcTitles(siteCd, 'recommendation') }}
+            {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }}
             Select
           </button>
         </div>

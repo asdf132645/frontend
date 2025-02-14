@@ -63,15 +63,15 @@
 
           <!-- Remark 출력 -->
           <div class="mt10" v-if="item.crcRemark && item.crcRemark.length > 0 && crcVisibleTitle.remark">
-            <span class="smCrcTitle">{{ setCrcTitles(siteCd, 'remark') }}</span>
+            <span class="smCrcTitle">{{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}</span>
             <pre class="pre-wrap" v-for="remark in item.crcRemark" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
           </div>
           <div class="mt10" v-if="item.crcComment && item.crcComment.length > 0 && crcVisibleTitle.comment">
-            <span class="smCrcTitle">{{ setCrcTitles(siteCd, 'comment') }}</span>
+            <span class="smCrcTitle">{{ setCrcTitles(siteCd, crcRemarkCount[1].name) }}</span>
             <pre class="pre-wrap" v-for="remark in item.crcComment" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
           </div>
           <div class="mt10" v-if="item.crcRecommendation && item.crcRecommendation.length > 0 && crcVisibleTitle.recommendation">
-            <span class="smCrcTitle">{{ setCrcTitles(siteCd, 'recommendation') }}</span>
+            <span class="smCrcTitle">{{ setCrcTitles(siteCd, crcRemarkCount[2].name) }}</span>
             <pre class="pre-wrap" v-for="remark in item.crcRecommendation" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
           </div>
         </div>

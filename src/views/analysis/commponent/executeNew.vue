@@ -6,31 +6,36 @@
         <font-awesome-icon :icon="['fas', 'circle-play']" :class="{ 'startBtn': true, [btnStatus]: true }"/>
       </p>
       <p class="startStopP-wrapper" v-else @click="toggleStartStop('stop')">
-        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn' />
+        <font-awesome-icon :icon="['fas', 'circle-stop']" class='stopBtn'/>
       </p>
 
       <div class="stop-container">
 
         <select :disabled="isRunningState" @change="handleChangeCellInfo" v-model="cellInfo.id">
-          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">{{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}</option>
+          <option v-for="cellItem in cellImageAnalyzedData" :key="cellItem.id" :value="cellItem.id">
+            {{ !isPresetChanged ? cellItem.presetNm : 'Custom' }}
+          </option>
         </select>
         <div class="flex-align-center mt5">
           <select v-model="cellInfo.analysisType" :disabled="isRunningState" @change="sendSearchCardCount">
             <option v-for="option in testTypeArr" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
-          <select v-model="cellInfo.wbcCount" class="execute-wbcCount-wrapper" :disabled="isRunningState || (cellInfo.analysisType === '05')">
+          <select v-model="cellInfo.wbcCount" class="execute-wbcCount-wrapper"
+                  :disabled="isRunningState || (cellInfo.analysisType === '05')">
             <option v-for="option in countType" :key="option.value" :value="option.value">{{ option.text }}</option>
           </select>
         </div>
 
 
         <div class="flex-justify-between">
-          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)" @mouseup="sendRewindBelt(false)">
-            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal" />
+          <div v-if="is100A" class="rewindBtn flex-center" @mousedown="sendRewindBelt(true)"
+               @mouseup="sendRewindBelt(false)">
+            <font-awesome-icon :icon="['fas', 'backward-fast']" flip="horizontal"/>
           </div>
 
-          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }" style="width: 100%;">
-            <span> {{isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
+          <div class="initBtn" @click="sendInit" :class="{'isInitDisabled': isInit === 'Y', 'initBtn-is100a': is100A }"
+               style="width: 100%;">
+            <span> {{ isRunningState ? 'INITIALIZING' : 'INITIALIZE' }} </span>
           </div>
         </div>
 
@@ -65,12 +70,12 @@ import {
   STITCH_COUNT_OPTIONS,
   BM_COUNT_OPTIONS
 } from '@/common/defines/constants/analysis';
-import { MESSAGES, MSG } from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {tcpReq} from '@/common/defines/constants/tcpRequest/tcpReq';
 import {getCellImgApi, getRunInfoApi, putCellImgApi} from "@/common/api/service/setting/settingApi";
 import EventBus from "@/eventBus/eventBus";
 import Alert from "@/components/commonUi/Alert.vue";
-import { testBmTypeList, testTypeList } from "@/common/defines/constants/settings";
+import {testBmTypeList, testTypeList} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
@@ -151,17 +156,17 @@ watch(commonDataGet.value, (value) => {
     initDataExecute();
     store.dispatch('commonModule/setCommonInfo', {loginSetData: 'nn'});
   }
-  if(value.resetAnalyzing){
+  if (value.resetAnalyzing) {
     cellImgGet();
     store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: false});
   }
-},{deep: true});
+}, {deep: true});
 
 watch([runInfo.value], async (newVals) => {
   await nextTick();
   const [newRunInfo] = newVals;
 
-  const { bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
+  const {bfSelectFiles: newBfSelectFiles} = newRunInfo || {};
   bfSelectFiles.value = newBfSelectFiles;
 
   if (isRunningState.value) {
@@ -192,7 +197,7 @@ watch([embeddedStatusJobCmd.value, executeState.value], async (newVals) => {
   }
 
   if (isInit.value === 'Y') {
-    await store.dispatch('commonModule/setCommonInfo', { isInitializing: false });
+    await store.dispatch('commonModule/setCommonInfo', {isInitializing: false});
   }
 
   isPause.value = newIsPause;
@@ -239,7 +244,7 @@ watch(() => cellInfo.value, (newCellInfo) => {
 
     isPresetChanged.value = !isMatching;
   }
-}, { deep: true })
+}, {deep: true})
 
 const initDataExecute = async () => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
@@ -330,7 +335,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       rbcPositionMargin: rbcPositionMargin || '0',
       wbcPositionMargin: wbcPositionMargin || '0',
       pltPositionMargin: pltPositionMargin || '0',
-      edgeShotType:  edgeShotType || '0',
+      edgeShotType: edgeShotType || '0',
     });
 
     if (is100A.value) {
@@ -345,7 +350,7 @@ const toggleStartStop = (action: 'start' | 'stop') => {
       const defaultCount = edgeShotType === '2' ? '1' : '3';
       const edgeShotCount = sessionStorage.getItem(key) || defaultCount;
 
-      Object.assign(startAction, { edgeShotCount });
+      Object.assign(startAction, {edgeShotCount});
     }
 
 
@@ -436,11 +441,11 @@ const sendInit = () => { // 장비 초기화 진행
 }
 
 const sendRewindBelt = async (isRewindingBelt: boolean) => {
-  await store.dispatch('commonModule/setCommonInfo', { isRewindingBelt: isRewindingBelt });
+  await store.dispatch('commonModule/setCommonInfo', {isRewindingBelt: isRewindingBelt});
 }
 
 const initData = async () => {
-  const newObj = {...embeddedStatusJobCmd.value }
+  const newObj = {...embeddedStatusJobCmd.value}
   isInit.value = newObj.isInit;
   isPause.value = newObj.isPause;
   userStop.value = newObj.userStop;
@@ -455,7 +460,7 @@ const cellImgGet = async () => {
       if (result?.data) {
         const data = result.data;
         setCellInfo(data);
-        await store.dispatch('commonModule/setCommonInfo', { analysisType: data.analysisType });
+        await store.dispatch('commonModule/setCommonInfo', {analysisType: data.analysisType});
 
 
       }
@@ -507,10 +512,10 @@ const handleChangeCellInfo = async (event: Event) => {
   const selectedCellId = event.target as HTMLSelectElement;
   const selectedCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) === selectedCellId.value)[0];
   const restCellInfo = cellImageAnalyzedData.value.filter((item) => String(item.id) !== selectedCellId.value);
-  const requestItem = { ...selectedCellInfo, presetChecked: true };
+  const requestItem = {...selectedCellInfo, presetChecked: true};
   try {
     for (const resetItem of restCellInfo) {
-      const restRequestItem = { ...resetItem, presetChecked: false };
+      const restRequestItem = {...resetItem, presetChecked: false};
       await putCellImgApi(restRequestItem, String(restRequestItem.id));
     }
     await putCellImgApi(requestItem, String(requestItem.id));

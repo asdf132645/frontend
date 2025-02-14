@@ -36,9 +36,9 @@
       <!-- Remark 관련 -->
       <div class="mt20" v-if="remarkCountReturnCode(0)">
         <div class="crcDivTitle">
-          <span> {{ setCrcTitles(siteCd, 'remark') }} </span>
+          <span> {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }} </span>
           <button class="reSelect" @click="openSelect('remark')">
-            {{ setCrcTitles(siteCd, 'remark') }}
+            {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
             Select
           </button>
         </div>
@@ -56,9 +56,9 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(1)">
         <div class="crcDivTitle">
-          <span> {{ setCrcTitles(siteCd, 'comment') }} </span>
+          <span> {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} </span>
           <button class="reSelect" @click="openSelect('comment')">
-            {{ setCrcTitles(siteCd, 'comment') }} Select
+            {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} Select
           </button>
         </div>
 
@@ -75,9 +75,9 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(2)">
         <div class="crcDivTitle">
-          <span> {{ setCrcTitles(siteCd, 'recommendation') }} </span>
+          <span> {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }} </span>
           <button class="reSelect" @click="openSelect('recommendation')">
-            {{ setCrcTitles(siteCd, 'recommendation') }} Select
+            {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }} Select
           </button>
         </div>
 
