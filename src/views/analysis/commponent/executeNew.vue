@@ -26,43 +26,44 @@
           </div>
 
 
-          <div v-if="isPresetHelperOpen.isOpen"  class="execute-preset-helper-wrapper">
+          <div v-if="isPresetHelperOpen.isOpen && !isObjectEmpty(presetHelperCellInfo)"  class="execute-preset-helper-wrapper">
             <h1>Analysis Setting</h1>
+            <hr class="w-full mb08" />
 
-            <div class="execute-preset-helper-content">
-              <p>
+            <ul class="execute-preset-helper-content">
+              <li v-if="presetHelperCellInfo?.analysisType">
                 <span>Analysis Type</span>
                 {{ presetHelperCellInfo?.analysisType }}
-              </p>
-              <p>
-                <span>EdgeShotType</span>
+              </li>
+              <li v-if="presetHelperCellInfo?.edgeShotType">
+                <span>Edge Shot Type</span>
                 {{ presetHelperCellInfo?.edgeShotType }}
-              </p>
-              <p v-if="presetHelperCellInfo?.edgeShotCount">
-                <span>EdgeShotCount</span>
+              </li>
+              <li v-if="presetHelperCellInfo?.edgeShotCount">
+                <span>Edge Shot Count</span>
                 {{ presetHelperCellInfo?.edgeShotCount }}
-              </p>
-              <p>
-                <span>StitchCount</span>
+              </li>
+              <li v-if="presetHelperCellInfo?.stitchCount">
+                <span>Stitch Count</span>
                 {{ presetHelperCellInfo?.stitchCount }}
-              </p>
-              <p>
-                <span>WBC count</span>
+              </li>
+              <li v-if="presetHelperCellInfo?.wbcCount">
+                <span>WBC Count</span>
                 {{ presetHelperCellInfo?.wbcCount }}
-              </p>
-              <p>
+              </li>
+              <li v-if="presetHelperCellInfo?.diffWbcPositionMargin">
                 <span>WBC Position Margin</span>
                 {{ presetHelperCellInfo?.diffWbcPositionMargin }}
-              </p>
-              <p>
+              </li>
+              <li v-if="presetHelperCellInfo?.diffRbcPositionMargin">
                 <span>RBC Position Margin</span>
                 {{ presetHelperCellInfo?.diffRbcPositionMargin }}
-              </p>
-              <p>
+              </li>
+              <li v-if="presetHelperCellInfo?.diffPltPositionMargin">
                 <span>Edge Position Margin</span>
                 {{ presetHelperCellInfo?.diffPltPositionMargin }}
-              </p>
-            </div>
+              </li>
+            </ul>
           </div>
 
         </div>
@@ -122,6 +123,7 @@ import { testBmTypeList, testTypeList } from "@/common/defines/constants/setting
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 
 const store = useStore();
@@ -172,16 +174,8 @@ const cellInfo = ref({
   },
   presetChecked: false,
 })
-const presetHelperCellInfo = ref({
-  analysisType: '01',
-  wbcCount: '100',
-  stitchCount: '1',
-  edgeShotType: '0',
-  edgeShotCount: '1',
-  diffWbcPositionMargin: '0',
-  diffRbcPositionMargin: '0',
-  diffPltPositionMargin: '0',
-})
+const presetHelperCellInfo = ref({});
+const presetHelperCellInfoForShow = ref([]);
 const currentPresetNm = ref('1');
 const isPresetChanged = ref(false);
 const isRecovering = ref(false);
@@ -296,19 +290,7 @@ watch(() => cellInfo.value, (newCellInfo) => {
     return;
   }
 
-  const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
-  const currentCellInfo = allCellData.find(item => item?.id === newCellInfo.id);
-  if (!currentCellInfo) {
-    isPresetChanged.value = true;
-  } else {
-    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0; // null/undefined 방지
-    const isMatching =
-        currentCellInfo.analysisType === newCellInfo.analysisType &&
-        currentWbcCount === (newCellInfo.wbcCount ?? 0) && // null/undefined 방지
-        currentCellInfo.stitchCount === newCellInfo.stitchCount;
-
-    isPresetChanged.value = !isMatching;
-  }
+  checkAnalysisSettingChanged(newCellInfo);
 }, { deep: true })
 
 const initDataExecute = async () => {
@@ -528,11 +510,8 @@ const cellImgGet = async () => {
         const data = result.data;
         setCellInfo(data);
         await store.dispatch('commonModule/setCommonInfo', { analysisType: data.analysisType });
-
-
       }
     }
-
   } catch (e) {
     console.error(e);
   }
@@ -611,16 +590,20 @@ const handlePauseState = (bfSelectFiles: any, userId: string) => {
 }
 
 const setCellInfo = (data: any) => {
-  cellInfo.value.analysisType = data.analysisType;
-  cellInfo.value.id = data.id;
-  cellInfo.value.wbcCount = setWbcCount(data);
-  cellInfo.value.diffWbcPositionMargin = data.diffWbcPositionMargin;
-  cellInfo.value.diffRbcPositionMargin = data.diffRbcPositionMargin;
-  cellInfo.value.diffPltPositionMargin = data.diffPltPositionMargin;
-  cellInfo.value.stitchCount = data.stitchCount;
-  cellInfo.value.edgeShotType = data.edgeShotType;
-  cellInfo.value.edgeShotCount.LP = data.edgeShotLPCount;
-  cellInfo.value.edgeShotCount.HP = data.edgeShotHPCount;
+  Object.assign(cellInfo.value, {
+    analysisType: data.analysisType,
+    id: data.id,
+    wbcCount: setWbcCount(data),
+    diffWbcPositionMargin: data.diffWbcPositionMargin,
+    diffRbcPositionMargin: data.diffRbcPositionMargin,
+    diffPltPositionMargin: data.diffPltPositionMargin,
+    stitchCount: data.stitchCount,
+    edgeShotType: data.edgeShotType,
+    edgeShotCount: {
+      LP: data.edgeShotLPCount,
+      HP: data.edgeShotHPCount,
+    },
+  });
   sessionStorage.setItem('wbcPositionMargin', data.diffWbcPositionMargin);
   sessionStorage.setItem('rbcPositionMargin', data.diffRbcPositionMargin);
   sessionStorage.setItem('pltPositionMargin', data.diffPltPositionMargin);
@@ -649,6 +632,11 @@ const showPresetHelper = (currentPresetNm: string, status: 'hover' | 'leave') =>
 const setPresetHelperData = (currentPresetNm: string) => {
   const selectedIndex = Number(currentPresetNm) - 1;
   const allCellData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+
+  if (selectedIndex < 0) {
+    return;
+  }
+
   const currentPresetHelperData = allCellData[selectedIndex];
 
   if (!currentPresetHelperData) {
@@ -656,15 +644,46 @@ const setPresetHelperData = (currentPresetNm: string) => {
   }
 
   const analysisData = testTypeArr.value.find((item) => item?.value === currentPresetHelperData?.analysisType);
-  if (analysisData) {
-    presetHelperCellInfo.value.analysisType = analysisData?.text;
+
+  presetHelperCellInfo.value = {
+    analysisType: analysisData?.text || '',
+  };
+
+  if (projectType.value === 'pb') {
+    switch (currentPresetHelperData?.analysisType) {
+      case '05':  // Quality Check
+        break;
+      case '01':  // Diff
+        Object.assign(presetHelperCellInfo.value, {
+          wbcCount: setWbcCount(currentPresetHelperData),
+          diffWbcPositionMargin: currentPresetHelperData.diffWbcPositionMargin,
+        });
+        break;
+      case '04':  // PBS
+        Object.assign(presetHelperCellInfo.value, {
+          wbcCount: setWbcCount(currentPresetHelperData),
+          edgeShotType: setEdgeShotType(currentPresetHelperData),
+          stitchCount: currentPresetHelperData.stitchCount,
+          diffWbcPositionMargin: currentPresetHelperData.diffWbcPositionMargin,
+          diffRbcPositionMargin: currentPresetHelperData.diffRbcPositionMargin,
+          diffPltPositionMargin: currentPresetHelperData.diffPltPositionMargin,
+        });
+
+        if (currentPresetHelperData?.edgeShotType === '1' || currentPresetHelperData?.edgeShotType === '2') {
+          Object.assign(presetHelperCellInfo.value, { edgeShotCount: setEdgeShotCount(currentPresetHelperData) });
+        }
+        break;
+    }
+  } else {
+    Object.assign(presetHelperCellInfo.value, {
+      wbcCount: setWbcCount(currentPresetHelperData),
+      edgeShotType: setEdgeShotType(currentPresetHelperData),
+      stitchCount: currentPresetHelperData.stitchCount,
+      diffWbcPositionMargin: currentPresetHelperData.diffWbcPositionMargin,
+      diffRbcPositionMargin: currentPresetHelperData.diffRbcPositionMargin,
+      diffPltPositionMargin: currentPresetHelperData.diffPltPositionMargin,
+    });
   }
-  presetHelperCellInfo.value.wbcCount = setWbcCount(currentPresetHelperData);
-  presetHelperCellInfo.value.edgeShotType = setEdgeShotType(currentPresetHelperData);
-  presetHelperCellInfo.value.edgeShotCount = setEdgeShotCount(currentPresetHelperData)
-  presetHelperCellInfo.value.diffWbcPositionMargin = currentPresetHelperData?.diffWbcPositionMargin;
-  presetHelperCellInfo.value.diffRbcPositionMargin = currentPresetHelperData?.diffRbcPositionMargin;
-  presetHelperCellInfo.value.diffPltPositionMargin = currentPresetHelperData?.diffPltPositionMargin;
 }
 
 const setEdgeShotType = (data: any) => {
@@ -683,9 +702,9 @@ const setEdgeShotType = (data: any) => {
 }
 
 const setEdgeShotCount = (data: any) => {
-  if (String(data.edgeShotType) === '1') {
+  if (String(data.edgeShotType) === '2') {
     return data.edgeShotLPCount;
-  } else if (String(data.edgeShotType) === '2') {
+  } else if (String(data.edgeShotType) === '3') {
     return data.edgeShotHPCount;
   } else {
     return '';
@@ -695,7 +714,26 @@ const setEdgeShotCount = (data: any) => {
 const setPresetName = () => {
   if (cellImageAnalyzedData.value) {
     const presetCheckedIndex = cellImageAnalyzedData.value.findIndex((item) => item.presetChecked);
-    currentPresetNm.value = String(Number(presetCheckedIndex) + 1);
+    currentPresetNm.value = presetCheckedIndex === -1 ? '1' : String(Number(presetCheckedIndex) + 1);
+  }
+}
+
+const checkAnalysisSettingChanged = (newCellInfo) => {
+  const localCellImageAnalyzedData = JSON.parse(JSON.stringify(cellImageAnalyzedData.value));
+  if (isObjectEmpty(localCellImageAnalyzedData)) {
+    return;
+  }
+  const currentCellInfo = localCellImageAnalyzedData.find(item => item?.id === newCellInfo.id);
+  if (!currentCellInfo) {
+    isPresetChanged.value = true;
+  } else {
+    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0; // null/undefined 방지
+    const isMatching =
+        currentCellInfo.analysisType === newCellInfo.analysisType &&
+        currentWbcCount === (newCellInfo.wbcCount ?? 0) && // null/undefined 방지
+        currentCellInfo.stitchCount === newCellInfo.stitchCount;
+
+    isPresetChanged.value = !isMatching;
   }
 }
 

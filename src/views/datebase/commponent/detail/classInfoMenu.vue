@@ -474,7 +474,7 @@ const getNormalRange = async () => {
 }
 
 const updateAbnormalRanges = (data: any) => {
-  if (isObjectEmpty(data?.abnormalClassInfo) || !Array.isArray(data?.abnormalClassInfo)) {
+  if (isObjectEmpty(data?.abnormalClassInfo) || (!Array.isArray(data?.abnormalClassInfo) || !data.abnormalClassInfo?.classNm)) {
     return;
   }
 

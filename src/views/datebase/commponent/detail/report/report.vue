@@ -333,7 +333,7 @@ watch(
         await getOrderClass();
         await initData(newVal);
 
-        if (!projectBm.value) {
+        if (!projectBm.value && slideData.value.testType === '04') {
           await rbcTotalAndReCount();
           rbcInfoData.value = isObjectEmpty(slideData.value?.rbcInfoAfter) ? slideData.value?.rbcInfo.rbcClass : slideData.value?.rbcInfoAfter;
           await countReAdd();

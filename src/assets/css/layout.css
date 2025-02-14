@@ -949,7 +949,7 @@ h3.titleText {
 
 .execute-preset-helper-wrapper > h1 {
     font-size: 1.2rem;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
 }
 
 .execute-preset-helper-content {
@@ -960,13 +960,13 @@ h3.titleText {
     gap: 12px;
 }
 
-.execute-preset-helper-content > p {
+.execute-preset-helper-content > li {
     display: inline-block;
     text-align: left;
     width: 100%;
 }
 
-.execute-preset-helper-content > p > span {
+.execute-preset-helper-content > li > span {
     display: inline-block;
     width: 200px;
 }
@@ -975,16 +975,24 @@ h3.titleText {
     border: 1px solid white;
     gap: 4px;
     cursor: pointer;
-    border-radius: 50%;
-    width: 36px;
+    border-radius: 4px;
+    width: 72px;
     height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+.execute-preset-btn:hover {
+    background-color: var(--main-bg-7-color);
+}
+
 .execute-preset-active-btn {
     color: black;
+    background-color: white;
+}
+
+.execute-preset-active-btn:hover {
     background-color: white;
 }
 
@@ -4283,6 +4291,7 @@ li.cbcLi {
     position: relative;
     height: 30px;
     border-bottom: 1px solid white;
+    cursor: default !important;
 }
 
 .classInfoMenu-error-container {
@@ -6401,9 +6410,9 @@ button.gbArrowButton.left {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 32px;
+    width: 72px;
     height: 32px;
-    border-radius: 50%;
+    border-radius: 4px;
     border: 1px solid white;
     cursor: pointer;
 }

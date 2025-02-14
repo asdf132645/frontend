@@ -347,6 +347,7 @@ const abnormalClassInfoOpen = async (isOpen, item) => {
     return;
   }
 
+  console.log('item', item);
   if (!item.slideCondition?.desc) {
     const slideInfo = await getSlideCondition(item.slotId);
     const slideInfoObj = {
@@ -826,7 +827,7 @@ const getNormalRange = async () => {
 }
 
 const updateAbnormalRanges = (data) => {
-  if (isObjectEmpty(data?.abnormalClassInfo)) {
+  if (isObjectEmpty(data?.abnormalClassInfo) || (!Array.isArray(data?.abnormalClassInfo) && !data.abnormalClassInfo?.classNm)) {
     return;
   }
 

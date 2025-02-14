@@ -253,8 +253,6 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
-const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
-const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const saveHttpType = ref('');
 const showTutorialImage = ref({
@@ -319,7 +317,7 @@ onMounted(async () => {
   await driveGet();
   await cellImgGetAll();
 
-  currentPresetNm.value = String(allCellInfo.value.clientData.findIndex((item) => item?.presetChecked) + 1);
+  setInitialPresetName();
 });
 
 watch(cellInfo.value, async () => {
@@ -385,49 +383,49 @@ const checkIsMovingWhenSettingNotSaved = () => {
 
 const handlePresetChange = (presetNm: '1' | '2' | '3') => {
   currentPresetNm.value = presetNm;
-  let selectedCellInfo;
+
   if (allCellInfo.value.clientData.length < 3) {
+    const {
+      testTypeCd, diffCellAnalyzingCount, diffWbcPositionMargin, diffRbcPositionMargin,
+      diffPltPositionMargin, pbsCellAnalyzingCount, stitchCount, edgeShotType,
+      edgeShotLPCount, edgeShotHPCount, bfCellAnalyzingCount, iaRootPath,
+      backupPath, backupStartDate, backupEndDate
+    } = defaultCellImgData;
+
     const cellImgSet = {
-      analysisType: defaultCellImgData.testTypeCd,
-      diffCellAnalyzingCount: defaultCellImgData.diffCellAnalyzingCount,
-      diffWbcPositionMargin: defaultCellImgData.diffWbcPositionMargin,
-      diffRbcPositionMargin: defaultCellImgData.diffRbcPositionMargin,
-      diffPltPositionMargin: defaultCellImgData.diffPltPositionMargin,
-      pbsCellAnalyzingCount: defaultCellImgData.pbsCellAnalyzingCount,
-      stitchCount: defaultCellImgData.stitchCount,
-      edgeShotType: defaultCellImgData.edgeShotType,
-      edgeShotLPCount: defaultCellImgData.edgeShotLPCount,
-      edgeShotHPCount: defaultCellImgData.edgeShotHPCount,
-      bfCellAnalyzingCount: defaultCellImgData.bfCellAnalyzingCount,
-      iaRootPath: defaultCellImgData.iaRootPath,
-      backupPath: defaultCellImgData.backupPath,
-      backupStartDate: defaultCellImgData.backupStartDate.toISOString().split('T')[0],
-      backupEndDate: defaultCellImgData.backupEndDate.toISOString().split('T')[0],
+      analysisType: testTypeCd,
+      diffCellAnalyzingCount,
+      diffWbcPositionMargin,
+      diffRbcPositionMargin,
+      diffPltPositionMargin,
+      pbsCellAnalyzingCount,
+      stitchCount,
+      edgeShotType,
+      edgeShotLPCount,
+      edgeShotHPCount,
+      bfCellAnalyzingCount,
+      iaRootPath,
+      backupPath,
+      backupStartDate: backupStartDate.toISOString().split('T')[0],
+      backupEndDate: backupEndDate.toISOString().split('T')[0],
       autoBackUpMonth: 'Not selected',
       autoBackUpStartDate: null,
     };
+
     allCellInfo.value.clientData.push(cellImgSet);
-    selectedCellInfo = cellImgSet;
-  } else {
-    selectedCellInfo = allCellInfo.value.clientData[Number(presetNm) - 1]
+
   }
 
+  const selectedIndex = Number(presetNm) - 1;
+  const selectedCellInfo = allCellInfo.value.clientData[selectedIndex];
+
   if (selectedCellInfo) {
-    cellInfo.value.id = selectedCellInfo?.id;
-    cellInfo.value.analysisType = selectedCellInfo.analysisType;
-    cellInfo.value.diffCellAnalyzingCount = selectedCellInfo.diffCellAnalyzingCount;
-    cellInfo.value.diffWbcPositionMargin = selectedCellInfo.diffWbcPositionMargin;
-    cellInfo.value.diffRbcPositionMargin = selectedCellInfo.diffRbcPositionMargin;
-    cellInfo.value.diffPltPositionMargin = selectedCellInfo.diffPltPositionMargin;
-    cellInfo.value.pbsCellAnalyzingCount = selectedCellInfo.pbsCellAnalyzingCount;
-    cellInfo.value.bfCellAnalyzingCount = selectedCellInfo.bfCellAnalyzingCount;
-    cellInfo.value.stitchCount = selectedCellInfo.stitchCount;
-    cellInfo.value.edgeShotType = String(selectedCellInfo?.edgeShotType);
-    cellInfo.value.edgeShotLPCount = String(selectedCellInfo?.edgeShotLPCount);
-    cellInfo.value.edgeShotHPCount = String(selectedCellInfo?.edgeShotHPCount);
-    cellInfo.value.iaRootPath = selectedCellInfo.iaRootPath;
-    cellInfo.value.autoBackUpMonth = selectedCellInfo?.autoBackUpMonth;
-    cellInfo.value.presetChecked = selectedCellInfo?.presetChecked;
+    Object.assign(cellInfo.value, {
+      ...selectedCellInfo,
+      edgeShotType: String(selectedCellInfo?.edgeShotType),
+      edgeShotLPCount: String(selectedCellInfo?.edgeShotLPCount),
+      edgeShotHPCount: String(selectedCellInfo?.edgeShotHPCount),
+    })
   }
 }
 
@@ -577,24 +575,18 @@ const pbsAnalysisValuesRowIndex = (analysisType: string) => {
 }
 
 const handleChangeCellId = (cellId: number) => {
-  const selectedCellInfo = allCellInfo.value.clientData.filter((item) => String(item.id) === String(cellId))[0];
+  if (!isObjectEmpty(allCellInfo.value)) {
+    return;
+  }
+
+  const selectedCellInfo = allCellInfo.value.clientData.find((item) => String(item?.id) === String(cellId));
   if (selectedCellInfo) {
-    cellInfo.value.id = String(selectedCellInfo.id);
-    cellInfo.value.analysisType = selectedCellInfo.analysisType;
-    cellInfo.value.diffCellAnalyzingCount = selectedCellInfo.diffCellAnalyzingCount;
-    cellInfo.value.diffWbcPositionMargin = selectedCellInfo.diffWbcPositionMargin;
-    cellInfo.value.diffRbcPositionMargin = selectedCellInfo.diffRbcPositionMargin;
-    cellInfo.value.diffPltPositionMargin = selectedCellInfo.diffPltPositionMargin;
-    cellInfo.value.pbsCellAnalyzingCount = selectedCellInfo.pbsCellAnalyzingCount;
-    cellInfo.value.bfCellAnalyzingCount = selectedCellInfo.bfCellAnalyzingCount;
-    cellInfo.value.stitchCount = selectedCellInfo.stitchCount;
-    cellInfo.value.edgeShotType = String(selectedCellInfo?.edgeShotType);
-    cellInfo.value.edgeShotLPCount = String(selectedCellInfo?.edgeShotLPCount);
-    cellInfo.value.edgeShotHPCount = String(selectedCellInfo?.edgeShotHPCount);
-    cellInfo.value.iaRootPath = selectedCellInfo.iaRootPath;
-    cellInfo.value.isNsNbIntegration = selectedCellInfo.isNsNbIntegration;
-    cellInfo.value.autoBackUpMonth = selectedCellInfo?.autoBackUpMonth;
-    cellInfo.value.presetChecked = selectedCellInfo?.presetChecked;
+    Object.assign(cellInfo.value, selectedCellInfo, {
+      id: String(selectedCellInfo?.id),
+      edgeShotType: String(selectedCellInfo?.edgeShotType),
+      edgeShotLPCount: String(selectedCellInfo?.edgeShotLPCount),
+      edgeShotHPCount: String(selectedCellInfo?.edgeShotHPCount),
+    });
   }
 }
 
@@ -635,5 +627,10 @@ const showToast = (message: string) => {
     toastInfo.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+
+const setInitialPresetName = () => {
+  const currentPresetIndex = allCellInfo.value.clientData.findIndex(item => item.presetChecked);
+  currentPresetNm.value = currentPresetIndex === -1 ? '1' : String(currentPresetIndex + 1);
+}
 
 </script>

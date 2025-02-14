@@ -316,7 +316,7 @@ instance?.appContext.config.globalProperties.$socket.on('chat', async (data) => 
 });
 
 async function socketData(data: any) {
-  if (commonDataGet.value.viewerCheck !== 'main') {
+  if (commonDataGet.value.viewerCheck !== 'main' || window.FORCE_VIEWER !== 'main') {
     return;
   }
   deleteData.value = false;

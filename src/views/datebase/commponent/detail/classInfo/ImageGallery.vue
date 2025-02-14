@@ -383,7 +383,6 @@ const updateFirstLastClass = (wbcInfo: any) => {
 
 const handleImageLoad = (itemIndex: any) => {
   if(router.currentRoute.value.fullPath !== '/databaseDetail'){
-    console.log('ss')
     return;
   }
   emits('update:cellRef', cellRef);
