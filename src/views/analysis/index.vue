@@ -1,7 +1,7 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <Execute v-if="siteCd !== '9090'" @initDataChangeText="initDataChangeText"/>
-    <ExecuteNew v-else @initDataChangeText="initDataChangeText"/>
+    <ExecuteNew v-if="siteCd === '9090'" @initDataChangeText="initDataChangeText"/>
+    <Execute v-else @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>

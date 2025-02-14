@@ -124,12 +124,10 @@
           HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
           HOSPITAL_SITE_CD_BY_NAME['인천길병원'],
       ], 'enable')">
-        <NewListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
-        <NewListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+        <NewListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
       </template>
       <template v-else>
-        <ListWbcImg v-if="!bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
-        <ListBmImg v-if="bmClassIsBoolen" :dbData="dbGetData" :selectedItem="selectedItem"/>
+        <ListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
       </template>
 
     </div>
@@ -151,10 +149,8 @@
 
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
-import NewListWbcImg from "@/views/datebase/commponent/list/newListWbcImg.vue";
-import NewListBmImg from "@/views/datebase/commponent/list/newListBmImg.vue";
-import ListWbcImg from "@/views/datebase/commponent/list/listWbcImg.vue";
-import ListBmImg from "@/views/datebase/commponent/list/listBmImg.vue";
+import NewListImg from "@/views/datebase/commponent/list/newListImg.vue";
+import ListImg from "@/views/datebase/commponent/list/listImg.vue";
 import {
   computed,
   getCurrentInstance,

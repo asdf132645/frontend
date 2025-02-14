@@ -700,6 +700,7 @@ export const imagePrintAndWbc = [
     { fullNm: 'Artifact(Smudge)', classId: '15', checked: false},
     { fullNm: 'rbcPrintModel', classId: '99999', checked: false},
 ]
+
 export const imagePrintAndBm = [
     { fullNm: 'Neutrophil', classId: '01', checked: false },
     { fullNm: 'Neutrophil-Segmented', classId: '71', checked: false },
@@ -721,7 +722,6 @@ export const imagePrintAndBm = [
     { fullNm: 'Histiocyte', classId: '16', checked: false },
     { fullNm: 'Others', classId: '17', checked: false }
 ];
-
 
 export const lisCodeWbcOption = [
     { fullNm: 'Neutrophil', classId: '01', key: 'NE' },
@@ -815,6 +815,7 @@ export const DIR_NAME = {
 }
 
 export const settingName = {
+    analysis: 'analysis',
     cellImageAnalyzed: 'cellImageAnalyzed',
     rbcDegree: 'rbcDegree',
     wbcRunningCount: 'wbcRunningCount',

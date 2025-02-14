@@ -332,11 +332,12 @@ onBeforeMount(async () => {
   barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
 
-  const crcOptionApi = await crcOptionGet();
-  if (crcOptionApi.data.length !== 0) {
-    crcConnect.value = crcOptionApi.data[0].crcConnect;
+  if (!projectBm.value) {
+    const crcOptionApi = await crcOptionGet();
+    if (crcOptionApi.data.length !== 0) {
+      crcConnect.value = crcOptionApi.data[0].crcConnect;
+    }
   }
-
 })
 
 onMounted(async () => {
