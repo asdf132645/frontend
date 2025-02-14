@@ -5877,7 +5877,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 640px;
+    left: 140px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
@@ -5890,7 +5890,7 @@ progress::-moz-progress-bar {
 .tutorial-positionMargin-container {
     position: absolute;
     top: 0;
-    left: 640px;
+    left: 90px;
     z-index: 10;
     background-color: var(--main-gray-color);
     padding: 4px;
@@ -5912,7 +5912,6 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
-    transform: translateZ(0);
 }
 
 .tooltip-container > pre {
@@ -5926,13 +5925,13 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-bottom {
-    top: 100%;
+    top: 150%;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .tooltip-pos-left {
-    right: 100%;
+    right: 150%;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -5992,6 +5991,21 @@ progress::-moz-progress-bar {
     left: 0;
     top: 50px;
     max-width: 70px;
+}
+
+.abnormalClassInfoPopup {
+    position: absolute;
+    min-width: 150px;
+    background: #1b1b1b;
+    z-index: 9;
+    text-align: left;
+    padding: 0px 10px 10px 10px;
+    border: 1px solid #dedede;
+    top: 36px;
+}
+
+.abnormalClassInfoPopup div {
+    padding-top: 10px;
 }
 
 .slideStatus-container {
@@ -6384,6 +6398,16 @@ button.gbArrowButton.left {
     z-index: 10;
 }
 
+.preset-container {
+    position: absolute;
+    left: 20px;
+    width: 660px;
+    height: 232px;
+    border: 1px solid white;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .delete-preset-btn:hover {
     background-color: #dc2626;
 }
@@ -6436,35 +6460,16 @@ button.gbArrowButton.left {
     z-index: 100;
 }
 
-.listWbcImg-pagination-controls {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.listWbcImg-pagination-controls button {
+.pagination button {
     margin: 0 5px;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    background: none;
-    cursor: pointer;
-    color: #fff;
 }
-
-.listWbcImg-pagination-controls button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.pagination button.active {
+    font-weight: bold;
+    color: blue;
 }
-
-.test {
-    display: flex;
+.pagination button:disabled {
+    color: gray;
 }
-
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

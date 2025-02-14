@@ -113,6 +113,8 @@
             @disableSelectItem="disableSelectItem"
             :selectedItemIdFalse="selectedItemIdFalse"
             :notStartLoading='notStartLoading'
+            :total="total"
+            :itemsPerPage="15"
         />
       </keep-alive>
     </div>
@@ -246,6 +248,7 @@ const previousValue = ref('');
 let lastInputTime = Date.now();
 const isBarcodeScannerInput = { value: false };
 const myip = ref('');
+const total = ref(0);
 
 
 onBeforeMount(async () => {
@@ -430,7 +433,7 @@ const initDbData = async () => {
       }
       return item;
     })
-    await getDbData('search');
+    await getDbData('mounted', page.value);
   } else {
     await getDbData('mounted', 1);
   }
@@ -440,7 +443,8 @@ const selectItem = async (item: any) => {
   selectedItem.value = item;
 };
 
-const saveLastSearchParams = () => {
+const saveLastSearchParams = async () => {
+
   const lastSearchParams = {
     page: page.value,
     prevPage: prevPage.value,
@@ -463,6 +467,7 @@ const loadLastSearchParams = () => {
 };
 
 const getDbData = async (type: string, pageNum?: number) => {
+  dbGetData.value = [];
 
   if (type === 'search') {
     checkedSelectedItems.value = [];
@@ -483,7 +488,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   }
   const requestData: any = {
     page: type !== 'mounted' ? pageChange : Number(pageNum),
-    pageSize: 20,
+    pageSize: 15,
     startDay: searchText.value === '' ? formatDate(startDate.value) : '',
     endDay: searchText.value === '' ? formatDate(endDate.value) : '',
     barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
@@ -508,7 +513,7 @@ const getDbData = async (type: string, pageNum?: number) => {
 
   try {
     const result = await getRunningApi(requestData);
-    saveLastSearchParams();
+
 
     if (page.value === 1 && result.data.data.length === 0) {
       loadingDelayParents.value = false;
@@ -519,6 +524,8 @@ const getDbData = async (type: string, pageNum?: number) => {
       prevDataPage.value = requestData.page;
       reqDataPrev.value = requestData;
       const newData = result.data.data;
+      total.value = result.data.total;
+
       if (newData.length === 0) {
         if (page.value === 1) {
           page.value = 1;
@@ -571,7 +578,6 @@ const getDbData = async (type: string, pageNum?: number) => {
 
       }
     }
-
     await getDbDataAfterFunc();
 
     if (dbGetData.value.length > 0) {
@@ -582,6 +588,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         await store.dispatch('commonModule/setCommonInfo', {dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
       }
     }
+    await saveLastSearchParams();
 
   } catch (e) {
     console.error(e);
@@ -611,10 +618,12 @@ const disableSelectItem = async () => {
   selectedItem.value = {};
 }
 
-const loadMoreData = async () => {
-  page.value += 1;
+const loadMoreData = async (pageNum: any) => {
+  console.log(pageNum)
+  page.value = pageNum;
   await getDbData('loadMoreData');
 };
+
 
 const loadPrevData = async () => {
 
