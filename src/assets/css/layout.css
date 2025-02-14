@@ -6461,6 +6461,10 @@ button.gbArrowButton.left {
     cursor: not-allowed;
 }
 
+.test {
+    display: flex;
+}
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);
