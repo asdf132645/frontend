@@ -727,10 +727,10 @@ const checkAnalysisSettingChanged = (newCellInfo) => {
   if (!currentCellInfo) {
     isPresetChanged.value = true;
   } else {
-    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0; // null/undefined 방지
+    const currentWbcCount = setWbcCount(currentCellInfo) ?? 0;
     const isMatching =
         currentCellInfo.analysisType === newCellInfo.analysisType &&
-        currentWbcCount === (newCellInfo.wbcCount ?? 0) && // null/undefined 방지
+        currentWbcCount === (newCellInfo.wbcCount ?? 0) &&
         currentCellInfo.stitchCount === newCellInfo.stitchCount;
 
     isPresetChanged.value = !isMatching;
