@@ -6479,3 +6479,7 @@ button.gbArrowButton.left {
         overflow-y: auto;
     }
 }
+
+.test {
+    display: flex;
+}
