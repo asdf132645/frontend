@@ -2552,6 +2552,11 @@ h3.titleH3 {
     padding: 10px;
 }
 
+.classificationListBtn:hover {
+    color: black;
+    background-color: white;
+}
+
 .settingDatePickers > select {
     max-width: 130px;
 }
@@ -2888,7 +2893,7 @@ ul.leftWbcInfo {
 }
 
 .dbDataTable {
-    height: 82.5vh;
+    height: 79.8vh;
     overflow-y: auto;
     display: block;
     width: 100%;
@@ -3702,7 +3707,7 @@ ul.normalItems {
 }
 
 .listTableImageContainer {
-    height: 358px;
+    height: 356px;
     overflow-y: hidden;
 }
 
@@ -5253,6 +5258,31 @@ input.codeInput {
     margin-left: 10px;
 }
 
+.listWbcImg-pagination-controls {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.listWbcImg-pagination-controls button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+.listWbcImg-pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* 페이드 인-아웃 애니메이션 */
 @keyframes fadeInOut {
     0% {
@@ -6460,16 +6490,26 @@ button.gbArrowButton.left {
     z-index: 100;
 }
 
+.paginationDiv {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
 .pagination button {
     margin: 0 5px;
 }
+
 .pagination button.active {
     font-weight: bold;
     color: blue;
 }
+
 .pagination button:disabled {
     color: gray;
+
 }
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

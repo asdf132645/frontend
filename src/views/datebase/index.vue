@@ -115,6 +115,7 @@
             :notStartLoading='notStartLoading'
             :total="total"
             :itemsPerPage="15"
+            :toggleRefreshPagination="toggleRefreshPagination"
         />
       </keep-alive>
     </div>
@@ -249,6 +250,7 @@ let lastInputTime = Date.now();
 const isBarcodeScannerInput = { value: false };
 const myip = ref('');
 const total = ref(0);
+const toggleRefreshPagination = ref(false);
 
 
 onBeforeMount(async () => {
@@ -593,6 +595,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   } catch (e) {
     console.error(e);
   }
+  toggleRefreshPagination.value = !toggleRefreshPagination.value;
 };
 
 const search = () => {
