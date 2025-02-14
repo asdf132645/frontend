@@ -113,6 +113,8 @@
             @disableSelectItem="disableSelectItem"
             :selectedItemIdFalse="selectedItemIdFalse"
             :notStartLoading='notStartLoading'
+            :total="total"
+            :itemsPerPage="15"
         />
       </keep-alive>
     </div>
@@ -246,6 +248,7 @@ const previousValue = ref('');
 let lastInputTime = Date.now();
 const isBarcodeScannerInput = { value: false };
 const myip = ref('');
+const total = ref(0);
 
 
 onBeforeMount(async () => {
@@ -463,6 +466,7 @@ const loadLastSearchParams = () => {
 };
 
 const getDbData = async (type: string, pageNum?: number) => {
+  dbGetData.value = [];
 
   if (type === 'search') {
     checkedSelectedItems.value = [];
@@ -483,7 +487,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   }
   const requestData: any = {
     page: type !== 'mounted' ? pageChange : Number(pageNum),
-    pageSize: 20,
+    pageSize: 15,
     startDay: searchText.value === '' ? formatDate(startDate.value) : '',
     endDay: searchText.value === '' ? formatDate(endDate.value) : '',
     barcodeNo: searchType.value === 'barcodeNo' ? searchText.value : undefined,
@@ -519,6 +523,8 @@ const getDbData = async (type: string, pageNum?: number) => {
       prevDataPage.value = requestData.page;
       reqDataPrev.value = requestData;
       const newData = result.data.data;
+      total.value = result.data.total;
+
       if (newData.length === 0) {
         if (page.value === 1) {
           page.value = 1;
@@ -611,10 +617,12 @@ const disableSelectItem = async () => {
   selectedItem.value = {};
 }
 
-const loadMoreData = async () => {
-  page.value += 1;
+const loadMoreData = async (pageNum: any) => {
+  console.log(pageNum)
+  page.value = pageNum;
   await getDbData('loadMoreData');
 };
+
 
 const loadPrevData = async () => {
 

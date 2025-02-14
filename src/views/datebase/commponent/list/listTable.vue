@@ -104,7 +104,7 @@
 
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
-        <td>{{ idx + 1 }}</td>
+        <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon
@@ -143,8 +143,7 @@
     </tbody>
   </table>
   <!-- 페이지네이션 버튼 -->
-  <div class="paginationDiv" v-if="dbGetData.length !== 0">
-    <!-- 이전/다음 페이지 버튼 -->
+  <div class="paginationDiv" v-if="dbGetData.length !== 0 && totalPages > 0">
     <div class="pagination">
       <button @click="handlePrevPage" :disabled="currentPage <= 1">Prev</button>
       <button
@@ -157,7 +156,6 @@
       </button>
       <button @click="handleNextPage" :disabled="currentPage >= totalPages">Next</button>
     </div>
-
   </div>
 
   <div v-if="contextMenu.visible" :style="{ top: (contextMenu.y - 100) + 'px', left: contextMenu.x + 'px' }"
@@ -679,7 +677,7 @@ const rowDbClick = async (item) => {
       {fetchPolicy: 'no-cache'}
   );
 
-// result를 watch하여 변경될 때마다 반응하도록 처리
+  // result를 watch하여 변경될 때마다 반응하도록 처리
   watch(result, async (newValue) => {
     if (newValue) {
       // 쿼리에서 새로운 데이터가 있으면 상태 업데이트
