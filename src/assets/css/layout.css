@@ -2977,6 +2977,10 @@ button.searchClass:hover {
     margin-left: 10px;
 }
 
+.reportBm {
+    width: 75%;
+}
+
 li.onRight {
     color: var(--coral-bg-0-color);
 }
