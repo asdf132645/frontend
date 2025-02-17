@@ -47,7 +47,7 @@
               <li class="lastLiM">
                 <div class="cursorPointer userBox" @click="userSetOutToggle">
                   <font-awesome-icon :icon="['fas', 'circle-user']"/>
-                  <p>{{ userModuleDataGet.userId }}</p>
+                  {{ userModuleDataGet.userId }}
                 </div>
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>
@@ -217,6 +217,7 @@ import ErrLog from "@/components/commonUi/ErrLog.vue";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import moment from "moment/moment";
+import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 

@@ -229,6 +229,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
+import {apiUrl} from "@/common/api/apiUrl";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import router from "@/router";
 
@@ -420,9 +421,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   // 타임스탬프 추가
 
   if (highImg === 'getImageRealTime' || props.projectType === 'pb') {
-    url = `${props.apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
-    url = `${props.apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 
 

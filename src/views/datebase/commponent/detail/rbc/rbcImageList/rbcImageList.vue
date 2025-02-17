@@ -216,8 +216,7 @@ const tileExist = ref(true);
 const newItemClassInfoArr = ref<any>([]);
 
 const store = useStore();
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);

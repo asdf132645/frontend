@@ -219,7 +219,7 @@ const reqDataPrev = ref('');
 const checkedSelectedItems = ref<any>([]);
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const eventTriggered = ref(false);
 const loadingDelayParents = ref(false);

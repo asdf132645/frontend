@@ -66,12 +66,12 @@ const isAutoLoginEnabled = ref(false);
 const isTcpConnected = computed(() => store.state.commonModule.isTcpConnected);
 const isViewer = ref(false);
 const forceViewer = ref('');
-const uimdOpenIp = ref('');
+const uimdOpenIp: any = ref('');
 const progress = ref(0);
 const progressOnOff = ref(false);
 
 onBeforeMount(async () => {
-  uimdOpenIp.value = window.MAIN_WEBSOCKET_IP;
+  uimdOpenIp.value = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
   forceViewer.value = window.FORCE_VIEWER;
   await checkIsViewer();
 })
@@ -124,7 +124,7 @@ const getDeviceInfoFromTxt = async () => {
   const fileName = 'HW_Config';
   try {
     const result = await readFileTxt(`path=${filePath}&filename=${fileName}`);
-    const iniFileData = result.data.data;
+    const iniFileData = result?.data?.data;
     const deviceBarcodePattern = /DEVICE_SERIAL\s*=\s*(.+)/;
     const siteCdPattern = /SERVICE_SITE\s*=\s*(.+)/;
 
@@ -196,20 +196,23 @@ const loginUser = async (event?: KeyboardEvent) => {
 const checkIsViewer = async () => {
   try {
     const result = await getDeviceIpApi();
-    if ((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data)))) {
-      isViewer.value = false;
-    } else {
-      isViewer.value = true;
-    }
+    const isLinuxServer = window.LINUX_SERVER_SET;
+    const deviceIp = result.data;
+    const serverIpList = isLinuxServer ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+
+    isViewer.value = !(deviceIp === '1' || (serverIpList && serverIpList.includes(deviceIp)));
+
   } catch (e) {
     console.error(e);
   }
 }
 
+
 const getIpAddress = async (userId: string) => {
   try {
     const result = await getDeviceIpApi();
-    if ((result.data === '1' || (window.APP_API_BASE_URL && window.APP_API_BASE_URL.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
+    const  apiUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+    if ((result.data === '1' || (apiUrl && apiUrl.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount('main');
       sessionStorage.setItem('viewerCheck', 'main');

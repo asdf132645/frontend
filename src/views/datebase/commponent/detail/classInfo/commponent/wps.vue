@@ -30,6 +30,7 @@ import {readDziFile, readJsonFile} from "@/common/api/service/fileReader/fileRea
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {apiUrl} from "@/common/api/apiUrl";
 
 const store = useStore();
 const props = defineProps(['wpsImgClickInfoData', 'slotId', 'selectItems']);
@@ -39,9 +40,8 @@ let viewer: any = ref<any>(null);
 const canvasCurrentHeight = ref('0');
 const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
-const apiBaseUrl = viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const canvasOverlay = ref<any>(null);
 const backgroundImage = ref('');
@@ -162,7 +162,7 @@ const adjustNavBar = (x1: number, x2: number, y1: number, y2: number) => {
 const wpsInitElement = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
   const folderPath = `${path}/${props.slotId}/04_WPS`;
-  backgroundImage.value = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=slide.jpg`;
+  backgroundImage.value = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=slide.jpg`;
   const tilesInfo = await fetchTilesInfo(folderPath);
 
   try {
@@ -176,7 +176,7 @@ const wpsInitElement = async () => {
       sequenceMode: true,
       defaultZoomLevel: 1,
       navigatorBackground: "transparent",
-      prefixUrl: openseadragonPrefixUrl(apiBaseUrl),
+      prefixUrl: openseadragonPrefixUrl(apiUrl()),
       tileSources: tilesInfo,
       showReferenceStrip: false,
       showFullPageControl: false,

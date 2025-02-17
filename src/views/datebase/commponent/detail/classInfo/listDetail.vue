@@ -306,7 +306,7 @@ import {
   getWbcCustomClassApi,
   getWbcHotKeysApi
 } from "@/common/api/service/setting/settingApi";
-import {deleteRunningApi, fileSysPost, getFolders} from "@/common/api/service/fileSys/fileSysApi";
+import {deleteDeleteFolderApi, fileSysPost, getFolders} from "@/common/api/service/fileSys/fileSysApi";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {
   basicBmClassList,
@@ -337,6 +337,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import slidePositionImg from "@/assets/images/slide_pos.png";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import {apiUrl} from "@/common/api/apiUrl";
 import router from "@/router";
 
 const selectedTitle = ref('');
@@ -379,11 +380,10 @@ const selectedImageSrc = ref('');
 const modalImageWidth = ref('200px');
 const modalImageHeight = ref('200px');
 const imgSet = ref(false);
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
 const wbcCustomItems = ref<any>([]);
 const wbcHotKeysItems = ref<any>([]);
 const bfHotKeysItems = ref<any>([]);
-const instance = getCurrentInstance();
 const projectType = ref<any>('');
 const opacity = ref('0.9');
 const zoomValue = ref(200);
@@ -765,7 +765,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
             return;
           }
           const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item.customNum}_${item?.abbreviation}`;
-          deleteRunningApi({path: filePath})
+          deleteDeleteFolderApi({path: filePath})
         }
       });
     }
@@ -800,7 +800,7 @@ const getWbcCustomClasses = async (upDown: any, upDownData: any) => {
         const findDelData = sortArr.find((dataItems: any) => dataItems.id === item.id);
         if (!findDelData) {
           const filePath = `${iaRootPath.value}/${selectItems.value?.slotId}/${projectTypeReturn(projectType.value)}/${item}_${item?.title}`;
-          deleteRunningApi({path: filePath});
+          deleteDeleteFolderApi({path: filePath});
           itemsToDelete.push(item);
         }
       });
@@ -2038,9 +2038,9 @@ function getImageUrl(imageName: any, id: string, title: string, highImg: string,
   // 타임스탬프 추가
 
   if (highImg === 'getImageRealTime' || projectType.value === 'pb') {
-    url = `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
-    url = `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
+    url = `${apiUrl()}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 
 
