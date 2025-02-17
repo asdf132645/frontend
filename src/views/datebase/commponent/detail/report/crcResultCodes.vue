@@ -83,14 +83,6 @@
             {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
           </span>
 
-<!--          <button-->
-<!--              class="reSelect"-->
-<!--              v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']"-->
-<!--              @click="createSummary"-->
-<!--          >-->
-<!--            Create Summary-->
-<!--          </button>-->
-
           <button class="reSelect" @click="openSelect('remark')">
             {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
             Select
@@ -857,7 +849,11 @@ const resRunningItem = async (updatedRuningInfo: any, noAlert?: boolean) => {
 const openSelect = (type: string) => {
   switch (type) {
     case 'remark':
-      isRemark.value = true;
+      if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원자력병원']) {
+        createSummary();
+      } else {
+        isRemark.value = true;
+      }
       break;
     case 'comment':
       isComment.value = true;
