@@ -722,7 +722,7 @@ span.icoText {
 
 .dbDataTable > tbody {
     overflow-y: auto;
-    height: 82.5vh;
+    height: 76.5vh;
 }
 
 /* header-menu-end */
@@ -2475,7 +2475,7 @@ table.defaultTable tbody td {
     background: var(--main-bg-2-color);
     margin-left: 8px;
     margin-right: 8px;
-    height: 940px;
+    height: 947px;
     font-size: 0.9rem;
 }
 
@@ -2894,7 +2894,7 @@ ul.leftWbcInfo {
 
 .dbDataTable {
     height: 79.8vh;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     display: block;
     width: 100%;
     border-collapse: collapse;
@@ -6493,16 +6493,23 @@ button.gbArrowButton.left {
 .paginationDiv {
     display: flex;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .pagination button {
     margin: 0 5px;
+    background: none;
+    color: #9da3b1;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
 }
 
 .pagination button.active {
     font-weight: bold;
-    color: blue;
+    color: #353942;
+    background: #fff;
+    border-radius: 5px;
 }
 
 .pagination button:disabled {
