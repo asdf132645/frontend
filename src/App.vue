@@ -917,7 +917,7 @@ const errorClear = async () => {
 const errLogLoad = async (): any => {
   const folderPath = `folderPath=${pbiaRootDir.value.replace('PBIA_proc', '')}UIMD_Data/Backend_Log`;
   const res = await errLogsReadApi(folderPath);
-  if (res.code === 200) {
+  if (res.code === 200 && !res?.data?.message) {
     let newArr = [];
 
     // 날짜별로 들어옴 다중 포문 쓴 이유
