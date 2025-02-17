@@ -133,7 +133,7 @@
     </tbody>
     <tbody v-else>
     <tr class="text-center">
-      <td colspan="13">
+      <td colspan="13" style="width: 1240px; cursor: auto">
         <p class="nodataimg">
           <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
         </p>
