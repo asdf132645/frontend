@@ -59,8 +59,8 @@
       >
         <td @click="handleCheckboxChange(item)">
           <div
-              @mouseenter="abnormalClassInfoOpen(true, item)"
-              @mouseleave="abnormalClassInfoOpen(false, item)"
+              @mouseover="abnormalClassInfoOpen(true, item)"
+              @mouseout="abnormalClassInfoOpen(false, item)"
               class="listTable-abnormalIcon-wrapper"
           >
             <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
@@ -347,7 +347,6 @@ const abnormalClassInfoOpen = async (isOpen, item) => {
     return;
   }
 
-  console.log('item', item);
   if (!item.slideCondition?.desc) {
     const slideInfo = await getSlideCondition(item.slotId);
     const slideInfoObj = {

@@ -64,7 +64,7 @@
           </div>
           <div class="iconHeaderMenu">
             <ul>
-              <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseleave="closeErrLogLeave" >
+              <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseout="closeErrLogLeave" >
                 <font-awesome-icon class="cursorPointer" :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
                 <ErrLog @click.stop  @closeErrLog='closeErrLog' v-if="ErrLogOpen" :ErrLogOpen="ErrLogOpen" :errArr="errArr" @errMouseSet="errMouseSet" />
               </li>
@@ -72,15 +72,15 @@
                 <font-awesome-icon
                     v-if="isDoorOpen !== 'Y'"
                     :icon="['fas', 'door-closed']"
-                    @mouseenter="tooltipVisibleFunc('drawerStatus', true)"
-                    @mouseleave="tooltipVisibleFunc('drawerStatus', false)"
+                    @mouseover="tooltipVisibleFunc('drawerStatus', true)"
+                    @mouseout="tooltipVisibleFunc('drawerStatus', false)"
                 />
                 <font-awesome-icon
                     v-else
                     :icon="['fas', 'door-open']"
                     style="color: red;"
-                    @mouseenter="tooltipVisibleFunc('drawerStatus', true)"
-                    @mouseleave="tooltipVisibleFunc('drawerStatus', false)"
+                    @mouseover="tooltipVisibleFunc('drawerStatus', true)"
+                    @mouseout="tooltipVisibleFunc('drawerStatus', false)"
                 />
                 <Tooltip :isVisible="tooltipVisible.drawerStatus" position="bottom" type="" :message="MSG.TOOLTIP.DRAWER_STATUS" />
               </li>
@@ -88,24 +88,24 @@
                 <font-awesome-icon
                     :icon="eqStatCdData.icon"
                     :class="eqStatCdData.class"
-                    @mouseenter="tooltipVisibleFunc('runningStatus', true)"
-                    @mouseleave="tooltipVisibleFunc('runningStatus', false)"
+                    @mouseover="tooltipVisibleFunc('runningStatus', true)"
+                    @mouseout="tooltipVisibleFunc('runningStatus', false)"
                 />
                 <Tooltip :isVisible="tooltipVisible.runningStatus" position="bottom" type="" :message="MSG.TOOLTIP.RUNNING_STATUS" />
               </li>
               <li class="oliCount pos-relative" @click="openLayer">
                 <font-awesome-icon
                     :icon="['fas', 'droplet']"
-                    @mouseenter="tooltipVisibleFunc('oilPrime', true)"
-                    @mouseleave="tooltipVisibleFunc('oilPrime', false)"
+                    @mouseover="tooltipVisibleFunc('oilPrime', true)"
+                    @mouseout="tooltipVisibleFunc('oilPrime', false)"
                 />
                 <Tooltip :isVisible="tooltipVisible.oilPrime" position="bottom" type="" :message="`OilCount: ${oilCountData || 0}`" />
               </li>
               <li class="storage pos-relative">
                 <font-awesome-icon
                     :icon="['fas', 'database']"
-                    @mouseenter="tooltipVisibleFunc('storage', true)"
-                    @mouseleave="tooltipVisibleFunc('storage', false)"
+                    @mouseover="tooltipVisibleFunc('storage', true)"
+                    @mouseout="tooltipVisibleFunc('storage', false)"
                 />
                 <Tooltip :isVisible="tooltipVisible.storage" position="bottom" type="" :message="`Storage: ${storagePercentData || 0}`" />
               </li>

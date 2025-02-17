@@ -10,8 +10,8 @@
               v-if="type !== 'report'"
               :icon="['fas', 'comment-dots']"
               @click="memoOpen"
-              @mouseenter="tooltipVisibleFunc('memo', true)"
-              @mouseleave="tooltipVisibleFunc('memo', false)"
+              @mouseover="tooltipVisibleFunc('memo', true)"
+              @mouseout="tooltipVisibleFunc('memo', false)"
           />
           <div v-if="memoModal" class="memoModal">
             <textarea v-model="memo"></textarea>
@@ -24,8 +24,8 @@
         <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': slideData.submitState === 'Submit'}">
           <font-awesome-icon
               :icon="['fas', 'square-check']"
-              @mouseenter="tooltipVisibleFunc('confirm', true)"
-              @mouseleave="tooltipVisibleFunc('confirm', false)"
+              @mouseover="tooltipVisibleFunc('confirm', true)"
+              @mouseout="tooltipVisibleFunc('confirm', false)"
           />
           <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type=""
                    :message="MSG.TOOLTIP.CONFIRM"/>

@@ -59,8 +59,8 @@
           <th class="pos-relative">
             Edge Shot Type
             <font-awesome-icon :icon="['fas', 'circle-info']"
-                               @mouseenter="() => informationFontHover('edgeShotType', 'hover')"
-                               @mouseleave="informationFontHover('edgeShotType', 'leave')"
+                               @mouseover="() => informationFontHover('edgeShotType', 'hover')"
+                               @mouseout="informationFontHover('edgeShotType', 'leave')"
             />
             <Transition>
               <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
@@ -104,8 +104,8 @@
           <th :rowspan="pbsAnalysisValuesRowIndex(cellInfo.analysisType)" class="pos-relative">
             Common
             <font-awesome-icon :icon="['fas', 'circle-info']"
-                               @mouseenter="() => informationFontHover('positionMargin', 'hover')"
-                               @mouseleave="informationFontHover('positionMargin', 'leave')"
+                               @mouseover="() => informationFontHover('positionMargin', 'hover')"
+                               @mouseout="informationFontHover('positionMargin', 'leave')"
             />
             <Transition>
               <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
@@ -142,8 +142,8 @@
           <th class="pos-relative" colspan="1">
             IA Root Path
             <font-awesome-icon :icon="['fas', 'circle-info']"
-                               @mouseenter="tooltipVisibleFunc('iaRootPath', true)"
-                               @mouseleave="tooltipVisibleFunc('iaRootPath', false)"
+                               @mouseover="tooltipVisibleFunc('iaRootPath', true)"
+                               @mouseout="tooltipVisibleFunc('iaRootPath', false)"
             />
             <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
           </th>

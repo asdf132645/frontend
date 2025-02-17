@@ -75,6 +75,8 @@ import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
 import {DIR_NAME} from "@/common/defines/constants/settings";
+import { CbcCodeItem } from "@/common/api/service/setting/dto/lisCodeDto";
+import { NormalRangeItems } from "@/common/api/service/setting/dto/normalRangeDto";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -85,7 +87,7 @@ const instance = getCurrentInstance();
 const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
-const normalItems = ref<any>([]);
+const normalItems = ref<NormalRangeItems[]>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
 const reqArr = computed(() => store.state.commonModule);
 const runningInfoBoolen = ref(false);
@@ -106,8 +108,8 @@ const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
 const parsedDataSysInfoProps = ref<any>({});
 const startStatus = ref(false);
-const pbVersion = ref<any>('');
-const pb100aCassette = ref<any>('');
+const pbVersion = ref('');
+const pb100aCassette = ref('');
 const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
@@ -115,13 +117,12 @@ let intervalId: any;
 const ipMatches = ref(false);
 const barcodeNum = ref('');
 const cbcFilePathSetArr = ref('');
-const cbcCodeList = ref<any>([]);
+const cbcCodeList = ref<CbcCodeItem[]>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
 const currentSlotId = ref('');
 const runningInfoId = ref('');
-const errArr = ref<any>([]);
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {

@@ -454,7 +454,7 @@ const setWbcRunningCount = async () => {
       const runCountData = runCountResult.data;
 
       if (runCountData && runCountData?.length > 0) {
-        const filteredRunCountData: any = runCountData.filter(data => data.min <= wbcCount.value && wbcCount.value <= data.max)[0];
+        const filteredRunCountData = runCountData.filter(data => data.min <= wbcCount.value && wbcCount.value <= data.max)[0];
         if (filteredRunCountData.wbcTargetCount) {
           filteredWbcCount.value = filteredRunCountData.wbcTargetCount;
         }

@@ -3,8 +3,8 @@
     <ul>
       <li
           class="pos-relative"
-          @mouseenter="tooltipVisibleFunc('analysisType', true)"
-          @mouseleave="tooltipVisibleFunc('analysisType', false)"
+          @mouseover="tooltipVisibleFunc('analysisType', true)"
+          @mouseout="tooltipVisibleFunc('analysisType', false)"
       >
         <span>{{ testType }}</span>
         <Tooltip :isVisible="tooltipVisible.analysisType" className="mb08" position="bottom" type="" message='Analysis Type' />
@@ -12,8 +12,8 @@
       <li
           class="pos-relative"
           v-if="barcodeNo"
-          @mouseenter="tooltipVisibleFunc('barcodeNo', true)"
-          @mouseleave="tooltipVisibleFunc('barcodeNo', false)"
+          @mouseover="tooltipVisibleFunc('barcodeNo', true)"
+          @mouseout="tooltipVisibleFunc('barcodeNo', false)"
       >
         <span>{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
         <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" position="bottom" type="" message='Barcode ID' />
@@ -22,8 +22,8 @@
       <li
           class="pos-relative"
           v-if="analyzedDttm"
-          @mouseenter="tooltipVisibleFunc('analyzedDttm', true)"
-          @mouseleave="tooltipVisibleFunc('analyzedDttm', false)"
+          @mouseover="tooltipVisibleFunc('analyzedDttm', true)"
+          @mouseout="tooltipVisibleFunc('analyzedDttm', false)"
       >
         <span>{{ getDateTimeYYYYMMDDHHmmss(analyzedDttm) }}</span>
         <Tooltip :isVisible="tooltipVisible.analyzedDttm" className="mb08" position="bottom" type="" message='Analyzed Date' />
@@ -31,8 +31,8 @@
       <li
           class="pos-relative"
           v-if="cbcPatientNo"
-          @mouseenter="tooltipVisibleFunc('patientNo', true)"
-          @mouseleave="tooltipVisibleFunc('patientNo', false)"
+          @mouseover="tooltipVisibleFunc('patientNo', true)"
+          @mouseout="tooltipVisibleFunc('patientNo', false)"
       >
         <span>{{ cbcPatientNo }}</span>
         <Tooltip :isVisible="tooltipVisible.patientNo" className="mb08" position="bottom" type="" message='Patient ID' />
@@ -41,8 +41,8 @@
         <li
             class="pos-relative"
             v-if="cbcPatientName"
-            @mouseenter="tooltipVisibleFunc('patientName', true)"
-            @mouseleave="tooltipVisibleFunc('patientName', false)"
+            @mouseover="tooltipVisibleFunc('patientName', true)"
+            @mouseout="tooltipVisibleFunc('patientName', false)"
         >
           {{ cbcPatientName }}
           <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" position="bottom" type="" message='Patient Name' />
@@ -50,8 +50,8 @@
         <li
             class="pos-relative"
             v-else-if="patientName"
-            @mouseenter="tooltipVisibleFunc('patientName', true)"
-            @mouseleave="tooltipVisibleFunc('patientName', false)"
+            @mouseover="tooltipVisibleFunc('patientName', true)"
+            @mouseout="tooltipVisibleFunc('patientName', false)"
         >
           {{ patientName }}
           <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" position="bottom" type="" message='Patient Name' />
@@ -60,8 +60,8 @@
       <li
           class="pos-relative"
           v-if="cbcSex"
-          @mouseenter="tooltipVisibleFunc('sex', true)"
-          @mouseleave="tooltipVisibleFunc('sex', false)"
+          @mouseover="tooltipVisibleFunc('sex', true)"
+          @mouseout="tooltipVisibleFunc('sex', false)"
       >
         <span>{{ cbcSex }}</span>
         <Tooltip :isVisible="tooltipVisible.sex" className="mb08" position="bottom" type="" message='Sex' />
@@ -69,8 +69,8 @@
       <li
           class="pos-relative"
           v-if="cbcAge"
-          @mouseenter="tooltipVisibleFunc('age', true)"
-          @mouseleave="tooltipVisibleFunc('age', false)"
+          @mouseover="tooltipVisibleFunc('age', true)"
+          @mouseout="tooltipVisibleFunc('age', false)"
       >
         <span>{{ cbcAge }}</span>
         <Tooltip :isVisible="tooltipVisible.age" className="mb08" position="bottom" type="" message='Age' />
@@ -78,8 +78,8 @@
       <li
           class="pos-relative"
           v-if="hospitalName"
-          @mouseenter="tooltipVisibleFunc('hospitalName', true)"
-          @mouseleave="tooltipVisibleFunc('hospitalName', false)"
+          @mouseover="tooltipVisibleFunc('hospitalName', true)"
+          @mouseout="tooltipVisibleFunc('hospitalName', false)"
       >
         <span>{{ hospitalName }}</span>
         <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" position="bottom" type="" message='Hospital name' />

@@ -17,8 +17,8 @@
                 :key="num"
                 class="execute-preset-btn"
                 :class="{ 'execute-preset-active-btn': String(currentPresetNm) === num }"
-                @mouseenter="showPresetHelper(num, 'hover')"
-                @mouseleave="showPresetHelper(num, 'leave')"
+                @mouseover="showPresetHelper(num, 'hover')"
+                @mouseout="showPresetHelper(num, 'leave')"
                 @click="handleChangePresetNm(String(num))"
             >
               {{ num }}
