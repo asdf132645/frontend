@@ -13,7 +13,7 @@ declare global {
         VIEWER_CHECK: string;
         FORCE_VIEWER: 'viewer' | 'main' | 'exhibition';
         MAIN_WEBSOCKET_IP?: string;
-        LINUXSERVERIP? : string;
+        EQUIPMENTPCIP? : string;
         LINUX_SERVER_SET? : boolean;
     }
 }

@@ -41,6 +41,6 @@ export const getBmTestTypeText = (value: string) => {
 };
 
 export const getBarcodeDetailImageUrl = (imageName: string, iaRootPath: string, slotId: string, barcodeDirName: string): string => {
-    const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+    const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
     return `${apiBaseUrl}/images/imgQualityCdn?folder=${iaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}&quality=30`;
 }

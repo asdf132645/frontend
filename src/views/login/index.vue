@@ -71,7 +71,7 @@ const progress = ref(0);
 const progressOnOff = ref(false);
 
 onBeforeMount(async () => {
-  uimdOpenIp.value = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+  uimdOpenIp.value = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
   forceViewer.value = window.FORCE_VIEWER;
   await checkIsViewer();
 })
@@ -198,7 +198,7 @@ const checkIsViewer = async () => {
     const result = await getDeviceIpApi();
     const isLinuxServer = window.LINUX_SERVER_SET;
     const deviceIp = result.data;
-    const serverIpList = isLinuxServer ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+    const serverIpList = isLinuxServer ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 
     isViewer.value = !(deviceIp === '1' || (serverIpList && serverIpList.includes(deviceIp)));
 
@@ -211,7 +211,7 @@ const checkIsViewer = async () => {
 const getIpAddress = async (userId: string) => {
   try {
     const result = await getDeviceIpApi();
-    const  apiUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+    const  apiUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
     if ((result.data === '1' || (apiUrl && apiUrl.includes(result.data))) && window.FORCE_VIEWER !== 'viewer') {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount('main');

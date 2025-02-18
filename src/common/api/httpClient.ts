@@ -34,7 +34,7 @@ export function useHttpClient() {
         const slush = parameters && parameters !== '' ? (type ? '?' : '/') : '';
         parameters = parameters || '';
         if (linuxServeSet) {
-            apiBaseUrl = window.LINUXSERVERIP;
+            apiBaseUrl = window.EQUIPMENTPCIP;
         } else {
             apiBaseUrl = window.APP_API_BASE_URL;
         }
@@ -77,7 +77,7 @@ export function useHttpClient() {
             }
         }
         if (linuxServeSet) {
-            apiBaseUrl = window.LINUXSERVERIP;
+            apiBaseUrl = window.EQUIPMENTPCIP;
         } else {
             apiBaseUrl = window.APP_API_BASE_URL;
         }
@@ -129,7 +129,7 @@ export function useHttpClient() {
 
         axios.defaults.withCredentials = true;
         if (linuxServeSet) {
-            apiBaseUrl = window.LINUXSERVERIP;
+            apiBaseUrl = window.EQUIPMENTPCIP;
         } else {
             apiBaseUrl = window.APP_API_BASE_URL;
         }

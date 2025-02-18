@@ -29,7 +29,7 @@ const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
 const iaRootPath = ref<any>(store.state.commonModule.iaRootPath);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 
 const allImages = ref([]);
 const hiddenImages = ref<{ [key: string]: boolean }>({});

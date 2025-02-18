@@ -281,7 +281,7 @@ onMounted(async () => {
   const result = await getDeviceIpApi();
 
   if (window.LINUX_SERVER_SET) {
-    ipMatches.value = isIpMatching(window.LINUXSERVERIP, result.data);
+    ipMatches.value = isIpMatching(window.EQUIPMENTPCIP, result.data);
   } else {
     ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
   }

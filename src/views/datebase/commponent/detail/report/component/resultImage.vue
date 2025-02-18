@@ -130,7 +130,7 @@ const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const store = useStore();
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const projectType = ref<any>('');
-const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 
 
 watch(

@@ -17,7 +17,7 @@ import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 const props = defineProps(['selectItems']);
 const store = useStore();
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const apiBaseUrl = window.LINUX_SERVER_SET ? window.LINUXSERVERIP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 const tilingViewerLayer = ref(null);
 const newImgHeight = ref('');
 const newImgWidth = ref('');
