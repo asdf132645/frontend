@@ -13,15 +13,15 @@
       <div class="mt30 loginDiv">
         <ul class="loginUl">
           <li>
-            <input class="loginInput" type="text" v-model="idVal" placeholder="ID" @keydown="loginUser">
+            <input class="loginInput" type="text" v-model="idVal" placeholder="ID" @keyup.enter="loginUser">
           </li>
           <li>
-            <input class="loginInput" type="password" v-model="password" placeholder="password" @keydown="loginUser">
+            <input class="loginInput" type="password" v-model="password" placeholder="password" @keyup.enter="loginUser">
           </li>
         </ul>
 
         <div class='loginBtn'>
-          <button type="button" @click="loginUser()" @keydown="loginUser">Login</button>
+          <button type="button" @click="loginUser()" @keyup.enter="loginUser">Login</button>
           <button type="button" @click="goJoinPage">Add User</button>
         </div>
       </div>

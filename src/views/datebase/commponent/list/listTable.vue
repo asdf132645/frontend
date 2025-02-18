@@ -852,7 +852,7 @@ const handleAbnormalRange = (countVal, min, max, unit) => {
 }
 
 const handleAbnormalValue = (value) => {
-  return value.replace('[', '').replace(']', '');
+  return value.replace('[', '').replace(']', '').replaceAll('Count', '');
 }
 
 </script>

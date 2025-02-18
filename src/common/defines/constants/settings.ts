@@ -575,8 +575,8 @@ export const defaultPBNormalRange = [
         abbreviation: 'NB',
         fullNm: 'Neutrophil-Band',
         classId: '72',
-        min: 42,
-        max: 85,
+        min: 2,
+        max: 6,
         unit: '%'
     },
     {

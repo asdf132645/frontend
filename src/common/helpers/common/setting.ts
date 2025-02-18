@@ -107,9 +107,6 @@ const settingsConstant = ref<any>({
 
 /** 로그인 시 Setting 값 설정 함수 */
 export const initializeAllSettings = async () => {
-    const store = useStore();
-    console.log('store', store)
-    // const siteCd = computed(() => store.state.commonModule.siteCd);
     const siteCd = '9090'
     await firstGetSettings('cellImage');
     if (siteCd === '9090') {
