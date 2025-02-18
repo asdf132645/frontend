@@ -15,8 +15,7 @@
           @mouseover="tooltipVisibleFunc('barcodeNo', true)"
           @mouseout="tooltipVisibleFunc('barcodeNo', false)"
       >
-        <span v-if="isGilHospital()">{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
-        <span v-else>{{ barcodeNo }}</span>
+        <span>{{ barcodeNo }}</span>
         <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" position="bottom" type="" message='Barcode ID' />
         <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal" :icon="['fas', 'pen-to-square']" />
       </li>
@@ -103,7 +102,7 @@
             <input
                 id="barcode"
                 type="text"
-                v-model="localBarcodeNo"
+                v-model="editingBarcodeNo"
                 @keydown.enter="handleEditBarcodeNo"
                 placeholder="BARCODE ID"
                 ref="barcodeInput"
@@ -126,15 +125,14 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, watch, defineEmits, ref, onMounted, computed, onBeforeMount, reactive, nextTick} from 'vue';
+import {defineProps, watch, defineEmits, ref, computed, onBeforeMount, nextTick} from 'vue';
 import {getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
-import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import Modal from "@/components/commonUi/modal.vue";
-import {barcodeNoUpdateMutation, gqlGenericUpdate, memoUpdateMutation} from "@/gql/mutation/slideData";
+import { barcodeNoUpdateMutation, gqlGenericUpdate } from "@/gql/mutation/slideData";
 import {MESSAGES, MSG_GENERAL, TOAST} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {DetailHeaderType} from "@/common/type/tooltipType";
@@ -158,7 +156,7 @@ const tooltipVisible = ref({
 })
 const isModalOpen = ref(false);
 const barcodeInput = ref(null);
-const localBarcodeNo = ref('');
+const editingBarcodeNo = ref('');
 const toast = ref({
   message: '',
   type: MESSAGES.TOAST_MSG_SUCCESS,
@@ -168,12 +166,7 @@ onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
 
-onMounted(async () => {
-  localBarcodeNo.value = props.barcodeNo;
-})
-
 watch(() => props.slideData, (newSlideData) => {
-  localBarcodeNo.value = newSlideData.barcodeNo;
   if (!newSlideData.cbcPatientNm || newSlideData.cbcPatientNm === '' || newSlideData.cbcPatientNm !== newSlideData.patientNm) {
     emits('updateSlideDataByCBCData', newSlideData);
   }
@@ -186,6 +179,7 @@ const tooltipVisibleFunc = (type: keyof DetailHeaderType, visible: boolean) => {
 
 const handleModal = async () => {
   isModalOpen.value = true;
+  editingBarcodeNo.value = props.barcodeNo;
   await nextTick();
   if (barcodeInput.value) {
     barcodeInput.value.focus();
@@ -195,19 +189,18 @@ const handleModal = async () => {
 
 const closeLayer = (val: boolean) => {
   if (!val) {
-    localBarcodeNo.value = props.barcodeNo;
+    editingBarcodeNo.value = props.barcodeNo;
   }
   isModalOpen.value = val;
-  localBarcodeNo.value
 };
 
 const handleEditBarcodeNo = async () => {
   await nextTick();
   try {
-    const updatedRuningInfo = { ...slideData.value, barcodeNo: localBarcodeNo.value };
+    const updatedRuningInfo = { ...slideData.value, barcodeNo: editingBarcodeNo.value };
     const res = await gqlGenericUpdate(barcodeNoUpdateMutation, {
       id: slideData.value.id,
-      barcodeNo: localBarcodeNo.value,
+      barcodeNo: editingBarcodeNo.value,
     });
 
     if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
