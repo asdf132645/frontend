@@ -16,7 +16,7 @@
           @mouseout="tooltipVisibleFunc('barcodeNo', false)"
       >
         <span v-if="isGilHospital()">{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
-        <span>{{ barcodeNo }}</span>
+        <span v-else>{{ barcodeNo }}</span>
         <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" position="bottom" type="" message='Barcode ID' />
         <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal" :icon="['fas', 'pen-to-square']" />
       </li>
