@@ -594,7 +594,7 @@ watch(() => settingChangedChecker.value, () => {
 })
 
 const getApiUrl = () => {
-  const tmp = window.APP_API_BASE_URL.split(':');
+  const tmp = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP.split(':') : window.APP_API_BASE_URL.split(':');
   apiUrl.value = `${tmp[0]}:${tmp[1]}`;
 }
 
