@@ -12,19 +12,27 @@ import {
     createCbcCodeRbcApi,
     createLisCodeWbcApi,
     createLisCodeRbcApi,
-    getLisCodeWbcApi, getLisCodeRbcApi, getCellImgAllApi
+    getLisCodeWbcApi, getLisCodeRbcApi, getCellImgAllApi, updateNormalRangeApi
 } from '@/common/api/service/setting/settingApi';
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
-import { defaultCbcList, defaultRbcDegree, LIS_CODE_RBC_OPTION, lisCodeWbcOption, normalRange, rbcClassList } from "@/common/defines/constants/settings";
+import {
+    defaultCbcList,
+    defaultRbcDegree,
+    LIS_CODE_RBC_OPTION,
+    lisCodeWbcOption,
+    defaultPBNormalRange,
+    rbcClassList,
+    defaultBMNormalRange
+} from "@/common/defines/constants/settings";
 import { useStore } from "vuex";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 
 const rbcClassListArr = reactive<any>({value: []}); // reactive로 변경
 
-const projectType = window.PROJECT_TYPE === 'bm';
+const isProjectBM = window.PROJECT_TYPE === 'bm';
 export const defaultCellImgData = {
-    testTypeCd: projectType ? '02' : '01',
-    diffCellAnalyzingCount: projectType ? '500':'100',
+    testTypeCd: isProjectBM ? '02' : '01',
+    diffCellAnalyzingCount: isProjectBM ? '500':'100',
     diffWbcPositionMargin: '0',
     diffRbcPositionMargin: '0',
     diffPltPositionMargin: '0',
@@ -34,7 +42,7 @@ export const defaultCellImgData = {
     edgeShotLPCount: '1',
     edgeShotHPCount: '3',
     bfCellAnalyzingCount: '100',
-    iaRootPath: projectType ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
+    iaRootPath: isProjectBM ? 'D:\\BMIA_proc' : 'D:\\PBIA_proc',
     isNsNbIntegration: false,
     isAlarm: false,
     alarmCount: '5',
@@ -83,7 +91,7 @@ const settingsConstant = ref<any>({
     },
     'normalRange': {
         'sendingForm': 'normalRangeItems',
-        'defaultItem': normalRange,
+        'defaultItem': window.PROJECT_TYPE === 'bm' ? defaultBMNormalRange : defaultPBNormalRange,
         'getRequest': getNormalRangeApi,
         'createRequest': createNormalRangeApi,
     },
@@ -149,10 +157,37 @@ const firstGetSettings = async (initializeType: string) => {
                 await createRequest(anotherDefaultValue || defaultItem);
             }
 
-            afterResponse(initializeType);
+            await afterResponse(initializeType);
+        } else {
+            await firstUpdateSettings(initializeType, data);
         }
     } catch (e) {
         console.error(`${initializeType} Error - ${e}`);
+    }
+}
+
+const firstUpdateSettings = async (initializeType: string, data: any) => {
+    switch (initializeType) {
+        case 'normalRange':
+            if (!isProjectBM) {
+                const pbNormalRangeItems = [...data];
+                const requestNormalRangeItem = pbNormalRangeItems.map((item) => {
+                    delete item.id
+                    return item;
+                });
+                const pbNormalRangeClassIds = new Set(pbNormalRangeItems.map((item) => item?.classId));
+                const newItems = ['71', '72']
+                    .filter((id) => !pbNormalRangeClassIds.has(id))
+                    .map((id) => defaultPBNormalRange.find((item) => String(item?.classId) === String(id)))
+                    .filter(Boolean);
+
+                if (newItems.length > 0) {
+                    await updateNormalRangeApi({ normalRangeItems: [...requestNormalRangeItem, ...newItems] });
+                }
+            }
+            break;
+        default:
+            break;
     }
 }
 
