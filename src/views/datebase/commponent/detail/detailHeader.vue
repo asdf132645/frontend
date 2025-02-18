@@ -15,9 +15,10 @@
           @mouseover="tooltipVisibleFunc('barcodeNo', true)"
           @mouseout="tooltipVisibleFunc('barcodeNo', false)"
       >
-        <span>{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
+        <span v-if="isGilHospital()">{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
+        <span>{{ barcodeNo }}</span>
         <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" position="bottom" type="" message='Barcode ID' />
-        <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['인천길병원']" @click="handleModal" :icon="['fas', 'pen-to-square']" />
+        <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal" :icon="['fas', 'pen-to-square']" />
       </li>
       <li
           class="pos-relative"
@@ -228,5 +229,9 @@ const showToast = (message: string) => {
     toast.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
+
+const isGilHospital = () => {
+  return siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']
+}
 
 </script>
