@@ -39,8 +39,8 @@
     </tr>
     </thead>
 
-    <tbody v-if="dbData.length !== 0">
-    <template v-for="(item, idx) in dbData"
+    <tbody v-if="dbGetData.length !== 0">
+    <template v-for="(item, idx) in dbGetData"
               :key="item.id">
       <tr
           :class="{
@@ -104,7 +104,7 @@
 
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
-        <td>{{ idx + 1 }}</td>
+        <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
         <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon
@@ -133,7 +133,7 @@
     </tbody>
     <tbody v-else>
     <tr class="text-center">
-      <td colspan="13">
+      <td colspan="13" style="width: 1240px; cursor: auto">
         <p class="nodataimg">
           <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
         </p>
@@ -142,6 +142,24 @@
     </tr>
     </tbody>
   </table>
+  <!-- 페이지네이션 버튼 -->
+  <div class="paginationDiv" v-if="dbGetData.length !== 0 && totalPages > 0">
+    <div class="pagination">
+      <button @click="handlePrevPage" :disabled="currentPage <= 1"><font-awesome-icon :icon="['fas', 'caret-left']" /></button>
+      <button
+          v-for="pageNum in totalPages"
+          :key="pageNum"
+          :class="{ active: pageNum === currentPage }"
+          @click="handlePageClick(pageNum)"
+      >
+        {{ pageNum }}
+      </button>
+      <button @click="handleNextPage" :disabled="currentPage >= totalPages">
+        <font-awesome-icon :icon="['fas', 'caret-right']" />
+      </button>
+    </div>
+  </div>
+
   <div v-if="contextMenu.visible" :style="{ top: (contextMenu.y - 100) + 'px', left: contextMenu.x + 'px' }"
        class="context-menu">
     <ul>
@@ -238,7 +256,6 @@ import {
   defineProps,
   defineEmits,
   computed,
-  nextTick,
   onUnmounted,
   getCurrentInstance, watch, onBeforeMount
 } from 'vue';
@@ -262,7 +279,7 @@ import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
-const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents']);
+const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents', 'total', 'itemsPerPage', 'toggleRefreshPagination']);
 const loadMoreRef = ref(null);
 const emits = defineEmits();
 const selectedItemId = ref('');
@@ -276,7 +293,6 @@ const alertType = ref('');
 const alertMessage = ref('');
 const myIp = ref('');
 const loadingDelay = ref(false);
-const abnormalClassInfoPopup = ref(false);
 const formatDateString = (dateString) => {
   const momentObj = moment(dateString, 'YYYYMMDDHHmmss');
   return momentObj.format('YYYY-MM-DD HH:mm:ss');
@@ -320,6 +336,10 @@ const barCodeImageShowError = ref(false);
 const selectedItemsUsedInDelete = ref([]);
 const dbDataFindByIdUsedInDelete = ref([]);
 const popupItemId = ref('');
+const currentPage = ref(1);
+const dbGetData = ref([]);
+
+
 const normalItems = ref([]);
 
 onBeforeMount(() => {
@@ -339,7 +359,124 @@ onMounted(async () => {
   document.addEventListener('click', handleOutsideClick);
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
+  const lastSearchParams = loadLastSearchParams();
+
+  if (!isObjectEmpty(lastSearchParams)) {
+    currentPage.value = lastSearchParams.page;
+  }
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
+
+watchEffect(async () => {
+  if (selectedSampleId.value) {
+    const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+    await selectItem(filteredItems[0]);
+  }
+  dbGetData.value = props.dbData; // 부모로부터 전달받은 데이터를 자식에서 사용
+  loadingDelay.value = false; // 데이터 로딩이 끝났으므로 로딩 상태 해제
+});
+
+watch(() => props.toggleRefreshPagination, () => {
+  const lastSearchParams = loadLastSearchParams();
+
+  if (!isObjectEmpty(lastSearchParams)) {
+    currentPage.value = lastSearchParams.page;
+  }
 })
+
+watch(
+    () => props.loadingDelayParents,
+    (newVal) => {
+      loadingDelay.value = newVal;
+    }
+);
+
+
+// watchEffect(async () => {
+//   try {
+//     if (props.dbData.length > 0) {
+//       await nextTick();
+//       loadingDelay.value = false;
+//       const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
+//
+//       // IntersectionObserver 설정
+//       const observer = new IntersectionObserver(handleIntersection, {
+//         root: null,
+//         rootMargin: '0px',
+//         threshold: 0.5,
+//       });
+//       if (loadMoreRef.value) {
+//         observer.observe(loadMoreRef.value);
+//       }
+//
+//       if (selectedItemId.value === '0' || !selectedItemId.value) {
+//         loadingDelay.value = false;
+//       }
+//
+//       // 데이터베이스 페이지 리셋 상태 확인
+//       if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
+//         // loadingDelay.value = true;
+//         await selectItem(filteredItems[0]);
+//         await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
+//         await removeCheckBox();
+//         return;
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error during watchEffect execution:', error);
+//     loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
+//   }
+// });
+
+async function selectItem(item) {
+  if (isShiftKeyPressed.value) {
+    if (firstShiftKeyStr.value) {
+      lastShiftKeyStr.value = item.id;
+      handleShiftSelection();
+    }
+  } else {
+    lastShiftKeyStr.value = '';
+  }
+  if (isCtrlKeyPressed.value) {
+    handleCheckboxChange(item);
+  }
+  // 부모로 전달
+  if (!item) {
+    return;
+  }
+
+  firstShiftKeyStr.value = item.id;
+
+  emits('selectItem', item);
+  selectedItemId.value = item.id;
+  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
+}
+
+// 페이지 클릭 시 부모 컴포넌트로 페이지 번호 전달
+const handlePageClick = (pageNum) => {
+  currentPage.value = pageNum;
+  emits('loadMoreData', pageNum); // 부모 컴포넌트에 페이지 번호 전달
+};
+
+// 이전 페이지 클릭
+const handlePrevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+    emits('loadMoreData', currentPage.value);
+  }
+};
+
+// 다음 페이지 클릭
+const handleNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+    emits('loadMoreData', currentPage.value);
+  }
+};
+
 
 const abnormalClassInfoOpen = async (isOpen, item) => {
   if (!isOpen) {
@@ -347,7 +484,6 @@ const abnormalClassInfoOpen = async (isOpen, item) => {
     return;
   }
 
-  console.log('item', item);
   if (!item.slideCondition?.desc) {
     const slideInfo = await getSlideCondition(item.slotId);
     const slideInfoObj = {
@@ -397,52 +533,9 @@ function handleKeyUp(event) {
 }
 
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleOutsideClick);
-});
 
-watch(
-    () => props.loadingDelayParents,
-    (newVal) => {
-      loadingDelay.value = newVal;
-    }
-);
-
-
-watchEffect(async () => {
-  try {
-    if (props.dbData.length > 0) {
-      await nextTick();
-      loadingDelay.value = false;
-      const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
-
-      // IntersectionObserver 설정
-      const observer = new IntersectionObserver(handleIntersection, {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.5,
-      });
-      if (loadMoreRef.value) {
-        observer.observe(loadMoreRef.value);
-      }
-
-      if (selectedItemId.value === '0' || !selectedItemId.value) {
-        loadingDelay.value = false;
-      }
-
-      // 데이터베이스 페이지 리셋 상태 확인
-      if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
-        // loadingDelay.value = true;
-        await selectItem(filteredItems[0]);
-        await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
-        await removeCheckBox();
-        return;
-      }
-    }
-  } catch (error) {
-    console.error('Error during watchEffect execution:', error);
-    loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
-  }
+const totalPages = computed(() => {
+  return Math.ceil(props.total / props.itemsPerPage);
 });
 
 
@@ -559,29 +652,7 @@ const hideAlert = () => {
 };
 
 
-const selectItem = async (item) => {
-  if (isShiftKeyPressed.value) {
-    if (firstShiftKeyStr.value) {
-      lastShiftKeyStr.value = item.id;
-      handleShiftSelection();
-    }
-  } else {
-    lastShiftKeyStr.value = '';
-  }
-  if (isCtrlKeyPressed.value) {
-    handleCheckboxChange(item);
-  }
-  // 부모로 전달
-  if (!item) {
-    return;
-  }
 
-  firstShiftKeyStr.value = item.id;
-
-  emits('selectItem', item);
-  selectedItemId.value = item.id;
-  await store.dispatch('commonModule/setCommonInfo', {selectedSampleId: String(item.id)});
-};
 
 const getIpAddress = async (item) => {
   try {
@@ -620,12 +691,12 @@ const rowDbClick = async (item) => {
   }
 
   await getIpAddress(item);
-  const { result, loading, error } = useGetRunningInfoByIdQuery(
-      { id: Number(item.id) },
-      { fetchPolicy: 'no-cache' }
+  const {result, loading, error} = useGetRunningInfoByIdQuery(
+      {id: Number(item.id)},
+      {fetchPolicy: 'no-cache'}
   );
 
-// result를 watch하여 변경될 때마다 반응하도록 처리
+  // result를 watch하여 변경될 때마다 반응하도록 처리
   watch(result, async (newValue) => {
     if (newValue) {
       // 쿼리에서 새로운 데이터가 있으면 상태 업데이트
@@ -856,5 +927,10 @@ const handleAbnormalValue = (value) => {
   return value.replace('[', '').replace(']', '');
 }
 
+
+const loadLastSearchParams = () => {
+  const storedSearchParams = sessionStorage.getItem('lastSearchParams');
+  return storedSearchParams ? JSON.parse(storedSearchParams) : {};
+};
 </script>
 

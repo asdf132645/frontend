@@ -36,8 +36,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
 
     if (cbcFilePathSetArr.includes("http")) { // url 설정인 경우
         try {
-            const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-
+            const apiBaseUrl = window.APP_API_BASE_URL;
             const body = {
                 machine: 'ADUIMD',
                 episode: selectItems.barcodeNo,
@@ -289,7 +288,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     resultStr += rbcTmp2
     console.log('rbc wbc 최종 resultStr 값', resultStr);
     try {
-        const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+        const apiBaseUrl = window.APP_API_BASE_URL;
 
         const body = {
             baseUrl: `${lisFilePathSetArr}/api/MifMain/File`,

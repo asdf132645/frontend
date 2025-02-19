@@ -26,7 +26,8 @@
                 @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
                 @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type="" :message="MSG.TOOLTIP.NS_NB_INTEGRATION" />
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
           </th>
           <td>
             <font-awesome-icon
@@ -44,7 +45,8 @@
                 @mouseenter="tooltipVisibleFunc('alarm', true)"
                 @mouseleave="tooltipVisibleFunc('alarm', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.ALARM" />
+            <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.ALARM"/>
           </th>
           <td>
             <font-awesome-icon
@@ -65,7 +67,8 @@
                 @mouseenter="tooltipVisibleFunc('keepPage', true)"
                 @mouseleave="tooltipVisibleFunc('keepPage', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type="" :message="MSG.TOOLTIP.KEEP_PAGE" />
+            <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.KEEP_PAGE"/>
           </th>
           <td>
             <font-awesome-icon
@@ -83,7 +86,8 @@
                 @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"
                 @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK" />
+            <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK"/>
           </th>
           <td>
             <font-awesome-icon
@@ -110,7 +114,8 @@
                 @mouseenter="tooltipVisibleFunc('downloadSavePath', true)"
                 @mouseleave="tooltipVisibleFunc('downloadSavePath', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH" />
+            <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH"/>
           </th>
 
           <td>
@@ -126,7 +131,8 @@
                     @mouseenter="tooltipVisibleFunc('openDownloadSavePath', true)"
                     @mouseleave="tooltipVisibleFunc('openDownloadSavePath', false)"
                 />
-                <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH" />
+                <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type=""
+                         :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH"/>
               </div>
             </div>
           </td>
@@ -139,7 +145,8 @@
                 @mouseenter="tooltipVisibleFunc('download', true)"
                 @mouseleave="tooltipVisibleFunc('download', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type="" :message="MSG.TOOLTIP.DOWNLOAD" />
+            <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.DOWNLOAD"/>
           </th>
           <td>
             <div class="backupDatePickers">
@@ -157,7 +164,8 @@
                 @mouseenter="tooltipVisibleFunc('upload', true)"
                 @mouseleave="tooltipVisibleFunc('upload', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.UPLOAD" />
+            <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.UPLOAD"/>
           </th>
           <td colspan="2">
             <div class="settingUploadContainer">
@@ -191,7 +199,6 @@
   </div>
 
 
-
   <!-- Upload 확인 모달 -->
   <div v-if="showUploadModal" :class="impossibleUploadCount === 0 ? 'uploadModalSmall' : 'uploadModal'">
     <p v-if="impossibleUploadCount === 0" class="fs12" style="top: 0;">Would you like to upload?</p>
@@ -214,23 +221,31 @@
       </ul>
     </div>
     <div class="uploadModalBtnContainer">
-      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{ MESSAGES.COPY }}</button>
-      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{ MESSAGES.MOVE }}</button>
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('copy')">{{
+          MESSAGES.COPY
+        }}
+      </button>
+      <button v-show="possibleUploadCount > 0" class="memoModalBtn" @click="uploadConfirm('move')">{{
+          MESSAGES.MOVE
+        }}
+      </button>
       <button class="memoModalBtn" @click="uploadCancel">{{
           impossibleUploadCount === 0 ? MESSAGES.CANCEL : MESSAGES.CLOSE
-        }}</button>
+        }}
+      </button>
     </div>
   </div>
 
   <!-- Upload 선택 모달 -->
-  <div v-show="showUploadSelectModal" :class="possibleUploadFileNames.length === 0 ? 'downloadDeleteSmallModal' : 'downloadDeleteModal'">
+  <div v-show="showUploadSelectModal"
+       :class="possibleUploadFileNames.length === 0 ? 'downloadDeleteSmallModal' : 'downloadDeleteModal'">
     <p class="fs12" style="top: 0;">Upload file list</p>
     <div v-show="possibleUploadFileNames.length > 0" class="downloadDeleteContainer">
       <p class="downloadDeleteSemiTitle">Select upload file</p>
       <ul class="downloadDeleteWrapper">
         <li class="userSelectText flex-justify-between" v-for="folderName in possibleUploadFileNames" :key="folderName">
           <p style="font-size: 0.8rem;">{{ folderName }}</p>
-          <input style="margin: 0;" v-model="selectedUploadFile" type="radio" :value="folderName" />
+          <input style="margin: 0;" v-model="selectedUploadFile" type="radio" :value="folderName"/>
         </li>
 
       </ul>
@@ -291,7 +306,7 @@ import {
   putCellImgApi
 } from "@/common/api/service/setting/settingApi";
 import Datepicker from 'vue3-datepicker';
-import { computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount } from "vue";
+import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount} from "vue";
 import {useStore} from "vuex";
 import moment from "moment";
 import {
@@ -321,7 +336,7 @@ import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import { CellImageAnalyzedType } from "@/common/type/tooltipType";
+import {CellImageAnalyzedType} from "@/common/type/tooltipType";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
@@ -444,7 +459,10 @@ const toastInfo = ref({
 })
 const editingItem = ref<any>(null);
 
-instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: { type: 'download' | 'upload'; isFinished: boolean}) => {
+instance?.appContext.config.globalProperties.$socket.on('downloadUploadFinished', async (downloadUploadObj: {
+  type: 'download' | 'upload';
+  isFinished: boolean
+}) => {
   if (downloadUploadObj?.isFinished) {
     clearInterval(intervalId.value);
     successFileCount.value = totalFileCount.value;
@@ -464,7 +482,7 @@ onMounted(async () => {
   cellInfo.value.analysisType = window.PROJECT_TYPE === 'bm' ? '02' : '01';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.cellImageAnalyzed});
 
   await cellImgGet();
   await driveGet();
@@ -486,22 +504,22 @@ watch(cellInfo.value, async () => {
         backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
       };
     } else {
-      return { ...item, presetChecked: false };
+      return {...item, presetChecked: false};
     }
   })
 
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(requestAllCellInfo) });
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(requestAllCellInfo)});
   if (settingType.value !== settingName.cellImageAnalyzed) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.cellImageAnalyzed});
   }
-}, { deep: true })
+}, {deep: true})
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
 })
 
 const getApiUrl = () => {
-  const tmp = window.APP_API_BASE_URL.split(':');
+  const tmp = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP.split(':') : window.APP_API_BASE_URL.split(':');
   apiUrl.value = `${tmp[0]}:${tmp[1]}`;
 }
 
@@ -601,7 +619,7 @@ const cellImgSet = async () => {
           backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
         };
       } else {
-        return { ...item, presetChecked: false };
+        return {...item, presetChecked: false};
       }
     })
     const allCellImgIds = allCellInfo.value.serverData.map(item => String(item.id));
@@ -623,7 +641,7 @@ const cellImgSet = async () => {
     handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     scrollToTop();
     const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
-    await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
+    await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'});
     await store.dispatch('dataBaseSetDataModule/setDataBaseSetData', {
       isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'
     });
@@ -637,13 +655,13 @@ const cellImgSet = async () => {
     sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
     sessionStorage.setItem('iaRootPath', data?.iaRootPath);
     sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-    const keepPageType = projectType.value === 'pb' ? 'keepPage': 'bmKeepPage'
+    const keepPageType = projectType.value === 'pb' ? 'keepPage' : 'bmKeepPage'
     sessionStorage.setItem(keepPageType, String(data?.keepPage));
     await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
-    await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
+    await store.dispatch('commonModule/setCommonInfo', {showLISUploadAfterCheckingAll: data?.lisUploadCheckAll});
 
-    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+    await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+    await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   } catch (e) {
     console.error(e);
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
@@ -691,7 +709,7 @@ const uploadConfirm = async (uploadType: 'move' | 'copy') => {
   try {
     isLoadingProgressBar.value = true;
     const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-    const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+    const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
     const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
 
     const uploadDto = {
@@ -743,8 +761,8 @@ const hideAlert = () => {
 };
 
 const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
 }
@@ -813,7 +831,7 @@ const downloadDtoObj = (downloadType: 'move' | 'copy') => {
   downloadUploadType.value = downloadType;
   showDownloadConfirm.value = false;
   const day = sessionStorage.getItem('lastSearchParams') || localStorage.getItem('lastSearchParams') || '';
-  const {startDate, endDate , page, searchText, nrCount, testType, wbcInfo, wbcTotal}  = JSON.parse(day);
+  const {startDate, endDate, page, searchText, nrCount, testType, wbcInfo, wbcTotal} = JSON.parse(day);
   const dayQuery = startDate + endDate + page + searchText + nrCount + testType + wbcInfo + wbcTotal;
   const sendingDownloadStartDate = moment(cellInfo.value.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0];
   const sendingDownloadEndDate = moment(cellInfo.value.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0];
@@ -833,7 +851,7 @@ const downloadDtoObj = (downloadType: 'move' | 'copy') => {
 }
 
 const createBackup = async () => {
-  if (downloadRootPath.value === ''){
+  if (downloadRootPath.value === '') {
     showErrorAlert('Please select a download save path');
     return
   }
@@ -962,7 +980,7 @@ const handleChangeCellId = (cellId: number) => {
 
 const deleteCellImg = async () => {
   try {
-    await deleteCellImgApi({ id: String(cellInfo.value.id) });
+    await deleteCellImgApi({id: String(cellInfo.value.id)});
     await cellImgGetAll();
     handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
@@ -980,9 +998,9 @@ const cellImgGetAll = async () => {
     if (result?.data && !isObjectEmpty(result?.data)) {
       allCellInfo.value.clientData = [...result.data];
       allCellInfo.value.serverData = [...result.data];
-      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value.serverData });
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', {cellImageAnalyzedData: allCellInfo.value.serverData});
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
     }
   } catch (error) {
     console.error(error);

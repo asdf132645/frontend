@@ -46,7 +46,7 @@ import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 
 const props = defineProps(['selectItems']);
 const store = useStore();
-const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 
 const paImages = ref([]);
 const idealZoneImages = ref([]);

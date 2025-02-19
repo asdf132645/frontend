@@ -13,5 +13,5 @@ export const getCrcContentMaxLength = (siteCd: HospitalSiteCodesType, type: 'rem
 }
 
 export const setCrcTitles = (siteCd: HospitalSiteCodesType, title: string) => {
-    return title;
+    return title.slice(0, 1).toUpperCase() + title.slice(1).toLowerCase();
 }

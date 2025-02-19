@@ -47,7 +47,7 @@
     <div class="resultInformationContainer" style="padding-top: 0;">
       <h3 class="mt20 mb10 hh3title">Result Information</h3>
       <ul class="resInfoTopContainer">
-        <div v-if="selectedItem?.testType === '01' || selectedItem?.testType === '04' || projectType === 'bm'" class="resInfoContainer">
+        <div v-if="resInfoSet()" class="resInfoContainer">
             <li class="resInfoWrapper mb10">
               <p>Class</p>
               <p>Count</p>
@@ -110,6 +110,7 @@ const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM', 'OT'];
 const projectType = ref('');
 const orderClass = ref({});
 const wbcInfoAfter = ref({});
+const isResInfo = ref(false);
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -122,6 +123,13 @@ onMounted(async () => {
     barcodeImg.value = getImageUrl('barcode_image.jpg');
   }
 });
+
+const resInfoSet = () => {
+  return props.selectedItem?.testType === '01' ||
+      props.selectedItem?.testType === '04' ||
+      projectType.value === 'bm';
+}
+
 
 watch(() => props.selectedItem, (newSelectedItem) => {
   if (Object.keys(newSelectedItem).length === 0) return;
@@ -208,14 +216,21 @@ const setWbcTotalAndPercent = async () => {
         item.percent = calculatePercentage(item.count, wbcTotal.value);
       }
 
-      if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
-        wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter);
-      } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
-        wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
-      } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천성모병원']) {
-        wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
-      } else if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-        wbcInfoAfter.value = await incheonGilPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfo.totalCount);
+      switch (siteCd.value) {
+        case HOSPITAL_SITE_CD_BY_NAME['서울성모병원']:
+          wbcInfoAfter.value = await seoulStMaryPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfoAfter);
+          break;
+        case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
+          wbcInfoAfter.value = await inhaPercentChange(props.selectedItem, props.selectedItem.wbcInfoAfter);
+          break;
+        case HOSPITAL_SITE_CD_BY_NAME['인천성모병원']:
+          wbcInfoAfter.value = await incheonStMaryPercentChange(projectType.value, props.selectedItem.wbcInfoAfter);
+          break;
+        case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
+          wbcInfoAfter.value = await incheonGilPercentChange(props.selectedItem.wbcInfoAfter, props.selectedItem.wbcInfo.totalCount);
+          break;
+        default:
+          break;
       }
     }
   }
@@ -247,12 +262,6 @@ const getStringArrayBySiteCd = (siteCd, testType) => {
   // testType에 따라 제외할 부분 정의
   return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
 };
-
-const formatDateString = (dateString) => {
-  const momentObj = moment(dateString, 'YYYYMMDDHHmmssSSSSS');
-  return momentObj.format('YYYY-MM-DD HH:mm:ss');
-}
-
 const showClassificationResults = (classificationResult) => {
   return (
       classificationResult &&
@@ -266,7 +275,7 @@ const showClassificationNonWbcResults = (classificationResult) => {
 }
 
 
-const apiBaseUrl = sessionStorage.getItem('viewerCheck') === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL;
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 
 function getImageUrl(imageName) {
   const path = props.selectedItem?.img_drive_root_path !== '' && props.selectedItem?.img_drive_root_path ? props.selectedItem?.img_drive_root_path : iaRootPath.value;

@@ -484,21 +484,6 @@ const keepPage = ref(false);
 const lisUploadCheckAll = ref(false);
 const backupStartDate = ref(moment().local().toDate());
 const backupEndDate = ref(moment().local().toDate());
-const autoDate = ref([
-  {value: 'Not selected'},
-  {value: 1},
-  {value: 2},
-  {value: 3},
-  {value: 4},
-  {value: 5},
-  {value: 6},
-  {value: 7},
-  {value: 8},
-  {value: 9},
-  {value: 10},
-  {value: 11},
-  {value: 12}
-]);
 const autoBackUpMonth = ref('Not selected');
 const saveHttpType = ref('');
 const drive = ref<any>([]);
@@ -609,7 +594,7 @@ watch(() => settingChangedChecker.value, () => {
 })
 
 const getApiUrl = () => {
-  const tmp = window.APP_API_BASE_URL.split(':');
+  const tmp = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP.split(':') : window.APP_API_BASE_URL.split(':');
   apiUrl.value = `${tmp[0]}:${tmp[1]}`;
 }
 

@@ -12,9 +12,9 @@ declare global {
         MAIN_API_IP: string;
         VIEWER_CHECK: string;
         FORCE_VIEWER: 'viewer' | 'main' | 'exhibition';
-        MAIN_WEBSOCKET_IP: string;
-        LINUXSERVERIP : string;
-        LINUXSERVER : boolean;
+        MAIN_WEBSOCKET_IP?: string;
+        EQUIPMENTPCIP? : string;
+        LINUX_SERVER_SET? : boolean;
     }
 }
 

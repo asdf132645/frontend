@@ -722,7 +722,7 @@ span.icoText {
 
 .dbDataTable > tbody {
     overflow-y: auto;
-    height: 82.5vh;
+    height: 76.5vh;
 }
 
 /* header-menu-end */
@@ -2475,7 +2475,7 @@ table.defaultTable tbody td {
     background: var(--main-bg-2-color);
     margin-left: 8px;
     margin-right: 8px;
-    height: 940px;
+    height: 947px;
     font-size: 0.9rem;
 }
 
@@ -2550,6 +2550,11 @@ img.cellImg {
 h3.titleH3 {
     text-align: left;
     padding: 10px;
+}
+
+.classificationListBtn:hover {
+    color: black;
+    background-color: white;
 }
 
 .settingDatePickers > select {
@@ -2888,8 +2893,8 @@ ul.leftWbcInfo {
 }
 
 .dbDataTable {
-    height: 82.5vh;
-    overflow-y: auto;
+    height: 79.8vh;
+    /*overflow-y: auto;*/
     display: block;
     width: 100%;
     border-collapse: collapse;
@@ -3702,7 +3707,7 @@ ul.normalItems {
 }
 
 .listTableImageContainer {
-    height: 358px;
+    height: 356px;
     overflow-y: hidden;
 }
 
@@ -5253,6 +5258,31 @@ input.codeInput {
     margin-left: 10px;
 }
 
+.listWbcImg-pagination-controls {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.listWbcImg-pagination-controls button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+.listWbcImg-pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* 페이드 인-아웃 애니메이션 */
 @keyframes fadeInOut {
     0% {
@@ -5877,7 +5907,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 640px;
+    left: 140px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
@@ -5890,7 +5920,7 @@ progress::-moz-progress-bar {
 .tutorial-positionMargin-container {
     position: absolute;
     top: 0;
-    left: 640px;
+    left: 90px;
     z-index: 10;
     background-color: var(--main-gray-color);
     padding: 4px;
@@ -5912,7 +5942,6 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
-    transform: translateZ(0);
 }
 
 .tooltip-container > pre {
@@ -5926,13 +5955,13 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-bottom {
-    top: 100%;
+    top: 150%;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .tooltip-pos-left {
-    right: 100%;
+    right: 150%;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -5992,6 +6021,21 @@ progress::-moz-progress-bar {
     left: 0;
     top: 50px;
     max-width: 70px;
+}
+
+.abnormalClassInfoPopup {
+    position: absolute;
+    min-width: 150px;
+    background: #1b1b1b;
+    z-index: 9;
+    text-align: left;
+    padding: 0px 10px 10px 10px;
+    border: 1px solid #dedede;
+    top: 36px;
+}
+
+.abnormalClassInfoPopup div {
+    padding-top: 10px;
 }
 
 .slideStatus-container {
@@ -6384,6 +6428,16 @@ button.gbArrowButton.left {
     z-index: 10;
 }
 
+.preset-container {
+    position: absolute;
+    left: 20px;
+    width: 660px;
+    height: 232px;
+    border: 1px solid white;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .delete-preset-btn:hover {
     background-color: #dc2626;
 }
@@ -6436,29 +6490,31 @@ button.gbArrowButton.left {
     z-index: 100;
 }
 
-.listWbcImg-pagination-controls {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+.paginationDiv {
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin-top: 10px;
+    margin-bottom: 8px;
 }
 
-.listWbcImg-pagination-controls button {
+.pagination button {
     margin: 0 5px;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
     background: none;
+    color: #9da3b1;
+    border: none;
+    padding: 5px 10px;
     cursor: pointer;
-    color: #fff;
 }
 
-.listWbcImg-pagination-controls button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.pagination button.active {
+    font-weight: bold;
+    color: #353942;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.pagination button:disabled {
+    color: gray;
+
 }
 
 @keyframes bounce {
@@ -6478,8 +6534,4 @@ button.gbArrowButton.left {
     .contentRightChild {
         overflow-y: auto;
     }
-}
-
-.test {
-    display: flex;
 }
