@@ -5905,9 +5905,7 @@ progress::-moz-progress-bar {
 
 .tooltip-container {
     position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
     width: fit-content;
     height: fit-content;
     font-size: 0.8rem;
