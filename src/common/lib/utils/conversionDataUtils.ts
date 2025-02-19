@@ -1,5 +1,5 @@
 import { commonCodeList } from '@/common/defines/constants/commonCodeList';
-import {bmTestType, testType} from "@/common/defines/constants/dataBase";
+import {BM_TEST_TYPE, TEST_TYPE} from "@/common/defines/constants/dataBase";
 interface CommonCode {
     grpCd: string;
     cd: string;
@@ -31,12 +31,12 @@ export function stringToDateTime(str: string): string {
 }
 
 export const getTestTypeText = (value: string) => {
-    const matchingOption = testType.find(option => option.value === value);
+    const matchingOption = TEST_TYPE.find(option => option.value === value);
     return matchingOption ? matchingOption.text : '';
 };
 
 export const getBmTestTypeText = (value: string) => {
-    const matchingOption = bmTestType.find(option => option.value === value);
+    const matchingOption = BM_TEST_TYPE.find(option => option.value === value);
     return matchingOption ? matchingOption.text : '';
 };
 

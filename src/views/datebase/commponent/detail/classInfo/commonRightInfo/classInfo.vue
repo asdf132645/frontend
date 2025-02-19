@@ -18,29 +18,6 @@
         <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
       </li>
       <li
-          class="pos-relative"
-          @mouseover="tooltipVisibleFunc('barcodeCopy', true)"
-          @mouseout="tooltipVisibleFunc('barcodeCopy', false)"
-      >
-        <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" position="top" type="" :message="MSG.TOOLTIP.BARCODE_COPY" />
-      </li>
-
-      <li
-          v-if="type !== 'report'"
-          class="pos-relative"
-          @mouseover="tooltipVisibleFunc('memo', true)"
-          @mouseout="tooltipVisibleFunc('memo', false)"
-      >
-        <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
-        <div v-if="memoModal" class="memoModal">
-          <textarea v-model="wbcMemo"></textarea>
-          <button class="memoModalBtn" @click="memoChange">OK</button>
-          <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
-        </div>
-      </li>
-      <li
           @click="commitConfirmed"
           class="pos-relative"
           :class="{'submitted': selectItems?.submitState === 'Submit',}"
@@ -167,10 +144,6 @@
         </div>
       </template>
     </div>
-    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
-      <textarea class="staticTextArea" v-model="wbcMemo"></textarea>
-      <button class="memoModalBtn" @click="memoChange">Save</button>
-    </div>
   </div>
 
   <Alert
@@ -265,9 +238,8 @@ import { TooltipClassInfoType } from "@/common/type/tooltipType";
 import {
   cbcUpdateMutation,
   gqlGenericUpdate,
-  memoUpdateMutation, useUpdateRunningInfoMutation
+  useUpdateRunningInfoMutation
 } from '@/gql/mutation/slideData';
-import {createCBCFileFunc} from "@/common/helpers/lisCbc";
 
 const router = useRouter();
 const showLISUploadButton = ref(true);
@@ -281,8 +253,6 @@ const showLISUploadAfterCheckingAll = computed(() => store.state.commonModule.sh
 
 const barcodeImg = ref('');
 const userId = ref('');
-const wbcMemo = ref('');
-const memoModal = ref(false);
 const wbcInfoVal = ref<any>([]);
 const wbcInfoAfterVal = ref<any>([]);
 const wbcInfoBeforeVal = ref<any>([]);
@@ -318,8 +288,6 @@ const lisHotKey = ref('');
 const crcConnect = ref(false);
 const isHotKeyPressed = ref(false);
 const tooltipVisible = ref<TooltipClassInfoType>({
-  barcodeCopy: false,
-  memo: false,
   confirm: false,
   classMoveLock: false,
   beforeCountPercent: false,
@@ -376,7 +344,6 @@ watch(() => slideData.value, async (newSlideData) => {
   selectItems.value = slideData.value;
   setBarCodeImage(newSlideData);
   setShowLISButton();
-  wbcMemo.value = selectItems.value?.wbcMemo;
   await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
 }, { deep: true });
 
@@ -436,7 +403,6 @@ const mountedMethod = async () => {
   if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
     await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
   }
-  wbcMemo.value = props.selectItems?.wbcMemo;
   if (selectItems.value?.submitState) {
     lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
   }
@@ -481,17 +447,6 @@ const drop = (index: any, event: any) => {
 
 const toggleLockEvent = () => {
   toggleLock.value = !toggleLock.value;
-}
-
-const barcodeCopy = async () => {
-  const textarea = document.createElement('textarea');
-  textarea.value = selectItems.value?.barcodeNo;
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand('copy');
-  document.body.removeChild(textarea);
-  toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-  showToast(MESSAGES.TOAST_MSG_BAR_CODE_SUCCESS);
 }
 
 const commitConfirmed = () => {
@@ -1015,7 +970,9 @@ const goDae = (): string => {
 
 
 const lisFileUrlCreate = async (data: any) => {
-  await createCBCFileFunc({ barcodeNo: selectItems.value?.barcodeNo, data: data });  // CBC 파일 생성
+  const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems.value?.barcodeNo}.txt`;
+  const parmsLisCopy = {filePath, data: data };
+  await createCbcFile(parmsLisCopy);
 
   // URL이 아닌 경우, 로컬 파일 작업 수행
   if (!lisFilePathSetArr.value.includes("http")) {
@@ -1147,37 +1104,6 @@ const onCommit = async () => {
   await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
   selectItems.value.submitState = 'Submit';
   emits('submitStateChanged', 'Submit');
-}
-
-const memoChange = async () => {
-  const enterAppliedWbcMemo = wbcMemo.value.replaceAll('\r\n', '<br>');
-  const updatedItem = {
-    wbcMemo: enterAppliedWbcMemo
-  }
-  const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  const res = await gqlGenericUpdate(memoUpdateMutation, {
-    id: updatedRuningInfo.id,
-    wbcMemo: updatedRuningInfo.wbcMemo,
-    rbcMemo: updatedRuningInfo.rbcMemo,
-  });
-
-  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-
-
-  if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-    showToast('Success');
-    wbcMemo.value = updatedRuningInfo.wbcMemo;
-  }
-  memoModal.value = false;
-}
-
-const memoOpen = () => {
-  memoModal.value = !memoModal.value;
-}
-
-const memoCancel = () => {
-  memoModal.value = false;
 }
 
 const getStringValue = (title: string): string => {

@@ -6,12 +6,13 @@
         :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
         :barcodeNo="selectItems?.barcodeNo"
         :cbcPatientNo="selectItems?.cbcPatientNo"
-        :patientName="selectItems?.patientName"
+        :patientName="patientName"
         :hospitalName="selectItems?.hosName"
         :cbcPatientName="selectItems?.cbcPatientNm"
         :cbcSex="selectItems?.cbcSex"
         :cbcAge="selectItems?.cbcAge"
         :analyzedDttm="selectItems?.analyzedDttm"
+        :slideData="selectItems"
     />
     <div style="display:flex;">
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
@@ -302,6 +303,7 @@ const isLoading = ref(true);
 const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const nonWbcClassList = ref<any[]>([]);
 const printContent = ref<HTMLElement | null>(null);
+const patientName = ref('');
 
 const rbcInfoData = ref<any>([]);
 const rbcInfoPathAfter = ref<any>([]);
@@ -382,6 +384,7 @@ onUnmounted(() => {
 const getDetailRunningInfo = async (data) => {
   try {
     selectItems.value = data;
+    patientName.value = data?.patientNm;
 
     if (
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] ||

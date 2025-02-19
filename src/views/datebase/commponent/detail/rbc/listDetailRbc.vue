@@ -6,12 +6,13 @@
         :testType="getTestTypeText(selectItems?.testType)"
         :barcodeNo="selectItems?.barcodeNo"
         :cbcPatientNo="selectItems?.cbcPatientNo"
-        :patientName="selectItems?.patientName"
+        :patientName="patientName"
         :hospitalName="selectItems?.hosName"
         :cbcPatientName="selectItems?.cbcPatientNm"
         :cbcSex="selectItems?.cbcSex"
         :cbcAge="selectItems?.cbcAge"
         :analyzedDttm="selectItems?.analyzedDttm"
+        :slideData="selectItems"
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox pos-relative' + (cbcLayer ? ' cbcLayer' : '')">
@@ -76,6 +77,7 @@ const notCanvasClickVal = ref(false);
 const slideData = computed(() => store.state.slideDataModule);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const patientName = ref('');
 
 onMounted(async () => {
   isLoading.value = false;
@@ -90,6 +92,7 @@ const initData = async () => {
 const getDetailRunningInfo = async () => {
   try {
     selectItems.value = slideData.value;
+    patientName.value = slideData.value?.patientNm;
   } catch (e) {
     console.error(e);
     selectItems.value = null;
