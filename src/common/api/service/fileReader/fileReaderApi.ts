@@ -12,11 +12,11 @@ export const readDziFile = async (request: any): Promise<ApiResponse<any | undef
 
 
 export const readFileTxt = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.fileTxtRead.get, `${request}`, false, window.LINUX_SERVER_SET );
+    return httpClient.httpGet(apiConstants.fileTxtRead.get, `${request}`, true, window.LINUX_SERVER_SET );
 };
 
 export const readFileEUCKR = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpGet(apiConstants.fileTxtRead.readFileEUCKR, `${request}`,false, window.LINUX_SERVER_SET );
+    return httpClient.httpGet(apiConstants.fileTxtRead.readFileEUCKR, `${request}`,true, window.LINUX_SERVER_SET );
 };
 
 export const readH7File = async (request: any): Promise<ApiResponse<void>> => {

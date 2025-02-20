@@ -1,8 +1,10 @@
 <template>
   <div class="crcPopUpDiv remark">
-    <div>
-      <h3>Remark</h3>
-      <button @click="cancelSelect" class="ml10 crcDefaultBtn">X</button>
+    <div class="remarkHeader">
+      <h3 class="crcDefaultTitle">{{ remarkNm }}</h3>
+      <button @click="cancelSelect" class="ml10 crcCloseBtn">
+        <font-awesome-icon :icon="['fas', 'xmark']" />
+      </button>
     </div>
     <div style="position: relative; height: 100%; width: 100%">
       <div class="headerRemark topLine">
@@ -64,21 +66,25 @@
           </td>
         </tr>
         </tbody>
+        <tbody>
+          <tr>
+            <td colspan="2"><input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/></td>
+            <td><textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea></td>
+            <td colspan="2"><button @click="addRemark" class="crcDefaultBtn ml10">Add</button></td>
+          </tr>
+        </tbody>
       </table>
 
       <div class="mt20 remarkBottomFix">
-        <p class="text-left fs10 fw-bold mb10">
-          Add New {{ setCrcTitles(siteCd, typeToText(type)) }}
-        </p>
-        <div class="remarkBottomBtnGroup mb10">
-          <div class="flex-justify-between">
-            <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>
-            <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>
-          </div>
-          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>
-        </div>
+<!--        <div class="remarkBottomBtnGroup mb10">-->
+<!--          <div class="flex-justify-between">-->
+<!--            <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>-->
+<!--            <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>-->
+<!--          </div>-->
+<!--          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>-->
+<!--        </div>-->
         <div>
-          <button class="crcDefaultBtn" @click="okSelect">Enter</button>
+          <button class="crcDefaultBtn bottomBtn" @click="okSelect">Comment Insert</button>
         </div>
 
       </div>
@@ -107,7 +113,7 @@ import {
   createCrcRecoApi,
   deleteCrcRecoApi,
   updateCrcRecoApi,
-  crcCommentGet, crcCommentSearchGet, createCrcCommentApi, deleteCrcCommentApi, updateCrcCommentApi // 서치 API 추가
+  crcCommentGet, crcCommentSearchGet, createCrcCommentApi, deleteCrcCommentApi, updateCrcCommentApi, crcOptionGet // 서치 API 추가
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
@@ -147,6 +153,7 @@ const crcPassWordVal = ref('');
 const passWordPass = ref(false);
 const passLayout = ref(false);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const remarkNm = ref('');
 
 onBeforeMount(async () => {
   crcDefaultModeVal.value = props.crcDefaultMode;
@@ -157,12 +164,17 @@ onBeforeMount(async () => {
 // 서버로부터 Remark 데이터 로드
 const loadRemarks = async (type?: string) => {
   let response: any = [];
+  const crcOptionApi = await crcOptionGet();
+
   if (props.type === 'remark') {
     response = await crcRemarkGet();
+    remarkNm.value = crcOptionApi.data[0].crcRemarkCount[0].name
   } else if (props.type === 'comment') {
     response = await crcCommentGet();
+    remarkNm.value = crcOptionApi.data[0].crcRemarkCount[1].name
   } else {
     response = await crcRecoGet();
+    remarkNm.value = crcOptionApi.data[0].crcRemarkCount[2].name
   }
 
   remarkArr.value = response?.data || [];
