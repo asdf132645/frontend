@@ -1,8 +1,8 @@
 <template>
-  <div class="loaderBackground" v-if="loading">
-    <div class="loader"></div>
-    <p class="loadingText">Loading...</p>
-  </div>
+<!--  <div class="loaderBackground" v-if="loading">-->
+<!--    <div class="loader"></div>-->
+<!--    <p class="loadingText">Loading...</p>-->
+<!--  </div>-->
   <ul class="wbcInfoDbUl">
     <template v-for="(item) in wbcInfoArrChild" :key="item.id">
       <li @click="scrollToElement(item.id)" v-if="siteCd !== '0006' && item?.title !== 'SM'"
@@ -239,7 +239,6 @@ const firstItemIndex = ref(0);
 const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
-const loading = ref(true);
 const clickableItem = ref<HTMLElement | null>(null);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
@@ -308,9 +307,9 @@ const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 const wpsImgClickInfoData = ref<any>({});
 const tooltipVisible = ref({ classCircle: false });
 
-watch(props.hiddenImages, (newVal) => {
+watch(props.hiddenImages, async (newVal) => {
   hiddenImages.value = {...newVal};
-  loading.value = false;
+  await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
 });
 
 watch(() => props.selectItems, (newSelectItems) => {
@@ -320,7 +319,7 @@ watch(() => props.selectItems, (newSelectItems) => {
 
 const debouncedUpdate = debounce(async (newVal) => {
   const timestamp = Date.now();
-  loading.value = false;
+  await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   wbcInfoArrChild.value = [];
   wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
     ...item,
@@ -379,21 +378,20 @@ const updateFirstLastClass = (wbcInfo: any) => {
   previousLastClass.value = lastClass.value;
 }
 
-const handleImageLoad = (itemIndex: any) => {
+const handleImageLoad = async (itemIndex: any) => {
   if(router.currentRoute.value.fullPath !== '/databaseDetail'){
     return;
   }
   emits('update:cellRef', cellRef);
-  classImgChange('first', null);
-  classImgChange('last', null);
+  await classImgChange('first', null);
+  await classImgChange('last', null);
   classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
 
   if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
-    loading.value = false;
+    await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   } else {
-    loading.value = true;
+    await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: true });
   }
-
 }
 
 const wpsIsSelected = (box: any) => {
@@ -455,7 +453,7 @@ const classImgChange = async (type: string, event: any) => {
     updateClassValue(lastClass, previousLastClass, lastClassObj, lastItemIndex);
   }
   if (props.totalCount === '0') {
-    loading.value = false
+    await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   }
 };
 
@@ -466,8 +464,8 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
-const tooltipVisibleFunc = (type: 'classCircle', visible: boolean) => {
-  tooltipVisible.value[type] = visible;
-}
+// const tooltipVisibleFunc = (type: 'classCircle', visible: boolean) => {
+//   tooltipVisible.value[type] = visible;
+// }
 
 </script>

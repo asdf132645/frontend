@@ -1,4 +1,9 @@
 <template>
+  <div class="loaderBackground" v-if="isClassInfoMenuLoading || isImageGalleryLoading">
+    <div class="loader"></div>
+    <p class="loadingText">Loading...</p>
+  </div>
+
   <div class="wbcMenu">
     <ul>
       <template v-if="['bm', 'pb'].includes(projectType)">
@@ -147,10 +152,11 @@ let timeoutId: number | undefined = undefined;
 const pageMoveDeleteStop = ref(false);
 const props = defineProps(['isNext', 'changeSlideByLisUpload']);
 const ipAddress = ref<any>('');
-const isLoading = ref(true);
 const keepPage = ref('');
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const testType = computed(() => store.state.commonModule.testType);
+const isClassInfoMenuLoading = computed(() => store.state.commonModule.isClassInfoMenuLoading);
+const isImageGalleryLoading = computed(() => store.state.commonModule.isImageGalleryLoading);
 const dbListDataFirstNum = computed(() => store.state.commonModule.dbListDataFirstNum);
 const dbListDataLastNum = computed(() => store.state.commonModule.dbListDataLastNum);
 const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
@@ -177,7 +183,7 @@ onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
   await getNormalRange();
-  isLoading.value = false;
+  await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
   const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
   keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
   await checkHasPltInfo();
@@ -343,11 +349,17 @@ async function pageUpDownRunnIng(id: number, step: string, type: string) {
 }
 
 const moveWbc = async (direction: any) => {
+  if (isClassInfoMenuLoading.value || isImageGalleryLoading.value) {
+    return;
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: true });
   if (direction === 'up') {
     if (dbListDataFirstNum.value === selectItems.value?.id) {
       showAlert.value = true;
       alertType.value = 'success';
       alertMessage.value = 'This is the first page. Navigation to other pages is not possible.';
+      await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
       return;
     }
   } else {
@@ -355,6 +367,7 @@ const moveWbc = async (direction: any) => {
       showAlert.value = true;
       alertType.value = 'success';
       alertMessage.value = 'This is the last page. Navigation to other pages is not possible.';
+      await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
       return;
     }
   }
@@ -379,14 +392,16 @@ const processNextDbIndex = async (direction: any, id: number) => {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';
+    await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
     return;
   } else {
     await handleDataResponse(res?.id, res);
+    await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
   }
 };
 
 const handleDataResponse = async (dbId: any, res: any) => {
-  if (!resData.value) return;
+  if (!resData.value || Object.keys(resData.value).length === 0) return;
   selectItems.value = resData.value;
 
   const resClassInfo = resData.value?.wbcInfoAfter.length === 0 ? resData.value?.wbcInfo?.wbcInfo[0] : resData.value?.wbcInfoAfter;
@@ -401,6 +416,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   pageMoveDeleteStop.value = true;
   await upDownBlockAccess(selectItemsNewVal);
   await checkHasPltInfo();
+  await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
 };
 
 const isActive = (path: string) => {
@@ -504,30 +520,38 @@ const handleAbnormalValue = (value: string) => {
 }
 
 const checkHasPltInfo = async () => {
-  if (projectType.value !== 'pb') {
+  // 인하대 업데이트로 잠시 막아놓음 (PLT 분리 Version 사용 X)
+  if (projectType.value !== 'pb' || siteCd.value === '0011') {
     return;
   }
 
   pltOnOff.value = false;
-  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
+  const path = slideData.value?.img_drive_root_path !== '' && resData.value?.img_drive_root_path ? resData.value?.img_drive_root_path : iaRootPath.value;
+  const folderPath = `${path}/${resData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
 
   try {
     const response = await fetch(url);
     const fileNames = await response.json();
-    for (const fileName of fileNames) {
-      const keywords = ['zPLT_Image', 'files'];
-      const notRbc = keywords.every(keyword => fileName.includes(keyword));
-      if(notRbc){
-        pltOnOff.value = true;
+    if (fileNames?.code === 400) {
+      pltOnOff.value = false;
+      return;
+    }
+    if (fileNames && fileNames.length > 0) {
+      for (const fileName of fileNames) {
+        const keywords = ['zPLT_Image', 'files'];
+        const notRbc = keywords.every(keyword => fileName.includes(keyword));
+        if(notRbc){
+          pltOnOff.value = true;
+        }
       }
+    } else {
+      pltOnOff.value = false;
     }
   } catch (err) {
     console.error(err);
     pltOnOff.value = false;
   }
-
 }
 
 </script>

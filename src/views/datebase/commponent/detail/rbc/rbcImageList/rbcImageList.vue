@@ -217,6 +217,8 @@ const newItemClassInfoArr = ref<any>([]);
 
 const store = useStore();
 const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
+const siteCd = computed(() => store.state.commonModule.siteCd);
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);
@@ -938,9 +940,23 @@ const fetchTilesInfo = async (folderPath: string) => {
     const tilesInfo = [];
     fileNameResultArr.value = [];
     for (const fileName of fileNames) {
-      const keywords = ['zPLT_Image', 'files'];
-      const notPlt = keywords.every(keyword => fileName.includes(keyword));
-      if (fileName.endsWith('_files') && !notPlt) {
+      let keywords = [];
+      let notPlt = false;
+      let showRbcPlt = false;
+
+      // RBC, PLT 분리 전에 RBC 쪽에서 PLT를 보여주는 코드
+      // 인하대 허용
+      if (siteCd.value === '0011') {
+        const keywords = ['zPLT_Image', 'RBC_Image'];
+        showRbcPlt = keywords.some(keyword => fileName.includes(keyword));
+      } else {
+        keywords = ['zPLT_Image', 'files'];
+        notPlt = keywords.every(keyword => fileName.includes(keyword));
+      }
+
+      // PLT 안보이는 조건 (인하대)
+      const showPlt = siteCd.value === '0011' ? fileName.endsWith('_files') && showRbcPlt : fileName.endsWith('_files') && !notPlt;
+      if (showPlt) {
 
         const fileNameResult = extractSubStringBeforeFiles(fileName);
         fileNameResultArr.value.push(fileNameResult)

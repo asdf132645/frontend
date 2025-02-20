@@ -1550,6 +1550,7 @@ p.loadingText {
     height: 100%;
     top: 0;
     left: 0;
+    z-index: 9999;
 }
 
 .loaderBackgroundForLogin {
@@ -6038,7 +6039,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 140px;
+    left: 440px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
