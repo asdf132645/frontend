@@ -13,6 +13,7 @@ import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
 import {computed} from "vue";
 import {useStore} from "vuex";
 import moment from "moment/moment";
+
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const slideData = computed(() => store.state.slideDataModule);
@@ -52,16 +53,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             console.log(jsonObject[0]); // 파싱된 JSON 객체 출력
             const res: any = jsonObject[0];
             // const res: any = inhaCbcTestCode[0];
-            const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
-            const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
-            if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
-                console.log(readFileTxtRes?.data?.data)
-                cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
-                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, testCode}] = cbcDataArray;
-                await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: testCode});
-                cbcWorkList = cbcDataArray;
-                return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
-            }
+
             // 응답 코드가 '0'일 때만 처리
             if (res?.returnCode === '0') {
                 // 환자 정보 설정
@@ -98,17 +90,27 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                         cbcWorkList.push(obj);
                     }
                 });
+                const parms = {
+                    filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${selectItems?.barcodeNo}.txt`,
+                    data: cbcWorkList,
+                };
+                await createCbcFile(parms);
             } else {
                 errMessage = res?.returnCode;
                 loading = false;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
             }
+            const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
+            const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
+            if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
+                console.log(readFileTxtRes?.data?.data)
+                cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
+                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, testCode}] = cbcDataArray;
+                await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: testCode});
+                cbcWorkList = cbcDataArray;
+                return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
+            }
 
-            const parms = {
-                filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${selectItems?.barcodeNo}.txt`,
-                data: cbcWorkList,
-            };
-            await createCbcFile(parms);
             loading = false;
             // console.log('Response:', response.data);
         } catch (error: any) {

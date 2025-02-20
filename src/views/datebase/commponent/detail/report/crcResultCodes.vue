@@ -31,14 +31,17 @@
         <span class="crcSpanMenu">Code</span>
         <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
-          <input
-              v-model="searchText"
-              placeholder="Code Search"
-              class="autocomplete-input"
-              @focus="showDropdown = true"
-              @blur="hideDropdownWithDelay"
-          />
 
+          <div class="search-container">
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon" />
+            <input
+                v-model="searchText"
+                placeholder="Code Search"
+                class="autocomplete-input"
+                @focus="showDropdown = true"
+                @blur="hideDropdownWithDelay"
+            />
+          </div>
           <!-- 검색어에 따라 필터링된 드롭다운 목록 -->
           <ul v-if="showDropdown && filteredOptions.length" class="autocomplete-list">
             <li
