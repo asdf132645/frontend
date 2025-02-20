@@ -241,8 +241,6 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  console.log(props.slideData?.wbcMemo
-  ,props.slideData?.rbcMemo);
   if (props?.slideData) {
     memo.value.wbc = props.slideData?.wbcMemo;
     memo.value.rbc = props.slideData?.rbcMemo;

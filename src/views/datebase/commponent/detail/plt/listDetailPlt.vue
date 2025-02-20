@@ -11,11 +11,14 @@
         :cbcPatientName="selectItems?.cbcPatientNm"
         :cbcSex="selectItems?.cbcSex"
         :cbcAge="selectItems?.cbcAge"
-        :slideData="selectItems"
         :analyzedDttm="selectItems?.analyzedDttm"
+        :slideData="selectItems"
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
-    <div :class="'plt databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
+    <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
+      <PltClass typpe="listTable" :selectItems="selectItems" />
+    </div>
+    <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <PltImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
@@ -38,6 +41,7 @@ import DetailHeader from '@/views/datebase/commponent/detail/detailHeader.vue';
 import { MESSAGES } from '@/common/defines/constants/constantMessageText';
 import ToastNotification from '@/components/commonUi/ToastNotification.vue';
 import PltImageList from "@/views/datebase/commponent/detail/plt/pltImageList/pltImageList.vue";
+import PltClass from "@/views/datebase/commponent/detail/plt/pltClass.vue";
 
 const selectItems = ref<any>({});
 const store = useStore();

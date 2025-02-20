@@ -1,5 +1,8 @@
 <template>
-  <!--  {{ jsonIsBool }}-->
+  <div class="classInfo-barcode-container" v-if="type !== 'report'">
+    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+    <p v-else>Barcode Image is missing</p>
+  </div>
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt10 flex-justify-between">
@@ -272,7 +275,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, nextTick} from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, nextTick, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
@@ -296,6 +299,8 @@ import {TooltipRbcClassType} from "@/common/type/tooltipType";
 import { DIR_NAME } from "@/common/defines/constants/settings";
 import { cbcUpdateMutation, gqlGenericUpdate, memoUpdateMutation, rbcUpdateMutation } from "@/gql/mutation/slideData";
 import {scrollToTop} from "@/common/lib/utils/scroll";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -314,6 +319,7 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
@@ -350,6 +356,12 @@ const shapeOthersCount = ref(0);
 const tooltipVisible = ref({
   confirm: false,
 })
+const barCodeImageShowError = ref(false);
+const barcodeImg = ref('');
+
+onBeforeMount(() => {
+  barCodeImageShowError.value = false;
+})
 
 onMounted(async () => {
   await nextTick();
@@ -364,6 +376,7 @@ onMounted(async () => {
   await rbcTotalAndReCount(rbcImagePageNumber.value);
   await afterChange(slideData.value);
   await countReAdd();
+  setBarCodeImage(slideData.value);
 });
 
 watch(() => props.allCheckClear, (newItem) => {
@@ -418,6 +431,7 @@ watch(
       }
       await afterChange(slideData.value);
       await countReAdd();
+      setBarCodeImage(slideData.value);
     },
     { deep: true}
 );
@@ -1120,6 +1134,16 @@ const reDegree = async (rbcInfoArray: any) => {
 
 const tooltipVisibleFunc = (type: keyof TooltipRbcClassType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
+}
+
+const onImageError = () => {
+  barCodeImageShowError.value = true;
+}
+
+const setBarCodeImage = (currentSelectItems: any) => {
+  const path = currentSelectItems.img_drive_root_path !== '' && currentSelectItems.img_drive_root_path ? currentSelectItems.img_drive_root_path : iaRootPath.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, currentSelectItems.slotId, DIR_NAME.BARCODE);
+  barCodeImageShowError.value = false;
 }
 
 </script>
