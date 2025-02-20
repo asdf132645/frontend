@@ -48,6 +48,8 @@ export interface CommonState {
     slideDataReset: string;
     cellImageAnalyzedData: CellImgAnalyzedResponse[] | undefined;
     isInitializing: boolean;
+    isClassInfoMenuLoading: boolean;
+    isImageGalleryLoading: boolean;
 }
 
 interface CommonModule {
@@ -101,6 +103,8 @@ interface CommonModule {
         setSlideDataReset: (state: CommonState, value: string) => void;
         setCellImageAnalyzedData: (state: CommonState, value: CellImgAnalyzedResponse[]) => void;
         setIsInitializing: (state: CommonState, value: boolean) => void;
+        setIsClassInfoMenuLoading: (state: CommonState, value: boolean) => void;
+        setIsImageGalleryLoading: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -155,6 +159,8 @@ export const commonModule: CommonModule = {
         slideDataReset: '',
         cellImageAnalyzedData: undefined,
         isInitializing: false,
+        isClassInfoMenuLoading: false,
+        isImageGalleryLoading: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -301,6 +307,12 @@ export const commonModule: CommonModule = {
         setIsInitializing(state: CommonState, value: boolean): void {
             state.isInitializing = value;
         },
+        setIsClassInfoMenuLoading(state: CommonState, value: boolean): void {
+            state.isClassInfoMenuLoading = value;
+        },
+        setIsImageGalleryLoading(state: CommonState, value: boolean): void {
+            state.isImageGalleryLoading = value;
+        }
     },
     actions: {
         setCommonInfo({commit}: { commit: Commit }, payload: CommonState): void {
@@ -447,6 +459,12 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isInitializing')) {
                 commit('setIsInitializing', payload.isInitializing);
+            }
+            if (payload.hasOwnProperty('isClassInfoMenuLoading')) {
+                commit('setIsClassInfoMenuLoading', payload.isClassInfoMenuLoading);
+            }
+            if (payload.hasOwnProperty('isImageGalleryLoading')) {
+                commit('setIsImageGalleryLoading', payload.isImageGalleryLoading);
             }
         },
     },

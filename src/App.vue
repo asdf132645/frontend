@@ -491,9 +491,21 @@ async function socketData(data: any) {
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          if (data?.workingDone === 'Y') {
-            await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
-            await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+          if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+            if (pbVersion.value !== '100a') {
+              await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+              await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+            } else {
+              if (data?.workingDone === 'Y') {
+                await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+                await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+              }
+            }
+          } else {
+            if (data?.workingDone === 'Y') {
+              await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
+              await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
+            }
           }
           await saveTestHistory(data, data?.slotInfo?.slotNo);
           return;
@@ -597,7 +609,8 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
+            const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
+            await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: inhaTestCode });
             await inhaDataSend(wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, lisFilePath.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, completeSlot, userModuleDataGet.value.id)
             barcodeNum.value = completeSlot?.barcodeNo;
             submitState = 'lisCbc';

@@ -1,6 +1,6 @@
 <template>
   <div class="classInfo-barcode-container" v-if="type !== 'report'">
-    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+    <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원'] && barcodeImg !== ''" @error="onImageError" :src="barcodeImg" />
     <p v-else>Barcode Image is missing</p>
   </div>
 
@@ -307,7 +307,6 @@ const okMessageType = ref('');
 const lisCodeWbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
-const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const lisBtnColor = ref(false);
 const cbcFilePathSetArr = ref('');
@@ -329,7 +328,6 @@ const tooltipVisible = ref<TooltipClassInfoType>({
 })
 
 onBeforeMount(async () => {
-  barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
 
   if (!projectBm.value) {
@@ -345,10 +343,9 @@ onMounted(async () => {
   window.removeEventListener('keyup', handleKeyUp);
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
-  await nextTick();
+  // await nextTick();
   await getOrderClass();
   await getCustomClass();
-  await mountedMethod();
 
   if (!projectBm.value) {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
@@ -360,7 +357,7 @@ onMounted(async () => {
     cbcFilePathSetArr.value = await getCbcPathData();
     cbcCodeList.value = await getCbcCodeList();
   }
-  barCodeImageShowError.value = false;
+  await mountedMethod();
 })
 
 onUnmounted(() => {
@@ -431,10 +428,13 @@ const handleKeyUp = (event: KeyboardEvent) => {
 };
 
 const mountedMethod = async () => {
-  if (isObjectEmpty(props.selectItems)) return;
+  if (!props.selectItems) {
+    return;
+  }
 
-  if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
-    await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+    const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+    await store.dispatch('commonModule/setCommonInfo', { inhaTestCode: inhaTestCode });
   }
   wbcMemo.value = props.selectItems?.wbcMemo;
   if (selectItems.value?.submitState) {
@@ -910,13 +910,18 @@ const gilDataSendLoad = async () => {
 }
 
 const inhaDataSendLoad = async () => {
-  await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
+  const { inhaTestCode: localInhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
+  await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: localInhaTestCode });
   const {
     errMessage,
     lisBtnColor: lisBtnColorVal
   } = await inhaDataSend(selectItems.value?.wbcInfoAfter, selectItems.value?.rbcInfoAfter, selectItems.value?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, selectItems.value, userModuleDataGet.value.id)
   if (errMessage !== '') {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    if (errMessage.toLowerCase() === 'success') {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    } else {
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    }
     showToast(errMessage);
   }
   lisBtnColor.value = lisBtnColorVal || false;
@@ -1541,8 +1546,9 @@ const hideAlert = () => {
 };
 
 const onImageError = () => {
-  barCodeImageShowError.value = true;
+  barcodeImg.value = '';
 }
+
 const showToast = (message: string) => {
   toastMessage.value = message;
   setTimeout(() => {
