@@ -139,6 +139,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   await nextTick();
   barCodeImageShowError.value = false;
+  setBarCodeImage(slideData.value);
 })
 
 watch(userModuleDataGet.value, (newUserId) => {
@@ -148,10 +149,9 @@ watch(userModuleDataGet.value, (newUserId) => {
 watch(() => slideData.value, async (newSlideData) => {
   selectItems.value = slideData.value;
   setBarCodeImage(newSlideData);
-  await beforeAfterChange(newSlideData)
-  await checkRBCTotalImageNames();
-  await rbcTotalAndReCountForReport();
-  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'RBC - Platelet' });
+  pltInfoVal.value = [];
+  await getWbcInfoForPlt(newSlideData)
+  await getRbcInfoForPlt(newSlideData);
   await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
 }, { deep: true });
 
@@ -204,15 +204,21 @@ const onCommit = async () => {
   emits('submitStateChanged', 'Submit');
 }
 
-const beforeAfterChange = async (newItem: any) => {
-  const wbcPltValue = newItem.wbcInfoAfter.filter((item) => item.id === '13' || item.id === '14');
-  if (!isObjectEmpty(wbcPltValue)) {
-    pltInfoVal.value = wbcPltValue.map((item) => {
-      return { count: item.count, name: item.name };
-    })
+const getWbcInfoForPlt = async (newItem: any) => {
+  if (!isObjectEmpty(newItem.wbcInfoAfter)) {
+    const wbcPltValue = newItem.wbcInfoAfter.filter((item) => item?.id === '13' || item?.id === '14');
+    if (wbcPltValue.length) {
+      pltInfoVal.value = wbcPltValue.map(({ count, name }) => ({ count, name }));
+    }
   }
-  console.log('pltInfoVal', pltInfoVal.value);
-  rbcInfoForPlt.value = newItem?.rbcInfo.rbcClass;
+}
+
+const getRbcInfoForPlt = async (newSlideData) => {
+  rbcInfoForPlt.value = newSlideData?.rbcInfo.rbcClass;
+
+  await checkRBCTotalImageNames();
+  await rbcTotalAndReCountForReport();
+  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'RBC - Platelet' });
 }
 
 const rbcTotalAndReCountForReport = async () => {
