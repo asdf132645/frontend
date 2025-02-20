@@ -873,9 +873,9 @@ const inhaDataSendLoad = async () => {
   } = await inhaDataSend(selectItems.value?.wbcInfoAfter, selectItems.value?.rbcInfoAfter, selectItems.value?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, selectItems.value, userModuleDataGet.value.id)
   if (errMessage !== '') {
     if (errMessage.toLowerCase() === 'success') {
-      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    } else {
       toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    } else {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
     }
     showToast(errMessage);
   }
