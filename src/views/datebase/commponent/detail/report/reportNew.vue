@@ -24,7 +24,7 @@
                     @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" @uploadLisChangeSlide="uploadLisChangeSlide"
           />
         </div>
-        <div class="reportDetail shadowBox" v-if="!crcConnect">
+        <div class="reportDetail shadowBox" :class="{ 'reportBm': projectBm }" v-if="!crcConnect">
           <div class="reportTitle">
             <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
             <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>

@@ -59,8 +59,8 @@
       >
         <td @click="handleCheckboxChange(item)">
           <div
-              @mouseenter="abnormalClassInfoOpen(true, item)"
-              @mouseleave="abnormalClassInfoOpen(false, item)"
+              @mouseover="abnormalClassInfoOpen(true, item)"
+              @mouseout="abnormalClassInfoOpen(false, item)"
               class="listTable-abnormalIcon-wrapper"
           >
             <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
@@ -924,7 +924,7 @@ const handleAbnormalRange = (countVal, min, max, unit) => {
 }
 
 const handleAbnormalValue = (value) => {
-  return value.replace('[', '').replace(']', '');
+  return value.replace('[', '').replace(']', '').replaceAll('Count', '');
 }
 
 

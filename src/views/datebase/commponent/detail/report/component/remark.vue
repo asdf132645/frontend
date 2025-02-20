@@ -1,5 +1,9 @@
 <template>
   <div class="crcPopUpDiv remark">
+    <div>
+      <h3>Remark</h3>
+      <button @click="cancelSelect" class="ml10 crcDefaultBtn">X</button>
+    </div>
     <div style="position: relative; height: 100%; width: 100%">
       <div class="headerRemark topLine">
         <span>Search Type</span>
@@ -74,8 +78,7 @@
           <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>
         </div>
         <div>
-          <button class="crcDefaultBtn" @click="okSelect">OK</button>
-          <button @click="cancelSelect" class="ml10 crcDefaultBtn">CANCEL</button>
+          <button class="crcDefaultBtn" @click="okSelect">Enter</button>
         </div>
 
       </div>

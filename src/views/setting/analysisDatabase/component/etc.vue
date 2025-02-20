@@ -23,8 +23,8 @@
             NS/NB Integration
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('nsNbIntegration', true)"
-                @mouseleave="tooltipVisibleFunc('nsNbIntegration', false)"
+                @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
+                @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
             />
             <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
@@ -42,8 +42,8 @@
             Alarm Timer (sec)
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('alarm', true)"
-                @mouseleave="tooltipVisibleFunc('alarm', false)"
+                @mouseover="tooltipVisibleFunc('alarm', true)"
+                @mouseout="tooltipVisibleFunc('alarm', false)"
             />
             <Tooltip :isVisible="tooltipVisible.alarm" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.ALARM"/>
@@ -64,8 +64,8 @@
             Keep Page
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('keepPage', true)"
-                @mouseleave="tooltipVisibleFunc('keepPage', false)"
+                @mouseover="tooltipVisibleFunc('keepPage', true)"
+                @mouseout="tooltipVisibleFunc('keepPage', false)"
             />
             <Tooltip :isVisible="tooltipVisible.keepPage" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.KEEP_PAGE"/>
@@ -83,8 +83,8 @@
             LIS Upload Check
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('lisUploadCheckAll', true)"
-                @mouseleave="tooltipVisibleFunc('lisUploadCheckAll', false)"
+                @mouseover="tooltipVisibleFunc('lisUploadCheckAll', true)"
+                @mouseout="tooltipVisibleFunc('lisUploadCheckAll', false)"
             />
             <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK"/>
@@ -111,8 +111,8 @@
             Download Save Path
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('downloadSavePath', true)"
-                @mouseleave="tooltipVisibleFunc('downloadSavePath', false)"
+                @mouseover="tooltipVisibleFunc('downloadSavePath', true)"
+                @mouseout="tooltipVisibleFunc('downloadSavePath', false)"
             />
             <Tooltip :isVisible="tooltipVisible.downloadSavePath" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH"/>
@@ -128,8 +128,8 @@
                     :icon="['fas', 'folder-open']"
                     @click="openSourceDrive"
                     class="openDriveIcon"
-                    @mouseenter="tooltipVisibleFunc('openDownloadSavePath', true)"
-                    @mouseleave="tooltipVisibleFunc('openDownloadSavePath', false)"
+                    @mouseover="tooltipVisibleFunc('openDownloadSavePath', true)"
+                    @mouseout="tooltipVisibleFunc('openDownloadSavePath', false)"
                 />
                 <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" className="mb08" position="top" type=""
                          :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH"/>
@@ -142,8 +142,8 @@
             Download
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('download', true)"
-                @mouseleave="tooltipVisibleFunc('download', false)"
+                @mouseover="tooltipVisibleFunc('download', true)"
+                @mouseout="tooltipVisibleFunc('download', false)"
             />
             <Tooltip :isVisible="tooltipVisible.download" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.DOWNLOAD"/>
@@ -161,8 +161,8 @@
             Upload
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                @mouseenter="tooltipVisibleFunc('upload', true)"
-                @mouseleave="tooltipVisibleFunc('upload', false)"
+                @mouseover="tooltipVisibleFunc('upload', true)"
+                @mouseout="tooltipVisibleFunc('upload', false)"
             />
             <Tooltip :isVisible="tooltipVisible.upload" className="mb08" position="top" type=""
                      :message="MSG.TOOLTIP.UPLOAD"/>

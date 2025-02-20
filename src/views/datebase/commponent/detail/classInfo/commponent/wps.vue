@@ -218,7 +218,7 @@ const wpsInitElement = async () => {
     canvas.id = 'myCanvas';
     canvasOverlay.value = canvas;
 
-    viewer.value.addHandler('open', async function (event: any) {
+    viewer.value.addHandler('open', async function (event: Event) {
       imgOn.value = true;
 
       // 캔버스 크기를 조정

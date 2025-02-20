@@ -1,7 +1,7 @@
 <template>
   <div
       v-if="isVisible"
-      :class="`tooltip-container tooltip-pos-${position} ${className}`"
+      :class="`tooltip-container ${positionClass(position)} ${className}`"
       :style="style"
   >
     <pre>{{ message }}</pre>
@@ -23,5 +23,12 @@ interface PropsType {
 const props = withDefaults(defineProps<PropsType>(), {
   position: 'top',
 });
+
+const positionClass = (position: string) => {
+  if (position === 'top') return 'tooltip-pos-top';
+  if (position === 'bottom') return 'tooltip-pos-bottom';
+  if (position === 'left') return 'tooltip-pos-left';
+  if (position === 'right') return 'tooltip-pos-right';
+}
 
 </script>

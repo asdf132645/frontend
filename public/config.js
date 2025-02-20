@@ -9,5 +9,5 @@ window.WEB_FRONTEND_VERSION='0.3.08v';
 window.MACHINE_VERSION='100a';  // 12a or 100a
 window.FORCE_VIEWER = 'main'; // main or viewer or exhibition
 window.PORT = '8080';
-window.LINUXSERVERIP = 'http://192.168.0.43:3020';
-window.LINUXSERVER = false;
+window.EQUIPMENTPCIP = 'http://192.168.0.131:3020';
+window.LINUX_SERVER_SET = false;

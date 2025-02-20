@@ -38,8 +38,8 @@
             type="button"
             @click="drawCellMarker(false)"
             class="pos-relative"
-            @mouseenter="tooltipVisibleFunc('cellMarking', true)"
-            @mouseleave="tooltipVisibleFunc('cellMarking', false)"
+            @mouseover="tooltipVisibleFunc('cellMarking', true)"
+            @mouseout="tooltipVisibleFunc('cellMarking', false)"
         >
           <font-awesome-icon :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"/>
           Cell Marking
@@ -49,8 +49,8 @@
         <button
             @click="showSizeControl"
             class="sizeButton pos-relative"
-            @mouseenter="tooltipVisibleFunc('size', true)"
-            @mouseleave="tooltipVisibleFunc('size', false)"
+            @mouseover="tooltipVisibleFunc('size', true)"
+            @mouseout="tooltipVisibleFunc('size', false)"
         >
           <font-awesome-icon :icon="['fas', 'plus-minus']"/>
           Size
@@ -84,8 +84,8 @@
           <button
               @click="imgSetOpen"
               class="pos-relative"
-              @mouseenter="tooltipVisibleFunc('imageSetting', true)"
-              @mouseleave="tooltipVisibleFunc('imageSetting', false)"
+              @mouseover="tooltipVisibleFunc('imageSetting', true)"
+              @mouseout="tooltipVisibleFunc('imageSetting', false)"
           >
             <font-awesome-icon :icon="['fas', 'gear']"/>
             IMG Setting
@@ -155,8 +155,8 @@
         <button
             @click="classCompare"
             class="pos-relative"
-            @mouseenter="tooltipVisibleFunc('classCompare', true)"
-            @mouseleave="tooltipVisibleFunc('classCompare', false)"
+            @mouseover="tooltipVisibleFunc('classCompare', true)"
+            @mouseout="tooltipVisibleFunc('classCompare', false)"
         >
           <font-awesome-icon :icon="['fas', 'code-compare']"/>
           Class Compare
@@ -167,8 +167,8 @@
             @click="wps"
             v-if="isWpsBtnShow"
             class="pos-relative"
-            @mouseenter="tooltipVisibleFunc('wps', true)"
-            @mouseleave="tooltipVisibleFunc('wps', false)"
+            @mouseover="tooltipVisibleFunc('wps', true)"
+            @mouseout="tooltipVisibleFunc('wps', false)"
         >
           <font-awesome-icon :icon="['fas', 'expand']"/>
           WPS
@@ -178,12 +178,12 @@
         <button
             @click="rollbackChanges"
             class="rollbackButton"
-            @mouseenter="tooltipVisibleFunc('rollback', true)"
-            @mouseleave="tooltipVisibleFunc('rollback', false)"
+            @mouseover="tooltipVisibleFunc('rollback', true)"
+            @mouseout="tooltipVisibleFunc('rollback', false)"
         >
           <font-awesome-icon :icon="['fas', 'rotate-left']"/>
           Rollback
-          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 18px;'" position="top"
+          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 12px;'" position="top"
                    type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
         </button>
       </div>

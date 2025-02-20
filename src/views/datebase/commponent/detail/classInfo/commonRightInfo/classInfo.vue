@@ -11,16 +11,16 @@
     <ul class="leftWbcInfo">
       <li
           class="pos-relative"
-          @mouseenter="tooltipVisibleFunc('cbcToResultCodes', true)"
-          @mouseleave="tooltipVisibleFunc('cbcToResultCodes', false)"
+          @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
+          @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
       >
         <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] && type === 'report' && crcConnect" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
       </li>
       <li
           class="pos-relative"
-          @mouseenter="tooltipVisibleFunc('barcodeCopy', true)"
-          @mouseleave="tooltipVisibleFunc('barcodeCopy', false)"
+          @mouseover="tooltipVisibleFunc('barcodeCopy', true)"
+          @mouseout="tooltipVisibleFunc('barcodeCopy', false)"
       >
         <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" position="top" type="" :message="MSG.TOOLTIP.BARCODE_COPY" />
@@ -29,8 +29,8 @@
       <li
           v-if="type !== 'report'"
           class="pos-relative"
-          @mouseenter="tooltipVisibleFunc('memo', true)"
-          @mouseleave="tooltipVisibleFunc('memo', false)"
+          @mouseover="tooltipVisibleFunc('memo', true)"
+          @mouseout="tooltipVisibleFunc('memo', false)"
       >
         <font-awesome-icon :icon="['fas', 'comment-dots']" @click="memoOpen" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
@@ -44,8 +44,8 @@
           @click="commitConfirmed"
           class="pos-relative"
           :class="{'submitted': selectItems?.submitState === 'Submit',}"
-          @mouseenter="tooltipVisibleFunc('confirm', true)"
-          @mouseleave="tooltipVisibleFunc('confirm', false)"
+          @mouseover="tooltipVisibleFunc('confirm', true)"
+          @mouseout="tooltipVisibleFunc('confirm', false)"
       >
         <font-awesome-icon :icon="['fas', 'square-check']" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
@@ -55,16 +55,16 @@
           @click="lisModalOpen"
           class="pos-relative"
           :class="{'submitted': selectItems?.submitState.includes('lis') || lisBtnColor,}"
-          @mouseenter="tooltipVisibleFunc('lisUpload', true)"
-          @mouseleave="tooltipVisibleFunc('lisUpload', false)"
+          @mouseover="tooltipVisibleFunc('lisUpload', true)"
+          @mouseout="tooltipVisibleFunc('lisUpload', false)"
       >
         <font-awesome-icon :icon="['fas', 'upload']" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
       </li>
       <li
           class="pos-relative"
-          @mouseenter="tooltipVisibleFunc('classMoveLock', true)"
-          @mouseleave="tooltipVisibleFunc('classMoveLock', false)"
+          @mouseover="tooltipVisibleFunc('classMoveLock', true)"
+          @mouseout="tooltipVisibleFunc('classMoveLock', false)"
       >
         <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
         <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />

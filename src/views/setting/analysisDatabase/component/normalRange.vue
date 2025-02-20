@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed, watch} from 'vue';
+import {ref, onMounted, computed, watch, onBeforeMount} from 'vue';
 import {
   createNormalRangeApi,
   updateNormalRangeApi,
@@ -53,7 +53,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
-import {normalRange, settingName} from "@/common/defines/constants/settings";
+import {defaultPBNormalRange, defaultBMNormalRange, settingName} from "@/common/defines/constants/settings";
 import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
@@ -71,6 +71,11 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const projectType = ref('');
+
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
+})
 
 onMounted(async () => {
   await getNormalRange();
@@ -135,7 +140,7 @@ const getNormalRange = async () => {
     if (result) {
       if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
         saveHttpType.value = 'post';
-        normalItems.value = normalRange;
+        normalItems.value = projectType.value === 'pb' ? defaultPBNormalRange : defaultBMNormalRange;
       } else {
         saveHttpType.value = 'put';
         normalItems.value = result.data;

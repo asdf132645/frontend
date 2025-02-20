@@ -473,7 +473,7 @@ const getNormalRange = async () => {
 }
 
 const updateAbnormalRanges = (data: any) => {
-  if (isObjectEmpty(data?.abnormalClassInfo) || (!Array.isArray(data?.abnormalClassInfo) || !data.abnormalClassInfo?.classNm)) {
+  if (isObjectEmpty(data?.abnormalClassInfo) || (!Array.isArray(data?.abnormalClassInfo) && !data.abnormalClassInfo?.classNm)) {
     return;
   }
 
@@ -500,7 +500,7 @@ const handleAbnormalRange = (countVal: string, min: number, max: number, unit: s
 }
 
 const handleAbnormalValue = (value: string) => {
-  return value.replace('[', '').replace(']', '');
+  return value.replace('[', '').replace(']', '').replaceAll('Count', '');
 }
 
 const checkHasPltInfo = async () => {

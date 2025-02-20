@@ -3,87 +3,86 @@
     <ul>
       <li
           class="pos-relative"
-          @mouseenter="tooltipVisibleFunc('analysisType', true)"
-          @mouseleave="tooltipVisibleFunc('analysisType', false)"
+          @mouseover="tooltipVisibleFunc('analysisType', true)"
+          @mouseout="tooltipVisibleFunc('analysisType', false)"
       >
         <span>{{ testType }}</span>
-        <Tooltip :isVisible="tooltipVisible.analysisType" className="mb08" position="bottom" type="" message='Analysis Type' />
+        <Tooltip :isVisible="tooltipVisible.analysisType" className="mb08" message='Analysis Type' />
       </li>
       <li
           class="pos-relative"
           v-if="barcodeNo"
-          @mouseenter="tooltipVisibleFunc('barcodeNo', true)"
-          @mouseleave="tooltipVisibleFunc('barcodeNo', false)"
+          @mouseover="tooltipVisibleFunc('barcodeNo', true)"
+          @mouseout="tooltipVisibleFunc('barcodeNo', false)"
       >
-        <span v-if="isGilHospital()">{{ !isModalOpen ? localBarcodeNo : barcodeNo }}</span>
-        <span v-else>{{ barcodeNo }}</span>
-        <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" position="bottom" type="" message='Barcode ID' />
+        <span>{{ barcodeNo }}</span>
+        <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" message='Barcode ID' />
         <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal" :icon="['fas', 'pen-to-square']" />
       </li>
       <li
           class="pos-relative"
           v-if="analyzedDttm"
-          @mouseenter="tooltipVisibleFunc('analyzedDttm', true)"
-          @mouseleave="tooltipVisibleFunc('analyzedDttm', false)"
+          @mouseover="tooltipVisibleFunc('analyzedDttm', true)"
+          @mouseout="tooltipVisibleFunc('analyzedDttm', false)"
       >
         <span>{{ getDateTimeYYYYMMDDHHmmss(analyzedDttm) }}</span>
-        <Tooltip :isVisible="tooltipVisible.analyzedDttm" className="mb08" position="bottom" type="" message='Analyzed Date' />
+        <Tooltip :isVisible="tooltipVisible.analyzedDttm" className="mb08" message='Analyzed Date' />
       </li>
       <li
           class="pos-relative"
           v-if="cbcPatientNo"
-          @mouseenter="tooltipVisibleFunc('patientNo', true)"
-          @mouseleave="tooltipVisibleFunc('patientNo', false)"
+          @mouseover="tooltipVisibleFunc('patientNo', true)"
+          @mouseout="tooltipVisibleFunc('patientNo', false)"
       >
         <span>{{ cbcPatientNo }}</span>
-        <Tooltip :isVisible="tooltipVisible.patientNo" className="mb08" position="bottom" type="" message='Patient ID' />
+        <Tooltip :isVisible="tooltipVisible.patientNo" className="mb08" message='Patient ID' />
       </li>
       <template v-if="cbcPatientName || patientName">
         <li
             class="pos-relative"
             v-if="cbcPatientName"
-            @mouseenter="tooltipVisibleFunc('patientName', true)"
-            @mouseleave="tooltipVisibleFunc('patientName', false)"
+            @mouseover="tooltipVisibleFunc('patientName', true)"
+            @mouseout="tooltipVisibleFunc('patientName', false)"
         >
           {{ cbcPatientName }}
-          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" position="bottom" type="" message='Patient Name' />
+          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" message='Patient Name' />
         </li>
         <li
             class="pos-relative"
             v-else-if="patientName"
-            @mouseenter="tooltipVisibleFunc('patientName', true)"
-            @mouseleave="tooltipVisibleFunc('patientName', false)"
+            @mouseover="tooltipVisibleFunc('patientName', true)"
+            @mouseout="tooltipVisibleFunc('patientName', false)"
         >
           {{ patientName }}
-          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" position="bottom" type="" message='Patient Name' />
+          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" message='Patient Name' />
         </li>
       </template>
       <li
           class="pos-relative"
           v-if="cbcSex"
-          @mouseenter="tooltipVisibleFunc('sex', true)"
-          @mouseleave="tooltipVisibleFunc('sex', false)"
+          @mouseover="tooltipVisibleFunc('sex', true)"
+          @mouseout="tooltipVisibleFunc('sex', false)"
       >
         <span>{{ cbcSex }}</span>
-        <Tooltip :isVisible="tooltipVisible.sex" className="mb08" position="bottom" type="" message='Sex' />
+        <Tooltip :isVisible="tooltipVisible.sex" className="mb08" type="" message='Sex' />
       </li>
       <li
           class="pos-relative"
           v-if="cbcAge"
-          @mouseenter="tooltipVisibleFunc('age', true)"
-          @mouseleave="tooltipVisibleFunc('age', false)"
+          @mouseover="tooltipVisibleFunc('age', true)"
+          @mouseout="tooltipVisibleFunc('age', false)"
       >
         <span>{{ cbcAge }}</span>
-        <Tooltip :isVisible="tooltipVisible.age" className="mb08" position="bottom" type="" message='Age' />
+        <Tooltip :isVisible="tooltipVisible.age" className="mb08" type="" message='Age' />
       </li>
       <li
           class="pos-relative"
           v-if="hospitalName"
-          @mouseenter="tooltipVisibleFunc('hospitalName', true)"
-          @mouseleave="tooltipVisibleFunc('hospitalName', false)"
+          @mouseover="tooltipVisibleFunc('hospitalName', true)"
+          @mouseout="tooltipVisibleFunc('hospitalName', false)"
       >
         <span>{{ hospitalName }}</span>
-        <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" position="bottom" type="" message='Hospital name' />
+        <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" message='Hospital name' />
       </li>
     </ul>
   </div>
@@ -103,7 +102,7 @@
             <input
                 id="barcode"
                 type="text"
-                v-model="localBarcodeNo"
+                v-model="editingBarcodeNo"
                 @keydown.enter="handleEditBarcodeNo"
                 placeholder="BARCODE ID"
                 ref="barcodeInput"
@@ -126,15 +125,14 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, watch, defineEmits, ref, onMounted, computed, onBeforeMount, reactive, nextTick} from 'vue';
+import {defineProps, watch, defineEmits, ref, computed, onBeforeMount, nextTick} from 'vue';
 import {getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
-import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import Modal from "@/components/commonUi/modal.vue";
-import {barcodeNoUpdateMutation, gqlGenericUpdate, memoUpdateMutation} from "@/gql/mutation/slideData";
+import { barcodeNoUpdateMutation, gqlGenericUpdate } from "@/gql/mutation/slideData";
 import {MESSAGES, MSG_GENERAL, TOAST} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {DetailHeaderType} from "@/common/type/tooltipType";
@@ -158,7 +156,7 @@ const tooltipVisible = ref({
 })
 const isModalOpen = ref(false);
 const barcodeInput = ref(null);
-const localBarcodeNo = ref('');
+const editingBarcodeNo = ref('');
 const toast = ref({
   message: '',
   type: MESSAGES.TOAST_MSG_SUCCESS,
@@ -168,12 +166,7 @@ onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
 })
 
-onMounted(async () => {
-  localBarcodeNo.value = props.barcodeNo;
-})
-
 watch(() => props.slideData, (newSlideData) => {
-  localBarcodeNo.value = newSlideData.barcodeNo;
   if (!newSlideData.cbcPatientNm || newSlideData.cbcPatientNm === '' || newSlideData.cbcPatientNm !== newSlideData.patientNm) {
     emits('updateSlideDataByCBCData', newSlideData);
   }
@@ -186,6 +179,7 @@ const tooltipVisibleFunc = (type: keyof DetailHeaderType, visible: boolean) => {
 
 const handleModal = async () => {
   isModalOpen.value = true;
+  editingBarcodeNo.value = props.barcodeNo;
   await nextTick();
   if (barcodeInput.value) {
     barcodeInput.value.focus();
@@ -195,19 +189,18 @@ const handleModal = async () => {
 
 const closeLayer = (val: boolean) => {
   if (!val) {
-    localBarcodeNo.value = props.barcodeNo;
+    editingBarcodeNo.value = props.barcodeNo;
   }
   isModalOpen.value = val;
-  localBarcodeNo.value
 };
 
 const handleEditBarcodeNo = async () => {
   await nextTick();
   try {
-    const updatedRuningInfo = { ...slideData.value, barcodeNo: localBarcodeNo.value };
+    const updatedRuningInfo = { ...slideData.value, barcodeNo: editingBarcodeNo.value };
     const res = await gqlGenericUpdate(barcodeNoUpdateMutation, {
       id: slideData.value.id,
-      barcodeNo: localBarcodeNo.value,
+      barcodeNo: editingBarcodeNo.value,
     });
 
     if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
