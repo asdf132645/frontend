@@ -3,88 +3,120 @@
     <div class="remarkHeader">
       <h3 class="crcDefaultTitle">{{ remarkNm }}</h3>
       <button @click="cancelSelect" class="ml10 crcCloseBtn">
-        <font-awesome-icon :icon="['fas', 'xmark']" />
+        <font-awesome-icon :icon="['fas', 'xmark']"/>
       </button>
     </div>
     <div style="position: relative; height: 100%; width: 100%">
       <div class="headerRemark topLine">
-        <span>Search Type</span>
-        <select v-model="searchType">
+         <span>
+        {{ remarkNm }} Search
+      </span>
+        <select v-model="searchType" class="searchSelect">
           <option value="Code">Code</option>
           <option value="Content">Content</option>
         </select>
-        <input type="text" v-model="searchRemark"/>
+        <div class="search-container report">
+          <input type="text" v-model="searchRemark" class="searchInputBox"/>
+        </div>
         <!-- Search 버튼에 searchRemark 함수 연결 -->
-        <button type="button" @click="searchRemarkData">Search</button>
+        <button class="btnSearchRemark" type="button" @click="searchRemarkData">
+          <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
+        </button>
+<!--        <button @click="deleteRemark(item.id)" class="ml10">-->
+<!--          <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--        </button>-->
       </div>
 
-      <table class="remarkDefaultTable">
-        <colgroup>
-          <col width="5%"/>
-          <col width="20%"/>
-          <col width="*"/>
-          <col width="20%"/>
-        </colgroup>
-        <thead>
-        <tr>
-          <th></th>
-          <th>Code</th>
-          <th>Content</th>
-          <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(item, idx) in remarkArr" :key="idx">
-          <td>
-            <input type="checkbox" v-model="selectedItems" :value="item.id"/>
-          </td>
-
-          <!-- 편집 모드인지 확인 -->
-          <td v-if="editIndex === idx">
-            <input v-model="editedCode" type="text"/>
-          </td>
-          <td v-else class="text-left">{{ item?.code }}</td>
-
-          <td v-if="editIndex === idx">
-            <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000" />
-          </td>
-          <td v-else class="text-left" v-html="item?.remarkAllContent"></td>
-
-          <td v-if="editIndex === idx">
-            <!-- Save 버튼 -->
-            <button class="crcDefaultBtn" @click="saveEdit(item.id)">Save</button>
-            <button class="crcDefaultBtn ml10" @click="cancelEdit">Cancel</button>
-          </td>
-          <td v-else>
-            <!-- Edit 버튼 -->
-            <button @click="startEdit(idx, item)">
-              <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
-            </button>
-            <button @click="deleteRemark(item.id)" class="ml10">
-              <font-awesome-icon :icon="['fas', 'trash']"/>
-            </button>
-          </td>
-        </tr>
-        </tbody>
-        <tbody>
+      <div class="scrollTableContainer">
+        <table class="remarkDefaultTable scroll">
+          <colgroup>
+            <col width="5%"/>
+            <col width="20%"/>
+            <col width="*"/>
+            <col width="20%"/>
+          </colgroup>
+          <thead>
           <tr>
-            <td colspan="2"><input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/></td>
-            <td><textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea></td>
-            <td colspan="2"><button @click="addRemark" class="crcDefaultBtn ml10">Add</button></td>
+            <th></th>
+            <th>Code</th>
+            <th>Content</th>
+            <th>Action</th>
           </tr>
-        </tbody>
-      </table>
+          </thead>
+        </table>
+
+        <!-- ✅ tbody를 감싸는 div 추가 -->
+        <div class="tbody-container">
+          <table class="remarkDefaultTable scroll">
+            <colgroup>
+              <col width="5%"/>
+              <col width="20%"/>
+              <col width="*"/>
+              <col width="20%"/>
+            </colgroup>
+            <tbody>
+            <tr v-for="(item, idx) in remarkArr" :key="idx">
+              <td>
+                <input type="checkbox" v-model="selectedItems" :value="item.id"/>
+              </td>
+
+              <!-- 편집 모드 -->
+              <td v-if="editIndex === idx">
+                <input v-model="editedCode" type="text"/>
+              </td>
+              <td v-else class="text-left">{{ item?.code }}</td>
+
+              <td v-if="editIndex === idx">
+                <textarea class="remarkTextArea table" v-model="editedContent" maxlength="1000"/>
+              </td>
+              <td v-else class="text-left" v-html="item?.remarkAllContent"></td>
+
+              <td v-if="editIndex === idx">
+                <!-- Save 버튼 -->
+                <button class="crcDefaultBtn" @click="saveEdit(item.id)">Save</button>
+                <button class="crcDefaultBtn ml10" @click="cancelEdit">Cancel</button>
+              </td>
+              <td v-else class="text-center">
+                <!-- Edit 버튼 -->
+                <button @click="startEdit(idx, item)">
+                  <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
+                </button>
+
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div class="mt20 remarkBottomFix">
-<!--        <div class="remarkBottomBtnGroup mb10">-->
-<!--          <div class="flex-justify-between">-->
-<!--            <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>-->
-<!--            <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>-->
-<!--          </div>-->
-<!--          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>-->
-<!--        </div>-->
+        <!--        <div class="remarkBottomBtnGroup mb10">-->
+        <!--          <div class="flex-justify-between">-->
+        <!--            <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>-->
+        <!--            <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>-->
+        <!--          </div>-->
+        <!--          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>-->
+        <!--        </div>-->
         <div>
-          <button class="crcDefaultBtn bottomBtn" @click="okSelect">Comment Insert</button>
+          <table class="remarkDefaultTable bottom">
+            <colgroup>
+              <col width="5%"/>
+              <col width="20%"/>
+              <col width="*"/>
+              <col width="20%"/>
+            </colgroup>
+            <tbody>
+            <tr>
+              <td colspan="2"><input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/></td>
+              <td><textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"
+                            maxlength="1000"></textarea></td>
+              <td colspan="2">
+                <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <button class="crcDefaultBtn bottomBtn" @click="okSelect">{{ remarkNm }} Insert</button>
         </div>
 
       </div>
@@ -96,7 +128,8 @@
       :messageType="toastMessageType"
       :duration="1500"
   />
-  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck" @passWordClose="passWordClose"/>
+  <PassWordCheck v-if="passLayout" :crcPassWord="crcPassWordVal" @returnPassWordCheck="returnPassWordCheck"
+                 @passWordClose="passWordClose"/>
 </template>
 
 
@@ -118,7 +151,7 @@ import {
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
 
 const props = defineProps({
@@ -183,7 +216,7 @@ const loadRemarks = async (type?: string) => {
     showToast("Search completed.");
   }
 };
-const passWordClose= () => {
+const passWordClose = () => {
   passLayout.value = false;
 }
 
@@ -362,21 +395,14 @@ const cancelEdit = () => {
   editIndex.value = null;
 };
 
-const typeToText = (type: 'reco' | 'comment' | 'remark'): 'recommendation' | 'comment' | 'remark' => {
-  switch (type) {
-    case 'reco':
-      return 'recommendation';
-    case 'comment':
-      return 'comment';
-    case 'remark':
-      return 'remark';
-  }
-}
-
 // OK 버튼 클릭 시 처리
 const okSelect = () => {
   const selectedRemarks = remarkArr.value.filter(item => selectedItems.value.includes(item.id));
-
+  if (selectedRemarks.length === 0) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast('Please check it.');
+    return;
+  }
   toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Remark Add Success');
   emit("listUpdated", selectedRemarks, props.type);

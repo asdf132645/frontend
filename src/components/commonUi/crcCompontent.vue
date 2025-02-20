@@ -41,11 +41,11 @@
             </template>
             <template v-else-if="item?.crcType === 'text'">
               <input v-model="item.crcContent" :disabled="pageName !== 'report'" type="text"
-                     placeholder="Enter text" v-if="pageName !== 'set'"/>
+                      v-if="pageName !== 'set'"/>
               <input v-model="item.crcContent" :disabled="pageName === 'set'"
                      v-else-if=" pageName ==='set' && isMasterId(masterId)"
                      type="text"
-                     placeholder="Enter text"/>
+                     />
             </template>
             <template v-else>
               <input class="smallInput" :disabled="pageName !== 'report'" v-model="item.crcContent" type="text"

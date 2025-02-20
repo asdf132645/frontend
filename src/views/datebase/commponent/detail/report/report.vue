@@ -292,7 +292,7 @@ const wbcInfo = ref<any>(null);
 const printOnOff = ref(false);
 const rbcInfo = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const cbcLayer = ref(true);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
 const slideData = computed(() => store.state.slideDataModule);
@@ -348,6 +348,7 @@ watch(
     {immediate: true, deep: true}
 );
 
+
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   if (!projectBm.value) {
@@ -375,6 +376,8 @@ onMounted(async () => {
   await getOrderClass();
   await initData();
   document.addEventListener('click', handleClickOutside);
+  await store.dispatch('commonModule/setCommonInfo', {cbcLayer: true});
+
 
 });
 onUnmounted(() => {

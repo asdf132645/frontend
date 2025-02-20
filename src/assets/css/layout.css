@@ -1632,7 +1632,7 @@ p.loadingText {
 .classNmRbc {
     display: inline-block;
     text-align: left;
-    min-width: 160px;
+    min-width: 138px;
 }
 
 .degree {
@@ -1746,7 +1746,7 @@ div#viewerSmall {
 ul.nth1Child li {
     display: inline-block;
     font-size: 0.8rem;
-    padding: 5px 0;
+    padding: 5px 5px;
     user-select: none;
 }
 
@@ -1839,7 +1839,7 @@ span.rbcSapnDown .degreeActive {
 }
 
 .categories.rbcClass > ul > li > span {
-    min-width: 74%;
+    min-width: 64%;
     font-size: 0.8rem;
     vertical-align: sub;
 }
@@ -3702,7 +3702,7 @@ ul.wbcHotKeysItems {
 }
 
 .rbcDivInReportWithCBC {
-    width: 27%;
+    width: 26%;
 }
 
 ul.normalItems {
@@ -4849,6 +4849,7 @@ button.reSelect {
     padding: 5px 10px;
     top: -12px;
     cursor: pointer;
+    min-width: 167px;
 }
 
 button.reSelect:hover {
@@ -4857,16 +4858,23 @@ button.reSelect:hover {
 }
 
 .crcPopUpDiv.crcAdd {
-    top: 0;
+    top: -44px;
     background: #f7fafc;
     border: 1px solid #3498db;
     padding: 20px;
-    width: 50%;
+    width: 52%;
     left: 25%;
     z-index: 1000;
     max-height: 800px;
-    overflow: auto;
+    /*overflow: auto;*/
     color: #333333;
+}
+
+.remarkBody {
+    max-height: 731px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 10px;
 }
 
 ul.crcListContentUl {
@@ -4933,6 +4941,7 @@ button.plusBtn {
     border-radius: 5px;
     padding: 5px 10px;
 }
+
 .crcListRow p {
     padding: 12px;
     display: block;
@@ -4944,6 +4953,7 @@ button.plusBtn {
     line-height: 3;
     padding-left: 15px;
 }
+
 .delBtn {
     background: none;
     font-size: 1.2rem;
@@ -5179,9 +5189,11 @@ li.crcListContentHeader input, li.crcListContentHeader span {
     width: auto;
     font-size: 0.9rem;
 }
+
 .crcSel {
     min-width: 167px;
 }
+
 span.smCrcTitle {
     margin-top: 10px;
     display: block;
@@ -5289,9 +5301,9 @@ table.remarkDefaultTable {
 }
 
 table.remarkDefaultTable tr th {
-    padding: 10px;
+    padding: 15px;
     font-weight: 600;
-    background: #185354;
+    background: #3f4e4f;
     color: #fff;
 }
 
@@ -5313,10 +5325,10 @@ h3.crcDefaultTitle {
 }
 
 .headerRemark.topLine button, .remarkDefaultTable button {
-    border: 1px solid #3498db;
+    border: 1px solid #000000;
     background: #fff;
     border-radius: 5px;
-    padding: 7px 14px;
+    padding: 9px 14px;
     font-size: 0.8rem;
     cursor: pointer;
 }
@@ -5346,12 +5358,17 @@ input.firstInput {
 }
 
 .crcDefaultBtn {
-    border: 1px solid #3498db;
+    border: 1px solid #000;
     background: #fff;
     border-radius: 5px;
     padding: 6px 14px;
     font-size: 0.8rem;
     cursor: pointer;
+}
+
+table.remarkDefaultTable.bottom tr {
+    border: none;
+    text-align: left;
 }
 
 table.remarkDefaultTable input {
@@ -5363,20 +5380,62 @@ table.remarkDefaultTable input {
     right: 20px;
 }
 
+table.remarkDefaultTable tr td:last-child {
+    text-align: center;
+}
+
+.search-container.report {
+    display: inline-block;
+}
+
+.search-container.report input {
+    width: 76%;
+    border: 1px solid #000000;
+}
+
+button.btnSearchRemark:hover {
+    background: #dedede;
+}
+.scrollTableContainer {
+    width: 100%;
+    overflow: hidden;
+}
+
+.remarkDefaultTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tbody-container {
+    display: block;
+    max-height: 400px; /* 스크롤 높이 설정 */
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* ✅ tbody 내부의 테이블이 thead와 정렬되도록 설정 */
+.tbody-container table {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* 테이블 레이아웃 유지 */
+}
 .crcPopUpDiv.remark {
     top: 0%;
     background: #f8f8f8;
     border: 1px solid #000000;
     padding: 20px;
-    width: 50%;
-    left: 25%;
+    width: 58%;
+    left: 21%;
     z-index: 1000;
     color: #333333;
     font-size: 0.8rem;
     max-height: 700px;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
 }
-
+table.remarkDefaultTable.scroll tbody {
+    max-height: 500px;
+    overflow: scroll;
+}
 .codeDiv {
     text-align: left;
 }

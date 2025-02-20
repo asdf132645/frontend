@@ -57,7 +57,9 @@
         <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">
           <font-awesome-icon :icon="['fas', 'floppy-disk']"/>
         </button>
-        <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
+        <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">
+          <font-awesome-icon :icon="['fas', 'broom']" />
+        </button>
         <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
                 v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
           Image Select
@@ -1051,6 +1053,7 @@ const tempSaveDataEmpty = async () => {
   // await saveDataDeleteApi({slotId: props.selectItems.slotId});
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
+  console.log(crcArr.value)
   cbcFlag.value = '';
   recoList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
   remarkList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
