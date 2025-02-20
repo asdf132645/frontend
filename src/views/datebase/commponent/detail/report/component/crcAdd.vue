@@ -1,7 +1,13 @@
 <template>
   <div @click="closeIsCrcAddChild" class="crcAddBack">
   </div>
-  <div class="crcPopUpDiv crcAdd"  @click.stop>
+  <div class="crcPopUpDiv crcAdd" @click.stop>
+    <div class="remarkHeader">
+      <h3 class="crcDefaultTitle"> Code Repository {{ addEditType === 'add' ? 'Add' : 'Edit' }} Modal</h3>
+      <button @click="closeIsCrcAddChild" class="ml10 crcCloseBtn">
+        <font-awesome-icon :icon="['fas', 'xmark']" />
+      </button>
+    </div>
     <div class="codeDiv">
       <span>Code</span>
       <input type="text" class="codeInput" v-model="codeVal"/>
@@ -47,9 +53,6 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in remarkList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <!--            <button @click="listDel(index, 'remark')">-->
-            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -66,9 +69,6 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in commentList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <!--            <button @click="listDel(index, 'comment')">-->
-            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -85,18 +85,15 @@
         <div class="remarkUlList">
           <div v-for="(item, index) in recoList" :key="index">
             <textarea v-model="item.remarkAllContent"></textarea>
-            <!--            <button @click="listDel(index, 'reco')">-->
-            <!--              <font-awesome-icon :icon="['fas', 'trash']"/>-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
     </div>
 
     <div class="mt20">
-      <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Save</button>
+      <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Insert</button>
       <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
-      <button class="crcDefaultBtn ml10" type="button" @click="closeIsCrcAddChild">Close</button>
+<!--      <button class="crcDefaultBtn ml10" type="button" @click="closeIsCrcAddChild">Close</button>-->
     </div>
   </div>
   <ToastNotification
@@ -188,7 +185,12 @@ const isComment = ref(false);
 onBeforeMount(async () => {
   // crcSetArr 초기화
   crcSetArr.value = JSON.parse(JSON.stringify(props.crcSetArrP));
-
+  const setFirstData = [{
+    code: "",
+    id: 0,
+    remarkAllContent: "",
+    remarkContent: ""
+  }];
   // Edit 모드일 경우 editItem의 값을 초기화
   if (props.addEditType === 'edit') {
     codeVal.value = props.editItem.code; // 코드 값 초기화
@@ -211,9 +213,9 @@ onBeforeMount(async () => {
     });
 
     // 리마크 초기화
-    remarkList.value = props.editItem.crcRemark || [];
-    recoList.value = props.editItem.crcRecommendation || [];
-    commentList.value = props.editItem.crcComment || [];
+    remarkList.value = props.editItem.crcRemark || setFirstData;
+    recoList.value = props.editItem.crcRecommendation || setFirstData;
+    commentList.value = props.editItem.crcComment || setFirstData;
     remarkList.value = remarkList.value.map(item => {
       return {
         ...item,
@@ -245,6 +247,9 @@ onBeforeMount(async () => {
         }
       }
     }
+    remarkList.value = setFirstData;
+    recoList.value = setFirstData;
+    commentList.value = setFirstData;
   }
   const crcOptionApi = await crcOptionGet();
   if (crcOptionApi.data.length !== 0) {
@@ -422,15 +427,15 @@ const updateList = (newList: any[], type: string) => {
 
   switch (type) {
     case 'remark':
-      remarkallContentPush(newList,remarkList)
+      remarkallContentPush(newList, remarkList)
       closeSelect('remark');
       break;
     case 'comment':
-      remarkallContentPush(newList,commentList)
+      remarkallContentPush(newList, commentList)
       closeSelect('comment');
       break;
     case 'reco':
-      remarkallContentPush(newList,recoList)
+      remarkallContentPush(newList, recoList)
       closeSelect('recommendation');
       break;
   }

@@ -35,9 +35,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 const props = defineProps(['dbData', 'selectedItem']);
 const store = useStore();
 const iaRootPath = ref(store.state.commonModule.iaRootPath);
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const apiBaseUrl = computed(() => viewerCheck.value === 'viewer' ? window.MAIN_API_IP : window.APP_API_BASE_URL);
-
+const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 const allImages = ref<any>([]);
 const hiddenImages = ref({});
 const selectedImage = ref('');
@@ -125,10 +123,10 @@ function getImageUrl(imageName: any, id: string, title: string): string {
   const path = selectedItem?.img_drive_root_path !== '' && selectedItem?.img_drive_root_path ? selectedItem?.img_drive_root_path : iaRootPath.value;
   if (projectType.value === 'pb') {
     const folderPath = `${path}/${slotId}/${DIR_NAME.WBC_CLASS}/${id}_${title}`;
-    return `${apiBaseUrl.value}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
+    return `${apiBaseUrl}/images/getImageRealTime?folder=${folderPath}&imageName=${imageName}`;
   } else {
     const folderPath = `${path}/${slotId}/${DIR_NAME.BM_CLASS}/${id}_${title}`;
-    return `${apiBaseUrl.value}/images?folder=${folderPath}&imageName=${imageName}`;
+    return `${apiBaseUrl}/images?folder=${folderPath}&imageName=${imageName}`;
   }
 }
 

@@ -164,6 +164,9 @@ onMounted(async () => {
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
   if (cbcFilePathSetArr.value && cbcFilePathSetArr.value !== '') {
+    // if(){
+    //
+    // }
     await initCbcData(selectItemsVal.value);
   }
 });

@@ -1,31 +1,36 @@
 <template>
   <div class="tab-content crcDiv reportCrcDiv">
-    <div class="text-left mb10">
-      <button class="crcBtn" @click="openCrcAdd">
-        Add
+    <div class="text-right mb10">
+      <button class="plusBtn" @click="openCrcAdd">
+        <font-awesome-icon :icon="['fas', 'circle-plus']" />
       </button>
-      <button class="crcBtn ml10" @click="deleteRow('check')">
-        Check Delete
+      <button class="delBtn ml10" @click="deleteRow('check')">
+        <font-awesome-icon :icon="['fas', 'trash']" />
       </button>
     </div>
     <ul class="crcListContentUl">
       <li class="crcListContentHeader">
-        <input type="checkbox" @change="selectAll($event)"/>
-        <span>All Check</span>
+        <div>
+          <input type="checkbox" @change="selectAll($event)"/>
+          <span class="ml5">Code</span>
+        </div>
+        <div>
+          <span>Action</span>
+          <span></span>
+        </div>
       </li>
-
       <!-- 각 crcDataArr의 항목을 출력 -->
       <li v-for="(item, index) in crcDataArr" :key="index" class="crcListContent">
-        <span class="crcListSpan" @click="toggleOpen(index)">
+        <span class="crcListSpan" @click="toggleOpen(index, item.id)">
             <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/>
             <span>{{ item.code }}</span>
             <div class="crcListDiv">
                 <button @click.stop="startEdit(item)" class="hoverSizeAction">
                     <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
                 </button>
-                <button @click.stop="deleteRow('', item.id)" class="hoverSizeAction">
-                    <font-awesome-icon :icon="['fas', 'trash']"/>
-                </button>
+<!--                <button @click.stop="deleteRow('', item.id)" class="hoverSizeAction">-->
+<!--                    <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--                </button>-->
             </div>
           <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
             <font-awesome-icon
@@ -62,17 +67,21 @@
           </div>
 
           <!-- Remark 출력 -->
-          <div class="mt10" v-if="item.crcRemark && item.crcRemark.length > 0 && crcVisibleTitle.remark">
+          <div class="mt10 remarkDetailDiv" v-if="item.crcRemark && item.crcRemark.length > 0 && crcVisibleTitle.remark">
             <span class="smCrcTitle">{{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}</span>
-            <pre class="pre-wrap" v-for="remark in item.crcRemark" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
+            <pre class="pre-wrap" v-for="remark in item.crcRemark" :key="remark.id"
+                 v-html="remark?.remarkAllContent"></pre>
           </div>
-          <div class="mt10" v-if="item.crcComment && item.crcComment.length > 0 && crcVisibleTitle.comment">
+          <div class="mt10 remarkDetailDiv" v-if="item.crcComment && item.crcComment.length > 0 && crcVisibleTitle.comment">
             <span class="smCrcTitle">{{ setCrcTitles(siteCd, crcRemarkCount[1].name) }}</span>
-            <pre class="pre-wrap" v-for="remark in item.crcComment" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
+            <pre class="pre-wrap" v-for="remark in item.crcComment" :key="remark.id"
+                 v-html="remark?.remarkAllContent"></pre>
           </div>
-          <div class="mt10" v-if="item.crcRecommendation && item.crcRecommendation.length > 0 && crcVisibleTitle.recommendation">
+          <div class="mt10 remarkDetailDiv"
+               v-if="item.crcRecommendation && item.crcRecommendation.length > 0 && crcVisibleTitle.recommendation">
             <span class="smCrcTitle">{{ setCrcTitles(siteCd, crcRemarkCount[2].name) }}</span>
-            <pre class="pre-wrap" v-for="remark in item.crcRecommendation" :key="remark.id" v-html="remark?.remarkAllContent"></pre>
+            <pre class="pre-wrap" v-for="remark in item.crcRecommendation" :key="remark.id"
+                 v-html="remark?.remarkAllContent"></pre>
           </div>
         </div>
       </li>
@@ -284,7 +293,14 @@ const selectAll = (event: Event) => {
 };
 
 // 열림/닫힘 토글 함수
-const toggleOpen = (index: number) => {
+const toggleOpen = (index: number, id) => {
+  const selectedIndex = selectedItems.value.indexOf(id);
+  if (selectedIndex !== -1) {
+    selectedItems.value.splice(selectedIndex, 1);
+  } else {
+    selectedItems.value.push(id);
+  }
+
   isOpen.value[index] = !isOpen.value[index];
 };
 

@@ -27,10 +27,8 @@
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
       <div class="text-left crcMenu mb10">
-        <button class="crcBtn" @click="lisClick">
-          <font-awesome-icon :icon="['fas', 'upload']"/>
-        </button>
-        <span class="crcSpanMenu">List</span>
+        <button>testBtn</button>
+        <span class="crcSpanMenu">Code</span>
         <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
           <input
@@ -53,11 +51,19 @@
             </li>
           </ul>
         </div>
-        <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">Save</button>
+        <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">
+          <font-awesome-icon :icon="['fas', 'floppy-disk']"/>
+        </button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">Clear</button>
-        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
+        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
+                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
           Image Select
         </button>
+        <div class="lisUploadDiv">
+          <button class="crcBtn" @click="lisClick">
+            <font-awesome-icon :icon="['fas', 'upload']"/>
+          </button>
+        </div>
       </div>
 
       <!-- RBC 결과 -->
@@ -99,7 +105,9 @@
 
       <div class="mt20" v-if="remarkCountReturnCode(1) && ywmcSlip === 'H3'">
         <div class="crcDivTitle">
-          <span><font-awesome-icon :icon="['fas', 'message']"/> {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} </span>
+          <span><font-awesome-icon :icon="['fas', 'message']"/> {{
+              setCrcTitles(siteCd, crcRemarkCount[1].name)
+            }} </span>
           <button class="reSelect" @click="openSelect('comment')">
             {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }}
             Select
@@ -148,7 +156,8 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh" v-if="activeTab === 2"/>
+    <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh"
+             v-if="activeTab === 2"/>
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
@@ -187,7 +196,7 @@
                   @selectWbcImgSend="selectWbcImgSend"
   />
   <teleport to="body">
-    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" @resetLisRtf="resetLisRtf" />
+    <LisRef :nowCrcDataLis="nowCrcDataLis" v-if="kcchOnOff" :selectItems="selectItems" @resetLisRtf="resetLisRtf"/>
   </teleport>
 </template>
 
@@ -216,14 +225,14 @@ import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import moment from "moment";
 import CellStatusDashBoard from "@/views/datebase/commponent/detail/report/component/cellStatusDashBoard.vue";
 import ResultImage from "@/views/datebase/commponent/detail/report/component/resultImage.vue";
-import { lisSendSD } from "@/common/helpers/lisCbc/sdCbcLis";
+import {lisSendSD} from "@/common/helpers/lisCbc/sdCbcLis";
 import AutoCBCMatching from "@/views/datebase/commponent/detail/report/component/autoCBCMatching.vue";
 import WbcImageSelect from "@/views/datebase/commponent/detail/report/component/wbcImageSelect.vue";
 import {ywmcCbcDataLoad} from "@/common/helpers/lisCbc/ywmcCbcLis";
 import {ywmcSaveCommentPostSendApi} from "@/common/api/service/lisSend/lisSend";
 import {RunningInfoCBCType} from "@/common/api/service/runningInfo/dto/runningInfoDto";
 import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.vue";
-import { changeRemark, kcch_0033GetCBCData } from "@/common/helpers/lisCbc/kcch_0033";
+import {changeRemark, kcch_0033GetCBCData} from "@/common/helpers/lisCbc/kcch_0033";
 import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
 import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 
@@ -358,7 +367,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   await nextTick();
   await dataAutoComputeLoad();
-  submitState.value =  props.selectItems?.submitState.includes('lis') || props.selectItems?.submitState === 'Submit';
+  submitState.value = props.selectItems?.submitState.includes('lis') || props.selectItems?.submitState === 'Submit';
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']) {
     const {data, cbcDataVal, slip} = await ywmcCbcDataLoad(props.selectItems?.barcodeNo, await getCbcCodeList());
     ywmcSlip.value = slip;
@@ -413,7 +422,7 @@ const initCbcData0033 = async () => {
 
     if (cbcResult?.resultCBCCode) {
       const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
-        return kcchCbcAutoMatching({ data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge });
+        return kcchCbcAutoMatching({data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge});
       }));
 
       const flattedAutoChangeCodes = autoChangeCodes.flat();
@@ -805,7 +814,7 @@ const commonSucessLis = async () => {
       submitOfDate: localTime.format(),
       submitUserId: userModuleDataGet.value.userId,
     };
-    const updatedRuningInfo = { id: props.selectItems?.id, ...updatedItem };
+    const updatedRuningInfo = {id: props.selectItems?.id, ...updatedItem};
     await resRunningItem(updatedRuningInfo, true);
     submitState.value = true;
   }
@@ -1040,12 +1049,12 @@ const tempSaveDataEmpty = async () => {
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
   cbcFlag.value = '';
-  recoList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
-  remarkList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
-  commentList.value = [{ id: 0, code: '', remarkContent: '', remarkAllContent: '' }];
+  recoList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
+  remarkList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
+  commentList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
   code.value = '';
   searchText.value = '';
-  createdSummary.value = { RBC: [], WBC: [], PLT: [] };
+  createdSummary.value = {RBC: [], WBC: [], PLT: []};
   toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
   showToast('Data empty to storage')
 }
@@ -1078,9 +1087,9 @@ const checkTextAreaMaxLength = () => {
   }
 }
 
-const updateCbcDataToDatabase = async ({ cbcPatientNo, cbcPatientNm, cbcSex, cbcAge }: RunningInfoCBCType) => {
-  const updatedItem = { cbcPatientNo, cbcPatientNm, cbcSex, cbcAge };
-  const updatedRuningInfo = { id: slideData.value.id, ...updatedItem };
+const updateCbcDataToDatabase = async ({cbcPatientNo, cbcPatientNm, cbcSex, cbcAge}: RunningInfoCBCType) => {
+  const updatedItem = {cbcPatientNo, cbcPatientNm, cbcSex, cbcAge};
+  const updatedRuningInfo = {id: slideData.value.id, ...updatedItem};
   await resRunningItem(updatedRuningInfo, true);
 }
 

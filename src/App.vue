@@ -75,8 +75,7 @@ import {errLogsReadApi} from "@/common/api/service/fileSys/fileSysApi";
 import moment from 'moment';
 import 'moment-timezone';
 import {DIR_NAME} from "@/common/defines/constants/settings";
-import { CbcCodeItem } from "@/common/api/service/setting/dto/lisCodeDto";
-import { NormalRangeItems } from "@/common/api/service/setting/dto/normalRangeDto";
+import {apiUrl} from "@/common/api/apiUrl";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -87,7 +86,7 @@ const instance = getCurrentInstance();
 const userId = ref('');
 const storedUser = sessionStorage.getItem('user');
 const getStoredUser = JSON.parse(storedUser || '{}');
-const normalItems = ref<NormalRangeItems[]>([]);
+const normalItems = ref<any>([]);
 const userModuleDataGet = computed(() => store.state.userModule);
 const reqArr = computed(() => store.state.commonModule);
 const runningInfoBoolen = ref(false);
@@ -108,21 +107,21 @@ const projectBm = ref(false);
 const parsedDataProps = ref<any>({});
 const parsedDataSysInfoProps = ref<any>({});
 const startStatus = ref(false);
-const pbVersion = ref('');
-const pb100aCassette = ref('');
+const pbVersion = ref<any>('');
+const pb100aCassette = ref<any>('');
 const deleteData = ref(false);
 let socketTimeoutId: number | undefined = undefined; // 타이머 ID 저장
 const isFullscreen = ref<boolean>(false);
-let intervalId: any;
 const ipMatches = ref(false);
 const barcodeNum = ref('');
 const cbcFilePathSetArr = ref('');
-const cbcCodeList = ref<CbcCodeItem[]>([]);
+const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
 const currentSlotId = ref('');
 const runningInfoId = ref('');
+let intervalId: any;
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
   if (isTcpConnected) {
@@ -150,7 +149,7 @@ const getIpAddress = async (ip: string) => {
 }
 
 function checkFullscreenStatus() {
-  const { path } = router.currentRoute.value;
+  const {path} = router.currentRoute.value;
   if (path === '/user/login') {
     return;
   }
@@ -230,15 +229,32 @@ window.addEventListener('beforeunload', async function (event: any) {
 
 const leave = async (event) => {
   event.preventDefault();
-  if (!ipMatches.value) {
+
+  const handleDeviceIp = async () => {
     const result = await getDeviceIpApi();
-    const ipAddress = `ip=${result.data}`
+    const ipAddress = `ip=${result.data}`;
     const url = `http://${result.data}:3000/close?${ipAddress}`;
     await axios.get(url);
-  } else {
+  };
+
+  const emitExitEvent = async () => {
     await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
+  };
+
+  try {
+    if (!ipMatches.value) {
+      await handleDeviceIp();
+    } else {
+      await emitExitEvent();
+      if (window.LINUX_SERVER_SET) {
+        await handleDeviceIp();
+      }
+    }
+  } catch (error) {
+    console.error('Error during leave operation:', error);
   }
 };
+
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
@@ -261,8 +277,14 @@ onMounted(async () => {
   await getNormalRange();
   await getDeviceInfo();
   startChecking();
+  // console.log(apiUrl());
   const result = await getDeviceIpApi();
-  ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
+
+  if (window.LINUX_SERVER_SET) {
+    ipMatches.value = isIpMatching(window.EQUIPMENTPCIP, result.data);
+  } else {
+    ipMatches.value = isIpMatching(window.APP_API_BASE_URL, result.data);
+  }
 
   if (!projectBm.value) {
     cbcFilePathSetArr.value = await getCbcPathData();
@@ -292,7 +314,7 @@ onMounted(async () => {
           await runInfoPostWebSocket();
         }
       }, 500);
-      await store.dispatch('commonModule/setCommonInfo', { firstLoading: true });
+      await store.dispatch('commonModule/setCommonInfo', {firstLoading: true});
     }
   }
   EventBus.subscribe('childEmitSocketData', emitSocketData);
@@ -749,9 +771,9 @@ const startSysPostWebSocket = async () => {
   }
 
   if (window.MACHINE_VERSION === '100a') {
-    Object.assign(req, { isRewindingBelt: isRewindingBelt.value });
+    Object.assign(req, {isRewindingBelt: isRewindingBelt.value});
 
-    Object.assign(req, { autoStart: reqAutoStart });
+    Object.assign(req, {autoStart: reqAutoStart});
   }
 
   await store.dispatch('commonModule/setCommonInfo', {reqArr: req});

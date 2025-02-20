@@ -3,5 +3,5 @@ import { apiConstants } from "@/common/api/apiConstants";
 const httpClient = useHttpClient();
 
 export const executeExcelCreate = async (request: any): Promise<ApiResponse<void>> => {
-    return httpClient.httpPost(apiConstants.excel.execute, request);
+    return httpClient.httpPost(apiConstants.excel.execute, request, '' , false, window.LINUX_SERVER_SET );
 }
