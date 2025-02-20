@@ -244,6 +244,10 @@
     color: var(--blue-bg-0-color);
 }
 
+.blueDarkText {
+    color: var(--blue-bg-5-color);
+}
+
 .userSelectText {
     user-select: text;
 }
@@ -508,6 +512,13 @@ main.bmComponent {
     padding: 2px 5px;
 }
 
+.detailHeader-tool-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
 .small-icon-menu {
     display: inline-block;
     width: 58%;
@@ -678,22 +689,6 @@ ul.userSetOutUl {
 .logOutBox:hover {
     background-color: var(--white-color);
     color: var(--main-bg-0-color);
-}
-
-.memoModalBtn {
-    background-color: var(--gray-bg-12-color);
-    color: var(--white-color);
-    border: 1px solid var(--white-color);
-    border-radius: 5px;
-    padding: 5px 5px;
-    margin-left: 9px;
-    min-width: 50px;
-    cursor: pointer;
-}
-
-.memoModalBtn:hover {
-    background-color: var(--white-color);
-    color: var(--gray-bg-12-color);
 }
 
 .lastMenu {
@@ -1225,6 +1220,22 @@ table.settingTable select {
     width: 200px;
 }
 
+.commonBtn {
+    border: 1px solid var(--white-color);
+    background-color: transparent;
+    color: var(--white-color);
+    cursor: pointer;
+    padding: 2px 4px;
+    /*padding: 4px;*/
+    width: fit-content;
+    border-radius: 4px;
+}
+
+.commonBtn:hover {
+    background: var(--white-color);
+    color: var(--black-color);
+}
+
 button.saveBtn, .defaultBtn {
     margin-top: 10px;
     background-color: transparent; /* 기본 배경색 */
@@ -1387,15 +1398,6 @@ ul.degree.analysis {
 
 .reportSection .wbcClassScroll {
     max-height: 78vh;
-}
-
-.memoModal.bottom .memoModalBtn {
-    margin: 0;
-    width: 100%;
-}
-
-.memoModal.bottom textarea {
-    min-height: 100px;
 }
 
 .tab-btn_img_list {
@@ -2541,7 +2543,7 @@ tr.checkFirst {
 }
 
 li.submitted {
-    color: var(--blue-bg-5-color);
+    color: var(--blue-bg-5-color) !important;
 }
 
 img.cellImg {
@@ -3564,40 +3566,80 @@ table.tableClass {
     padding-top: 10px;
 }
 
-/*.downloadDeleteContainer p {*/
-/*    font-weight: bold;*/
-/*    margin-bottom: 10px;*/
-/*}*/
-
 .memoModal {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     left: 0;
-    min-width: 300px;
+    width: 400px;
+    height: 356px;
     background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
-    z-index: 999;
+    gap: 24px;
+    border-radius: 4px;
+}
 
+.memoModal-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.memoModal-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 70%;
+}
+
+.memoModal-title {
+    font-size: 1rem;
+}
+
+.memoModal-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .memoModal textarea {
     width: 100%;
-    min-width: 300px;
-    max-width: 600px;
-    min-height: 200px;
-    max-height: 400px;
-}
-
-.staticMemoModal {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 170px;
-    width: -webkit-fill-available;
-}
-
-.staticTextArea {
-    height: 140px;
+    height: 100px;
     resize: none;
+}
+
+.memoModal-btn-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+
+.memoModal-cancel-btn {
+    position: relative;
+    left: 6px;
+}
+
+.memoModalBtn {
+    background-color: var(--gray-bg-12-color);
+    color: var(--white-color);
+    border: 1px solid var(--white-color);
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin-left: 9px;
+    min-width: 50px;
+    cursor: pointer;
+    position: relative;
+    left: 6px;
+    top: 8px;
+}
+
+.memoModalBtn:hover {
+    background-color: var(--white-color);
+    color: var(--gray-bg-12-color);
 }
 
 ul.editOrder li {
@@ -4513,10 +4555,6 @@ table.cbcTable td {
     box-sizing: border-box;
     border-bottom: 1px dotted #ccc;
     padding: 5px;
-}
-
-.wbcContent .topClintInfo {
-    margin-bottom: 5px;
 }
 
 .crcWrap ul li {
