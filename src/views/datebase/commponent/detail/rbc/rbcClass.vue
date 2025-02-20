@@ -5,21 +5,6 @@
     <div class="mt10 flex-justify-between">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
-        <li class="pos-relative">
-          <font-awesome-icon
-              v-if="type !== 'report'"
-              :icon="['fas', 'comment-dots']"
-              @click="memoOpen"
-              @mouseover="tooltipVisibleFunc('memo', true)"
-              @mouseout="tooltipVisibleFunc('memo', false)"
-          />
-          <div v-if="memoModal" class="memoModal">
-            <textarea v-model="memo"></textarea>
-            <button class="memoModalBtn" @click="memoChange">OK</button>
-            <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
-          </div>
-          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" :message="MSG.TOOLTIP.MEMO"/>
-        </li>
         <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': slideData.submitState === 'Submit'}">
           <font-awesome-icon
               :icon="['fas', 'square-check']"
@@ -266,10 +251,6 @@
     <!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
     <!--        </div>-->
 
-    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
-      <textarea class="staticTextArea" v-model="memo"></textarea>
-      <button class="memoModalBtn" @click="memoChange">Save</button>
-    </div>
   </div>
   <Alert
       v-if="showAlert"
@@ -324,9 +305,7 @@ const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
 const pltCount = ref(0);
 const malariaCount = ref(0);
-const memo = ref('');
 const sliderValue = ref(50);
-const memoModal = ref(false);
 const store = useStore();
 const showAlert = ref(false);
 const alertType = ref('');
@@ -370,7 +349,6 @@ const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
 const tooltipVisible = ref({
   confirm: false,
-  memo: false,
 })
 
 onMounted(async () => {
@@ -379,7 +357,6 @@ onMounted(async () => {
   const {path} = router.currentRoute.value;
   pltCount.value = slideData.value?.rbcInfo.pltCount;
   malariaCount.value = slideData.value?.rbcInfo.malariaCount;
-  memo.value = slideData.value?.rbcMemo;
   maxRbcCount.value = slideData.value?.rbcInfo.maxRbcCount;
   except.value = path === '/report';
   rightClickItem.value = [];
@@ -431,7 +408,6 @@ watch(
       await reDegree(rbcInfoBeforeVal.value);
       pltCount.value = slideData.value?.pltCount;
       malariaCount.value = slideData.value?.malariaCount;
-      memo.value = slideData.value?.rbcMemo;
       rightClickItemSet();
       allCheckType.value = {
         '01': true,
@@ -944,34 +920,6 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   }
 
 };
-
-const memoOpen = () => {
-  memoModal.value = !memoModal.value;
-}
-
-const memoCancel = () => {
-  memoModal.value = false;
-}
-
-const memoChange = async () => {
-
-  const enterAppliedRbcMemo = memo.value.replaceAll('\r\n', '<br>');
-  const updatedItem = {
-    rbcMemo: enterAppliedRbcMemo,
-  };
-  const updatedRuningInfo = {...slideData.value, ...updatedItem}
-  const res = await gqlGenericUpdate(memoUpdateMutation, {
-    id: updatedRuningInfo.id,
-    wbcMemo: updatedRuningInfo.wbcMemo,
-    rbcMemo: updatedRuningInfo.rbcMemo,
-  });
-  if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
-    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-    memo.value = updatedRuningInfo.rbcMemo;
-    showSuccessAlert('Success');
-  }
-  memoModal.value = false;
-}
 
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;

@@ -1,6 +1,4 @@
 export interface TooltipClassInfoType {
-    barcodeCopy: boolean;
-    memo: boolean;
     confirm: boolean;
     classMoveLock: boolean;
     beforeCountPercent: boolean;
@@ -35,5 +33,7 @@ export interface DetailHeaderType {
     sex: boolean;
     age: boolean;
     hospitalName: boolean;
-    slideStatus: boolean;
+    barcodeCopy: boolean;
+    barcodeEdit: boolean;
+    memo: boolean;
 }

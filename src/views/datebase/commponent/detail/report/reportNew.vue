@@ -6,12 +6,13 @@
         :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
         :barcodeNo="selectItems?.barcodeNo"
         :cbcPatientNo="selectItems?.cbcPatientNo"
-        :patientName="selectItems?.patientName"
+        :patientName="patientName"
         :hospitalName="selectItems?.hosName"
         :cbcPatientName="selectItems?.cbcPatientNm"
         :cbcSex="selectItems?.cbcSex"
         :cbcAge="selectItems?.cbcAge"
         :analyzedDttm="selectItems?.analyzedDttm"
+        :slideData="selectItems"
     />
     <div style="display:flex;">
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
@@ -323,6 +324,7 @@ const changeSlideByLisUpload = ref(false);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const totalRBCImageNames = ref<string[]>([]);
+const patientName = ref('');
 
 watch(
     () => slideData.value,
@@ -384,7 +386,7 @@ onUnmounted(() => {
 const getDetailRunningInfo = async (data) => {
   try {
     selectItems.value = data;
-
+    patientName.value = data?.patientNm;
     if (
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] ||
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD'] ||

@@ -5,37 +5,33 @@
       <h3 class="orderTitle hh3title">Order Information</h3>
       <div class="orderListWrapper" style="padding: 0;">
         <ul class="orderListUi">
-          <li v-if="selectedItem?.testType">
+          <li>
             <p>Analysis Type</p>
-            <p>{{ selectedItem?.testType }}</p>
+            <p>{{ convertAnalysisTypeToTestType(selectedItem?.testType) }}</p>
           </li>
-          <li v-if="selectedItem?.barcodeNo">
+          <li>
             <p>Barcode ID</p>
             <p>{{ selectedItem?.barcodeNo }}</p>
           </li>
-          <li v-if="selectedItem?.analyzedDttm">
+          <li>
             <p>Analyzed Date</p>
             <p>{{ getDateTimeYYYYMMDDHHmmss(selectedItem?.analyzedDttm) }}</p>
           </li>
-          <li v-if="selectedItem?.patientNm">
+          <li>
             <p>Patient Name</p>
             <p>{{ selectedItem?.patientNm }}</p>
           </li>
-          <li v-if="selectedItem?.cbcSex">
+          <li>
             <p>Sex</p>
             <p>{{ selectedItem?.cbcSex }}</p>
           </li>
-          <li v-if="selectedItem?.cbcAge">
+          <li>
             <p>Age</p>
             <p>{{ selectedItem?.cbcAge }}</p>
           </li>
-          <li v-if="selectedItem?.hosNm">
+          <li>
             <p>Hospital</p>
             <p>{{ selectedItem?.hosNm }}</p>
-          </li>
-          <li>
-            <p>NS, NB Integration</p>
-            <p>{{ integrationFindNe(selectedItem.wbcInfoAfter) }}</p>
           </li>
         </ul>
         <div>
@@ -97,6 +93,7 @@ import {
 } from "@/common/helpers/common/classPercent";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
 import {getDateTimeYYYYMMDDHHmmss} from "@/common/lib/utils/dateUtils";
+import {BM_TEST_TYPE, TEST_TYPE} from "@/common/defines/constants/dataBase";
 
 const store = useStore();
 const props = defineProps(['selectedItem']);
@@ -141,20 +138,6 @@ watch(() => props.selectedItem, (newSelectedItem) => {
     barcodeImg.value = getImageUrl('barcode_image.jpg', newSelectedItem);
   }
 });
-
-const integrationFindNe = (wbcInfoAfter) => {
-  let returnText = '';
-  const neFindItem = wbcInfoAfter.find((el) => {
-    return el.title === 'NE'
-  });
-
-  if(neFindItem){
-    returnText = 'Y' ;
-  }else{
-    returnText = 'N';
-  }
-  return returnText;
-}
 
 const sortClassOrder = async () => {
   if (!orderClass.value || orderClass.value.length === 0 || !Array.isArray(orderClass.value)) {
@@ -284,6 +267,17 @@ function getImageUrl(imageName) {
 
 const onImageError = () => {
   barCodeImageShowError.value = true;
+}
+
+const convertAnalysisTypeToTestType = (analysisType) => {
+  if (!analysisType) {
+    return '';
+  }
+
+  if (projectType.value === 'pb') {
+    return TEST_TYPE.find((item) => item.value === analysisType)?.text;
+  }
+  return BM_TEST_TYPE.find((item) => item.value === analysisType)?.text;
 }
 
 </script>
