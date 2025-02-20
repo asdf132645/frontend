@@ -268,10 +268,10 @@
     <!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
     <!--        </div>-->
 
-    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">
-      <textarea class="staticTextArea" v-model="memo"></textarea>
-      <button class="memoModalBtn" @click="memoChange">Save</button>
-    </div>
+<!--    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">-->
+<!--      <textarea class="staticTextArea" v-model="memo"></textarea>-->
+<!--      <button class="memoModalBtn" @click="memoChange">Save</button>-->
+<!--    </div>-->
   </div>
   <Alert
       v-if="showAlert"
