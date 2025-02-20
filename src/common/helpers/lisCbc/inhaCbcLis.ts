@@ -89,16 +89,18 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                         cbcWorkList.push(obj);
                     }
                 });
-                const parms = {
-                    filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${selectItems?.barcodeNo}.txt`,
-                    data: cbcWorkList,
-                };
-                await createCbcFile(parms);
             } else {
                 errMessage = res?.returnCode;
                 loading = false;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
             }
+
+            const parms = {
+                filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${selectItems?.barcodeNo}.txt`,
+                data: cbcWorkList,
+            };
+            await createCbcFile(parms);
+
             const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
             const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
             if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
@@ -109,7 +111,6 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 cbcWorkList = cbcDataArray;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
             }
-
             loading = false;
             // console.log('Response:', response.data);
         } catch (error: any) {
@@ -289,7 +290,7 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
     resultStr += rbcTmp2
     console.log('rbc wbc 최종 resultStr 값', resultStr);
     try {
-        const apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
+        const apiBaseUrl = window.APP_API_BASE_URL;
 
         const body = {
             baseUrl: `${lisFilePathSetArr}/api/MifMain/File`,
