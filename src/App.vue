@@ -609,9 +609,9 @@ async function socketData(data: any) {
           wbcInfoAfter = updateWbcInfoAfter();
           // 바코드 번호가 다를 경우 이벤트 버스에 저장
           if (barcodeNum.value !== completeSlot.barcodeNo) {
-            const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
-            await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: inhaTestCode });
-            await inhaDataSend(wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, lisFilePath.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, completeSlot, userModuleDataGet.value.id)
+            const { inhaTestCode: localInhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, completeSlot, cbcCodeList.value, 'lisUpload');
+            await store.dispatch('commonModule/setCommonInfo', { inhaTestCode: localInhaTestCode });
+            await inhaDataSend(wbcInfoAfter, rbcInfoAfter, completeSlot.barcodeNo, lisFilePath.value, localInhaTestCode, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, completeSlot, userModuleDataGet.value.id)
             barcodeNum.value = completeSlot?.barcodeNo;
             submitState = 'lisCbc';
           }
