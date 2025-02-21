@@ -4,97 +4,101 @@
   <div class="crcPopUpDiv crcAdd" @click.stop>
     <div class="remarkHeader">
       <h3 class="crcDefaultTitle"> Code Repository {{ addEditType === 'add' ? 'Add' : 'Edit' }} Modal</h3>
-      <button @click="closeIsCrcAddChild" class="ml10 crcCloseBtn">
-        <font-awesome-icon :icon="['fas', 'xmark']" />
-      </button>
-    </div>
-    <div class="codeDiv">
-      <span>Code</span>
-      <input type="text" class="codeInput" v-model="codeVal"/>
-    </div>
-    <div>
-      <crc-compontent
-          :items="crcSetArr"
-          @updateSelect="updateSelect"
-          moType="RBC"
-          pageName="report"
-      ></crc-compontent>
-
-      <div class="moDivBox mt20">
-        <div>
-          <crc-compontent
-              :items="crcSetArr"
-              @updateSelect="updateSelect"
-              moType="WBC"
-              pageName="report"
-          ></crc-compontent>
-        </div>
-
-        <div>
-          <crc-compontent
-              :items="crcSetArr"
-              @updateSelect="updateSelect"
-              moType="PLT"
-              pageName="report"
-          ></crc-compontent>
-        </div>
+      <div>
+        <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">
+          <font-awesome-icon :icon="['fas', 'floppy-disk']"/>
+        </button>
+        <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
+        <button @click="closeIsCrcAddChild" class="ml10 crcCloseBtn">
+          <font-awesome-icon :icon="['fas', 'xmark']"/>
+        </button>
       </div>
-      <!-- Remark 관련 -->
-      <div class="mt20" v-if="remarkCountReturnCode(0)">
-        <div class="crcDivTitle">
-          <span> {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }} </span>
-          <button class="reSelect" @click="openSelect('remark')">
-            {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
-            Select
-          </button>
+    </div>
+    <div class="remarkBody">
+      <div class="codeDiv">
+        <span>Code</span>
+        <input type="text" class="codeInput" v-model="codeVal"/>
+      </div>
+      <div>
+        <crc-compontent
+            :items="crcSetArr"
+            @updateSelect="updateSelect"
+            moType="RBC"
+            pageName="report"
+        ></crc-compontent>
+
+        <div class="moDivBox mt20">
+          <div>
+            <crc-compontent
+                :items="crcSetArr"
+                @updateSelect="updateSelect"
+                moType="WBC"
+                pageName="report"
+            ></crc-compontent>
+          </div>
+
+          <div>
+            <crc-compontent
+                :items="crcSetArr"
+                @updateSelect="updateSelect"
+                moType="PLT"
+                pageName="report"
+            ></crc-compontent>
+          </div>
+        </div>
+        <!-- Remark 관련 -->
+        <div class="mt20" v-if="remarkCountReturnCode(0)">
+          <div class="crcDivTitle">
+            <span> {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }} </span>
+            <button class="reSelect" @click="openSelect('remark')">
+              {{ setCrcTitles(siteCd, crcRemarkCount[0].name) }}
+              Select
+            </button>
+          </div>
+
+          <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+          <div class="remarkUlList">
+            <div v-for="(item, index) in remarkList" :key="index">
+              <textarea v-model="item.remarkAllContent"></textarea>
+            </div>
+          </div>
         </div>
 
-        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-        <div class="remarkUlList">
-          <div v-for="(item, index) in remarkList" :key="index">
-            <textarea v-model="item.remarkAllContent"></textarea>
+        <div class="mt20" v-if="remarkCountReturnCode(1)">
+          <div class="crcDivTitle">
+            <span> {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} </span>
+            <button class="reSelect" @click="openSelect('comment')">
+              {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} Select
+            </button>
+          </div>
+
+          <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+          <div class="remarkUlList">
+            <div v-for="(item, index) in commentList" :key="index">
+              <textarea v-model="item.remarkAllContent"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt20" v-if="remarkCountReturnCode(2)">
+          <div class="crcDivTitle">
+            <span> {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }} </span>
+            <button class="reSelect" @click="openSelect('recommendation')">
+              {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }} Select
+            </button>
+          </div>
+
+          <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
+          <div class="remarkUlList">
+            <div v-for="(item, index) in recoList" :key="index">
+              <textarea v-model="item.remarkAllContent"></textarea>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="mt20" v-if="remarkCountReturnCode(1)">
-        <div class="crcDivTitle">
-          <span> {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} </span>
-          <button class="reSelect" @click="openSelect('comment')">
-            {{ setCrcTitles(siteCd, crcRemarkCount[1].name) }} Select
-          </button>
-        </div>
-
-        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-        <div class="remarkUlList">
-          <div v-for="(item, index) in commentList" :key="index">
-            <textarea v-model="item.remarkAllContent"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt20" v-if="remarkCountReturnCode(2)">
-        <div class="crcDivTitle">
-          <span> {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }} </span>
-          <button class="reSelect" @click="openSelect('recommendation')">
-            {{ setCrcTitles(siteCd, crcRemarkCount[2].name) }} Select
-          </button>
-        </div>
-
-        <!-- 업데이트된 Remark 리스트를 보여주는 부분 -->
-        <div class="remarkUlList">
-          <div v-for="(item, index) in recoList" :key="index">
-            <textarea v-model="item.remarkAllContent"></textarea>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <div class="mt20">
-      <button class="crcDefaultBtn" type="button" @click="saveCrcData" v-if="addEditType === 'add'">Insert</button>
-      <button class="crcDefaultBtn" type="button" @click="saveEdit" v-else>Edit</button>
-<!--      <button class="crcDefaultBtn ml10" type="button" @click="closeIsCrcAddChild">Close</button>-->
-    </div>
+
   </div>
   <ToastNotification
       v-if="toastMessage"

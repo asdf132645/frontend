@@ -59,6 +59,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 cbcWorkList = cbcDataArray;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode: testCode, loading };
             }
+
             // 응답 코드가 '0'일 때만 처리
             if (res?.returnCode === '0') {
                 // 환자 정보 설정
