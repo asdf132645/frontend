@@ -117,6 +117,10 @@
     gap: 4px;
 }
 
+.gap8 {
+    gap: 8px;
+}
+
 .gap14 {
     gap: 14px;
 }
@@ -2866,7 +2870,7 @@ ul.leftWbcInfo li {
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
-    width: 220px;
+    width: 160px;
     text-align: left;
 }
 
@@ -6078,6 +6082,7 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
+    color: white;
 }
 
 .tooltip-container > pre {

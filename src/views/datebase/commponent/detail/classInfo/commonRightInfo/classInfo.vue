@@ -6,7 +6,19 @@
 
 
   <div class="mt10 mb10 flex-justify-between">
-    <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
+    <div class="flex-align-center-justify-between">
+      <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
+      <p
+          v-if="type !== 'report'"
+          class="pos-relative cursorPointer"
+          @mouseover="tooltipVisibleFunc('classMoveLock', true)"
+          @mouseout="tooltipVisibleFunc('classMoveLock', false)"
+      >
+        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
+        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.classMoveLock" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CLASS_MOVE" />
+      </p>
+    </div>
 
     <ul class="leftWbcInfo">
       <li
@@ -29,16 +41,6 @@
       >
         <font-awesome-icon :icon="['fas', 'upload']" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
-      </li>
-      <li
-          v-if="type !== 'report'"
-          class="pos-relative"
-          @mouseover="tooltipVisibleFunc('classMoveLock', true)"
-          @mouseout="tooltipVisibleFunc('classMoveLock', false)"
-      >
-        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
-        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.classMoveLock" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CLASS_MOVE" />
       </li>
     </ul>
   </div>

@@ -9,7 +9,7 @@
         <span>{{ testType }}</span>
         <Tooltip :isVisible="tooltipVisible.analysisType" className="mb08" message='Analysis Type' />
       </li>
-      <li v-if="barcodeNo" class="flex-align-center gap4">
+      <li v-if="barcodeNo" class="flex-align-center gap8">
         <p
             class="pos-relative"
             @mouseover="tooltipVisibleFunc('barcodeNo', true)"

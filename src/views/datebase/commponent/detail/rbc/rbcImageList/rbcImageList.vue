@@ -16,9 +16,20 @@
 <!--        >Malaria-->
 <!--        </button>-->
       </div>
-      <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
-        <font-awesome-icon @click="imgSetOpen" size="lg" class="hoverSizeAction cursorPointer" :icon="['fas', 'gear']" />
-        <div class="imageList-setting-container" v-show="imgSet_img_list">
+      <div class='btn-imgsetbox_img_list imageSettingRef'>
+        <Button
+            class="wbc-img-set"
+            size="sm"
+            @click="imgSetOpen"
+            :icon="['fas', 'gear']"
+            :isActive="imgSet_img_list"
+            @mouseover="tooltipVisibleFunc('imageSetting', true)"
+            @mouseout="tooltipVisibleFunc('imageSetting', false)"
+        >
+          IMG Setting
+          <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" :style="'left: 36px'" :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
+        </Button>
+        <div class='imageList-setting-container imageSettingRef' v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness {{ imgBrightness }}</span>
@@ -172,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constants/rbc';
 import {DIR_NAME} from "@/common/defines/constants/settings";
@@ -183,6 +194,8 @@ import pako from 'pako';
 import Alert from "@/components/commonUi/Alert.vue";
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 import Button from "@/components/commonUi/Button.vue";
+import {MSG} from "@/common/defines/constants/constantMessageText";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -239,15 +252,22 @@ const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
 const zoomRatio = ref(0);
 const maxNumberOfLines = ref(330);
+const tooltipVisible = ref({
+  imageSetting: false,
+})
 
 onMounted(async () => {
   await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
   await nextTick();
   await initElement();
   await initGetRulerWidthHeight();
-  document.addEventListener('click', closeSelectBox);
+  document.addEventListener('click', handleClickOutside);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
+
+onUnmounted(async () => {
+  document.addEventListener('click', handleClickOutside);
+})
 
 const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -370,10 +390,15 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   }
 };
 
-const closeSelectBox = (event: MouseEvent) => {
+const handleClickOutside = (event: MouseEvent) => {
   const selectBox = document.querySelector('.rbc-select-box');
   if (selectBox && !selectBox.contains(event.target as Node)) {
     showSelect.value = false; // 셀렉트 박스 닫기
+  }
+
+  const imgSettingBox = document.querySelector('.imageSettingRef');
+  if (imgSettingBox && !imgSettingBox.contains(event.target as Node)) {
+    imgSet_img_list.value = false;
   }
 };
 
@@ -1349,6 +1374,10 @@ const initGetRulerWidthHeight = async () => {
   } catch (e) {
     console.error(e);
   }
+}
+
+const tooltipVisibleFunc = (type: 'imageSetting', visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 </script>

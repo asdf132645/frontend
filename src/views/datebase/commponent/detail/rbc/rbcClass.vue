@@ -19,6 +19,7 @@
         </li>
       </ul>
     </div>
+
     <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">

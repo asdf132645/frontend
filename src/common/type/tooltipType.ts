@@ -6,6 +6,15 @@ export interface TooltipClassInfoType {
     lisUpload: boolean;
 }
 
+export interface TooltipListDetailType {
+    cellMarking: boolean;
+    size: boolean;
+    imageSetting: boolean;
+    classCompare: boolean;
+    wps: boolean;
+    rollback: boolean;
+}
+
 export interface TooltipCrcResultCodesType {
     cbcToResultCodes: boolean;
 }
