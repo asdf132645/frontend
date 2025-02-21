@@ -1,0 +1,147 @@
+.base-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+    padding: 8px 16px;
+    gap: 8px;
+}
+
+/* 크기 스타일 sm, md, lg */
+
+.btn-sm {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.btn-md {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+.btn-lg {
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+/* 스타일 타입 */
+
+.btn-primary {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+}
+
+.btn-primary:hover {
+    background-color: white;
+    color: black;
+}
+
+.btn-secondary {
+    background: var(--main-bg-9-color);
+    color: white;
+    border: none;
+}
+
+.btn-icon {
+    font-size: 1.2em;
+}
+.btn-sm .btn-icon {
+    font-size: 1em;
+}
+.btn-lg .btn-icon {
+    font-size: 1.4em;
+}
+
+/* 비활성화 스타일 */
+.btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.classInfo-barcode-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    height: 200px;
+}
+
+.classInfo-barcode-wrapper > img {
+    height: 200px;
+}
+
+.categories-lastItem {
+    border-bottom: none;
+}
+
+.imageList-tab-btn {
+    width: 120px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
+}
+
+.imageList-btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    align-items: center;
+}
+
+.imageList-setting-container {
+    position: absolute;
+    top: 40px;
+    left: -234px;
+    width: 250px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.imageList-setting-container div {
+    padding: 10px 20px 10px 10px;
+}
+
+.listDetail-top-button-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.listDetail-top-button-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.listDetail-size-setting-container {
+    position: absolute;
+    top: 32px;
+    left: 128px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    border-radius: 4px;
+    width: 270px;
+    z-index: 3;
+    padding: 10px 8px;
+}
+
+.sizeContainer div {
+    text-align: center;
+}
+
+.sizeContainer div input, .sizeContainer div button {
+    width: 250px;
+}

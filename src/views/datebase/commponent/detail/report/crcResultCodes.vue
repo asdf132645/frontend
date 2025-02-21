@@ -27,7 +27,15 @@
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
       <div class="text-left crcMenu mb10">
-        <button>testBtn</button>
+        <div
+            class="pos-relative"
+            @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
+            @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
+        >
+          <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
+          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
+        </div>
+<!--        <button>testBtn</button>-->
         <span class="crcSpanMenu">Code</span>
         <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
@@ -216,7 +224,7 @@ import {
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
@@ -235,6 +243,8 @@ import LisRef from "@/views/datebase/commponent/detail/report/component/lisRef.v
 import {changeRemark, kcch_0033GetCBCData} from "@/common/helpers/lisCbc/kcch_0033";
 import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
 import {setCrcTitles} from "@/common/helpers/crc/crcContent";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
+import { TooltipCrcResultCodesType } from "@/common/type/tooltipType";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -244,9 +254,6 @@ const props = defineProps({
   },
   selectItems: {
     type: Array
-  },
-  triggerChangeCRCMorphology: {
-    type: Boolean,
   }
 });
 const store = useStore();
@@ -305,6 +312,9 @@ const createdSummary = ref<any>({
   WBC: [],
   PLT: [],
 });
+const tooltipVisible = ref({
+  cbcToResultCodes: false,
+})
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
@@ -400,10 +410,6 @@ onMounted(async () => {
     ywmcSlip.value = 'H3'; // 원주기독에 독단적인 커스텀마이징 때문에 강제적으로 H3 pbs 기준으로 맞춤..
   }
 });
-
-watch(() => props.triggerChangeCRCMorphology, async () => {
-  await initCbcData0033();
-})
 
 const initCbcData0033 = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -1095,7 +1101,14 @@ const updateCbcDataToDatabase = async ({cbcPatientNo, cbcPatientNm, cbcSex, cbcA
 
 const createSummary = () => {
   changeRemark(crcArr.value, createdSummary.value, remarkList.value)
+}
 
+const tooltipVisibleFunc = (type: keyof TooltipCrcResultCodesType, visible: boolean) => {
+  tooltipVisible.value[type] = visible;
+}
+
+const updateCRCMorphology = async () => {
+  await initCbcData0033();
 }
 
 </script>

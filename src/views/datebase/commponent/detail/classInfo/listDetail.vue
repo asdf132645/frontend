@@ -33,159 +33,164 @@
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <div class="imgMenuSetDiv">
-        <button
-            type="button"
-            @click="drawCellMarker(false)"
-            class="pos-relative"
-            @mouseover="tooltipVisibleFunc('cellMarking', true)"
-            @mouseout="tooltipVisibleFunc('cellMarking', false)"
-        >
-          <font-awesome-icon :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"/>
-          Cell Marking
-          <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_MARKING"/>
-        </button>
-        <button
-            @click="showSizeControl"
-            class="sizeButton pos-relative"
-            @mouseover="tooltipVisibleFunc('size', true)"
-            @mouseout="tooltipVisibleFunc('size', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-          Size
-          <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_SIZE"/>
-        </button>
-        <div v-show="showSize" class="sizeContainer">
-          <div>
+      <div class="listDetail-top-button-container">
+        <div class="listDetail-top-button-wrapper">
+          <Button
+              type="button"
+              size="sm"
+              @click="drawCellMarker(false)"
+              class="pos-relative"
+              @mouseover="tooltipVisibleFunc('cellMarking', true)"
+              @mouseout="tooltipVisibleFunc('cellMarking', false)"
+              :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+          >
+            Cell Marking
+            <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_MARKING"/>
+          </Button>
+          <Button
+              @click="showSizeControl"
+              size="sm"
+              class="sizeButton pos-relative"
+              @mouseover="tooltipVisibleFunc('size', true)"
+              @mouseout="tooltipVisibleFunc('size', false)"
+              :icon="['fas', 'plus-minus']"
+          >
+            Size
+            <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_SIZE"/>
+          </Button>
+          <div v-show="!showSize" class="listDetail-size-setting-container shadowBox">
             <div class="sizeTitle">Size</div>
             <div class="customImgSet size">
-              <!--              {{ imgPixelConvertToPercent(imageSize) }}-->
               <input
                   type="number"
                   :value="displayValue"
                   @input="updateImageSize"
               />
             </div>
-            <!--            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>-->
             <input
+                style="display: inline-flex"
                 type="range"
                 min="50"
                 max="290"
                 v-model="imageSize"
                 @input="changeImageSize"
             />
-            <button class="resetBtn mb10" @click="imgSizeReset">Size Reset</button>
+            <Button @click="imgSizeReset" class="w-full">
+              Size Reset
+            </Button>
           </div>
-
-        </div>
-        <div class="imgSetWrap" ref="imgSetWrap">
-          <button
-              @click="imgSetOpen"
-              class="pos-relative"
-              @mouseover="tooltipVisibleFunc('imageSetting', true)"
-              @mouseout="tooltipVisibleFunc('imageSetting', false)"
+          <Button
+              size="sm"
+              @click="classCompare"
+              @mouseover="tooltipVisibleFunc('classCompare', true)"
+              @mouseout="tooltipVisibleFunc('classCompare', false)"
+              :icon="['fas', 'code-compare']"
           >
-            <font-awesome-icon :icon="['fas', 'gear']"/>
-            IMG Setting
-            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
-          </button>
-          <div class="imgSet" v-show="imgSet">
-            <div>
-              <font-awesome-icon :icon="['fas', 'sun']"/>
-              Brightness
-              <div class="customImgSet"><input type="number" v-model="imgBrightness" @input="changeImgBrightness"/>
-              </div>
-              <input
-                  type="range"
-                  min="50"
-                  max="120"
-                  v-model="imgBrightness"
-                  @input="changeImgBrightness"
-              />
-              <button class="resetBtn mb20" @click="brightnessReset">Brightness Reset</button>
-            </div>
-            <div>
-              <font-awesome-icon :icon="['fas', 'palette']"/>
-              RGB
-              <div class="customImgSet rgb">
-                [
-                <input type="number" v-model="imageRgb[0]" @input="changeImageRgb('')"/>,
-                <input type="number" v-model="imageRgb[1]" @input="changeImageRgb('')"/>,
-                <input type="number" v-model="imageRgb[2]" @input="changeImageRgb('')"/>
-                ]
-              </div>
-              <div class="flex-align-center">
-                <label>R</label>
-                <input
-                    type="range"
-                    min="0"
-                    max="255"
-                    v-model="imageRgb[0]"
-                    @input="changeImageRgb('')"
-                />
-              </div>
-              <div class="flex-align-center">
-                <label>G</label>
-                <input
-                    type="range"
-                    min="0"
-                    max="255"
-                    v-model="imageRgb[1]"
-                    @input="changeImageRgb('')"
-                />
-              </div>
-              <div class="flex-align-center">
-                <label>B</label>
-                <input
-                    type="range"
-                    min="0"
-                    max="255"
-                    v-model="imageRgb[2]"
-                    @input="changeImageRgb('')"
-                />
-              </div>
-              <button class="resetBtn" @click="rgbReset">RGB Reset</button>
-            </div>
-
-          </div>
+            Class Compare
+            <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_CLASS_COMPARE"/>
+          </Button>
+          <Button
+              @click="wps"
+              v-if="isWpsBtnShow"
+              size="sm"
+              @mouseover="tooltipVisibleFunc('wps', true)"
+              @mouseout="tooltipVisibleFunc('wps', false)"
+              :icon="['fas', 'expand']"
+          >
+            WPS
+            <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_WPS"/>
+          </Button>
         </div>
-        <button
-            @click="classCompare"
-            class="pos-relative"
-            @mouseover="tooltipVisibleFunc('classCompare', true)"
-            @mouseout="tooltipVisibleFunc('classCompare', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'code-compare']"/>
-          Class Compare
-          <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_CLASS_COMPARE"/>
-        </button>
-        <button
-            @click="wps"
-            v-if="isWpsBtnShow"
-            class="pos-relative"
-            @mouseover="tooltipVisibleFunc('wps', true)"
-            @mouseout="tooltipVisibleFunc('wps', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'expand']"/>
-          WPS
-          <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_WPS"/>
-        </button>
-        <button
-            @click="rollbackChanges"
-            class="rollbackButton"
-            @mouseover="tooltipVisibleFunc('rollback', true)"
-            @mouseout="tooltipVisibleFunc('rollback', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'rotate-left']"/>
-          Rollback
-          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 12px;'" position="top"
-                   type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
-        </button>
+        <div>
+          <div class="imgSetWrap" ref="imgSetWrap">
+            <Button
+                @click="imgSetOpen"
+                class="pos-relative"
+                @mouseover="tooltipVisibleFunc('imageSetting', true)"
+                @mouseout="tooltipVisibleFunc('imageSetting', false)"
+                :icon="['fas', 'gear']"
+            >
+              IMG Setting
+              <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type=""
+                       :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
+            </Button>
+            <div class="imgSet" v-show="imgSet">
+              <div>
+                <font-awesome-icon :icon="['fas', 'sun']"/>
+                Brightness
+                <div class="customImgSet"><input type="number" v-model="imgBrightness" @input="changeImgBrightness"/>
+                </div>
+                <input
+                    type="range"
+                    min="50"
+                    max="120"
+                    v-model="imgBrightness"
+                    @input="changeImgBrightness"
+                />
+                <button class="resetBtn mb20" @click="brightnessReset">Brightness Reset</button>
+              </div>
+              <div>
+                <font-awesome-icon :icon="['fas', 'palette']"/>
+                RGB
+                <div class="customImgSet rgb">
+                  [
+                  <input type="number" v-model="imageRgb[0]" @input="changeImageRgb('')"/>,
+                  <input type="number" v-model="imageRgb[1]" @input="changeImageRgb('')"/>,
+                  <input type="number" v-model="imageRgb[2]" @input="changeImageRgb('')"/>
+                  ]
+                </div>
+                <div class="flex-align-center">
+                  <label>R</label>
+                  <input
+                      type="range"
+                      min="0"
+                      max="255"
+                      v-model="imageRgb[0]"
+                      @input="changeImageRgb('')"
+                  />
+                </div>
+                <div class="flex-align-center">
+                  <label>G</label>
+                  <input
+                      type="range"
+                      min="0"
+                      max="255"
+                      v-model="imageRgb[1]"
+                      @input="changeImageRgb('')"
+                  />
+                </div>
+                <div class="flex-align-center">
+                  <label>B</label>
+                  <input
+                      type="range"
+                      min="0"
+                      max="255"
+                      v-model="imageRgb[2]"
+                      @input="changeImageRgb('')"
+                  />
+                </div>
+                <button class="resetBtn" @click="rgbReset">RGB Reset</button>
+              </div>
+
+            </div>
+          </div>
+          <Button
+              @click="rollbackChanges"
+              class="rollbackButton"
+              @mouseover="tooltipVisibleFunc('rollback', true)"
+              @mouseout="tooltipVisibleFunc('rollback', false)"
+          >
+            <font-awesome-icon :icon="['fas', 'rotate-left']"/>
+            Rollback
+            <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 12px;'" position="top"
+                     type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
+          </Button>
+        </div>
+
       </div>
       <div>
         <ImageGallery
@@ -339,6 +344,7 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {apiUrl} from "@/common/api/apiUrl";
 import router from "@/router";
+import Button from "@/components/commonUi/Button.vue";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);

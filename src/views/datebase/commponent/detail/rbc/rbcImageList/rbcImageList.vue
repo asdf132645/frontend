@@ -1,23 +1,24 @@
 <template>
   <div class="rbc-container imgList">
-    <div class="btn-container_img_list">
+    <div class="imageList-btn-wrapper">
       <div>
-        <button
-            @click="toggleViewer('lowMag')"
-            class="tab-btn_img_list"
-            :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"
-        >Low magnification
-        </button>
-        <button
-            @click="toggleViewer('malaria')"
-            class="tab-btn_img_list"
-            :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"
-        >Malaria
-        </button>
+<!--        <button-->
+<!--            @click="toggleViewer('lowMag')"-->
+<!--            class="tab-btn_img_list"-->
+<!--            :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"-->
+<!--        >RBC Field-->
+<!--        </button>-->
+        <button class="imageList-tab-btn">RBC Field</button>
+<!--        <button-->
+<!--            @click="toggleViewer('malaria')"-->
+<!--            class="tab-btn_img_list"-->
+<!--            :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"-->
+<!--        >Malaria-->
+<!--        </button>-->
       </div>
       <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
-        <button class="darkButton" @click="imgSetOpen" v-show="activeTab !== 'malaria'">IMG Setting</button>
-        <div class="imgSet_img_list" v-show="imgSet_img_list">
+        <font-awesome-icon @click="imgSetOpen" size="lg" class="hoverSizeAction cursorPointer" :icon="['fas', 'gear']" />
+        <div class="imageList-setting-container" v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness {{ imgBrightness }}</span>
@@ -181,6 +182,7 @@ import {useStore} from "vuex";
 import pako from 'pako';
 import Alert from "@/components/commonUi/Alert.vue";
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
+import Button from "@/components/commonUi/Button.vue";
 
 const showAlert = ref(false);
 const alertType = ref('');

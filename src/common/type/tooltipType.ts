@@ -4,6 +4,9 @@ export interface TooltipClassInfoType {
     beforeCountPercent: boolean;
     afterCountPercent: boolean;
     lisUpload: boolean;
+}
+
+export interface TooltipCrcResultCodesType {
     cbcToResultCodes: boolean;
 }
 

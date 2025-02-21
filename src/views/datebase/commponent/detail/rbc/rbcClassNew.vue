@@ -1,26 +1,14 @@
 <template>
+  <div class="classInfo-barcode-wrapper" v-if="type !== 'report'">
+    <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원'] && barcodeImg !== ''" @error="onImageError" :src="barcodeImg" />
+    <p v-else>Barcode Image is missing</p>
+  </div>
   <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt10 flex-justify-between">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
       <ul class="leftWbcInfo rbcClass">
-        <li class="pos-relative">
-          <font-awesome-icon
-              v-if="type !== 'report'"
-              :icon="['fas', 'comment-dots']"
-              @click="memoOpen"
-              @mouseover="tooltipVisibleFunc('memo', true)"
-              @mouseout="tooltipVisibleFunc('memo', false)"
-          />
-          <div v-if="memoModal" class="memoModal">
-            <textarea v-model="memo"></textarea>
-            <button class="memoModalBtn" @click="memoChange">OK</button>
-            <button class="memoModalBtn" @click="memoCancel">CANCEL</button>
-          </div>
-          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.MEMO"/>
-        </li>
         <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': slideData.submitState === 'Submit'}">
           <font-awesome-icon
               :icon="['fas', 'square-check']"
@@ -206,16 +194,16 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">
-                {{ Number(classInfo?.percent) || 0 }}
+                {{ Number(classInfo?.percent) || 0 }}%
               </li>
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '03'">
-                {{ percentageChange(rbcCount.shapeOthersTotalCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
+                {{ percentageChange(rbcCount.shapeOthersTotalCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}%
               </li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
-                {{ percentageChange(rbcCount.malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
+                {{ percentageChange(rbcCount.malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}%
               </li>
               <div v-if="classIndex === category?.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
@@ -233,7 +221,7 @@
     </template>
     <!--orders-->
     <div>
-      <div class="categories rbcClass">
+      <div class="categories rbcClass categories-lastItem">
         <ul class="categoryNm">
           <li>Others</li>
         </ul>
@@ -267,11 +255,6 @@
     <!--          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
     <!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
     <!--        </div>-->
-
-<!--    <div class="memoModal bottom text-left staticMemoModal" v-if="router.currentRoute.value.path === '/report'">-->
-<!--      <textarea class="staticTextArea" v-model="memo"></textarea>-->
-<!--      <button class="memoModalBtn" @click="memoChange">Save</button>-->
-<!--    </div>-->
   </div>
   <Alert
       v-if="showAlert"
@@ -315,9 +298,11 @@ import {
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {TooltipRbcClassType} from "@/common/type/tooltipType";
 import { DIR_NAME } from "@/common/defines/constants/settings";
-import { cbcUpdateMutation, gqlGenericUpdate, memoUpdateMutation, rbcUpdateMutation } from "@/gql/mutation/slideData";
+import { cbcUpdateMutation, gqlGenericUpdate, rbcUpdateMutation } from "@/gql/mutation/slideData";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 
 
 const getCategoryName = (category: RbcInfo) => category?.categoryNm;
@@ -336,9 +321,7 @@ const rbcCount = ref({
   shapeBodyTotalCount: 0,
   shapeOthersTotalCount: 0,
 });
-const memo = ref('');
 const sliderValue = ref(50);
-const memoModal = ref(false);
 const store = useStore();
 const showAlert = ref(false);
 const alertType = ref('');
@@ -347,6 +330,7 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
@@ -374,10 +358,8 @@ const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
 const projectType = ref(window.PROJECT_TYPE);
 const totalRBCImageNames = ref<string[]>([])
-const tooltipVisible = ref({
-  confirm: false,
-  memo: false,
-})
+const tooltipVisible = ref({ confirm: false })
+const barcodeImg = ref('');
 
 onMounted(async () => {
   await nextTick();
@@ -386,7 +368,6 @@ onMounted(async () => {
   rbcCount.value.pltCount = slideData.value?.rbcInfo.pltCount;
   rbcCount.value.malariaCount = slideData.value?.rbcInfo.malariaCount;
   rbcCount.value.maxRbcCount = slideData.value?.rbcInfo.maxRbcCount;
-  memo.value = slideData.value?.rbcMemo;
   except.value = path === '/report';
   rightClickItem.value = [];
   rightClickItemSet();
@@ -401,6 +382,7 @@ onMounted(async () => {
     await countReAdd();
   }
   await reDegree(rbcInfoBeforeVal.value);
+  setBarCodeImage(slideData.value);
 });
 
 watch(() => props.allCheckClear, (newItem) => {
@@ -454,7 +436,6 @@ watch(
 
       await reDegree(rbcInfoBeforeVal.value);
       await reDegree(rbcInfoAfterVal.value);
-      memo.value = slideData.value?.rbcMemo;
       rightClickItemSet();
       allCheckType.value = {
         '01': true,
@@ -1154,34 +1135,6 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
 
 };
 
-const memoOpen = () => {
-  memoModal.value = !memoModal.value;
-}
-
-const memoCancel = () => {
-  memoModal.value = false;
-}
-
-const memoChange = async () => {
-
-  const enterAppliedRbcMemo = memo.value.replaceAll('\r\n', '<br>');
-  const updatedItem = {
-    rbcMemo: enterAppliedRbcMemo,
-  };
-  const updatedRuningInfo = {...slideData.value, ...updatedItem}
-  const res = await gqlGenericUpdate(memoUpdateMutation, {
-    id: updatedRuningInfo.id,
-    wbcMemo: updatedRuningInfo.wbcMemo,
-    rbcMemo: updatedRuningInfo.rbcMemo,
-  });
-  if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
-    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-    memo.value = updatedRuningInfo.rbcMemo;
-    showSuccessAlert('Success');
-  }
-  memoModal.value = false;
-}
-
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
@@ -1349,6 +1302,15 @@ const getDegreeValue = (classInfo: any) => {
 
 const tooltipVisibleFunc = (type: keyof TooltipRbcClassType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
+}
+
+const onImageError = () => {
+  barcodeImg.value = '';
+}
+
+const setBarCodeImage = (currentSelectItems: any) => {
+  const path = currentSelectItems.img_drive_root_path !== '' && currentSelectItems.img_drive_root_path ? currentSelectItems.img_drive_root_path : iaRootPath.value;
+  barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, currentSelectItems.slotId, DIR_NAME.BARCODE);
 }
 
 </script>

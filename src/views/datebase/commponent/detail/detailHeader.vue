@@ -116,7 +116,7 @@
             <div v-if="isMemoModalOpen" class="memoModal shadowBox">
               <div class="memoModal-header">
                 <h1 class="fs12">Memo</h1>
-                <font-awesome-icon @click="memoCancel" class="commonBtn memoModal-cancel-btn" :icon="['fas', 'xmark']" />
+                <font-awesome-icon @click="memoCancel" class="memoModal-cancel-btn" :icon="['fas', 'xmark']" />
               </div>
               <div class="memoModal-main">
                 <div class="memoModal-wrapper">
@@ -200,6 +200,7 @@ import {MESSAGES, MSG, MSG_GENERAL, TOAST} from "@/common/defines/constants/cons
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {DetailHeaderType} from "@/common/type/tooltipType";
 import Alert from "@/components/commonUi/Alert.vue";
+import Button from "@/components/commonUi/Button.vue";
 
 const props = defineProps(['testType', 'barcodeNo', 'cbcPatientNo', 'patientName', 'hospitalName', 'cbcPatientName', 'cbcSex', 'cbcAge', 'analyzedDttm', 'slideData', 'crcConnect', 'checkedAllClass']);
 const emits = defineEmits();

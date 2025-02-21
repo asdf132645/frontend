@@ -1,9 +1,12 @@
 <template>
   <div class="rbc-container imgList">
-    <div class="btn-container_img_list plt">
+    <div class="imageList-btn-wrapper">
+      <div>
+        <button class="imageList-tab-btn">PLT Field</button>
+      </div>
       <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
-        <button class="darkButton" @click="imgSetOpen" v-show="activeTab !== 'malaria'">IMG Setting</button>
-        <div class="imgSet_img_list" v-show="imgSet_img_list">
+        <font-awesome-icon @click="imgSetOpen" size="lg" class="hoverSizeAction cursorPointer" :icon="['fas', 'gear']" />
+        <div class="imageList-setting-container" v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness {{ imgBrightness }}</span>

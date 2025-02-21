@@ -3220,20 +3220,20 @@ select.selectSizeTitle {
     margin: 9px 0px 9px 0px;
 }
 
-.imgMenuSetDiv {
-    position: relative;
-    text-align: left;
-}
+/*.imgMenuSetDiv {*/
+/*    position: relative;*/
+/*    text-align: left;*/
+/*}*/
 
-.imgMenuSetDiv > button {
-    background: none;
-    color: var(--white-color);
-    font-size: 1rem;
-    border-radius: 5px;
-    margin-right: 19px;
-    cursor: pointer;
-    padding: 3px;
-}
+/*.imgMenuSetDiv > button {*/
+/*    background: none;*/
+/*    color: var(--white-color);*/
+/*    font-size: 1rem;*/
+/*    border-radius: 5px;*/
+/*    margin-right: 19px;*/
+/*    cursor: pointer;*/
+/*    padding: 3px;*/
+/*}*/
 
 .sizeContainer {
     position: absolute;
@@ -3626,6 +3626,12 @@ table.tableClass {
 .memoModal-cancel-btn {
     position: relative;
     left: 6px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.memoModal-cancel-btn:hover {
+    transform: scale(1.1);
 }
 
 .memoModalBtn {

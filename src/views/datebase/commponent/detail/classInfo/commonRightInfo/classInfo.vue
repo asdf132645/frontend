@@ -1,5 +1,5 @@
 <template>
-  <div class="classInfo-barcode-container" v-if="type !== 'report'">
+  <div class="classInfo-barcode-wrapper" v-if="type !== 'report'">
     <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원'] && barcodeImg !== ''" @error="onImageError" :src="barcodeImg" />
     <p v-else>Barcode Image is missing</p>
   </div>
@@ -9,14 +9,6 @@
     <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
 
     <ul class="leftWbcInfo">
-      <li
-          class="pos-relative"
-          @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
-          @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
-      >
-        <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] && type === 'report' && crcConnect" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
-      </li>
       <li
           @click="commitConfirmed"
           class="pos-relative"
@@ -39,6 +31,7 @@
         <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
       </li>
       <li
+          v-if="type !== 'report'"
           class="pos-relative"
           @mouseover="tooltipVisibleFunc('classMoveLock', true)"
           @mouseout="tooltipVisibleFunc('classMoveLock', false)"
@@ -82,7 +75,7 @@
         <li style="display: flex; justify-content: space-evenly;">
           <span :class="['w20', 'text-left', item.isChanged && 'blueText']">{{ Number(item?.count.after) || 0 }}</span>
           <span :class="['w50', 'text-left', item.isChanged && 'blueText']">{{
-              Number(item?.percent.after) ? item?.percent.after + '%' : '0'
+              Number(item?.percent.after) ? item?.percent.after + '%' : '0%'
             }}</span>
         </li>
       </ul>
@@ -292,7 +285,6 @@ const tooltipVisible = ref<TooltipClassInfoType>({
   beforeCountPercent: false,
   afterCountPercent: false,
   lisUpload: false,
-  cbcToResultCodes: false,
 })
 
 onBeforeMount(async () => {
@@ -1455,10 +1447,6 @@ const getCustomClass = async () => {
   } catch (e) {
     console.error(e);
   }
-}
-
-const updateCRCMorphology = () => {
-  emits('updateCRCMorphology', true);
 }
 
 const showErrorAlert = (message: string) => {

@@ -1,6 +1,6 @@
 <template>
-  <div class="classInfo-barcode-container" v-if="type !== 'report'">
-    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+  <div class="classInfo-barcode-wrapper" v-if="type !== 'report'">
+    <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
     <p v-else>Barcode Image is missing</p>
   </div>
 
@@ -22,11 +22,9 @@
     </ul>
   </div>
   <div class="wbcClassScroll">
-    <ul class="nth1Child classAttribute">
+    <ul class="nth1Child classAttribute text">
       <li>Class</li>
-      <li class="wbcTitleText">
-        <p class="firstP">Count</p>
-      </li>
+      <li class="wbcTitleText">Count</li>
     </ul>
     <div
         v-for="(item, idx) in pltInfoVal"
@@ -36,15 +34,8 @@
       <ul :class="{ 'nth1Child': true }">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span class="w20 text-left">{{ Number(item?.count) || 0 }}</span>
-        </li>
-      </ul>
-    </div>
-    <div class="wbcClassDbDiv classTotalColor">
-      <ul class="nth1Child">
-        <li>Total</li>
-        <li class="classInfoWbc">
-          <span class="w20 text-left">{{ Number(0) || 0 }}</span>
+          <span v-if="item?.name !== 'Platelet'" class="w20 text-left">{{ Number(item?.count) || 0 }}</span>
+          <span v-else>{{ Number(item?.count) || 0 }} PLT / 1000 RBC</span>
         </li>
       </ul>
     </div>
@@ -118,7 +109,6 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const okMessageType = ref('');
-const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const tooltipVisible = ref<TooltipClassInfoType>({
   confirm: false,
@@ -132,13 +122,8 @@ const rbcCount = ref({
 });
 const totalRBCImageNames = ref<string[]>([]);
 
-onBeforeMount(async () => {
-  barCodeImageShowError.value = false;
-})
-
 onMounted(async () => {
   await nextTick();
-  barCodeImageShowError.value = false;
   setBarCodeImage(slideData.value);
 })
 
@@ -218,7 +203,7 @@ const getRbcInfoForPlt = async (newSlideData) => {
 
   await checkRBCTotalImageNames();
   await rbcTotalAndReCountForReport();
-  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'RBC - Platelet' });
+  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'Platelet' });
 }
 
 const rbcTotalAndReCountForReport = async () => {
@@ -339,7 +324,7 @@ const hideAlert = () => {
 };
 
 const onImageError = () => {
-  barCodeImageShowError.value = true;
+  barcodeImg.value = '';
 }
 const tooltipVisibleFunc = (type: keyof TooltipClassInfoType, visible: boolean) => {
   tooltipVisible.value[type] = visible;

@@ -67,7 +67,7 @@
           </p>
           <p>PLT</p>
         </li>
-        <li v-if="!isLoading" :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
+        <li :class='{ "onRight": isActive("/report") }' @click="pageGo('/report')">
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'clipboard']"/>
           </p>
@@ -103,7 +103,7 @@ import {
   computed,
   defineEmits,
   defineProps,
-  getCurrentInstance,
+  getCurrentInstance, nextTick,
   onBeforeMount,
   onMounted,
   onUnmounted,
@@ -202,6 +202,12 @@ onUnmounted(async () => {
   await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
 })
 
+watch(() => slideData.value?.id, async (newSlideDataId, oldSlideDataId) => {
+  if (newSlideDataId !== oldSlideDataId) {
+    await checkHasPltInfo();
+  }
+})
+
 const getDetailRunningInfo = async () => {
   try {
     const {result, loading, error} = useGetRunningInfoByIdQuery(
@@ -282,6 +288,7 @@ const getOrderClass = async () => {
     console.error(e)
   }
 }
+
 const delayedEmit = (type: string, payload: string, delay: number) => {
   if (socketTimeoutId !== undefined) {
     clearTimeout(socketTimeoutId); // 이전 타이머 클리어
@@ -378,7 +385,7 @@ const moveWbc = async (direction: any) => {
   }
   isButtonDisabled.value = true; // 버튼 비활성화
   await getOrderClass(); // 클래스 정보를 업데이트
-  await processNextDbIndex(direction, selectItems.value?.id);
+  await processNextDbIndex(direction, resData.value?.id);
 
   timeoutId = window.setTimeout(() => {
     isButtonDisabled.value = false;
@@ -415,7 +422,6 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   emits('refreshClass', selectItemsNewVal);
   pageMoveDeleteStop.value = true;
   await upDownBlockAccess(selectItemsNewVal);
-  await checkHasPltInfo();
   await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
 };
 
@@ -525,9 +531,14 @@ const checkHasPltInfo = async () => {
     return;
   }
 
+  if (isActive('/databasePlt')) {
+    pltOnOff.value = true;
+    return;
+  }
+
   pltOnOff.value = false;
-  const path = slideData.value?.img_drive_root_path !== '' && resData.value?.img_drive_root_path ? resData.value?.img_drive_root_path : iaRootPath.value;
-  const folderPath = `${path}/${resData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
 
   try {
@@ -538,12 +549,11 @@ const checkHasPltInfo = async () => {
       return;
     }
     if (fileNames && fileNames.length > 0) {
-      for (const fileName of fileNames) {
-        const keywords = ['zPLT_Image', 'files'];
-        const notRbc = keywords.every(keyword => fileName.includes(keyword));
-        if(notRbc){
-          pltOnOff.value = true;
-        }
+      const hasPlt = fileNames.find((item) => item.includes('zPLT_Image'));
+      if (hasPlt) {
+        pltOnOff.value = true;
+      } else {
+        pltOnOff.value = false;
       }
     } else {
       pltOnOff.value = false;
