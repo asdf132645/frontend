@@ -63,7 +63,8 @@
               @mouseout="abnormalClassInfoOpen(false, item)"
               class="listTable-abnormalIcon-wrapper"
           >
-            <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+            <template
+                v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
               <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
                                  v-if="item?.slideCondition?.condition === 'Bad'"
               />
@@ -75,25 +76,33 @@
               <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
                                  v-if="item.isNormal === 'N' && projectType === 'pb'"/>
             </template>
-            <div v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
+            <div
+                v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
               <div class="slideStatus-container">
-                <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+                <template
+                    v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
                   <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
                     <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
                     <span>{{ slideCondition?.desc }}</span>
                   </div>
 
-                  <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+                  <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
                 </template>
 
 
-                <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'" class="slideStatusPopup-wrapper normalRange">
-                  <h1 class="slideStatusPopup-title" :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">Out of Normal Range</h1>
-                  <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo" :key="abnormalIdx">
+                <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'"
+                     class="slideStatusPopup-wrapper normalRange">
+                  <h1 class="slideStatusPopup-title"
+                      :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">
+                    Out of Normal Range</h1>
+                  <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo"
+                       :key="abnormalIdx">
                     <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
                       <span>{{ abItem?.classNm }}</span>
                       <span>{{ handleAbnormalValue(abItem?.val) }}</span>
-                      <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
+                      <span>{{
+                          handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
+                        }}</span>
                     </p>
                   </div>
                 </div>
@@ -145,17 +154,30 @@
   <!-- 페이지네이션 버튼 -->
   <div class="paginationDiv" v-if="dbGetData.length !== 0 && totalPages > 0">
     <div class="pagination">
-      <button @click="handlePrevPage" :disabled="currentPage <= 1"><font-awesome-icon :icon="['fas', 'caret-left']" /></button>
+
+      <button @click="handlePrevChunk" :disabled="currentPage <= 1">
+        <font-awesome-icon :icon="['fas', 'backward']" />
+      </button>
+
+      <button @click="handlePrevPage" :disabled="currentPage <= 1">
+        <font-awesome-icon :icon="['fas', 'caret-left']"/>
+      </button>
+
       <button
-          v-for="pageNum in totalPages"
+          v-for="pageNum in displayedPages"
           :key="pageNum"
           :class="{ active: pageNum === currentPage }"
           @click="handlePageClick(pageNum)"
       >
         {{ pageNum }}
       </button>
+
       <button @click="handleNextPage" :disabled="currentPage >= totalPages">
-        <font-awesome-icon :icon="['fas', 'caret-right']" />
+        <font-awesome-icon :icon="['fas', 'caret-right']"/>
+      </button>
+
+      <button @click="handleNextChunk" :disabled="currentPage >= totalPages">
+        <font-awesome-icon :icon="['fas', 'forward']" />
       </button>
     </div>
   </div>
@@ -221,12 +243,12 @@
     </template>
   </Modal>
 
-    <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
-              :selectItemWbc="selectItemWbc" @printClose="printClose"/>
-<!--  <template v-else>-->
-<!--    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"-->
-<!--           :selectItemWbc="selectItemWbc" @printClose="printClose"/>-->
-<!--  </template>-->
+  <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
+            :selectItemWbc="selectItemWbc" @printClose="printClose"/>
+  <!--  <template v-else>-->
+  <!--    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"-->
+  <!--           :selectItemWbc="selectItemWbc" @printClose="printClose"/>-->
+  <!--  </template>-->
 
   <Alert
       v-if="showAlert"
@@ -476,7 +498,20 @@ const handleNextPage = () => {
     emits('loadMoreData', currentPage.value);
   }
 };
+// 5씩 이전으로
+const handlePrevChunk = () => {
+  const maxMove = Math.min(5, currentPage.value - 1); // 현재 페이지에서 이동할 수 있는 최대 거리
+  currentPage.value -= maxMove;
+  emits('loadMoreData', currentPage.value);
+};
 
+
+// ※ 수정 할 때 참고 5개 이후 계삭 해서 5개 미만일경우 끝으로 이동하는 함수
+const handleNextChunk = () => {
+  const maxMove = Math.min(5, totalPages.value - currentPage.value); // 남은 페이지 수 확인
+  currentPage.value += maxMove;
+  emits('loadMoreData', currentPage.value);
+};
 
 const abnormalClassInfoOpen = async (isOpen, item) => {
   if (!isOpen) {
@@ -491,7 +526,7 @@ const abnormalClassInfoOpen = async (isOpen, item) => {
       desc: slideInfo?.slideDescription
     };
 
-    const updatedRuningInfo = { ...item, slideCondition: slideInfoObj };
+    const updatedRuningInfo = {...item, slideCondition: slideInfoObj};
     await gqlGenericUpdate(slideConditionUpdateMutation, {
       id: item?.id,
       slideCondition: slideInfoObj
@@ -533,9 +568,18 @@ function handleKeyUp(event) {
 }
 
 
-
 const totalPages = computed(() => {
   return Math.ceil(props.total / props.itemsPerPage);
+});
+
+// 현재 페이지 그룹 계산 (5개 단위)
+const currentChunk = computed(() => Math.floor((currentPage.value - 1) / 5) * 5 + 1);
+
+// 보여줄 페이지 리스트 계산
+const displayedPages = computed(() => {
+  let start = Math.floor((currentPage.value - 1) / 5) * 5 + 1;
+  let end = Math.min(start + 4, totalPages.value);
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
 
@@ -650,8 +694,6 @@ const showErrorAlert = (message) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-
-
 
 
 const getIpAddress = async (item) => {
@@ -880,7 +922,7 @@ const getSlideCondition = async (slotId) => {
     console.error(err);
   }
 
-  return { slideCondition, slideDescription };
+  return {slideCondition, slideDescription};
 }
 
 const getNormalRange = async () => {

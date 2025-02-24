@@ -6,10 +6,10 @@
 
   <div>
     <h3 class="titleH3">
-      Classification List
+      Database List
       <button @click.stop="classListToggleEvent" class="classificationListBtn">
-        <font-awesome-icon v-if="!classListToggle" :icon="['fas', 'caret-up']" flip="vertical" />
-        <font-awesome-icon v-else :icon="['fas', 'caret-up']" />
+        <font-awesome-icon v-if="!classListToggle" :icon="['fas', 'caret-up']" flip="vertical"/>
+        <font-awesome-icon v-else :icon="['fas', 'caret-up']"/>
       </button>
     </h3>
     <div class='listBoxTable'>
@@ -21,9 +21,11 @@
             <option value="patientNm">Patient Name</option>
           </select>
           <div class="search-container">
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon" />
-            <input type="text" v-model="searchText" placeholder="Search" class="searchInputBox" @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
-          </div>          <div class="settingDatePickers">
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
+            <input type="text" v-model="searchText" placeholder="Search" class="searchInputBox"
+                   @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
+          </div>
+          <div class="settingDatePickers">
             <Datepicker v-model="startDate" :week-starts-on="0"></Datepicker>
             <Datepicker v-model="endDate" :week-starts-on="0"></Datepicker>
           </div>
@@ -32,37 +34,19 @@
           <button type="button" class="searchClass" @click="search">Search</button>
 
           <div class="search-right-wrapper">
-            <button v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="search-btn">Patient List</button>
-            <font-awesome-icon v-if="viewerCheck === 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" />
+            <button v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="search-btn">
+              Patient List
+            </button>
+            <font-awesome-icon v-if="viewerCheck === 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel"
+                               class="excelIcon"/>
           </div>
         </div>
 
 
         <!-- Classification List Modal -->
         <div class="filterDivBox" v-if="classListToggle">
-          <div class="nrCount" v-if="!bmClassIsBoolen">
-            <span>NR Count</span>
-            <input type="text" v-model="nrCount"/>
-          </div>
-          <div class="wbcTotal">
-            <span>WBC Total</span>
-            <select v-model="wbcCountOrder">
-              <option value="all">Do Not Select</option>
-              <option>DESC</option>
-              <option>ASC</option>
-            </select>
-          </div>
-          <div class="wbcInfoFilter">
-            <span>{{ bmClassIsBoolen ? 'BM' : 'WBC' }} Info Filter</span>
-            <ul class="wbcInfoFilter">
-              <li v-for="(item, idx) in titleItem" :key="idx">
-                <input type="checkbox" :id="'checkbox_' + idx" v-model="item.checked" @change="updateFilter">
-                <label :for="'checkbox_' + idx">{{ item.title }}</label>
-              </li>
-            </ul>
-          </div>
           <div class="lastTestType">
-            <span>Test Type</span>
+            <span>Analysis Type</span>
             <div>
               <label>
                 <input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>
@@ -94,8 +78,29 @@
                 </label>
               </template>
             </div>
-
           </div>
+          <!--          <div class="nrCount" v-if="!bmClassIsBoolen">-->
+          <!--            <span>NR Count</span>-->
+          <!--            <input type="text" v-model="nrCount"/>-->
+          <!--          </div>-->
+          <!--          <div class="wbcTotal">-->
+          <!--            <span>WBC Total</span>-->
+          <!--            <select v-model="wbcCountOrder">-->
+          <!--              <option value="all">Do Not Select</option>-->
+          <!--              <option>DESC</option>-->
+          <!--              <option>ASC</option>-->
+          <!--            </select>-->
+          <!--          </div>-->
+          <div class="wbcInfoFilter">
+            <span>{{ bmClassIsBoolen ? 'BM' : 'WBC' }} Info Filter</span>
+            <ul class="wbcInfoFilter">
+              <li v-for="(item, idx) in titleItem" :key="idx">
+                <input type="checkbox" :id="'checkbox_' + idx" v-model="item.checked" @change="updateFilter">
+                <label :for="'checkbox_' + idx">{{ item.title }}</label>
+              </li>
+            </ul>
+          </div>
+
         </div>
 
 
@@ -136,7 +141,7 @@
     </div>
   </div>
 
-  <PopupTable v-model:isOpen="showPopupTable" :workList="workList" />
+  <PopupTable v-model:isOpen="showPopupTable" :workList="workList"/>
 
 
   <Alert
@@ -181,10 +186,10 @@ import Button from "@/components/commonUi/Button.vue";
 import PopupTable from "@/components/commonUi/PopupTable.vue";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
-import { sdPatientNameGetAPI, sdWorklistsAPI } from "@/common/helpers/lisCbc/sdCbcLis";
+import {sdPatientNameGetAPI, sdWorklistsAPI} from "@/common/helpers/lisCbc/sdCbcLis";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import { WbcInfo } from "@/store/modules/testPageCommon/ruuningInfo";
-import { DIR_NAME } from "@/common/defines/constants/settings";
+import {WbcInfo} from "@/store/modules/testPageCommon/ruuningInfo";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
@@ -247,7 +252,7 @@ const showPopupTable = ref(false);
 const workList = ref({});
 const previousValue = ref('');
 let lastInputTime = Date.now();
-const isBarcodeScannerInput = { value: false };
+const isBarcodeScannerInput = {value: false};
 const myip = ref('');
 const total = ref(0);
 const toggleRefreshPagination = ref(false);
@@ -285,7 +290,6 @@ async function handleStateVal(data: any) {
       return;
     }
   }
-
 
 
   eventTriggered.value = true;
@@ -352,7 +356,7 @@ const handleInput = (event: any) => {
 
 const openCheckList = async () => {
   const formattedDate = moment(today).format('YYYY-MM-DD');
-  const { data, code } = await sdWorklistsAPI(formattedDate);
+  const {data, code} = await sdWorklistsAPI(formattedDate);
   if (Number(code) === 200) {
     workList.value = data;
     showPopupTable.value = true;
@@ -431,7 +435,7 @@ const initDbData = async () => {
     titleItemArr.value = lastSearchParams.wbcInfo ?? [];
     titleItem.value = titleItem.value.map((item: WbcInfo) => {
       if (lastSearchParams.wbcInfo.includes(item.title)) {
-        return {...item, checked: true }
+        return {...item, checked: true}
       }
       return item;
     })
@@ -556,9 +560,9 @@ const getDbData = async (type: string, pageNum?: number) => {
           const wbcInfoItems = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
           titleItem.value = wbcInfoItems.map((item: WbcInfo) => {
             if (titleItemArr.value.includes(item.title)) {
-              return {...item, checked: true };
+              return {...item, checked: true};
             }
-            return { ...item, checked: false };
+            return {...item, checked: false};
           });
         }
 
@@ -573,7 +577,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         }
         // 마지막 조회 결과 저장
         if (dbGetData.value.length !== 0) {
-        //
+          //
         } else {
           page.value -= 1;
         }
@@ -585,7 +589,7 @@ const getDbData = async (type: string, pageNum?: number) => {
     if (dbGetData.value.length > 0) {
       const {path} = router.currentRoute.value;
 
-      if(path === '/dataBase'){
+      if (path === '/dataBase') {
         await store.dispatch('commonModule/setCommonInfo', {dbListDataFirstNum: Number(dbGetData.value[0].id)})
         await store.dispatch('commonModule/setCommonInfo', {dbListDataLastNum: Number(dbGetData.value[dbGetData.value.length - 1].id)})
       }
@@ -1150,12 +1154,19 @@ const getDbDataAfterFunc = async () => {
       const formatedStartDate = moment(startDate.value).format('YYYY-MM-DD');
       const formatedEndDate = moment(endDate.value).format('YYYY-MM-DD');
       try {
-        const { data: patientDataResult, code } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
+        const {
+          data: patientDataResult,
+          code
+        } = await sdPatientNameGetAPI(barcodeNoList, formatedStartDate, formatedEndDate);
         if (code === 200 && !isObjectEmpty(patientDataResult.data)) {
           dbGetData.value = dbGetData.value.map((item: any) => {
-            const equalBarcodeData = patientDataResult.data.find((patItem: { no: number; reqNo: string; patName: string }) => patItem.reqNo === item.barcodeNo)
+            const equalBarcodeData = patientDataResult.data.find((patItem: {
+              no: number;
+              reqNo: string;
+              patName: string
+            }) => patItem.reqNo === item.barcodeNo)
             if (!isObjectEmpty(equalBarcodeData)) {
-              const updatedItem = { ...item, patientNm: equalBarcodeData.patName };
+              const updatedItem = {...item, patientNm: equalBarcodeData.patName};
               return updatedItem;
             } else {
               return item;
