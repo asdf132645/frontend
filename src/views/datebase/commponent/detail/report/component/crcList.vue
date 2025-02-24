@@ -17,7 +17,7 @@
       <!-- 각 crcDataArr의 항목을 출력 -->
       <li v-for="(item, index) in crcDataArr" :key="index" class="crcListContent">
         <span class="crcListSpan" @click="toggleOpen(index, item.id)">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/>
+            <input type="checkbox" v-model="selectedItems" :value="item.id"/>
             <span>{{ item.code }}</span>
             <div class="crcListDiv">
                 <button @click.stop="startEdit(item)" class="hoverSizeAction">
@@ -281,11 +281,19 @@ const deleteSelectedItems = async () => {
 const selectAll = (event: Event) => {
   const checked = (event.target as HTMLInputElement).checked;
   if (checked) {
+    toggleControll();
     selectedItems.value = crcDataArr.value.map(item => item.id);
   } else {
+    isOpen.value = [];
     selectedItems.value = [];
   }
 };
+
+const toggleControll = () => {
+  for (const checkedKey in crcDataArr.value) {
+    toggleOpen(Number(checkedKey), crcDataArr.value[checkedKey].id)
+  }
+}
 
 // 열림/닫힘 토글 함수
 const toggleOpen = (index: number, id) => {
