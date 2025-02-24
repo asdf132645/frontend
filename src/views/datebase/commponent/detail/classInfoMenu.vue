@@ -7,7 +7,8 @@
   <div class="wbcMenu">
     <ul>
       <template v-if="['bm', 'pb'].includes(projectType)">
-        <template v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+        <template
+            v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
           <li
               v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
               class="classInfoMenu-warning-container"
@@ -15,8 +16,10 @@
               @mouseout="showErrorContainer(false)"
           >
             <p class="menuIco">
-              <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']" v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'" />
-              <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']" v-else-if="slideData?.isNormal === 'N' && projectType === 'pb'" />
+              <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']"
+                                 v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'"/>
+              <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']"
+                                 v-else-if="slideData?.isNormal === 'N' && projectType === 'pb'"/>
             </p>
             <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
               <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
@@ -24,15 +27,19 @@
                 <p>{{ slideCondition?.desc }}</p>
               </div>
 
-              <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line" />
+              <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
 
-              <div v-if="Array.isArray(slideData?.abnormalClassInfo) && projectType === 'pb'" class="classInfoMenu-error-wrapper normalRange mt08">
+              <div v-if="Array.isArray(slideData?.abnormalClassInfo) && projectType === 'pb'"
+                   class="classInfoMenu-error-wrapper normalRange mt08">
                 <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
-                <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo" :key="abnormalIdx">
+                <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo"
+                     :key="abnormalIdx">
                   <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
                     <span>{{ abItem?.classNm }}</span>
                     <span>{{ handleAbnormalValue(abItem?.val) }}</span>
-                    <span>{{ handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit) }}</span>
+                    <span>{{
+                        handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
+                      }}</span>
                   </p>
                 </div>
               </div>
@@ -117,17 +124,17 @@ import {
   pageUpDownRunnIngApi,
   updatePcIpStateApi
 } from "@/common/api/service/runningInfo/runningInfoApi";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import { getNormalRangeApi, getOrderClassApi } from "@/common/api/service/setting/settingApi";
+import {useStore} from "vuex";
+import {useRoute} from "vue-router";
+import {getNormalRangeApi, getOrderClassApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import { getDeviceIpApi } from "@/common/api/service/device/deviceApi";
-import { useGetRunningInfoByIdQuery } from "@/gql/useQueries";
-import { DIR_NAME } from "@/common/defines/constants/settings";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
+import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
+import {DIR_NAME} from "@/common/defines/constants/settings";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import { gqlGenericUpdate, slideConditionUpdateMutation } from "@/gql/mutation/slideData";
-import { isObjectEmpty } from "@/common/lib/utils/validators";
+import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/slideData";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
@@ -183,7 +190,7 @@ onBeforeMount(async () => {
   projectType.value = window.PROJECT_TYPE;
   await getDetailRunningInfo();
   await getNormalRange();
-  await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
+  await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
   const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
   keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
   await checkHasPltInfo();
@@ -199,8 +206,10 @@ onUnmounted(async () => {
   if (pageMoveDeleteStop.value) {
     await deleteConnectionStatus();
   }
-  await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
-})
+
+  if (router.currentRoute.value.fullPath !== '/report') {
+    await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
+  }})
 
 watch(() => slideData.value?.id, async (newSlideDataId, oldSlideDataId) => {
   if (newSlideDataId !== oldSlideDataId) {
@@ -224,7 +233,7 @@ const getDetailRunningInfo = async () => {
         const result = newValue?.getRunningInfoByIdGQL;
         selectItems.value = result;
 
-        store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType});
+        store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
 
         resData.value = result;
       } else {
@@ -360,13 +369,13 @@ const moveWbc = async (direction: any) => {
     return;
   }
 
-  await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: true });
+  await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: true});
   if (direction === 'up') {
     if (dbListDataFirstNum.value === selectItems.value?.id) {
       showAlert.value = true;
       alertType.value = 'success';
       alertMessage.value = 'This is the first page. Navigation to other pages is not possible.';
-      await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
+      await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
       return;
     }
   } else {
@@ -374,12 +383,14 @@ const moveWbc = async (direction: any) => {
       showAlert.value = true;
       alertType.value = 'success';
       alertMessage.value = 'This is the last page. Navigation to other pages is not possible.';
-      await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
+      await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
       return;
     }
   }
+  if (router.currentRoute.value.fullPath !== '/report') {
+    await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
+  }
 
-  await store.dispatch('commonModule/setCommonInfo', {cbcLayer: false});
   if (timeoutId !== undefined) {
     clearTimeout(timeoutId);
   }
@@ -399,11 +410,11 @@ const processNextDbIndex = async (direction: any, id: number) => {
     showAlert.value = true;
     alertType.value = 'success';
     alertMessage.value = 'Someone else is editing.';
-    await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
+    await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
     return;
   } else {
     await handleDataResponse(res?.id, res);
-    await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
+    await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
   }
 };
 
@@ -422,7 +433,7 @@ const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
   emits('refreshClass', selectItemsNewVal);
   pageMoveDeleteStop.value = true;
   await upDownBlockAccess(selectItemsNewVal);
-  await store.dispatch('commonModule/setCommonInfo', { isClassInfoMenuLoading: false });
+  await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
 };
 
 const isActive = (path: string) => {
@@ -449,7 +460,7 @@ const showErrorContainer = async (show: boolean) => {
       desc: slideInfo?.slideDescription
     };
 
-    const updatedRuningInfo = { ...slideData.value, slideCondition: slideInfoObj };
+    const updatedRuningInfo = {...slideData.value, slideCondition: slideInfoObj};
     await gqlGenericUpdate(slideConditionUpdateMutation, {
       id: slideData.value?.id,
       slideCondition: slideInfoObj
@@ -477,7 +488,7 @@ const getSlideCondition = async (slotId: string) => {
     console.error(err);
   }
 
-  return { slideCondition, slideDescription };
+  return {slideCondition, slideDescription};
 }
 
 const getNormalRange = async () => {
