@@ -1,9 +1,9 @@
 <template>
   <div class="tab-content crcDiv reportCrcDiv">
     <div class="text-right mb10">
-      <button class="plusBtn" @click="openCrcAdd">
-        <font-awesome-icon :icon="['fas', 'circle-plus']" />
-      </button>
+<!--      <button class="plusBtn" @click="openCrcAdd">-->
+<!--        <font-awesome-icon :icon="['fas', 'circle-plus']" />-->
+<!--      </button>-->
       <button class="delBtn ml10" @click="deleteRow('check')">
         <font-awesome-icon :icon="['fas', 'trash']" />
       </button>
@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
 import {crcDataGet, updateCrcDataApi, deleteCrcDataApi} from "@/common/api/service/setting/settingApi";
-import {ref, onMounted, nextTick, onBeforeMount, computed} from "vue";
+import {ref, onMounted, nextTick, onBeforeMount, computed, defineExpose } from "vue";
 import CrcAdd from "@/views/datebase/commponent/detail/report/component/crcAdd.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -224,6 +224,8 @@ const openCrcAdd = () => {
   isCrcAdd.value = true;
   addEditType.value = 'add';
 };
+
+
 
 // CrcAdd 닫기 함수
 const close = () => {
@@ -333,4 +335,7 @@ const setRemarkTitleVisible = () => {
   crcVisibleTitle.value.recommendation = remarkMap?.recommendation || false;
 }
 
+defineExpose({
+  openCrcAdd,
+});
 </script>

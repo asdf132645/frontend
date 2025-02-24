@@ -22,9 +22,9 @@
         <button class="btnSearchRemark" type="button" @click="searchRemarkData">
           <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
         </button>
-<!--        <button @click="deleteRemark(item.id)" class="ml10">-->
-<!--          <font-awesome-icon :icon="['fas', 'trash']"/>-->
-<!--        </button>-->
+        <!--        <button @click="deleteRemark(item.id)" class="ml10">-->
+        <!--          <font-awesome-icon :icon="['fas', 'trash']"/>-->
+        <!--        </button>-->
       </div>
 
       <div class="scrollTableContainer">
@@ -111,7 +111,9 @@
               <td><textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"
                             maxlength="1000"></textarea></td>
               <td colspan="2">
-                <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>
+                <button @click="addRemark" class="crcDefaultBtn ml10">
+                  <font-awesome-icon :icon="['fas', 'plus']"/>
+                </button>
               </td>
             </tr>
             </tbody>
