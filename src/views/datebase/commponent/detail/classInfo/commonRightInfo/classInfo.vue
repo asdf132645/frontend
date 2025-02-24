@@ -1102,6 +1102,7 @@ const onCommit = async () => {
 
   await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
   selectItems.value.submitState = 'Submit';
+
   emits('submitStateChanged', 'Submit');
 }
 

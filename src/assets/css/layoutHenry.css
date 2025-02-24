@@ -177,3 +177,10 @@
     background-color: var(--white-color);
     color: black;
 }
+
+.detailHeader-tool-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

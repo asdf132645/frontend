@@ -104,15 +104,15 @@
       <li class="detailHeader-tool-container">
         <div class="flex-align-center pos-relative">
           <h1 class="mr12 fs10">Tools</h1>
-          <div class="pos-relative">
+          <div class="detailHeader-tool-wrapper">
             <span
                 class="pos-relative"
                 @mouseover="tooltipVisibleFunc('memo', true)"
                 @mouseout="tooltipVisibleFunc('memo', false)"
             >
-            <font-awesome-icon :icon="['fas', 'comment-dots']" :class="hasMemo() && 'blueDarkText'" @click="memoOpen" class="hoverSizeAction cursorPointer" />
-            <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
-          </span>
+              <font-awesome-icon :icon="['fas', 'comment-dots']" :class="hasMemo() && 'blueDarkText'" @click="memoOpen" class="hoverSizeAction cursorPointer" />
+              <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
+            </span>
             <div v-if="isMemoModalOpen" class="memoModal shadowBox">
               <div class="memoModal-header">
                 <h1 class="fs12">Memo</h1>
@@ -132,6 +132,27 @@
                 <button class="memoModalBtn" @click="memoChange">Save</button>
               </div>
             </div>
+            <span
+                class="pos-relative"
+                @mouseover="tooltipVisibleFunc('confirm', true)"
+                @mouseout="tooltipVisibleFunc('confirm', false)"
+                @click="commitConfirmed"
+                :class="{'blueDarkText': slideData?.submitState === 'Submit',}"
+            >
+              <font-awesome-icon :icon="['fas', 'square-check']" class="hoverSizeAction" />
+              <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
+            </span>
+            <span
+                v-if="!crcConnect && showLISUploadButton"
+                @click="lisModalOpen"
+                class="pos-relative"
+                :class="{'blueDarkText': selectItems?.submitState.includes('lis') || lisBtnColor,}"
+                @mouseover="tooltipVisibleFunc('lisUpload', true)"
+                @mouseout="tooltipVisibleFunc('lisUpload', false)"
+            >
+              <font-awesome-icon :icon="['fas', 'upload']" class="hoverSizeAction" />
+              <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
+            </span>
           </div>
         </div>
       </li>
@@ -182,6 +203,15 @@
       :messageType="toast.type"
       :duration="1500"
   />
+
+  <Confirm
+      v-if="showConfirm"
+      :is-visible="showConfirm"
+      :type="confirmType"
+      :message="confirmMessage"
+      @hide="hideConfirm"
+      @okConfirm="handleOkConfirm"
+  />
 </template>
 
 <script setup lang="ts">
@@ -192,7 +222,7 @@ import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import Modal from "@/components/commonUi/modal.vue";
 import {
-  barcodeNoUpdateMutation,
+  barcodeNoUpdateMutation, cbcUpdateMutation,
   gqlGenericUpdate,
   memoUpdateMutation
 } from "@/gql/mutation/slideData";
@@ -201,12 +231,15 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {DetailHeaderType} from "@/common/type/tooltipType";
 import Alert from "@/components/commonUi/Alert.vue";
 import Button from "@/components/commonUi/Button.vue";
+import Confirm from "@/components/commonUi/Confirm.vue";
+import moment from "moment/moment";
 
 const props = defineProps(['testType', 'barcodeNo', 'cbcPatientNo', 'patientName', 'hospitalName', 'cbcPatientName', 'cbcSex', 'cbcAge', 'analyzedDttm', 'slideData', 'crcConnect', 'checkedAllClass']);
 const emits = defineEmits();
 const store = useStore();
 const slideData = computed(() => store.state.slideDataModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
+const userModuleDataGet = computed(() => store.state.userModule);
 const projectBm = ref(false);
 const tooltipVisible = ref({
   analysisType: false,
@@ -220,6 +253,7 @@ const tooltipVisible = ref({
   hospitalName: false,
   barcodeCopy: false,
   memo: false,
+  confirm: false,
 })
 const isModalOpen = ref(false);
 const barcodeInput = ref(null);
@@ -236,6 +270,10 @@ const memo = ref({
   wbc: '',
   rbc: '',
 })
+const showConfirm = ref(false);
+const confirmMessage = ref('');
+const confirmType = ref('');
+const okMessageType = ref('');
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
@@ -369,6 +407,56 @@ const hideAlert = () => {
 
 const hasMemo = () => {
   return props.slideData?.wbcMemo || props.slideData?.rbcMemo;
+}
+
+const commitConfirmed = () => {
+  if (slideData.value?.submitState === 'Submit') {
+    return;
+  }
+  showConfirm.value = true;
+  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
+  okMessageType.value = 'commit';
+}
+
+const hideConfirm = () => {
+  showConfirm.value = false;
+}
+
+const handleOkConfirm = () => {
+  if (okMessageType.value === 'commit') {
+    onCommit();
+  } else {
+    uploadLis();
+  }
+  showConfirm.value = false;
+}
+
+const lisModalOpen = () => {
+  showConfirm.value = true;
+  confirmMessage.value = MESSAGES.IDS_MSG_UPLOAD_LIS;
+  okMessageType.value = 'lisCbc';
+}
+
+const onCommit = async () => {
+  const localTime = moment().local();
+  const updatedItem = {
+    submitState: 'Submit',
+    submitOfDate: localTime.format(),
+    submitUserId: userModuleDataGet.value.userId,
+  };
+
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
+  await gqlGenericUpdate(cbcUpdateMutation,{
+    id: updatedRuningInfo.id,
+    submitState: updatedRuningInfo.submitState,
+    submitOfDate: updatedRuningInfo.submitOfDate,
+    submitUserId: updatedRuningInfo.submitUserId,
+  });
+
+  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
+  slideData.value.submitState = 'Submit';
+  toast.value.message = MESSAGES.TOAST_MSG_SUCCESS;
+  showToast(MSG_GENERAL.SUCCESS);
 }
 
 </script>

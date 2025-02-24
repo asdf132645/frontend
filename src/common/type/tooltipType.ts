@@ -48,4 +48,5 @@ export interface DetailHeaderType {
     barcodeCopy: boolean;
     barcodeEdit: boolean;
     memo: boolean;
+    confirm: boolean;
 }
