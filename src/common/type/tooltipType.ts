@@ -49,4 +49,5 @@ export interface DetailHeaderType {
     barcodeEdit: boolean;
     memo: boolean;
     confirm: boolean;
+    lisUpload: boolean;
 }

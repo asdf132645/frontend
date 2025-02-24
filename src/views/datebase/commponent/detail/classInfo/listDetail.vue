@@ -18,17 +18,16 @@
         :patientName="patientNm"
         :slideData="selectItems"
         @updateSlideDataByCBCData="updateCBCData"
+        @nextPage="nextPage"
+        @uploadLisChangeSlide="uploadLisChangeSlide"
+        :checkedAllClass="checkedAllClass"
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
       <ClassInfo v-if="!isLoading" :wbcInfo="wbcInfo" :classCompareShow="classCompareShow"
                  type='listTable'
-                 @nextPage="nextPage"
                  @scrollEvent="scrollToElement"
-                 @uploadLisChangeSlide="uploadLisChangeSlide"
-                 @submitStateChanged="submitStateChanged"
                  :selectItems="selectItems"
-                 :checkedAllClass="checkedAllClass"
       />
     </div>
 
@@ -465,7 +464,6 @@ onMounted(async () => {
   window.addEventListener("keyup", handleKeyUp);
   document.body.addEventListener("click", handleBodyClick);
   document.addEventListener('click', handleClickOutside);
-
 });
 
 onUnmounted(async () => {
@@ -2178,12 +2176,6 @@ const hideAlert = () => {
   showAlert.value = false;
 }
 
-const uploadLisChangeSlide = (hospitalNm: any) => {
-  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
-  }
-}
-
 async function getNormalRange() {
   try {
     const result = await getNormalRangeApi();
@@ -2234,15 +2226,14 @@ const allClassesChecked = async () => {
   await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
 }
 
-const submitStateChanged = (changedSubmitState: string) => {
-  if (changedSubmitState) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-    showToast(MSG_GENERAL.SUCCESS);
-  }
-}
-
 const tooltipVisibleFunc = (type: keyof TooltipListDetailType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
+}
+
+const uploadLisChangeSlide = (hospitalNm: any) => {
+  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
+  }
 }
 
 </script>

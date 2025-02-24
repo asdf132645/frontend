@@ -13,21 +13,22 @@
         :cbcAge="selectItems?.cbcAge"
         :analyzedDttm="selectItems?.analyzedDttm"
         :slideData="selectItems"
+        @uploadLisChangeSlide="uploadLisChangeSlide"
     />
     <div style="display:flex;">
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
       <div class="reportDiv">
         <div class="rbcDiv shadowBox" :class="cbcLayer ? 'rbcDivInReportWithCBC' : ''" v-if="!projectBm && selectItems.testType === '04'">
           <template v-if="siteCd === '9090'">
-            <RbcClassNew v-if="!isLoading" :rbcInfo="rbcInfo" type='report' @submitStateChanged="submitStateChanged" />
+            <RbcClassNew v-if="!isLoading" :rbcInfo="rbcInfo" type='report' />
           </template>
           <template v-else>
-            <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report' @submitStateChanged="submitStateChanged" />
+            <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report' />
           </template>
         </div>
         <div class="wbcDiv shadowBox">
-          <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' :crcConnect="crcConnect"
-                    @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" @uploadLisChangeSlide="uploadLisChangeSlide"
+          <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
+                    @classOrderChanged="classOrderChanged"
           />
         </div>
         <div class="reportDetail shadowBox" :class="{ 'reportBm': projectBm }" v-if="!crcConnect">
@@ -681,13 +682,6 @@ const showToast = (message: string) => {
   setTimeout(() => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
-};
-
-const submitStateChanged = (changedSubmitState: string) => {
-  if (changedSubmitState) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-    showToast(MSG_GENERAL.SUCCESS);
-  }
 };
 
 const uploadLisChangeSlide = (hospitalNm: any) => {

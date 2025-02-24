@@ -19,30 +19,6 @@
         <Tooltip :isVisible="tooltipVisible.classMoveLock" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CLASS_MOVE" />
       </p>
     </div>
-
-    <ul class="leftWbcInfo">
-      <li
-          @click="commitConfirmed"
-          class="pos-relative"
-          :class="{'submitted': selectItems?.submitState === 'Submit',}"
-          @mouseover="tooltipVisibleFunc('confirm', true)"
-          @mouseout="tooltipVisibleFunc('confirm', false)"
-      >
-        <font-awesome-icon :icon="['fas', 'square-check']" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
-      </li>
-      <li
-          v-if="!crcConnect && showLISUploadButton"
-          @click="lisModalOpen"
-          class="pos-relative"
-          :class="{'submitted': selectItems?.submitState.includes('lis') || lisBtnColor,}"
-          @mouseover="tooltipVisibleFunc('lisUpload', true)"
-          @mouseout="tooltipVisibleFunc('lisUpload', false)"
-      >
-        <font-awesome-icon :icon="['fas', 'upload']" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
-      </li>
-    </ul>
   </div>
   <div class="wbcClassScroll">
     <ul class="nth1Child classAttribute">
@@ -116,7 +92,7 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in filterByTitle(wbcInfoVal, 'nonWbc')" :key="outerIndex">
-        <div class="categories" v-show="selectItems?.siteCd !== '0006' && nWbcItem?.title !== 'SM'"
+        <div class="categories" v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
             <li class="mb10 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
@@ -155,14 +131,6 @@
       :messageType="toastMessageType"
       :duration="1500"
   />
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      :type="confirmType"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
 </template>
 
 <script setup lang="ts">
@@ -170,15 +138,13 @@ import {
   computed,
   defineEmits,
   defineProps,
-  nextTick,
   onBeforeMount,
   onMounted,
-  onUnmounted,
   ref,
   watch
 } from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import {crcOptionGet, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
+import { getWbcCustomClassApi } from "@/common/api/service/setting/settingApi";
 import { DIR_NAME } from "@/common/defines/constants/settings";
 import {
   basicBmClassList,
@@ -189,27 +155,15 @@ import {
 import {useStore} from "vuex";
 import {MESSAGES, MSG } from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import {
   getOrderClassApi,
   putOrderClassApi
 } from "@/common/api/service/setting/settingApi";
 
-const props = defineProps(['wbcInfo', 'type', 'classCompareShow', 'selectItems', 'checkedAllClass', 'crcConnect']);
+const props = defineProps(['wbcInfo', 'type', 'classCompareShow']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
-import moment from 'moment';
-import { BUSINESS_ID, CbcWbcTestCdList_0002, EQMT_CD, INST_CD } from "@/common/defines/constants/lis";
-import axios from "axios";
-import {xml2json} from "xml-js";
-import {createCbcFile, createDirectory, createFile} from "@/common/api/service/fileSys/fileSysApi";
-import {
-  createH17,
-  readH7Message,
-  readNoFlagHl7Message
-} from "@/common/api/service/fileReader/fileReaderApi";
-import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {
   incheonGilPercentChange,
@@ -222,30 +176,20 @@ import {
   getCbcPathData, getLisPathData,
   getLisWbcRbcData,
   inhaCbc,
-  inhaDataSend,
 } from "@/common/helpers/lisCbc/inhaCbcLis";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import {useRouter} from "vue-router";
-import {isObjectEmpty} from "@/common/lib/utils/validators";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipClassInfoType } from "@/common/type/tooltipType";
 import {
-  cbcUpdateMutation,
   gqlGenericUpdate,
   useUpdateRunningInfoMutation
 } from '@/gql/mutation/slideData';
 
-const router = useRouter();
-const showLISUploadButton = ref(true);
-const selectItems = ref<any>(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
-const inhaTestCode: any = computed(() => store.state.commonModule.inhaTestCode);
-const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const slideData = computed(() => store.state.slideDataModule);
-const showLISUploadAfterCheckingAll = computed(() => store.state.commonModule.showLISUploadAfterCheckingAll);
-
+const selectItems = ref<any>([]);
 const barcodeImg = ref('');
 const userId = ref('');
 const wbcInfoVal = ref<any>([]);
@@ -261,28 +205,19 @@ const dragOffsetY = ref(0);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmType = ref('');
-const confirmMessage = ref('');
 const orderClass = ref<any>([]);
 const projectBm = ref(false);
 const totalBeforeCount = ref(0);
 const totalAfterCount = ref(0);
-const okMessageType = ref('');
-const lisCodeWbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
-const submittedScreen = ref(false);
 const lisBtnColor = ref(false);
 const cbcFilePathSetArr = ref('');
 const cbcCodeList = ref<any>([]);
 const lisCodeWbcArrApp = ref<any>([]);
 const lisCodeRbcArrApp = ref<any>([]);
 const lisHotKey = ref('');
-const crcConnect = ref(false);
-const isHotKeyPressed = ref(false);
 const tooltipVisible = ref<TooltipClassInfoType>({
-  confirm: false,
   classMoveLock: false,
   beforeCountPercent: false,
   afterCountPercent: false,
@@ -291,20 +226,9 @@ const tooltipVisible = ref<TooltipClassInfoType>({
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
-
-  if (!projectBm.value) {
-    const crcOptionApi = await crcOptionGet();
-    if (crcOptionApi.data.length !== 0) {
-      crcConnect.value = crcOptionApi.data[0].crcConnect;
-    }
-  }
 })
 
 onMounted(async () => {
-  window.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('keyup', handleKeyUp);
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
   // await nextTick();
   await getOrderClass();
   await getCustomClass();
@@ -319,94 +243,42 @@ onMounted(async () => {
     cbcFilePathSetArr.value = await getCbcPathData();
     cbcCodeList.value = await getCbcCodeList();
   }
+  setBarCodeImage(slideData.value);
   await mountedMethod();
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('keyup', handleKeyUp);
 })
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
-watch(() => slideData.value, async (newSlideData) => {
-  selectItems.value = slideData.value;
-  setBarCodeImage(newSlideData);
-  setShowLISButton();
-  await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
-}, { deep: true });
+watch(() => slideData.value.id, async () => {
+  setBarCodeImage(slideData.value);
+  await store.dispatch('commonModule/setCommonInfo', {testType: slideData.value?.testType});
+})
 
 watch(() => props.wbcInfo, async (newItem) => {
-  window.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('keyup', handleKeyUp);
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
   if (Object.keys(newItem).length !== 0) {
     await beforeAfterChange(newItem)
   }
 });
-
-watch(() => props.checkedAllClass, () => {
-  showLISUploadButton.value = true;
-})
 
 const setBarCodeImage = (currentSelectItems: any) => {
   const path = currentSelectItems.img_drive_root_path !== '' && currentSelectItems.img_drive_root_path ? currentSelectItems.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, currentSelectItems.slotId, DIR_NAME.BARCODE);
 }
 
-const setShowLISButton = () => {
-  if (!showLISUploadAfterCheckingAll.value) {
-    showLISUploadButton.value = true;
-  } else {
-    showLISUploadButton.value = slideData.value.submitState.includes('lis') || slideData.value.isAllClassesChecked;
-  }
-}
-
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (router.currentRoute.value.path === '/report') return;
-  const keyName = event.key;
-
-  if (!isHotKeyPressed.value && keyName.toUpperCase() === lisHotKey.value.toUpperCase()) {
-    event.preventDefault(); // 기본 동작 방지
-    isHotKeyPressed.value = true; // 한 번만 실행되도록 설정
-    if (showLISUploadButton.value) {
-      uploadLis();
-    } else {
-      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-      showToast(MESSAGES.TOAST_MSG_LIS_UPLOAD_SCROLL);
-    }
-  }
-};
-
-const handleKeyUp = (event: KeyboardEvent) => {
-  if (router.currentRoute.value.path === '/report') return;
-  if (isHotKeyPressed.value) {
-    isHotKeyPressed.value = false; // 키를 떼면 다시 실행 가능
-  }
-};
-
 const mountedMethod = async () => {
-  if (!props.selectItems) {
+  if (!slideData.value) {
     return;
   }
 
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
-    const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+    const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, slideData.value, cbcCodeList.value, 'lisUpload');
     await store.dispatch('commonModule/setCommonInfo', { inhaTestCode: inhaTestCode });
   }
-  if (selectItems.value?.submitState) {
-    lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
+  if (slideData.value?.submitState) {
+    lisBtnColor.value = slideData.value?.submitState === 'lisCbc';
   }
-
-}
-
-const lisModalOpen = () => {
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.IDS_MSG_UPLOAD_LIS;
-  okMessageType.value = 'lisCbc';
 }
 
 const goClass = (id: any) => {
@@ -441,669 +313,6 @@ const drop = (index: any, event: any) => {
 
 const toggleLockEvent = () => {
   toggleLock.value = !toggleLock.value;
-}
-
-const commitConfirmed = () => {
-  if (slideData.value?.submitState === 'Submit') {
-    return;
-  }
-  submittedScreen.value = true;
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
-  okMessageType.value = 'commit';
-}
-
-const handleOkConfirm = () => {
-  if (okMessageType.value === 'commit') {
-    onCommit();
-  } else {
-    uploadLis();
-  }
-  showConfirm.value = false;
-}
-
-const uploadLis = async () => {
-  switch (siteCd.value) {
-    case HOSPITAL_SITE_CD_BY_NAME['서울성모병원']:
-      cmcSeoulLisAndCbcDataGet();
-      break;
-    case HOSPITAL_SITE_CD_BY_NAME['인하대병원']:
-      await inhaDataSendLoad();
-      break;
-    case HOSPITAL_SITE_CD_BY_NAME['인천길병원']:
-      await gilDataSendLoad();
-      break;
-    case HOSPITAL_SITE_CD_BY_NAME['고대안암병원']:
-      godaeAnamDataSendLoad();
-      break;
-    case HOSPITAL_SITE_CD_BY_NAME['NONE']:
-    case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
-      await uimdTestCbcLisDataGet();
-      break;
-    default:
-      await otherDataSend();
-      break;
-  }
-}
-
-const uimdTestCbcLisDataGet = async () => {
-  // 서울 성모 테스트 코드
-  const codeList = CbcWbcTestCdList_0002;
-  const {wbcInfoAfter} = selectItems.value ?? {};
-  let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-  // cbc 결과 조회
-  axios.get(`${apiBaseUrl}/cbc/liveTest`, {   // UIMD 백엔드 xml 테스트 코드 : http://192.168.0.131:3002/api/cbc/liveTest
-    params: {
-      baseUrl: 'http://emr012.cmcnu.or.kr/cmcnu/.live',
-      submit_id: 'TRLII00124',
-      business_id: 'li',
-      instcd: '012', // 병원 코드
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  }).then(async function (resultCbc) {
-    // 결과 처리 코드
-    const xml = resultCbc.data.trim(); // 불필요한 공백 제거
-    const cbcJson = JSON.parse(xml2json(xml, { compact: true }));
-    const cbcWorkList = cbcJson.root.spcworklist.worklist;
-    const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
-
-    // LHR100는 WBC를 뜻함 -> 평화이즈 데이터를 WBC로 변경하는 과정
-    const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
-      return item.testcd._cdata === 'LHR100'
-    })
-    wbcInfoAfter.forEach(function (wbcItem: any) {
-      wbcItem.testcd = ''
-      // testcd 없음 필드 자체에 추가 하는 로직
-      codeList.forEach(function (code) {
-        if (String(wbcItem.id) === String(code.id)) {
-          wbcItem.testcd = code.cd
-        }
-      })
-    })
-    // five diff push
-    let wbcTemp: any = [];
-    wbcInfoAfter.forEach(function (wbcItem: any) {
-      fiveDiffWorkList.forEach(function (fiveDiffItem) {
-        if (wbcItem.testcd === fiveDiffItem) {
-          wbcTemp.push({
-            testcd: wbcItem.testcd,
-            percent: wbcItem.percent,
-            name: wbcItem.name,
-          })
-        } else {
-          if ((Number(wbcItem.count) > 0) && wbcItem.testcd !== '') {
-            wbcTemp.push({
-              testcd: wbcItem.testcd,
-              percent: wbcItem.percent,
-              name: wbcItem.name,
-            })
-          }
-        }
-      })
-    })
-
-    // 중복제거
-    const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
-    wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
-
-    const totalPercentRounded = wbcTemp
-        .filter((item: any) => item.name !== "Neutrophil")
-        .map((item: any) => Math.round(parseFloat(item.percent)))
-        .reduce((sum: any, percent: any) => sum + percent, 0);
-    const updatedWbcTemp = wbcTemp.map((item: any) =>
-        item.name === "Neutrophil"
-            ? {...item, percent: 100 - totalPercentRounded}
-            : {...item, percent: Math.round(parseFloat(item.percent))}
-    );
-    wbcTemp = updatedWbcTemp;
-
-    // neutrophil-seg
-    const nsPercentItem = wbcTemp.filter((item: any) => item.testcd === 'LHR10501');
-
-    // ANC insert LHR10599=> ANC 계산
-    if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
-      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
-      wbcTemp.push({
-        testcd: 'LHR10599',
-        percent: ancResult,
-        name: 'ANC 계산'
-      })
-    }
-
-    const localTime = moment().local();
-    const updatedItem = {
-      submitState: 'lisCbc',
-      submitOfDate: localTime.format(),
-      submitUserId: userModuleDataGet.value.userId,
-    };
-    lisBtnColor.value = true;
-    const updatedRuningInfo = {...slideData.value, ...updatedItem};
-    await gqlGenericUpdate(cbcUpdateMutation,{
-      id: updatedRuningInfo.id,
-      submitState: updatedRuningInfo.submitState,
-      submitOfDate: updatedRuningInfo.submitOfDate,
-      submitUserId: updatedRuningInfo.submitUserId,
-    });
-    await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-
-  }).catch(function (err) {
-    console.error('error.config', err.config)
-    showErrorAlert(err.message);
-  });
-}
-
-const cmcSeoulLisAndCbcDataGet = () => {
-  const codeList = CbcWbcTestCdList_0002;
-  const {barcodeNo, wbcInfoAfter} = selectItems.value ?? {};
-  let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-  // cbc 결과 조회
-  axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-    params: {
-      submit_id: 'TRLII00124',
-      business_id: 'li',
-      instcd: '012', // 병원 코드
-      bcno: barcodeNo,
-      baseUrl: 'http://emr012.cmcnu.or.kr/cmcnu/.live'
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  }).then(async function (resultCbc) {
-    // 결과 처리 코드
-    const xml = resultCbc.data.data.trim(); // 불필요한 공백 제거
-    const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
-    const cbcWorkList = cbcJson.root.spcworklist.worklist;
-    const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
-    // LHR100는 WBC를 뜻함 -> 평화이즈 데이터를 WBC로 변경하는 과정
-    const wbcDiffCountItem = cbcWorkList.filter(function (item: any) {
-      return item.testcd._cdata === 'LHR100'
-    })
-
-    wbcInfoAfter.forEach(function (wbcItem: any) {
-      wbcItem.testcd = ''
-      // testcd 없음 필드 자체에 추가 하는 로직
-      codeList.forEach(function (code) {
-        if (String(wbcItem.id) === String(code.id)) {
-          wbcItem.testcd = code.cd
-        }
-      })
-    })
-
-    // five diff push
-    let wbcTemp: any = [];
-    wbcInfoAfter.forEach(function (wbcItem: any) {
-      fiveDiffWorkList.forEach(function (fiveDiffItem) {
-        if (wbcItem.testcd === fiveDiffItem) {
-          wbcTemp.push({
-            testcd: wbcItem.testcd,
-            percent: wbcItem.percent,
-          })
-        } else {
-          if ((Number(wbcItem.count) > 0) && wbcItem.testcd !== '') {
-            wbcTemp.push({
-              testcd: wbcItem.testcd,
-              percent: wbcItem.percent,
-            })
-          }
-        }
-      })
-    })
-    // 중복제거
-    const uniqueItems = new Set(wbcTemp.map((item: any) => item.testcd));
-    wbcTemp = Array.from(uniqueItems).map(testcd => wbcTemp.find((item: any) => item.testcd === testcd));
-    // 뉴트로필 외 반올림 뉴트로필 100기준 정수로 재 계산
-    const totalPercentRounded = wbcTemp
-        .filter((item: any) => item.name !== "Neutrophil")
-        .map((item: any) => Math.round(parseFloat(item.percent)))
-        .reduce((sum: any, percent: any) => sum + percent, 0);
-    const updatedWbcTemp = wbcTemp.map((item: any) =>
-        item.name === "Neutrophil"
-            ? {...item, percent: 100 - totalPercentRounded}
-            : {...item, percent: Math.round(parseFloat(item.percent))}
-    );
-    wbcTemp = updatedWbcTemp;
-
-    // neutrophil-seg ANC 계산을 위해서 전체 다 뉴트로필로 변경 전체 개수를 측정 하기 위해서
-    const nsPercentItem = wbcTemp.filter((item: any) => item.testcd === 'LHR10501');
-
-    // ANC insert LHR10599=> ANC 계산
-    if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
-      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
-      wbcTemp.push({
-        testcd: 'LHR10599',
-        percent: ancResult,
-        name: 'ANC 계산'
-      })
-    }
-    const filePath = `D:\\UIMD_Data\\UI_Log\\CBCLookUP\\${barcodeNo}.txt`;
-    const paramsLisCopyLogData = {
-      filePath,
-      data: {
-        cbcJson,
-        cbcWorkList
-      },
-    };
-    await createCbcFile(paramsLisCopyLogData);
-    // 유저 체크
-    checkUserAuth(userModuleDataGet.value.employeeNo).then(function (isUserAuth) {
-      if (isUserAuth === 'succ') {
-        const params = {
-          empNo: userModuleDataGet.value.employeeNo,
-          barcodeNo: barcodeNo,
-          wbcInfo: wbcTemp
-        }
-        const now = new Date();
-        const year = `${now.getFullYear()}`;
-        let month = `${now.getMonth() + 1}`;
-        if (month.length === 1) {
-          month = `0${month}`;
-        }
-        let day = `${now.getDate()}`;
-        if (day.length === 1) {
-          day = `0${day}`;
-        }
-
-        const separator1 = String.fromCharCode(23); // '\u0017'
-        const separator2 = String.fromCharCode(23, 23); // '\u0017\u0017'
-        const terminator = String.fromCharCode(3); // '\u0003'
-        const paramsResult = params.wbcInfo
-            .filter((wbcItem: any) => wbcItem.testcd !== null && wbcItem.testcd !== '')
-            .map((wbcItem: any) => `${wbcItem.testcd}${separator1}${wbcItem.percent}${separator2}${year}${month}${day}${terminator}`)
-            .join('');
-
-        // LIS 최종 업로드 Report
-        const newparams = {
-          submit_id: 'TXLII00101',
-          business_id: BUSINESS_ID,
-          ex_interface: `${params.empNo}|${INST_CD}`,
-          instcd: INST_CD,
-          userid: params.empNo,
-          eqmtcd: EQMT_CD,
-          bcno: params.barcodeNo,
-          result: paramsResult,
-          testcont: 'MANUAL DIFFERENTIAL COUNT RESULT',
-          testcontcd: '01',
-          execdeptcd: 'H1',
-          baseUrl: 'http://emr012.cmcnu.or.kr/cmcnu/.live'
-        }
-        axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-          params: newparams,
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }).then(async function (result) {
-          const xml = result.data.data;
-          const json = JSON.parse(xml2json(xml, {compact: true}));
-          const resultFlag = json.root.ResultFlag.resultflag._text;
-          const paramsDataCbcLisLog = {
-            empNo: userModuleDataGet.value.employeeNo,
-            barcodeNo,
-            wbcTemp,
-            frontendSendData: newparams,
-            processSendData: paramsResult,
-            uimdDefaultData: wbcInfoAfter,
-            nsPercentItem,
-            cbcJson,
-            cbcWorkList,
-          };
-          const filePath = `D:\\UIMD_Data\\UI_Log\\LISFinalReport\\${barcodeNo}.txt`;
-          const paramsLisCopyLogData = {
-            filePath,
-            data: {
-              frontendData: paramsDataCbcLisLog,
-              lisLastReportVal: result,
-            },
-          };
-          await createCbcFile(paramsLisCopyLogData);
-          if (resultFlag === 'Y') {
-            const localTime = moment().local();
-            // lisCbc 등록 후 list 테이블에서 로우 색상 변경 코드
-            const updatedItem = {
-              submitState: 'lisCbc',
-              submitOfDate: localTime.format(),
-              submitUserId: userModuleDataGet.value.userId,
-            };
-            lisBtnColor.value = true;
-            const updatedRuningInfo = {...slideData.value, ...updatedItem};
-            await gqlGenericUpdate(cbcUpdateMutation,{
-              id: updatedRuningInfo.id,
-              submitState: updatedRuningInfo.submitState,
-              submitOfDate: updatedRuningInfo.submitOfDate,
-              submitUserId: updatedRuningInfo.submitUserId,
-            });
-            await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-
-          } else {
-            const index = json.root.ResultFlag.error2._text.indexOf('!');  // '!'의 위치를 찾음
-            const result = index !== -1 ? json.root.ResultFlag.error2._text.substring(0, index + 1) : json.root.ResultFlag.error2._text;
-            const errText = json.root.ResultFlag.error2._text === '1' ? 'LIS 전송이 실패 했습니다.' : result;
-            showErrorAlert(errText);
-          }
-        }).catch(function (err) {
-          showErrorAlert(err.message);
-        })
-      } else {
-        showErrorAlert(MESSAGES.IDS_ERROR_PLEASE_CONFIRM_YOUR_USER_ID);
-      }
-    })
-  }).catch(function (err) {
-    console.error('error.config', err.config)
-    showErrorAlert(err.message);
-  });
-}
-
-const godaeAnamDataSendLoad = () => {
-  const goDaeData = goDae();
-  lisFileUrlCreate(goDaeData);
-}
-
-const gilDataSendLoad = async () => {
-  const url = lisFilePathSetArr.value;
-  const fileCreateRes = await createDirectory(`path=${url}`);
-
-  if (fileCreateRes) {
-    const data = {
-      sendingApp: 'PBIA',
-      sendingFacility: 'PBIA',
-      receivingApp: 'LIS',
-      receivingFacility: 'LIS',
-      dateTime: getDateTimeStr(),
-      security: '',
-      messageType: ['ADT', 'R02'],
-      messageControlId: selectItems.value?.barcodeNo,
-      processingId: 'P',
-      hl7VersionId: '2.5',
-      selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: incheonGilPercentChange(selectItems.value?.wbcInfoAfter, selectItems.value?.wbcInfo.totalCount),
-      result: lisCodeWbcArrApp.value,
-    };
-    const res = await readNoFlagHl7Message(data);
-    if (res) {
-      if (!lisFilePathSetArr.value.includes("http")) { // file
-        const data = {
-          filepath: `${lisFilePathSetArr.value}\\${selectItems.value.barcodeNo}.hl7`,
-          msg: res,
-        }
-        try {
-          await createH17(data);
-          toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-          showToast(MESSAGES.IDS_MSG_SUCCESS);
-          const localTime = moment().local();
-          const updatedItem = {
-            submitState: 'lisCbc',
-            submitOfDate: localTime.format(),
-            submitUserId: userModuleDataGet.value.userId,
-          };
-          lisBtnColor.value = true;
-
-          const updatedRuningInfo = {...slideData.value, ...updatedItem};
-          await gqlGenericUpdate(cbcUpdateMutation,{
-            id: updatedRuningInfo.id,
-            submitState: updatedRuningInfo.submitState,
-            submitOfDate: updatedRuningInfo.submitOfDate,
-            submitUserId: updatedRuningInfo.submitUserId,
-          });
-          await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-          emits('uploadLisChangeSlide', HOSPITAL_SITE_CD_BY_NAME['인천길병원']);
-
-        } catch (error: any) {
-          showErrorAlert(error.response.data.message);
-        }
-      } else { // url
-        await sendLisMessage(res);
-      }
-    }
-  }
-}
-
-const inhaDataSendLoad = async () => {
-  const { inhaTestCode: localInhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
-  await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: localInhaTestCode });
-  const {
-    errMessage,
-    lisBtnColor: lisBtnColorVal
-  } = await inhaDataSend(selectItems.value?.wbcInfoAfter, selectItems.value?.rbcInfoAfter, selectItems.value?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, selectItems.value, userModuleDataGet.value.id)
-  if (errMessage !== '') {
-    if (errMessage.toLowerCase() === 'success') {
-      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-    } else {
-      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    }
-    showToast(errMessage);
-  }
-  lisBtnColor.value = lisBtnColorVal || false;
-}
-
-const otherDataSend = async () => {
-  const url = lisFilePathSetArr.value;
-  const fileCreateRes = await createDirectory(`path=${url}`);
-
-  if (fileCreateRes) {
-    const data = {
-      sendingApp: 'PBIA',
-      sendingFacility: 'PBIA',
-      receivingApp: 'LIS',
-      receivingFacility: 'LIS',
-      dateTime: getDateTimeStr(),
-      security: '',
-      messageType: ['ADT', 'R02'],
-      messageControlId: selectItems.value?.barcodeNo,
-      processingId: 'P',
-      hl7VersionId: '2.5',
-      selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: selectItems.value?.wbcInfoAfter,
-      result: lisCodeWbcArrApp.value,
-    };
-    const res = await readH7Message(data);
-    if (res) {
-      if (!lisFilePathSetArr.value.includes("http")) { // file
-        const data = {
-          filepath: `${lisFilePathSetArr.value}\\${selectItems.value.barcodeNo}.hl7`,
-          msg: res,
-        }
-        try {
-          await createH17(data);
-          toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-          showToast(MESSAGES.IDS_MSG_SUCCESS);
-        } catch (error: any) {
-          showErrorAlert(error.response.data.message);
-        }
-      } else { // url
-        await sendLisMessage(res);
-      }
-    }
-  }
-}
-
-
-const goDae = (): string => {
-  let data = `H|\\^&||||||||||P||${selectItems.value?.barcodeNo}\n`;
-  let seq = 0;
-  let kumcMergePercent = 0;
-  let kumcBandPercent = 0;
-  // 누적 백분율 계산
-  selectItems.value?.wbcInfoAfter.forEach((wbcItem: any) => {
-    if (['02', '03', '04', '10'].includes(wbcItem.id)) {
-      kumcMergePercent += Number(wbcItem.percent);
-    }
-    if (wbcItem.id === '72') {
-      kumcBandPercent = Number(wbcItem.percent);
-    }
-  });
-
-  // 백분율 조정
-  if (kumcMergePercent > 0 && kumcBandPercent < 6) {
-    const updateItem = (id: string, newPercent: string) => {
-      const item = selectItems.value?.wbcInfoAfter.find((item: any) => item.id === id);
-      if (item) {
-        item.percent = newPercent;
-      }
-    };
-
-    updateItem('71', (Number(selectItems.value?.wbcInfoAfter.find((item: any) => item.id === '71')?.percent) + kumcBandPercent).toString());
-    updateItem('72', '0');
-  }
-
-  // 데이터 생성
-  const appendData = (lisCode: any, wbcItem: any) => {
-    if (lisCode.LIS_CD !== '') {
-      if (['01', '71', '05', '07', '08', '09'].includes(wbcItem.id) || Number(wbcItem.percent) > 0) {
-        data += `R|${++seq}|^^^^${lisCode.LIS_CD}|${wbcItem.count}|||||||^${userModuleDataGet.value.name}\n`;
-        data += `R|${++seq}|^^^^${lisCode.LIS_CD}%|${wbcItem.percent}|%||||||^${userModuleDataGet.value.name}\n`;
-      }
-    }
-  };
-
-  lisCodeWbcArr.value.forEach((lisCode: any) => {
-    selectItems.value?.wbcInfoAfter.forEach((wbcItem: any) => {
-      if (lisCode.IA_CD === wbcItem.id) {
-        appendData(lisCode, wbcItem);
-      }
-    });
-  });
-
-  return data += 'L|1|N';
-};
-
-
-const lisFileUrlCreate = async (data: any) => {
-  const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems.value?.barcodeNo}.txt`;
-  const parmsLisCopy = {filePath, data: data };
-  await createCbcFile(parmsLisCopy);
-
-  // URL이 아닌 경우, 로컬 파일 작업 수행
-  if (!lisFilePathSetArr.value.includes("http")) {
-    const url = lisFilePathSetArr.value;
-
-    const fileCreateRes = await createDirectory(`path=${url}`);
-    if (fileCreateRes) {
-      const fileParams = {
-        path: url,
-        filename: `${selectItems.value?.barcodeNo}.lst2msg`,
-        content: data,
-      };
-
-      // 파일 생성
-      const fileRes = await createFile(fileParams);
-      if (fileRes) {
-        // 실행 정보 업데이트
-        const localTime = moment().local();
-        const updatedItem = {
-          submitState: 'lisCbc',
-          submitOfDate: localTime.format(),
-          submitUserId: userModuleDataGet.value.userId,
-        };
-        const updatedRuningInfo = {...slideData.value, ...updatedItem};
-        await gqlGenericUpdate(cbcUpdateMutation,{
-          id: updatedRuningInfo.id,
-          submitState: updatedRuningInfo.submitState,
-          submitOfDate: updatedRuningInfo.submitOfDate,
-          submitUserId: updatedRuningInfo.submitUserId,
-        });
-
-        await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-        toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-        showToast(MESSAGES.IDS_MSG_SUCCESS);
-
-        // 알림이 없을 경우 다음 페이지로 이동
-        if (!showAlert.value) {
-          emits('nextPage');
-        }
-      } else {
-        // 파일 생성 오류 시 알림 표시
-        showErrorAlert('lisCbc file err');
-      }
-    }
-  } else {
-    // URL로 설정된 경우 메시지 전송
-    await sendLisMessage(data);
-  }
-};
-
-const sendLisMessage = async (data: any) => {
-  const body = {
-    barcodeNo: selectItems.value?.barcodeNo,
-    userId: userModuleDataGet.value.name,
-    deviceBarcode: deviceSerialNm.value,
-    resultMsg: data,
-    baseUrl: lisFilePathSetArr.value,
-  };
-  try {
-    let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-    const result = await axios.post(`${apiBaseUrl}/cbc/executePostCurl`, body);
-    if (result.data.errorCode === 'E000') {
-      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-      showToast(MESSAGES.IDS_MSG_SUCCESS);
-
-    } else {
-      showErrorAlert(result.data.errorMessage);
-    }
-  } catch (err: any) {
-    showErrorAlert(err.message);
-  }
-};
-
-
-const checkUserAuth = async (empNo: any) => {
-  return new Promise((succ, fail) => {
-    if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원']) {
-      let apiBaseUrl = window.APP_API_BASE_URL || 'http://192.168.0.131:3002';
-      axios.get(`${apiBaseUrl}/cbc/lisCbcMarys`, {
-        params: {
-          submit_id: 'TRLII00104',
-          business_id: 'li',
-          instcd: '012', // 병원 코드
-          userid: empNo,
-          baseUrl: 'http://emr012.cmcnu.or.kr/cmcnu/.live'
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }).then(function (result) {
-        const xml = result.data.data;
-        const json = JSON.parse(xml2json(xml, {compact: true}));
-        const userNm = json.root.getUsernm.usernm._text;
-        if (userNm === null || userNm === '') {
-          succ('fail')
-        } else {
-          succ('succ')
-        }
-
-      }).catch(function (err) {
-        console.error('checkUserAuth :' + err.message)
-        fail(new Error(err.message))
-      })
-
-    }
-  })
-}
-
-const hideConfirm = () => {
-  showConfirm.value = false;
-}
-
-const onCommit = async () => {
-  const localTime = moment().local();
-  const updatedItem = {
-    submitState: 'Submit',
-    submitOfDate: localTime.format(),
-    submitUserId: userModuleDataGet.value.userId,
-  };
-
-  const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await gqlGenericUpdate(cbcUpdateMutation,{
-    id: updatedRuningInfo.id,
-    submitState: updatedRuningInfo.submitState,
-    submitOfDate: updatedRuningInfo.submitOfDate,
-    submitUserId: updatedRuningInfo.submitUserId,
-  });
-
-  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-  selectItems.value.submitState = 'Submit';
-
-  emits('submitStateChanged', 'Submit');
 }
 
 const getStringValue = (title: string): string => {
@@ -1148,7 +357,9 @@ const getOrderClass = async () => {
 
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
-  const customClassItems = selectItems.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
+  const customClassItems = slideData.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
+  selectItems.value = slideData.value;
+  slideData.value.wbcInfoAfter = newItem;
   selectItems.value.wbcInfoAfter = newItem;
 
   const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
@@ -1308,7 +519,7 @@ const createPercent = (item: any, totalCount: any) => {
       return;
     }
 
-    const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+    const targetArray = getStringArrayBySiteCd(siteCd.value, slideData.value?.testType);
     if (!targetArray.includes(item.title)) {
       const percentage = ((Number(item.count) / Number(totalCount)) * 100).toFixed(1); // 소수점 0인경우 정수 표현
       item.percent = (Number(percentage) === Math.floor(Number(percentage))) ? Math.floor(Number(percentage)).toString() : percentage;
@@ -1318,7 +529,7 @@ const createPercent = (item: any, totalCount: any) => {
 
 const shouldRenderCategory = (title: string) => {
   // 제외할 클래스들 정의
-  const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+  const targetArray = getStringArrayBySiteCd(siteCd.value, slideData.value?.testType);
   return !targetArray.includes(title);
 };
 
@@ -1357,7 +568,7 @@ const totalCountSet = (showType: string, wbcInfoChangeVal: any) => {
         showType === 'before' ? totalBeforeCount.value += Number(item.count) : totalAfterCount.value += Number(item.count);
       }
     } else {
-      const targetArray = getStringArrayBySiteCd(siteCd.value, selectItems.value?.testType);
+      const targetArray = getStringArrayBySiteCd(siteCd.value, slideData.value?.testType);
       const titleInArray = targetArray.includes(item.title);
       if (!titleInArray) {
         showType === 'before' ? totalBeforeCount.value += Number(item.count) : totalAfterCount.value += Number(item.count);
@@ -1414,7 +625,7 @@ async function updateOriginalDb() {
   // originalDb 업데이트
 
   if (slideData.value) {
-    slideData.value.wbcInfoAfter = clonedWbcInfo;
+    selectItems.value.wbcInfoAfter = clonedWbcInfo;
   }
 
   await putOrderClassApi(sortArr);

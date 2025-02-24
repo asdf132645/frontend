@@ -1,3 +1,4 @@
+/* 공통 스타일 */
 .base-btn {
     position: relative;
     align-items: center;
@@ -13,6 +14,58 @@
 .base-btn:active {
     transform: scale(0.98);
     box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+
+.base-btn.blueText {
+    color: var(--blue-bg-0-color);
+}
+
+/* 크기 설정 */
+.base-btn--sm {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+.base-btn--md {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+.base-btn--lg {
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+/* primary 스타일 */
+.base-btn--primary {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+}
+.base-btn--primary.base-btn--active {
+    background: var(--white-bg-0-color);
+    color: black;
+}
+.base-btn--primary.base-btn--hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* secondary 스타일 */
+.base-btn--secondary {
+    background: var(--main-bg-9-color);
+    color: white;
+    border: none;
+}
+.base-btn--secondary.base-btn--active {
+    background: var(--white-bg-0-color);
+    color: black;
+}
+.base-btn--secondary.base-btn--hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 비활성화 상태 */
+.base-btn--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .classInfo-barcode-wrapper {

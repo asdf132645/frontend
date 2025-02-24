@@ -21,7 +21,6 @@
                   @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
                   :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
                   :notCanvasClickVal="notCanvasClickVal"
-                  @submitStateChanged="submitStateChanged"
         />
       </template>
       <template v-else>
@@ -29,7 +28,6 @@
                   @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
                   :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
                   :notCanvasClickVal="notCanvasClickVal"
-                  @submitStateChanged="submitStateChanged"
         />
       </template>
 
@@ -157,12 +155,5 @@ const showToast = (message: string) => {
     toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
-
-const submitStateChanged = (changedSubmitState: string) => {
-  if (changedSubmitState) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
-    showToast(MSG_GENERAL.SUCCESS);
-  }
-}
 
 </script>

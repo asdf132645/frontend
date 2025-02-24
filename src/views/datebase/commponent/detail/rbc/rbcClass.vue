@@ -8,16 +8,6 @@
   <div>
     <div class="mt10 flex-justify-between">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
-      <ul class="leftWbcInfo rbcClass">
-        <li class="pos-relative" @click="commitConfirmed" :class="{'submitted': slideData.submitState === 'Submit'}">
-          <font-awesome-icon
-              :icon="['fas', 'square-check']"
-              @mouseover="tooltipVisibleFunc('confirm', true)"
-              @mouseout="tooltipVisibleFunc('confirm', false)"
-          />
-          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" :message="MSG.TOOLTIP.CONFIRM"/>
-        </li>
-      </ul>
     </div>
 
     <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
@@ -265,26 +255,14 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      :type="confirmType"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
-
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, watch, onMounted, computed, defineEmits, nextTick, onBeforeMount} from 'vue';
+import { ref, defineProps, watch, onMounted, computed, defineEmits, nextTick } from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
 import Alert from "@/components/commonUi/Alert.vue";
-import Confirm from "@/components/commonUi/Confirm.vue";
-import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
-import moment from "moment/moment";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
@@ -296,11 +274,8 @@ import {
   VISIBLE_SHAPE_OPTIONS,
   VISIBLE_SIZE_OPTIONS, VisibleRbcType
 } from "@/common/defines/constants/rbc";
-import Tooltip from "@/components/commonUi/Tooltip.vue";
-import {TooltipRbcClassType} from "@/common/type/tooltipType";
 import { DIR_NAME } from "@/common/defines/constants/settings";
-import { cbcUpdateMutation, gqlGenericUpdate, rbcUpdateMutation } from "@/gql/mutation/slideData";
-import {scrollToTop} from "@/common/lib/utils/scroll";
+import { gqlGenericUpdate, rbcUpdateMutation } from "@/gql/mutation/slideData";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 
@@ -317,9 +292,6 @@ const store = useStore();
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmType = ref('');
-const confirmMessage = ref('');
 const userModuleDataGet = computed(() => store.state.userModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isBefore = ref(false);
@@ -355,9 +327,6 @@ const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
 const projectType = ref(window.PROJECT_TYPE);
 const shapeOthersCount = ref(0);
-const tooltipVisible = ref({
-  confirm: false,
-})
 const barcodeImg = ref('');
 
 onMounted(async () => {
@@ -932,61 +901,9 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
 
 };
 
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-  scrollToTop();
-};
-
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
-
 const hideAlert = () => {
   showAlert.value = false;
 };
-
-const commitConfirmed = () => {
-  if (slideData.value?.submitState === 'Submit') {
-    return;
-  }
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
-}
-
-const handleOkConfirm = () => {
-  onCommit();
-  showConfirm.value = false;
-}
-
-const hideConfirm = () => {
-  showConfirm.value = false;
-}
-
-const onCommit = async () => {
-  const localTime = moment().local();
-  const updatedItem = {
-    submitState: 'Submit',
-    submitOfDate: localTime.format(),
-    submitUserId: userModuleDataGet.value.userId,
-  };
-
-  const updatedRuningInfo = {...slideData.value, ...updatedItem}
-  await gqlGenericUpdate(cbcUpdateMutation, {
-    id: updatedRuningInfo.id,
-    submitState: updatedRuningInfo.submitState,
-    submitOfDate: updatedRuningInfo.submitOfDate,
-    submitUserId: updatedRuningInfo.submitUserId,
-  });
-
-  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-  slideData.value.submitState = 'Submit';
-  emits('submitStateChanged', 'Submit');
-}
 
 const getRbcDegreeData = async () => {
   try {
@@ -1128,10 +1045,6 @@ const reDegree = async (rbcInfoArray: any) => {
     });
   });
 };
-
-const tooltipVisibleFunc = (type: keyof TooltipRbcClassType, visible: boolean) => {
-  tooltipVisible.value[type] = visible;
-}
 
 const onImageError = () => {
   barcodeImg.value = '';

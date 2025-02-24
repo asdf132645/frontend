@@ -120,7 +120,7 @@ export const MSG = {
         CBC_TO_RESULTCODES: 'Apply CBC & UIMD data to Result Codes',
         BARCODE_COPY: 'Copy barcodeNo',
         MEMO: 'Memo On/Off',
-        CONFIRM: 'Confirm',
+        CONFIRM: 'Confirm Slide',
         CLASS_MOVE: 'Class Drag movement Lock/Unlock',
         LIS_UPLOAD: 'Upload LIS',
         COUNT_PERCENT: 'Count   Percent',
@@ -150,6 +150,7 @@ export const MSG = {
         SUCCESS: 'Success',
         ERROR: 'Error',
         BARCODE_COPIED: 'Barcode Copied',
+        LIS_UPLOAD_ONLY_WBC: 'LIS(HIS) upload is only allowed on the WBC tab'
     },
     ERROR: {
         SETTING_SAVE: 'Save failed',

@@ -7,19 +7,6 @@
 
   <div class="mt10 mb10 flex-justify-between">
     <h3 class="wbcClassInfoLeft">PLT Classification</h3>
-
-    <ul class="leftWbcInfo">
-      <li
-          @click="commitConfirmed"
-          class="pos-relative"
-          :class="{'submitted': selectItems?.submitState === 'Submit',}"
-          @mouseover="tooltipVisibleFunc('confirm', true)"
-          @mouseout="tooltipVisibleFunc('confirm', false)"
-      >
-        <font-awesome-icon :icon="['fas', 'square-check']" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
-      </li>
-    </ul>
   </div>
   <div class="wbcClassScroll">
     <ul class="nth1Child classAttribute text">
@@ -49,14 +36,6 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      :type="confirmType"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
 </template>
 
 <script setup lang="ts">
@@ -65,34 +44,24 @@ import {
   defineEmits,
   defineProps,
   nextTick,
-  onBeforeMount,
   onMounted,
   ref,
   watch
 } from 'vue';
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
-import { DIR_NAME } from "@/common/defines/constants/settings";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 import {useStore} from "vuex";
-import {MESSAGES, MSG } from "@/common/defines/constants/constantMessageText";
 import Alert from "@/components/commonUi/Alert.vue";
-import Confirm from "@/components/commonUi/Confirm.vue";
+import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {isObjectEmpty} from "@/common/lib/utils/validators";
+import {RBC_CODE_CLASS_ID} from "@/common/defines/constants/dataBase";
+import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
 
 const props = defineProps(['type', 'selectItems']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
-import moment from 'moment';
-import { readJsonFile } from "@/common/api/service/fileReader/fileReaderApi";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
-import {isObjectEmpty} from "@/common/lib/utils/validators";
-import Tooltip from "@/components/commonUi/Tooltip.vue";
-import { TooltipClassInfoType } from "@/common/type/tooltipType";
-import {
-  cbcUpdateMutation,
-  gqlGenericUpdate,
-} from '@/gql/mutation/slideData';
-import { RBC_CODE_CLASS_ID } from "@/common/defines/constants/dataBase";
-import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
 
 const selectItems = ref<any>(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
@@ -105,14 +74,6 @@ const pltInfoVal = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmType = ref('');
-const confirmMessage = ref('');
-const okMessageType = ref('');
-const submittedScreen = ref(false);
-const tooltipVisible = ref<TooltipClassInfoType>({
-  confirm: false,
-})
 const rbcInfoForPlt = ref([]);
 const rbcInfoPathAfter = ref<any>([]);
 const rbcCount = ref({
@@ -138,62 +99,18 @@ watch(() => slideData.value, async (newSlideData) => {
   await getWbcInfoForPlt(newSlideData)
   await getRbcInfoForPlt(newSlideData);
   await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
-}, { deep: true });
+}, {deep: true});
 
 const setBarCodeImage = (currentSelectItems: any) => {
   const path = currentSelectItems.img_drive_root_path !== '' && currentSelectItems.img_drive_root_path ? currentSelectItems.img_drive_root_path : pbiaRootDir.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, currentSelectItems.slotId, DIR_NAME.BARCODE);
 }
 
-const commitConfirmed = () => {
-  if (slideData.value?.submitState === 'Submit') {
-    return;
-  }
-  submittedScreen.value = true;
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.IDS_MSG_CONFIRM_SLIDE;
-  okMessageType.value = 'commit';
-}
-
-const handleOkConfirm = () => {
-  if (okMessageType.value === 'commit') {
-    onCommit();
-  } else {
-    uploadLis();
-  }
-  showConfirm.value = false;
-}
-
-const hideConfirm = () => {
-  showConfirm.value = false;
-}
-
-const onCommit = async () => {
-  const localTime = moment().local();
-  const updatedItem = {
-    submitState: 'Submit',
-    submitOfDate: localTime.format(),
-    submitUserId: userModuleDataGet.value.userId,
-  };
-
-  const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await gqlGenericUpdate(cbcUpdateMutation,{
-    id: updatedRuningInfo.id,
-    submitState: updatedRuningInfo.submitState,
-    submitOfDate: updatedRuningInfo.submitOfDate,
-    submitUserId: updatedRuningInfo.submitUserId,
-  });
-
-  await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
-  selectItems.value.submitState = 'Submit';
-  emits('submitStateChanged', 'Submit');
-}
-
 const getWbcInfoForPlt = async (newItem: any) => {
   if (!isObjectEmpty(newItem.wbcInfoAfter)) {
     const wbcPltValue = newItem.wbcInfoAfter.filter((item) => item?.id === '13' || item?.id === '14');
     if (wbcPltValue.length) {
-      pltInfoVal.value = wbcPltValue.map(({ count, name }) => ({ count, name }));
+      pltInfoVal.value = wbcPltValue.map(({count, name}) => ({count, name}));
     }
   }
 }
@@ -203,7 +120,7 @@ const getRbcInfoForPlt = async (newSlideData) => {
 
   await checkRBCTotalImageNames();
   await rbcTotalAndReCountForReport();
-  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'Platelet' });
+  pltInfoVal.value.push({count: rbcCount.value.pltCount, name: 'Platelet'});
 }
 
 const rbcTotalAndReCountForReport = async () => {
@@ -216,8 +133,8 @@ const rbcTotalAndReCountForReport = async () => {
   for (const rbcImageName of totalRBCImageNames.value) {
     const urlNew = `${basePath}/${slotId}_new_${rbcImageName}.json`;
 
-    const responseNew = await readJsonFile({fullPath: urlNew });
-    const responseOld = await readJsonFile({fullPath: urlOld });
+    const responseNew = await readJsonFile({fullPath: urlNew});
+    const responseOld = await readJsonFile({fullPath: urlOld});
 
     const oldData = responseOld?.data?.[Number(rbcImageName)]?.rbcClassList || [];
     const newData = responseNew.data !== 'not file' ? responseNew.data : [];
@@ -325,9 +242,6 @@ const hideAlert = () => {
 
 const onImageError = () => {
   barcodeImg.value = '';
-}
-const tooltipVisibleFunc = (type: keyof TooltipClassInfoType, visible: boolean) => {
-  tooltipVisible.value[type] = visible;
 }
 
 </script>
