@@ -1,9 +1,6 @@
 <template>
   <div class="tab-content crcDiv reportCrcDiv">
     <div class="text-right mb10">
-<!--      <button class="plusBtn" @click="openCrcAdd">-->
-<!--        <font-awesome-icon :icon="['fas', 'circle-plus']" />-->
-<!--      </button>-->
       <Button @click="deleteRow('check')" :icon="['fas', 'trash']"></Button>
     </div>
     <ul class="crcListContentUl">
@@ -26,9 +23,6 @@
                 <button @click.stop="startEdit(item)" class="hoverSizeAction">
                     <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
                 </button>
-<!--                <button @click.stop="deleteRow('', item.id)" class="hoverSizeAction">-->
-<!--                    <font-awesome-icon :icon="['fas', 'trash']"/>-->
-<!--                </button>-->
             </div>
           <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
             <font-awesome-icon
