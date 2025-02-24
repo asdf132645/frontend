@@ -1,0 +1,179 @@
+.base-btn {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 8px 16px;
+    gap: 8px;
+    transition: 0.2s all;
+}
+
+.base-btn:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+
+.classInfo-barcode-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    height: 200px;
+}
+
+.classInfo-barcode-wrapper > img {
+    height: 200px;
+}
+
+.categories-lastItem {
+    border-bottom: none;
+}
+
+.imageList-tab-btn {
+    width: 120px;
+    padding: 10px 20px;
+    border: none;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.imageList-btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.imageList-setting-container {
+    position: absolute;
+    top: 40px;
+    left: -147px;
+    width: 250px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.imageList-setting-container div {
+    padding: 10px 20px 10px 10px;
+}
+
+.listDetail-top-button-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 12px auto;
+}
+
+.listDetail-top-button-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.listDetail-size-setting-container {
+    position: absolute;
+    top: 36px;
+    left: 120px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    border-radius: 4px;
+    width: 270px;
+    z-index: 3;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.listDetail-size-setting-container > input {
+    width: 96%;
+}
+
+.listDetail-size-setting-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 80%;
+}
+
+.sizeContainer div {
+    text-align: center;
+}
+
+.sizeContainer div input, .sizeContainer div button {
+    width: 250px;
+}
+
+.listDetail-img-setting-container {
+    position: absolute;
+    top: 36px;
+    right: 100px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    border-radius: 4px;
+    width: 300px;
+    z-index: 3;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.listDetail-img-setting-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.listDetail-img-setting-wrapper > input {
+    width: 96%;
+}
+
+.listDetail-img-setting-rbcWrapper {
+    display: flex;
+    align-items: center;
+    width: 95%;
+}
+
+.listDetail-wbcCircle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.listDetail-wbcCircle-wrapper .circle {
+    padding-top: 13px;
+    position: relative;
+}
+
+.listDetail-wbcCircle-wrapper > li {
+    padding: 4px;
+    display: inline-block;
+    border: 1px solid var(--gray-1-color);
+    border-radius: 100%;
+    height: 50px;
+    width: 50px;
+    min-width: 50px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.listDetail-wbcCircle-wrapper >li:hover {
+    background-color: var(--white-color);
+    color: black;
+}

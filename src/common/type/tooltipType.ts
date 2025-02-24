@@ -4,6 +4,18 @@ export interface TooltipClassInfoType {
     beforeCountPercent: boolean;
     afterCountPercent: boolean;
     lisUpload: boolean;
+}
+
+export interface TooltipListDetailType {
+    cellMarking: boolean;
+    size: boolean;
+    imageSetting: boolean;
+    classCompare: boolean;
+    wps: boolean;
+    rollback: boolean;
+}
+
+export interface TooltipCrcResultCodesType {
     cbcToResultCodes: boolean;
 }
 

@@ -337,7 +337,9 @@ const inhaCbcLoad = async () => {
     cbcSex: cbcSexVal,
     cbcAge: cbcAgeVal,
     loading: loadingVal,
+    inhaTestCode
   } = await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'cbcRead');
+  await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: inhaTestCode });
   if (errMessage !== '') {
     showSuccessAlert(errMessage);
   }

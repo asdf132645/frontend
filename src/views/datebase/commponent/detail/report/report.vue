@@ -27,7 +27,7 @@
         </div>
         <div class="wbcDiv shadowBox">
           <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report' :crcConnect="crcConnect"
-                    @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" @uploadLisChangeSlide="uploadLisChangeSlide" @updateCRCMorphology="updateCRCMorphology"
+                    @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" @uploadLisChangeSlide="uploadLisChangeSlide"
           />
         </div>
         <div class="reportDetail shadowBox" :class="{ 'reportBm': projectBm }" v-if="!crcConnect">
@@ -229,7 +229,7 @@
             </div>
           </div>
         </div>
-        <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems" :triggerChangeCRCMorphology="triggerChangeCRCMorphology"/>
+        <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems" />
       </div>
     </div>
 
@@ -322,8 +322,6 @@ const isContent = ref(false);
 const changeSlideByLisUpload = ref(false);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
-const triggerChangeCRCMorphology = ref(false);
-
 
 watch(
     () => slideData.value,
@@ -695,12 +693,6 @@ const submitStateChanged = (changedSubmitState: string) => {
 const uploadLisChangeSlide = (hospitalNm: any) => {
   if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
     changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
-  }
-}
-
-const updateCRCMorphology = (value: boolean) => {
-  if (value) {
-    triggerChangeCRCMorphology.value = !triggerChangeCRCMorphology.value;
   }
 }
 

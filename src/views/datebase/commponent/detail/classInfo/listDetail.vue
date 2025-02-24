@@ -33,70 +33,102 @@
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <div class="imgMenuSetDiv">
-        <button
-            type="button"
-            @click="drawCellMarker(false)"
-            class="pos-relative"
-            @mouseover="tooltipVisibleFunc('cellMarking', true)"
-            @mouseout="tooltipVisibleFunc('cellMarking', false)"
-        >
-          <font-awesome-icon :icon="cellMarkerIcon ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"/>
-          Cell Marking
-          <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_MARKING"/>
-        </button>
-        <button
-            @click="showSizeControl"
-            class="sizeButton pos-relative"
-            @mouseover="tooltipVisibleFunc('size', true)"
-            @mouseout="tooltipVisibleFunc('size', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'plus-minus']"/>
-          Size
-          <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_SIZE"/>
-        </button>
-        <div v-show="showSize" class="sizeContainer">
-          <div>
-            <div class="sizeTitle">Size</div>
-            <div class="customImgSet size">
-              <!--              {{ imgPixelConvertToPercent(imageSize) }}-->
+      <div class="listDetail-top-button-container">
+        <div class="listDetail-top-button-wrapper">
+          <Button
+              class="wbc-img-set"
+              size="sm"
+              @click="imgSetOpen"
+              @mouseover="tooltipVisibleFunc('imageSetting', true)"
+              @mouseout="tooltipVisibleFunc('imageSetting', false)"
+              :icon="['fas', 'gear']"
+              :isActive="imgSet"
+          >
+            IMG Setting
+            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
+          </Button>
+          <Button
+              type="button"
+              size="sm"
+              @click="drawCellMarker(false)"
+              class="pos-relative"
+              @mouseover="tooltipVisibleFunc('cellMarking', true)"
+              @mouseout="tooltipVisibleFunc('cellMarking', false)"
+              :icon="['fas', 'marker']"
+              :isActive="cellMarkerIcon"
+          >
+            Cell Marking
+            <Tooltip :isVisible="tooltipVisible.cellMarking" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_MARKING"/>
+          </Button>
+          <Button
+              @click="showSizeControl"
+              size="sm"
+              class="sizeButton"
+              @mouseover="tooltipVisibleFunc('size', true)"
+              @mouseout="tooltipVisibleFunc('size', false)"
+              :icon="['fas', 'plus-minus']"
+              :isActive="showSize"
+          >
+            Size
+            <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_SIZE"/>
+          </Button>
+          <div v-show="showSize" class="listDetail-size-setting-container shadowBox sizeButton">
+            <div class="listDetail-size-setting-wrapper">
+              <h1>Size</h1>
               <input
                   type="number"
                   :value="displayValue"
                   @input="updateImageSize"
               />
             </div>
-            <!--            <font-awesome-icon :icon="['fas', 'undo']" @click="imgSizeReset"/>-->
             <input
+                style="display: inline-flex"
                 type="range"
                 min="50"
                 max="290"
                 v-model="imageSize"
                 @input="changeImageSize"
             />
-            <button class="resetBtn mb10" @click="imgSizeReset">Size Reset</button>
+            <Button @click="imgSizeReset" class="w-full">
+              Size Reset
+            </Button>
           </div>
-
-        </div>
-        <div class="imgSetWrap" ref="imgSetWrap">
-          <button
-              @click="imgSetOpen"
-              class="pos-relative"
-              @mouseover="tooltipVisibleFunc('imageSetting', true)"
-              @mouseout="tooltipVisibleFunc('imageSetting', false)"
+          <Button
+              size="sm"
+              @click="classCompare"
+              @mouseover="tooltipVisibleFunc('classCompare', true)"
+              @mouseout="tooltipVisibleFunc('classCompare', false)"
+              :icon="['fas', 'code-compare']"
+              :isActive="classCompareShow"
           >
-            <font-awesome-icon :icon="['fas', 'gear']"/>
-            IMG Setting
-            <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
-          </button>
-          <div class="imgSet" v-show="imgSet">
-            <div>
-              <font-awesome-icon :icon="['fas', 'sun']"/>
-              Brightness
-              <div class="customImgSet"><input type="number" v-model="imgBrightness" @input="changeImgBrightness"/>
+            Class Compare
+            <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_CLASS_COMPARE"/>
+          </Button>
+          <Button
+              @click="wps"
+              v-if="isWpsBtnShow"
+              size="sm"
+              @mouseover="tooltipVisibleFunc('wps', true)"
+              @mouseout="tooltipVisibleFunc('wps', false)"
+              :icon="['fas', 'expand']"
+              :isActive="wpsShow"
+          >
+            WPS
+            <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.CELL_WPS"/>
+          </Button>
+        </div>
+        <div class="listDetail-top-button-wrapper">
+          <div class="listDetail-img-setting-container wbc-img-set" v-show="imgSet">
+            <div class="listDetail-img-setting-wrapper">
+              <div>
+                <font-awesome-icon :icon="['fas', 'sun']"/>
+                Brightness
+                <div class="customImgSet"><input type="number" v-model="imgBrightness" @input="changeImgBrightness"/></div>
               </div>
               <input
                   type="range"
@@ -105,19 +137,21 @@
                   v-model="imgBrightness"
                   @input="changeImgBrightness"
               />
-              <button class="resetBtn mb20" @click="brightnessReset">Brightness Reset</button>
+              <Button @click="brightnessReset" class="w-full">Brightness Reset</Button>
             </div>
-            <div>
-              <font-awesome-icon :icon="['fas', 'palette']"/>
-              RGB
-              <div class="customImgSet rgb">
-                [
-                <input type="number" v-model="imageRgb[0]" @input="changeImageRgb('')"/>,
-                <input type="number" v-model="imageRgb[1]" @input="changeImageRgb('')"/>,
-                <input type="number" v-model="imageRgb[2]" @input="changeImageRgb('')"/>
-                ]
+            <div class="listDetail-img-setting-wrapper">
+              <div>
+                <font-awesome-icon :icon="['fas', 'palette']"/>
+                RGB
+                <div class="customImgSet rgb">
+                  [
+                  <input type="number" v-model="imageRgb[0]" @input="changeImageRgb('')"/>,
+                  <input type="number" v-model="imageRgb[1]" @input="changeImageRgb('')"/>,
+                  <input type="number" v-model="imageRgb[2]" @input="changeImageRgb('')"/>
+                  ]
+                </div>
               </div>
-              <div class="flex-align-center">
+              <div class="listDetail-img-setting-rbcWrapper">
                 <label>R</label>
                 <input
                     type="range"
@@ -127,7 +161,7 @@
                     @input="changeImageRgb('')"
                 />
               </div>
-              <div class="flex-align-center">
+              <div class="listDetail-img-setting-rbcWrapper">
                 <label>G</label>
                 <input
                     type="range"
@@ -137,7 +171,7 @@
                     @input="changeImageRgb('')"
                 />
               </div>
-              <div class="flex-align-center">
+              <div class="listDetail-img-setting-rbcWrapper">
                 <label>B</label>
                 <input
                     type="range"
@@ -147,45 +181,21 @@
                     @input="changeImageRgb('')"
                 />
               </div>
-              <button class="resetBtn" @click="rgbReset">RGB Reset</button>
+              <Button @click="rgbReset" class="w-full">RGB Reset</Button>
             </div>
-
           </div>
+          <Button
+              @click="rollbackChanges"
+              size="sm"
+              @mouseover="tooltipVisibleFunc('rollback', true)"
+              @mouseout="tooltipVisibleFunc('rollback', false)"
+              :icon="['fas', 'rotate-left']"
+          >
+            Rollback
+            <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 12px;'" position="top"
+                     type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
+          </Button>
         </div>
-        <button
-            @click="classCompare"
-            class="pos-relative"
-            @mouseover="tooltipVisibleFunc('classCompare', true)"
-            @mouseout="tooltipVisibleFunc('classCompare', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'code-compare']"/>
-          Class Compare
-          <Tooltip :isVisible="tooltipVisible.classCompare" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_CLASS_COMPARE"/>
-        </button>
-        <button
-            @click="wps"
-            v-if="isWpsBtnShow"
-            class="pos-relative"
-            @mouseover="tooltipVisibleFunc('wps', true)"
-            @mouseout="tooltipVisibleFunc('wps', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'expand']"/>
-          WPS
-          <Tooltip :isVisible="tooltipVisible.wps" className="mb08" position="top" type=""
-                   :message="MSG.TOOLTIP.CELL_WPS"/>
-        </button>
-        <button
-            @click="rollbackChanges"
-            class="rollbackButton"
-            @mouseover="tooltipVisibleFunc('rollback', true)"
-            @mouseout="tooltipVisibleFunc('rollback', false)"
-        >
-          <font-awesome-icon :icon="['fas', 'rotate-left']"/>
-          Rollback
-          <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 12px;'" position="top"
-                   type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
-        </button>
       </div>
       <div>
         <ImageGallery
@@ -339,6 +349,8 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {apiUrl} from "@/common/api/apiUrl";
 import router from "@/router";
+import Button from "@/components/commonUi/Button.vue";
+import {TooltipListDetailType} from "@/common/type/tooltipType";
 
 const selectedTitle = ref('');
 const wbcInfo = ref<any>(null);
@@ -430,7 +442,7 @@ const wbcXYPos = ref({
 })
 const imageRef = ref<HTMLImageElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
-const tooltipVisible = ref({
+const tooltipVisible = ref<TooltipListDetailType>({
   cellMarking: false,
   size: false,
   imageSetting: false,
@@ -458,7 +470,6 @@ onMounted(async () => {
 
 onUnmounted(async () => {
   document.addEventListener('click', handleClickOutside);
-
 })
 
 watch(
@@ -571,18 +582,24 @@ const handleUpdateCellRef = (refValue: any) => {
 };
 
 const classCompare = () => {
+  if (wpsShow.value) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast('When WPS is enabled, Class Compare cannot be checked.');
+    return;
+  }
   classCompareShow.value = !classCompareShow.value;
 }
 
 const wps = () => {
+  if (classCompareShow.value && wpsShow.value === false) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast('When classCompare is enabled, WPS cannot be checked.');
+    return;
+  }
+
   wpsShow.value = !wpsShow.value;
   if (!wpsShow.value) {
     blockClicks.value = false;
-  }
-  if (classCompareShow.value) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    showToast('When classCompare is enabled, WPS cannot be checked.');
-    wpsShow.value = false;
   }
 }
 
@@ -644,12 +661,12 @@ const showSizeControl = () => {
 
 const handleClickOutside = (event: any) => {
   // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
-  if (!event.target.closest('.imgSetWrap')) {
+  if (!event.target.closest('.wbc-img-set')) {
     imgSet.value = false;
     selectedTitle.value = '';
   }
 
-  if (!event.target.closest('.sizeContainer, .sizeButton')) {
+  if (!event.target.closest('.sizeButton')) {
     showSize.value = false;
   }
 };
@@ -901,7 +918,6 @@ const closeModal = () => {
 };
 
 const outerClickCloseModal = (e: any) => {
-  console.log('e.target.classList', e.target.classList);
   if (e.target.classList.contains('wbcModal')) {
     modalOpen.value = false;
   }
@@ -2225,7 +2241,7 @@ const submitStateChanged = (changedSubmitState: string) => {
   }
 }
 
-const tooltipVisibleFunc = (type: 'cellMarking' | 'size' | 'imageSetting' | 'classCompare' | 'wps' | 'rollback', visible: boolean) => {
+const tooltipVisibleFunc = (type: keyof TooltipListDetailType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
 }
 

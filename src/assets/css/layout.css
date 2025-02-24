@@ -117,6 +117,10 @@
     gap: 4px;
 }
 
+.gap8 {
+    gap: 8px;
+}
+
 .gap14 {
     gap: 14px;
 }
@@ -1550,6 +1554,7 @@ p.loadingText {
     height: 100%;
     top: 0;
     left: 0;
+    z-index: 9999;
 }
 
 .loaderBackgroundForLogin {
@@ -2865,7 +2870,7 @@ ul.leftWbcInfo li {
 h3.wbcClassInfoLeft {
     display: inline-block;
     font-weight: 600;
-    width: 220px;
+    width: 160px;
     text-align: left;
 }
 
@@ -3219,20 +3224,20 @@ select.selectSizeTitle {
     margin: 9px 0px 9px 0px;
 }
 
-.imgMenuSetDiv {
-    position: relative;
-    text-align: left;
-}
+/*.imgMenuSetDiv {*/
+/*    position: relative;*/
+/*    text-align: left;*/
+/*}*/
 
-.imgMenuSetDiv > button {
-    background: none;
-    color: var(--white-color);
-    font-size: 1rem;
-    border-radius: 5px;
-    margin-right: 19px;
-    cursor: pointer;
-    padding: 3px;
-}
+/*.imgMenuSetDiv > button {*/
+/*    background: none;*/
+/*    color: var(--white-color);*/
+/*    font-size: 1rem;*/
+/*    border-radius: 5px;*/
+/*    margin-right: 19px;*/
+/*    cursor: pointer;*/
+/*    padding: 3px;*/
+/*}*/
 
 .sizeContainer {
     position: absolute;
@@ -3625,6 +3630,12 @@ table.tableClass {
 .memoModal-cancel-btn {
     position: relative;
     left: 6px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.memoModal-cancel-btn:hover {
+    transform: scale(1.1);
 }
 
 .memoModalBtn {
@@ -6100,7 +6111,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 140px;
+    left: 440px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
@@ -6133,6 +6144,7 @@ progress::-moz-progress-bar {
     padding: 6px;
     border-radius: 4px;
     box-shadow: 2px 2px 2px var(--black-color);
+    color: white;
 }
 
 .tooltip-container > pre {

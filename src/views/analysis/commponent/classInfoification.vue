@@ -78,8 +78,7 @@
             </ul>
             <ul class="classNm">
               <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
-              <li style="cursor: default;">{{ nWbcItem?.count }} <span
-                  v-if="nWbcItem.title === 'NR' || nWbcItem.title === 'GP'"> / {{ maxWbcCount }} WBC</span></li>
+              <li style="cursor: default;">{{ nWbcItem?.count }}</li>
             </ul>
             <ul class="degree">
               <li class="mb10 liTitle" v-if="outerIndex === 0"></li>

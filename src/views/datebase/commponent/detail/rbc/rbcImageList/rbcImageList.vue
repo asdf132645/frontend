@@ -1,23 +1,35 @@
 <template>
   <div class="rbc-container imgList">
-    <div class="btn-container_img_list">
+    <div class="imageList-btn-wrapper">
       <div>
-        <button
-            @click="toggleViewer('lowMag')"
-            class="tab-btn_img_list"
-            :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"
-        >Low magnification
-        </button>
-        <button
-            @click="toggleViewer('malaria')"
-            class="tab-btn_img_list"
-            :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"
-        >Malaria
-        </button>
+<!--        <button-->
+<!--            @click="toggleViewer('lowMag')"-->
+<!--            class="tab-btn_img_list"-->
+<!--            :class="{ 'active': activeTab === 'lowMag', 'inactive': activeTab !== 'lowMag'}"-->
+<!--        >RBC Field-->
+<!--        </button>-->
+        <button class="imageList-tab-btn">RBC Field</button>
+<!--        <button-->
+<!--            @click="toggleViewer('malaria')"-->
+<!--            class="tab-btn_img_list"-->
+<!--            :class="{ 'active': activeTab === 'malaria', 'inactive': activeTab !== 'malaria' }"-->
+<!--        >Malaria-->
+<!--        </button>-->
       </div>
-      <div class='btn-imgsetbox_img_list' ref="imgSetWrap">
-        <button class="darkButton" @click="imgSetOpen" v-show="activeTab !== 'malaria'">IMG Setting</button>
-        <div class="imgSet_img_list" v-show="imgSet_img_list">
+      <div class='btn-imgsetbox_img_list imageSettingRef'>
+        <Button
+            class="wbc-img-set"
+            size="sm"
+            @click="imgSetOpen"
+            :icon="['fas', 'gear']"
+            :isActive="imgSet_img_list"
+            @mouseover="tooltipVisibleFunc('imageSetting', true)"
+            @mouseout="tooltipVisibleFunc('imageSetting', false)"
+        >
+          IMG Setting
+          <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" :style="'left: 36px'" :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
+        </Button>
+        <div class='imageList-setting-container imageSettingRef' v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness {{ imgBrightness }}</span>
@@ -171,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, nextTick, onMounted, ref, watch} from 'vue';
+import {computed, defineEmits, defineProps, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import OpenSeadragon from 'openseadragon';
 import {rulers} from '@/common/defines/constants/rbc';
 import {DIR_NAME} from "@/common/defines/constants/settings";
@@ -181,6 +193,9 @@ import {useStore} from "vuex";
 import pako from 'pako';
 import Alert from "@/components/commonUi/Alert.vue";
 import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
+import Button from "@/components/commonUi/Button.vue";
+import {MSG} from "@/common/defines/constants/constantMessageText";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -217,6 +232,8 @@ const newItemClassInfoArr = ref<any>([]);
 
 const store = useStore();
 const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
+const siteCd = computed(() => store.state.commonModule.siteCd);
+const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcInfoPathAfter = ref<any>([]);
 const classInfoArr = ref<any>([]);
@@ -235,15 +252,22 @@ const canvasCurrentWitdh = ref('0');
 const fileNameResultArr = ref<any>([]);
 const zoomRatio = ref(0);
 const maxNumberOfLines = ref(330);
+const tooltipVisible = ref({
+  imageSetting: false,
+})
 
 onMounted(async () => {
   await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
   await nextTick();
   await initElement();
   await initGetRulerWidthHeight();
-  document.addEventListener('click', closeSelectBox);
+  document.addEventListener('click', handleClickOutside);
   rightClickItem.value = !props.selectItems.rbcInfo.rbcClass ? props.selectItems.rbcInfo : props.selectItems.rbcInfo.rbcClass;
 });
+
+onUnmounted(async () => {
+  document.addEventListener('click', handleClickOutside);
+})
 
 const dziWidthHeight = async (imageFileName: any): Promise<any> => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;
@@ -366,10 +390,15 @@ const rbcInfoPathAfterJsonCreate = async (jsonData: any) => {
   }
 };
 
-const closeSelectBox = (event: MouseEvent) => {
+const handleClickOutside = (event: MouseEvent) => {
   const selectBox = document.querySelector('.rbc-select-box');
   if (selectBox && !selectBox.contains(event.target as Node)) {
     showSelect.value = false; // 셀렉트 박스 닫기
+  }
+
+  const imgSettingBox = document.querySelector('.imageSettingRef');
+  if (imgSettingBox && !imgSettingBox.contains(event.target as Node)) {
+    imgSet_img_list.value = false;
   }
 };
 
@@ -938,9 +967,23 @@ const fetchTilesInfo = async (folderPath: string) => {
     const tilesInfo = [];
     fileNameResultArr.value = [];
     for (const fileName of fileNames) {
-      const keywords = ['zPLT_Image', 'files'];
-      const notPlt = keywords.every(keyword => fileName.includes(keyword));
-      if (fileName.endsWith('_files') && !notPlt) {
+      let keywords = [];
+      let notPlt = false;
+      let showRbcPlt = false;
+
+      // RBC, PLT 분리 전에 RBC 쪽에서 PLT를 보여주는 코드
+      // 인하대 허용
+      if (siteCd.value === '0011') {
+        const keywords = ['zPLT_Image', 'RBC_Image'];
+        showRbcPlt = keywords.some(keyword => fileName.includes(keyword));
+      } else {
+        keywords = ['zPLT_Image', 'files'];
+        notPlt = keywords.every(keyword => fileName.includes(keyword));
+      }
+
+      // PLT 안보이는 조건 (인하대)
+      const showPlt = siteCd.value === '0011' ? fileName.endsWith('_files') && showRbcPlt : fileName.endsWith('_files') && !notPlt;
+      if (showPlt) {
 
         const fileNameResult = extractSubStringBeforeFiles(fileName);
         fileNameResultArr.value.push(fileNameResult)
@@ -1331,6 +1374,10 @@ const initGetRulerWidthHeight = async () => {
   } catch (e) {
     console.error(e);
   }
+}
+
+const tooltipVisibleFunc = (type: 'imageSetting', visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 </script>

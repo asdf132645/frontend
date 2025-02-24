@@ -1,19 +1,34 @@
 <template>
-  <div class="loaderBackground" v-if="loading">
-    <div class="loader"></div>
-    <p class="loadingText">Loading...</p>
-  </div>
-  <ul class="wbcInfoDbUl">
-    <template v-for="(item) in wbcInfoArrChild" :key="item.id">
-      <li @click="scrollToElement(item.id)" v-if="siteCd !== '0006' && item?.title !== 'SM'"
-          @dragover.prevent="$emit('onDragOverCircle')" @drop="$emit('onDropCircle', item)">
-        <div class="circle" :title="item.name">
+<!--  <div class="loaderBackground" v-if="loading">-->
+<!--    <div class="loader"></div>-->
+<!--    <p class="loadingText">Loading...</p>-->
+<!--  </div>-->
+  <ul class="listDetail-wbcCircle-wrapper">
+    <template v-for="(item, index) in wbcInfoArrChild" :key="item.id">
+      <li
+          @click="scrollToElement(item.id)"
+          v-if="siteCd !== '0006' && item?.title !== 'SM'"
+          @dragover.prevent="$emit('onDragOverCircle')"
+          @drop="$emit('onDropCircle', item)"
+          class="pos-relative"
+          @mouseover="handleHoverClassCircle(item, index)"
+          @mouseout="handleLeaveClassCircle"
+      >
+        <div class="circle" :ref="(el) => setCircleRef(el, index)" :title="item.name">
           <p>{{ item?.title }}</p>
           <p>{{ item?.count }}</p>
         </div>
       </li>
     </template>
   </ul>
+  <Teleport to="body">
+    <div
+        v-if="hoverCircleClassName"
+        :style="tooltipStyle"
+    >
+      {{ hoverCircleClassName }}
+    </div>
+  </Teleport>
   <template v-if="!classCompareShow">
     <ul
         :class="{ wpsDiv: wpsShow, cellImgBox: true }"
@@ -227,8 +242,8 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {apiUrl} from "@/common/api/apiUrl";
-import Tooltip from "@/components/commonUi/Tooltip.vue";
 import router from "@/router";
+import Button from "@/components/commonUi/Button.vue";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -239,11 +254,11 @@ const firstItemIndex = ref(0);
 const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
-const loading = ref(true);
 const clickableItem = ref<HTMLElement | null>(null);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const scrollContainer = ref(null);
+const hoverClassName = ref(null);
 const { setImageRef } = useImageRefs();
 const scrollToElement = (itemId: any) => {
   const targetElement = refsArray.value[itemId];
@@ -306,11 +321,13 @@ const previousFirstClass = ref('Metamyelocyte');
 const previousLastClass = ref('Myelocyte');
 const hiddenImages = ref<{ [key: string]: boolean }>({...props.hiddenImages});
 const wpsImgClickInfoData = ref<any>({});
-const tooltipVisible = ref({ classCircle: false });
+const hoverCircleClassName = ref();
+const tooltipStyle = ref({ top: '0px', left: '0px' });
+const circleRefs = ref([]);
 
-watch(props.hiddenImages, (newVal) => {
+watch(props.hiddenImages, async (newVal) => {
   hiddenImages.value = {...newVal};
-  loading.value = false;
+  await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
 });
 
 watch(() => props.selectItems, (newSelectItems) => {
@@ -320,7 +337,7 @@ watch(() => props.selectItems, (newSelectItems) => {
 
 const debouncedUpdate = debounce(async (newVal) => {
   const timestamp = Date.now();
-  loading.value = false;
+  await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   wbcInfoArrChild.value = [];
   wbcInfoArrChild.value = removeDuplicatesById(newVal).map((item: any, index: number) => ({
     ...item,
@@ -379,21 +396,20 @@ const updateFirstLastClass = (wbcInfo: any) => {
   previousLastClass.value = lastClass.value;
 }
 
-const handleImageLoad = (itemIndex: any) => {
+const handleImageLoad = async (itemIndex: any) => {
   if(router.currentRoute.value.fullPath !== '/databaseDetail'){
     return;
   }
   emits('update:cellRef', cellRef);
-  classImgChange('first', null);
-  classImgChange('last', null);
+  await classImgChange('first', null);
+  await classImgChange('last', null);
   classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
 
   if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
-    loading.value = false;
+    await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   } else {
-    loading.value = true;
+    await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: true });
   }
-
 }
 
 const wpsIsSelected = (box: any) => {
@@ -455,7 +471,7 @@ const classImgChange = async (type: string, event: any) => {
     updateClassValue(lastClass, previousLastClass, lastClassObj, lastItemIndex);
   }
   if (props.totalCount === '0') {
-    loading.value = false
+    await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   }
 };
 
@@ -466,8 +482,46 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
-const tooltipVisibleFunc = (type: 'classCircle', visible: boolean) => {
-  tooltipVisible.value[type] = visible;
+const handleHoverClassCircle = async (item: { id: string, name: string }, index: number) => {
+  hoverCircleClassName.value = item?.name;
+
+  await nextTick();
+
+  if (!circleRefs.value || circleRefs.value.length === 0) {
+    return;
+  }
+
+  const circleEl = circleRefs.value[index]; // 해당 index의 circle 요소 가져오기
+  if (circleEl) {
+    const rect = circleEl.getBoundingClientRect(); // 요소의 화면 내 위치 가져오기
+    const isLastIndex = circleRefs.value.length - 1 === index;
+    tooltipStyle.value = {
+      position: 'absolute',
+      display: 'block',
+      width: 'fit-content',
+      height: 'fit-content',
+      fontSize: '0.8rem',
+      top: `${rect.top - 30}px`,
+      left: `${rect.left + (rect.width / 2) - (isLastIndex ? 20 : 0)}px`,
+      transform: "translateX(-50%)",
+      backgroundColor: 'var(--main-bg-2-color)',
+      color: 'white',
+      padding: '6px',
+      borderRaidus: '4px',
+      boxShadow: '2px 2px 2px var(--black-color)',
+      zIndex: '9999',
+    };
+  }
 }
+
+const handleLeaveClassCircle = () => {
+  hoverCircleClassName.value = undefined;
+}
+
+const setCircleRef = (el, index) => {
+  if (el) {
+    circleRefs.value[index] = el;
+  }
+};
 
 </script>

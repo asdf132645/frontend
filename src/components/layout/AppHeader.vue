@@ -19,7 +19,7 @@
           <span class='icoText'>Analysis</span>
         </router-link>
         <router-link to="/dataBase"
-                     :class='{ "leftActive": isActive("/dataBase") || isActive("/databaseDetail") || isActive("/databaseRbc") || isActive("/report") || isActive("/databaseWhole") }'>
+                     :class='{ "leftActive": isActive("/dataBase") || isActive("/databaseDetail") || isActive("/databaseRbc") || isActive("/databasePlt") || isActive("/report") || isActive("/databaseWhole") }'>
           <font-awesome-icon :icon="['fas', 'server']"
                              style="font-size: 1rem;"
           />

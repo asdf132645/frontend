@@ -1,8 +1,9 @@
 <template>
-  <div class="classInfo-barcode-container" v-if="type !== 'report'">
-    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+  <div class="classInfo-barcode-wrapper" v-if="type !== 'report'">
+    <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원'] && barcodeImg !== ''" @error="onImageError" :src="barcodeImg" />
     <p v-else>Barcode Image is missing</p>
   </div>
+
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt10 flex-justify-between">
@@ -18,6 +19,7 @@
         </li>
       </ul>
     </div>
+
     <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">
@@ -192,16 +194,16 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">
-                {{ Number(classInfo?.percent) || 0 }}
+                {{ Number(classInfo?.percent) || 0 }}%
               </li>
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '03'">
-                {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
+                {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}%
               </li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
-                {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
+                {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}%
               </li>
               <div v-if="classIndex === category?.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
@@ -297,7 +299,7 @@ import {
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {TooltipRbcClassType} from "@/common/type/tooltipType";
 import { DIR_NAME } from "@/common/defines/constants/settings";
-import { cbcUpdateMutation, gqlGenericUpdate, memoUpdateMutation, rbcUpdateMutation } from "@/gql/mutation/slideData";
+import { cbcUpdateMutation, gqlGenericUpdate, rbcUpdateMutation } from "@/gql/mutation/slideData";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
@@ -356,12 +358,7 @@ const shapeOthersCount = ref(0);
 const tooltipVisible = ref({
   confirm: false,
 })
-const barCodeImageShowError = ref(false);
 const barcodeImg = ref('');
-
-onBeforeMount(() => {
-  barCodeImageShowError.value = false;
-})
 
 onMounted(async () => {
   await nextTick();
@@ -1137,13 +1134,12 @@ const tooltipVisibleFunc = (type: keyof TooltipRbcClassType, visible: boolean) =
 }
 
 const onImageError = () => {
-  barCodeImageShowError.value = true;
+  barcodeImg.value = '';
 }
 
 const setBarCodeImage = (currentSelectItems: any) => {
   const path = currentSelectItems.img_drive_root_path !== '' && currentSelectItems.img_drive_root_path ? currentSelectItems.img_drive_root_path : iaRootPath.value;
   barcodeImg.value = getBarcodeDetailImageUrl('barcode_image.jpg', path, currentSelectItems.slotId, DIR_NAME.BARCODE);
-  barCodeImageShowError.value = false;
 }
 
 </script>

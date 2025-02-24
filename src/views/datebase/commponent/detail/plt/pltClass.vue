@@ -1,6 +1,6 @@
 <template>
-  <div class="classInfo-barcode-container" v-if="type !== 'report'">
-    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+  <div class="classInfo-barcode-wrapper" v-if="type !== 'report'">
+    <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
     <p v-else>Barcode Image is missing</p>
   </div>
 
@@ -22,11 +22,9 @@
     </ul>
   </div>
   <div class="wbcClassScroll">
-    <ul class="nth1Child classAttribute">
+    <ul class="nth1Child classAttribute text">
       <li>Class</li>
-      <li class="wbcTitleText">
-        <p class="firstP">Count</p>
-      </li>
+      <li class="wbcTitleText">Count</li>
     </ul>
     <div
         v-for="(item, idx) in pltInfoVal"
@@ -36,15 +34,8 @@
       <ul :class="{ 'nth1Child': true }">
         <li>{{ item?.name }}</li>
         <li style="display: flex; justify-content: space-evenly;">
-          <span class="w20 text-left">{{ Number(item?.count) || 0 }}</span>
-        </li>
-      </ul>
-    </div>
-    <div class="wbcClassDbDiv classTotalColor">
-      <ul class="nth1Child">
-        <li>Total</li>
-        <li class="classInfoWbc">
-          <span class="w20 text-left">{{ Number(0) || 0 }}</span>
+          <span v-if="item?.name !== 'Platelet'" class="w20 text-left">{{ Number(item?.count) || 0 }}</span>
+          <span v-else>{{ Number(item?.count) || 0 }} PLT / 1000 RBC</span>
         </li>
       </ul>
     </div>
@@ -118,7 +109,6 @@ const showConfirm = ref(false);
 const confirmType = ref('');
 const confirmMessage = ref('');
 const okMessageType = ref('');
-const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const tooltipVisible = ref<TooltipClassInfoType>({
   confirm: false,
@@ -132,13 +122,9 @@ const rbcCount = ref({
 });
 const totalRBCImageNames = ref<string[]>([]);
 
-onBeforeMount(async () => {
-  barCodeImageShowError.value = false;
-})
-
 onMounted(async () => {
   await nextTick();
-  barCodeImageShowError.value = false;
+  setBarCodeImage(slideData.value);
 })
 
 watch(userModuleDataGet.value, (newUserId) => {
@@ -148,10 +134,9 @@ watch(userModuleDataGet.value, (newUserId) => {
 watch(() => slideData.value, async (newSlideData) => {
   selectItems.value = slideData.value;
   setBarCodeImage(newSlideData);
-  await beforeAfterChange(newSlideData)
-  await checkRBCTotalImageNames();
-  await rbcTotalAndReCountForReport();
-  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'RBC - Platelet' });
+  pltInfoVal.value = [];
+  await getWbcInfoForPlt(newSlideData)
+  await getRbcInfoForPlt(newSlideData);
   await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
 }, { deep: true });
 
@@ -204,15 +189,21 @@ const onCommit = async () => {
   emits('submitStateChanged', 'Submit');
 }
 
-const beforeAfterChange = async (newItem: any) => {
-  const wbcPltValue = newItem.wbcInfoAfter.filter((item) => item.id === '13' || item.id === '14');
-  if (!isObjectEmpty(wbcPltValue)) {
-    pltInfoVal.value = wbcPltValue.map((item) => {
-      return { count: item.count, name: item.name };
-    })
+const getWbcInfoForPlt = async (newItem: any) => {
+  if (!isObjectEmpty(newItem.wbcInfoAfter)) {
+    const wbcPltValue = newItem.wbcInfoAfter.filter((item) => item?.id === '13' || item?.id === '14');
+    if (wbcPltValue.length) {
+      pltInfoVal.value = wbcPltValue.map(({ count, name }) => ({ count, name }));
+    }
   }
-  console.log('pltInfoVal', pltInfoVal.value);
-  rbcInfoForPlt.value = newItem?.rbcInfo.rbcClass;
+}
+
+const getRbcInfoForPlt = async (newSlideData) => {
+  rbcInfoForPlt.value = newSlideData?.rbcInfo.rbcClass;
+
+  await checkRBCTotalImageNames();
+  await rbcTotalAndReCountForReport();
+  pltInfoVal.value.push({ count: rbcCount.value.pltCount, name: 'Platelet' });
 }
 
 const rbcTotalAndReCountForReport = async () => {
@@ -333,7 +324,7 @@ const hideAlert = () => {
 };
 
 const onImageError = () => {
-  barCodeImageShowError.value = true;
+  barcodeImg.value = '';
 }
 const tooltipVisibleFunc = (type: keyof TooltipClassInfoType, visible: boolean) => {
   tooltipVisible.value[type] = visible;

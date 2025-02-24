@@ -13,10 +13,7 @@ import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
 import {computed} from "vue";
 import {useStore} from "vuex";
 import moment from "moment/moment";
-
 const store = useStore();
-const userModuleDataGet = computed(() => store.state.userModule);
-const slideData = computed(() => store.state.slideDataModule);
 
 export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeList: any, funcType: string) => {
     console.log('인하대 CBC 데이터 받기 - inhaCbc cbcFilePathSetArr', cbcFilePathSetArr);
@@ -53,6 +50,15 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
             console.log(jsonObject[0]); // 파싱된 JSON 객체 출력
             const res: any = jsonObject[0];
             // const res: any = inhaCbcTestCode[0];
+            const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
+            const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
+            if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
+                console.log(readFileTxtRes?.data?.data)
+                cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
+                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, testCode}] = cbcDataArray;
+                cbcWorkList = cbcDataArray;
+                return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode: testCode, loading };
+            }
 
             // 응답 코드가 '0'일 때만 처리
             if (res?.returnCode === '0') {
@@ -63,7 +69,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                 cbcAge = res?.age;
                 inhaTestCode = res?.testCode;
                 // 공통 정보 설정
-                await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
+                // await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: res?.testCode});
 
                 // 테스트 코드 리스트 처리
                 const testCodeList = res.testCode.split(',');
@@ -90,27 +96,28 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
                         cbcWorkList.push(obj);
                     }
                 });
-                const parms = {
-                    filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${selectItems?.barcodeNo}.txt`,
-                    data: cbcWorkList,
-                };
-                await createCbcFile(parms);
             } else {
                 errMessage = res?.returnCode;
                 loading = false;
                 return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
             }
-            const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
-            const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
-            if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
-                console.log(readFileTxtRes?.data?.data)
-                cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
-                const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, testCode}] = cbcDataArray;
-                await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: testCode});
-                cbcWorkList = cbcDataArray;
-                return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
-            }
 
+            const parms = {
+                filePath: `D:\\UIMD_Data\\UI_Log\\CBC_IA\\${selectItems?.barcodeNo}.txt`,
+                data: cbcWorkList,
+            };
+            await createCbcFile(parms);
+            //
+            // const filePath = `D:\\UIMD_Data\\UI_Log\\CBC_IA`;
+            // const readFileTxtRes: any = await readFileTxt(`path=${filePath}&filename=${selectItems?.barcodeNo}`);
+            // if (readFileTxtRes?.data?.success && (res?.returnCode !== '0')) {
+            //     console.log(readFileTxtRes?.data?.data)
+            //     cbcDataArray = JSON.parse(readFileTxtRes?.data?.data?.toString());
+            //     const [{cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, testCode}] = cbcDataArray;
+            //     await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: testCode});
+            //     cbcWorkList = cbcDataArray;
+            //     return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading};
+            // }
             loading = false;
             // console.log('Response:', response.data);
         } catch (error: any) {
@@ -122,7 +129,7 @@ export const inhaCbc = async (cbcFilePathSetArr: any, selectItems: any, cbcCodeL
     return {cbcWorkList, errMessage, cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, inhaTestCode, loading}
 }
 
-export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, lisFilePathSetArr: any, inhaTestCode: any, lisCodeWbcArr: any, lisCodeRbcArr: any, selectItems: any, id: any) => {
+export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcodeNo: any, lisFilePathSetArr: any, inhaTestCode: any, lisCodeWbcArr: any, lisCodeRbcArr: any, selectItems: any, userId: any) => {
     console.log('Lis 업로드 로직 시작');
     console.log('인하대 테스트 wbcInfoAfter', wbcInfoAfter)
     console.log('인하대 테스트 rbcInfoAfter', rbcInfoAfter)
@@ -317,11 +324,11 @@ export const inhaDataSend = async (wbcInfoAfter: any, rbcInfoAfter: any, barcode
                 const updatedItem = {
                     submitState: 'lisCbc',
                     submitOfDate: localTime.format(),
-                    submitUserId: userModuleDataGet.value.userId,
+                    submitUserId: userId,
 
                 };
-                const updatedRuningInfo = {id: slideData.value.id, ...updatedItem}
-                await resRunningItem(updatedRuningInfo, true, id);
+                const updatedRuningInfo = {id: selectItems?.id, ...updatedItem}
+                await resRunningItem(updatedRuningInfo, true, userId);
             }
 
             lisBtnColor = true;

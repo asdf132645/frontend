@@ -1,22 +1,26 @@
 <template>
-  <div class="classInfo-barcode-container" v-if="type !== 'report'">
-    <img v-if="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"/>
+  <div class="classInfo-barcode-wrapper" v-if="type !== 'report'">
+    <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원'] && barcodeImg !== ''" @error="onImageError" :src="barcodeImg" />
     <p v-else>Barcode Image is missing</p>
   </div>
 
 
   <div class="mt10 mb10 flex-justify-between">
-    <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
+    <div class="flex-align-center-justify-between">
+      <h3 class="wbcClassInfoLeft">{{ wbcClassTileChange() }}</h3>
+      <p
+          v-if="type !== 'report'"
+          class="pos-relative cursorPointer"
+          @mouseover="tooltipVisibleFunc('classMoveLock', true)"
+          @mouseout="tooltipVisibleFunc('classMoveLock', false)"
+      >
+        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
+        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
+        <Tooltip :isVisible="tooltipVisible.classMoveLock" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CLASS_MOVE" />
+      </p>
+    </div>
 
     <ul class="leftWbcInfo">
-      <li
-          class="pos-relative"
-          @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
-          @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
-      >
-        <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원'] && type === 'report' && crcConnect" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
-      </li>
       <li
           @click="commitConfirmed"
           class="pos-relative"
@@ -37,15 +41,6 @@
       >
         <font-awesome-icon :icon="['fas', 'upload']" class="hoverSizeAction" />
         <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
-      </li>
-      <li
-          class="pos-relative"
-          @mouseover="tooltipVisibleFunc('classMoveLock', true)"
-          @mouseout="tooltipVisibleFunc('classMoveLock', false)"
-      >
-        <font-awesome-icon :icon="['fas', 'lock']" v-if="!toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
-        <font-awesome-icon :icon="['fas', 'lock-open']" v-if="toggleLock" @click="toggleLockEvent" class="hoverSizeAction" />
-        <Tooltip :isVisible="tooltipVisible.classMoveLock" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CLASS_MOVE" />
       </li>
     </ul>
   </div>
@@ -82,7 +77,7 @@
         <li style="display: flex; justify-content: space-evenly;">
           <span :class="['w20', 'text-left', item.isChanged && 'blueText']">{{ Number(item?.count.after) || 0 }}</span>
           <span :class="['w50', 'text-left', item.isChanged && 'blueText']">{{
-              Number(item?.percent.after) ? item?.percent.after + '%' : '0'
+              Number(item?.percent.after) ? item?.percent.after + '%' : '0%'
             }}</span>
         </li>
       </ul>
@@ -277,7 +272,6 @@ const okMessageType = ref('');
 const lisCodeWbcArr = ref<any>([]);
 const lisFilePathSetArr = ref<any>([]);
 const customClassArr = ref<any>([]);
-const barCodeImageShowError = ref(false);
 const submittedScreen = ref(false);
 const lisBtnColor = ref(false);
 const cbcFilePathSetArr = ref('');
@@ -293,11 +287,9 @@ const tooltipVisible = ref<TooltipClassInfoType>({
   beforeCountPercent: false,
   afterCountPercent: false,
   lisUpload: false,
-  cbcToResultCodes: false,
 })
 
 onBeforeMount(async () => {
-  barCodeImageShowError.value = false;
   projectBm.value = window.PROJECT_TYPE === 'bm';
 
   if (!projectBm.value) {
@@ -313,10 +305,9 @@ onMounted(async () => {
   window.removeEventListener('keyup', handleKeyUp);
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
-  await nextTick();
+  // await nextTick();
   await getOrderClass();
   await getCustomClass();
-  await mountedMethod();
 
   if (!projectBm.value) {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
@@ -328,7 +319,7 @@ onMounted(async () => {
     cbcFilePathSetArr.value = await getCbcPathData();
     cbcCodeList.value = await getCbcCodeList();
   }
-  barCodeImageShowError.value = false;
+  await mountedMethod();
 })
 
 onUnmounted(() => {
@@ -398,10 +389,13 @@ const handleKeyUp = (event: KeyboardEvent) => {
 };
 
 const mountedMethod = async () => {
-  if (isObjectEmpty(props.selectItems)) return;
+  if (!props.selectItems) {
+    return;
+  }
 
-  if ((inhaTestCode.value === '' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'])) {
-    await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+  if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+    const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, props.selectItems, cbcCodeList.value, 'lisUpload');
+    await store.dispatch('commonModule/setCommonInfo', { inhaTestCode: inhaTestCode });
   }
   if (selectItems.value?.submitState) {
     lisBtnColor.value = props.selectItems.submitState === 'lisCbc';
@@ -865,13 +859,18 @@ const gilDataSendLoad = async () => {
 }
 
 const inhaDataSendLoad = async () => {
-  await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
+  const { inhaTestCode: localInhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, selectItems.value, cbcCodeList.value, 'lisUpload');
+  await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: localInhaTestCode });
   const {
     errMessage,
     lisBtnColor: lisBtnColorVal
   } = await inhaDataSend(selectItems.value?.wbcInfoAfter, selectItems.value?.rbcInfoAfter, selectItems.value?.barcodeNo, lisFilePathSetArr.value, inhaTestCode.value, lisCodeWbcArrApp.value, lisCodeRbcArrApp.value, selectItems.value, userModuleDataGet.value.id)
   if (errMessage !== '') {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    if (errMessage.toLowerCase() === 'success') {
+      toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    } else {
+      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    }
     showToast(errMessage);
   }
   lisBtnColor.value = lisBtnColorVal || false;
@@ -1452,10 +1451,6 @@ const getCustomClass = async () => {
   }
 }
 
-const updateCRCMorphology = () => {
-  emits('updateCRCMorphology', true);
-}
-
 const showErrorAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'error';
@@ -1467,8 +1462,9 @@ const hideAlert = () => {
 };
 
 const onImageError = () => {
-  barCodeImageShowError.value = true;
+  barcodeImg.value = '';
 }
+
 const showToast = (message: string) => {
   toastMessage.value = message;
   setTimeout(() => {
