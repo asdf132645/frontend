@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isContent" class="crcReport">
+  <div v-if="isContent"  :class="'crcReport ' + (cbcLayer ? 'cbcLayer' : '')">
     <div class="tabs">
       <button
           class="tab"
@@ -322,6 +322,7 @@ const tooltipVisible = ref({
   cbcToResultCodes: false,
 })
 const childRef = ref(null);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];

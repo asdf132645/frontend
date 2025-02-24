@@ -4916,6 +4916,7 @@ ul.crcListContentUl {
 button.crcDefaultBtn.bottomBtn {
     width: 100%;
 }
+
 ul.crcListContentUl li.crcListContentHeader {
     font-size: 0.9rem;
     border-bottom: 1px solid #ffffff;
@@ -5042,7 +5043,7 @@ span.crcListSpan > span {
 
 .crcReport {
     position: relative;
-    width: 45%;
+    width: 48%;
     background: #252629;
     color: #fff;
     font-size: 0.8rem;
@@ -5431,6 +5432,7 @@ table.remarkDefaultTable tr td:last-child {
 button.btnSearchRemark:hover {
     background: #dedede;
 }
+
 .scrollTableContainer {
     width: 100%;
     overflow: hidden;
@@ -5473,10 +5475,12 @@ button.crcDefaultBtn.remarkDelBtn {
     max-height: 900px;
     /*overflow-y: auto;*/
 }
+
 table.remarkDefaultTable.scroll tbody {
     max-height: 500px;
     overflow: scroll;
 }
+
 .codeDiv {
     text-align: left;
 }
@@ -5510,6 +5514,10 @@ input.codeInput {
     background: none;
     cursor: pointer;
     color: #fff;
+}
+
+.crcReport.cbcLayer {
+    width: 45%;
 }
 
 .listWbcImg-pagination-controls button:disabled {
