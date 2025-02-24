@@ -23,6 +23,14 @@
       >
         Dashboard
       </button>
+      <div class="lisUploadDiv" >
+        <button class="crcBtn" @click="lisClick" v-show="activeTab === 1">
+          <font-awesome-icon :icon="['fas', 'upload']"/>
+        </button>
+        <button class="plusBtn" @click="childPlusBtn">
+          <font-awesome-icon :icon="['fas', 'circle-plus']" />
+        </button>
+      </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
@@ -72,11 +80,7 @@
                 v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
           Image Select
         </button>
-        <div class="lisUploadDiv">
-          <button class="crcBtn" @click="lisClick">
-            <font-awesome-icon :icon="['fas', 'upload']"/>
-          </button>
-        </div>
+
       </div>
 
       <!-- RBC 결과 -->
@@ -170,7 +174,7 @@
 
     <!-- 두 번째 탭 콘텐츠 -->
     <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh"
-             v-if="activeTab === 2"/>
+             v-show="activeTab === 2" ref="childRef"/>
     <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
@@ -250,6 +254,7 @@ import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/c
 import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import { TooltipCrcResultCodesType } from "@/common/type/tooltipType";
+import router from "@/router";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -320,6 +325,7 @@ const createdSummary = ref<any>({
 const tooltipVisible = ref({
   cbcToResultCodes: false,
 })
+const childRef = ref(null);
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
@@ -415,6 +421,16 @@ onMounted(async () => {
     ywmcSlip.value = 'H3'; // 원주기독에 독단적인 커스텀마이징 때문에 강제적으로 H3 pbs 기준으로 맞춤..
   }
 });
+
+watch(() => props.triggerChangeCRCMorphology, async () => {
+  await initCbcData0033();
+})
+
+const childPlusBtn = () => {
+  if (childRef.value) {
+    childRef.value.openCrcAdd(); // 자식 컴포넌트의 함수 호출
+  }
+}
 
 const initCbcData0033 = async () => {
   const path = props.selectItems?.img_drive_root_path !== '' && props.selectItems?.img_drive_root_path ? props.selectItems?.img_drive_root_path : iaRootPath.value;

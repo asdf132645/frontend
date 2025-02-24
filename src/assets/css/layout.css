@@ -4901,7 +4901,7 @@ ul.crcListContentUl li.crcListContentHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #000;
+    background: #1c1c1c;
     padding: 10px 7px;
 }
 
@@ -5315,7 +5315,7 @@ table.remarkDefaultTable {
 table.remarkDefaultTable tr th {
     padding: 15px;
     font-weight: 600;
-    background: #3f4e4f;
+    background: #1c1c1c;
     color: #fff;
 }
 
@@ -6334,7 +6334,7 @@ progress::-moz-progress-bar {
 }
 
 table.defaultTable.dbDataTable tr th {
-    background: #424349;
+    background: #1c1c1c;
     color: aliceblue;
     padding: 15px 0px 15px 0px;
     font-weight: 600;
