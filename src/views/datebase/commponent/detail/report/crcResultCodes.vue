@@ -23,33 +23,35 @@
       >
         Dashboard
       </button>
-      <div class="lisUploadDiv" >
+      <div class="lisUploadDiv">
         <button class="crcBtn" @click="lisClick" v-show="activeTab === 1">
           <font-awesome-icon :icon="['fas', 'upload']"/>
         </button>
         <button class="plusBtn" @click="childPlusBtn">
-          <font-awesome-icon :icon="['fas', 'circle-plus']" />
+          <font-awesome-icon :icon="['fas', 'circle-plus']"/>
         </button>
       </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
-    <div class="tab-content crcDiv reportCrcDiv" v-if="activeTab === 1">
+    <div class="tab-content crcDiv reportCrcDiv" v-show="activeTab === 1">
       <div class="text-left crcMenu mb10">
         <div
             class="pos-relative"
             @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
             @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
         >
-          <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="updateCRCMorphology" :icon="['fas', 'file-import']" class="hoverSizeAction" />
-          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top" :message="MSG.TOOLTIP.CBC_TO_RESULTCODES" />
+          <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="updateCRCMorphology"
+                             :icon="['fas', 'file-import']" class="hoverSizeAction"/>
+          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top"
+                   :message="MSG.TOOLTIP.CBC_TO_RESULTCODES"/>
         </div>
-<!--        <button>testBtn</button>-->
+        <!--        <button>testBtn</button>-->
         <span class="crcSpanMenu">Code</span>
         <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
 
           <div class="search-container">
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon" />
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
             <input
                 v-model="searchText"
                 placeholder="Code Search"
@@ -74,7 +76,7 @@
           <font-awesome-icon :icon="['fas', 'floppy-disk']"/>
         </button>
         <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">
-          <font-awesome-icon :icon="['fas', 'broom']" />
+          <font-awesome-icon :icon="['fas', 'broom']"/>
         </button>
         <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
                 v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
@@ -173,9 +175,11 @@
     </div>
 
     <!-- 두 번째 탭 콘텐츠 -->
-    <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh"
-             v-show="activeTab === 2" ref="childRef"/>
-    <div class="tab-content crcDiv reportCrcDiv dashboard" v-if="activeTab === 3">
+    <div v-show="activeTab === 2">
+      <CrcList :crcPassWord="crcPassWord" :crcRemarkCount="crcRemarkCount" :crcArr="crcArr" @refresh="pageRefresh"
+               ref="childRef"/>
+    </div>
+    <div class="tab-content crcDiv reportCrcDiv dashboard" v-show="activeTab === 3">
       <cell-status-dash-board :autoNomarlCheck="autoNomarlCheck"/>
     </div>
     <AutoCBCMatching v-if="autoCBCMatchingShow" :isAutoCBCMatchingArr="isAutoCBCMatchingArr" @codeSelect="codeSelect"
@@ -253,7 +257,7 @@ import {changeRemark, kcch_0033GetCBCData} from "@/common/helpers/lisCbc/kcch_00
 import {kcchCbcAutoMatching, KcchCbcAutoMatchingReturn} from "@/common/defines/constants/autoResultCodeMatching";
 import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import { TooltipCrcResultCodesType } from "@/common/type/tooltipType";
+import {TooltipCrcResultCodesType} from "@/common/type/tooltipType";
 import router from "@/router";
 
 const crcArr = ref<any>([]);

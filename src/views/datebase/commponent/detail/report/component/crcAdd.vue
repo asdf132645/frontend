@@ -244,12 +244,9 @@ onBeforeMount(async () => {
 
   } else {
     crcSetArr.value = (await crcGet()).data;
+    console.log(crcSetArr.value);
     for (const argument of crcSetArr.value) {
-      if (argument.crcType === 'select') {
-        if (!argument?.val) {
-          argument.val = argument.crcContent.split(',')[0];
-        }
-      }
+      argument.val = '';
     }
     remarkList.value = setFirstData;
     recoList.value = setFirstData;

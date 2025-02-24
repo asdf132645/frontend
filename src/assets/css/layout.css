@@ -4893,6 +4893,16 @@ ul.crcListContentUl {
     text-align: left;
 }
 
+
+.defaultLine {
+    width: 100%;
+    border-bottom: 1px solid #808080;
+    margin: 30px 0px;
+}
+
+button.crcDefaultBtn.bottomBtn {
+    width: 100%;
+}
 ul.crcListContentUl li.crcListContentHeader {
     font-size: 0.9rem;
     border-bottom: 1px solid #ffffff;
@@ -5431,6 +5441,12 @@ button.btnSearchRemark:hover {
     width: 100%;
     table-layout: fixed; /* 테이블 레이아웃 유지 */
 }
+
+button.crcDefaultBtn.remarkDelBtn {
+    position: absolute;
+    right: 11px;
+}
+
 .crcPopUpDiv.remark {
     top: 0%;
     background: #f8f8f8;
@@ -5441,7 +5457,7 @@ button.btnSearchRemark:hover {
     z-index: 1000;
     color: #333333;
     font-size: 0.8rem;
-    max-height: 700px;
+    max-height: 900px;
     /*overflow-y: auto;*/
 }
 table.remarkDefaultTable.scroll tbody {

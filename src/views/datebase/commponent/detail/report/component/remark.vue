@@ -22,9 +22,9 @@
         <button class="btnSearchRemark" type="button" @click="searchRemarkData">
           <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
         </button>
-        <!--        <button @click="deleteRemark(item.id)" class="ml10">-->
-        <!--          <font-awesome-icon :icon="['fas', 'trash']"/>-->
-        <!--        </button>-->
+        <button class="crcDefaultBtn ml10 remarkDelBtn" @click="deleteSelectedRemarks">
+          <font-awesome-icon :icon="['fas', 'trash']"/>
+        </button>
       </div>
 
       <div class="scrollTableContainer">
@@ -37,7 +37,9 @@
           </colgroup>
           <thead>
           <tr>
-            <th></th>
+            <th>
+              <input type="checkbox" v-model="selectAll" @change="toggleSelectAll"/>
+            </th>
             <th>Code</th>
             <th>Content</th>
             <th>Action</th>
@@ -118,6 +120,7 @@
             </tr>
             </tbody>
           </table>
+          <div class="defaultLine"></div>
           <button class="crcDefaultBtn bottomBtn" @click="okSelect">{{ remarkNm }} Insert</button>
         </div>
 
@@ -155,6 +158,7 @@ import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {useStore} from "vuex";
 import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
+const selectAll = ref(false);
 
 const props = defineProps({
   crcDefaultMode: {
@@ -237,6 +241,44 @@ const returnPassWordCheck = (val: boolean) => {
     showToast("The administrator password is incorrect.");
   }
 }
+
+// 전체 선택 체크박스 클릭 시
+const toggleSelectAll = () => {
+  if (selectAll.value) {
+    selectedItems.value = remarkArr.value.map(item => item.id);
+  } else {
+    selectedItems.value = [];
+  }
+};
+
+// 선택된 remark 삭제
+const deleteSelectedRemarks = async () => {
+  if (selectedItems.value.length === 0) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast("Please select the item to delete.");
+    return;
+  }
+
+  try {
+    for (const id of selectedItems.value) {
+      if (props.type === 'remark') {
+        await deleteCrcRemarkApi({ id });
+      } else if (props.type === 'comment') {
+        await deleteCrcCommentApi({ id });
+      } else {
+        await deleteCrcRecoApi({ id });
+      }
+    }
+    toastMessageType.value = MESSAGES.TOAST_MSG_SUCCESS;
+    showToast("Deletion complete.");
+    selectedItems.value = [];
+    await loadRemarks();
+  } catch (error) {
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast("Deletion failed.");
+    console.error("Failed to delete remarks:", error);
+  }
+};
 
 // 검색 기능
 const searchRemarkData = async () => {
