@@ -119,7 +119,7 @@ export const MSG = {
         RUNNING_STATUS: 'Device operation status',
         CBC_TO_RESULTCODES: 'Apply CBC & UIMD data to Result Codes',
         BARCODE_COPY: 'Copy barcodeNo',
-        MEMO: 'Memo On/Off',
+        MEMO: 'Open Memo',
         CONFIRM: 'Confirm Slide',
         CLASS_MOVE: 'Class Drag movement Lock/Unlock',
         LIS_UPLOAD: 'Upload LIS',

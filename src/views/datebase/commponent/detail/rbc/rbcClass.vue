@@ -6,15 +6,29 @@
 
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
-    <div class="mt10 flex-justify-between">
+    <div class="mt10 flex-justify-between mb10">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
     </div>
 
+    <ul class="rbcClass-content-title-wrapper classAttribute">
+      <li>Category</li>
+      <li>Class</li>
+      <li class="wbcTitleText">
+        <p class="firstP">Degree</p>
+        <p class="flex-align-center-justify-around">
+          <span>0</span>
+          <span>1+</span>
+          <span>2+</span>
+          <span>3+</span>
+        </p>
+      </li>
+      <li>Count</li>
+      <li>Percent</li>
+    </ul>
     <template v-for="(classList, outerIndex) in [rbcInfoBeforeVal]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories rbcClass">
           <ul class="categoryNm">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Category</li>
             <li @click="toggleAll(allCheckType[category?.categoryId], category?.categoryId)"
                 class="flex-column cursorPointer" style="padding-top: 6px">
               <span>{{ getCategoryName(category) }}</span>
@@ -28,14 +42,6 @@
             </li>
           </ul>
           <ul class="classNmRbc">
-            <li
-                v-if="innerIndex === 0"
-                class="mt18 mb14 liTitle flex-justify-start-align-center w-fit"
-                style="top: -4px;"
-            >
-              <p style="padding-top: 2px;">Class</p>
-
-            </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category?.categoryId}-${classInfo?.classId}`">
               <li @click="handleClick(category?.categoryId, classInfo?.classId, classInfo?.classNm, category?.categoryNm)"
@@ -69,15 +75,6 @@
             </template>
           </ul>
           <ul class="degree analysis">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">
-              <p>Degree</p>
-              <p class="rbcDegree-span-wrapper">
-                <span>0</span>
-                <span>1+</span>
-                <span>2+</span>
-                <span>3+</span>
-              </p>
-            </li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category.categoryId}-${classInfo.classId}`">
               <li v-if="(classInfo?.classId !== '01' || category?.categoryId === '05') || (rbcInfoAfterVal[innerIndex]?.classInfo[classIndex].classId !== '01' || rbcInfoAfterVal[innerIndex]?.categoryId === '05')">
@@ -154,7 +151,6 @@
 
           </ul>
           <ul class="rbcPercent">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Count</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">{{ Number(classInfo?.originalDegree) || 0 }}</li>
@@ -180,7 +176,6 @@
             </template>
           </ul>
           <ul class="rbcPercent mr1">
-            <li v-if="innerIndex === 0" class="mt18 mb14 liTitle">Percent</li>
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo?.classNm !== 'Poikilocyte'">

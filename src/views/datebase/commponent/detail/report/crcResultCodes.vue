@@ -24,12 +24,8 @@
         Dashboard
       </button>
       <div class="lisUploadDiv">
-        <button class="crcBtn" @click="lisClick" v-show="activeTab === 1">
-          <font-awesome-icon :icon="['fas', 'upload']"/>
-        </button>
-        <button class="plusBtn" @click="childPlusBtn">
-          <font-awesome-icon :icon="['fas', 'circle-plus']"/>
-        </button>
+        <Button @click="lisClick" v-show="activeTab === 1" size="sm" :icon="['fas', 'upload']"></Button>
+        <Button @click="childPlusBtn" size="sm" :icon="['fas', 'circle-plus']" class="ml10"></Button>
       </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
@@ -72,17 +68,9 @@
             </li>
           </ul>
         </div>
-        <button class="crcBtn tempSave ml10" @click="tempSaveLocalStorage">
-          <font-awesome-icon :icon="['fas', 'floppy-disk']"/>
-        </button>
-        <button class="crcBtn tempSave ml10" @click="tempSaveDataEmpty">
-          <font-awesome-icon :icon="['fas', 'broom']"/>
-        </button>
-        <button class="crcBtn tempSave ml10" @click="IsWbcImageSelect = true"
-                v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']">
-          Image Select
-        </button>
-
+        <Button @click="tempSaveLocalStorage" :icon="['fas', 'floppy-disk']" size="sm" class="ml10"></Button>
+        <Button @click="tempSaveDataEmpty" :icon="['fas', 'broom']" size="sm" class="ml10"></Button>
+        <Button v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']" @click="IsWbcImageSelect = true" size="sm" class="ml10">Image Select</Button>
       </div>
 
       <!-- RBC 결과 -->

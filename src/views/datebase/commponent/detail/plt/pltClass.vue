@@ -20,8 +20,8 @@
     >
       <ul :class="{ 'nth1Child': true }">
         <li>{{ item?.name }}</li>
-        <li style="display: flex; justify-content: space-evenly;">
-          <span v-if="item?.name !== 'Platelet'" class="w20 text-left">{{ Number(item?.count) || 0 }}</span>
+        <li class="flex-align-center-justify-evenly">
+          <span v-if="item?.name !== 'Platelet'" class="w20">{{ Number(item?.count) || 0 }}</span>
           <span v-else>{{ Number(item?.count) || 0 }} PLT / 1000 RBC</span>
         </li>
       </ul>
@@ -58,12 +58,11 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {RBC_CODE_CLASS_ID} from "@/common/defines/constants/dataBase";
 import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
 
-const props = defineProps(['type', 'selectItems']);
+const props = defineProps(['type']);
 const store = useStore();
 const userModuleDataGet = computed(() => store.state.userModule);
 const emits = defineEmits();
 
-const selectItems = ref<any>(props.selectItems);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const slideData = computed(() => store.state.slideDataModule);
@@ -84,22 +83,24 @@ const rbcCount = ref({
 const totalRBCImageNames = ref<string[]>([]);
 
 onMounted(async () => {
-  await nextTick();
+  // await nextTick();
   setBarCodeImage(slideData.value);
+  pltInfoVal.value = [];
+  await getWbcInfoForPlt(slideData.value)
+  await getRbcInfoForPlt(slideData.value);
 })
 
 watch(userModuleDataGet.value, (newUserId) => {
   userId.value = newUserId.id;
 });
 
-watch(() => slideData.value, async (newSlideData) => {
-  selectItems.value = slideData.value;
-  setBarCodeImage(newSlideData);
+watch(() => slideData.value?.id, async () => {
+  setBarCodeImage(slideData.value);
   pltInfoVal.value = [];
-  await getWbcInfoForPlt(newSlideData)
-  await getRbcInfoForPlt(newSlideData);
-  await store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value?.testType});
-}, {deep: true});
+  await getWbcInfoForPlt(slideData.value)
+  await getRbcInfoForPlt(slideData.value);
+  await store.dispatch('commonModule/setCommonInfo', {testType: slideData.value?.testType});
+})
 
 const setBarCodeImage = (currentSelectItems: any) => {
   const path = currentSelectItems.img_drive_root_path !== '' && currentSelectItems.img_drive_root_path ? currentSelectItems.img_drive_root_path : pbiaRootDir.value;

@@ -4,9 +4,7 @@
 <!--      <button class="plusBtn" @click="openCrcAdd">-->
 <!--        <font-awesome-icon :icon="['fas', 'circle-plus']" />-->
 <!--      </button>-->
-      <button class="delBtn ml10" @click="deleteRow('check')">
-        <font-awesome-icon :icon="['fas', 'trash']" />
-      </button>
+      <Button @click="deleteRow('check')" :icon="['fas', 'trash']"></Button>
     </div>
     <ul class="crcListContentUl">
       <li class="crcListContentHeader">
@@ -125,6 +123,7 @@ import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
 import {useStore} from "vuex";
+import Button from "@/components/commonUi/Button.vue";
 
 // Props 받기
 const props = defineProps({

@@ -50,9 +50,9 @@
 
 /* secondary 스타일 */
 .base-btn--secondary {
-    background: var(--main-bg-9-color);
-    color: white;
-    border: none;
+    color: black;
+    border: 1px solid #000;
+    background: #fff;
 }
 .base-btn--secondary.base-btn--active {
     background: var(--white-bg-0-color);
@@ -236,4 +236,41 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.rbcClass-content-title-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 2px;
+}
+
+.rbcClass-content-title-wrapper > li {
+    padding: 5px;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(1) {
+    width: 18%;
+    text-align: left;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(2) {
+    width: 32%;
+    text-align: left;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(3) {
+    text-align: center;
+    width: 23%;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(4) {
+    text-align: center;
+    width: 10%;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(5) {
+    text-align: center;
+    width: 16%;
 }

@@ -16,7 +16,7 @@
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox' + (cbcLayer ? ' cbcLayer' : '')">
-      <PltClass typpe="listTable" :selectItems="selectItems" />
+      <PltClass type="listTable" />
     </div>
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
       <PltImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>

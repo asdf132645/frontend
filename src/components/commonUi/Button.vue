@@ -11,6 +11,7 @@
         v-if="icon"
         :icon="icon"
         class="btn-icon"
+        size="lg"
     />
     <slot/>
   </button>

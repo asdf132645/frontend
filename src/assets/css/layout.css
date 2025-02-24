@@ -203,6 +203,18 @@
     justify-content: space-between;
 }
 
+.flex-align-center-justify-evenly {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.flex-align-center-justify-around {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
 .flex-column {
     display: flex;
     flex-direction: column;
@@ -522,7 +534,7 @@ main.bmComponent {
 
 .detailHeader-tool-container {
     position: absolute;
-    left: 50%;
+    left: 54.5%;
     transform: translateX(-50%);
     z-index: 10;
 }
@@ -1637,7 +1649,7 @@ p.loadingText {
 .classNmRbc {
     display: inline-block;
     text-align: left;
-    min-width: 138px;
+    min-width: 127px;
 }
 
 .degree {
@@ -1898,7 +1910,8 @@ button.degreeBtn {
 }
 
 .categories.rbcClass .categoryNm {
-    width: 17%;
+    padding-left: 4px;
+    width: 19%;
 }
 
 .loading-overlay-container {
