@@ -108,7 +108,7 @@
               <td><textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"
                             maxlength="1000"></textarea></td>
               <td colspan="2">
-                <button @click="addRemark" class="crcDefaultBtn ml10">
+                <button @click="addRemark" class="crcDefaultBtn ml10 width100">
                   <font-awesome-icon :icon="['fas', 'plus']"/>
                 </button>
               </td>
@@ -319,7 +319,7 @@ const searchRemarkData = async () => {
 const addRemark = async () => {
   if (!newRemarkCode.value || !newRemarkContent.value) {
     toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    showToast("code와 content를 입력해주세요.");
+    showToast("Please enter code and content.");
     return;
   }
 
