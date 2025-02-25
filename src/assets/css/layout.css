@@ -17,6 +17,10 @@
     opacity: 0;
 }
 
+.width100 {
+    width: 100%;
+}
+
 .mt5 {
     margin-top: 5px;
 }
@@ -5305,7 +5309,8 @@ span.crcPercentText {
 }
 
 .headerRemark.topLine span {
-    width: 11%;
+    min-width: 11%;
+    margin-right: 10px;
 }
 
 .headerRemark.topLine input {
@@ -6375,6 +6380,8 @@ table.defaultTable.dbDataTable tr th {
     color: aliceblue;
     padding: 15px 0px 15px 0px;
     font-weight: 600;
+    border-bottom: 1px solid #dedede;
+    border-top: 1px solid #dedede;
 }
 
 
