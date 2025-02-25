@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isContent" class="crcReport">
+  <div v-if="isContent"  :class="'crcReport ' + (cbcLayer ? 'cbcLayer' : '')">
     <div class="tabs">
       <button
           class="tab"
@@ -70,7 +70,9 @@
         </div>
         <Button @click="tempSaveLocalStorage" :icon="['fas', 'floppy-disk']" size="sm" class="ml10"></Button>
         <Button @click="tempSaveDataEmpty" :icon="['fas', 'broom']" size="sm" class="ml10"></Button>
-        <Button v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']" @click="IsWbcImageSelect = true" size="sm" class="ml10">Image Select</Button>
+        <Button v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']" @click="IsWbcImageSelect = true" size="sm"
+                class="ml10">Image Select
+        </Button>
       </div>
 
       <!-- RBC 결과 -->
@@ -176,12 +178,14 @@
   </div>
 
   <!-- 자식 컴포넌트 Remark -->
-  <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
-          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
-  <Remark v-if="isComment" @cancel="closeSelect('comment')" @listUpdated="updateList" type="comment"
-          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
-  <Remark v-if="isRecommendation" @cancel="closeSelect('recommendation')" @listUpdated="updateList" type="reco"
-          :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+  <teleport to="body">
+    <Remark v-if="isRemark" @cancel="closeSelect('remark')" @listUpdated="updateList" type="remark"
+            :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+    <Remark v-if="isComment" @cancel="closeSelect('comment')" @listUpdated="updateList" type="comment"
+            :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+    <Remark v-if="isRecommendation" @cancel="closeSelect('recommendation')" @listUpdated="updateList" type="reco"
+            :crcDefaultMode="crcDefaultMode" :crcPassWord="crcPassWord"/>
+  </teleport>
   <ToastNotification
       v-if="toastMessage"
       :message="toastMessage"
@@ -318,6 +322,7 @@ const tooltipVisible = ref({
   cbcToResultCodes: false,
 })
 const childRef = ref(null);
+const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];

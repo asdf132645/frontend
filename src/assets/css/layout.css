@@ -2513,7 +2513,7 @@ table.defaultTable tbody td {
     display: inline-block;
     vertical-align: top;
     text-align: left;
-    background: var(--main-bg-2-color);
+    background: var(--main-bg-8-color);
     margin-left: 8px;
     margin-right: 8px;
     height: 947px;
@@ -2528,7 +2528,7 @@ table.defaultTable tbody td {
     width: 70%;
     display: inline-block;
     text-align: left;
-    background: var(--main-bg-2-color);
+    background: var(--main-bg-8-color);
 }
 
 .text-center {
@@ -2554,7 +2554,7 @@ table.defaultTable tbody td {
 }
 
 .filterDivBox > div {
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
     width: 100%;
 }
 
@@ -4943,6 +4943,7 @@ ul.crcListContentUl {
 button.crcDefaultBtn.bottomBtn {
     width: 100%;
 }
+
 ul.crcListContentUl li.crcListContentHeader {
     font-size: 0.9rem;
     border-bottom: 1px solid #ffffff;
@@ -5069,7 +5070,7 @@ span.crcListSpan > span {
 
 .crcReport {
     position: relative;
-    width: 45%;
+    width: 48%;
     background: #252629;
     color: #fff;
     font-size: 0.8rem;
@@ -5458,6 +5459,7 @@ table.remarkDefaultTable tr td:last-child {
 button.btnSearchRemark:hover {
     background: #dedede;
 }
+
 .scrollTableContainer {
     width: 100%;
     overflow: hidden;
@@ -5500,10 +5502,12 @@ button.crcDefaultBtn.remarkDelBtn {
     max-height: 900px;
     /*overflow-y: auto;*/
 }
+
 table.remarkDefaultTable.scroll tbody {
     max-height: 500px;
     overflow: scroll;
 }
+
 .codeDiv {
     text-align: left;
 }
@@ -5533,10 +5537,14 @@ input.codeInput {
 .listWbcImg-pagination-controls button {
     margin: 0 5px;
     padding: 5px 10px;
-    border: 1px solid #ccc;
+    border: none;
     background: none;
     cursor: pointer;
     color: #fff;
+}
+
+.crcReport.cbcLayer {
+    width: 45%;
 }
 
 .listWbcImg-pagination-controls button:disabled {

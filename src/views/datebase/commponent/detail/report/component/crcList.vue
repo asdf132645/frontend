@@ -1,9 +1,6 @@
 <template>
   <div class="tab-content crcDiv reportCrcDiv">
     <div class="text-right mb10">
-<!--      <button class="plusBtn" @click="openCrcAdd">-->
-<!--        <font-awesome-icon :icon="['fas', 'circle-plus']" />-->
-<!--      </button>-->
       <Button @click="deleteRow('check')" :icon="['fas', 'trash']"></Button>
     </div>
     <ul class="crcListContentUl">
@@ -20,15 +17,12 @@
       <!-- 각 crcDataArr의 항목을 출력 -->
       <li v-for="(item, index) in crcDataArr" :key="index" class="crcListContent">
         <span class="crcListSpan" @click="toggleOpen(index, item.id)">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" @click.stop/>
+            <input type="checkbox" v-model="selectedItems" :value="item.id"/>
             <span>{{ item.code }}</span>
             <div class="crcListDiv">
                 <button @click.stop="startEdit(item)" class="hoverSizeAction">
                     <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
                 </button>
-<!--                <button @click.stop="deleteRow('', item.id)" class="hoverSizeAction">-->
-<!--                    <font-awesome-icon :icon="['fas', 'trash']"/>-->
-<!--                </button>-->
             </div>
           <!-- 아이콘 클릭 시 열림/닫힘 토글 -->
             <font-awesome-icon
@@ -287,11 +281,19 @@ const deleteSelectedItems = async () => {
 const selectAll = (event: Event) => {
   const checked = (event.target as HTMLInputElement).checked;
   if (checked) {
+    toggleControll();
     selectedItems.value = crcDataArr.value.map(item => item.id);
   } else {
+    isOpen.value = [];
     selectedItems.value = [];
   }
 };
+
+const toggleControll = () => {
+  for (const checkedKey in crcDataArr.value) {
+    toggleOpen(Number(checkedKey), crcDataArr.value[checkedKey].id)
+  }
+}
 
 // 열림/닫힘 토글 함수
 const toggleOpen = (index: number, id) => {

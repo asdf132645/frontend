@@ -1,4 +1,6 @@
 <template>
+  <div @click="emit('cancel')" class="crcAddBack">
+  </div>
   <div class="crcPopUpDiv remark">
     <div class="remarkHeader">
       <h3 class="crcDefaultTitle">{{ remarkNm }}</h3>
@@ -92,13 +94,6 @@
       </div>
 
       <div class="mt20 remarkBottomFix">
-        <!--        <div class="remarkBottomBtnGroup mb10">-->
-        <!--          <div class="flex-justify-between">-->
-        <!--            <input v-model="newRemarkCode" type="text" placeholder="code" class="firstInput"/>-->
-        <!--            <button @click="addRemark" class="crcDefaultBtn ml10">Add</button>-->
-        <!--          </div>-->
-        <!--          <textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea" maxlength="1000"></textarea>-->
-        <!--        </div>-->
         <div>
           <table class="remarkDefaultTable bottom">
             <colgroup>
