@@ -13,7 +13,7 @@
     <ul class="rbcClass-content-title-wrapper classAttribute">
       <li>Category</li>
       <li>Class</li>
-      <li class="wbcTitleText">
+      <li class="wbcTitleText flex-column-align-center gap4">
         <p class="firstP">Degree</p>
         <p class="flex-align-center-justify-around">
           <span>0</span>

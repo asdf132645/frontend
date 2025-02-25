@@ -8,7 +8,6 @@ export interface TooltipClassInfoType {
 
 export interface TooltipListDetailType {
     cellMarking: boolean;
-    size: boolean;
     imageSetting: boolean;
     classCompare: boolean;
     wps: boolean;

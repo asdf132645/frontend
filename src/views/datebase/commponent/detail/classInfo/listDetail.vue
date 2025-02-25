@@ -62,40 +62,6 @@
                      :message="MSG.TOOLTIP.CELL_MARKING"/>
           </Button>
           <Button
-              @click="showSizeControl"
-              size="sm"
-              class="sizeButton"
-              @mouseover="tooltipVisibleFunc('size', true)"
-              @mouseout="tooltipVisibleFunc('size', false)"
-              :icon="['fas', 'plus-minus']"
-              :isActive="showSize"
-          >
-            Size
-            <Tooltip :isVisible="tooltipVisible.size" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.CELL_SIZE"/>
-          </Button>
-          <div v-show="showSize" class="listDetail-size-setting-container shadowBox sizeButton">
-            <div class="listDetail-size-setting-wrapper">
-              <h1>Size</h1>
-              <input
-                  type="number"
-                  :value="displayValue"
-                  @input="updateImageSize"
-              />
-            </div>
-            <input
-                style="display: inline-flex"
-                type="range"
-                min="50"
-                max="290"
-                v-model="imageSize"
-                @input="changeImageSize"
-            />
-            <Button @click="imgSizeReset" class="w-full">
-              Size Reset
-            </Button>
-          </div>
-          <Button
               size="sm"
               @click="classCompare"
               @mouseover="tooltipVisibleFunc('classCompare', true)"
@@ -123,6 +89,30 @@
         </div>
         <div class="listDetail-top-button-wrapper">
           <div class="listDetail-img-setting-container wbc-img-set" v-show="imgSet">
+            <div class="listDetail-img-setting-wrapper">
+              <div class="flex-center">
+                <h1>Size</h1>
+                <div class="customImgSet">
+                  <input
+                      type="number"
+                      :value="displayValue"
+                      @input="updateImageSize"
+                  />
+                </div>
+
+              </div>
+              <input
+                  style="display: inline-flex"
+                  type="range"
+                  min="50"
+                  max="290"
+                  v-model="imageSize"
+                  @input="changeImageSize"
+              />
+              <Button @click="imgSizeReset" class="w-full">
+                Size Reset
+              </Button>
+            </div>
             <div class="listDetail-img-setting-wrapper">
               <div>
                 <font-awesome-icon :icon="['fas', 'sun']"/>
@@ -182,6 +172,7 @@
               </div>
               <Button @click="rgbReset" class="w-full">RGB Reset</Button>
             </div>
+
           </div>
           <Button
               @click="rollbackChanges"
@@ -402,7 +393,6 @@ const zoomValue = ref(200);
 const selectItemImageArr = ref<any>([]);
 const moveRightClickArr = ref<any>([]);
 const orderClass = ref<any>([]);
-const showSize = ref(false);
 const hiddenImages = ref<{ [key: string]: boolean }>({});
 const contextMenuVisible = ref(false);
 const contextMenuX = ref(0);
@@ -443,7 +433,6 @@ const imageRef = ref<HTMLImageElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const tooltipVisible = ref<TooltipListDetailType>({
   cellMarking: false,
-  size: false,
   imageSetting: false,
   classCompare: false,
   wps: false,
@@ -653,19 +642,11 @@ function hideImage(id: string, fileName: string, title?: string) {
   hiddenImages.value[`${id}-${fileName}`] = true;
 }
 
-const showSizeControl = () => {
-  showSize.value = !showSize.value;
-};
-
 const handleClickOutside = (event: any) => {
   // 클릭 이벤트의 대상이 imgSet이 아닌지 확인
   if (!event.target.closest('.wbc-img-set')) {
     imgSet.value = false;
     selectedTitle.value = '';
-  }
-
-  if (!event.target.closest('.sizeButton')) {
-    showSize.value = false;
   }
 };
 document.addEventListener('click', (event) => {

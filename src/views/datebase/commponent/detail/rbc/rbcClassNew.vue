@@ -6,16 +6,21 @@
   <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
-    <div class="mt10 flex-justify-between">
+    <div class="mt10 flex-justify-between mb10">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
     </div>
 
     <ul class="rbcClass-content-title-wrapper classAttribute">
       <li>Category</li>
       <li>Class</li>
-      <li class="wbcTitleText">
+      <li class="wbcTitleText  flex-column-align-center gap4">
         <p class="firstP">Degree</p>
-        <p>0 1+ 2+ 3+</p>
+        <p class="flex-align-center-justify-around">
+          <span>0</span>
+          <span>1+</span>
+          <span>2+</span>
+          <span>3+</span>
+        </p>
       </li>
       <li>Count</li>
       <li>Percent</li>

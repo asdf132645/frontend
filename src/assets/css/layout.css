@@ -210,6 +210,7 @@
 }
 
 .flex-align-center-justify-around {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -527,16 +528,18 @@ main.bmComponent {
 
 .topClintInfo ul li {
     font-size: 0.9rem;
-    color: #f0f0f0;
-    white-space: nowrap;
-    padding: 2px 5px;
+    /*font-size: 0.9rem;*/
+    /*color: #f0f0f0;*/
+    /*white-space: nowrap;*/
+    /*padding: 2px 5px;*/
 }
 
 .detailHeader-tool-container {
     position: absolute;
-    left: 54.5%;
-    transform: translateX(-50%);
+    right: 16.5%;
     z-index: 10;
+    display: flex;
+    align-items: center;
 }
 
 .small-icon-menu {
@@ -1652,6 +1655,19 @@ p.loadingText {
     min-width: 127px;
 }
 
+.rbcRightClickLi-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.rbcRightClickLi-wrapper > li {
+    cursor: pointer;
+}
+
+.rbcRightClickLi-wrapper > li:hover {
+    background-color: var(--gray-bg-11-color);
+}
+
 .degree {
     display: inline-block;
     width: 9%;
@@ -1911,7 +1927,7 @@ button.degreeBtn {
 
 .categories.rbcClass .categoryNm {
     padding-left: 4px;
-    width: 19%;
+    width: 15%;
 }
 
 .loading-overlay-container {
@@ -4424,6 +4440,17 @@ p.menuIco {
     min-width: 195px;
     height: 300px;
     overflow-y: scroll;
+    padding: 12px 8px;
+    border-radius: 4px;
+}
+
+.rbc-select-box-title-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 18px;
+    font-size: 1rem;
+    margin-bottom: 4px;
 }
 
 table.cbcTable {

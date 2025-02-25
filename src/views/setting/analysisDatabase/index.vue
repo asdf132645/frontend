@@ -19,7 +19,6 @@
         <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
           {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
         </button>
-        <button @click='activateTab("deviceControls")' :class="{ 'active': activeTab === 'deviceControls' }">Device Controls</button>
       </template>
     </div>
 
@@ -53,7 +52,6 @@ import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellIm
 import NewAnalysis from "@/views/setting/analysisDatabase/component/newAnalysis.vue";
 import Etc from "@/views/setting/analysisDatabase/component/etc.vue";
 import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
-import DeviceControls from '@/views/setting/analysisDatabase/component/deviceControls.vue'
 import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'
 import WbcHotKey from "@/views/setting/analysisDatabase/component/wbcHotKeys.vue";
 import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
@@ -122,8 +120,6 @@ const activeTabComponent = computed(() => {
       return Etc;
     case 'rbcDegree':
       return RbcDegree;
-    case 'deviceControls':
-      return DeviceControls;
     case 'wbcCustomClass':
       return WbcCustomClass;
     case 'wbcHotKeys':

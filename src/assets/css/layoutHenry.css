@@ -21,6 +21,11 @@
 }
 
 /* 크기 설정 */
+.base-btn--xs {
+    font-size: 10px;
+    padding: 4px 8px;
+}
+
 .base-btn--sm {
     font-size: 12px;
     padding: 6px 12px;
@@ -171,7 +176,7 @@
 .listDetail-img-setting-container {
     position: absolute;
     top: 36px;
-    right: 100px;
+    left: 0;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
     border-radius: 4px;

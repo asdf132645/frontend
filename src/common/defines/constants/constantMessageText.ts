@@ -134,7 +134,6 @@ export const MSG = {
         OPEN_DOWNLOAD_SAVE_PATH: 'Open Download Save Path',
         LIS_UPLOAD_CHECK: 'Show LIS Upload Button after viewing all cell',
         CELL_MARKING: 'Mark Center of the cell',
-        CELL_SIZE: 'Resize Cell Image',
         CELL_IMG_SETTING: 'Modify Image Setting',
         CELL_CLASS_COMPARE: 'Compare two WBC classes',
         CELL_WPS: 'Switch WBC Positioning System mode',
