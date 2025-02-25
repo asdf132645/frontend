@@ -312,6 +312,7 @@ const cbcFilePathSetArr = ref('');
 const cbcCodeList = ref<any>([]);
 const lisBtnColor = ref(false);
 const restrictedRoutes = ['/report', '/databaseRbc', '/databasePlt', '/databaseWhole'];
+const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
@@ -595,6 +596,7 @@ const handleKeyUp = () => {
 };
 
 const uploadLis = async () => {
+  console.log(siteCd.value)
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['서울성모병원']:
       cmcSeoulLisAndCbcDataGet();
@@ -610,7 +612,9 @@ const uploadLis = async () => {
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
-      await uimdTestCbcLisDataGet();
+    case HOSPITAL_SITE_CD_BY_NAME['TEST']:
+      // await uimdTestCbcLisDataGet();
+      await otherDataSend();
       break;
     default:
       await otherDataSend();
@@ -965,49 +969,48 @@ const inhaDataSendLoad = async () => {
 
 const otherDataSend = async () => {
   const url = lisFilePathSetArr.value;
-  const fileCreateRes = await createDirectory(`path=${url}`);
-
-  if (fileCreateRes) {
+  const data = {
+    sendingApp: 'PBIA',
+    sendingFacility: 'PBIA',
+    receivingApp: 'LIS',
+    receivingFacility: 'LIS',
+    dateTime: getDateTimeStr(),
+    security: '',
+    messageType: ['ADT', 'R02'],
+    messageControlId: slideData.value?.barcodeNo,
+    processingId: 'P',
+    hl7VersionId: '2.5',
+    selectedItem: { /* selectedItem 데이터 */},
+    wbcInfo: slideData.value?.wbcInfoAfter,
+    rbcInfo: slideData.value?.rbcInfoAfter,
+    result: lisCodeWbcArrApp.value,
+    rbcFfiltering: lisCodeRbcArrApp.value,
+    pidData: {patientId: slideData.value?.barcodeNo, patientName: slideData.value.cbcPatientNm || 'No Name' },
+  };
+  console.log(JSON.stringify(lisCodeRbcArrApp.value))
+  console.log(JSON.stringify(slideData.value?.rbcInfoAfter))
+  const res = await readH7Message(data);
+  if(url.includes("http")){ // HTTP 통신 시 사용
+    await sendLisMessage(res);
+  }else{ // 공유 폴더 사용 시
     const data = {
-      sendingApp: 'PBIA',
-      sendingFacility: 'PBIA',
-      receivingApp: 'LIS',
-      receivingFacility: 'LIS',
-      dateTime: getDateTimeStr(),
-      security: '',
-      messageType: ['ADT', 'R02'],
-      messageControlId: slideData.value?.barcodeNo,
-      processingId: 'P',
-      hl7VersionId: '2.5',
-      selectedItem: { /* selectedItem 데이터 */},
-      wbcInfo: slideData.value?.wbcInfoAfter,
-      result: lisCodeWbcArrApp.value,
-    };
-    const res = await readH7Message(data);
-    if (res) {
-      if (!lisFilePathSetArr.value.includes("http")) { // file
-        const data = {
-          filepath: `${lisFilePathSetArr.value}\\${slideData.value.barcodeNo}.hl7`,
-          msg: res,
-        }
-        try {
-          await createH17(data);
-          toast.value.type = MESSAGES.TOAST_MSG_SUCCESS;
-          showToast(MESSAGES.IDS_MSG_SUCCESS);
-
-          await updateSubmitState();
-        } catch (error: any) {
-          showErrorAlert(error.response.data.message);
-        }
-      } else { // url
-        await sendLisMessage(res);
-      }
+      filepath: `${lisFilePathSetArr.value}\\${slideData.value.barcodeNo}.hl7`,
+      msg: res,
     }
+    try {
+      await createH17(data);
+      toast.value.type = MESSAGES.TOAST_MSG_SUCCESS;
+      showToast(MESSAGES.IDS_MSG_SUCCESS);
+
+      await updateSubmitState();
+    } catch (error: any) {
+      showErrorAlert(error.response.data.message);
+    }
+
   }
 }
 
-
-const goDae = (): string => {
+const goDae =  async (): Promise<string> => {
   let data = `H|\\^&||||||||||P||${slideData.value?.barcodeNo}\n`;
   let seq = 0;
   let kumcMergePercent = 0;
@@ -1044,6 +1047,7 @@ const goDae = (): string => {
       }
     }
   };
+  const {lisCodeWbcArr} = await getLisWbcRbcData();
 
   lisCodeWbcArr.value.forEach((lisCode: any) => {
     slideData.value?.wbcInfoAfter.forEach((wbcItem: any) => {
