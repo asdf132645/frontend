@@ -251,6 +251,7 @@ import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {TooltipCrcResultCodesType} from "@/common/type/tooltipType";
 import router from "@/router";
+import {autoCbcDataMatchingDefault} from "@/common/helpers/lisCbc/commonCbcAutoMatching";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -338,6 +339,7 @@ onBeforeMount(async () => {
   if (isContent.value) {
     const saveDataGet: any = await saveDataSlotIdGetApi(props?.selectItems?.slotId);
     const crcSettingData = saveDataGet.data.crcArr;
+    console.log(saveDataGet.data.crcArr)
     const codeVal = saveDataGet.data.code || '';
     const remarkListVal = saveDataGet.data.remarkList || [];
     const commentListVal = saveDataGet.data.commentList || [];
@@ -358,6 +360,7 @@ onBeforeMount(async () => {
         }));
       });
       trrur.value = true;
+
     } else {
       crcArr.value = (await crcGet()).data;
       trrur.value = true;
@@ -445,7 +448,7 @@ const initCbcData0033 = async () => {
 
 
     if (cbcResult?.resultCBCCode) {
-      const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem) => {
+      const autoChangeCodes = await Promise.all(cbcResult.resultCBCCode.map(async (cbcItem: any) => {
         return kcchCbcAutoMatching({data: cbcItem, sex: cbcResult?.cbcSex, age: cbcResult?.cbcAge});
       }));
 
@@ -507,6 +510,8 @@ const dataAutoComputeLoad = async () => {
         }
       }
     }
+  }else{
+    console.log(await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value));
   }
 }
 
@@ -1072,7 +1077,6 @@ const tempSaveDataEmpty = async () => {
   // await saveDataDeleteApi({slotId: props.selectItems.slotId});
   crcArr.value = [];
   crcArr.value = (await crcGet()).data;
-  console.log(crcArr.value)
   cbcFlag.value = '';
   recoList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
   remarkList.value = [{id: 0, code: '', remarkContent: '', remarkAllContent: ''}];
