@@ -41,10 +41,9 @@ export const autoCbcDataMatchingDefault = async (barcodeNo: string, cbcCodeList:
 
 
 // 조건을 평가하는 함수
-// 조건을 평가하는 함수
 const evaluateCondition = (count: any, condition: any) => {
     const numCount = parseFloat(count);
-    // 공백을 포함한 조건 처리 (ex. "> 99" 또는 ">99")
+    // 공백을 포함한 조건 처리 안 하면 에러
     const conditionMatch = /([<>]=?)(\s*\d+(\.\d+)?)/.exec(condition);
 
     if (conditionMatch) {
