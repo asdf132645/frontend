@@ -36,7 +36,7 @@ export const autoCbcDataMatchingDefault = async (barcodeNo: string, cbcCodeList:
     console.log(JSON.stringify(crcArr));
 
     // 새로 업데이트된 crcArr를 반환
-    return matchValues(findAutoCbcArr.data, cbcData, crcArr);
+    return matchValues(findAutoCbcArr.data, cbcData, crcArr, cbcSex, cbcAge);
 }
 
 
@@ -67,27 +67,58 @@ const evaluateCondition = (count: any, condition: any) => {
 
 
 // 자동으로 crcArr의 val 값을 채우는 함수
-const matchValues = (findAutoCbcArr: any, cbcArr: any, crcArr: any) => {
-    // crcArr를 복사하여 업데이트할 배열을 만들기
-    const updatedCrcArr = [...crcArr];
+const matchValues = (findAutoCbcArr: any, cbcArr: any, crcArr: any, cbcSex: string, cbcAge: any) => {
+    findAutoCbcArr.forEach((itemA: any) => {
+        // cbc_code와 매칭되는 cbcArr 아이템 찾기
+        const cbcItem = cbcArr.find((itemCbc: any) => itemCbc.classNm === itemA.cbc_code.replace('%', ''));
 
-    updatedCrcArr.forEach((crcItem: any) => {
-        // crcArr의 cbcCode와 일치하는 cbc_code를 가진 AItem을 찾기
-        findAutoCbcArr.forEach((itemA: any) => {
-            // cbc_code가 일치하는 cbcArr 항목을 찾기
-            const cbcItem = cbcArr.find((itemCbc: any) => itemCbc.classNm === itemA.cbc_code.replace('%', ''));
+        if (cbcItem) {
+            const { count } = cbcItem;
+            const { conditional, sex, age, ageCategory } = itemA;
 
-            if (cbcItem && crcItem.cbcCode && crcItem.cbcCode === itemA.cbc_code) {
-                const { count } = cbcItem;
-                const { conditional } = itemA;
+            // 성별 필터링
+            if (sex && sex !== "all" && sex !== cbcSex) {
+                return; // 성별이 다르면 검사 패스
+            }
 
-                // 조건을 만족하면 val에 content 값을 넣기
-                if (conditional && evaluateCondition(count, conditional)) {
-                    crcItem.val = itemA.content; // 조건이 맞으면 val에 content를 넣음
+            // 나이 필터링
+            if (age) {
+                const numericAge = parseFloat(age); // 숫자로 변환 가능하면 변환
+
+                if (!isNaN(numericAge)) {
+                    // 나이가 특정 숫자인 경우 비교
+                    if (cbcAge !== numericAge) {
+                        return; // 나이가 다르면 검사 패스
+                    }
+                } else if (age.includes('.')) {
+                    // YYYY.MM.DD 형식의 나이 비교
+                    if (age !== cbcAge.toString()) {
+                        return;
+                    }
                 }
             }
-        });
+
+            // ageCategory가 "kid"인 경우 추가 체크 (날짜 형식이 있는지)
+            if (ageCategory === "kid") {
+                if (age && age.includes('.')) {
+                    // age가 YYYY.MM.DD 형식인데, cbcAge도 해당 형식이어야 함
+                    if (age !== cbcAge.toString()) {
+                        return; // 조건 불일치 시 패스
+                    }
+                }
+            }
+
+            // 조건 평가
+            if (conditional && evaluateCondition(count, conditional)) {
+                // crcArr에서 cbcCode 기반으로 매칭
+                const crcItem = crcArr.find((itemCrc: any) => itemCrc.cbcCode === itemA.cbc_code);
+
+                if (crcItem) {
+                    crcItem.val = itemA.content; // content 값 반영
+                }
+            }
+        }
     });
 
-    return updatedCrcArr;
+    return crcArr; // 업데이트된 crcArr 반환
 };
