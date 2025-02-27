@@ -59,6 +59,7 @@
           <template v-if="pageName==='set'">
             <input class="smallInput" type="text" :title="lisCodeMatchingInfo" placeholder="lisCodeMatching" v-model="item.crcCode" @change="updateCrcArr(item.id)"/>
             <input class="smallInput" type="text" placeholder="lisValMatching" :title="lisValMatchingInfo" v-model="item.crcCodeMatching" @change="updateCrcArr(item.id)"/>
+            <input class="smallInput" type="text" placeholder="cbcCode" v-model="item.cbcCode" @change="updateCrcArr(item.id)" />
           </template>
         </div>
         <div v-if="item.crcType === 'percent'" class="smallBox">
@@ -175,4 +176,18 @@ const changeSelect = (eve: Event, id: string | number) => {
     emit('updateSelect', {val: eve.target?.value, id});
   }
 }
+
+const autoChangeSelect = (id: string | number, newValue: string) => {
+  // 해당 id를 가진 아이템을 찾기
+  const item = arrData.value.find((item: any) => item.id === id);
+
+  if (item) {
+    // item.val을 새 값으로 변경
+    item.val = newValue;
+
+    // 셀렉트 박스를 업데이트
+    emit('updateSelect', { val: newValue, id });
+  }
+};
+
 </script>

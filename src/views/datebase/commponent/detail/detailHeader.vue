@@ -993,8 +993,7 @@ const otherDataSend = async () => {
     rbcFfiltering: lisCodeRbcArrApp.value,
     pidData: {patientId: slideData.value?.barcodeNo, patientName: slideData.value.cbcPatientNm || 'No Name' },
   };
-  console.log(JSON.stringify(lisCodeRbcArrApp.value))
-  console.log(JSON.stringify(slideData.value?.rbcInfoAfter))
+
   const res = await readH7Message(data);
   if(url.includes("http")){ // HTTP 통신 시 사용
     await sendLisMessage(res);

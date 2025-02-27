@@ -1,5 +1,5 @@
 import {getFolders} from "@/common/api/service/fileSys/fileSysApi";
-import {readFileEUCKR, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
+import {readFileEUCKR, readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {getCbcPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
 import {sdCbcAutoMatching} from "@/common/defines/constants/autoResultCodeMatching";
 
@@ -156,6 +156,40 @@ export const cbcDataGet = async (barcodeNo: string, cbcCodeList: any) => {
     const fileNm = await cbcFileNameExtract(barcodeNo);
     const path = await getCbcPathData();
     const readFileTxtRes: any = await readFileEUCKR(`path=${path}&filename=${fileNm}`);
+    const cbcData: any = [];
+    let cbcSex = ''
+    let cbcAge = '';
+    if (readFileTxtRes.data.success) {
+
+        const msg: any = await readH7File(readFileTxtRes.data.data);
+        msg?.data?.segments?.forEach((cbcSegment: any) => {
+            const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
+            const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
+            const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
+            const sanitizedClassCd = classCd ? classCd.replace(/[^\w\s]/gi, '') : '';
+
+            if (cbcSegment.name.trim() === 'OBX') {
+                if (unit !== '%') {
+                    const obj = {
+                        classNm: sanitizedClassCd,
+                        count: count,
+                        unit: unit
+                    }
+                    cbcData.push(obj)
+                }
+            } else if (cbcSegment.name.trim() === 'PID') {
+                cbcSex = cbcSegment?.fields[6].value[0][0].value[0]
+                cbcAge = cbcSegment?.fields[7].value[0][0].value[0];
+            }
+        })
+    }
+    return {cbcData: cbcData, cbcSex: cbcSex, cbcAge: cbcAge};
+}
+
+
+export const cbcDataGetCommon = async (barcodeNo: string, cbcCodeList: any) => {
+    const path = await getCbcPathData();
+    const readFileTxtRes: any = await readFileTxt(`path=${path}&filename=${barcodeNo}`);
     const cbcData: any = [];
     let cbcSex = ''
     let cbcAge = '';

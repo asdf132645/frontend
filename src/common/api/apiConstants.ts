@@ -10,7 +10,7 @@ export const apiConstants = {
             endpoint: 'sybase/save-uimd-result',
             requiresToken: false,
         },
-        saveComment:{
+        saveComment: {
             endpoint: 'sybase/saveComment',
             requiresToken: false,
         },
@@ -424,8 +424,8 @@ export const apiConstants = {
             endpoint: 'filesystem/existsFile',
             requiresToken: false,
         },
-        fileSearch:{
-            endpoint:'filesystem/fileSearch',
+        fileSearch: {
+            endpoint: 'filesystem/fileSearch',
             requiresToken: false,
         },
         delete: {
@@ -448,7 +448,7 @@ export const apiConstants = {
             endpoint: 'file/cbcSaveData',
             requiresToken: false,
         },
-        errLogsRead:{
+        errLogsRead: {
             endpoint: 'filesystem/errLogsRead',
             requiresToken: false,
         },
@@ -669,7 +669,28 @@ export const apiConstants = {
         saveDataDelete: {
             endpoint: 'crc-save-data/saveDataDelete',
             requiresToken: false,
+        },
+        autoCbcCreate: {
+            endpoint: 'autoCbc/autoCbcCreate',
+            requiresToken: false,
         }
-
+        ,
+        autoCbcPut: {
+            endpoint: 'autoCbc/autoCbcPut',
+            requiresToken: false,
+        },
+        findAutoCbc: {
+            endpoint: 'autoCbc/findAutoCbc',
+            requiresToken: false,
+        }
+        ,
+        autoCbcDel: {
+            endpoint: 'autoCbc/autoCbcDel',
+            requiresToken: false,
+        },
+        autoCbcUpdateAll:{
+            endpoint: 'autoCbc/autoCbcUpdateAll',
+            requiresToken: false,
+        }
     }
 };
