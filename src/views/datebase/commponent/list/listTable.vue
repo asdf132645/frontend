@@ -38,125 +38,129 @@
       <th>Edit</th>
     </tr>
     </thead>
+    <transition name="fade">
 
-    <tbody v-if="dbGetData.length !== 0">
-    <template v-for="(item, idx) in dbGetData"
-              :key="item.id">
-      <tr
-          :class="{
+      <tbody v-show="dbGetData.length !== 0" class="fade">
+      <template v-for="(item, idx) in dbGetData"
+                :key="item.id">
+        <tr
+            :class="{
             selectedTr: selectedItemId === item.id,
             submittedTr: item.submitState === 'Submit',
             lisTr: item.submitState.includes('lis'),
             rock: item.lock_status && item.pcIp !== myIp,
             checkFirst: item.submitState === 'checkFirst',
           }"
-          @click="selectItem(item)"
-          @dblclick='rowDbClick(item)'
-          ref="firstRow"
-          style="height: 49px"
-          v-bind:data-row-id="item.id"
-          @contextmenu.prevent="rowRightClick(item, $event)"
-      >
-        <td @click="handleCheckboxChange(item)">
-          <div
-              @mouseover="abnormalClassInfoOpen(true, item)"
-              @mouseout="abnormalClassInfoOpen(false, item)"
-              class="listTable-abnormalIcon-wrapper"
-          >
-            <template
-                v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                 v-if="item?.slideCondition?.condition === 'Bad'"
-              />
-              <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                 v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
-              />
-            </template>
-            <template v-else>
-              <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                 v-if="item.isNormal === 'N' && projectType === 'pb'"/>
-            </template>
+            @click="selectItem(item)"
+            @dblclick='rowDbClick(item)'
+            ref="firstRow"
+            style="height: 49px"
+            v-bind:data-row-id="item.id"
+            @contextmenu.prevent="rowRightClick(item, $event)"
+        >
+          <td @click="handleCheckboxChange(item)">
             <div
-                v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
-              <div class="slideStatus-container">
-                <template
-                    v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-                  <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
-                    <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-                    <span>{{ slideCondition?.desc }}</span>
+                @mouseover="abnormalClassInfoOpen(true, item)"
+                @mouseout="abnormalClassInfoOpen(false, item)"
+                class="listTable-abnormalIcon-wrapper"
+            >
+              <template
+                  v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+                <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                   v-if="item?.slideCondition?.condition === 'Bad'"
+                />
+                <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                   v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
+                />
+              </template>
+              <template v-else>
+                <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                                   v-if="item.isNormal === 'N' && projectType === 'pb'"/>
+              </template>
+              <div
+                  v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
+                <div class="slideStatus-container">
+                  <template
+                      v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+                    <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
+                      <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                      <span>{{ slideCondition?.desc }}</span>
+                    </div>
+
+                    <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
+                  </template>
+
+
+                  <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'"
+                       class="slideStatusPopup-wrapper normalRange">
+                    <h1 class="slideStatusPopup-title"
+                        :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">
+                      Out of Normal Range</h1>
+                    <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo"
+                         :key="abnormalIdx">
+                      <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
+                        <span>{{ abItem?.classNm }}</span>
+                        <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                        <span>{{
+                            handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
+                          }}</span>
+                      </p>
+                    </div>
                   </div>
 
-                  <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
-                </template>
-
-
-                <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'"
-                     class="slideStatusPopup-wrapper normalRange">
-                  <h1 class="slideStatusPopup-title"
-                      :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">
-                    Out of Normal Range</h1>
-                  <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo"
-                       :key="abnormalIdx">
-                    <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
-                      <span>{{ abItem?.classNm }}</span>
-                      <span>{{ handleAbnormalValue(abItem?.val) }}</span>
-                      <span>{{
-                          handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
-                        }}</span>
-                    </p>
-                  </div>
                 </div>
-
               </div>
             </div>
-          </div>
 
-          <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
-        </td>
-        <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
-        <td>
-          <font-awesome-icon
-              :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
-          />
-        </td>
-        <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
-        <td> {{ item?.traySlot }}</td>
-        <td> {{ item?.barcodeNo }}</td>
-        <td> {{ item?.patientId }}</td>
-        <td> {{ item?.patientNm }}</td>
-        <td> {{ item?.analyzedDttm === '' ? '' : formatDateString(item?.analyzedDttm) }}</td>
-        <td> {{ item?.tactTime }}</td>
-        <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
-        <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
-        <td>
-          <font-awesome-icon
-              v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status || item.pcIp === myIp"
-              :icon="['fas', 'pen-to-square']"
-              @click="editData(item)"/>
+            <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
+          </td>
+          <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
+          <td>
+            <font-awesome-icon
+                :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
+            />
+          </td>
+          <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
+          <td> {{ item?.traySlot }}</td>
+          <td> {{ item?.barcodeNo }}</td>
+          <td> {{ item?.patientId }}</td>
+          <td> {{ item?.patientNm }}</td>
+          <td> {{ item?.analyzedDttm === '' ? '' : formatDateString(item?.analyzedDttm) }}</td>
+          <td> {{ item?.tactTime }}</td>
+          <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
+          <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
+          <td>
+            <font-awesome-icon
+                v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status || item.pcIp === myIp"
+                :icon="['fas', 'pen-to-square']"
+                @click="editData(item)"/>
+          </td>
+        </tr>
+      </template>
+      <tr>
+        <div ref="loadMoreRef" style="height: 30px;"></div>
+      </tr>
+      </tbody>
+    </transition>
+    <transition>
+      <tbody v-show="dbGetData.length === 0" class="fade">
+      <tr class="text-center">
+        <td colspan="13" style="width: 1240px; cursor: auto">
+          <p class="nodataimg">
+            <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
+          </p>
+          NO Data
         </td>
       </tr>
-    </template>
-    <tr>
-      <div ref="loadMoreRef" style="height: 30px;"></div>
-    </tr>
-    </tbody>
-    <tbody v-else>
-    <tr class="text-center">
-      <td colspan="13" style="width: 1240px; cursor: auto">
-        <p class="nodataimg">
-          <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
-        </p>
-        NO Data
-      </td>
-    </tr>
-    </tbody>
+      </tbody>
+    </transition>
   </table>
   <!-- 페이지네이션 버튼 -->
   <div class="paginationDiv" v-if="dbGetData.length !== 0 && totalPages > 0">
     <div class="pagination">
 
       <button @click="handlePrevChunk" :disabled="currentPage <= 1">
-        <font-awesome-icon :icon="['fas', 'backward']" />
+        <font-awesome-icon :icon="['fas', 'backward']"/>
       </button>
 
       <button @click="handlePrevPage" :disabled="currentPage <= 1">
@@ -177,7 +181,7 @@
       </button>
 
       <button @click="handleNextChunk" :disabled="currentPage >= totalPages">
-        <font-awesome-icon :icon="['fas', 'forward']" />
+        <font-awesome-icon :icon="['fas', 'forward']"/>
       </button>
     </div>
   </div>
@@ -285,7 +289,6 @@ import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
-import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getNormalRangeApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
@@ -345,7 +348,6 @@ const instance = getCurrentInstance();
 const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-const dataBasePageReset = computed(() => store.state.commonModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isCtrlKeyPressed = ref(false);
 const isShiftKeyPressed = ref(false);
@@ -414,43 +416,6 @@ watch(
       loadingDelay.value = newVal;
     }
 );
-
-
-// watchEffect(async () => {
-//   try {
-//     if (props.dbData.length > 0) {
-//       await nextTick();
-//       loadingDelay.value = false;
-//       const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
-//
-//       // IntersectionObserver 설정
-//       const observer = new IntersectionObserver(handleIntersection, {
-//         root: null,
-//         rootMargin: '0px',
-//         threshold: 0.5,
-//       });
-//       if (loadMoreRef.value) {
-//         observer.observe(loadMoreRef.value);
-//       }
-//
-//       if (selectedItemId.value === '0' || !selectedItemId.value) {
-//         loadingDelay.value = false;
-//       }
-//
-//       // 데이터베이스 페이지 리셋 상태 확인
-//       if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
-//         // loadingDelay.value = true;
-//         await selectItem(filteredItems[0]);
-//         await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
-//         await removeCheckBox();
-//         return;
-//       }
-//     }
-//   } catch (error) {
-//     console.error('Error during watchEffect execution:', error);
-//     loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
-//   }
-// });
 
 async function selectItem(item) {
   if (isShiftKeyPressed.value) {
@@ -571,14 +536,11 @@ const totalPages = computed(() => {
   return Math.ceil(props.total / props.itemsPerPage);
 });
 
-// 현재 페이지 그룹 계산 (5개 단위)
-const currentChunk = computed(() => Math.floor((currentPage.value - 1) / 5) * 5 + 1);
-
 // 보여줄 페이지 리스트 계산
 const displayedPages = computed(() => {
   let start = Math.floor((currentPage.value - 1) / 5) * 5 + 1;
   let end = Math.min(start + 4, totalPages.value);
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  return Array.from({length: end - start + 1}, (_, i) => start + i);
 });
 
 
