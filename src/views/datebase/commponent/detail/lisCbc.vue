@@ -153,6 +153,10 @@ watch(props.selectItems, async (newVal) => {
 
 }, {deep: true});
 
+onMounted(async () => {
+  await mountedSet(props.selectItems);
+});
+
 const  mountedSet = async (newVal: any) => {
   cbcWorkList.value = [];
   if (props.selectItems) {

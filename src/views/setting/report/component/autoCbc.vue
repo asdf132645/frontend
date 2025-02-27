@@ -6,7 +6,7 @@
     <div class="form-container">
       <div v-for="(value, key) in newData" :key="key">
         <label>{{ key }}</label>
-        <input v-model="newData[key]" :type="key === 'age' ? 'number' : 'text'"/>
+        <input v-model="newData[key]" type="text"/>
       </div>
       <button @click="createdAutoCbcData">추가</button>
     </div>
@@ -48,10 +48,10 @@
         <td><input v-model="item.title"/></td>
         <td><input v-model="item.content"/></td>
         <td><input v-model="item.sex"/></td>
-        <td><input v-model.number="item.age" type="text"/></td>
+        <td><input v-model="item.age"/></td>
         <td><input v-model="item.ageCategory"/></td>
         <td>
-          <button @click="updateAutoCbcData(item)">수정</button>
+          <button @click="updateAutoCbcData(item)" type="button">수정</button>
           <button @click="deleteAutoCbcData(item.id)">삭제</button>
         </td>
       </tr>
@@ -93,6 +93,7 @@ const loadAutoCbcData = async () => {
     ]);
 
     findAutoCbcDataArr.value = autoCbcResponse.data;
+    console.log(autoCbcResponse.data)
 
     // orderIdx를 기준으로 오름차순 정렬
     findAutoCbcDataArr.value.sort((a, b) => parseInt(a.orderIdx) - parseInt(b.orderIdx));
@@ -137,6 +138,7 @@ const createdAutoCbcData = async () => {
 };
 
 const updateAutoCbcData = async (item) => {
+  console.log(item)
   try {
     await autoCbcPutApi(item);
     await loadAutoCbcData();
