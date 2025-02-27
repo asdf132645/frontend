@@ -21,16 +21,21 @@
 }
 
 /* 크기 설정 */
+.base-btn--xs {
+    font-size: 10px;
+    padding: 4px 8px;
+}
+
 .base-btn--sm {
-    font-size: 12px;
+    font-size: 0.8rem;
     padding: 6px 12px;
 }
 .base-btn--md {
-    font-size: 14px;
+    font-size: 0.8rem;
     padding: 8px 16px;
 }
 .base-btn--lg {
-    font-size: 16px;
+    font-size: 1rem;
     padding: 10px 20px;
 }
 
@@ -171,7 +176,7 @@
 .listDetail-img-setting-container {
     position: absolute;
     top: 36px;
-    right: 100px;
+    left: 0;
     background: var(--main-bg-2-color);
     border: 1px solid var(--white-color);
     border-radius: 4px;
@@ -246,23 +251,50 @@
     padding: 2px;
 }
 
+.rbcClassReport-content-title-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 2px;
+}
+
+.rbcClassReport-content-title-wrapper > li {
+    padding: 5px;
+}
+
 .rbcClass-content-title-wrapper > li {
     padding: 5px;
 }
 
 .rbcClass-content-title-wrapper > li:nth-child(1) {
-    width: 18%;
+    width: 15%;
+    text-align: left;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(1) {
+    width: 13%;
     text-align: left;
 }
 
 .rbcClass-content-title-wrapper > li:nth-child(2) {
+    width: 37%;
+    text-align: left;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(2) {
     width: 32%;
     text-align: left;
 }
 
 .rbcClass-content-title-wrapper > li:nth-child(3) {
     text-align: center;
-    width: 23%;
+    width: 21%;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(3) {
+    width: 20%;
+    text-align: center;
 }
 
 .rbcClass-content-title-wrapper > li:nth-child(4) {
@@ -270,7 +302,17 @@
     width: 10%;
 }
 
+.rbcClassReport-content-title-wrapper > li:nth-child(4) {
+    width: 11%;
+    text-align: left;
+}
+
 .rbcClass-content-title-wrapper > li:nth-child(5) {
     text-align: center;
     width: 16%;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(5) {
+    width: 10%;
+    text-align: center;
 }

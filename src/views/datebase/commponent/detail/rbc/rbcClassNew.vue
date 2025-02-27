@@ -6,16 +6,21 @@
   <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
-    <div class="mt10 flex-justify-between">
+    <div class="mt10 flex-justify-between mb10">
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
     </div>
 
-    <ul class="rbcClass-content-title-wrapper classAttribute">
+    <ul class="classAttribute" :class="type === 'report' ? 'rbcClassReport-content-title-wrapper' : 'rbcClass-content-title-wrapper'">
       <li>Category</li>
       <li>Class</li>
-      <li class="wbcTitleText">
-        <p class="firstP">Degree</p>
-        <p>0 1+ 2+ 3+</p>
+      <li class="rbcDegree-wrapper gap4">
+        <p>Degree</p>
+        <p class="flex-align-center-justify-around">
+          <span>0</span>
+          <span>1+</span>
+          <span>2+</span>
+          <span>3+</span>
+        </p>
       </li>
       <li>Count</li>
       <li>Percent</li>
@@ -40,7 +45,7 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category?.categoryId}-${classInfo?.classId}`">
               <li @click="handleClick(category?.categoryId, classInfo?.classId, classInfo?.classNm, category?.categoryNm)"
-                  class="flex-align-center cursorPointer">
+                  class="flex-align-center-justify-between cursorPointer">
                 <span>{{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
                 <div
                     v-if="showCheckbox(category?.categoryId, classInfo?.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
@@ -55,7 +60,7 @@
               </li>
               <li v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '05'"
                   @click="handleClick('05', '03', classInfo?.classNm, category?.categoryNm)"
-                  class="flex-align-center"
+                  class="flex-align-center-justify-between"
               >
                 <span>Malaria</span>
                 <div v-if="type !== 'report'">
@@ -206,7 +211,7 @@
           <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li @click="handleClick('04', '01', 'Platelet', 'Others')" style="padding-top: 0;" class="flex-align-center">
+          <li @click="handleClick('04', '01', 'Platelet', 'Others')" style="padding-top: 0;" class="flex-align-center-justify-between">
             <span>Platelet</span>
             <div v-if="type !== 'report'">
               <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA"

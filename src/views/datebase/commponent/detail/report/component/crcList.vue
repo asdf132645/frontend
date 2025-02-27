@@ -7,7 +7,7 @@
       <li class="crcListContentHeader">
         <div>
           <input type="checkbox" @change="selectAll($event)"/>
-          <span class="ml5">Code</span>
+          <span class="ml05">Code</span>
         </div>
         <div>
           <span>Action</span>

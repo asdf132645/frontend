@@ -15,7 +15,7 @@
       </div>
       <table class="settingTable">
         <tbody>
-          <tr v-if="viewerCheck !== 'viewer'">
+          <tr>
             <th class="analysis-setting-subTitle">Analysis Type</th>
             <td colspan="2">
               <select v-model="cellInfo.analysisType">
@@ -25,7 +25,7 @@
           </tr>
 
         <!-- WBC / BM Diff Analysis -->
-        <tr v-if="viewerCheck !== 'viewer' && (projectType === 'bm' || (projectType === 'pb' && cellInfo.analysisType === '01'))">
+        <tr v-if="projectType === 'bm' || (projectType === 'pb' && cellInfo.analysisType === '01')">
           <th>{{ projectType === 'pb' ? 'WBC' : 'BM' }} Diff Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
@@ -36,7 +36,7 @@
         </tr>
 
         <!-- PBS Analysis -->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && cellInfo.analysisType === '04'">
+        <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
           <th rowspan="2">PBS Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
@@ -45,7 +45,7 @@
             </select>
           </td>
         </tr>
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && cellInfo.analysisType === '04'">
+        <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
           <th>Stitch Count</th>
           <td>
             <select v-model="cellInfo.stitchCount">
@@ -55,7 +55,7 @@
         </tr>
 
         <!-- Edge Shot Type -->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && cellInfo.analysisType === '04'">
+        <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
           <th class="pos-relative">
             Edge Shot Type
             <font-awesome-icon :icon="['fas', 'circle-info']"
@@ -76,7 +76,7 @@
         </tr>
 
         <!-- Edge Shot Count -->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && machineVersion === '100a' && ['2', '3'].includes(cellInfo.edgeShotType)">
+        <tr v-if="projectType === 'pb' && machineVersion === '100a' && ['2', '3'].includes(cellInfo.edgeShotType)">
           <th class="pos-relative">Edge Shot Count</th>
           <td>
             <select v-if="cellInfo.edgeShotType === '2'" v-model="cellInfo.edgeShotLPCount">
@@ -89,7 +89,7 @@
         </tr>
 
         <!-- BF Analysis -->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && visibleBySite(siteCd, ['9090', '0000'], 'disable')">
+        <tr v-if="projectType === 'pb' && visibleBySite(siteCd, ['9090', '0000'], 'disable')">
           <th>BF Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
@@ -100,7 +100,7 @@
         </tr>
 
         <!-- Common Analysis -->
-        <tr v-if="projectType === 'pb' && viewerCheck !== 'viewer' && ['01', '04'].includes(cellInfo.analysisType)">
+        <tr v-if="projectType === 'pb' && ['01', '04'].includes(cellInfo.analysisType)">
           <th :rowspan="pbsAnalysisValuesRowIndex(cellInfo.analysisType)" class="pos-relative">
             Common
             <font-awesome-icon :icon="['fas', 'circle-info']"
@@ -153,6 +153,26 @@
             </select>
           </td>
         </tr>
+
+          <tr>
+            <th class="pos-relative">
+              NS/NB Integration
+              <font-awesome-icon
+                  :icon="['fas', 'circle-info']"
+                  @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
+                  @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
+              />
+              <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
+                       :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
+            </th>
+            <td>
+              <font-awesome-icon
+                  :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                  class="iconSize"
+                  @click="toggleNsNbIntegration"
+              />
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -250,7 +270,6 @@ const showConfirm = ref(false);
 const confirmType = ref('setting');
 const confirmMessage = ref('');
 const siteCd = computed(() => store.state.commonModule.siteCd);
-const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
@@ -632,5 +651,9 @@ const setInitialPresetName = () => {
   const currentPresetIndex = allCellInfo.value.clientData.findIndex(item => item.presetChecked);
   currentPresetNm.value = currentPresetIndex === -1 ? '1' : String(currentPresetIndex + 1);
 }
+
+const toggleNsNbIntegration = () => {
+  cellInfo.value.isNsNbIntegration = !cellInfo.value.isNsNbIntegration;
+};
 
 </script>

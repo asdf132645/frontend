@@ -3,12 +3,12 @@
     <div class="loader"></div>
     <p class="loadingText">Loading...</p>
   </div>
-  <table class='defaultTable mt20 dbDataTable' ref="scrollableDiv">
+  <table class='defaultTable dbDataTable' ref="scrollableDiv">
     <colgroup>
       <col width="7%"/>
       <col width="2%"/>
-      <col width="7%"/>
       <col width="4%"/>
+      <col width="7%"/>
       <col width="6%"/>
       <col width="8%"/>
       <col width="8%"/>
@@ -25,10 +25,10 @@
         <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
       </th>
       <th>NO</th>
-      <th>Type</th>
       <th>State</th>
+      <th>Type</th>
       <th>Tray Slot</th>
-      <th>Barcode NO</th>
+      <th>Barcode ID</th>
       <th>Patient ID</th>
       <th>Patient Name</th>
       <th>Analyzed Date</th>
@@ -114,12 +114,12 @@
           <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
         </td>
         <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
-        <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td>
           <font-awesome-icon
               :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
           />
         </td>
+        <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
         <td> {{ item?.traySlot }}</td>
         <td> {{ item?.barcodeNo }}</td>
         <td> {{ item?.patientId }}</td>
@@ -185,17 +185,16 @@
   <div v-if="contextMenu.visible" :style="{ top: (contextMenu.y - 100) + 'px', left: contextMenu.x + 'px' }"
        class="context-menu">
     <ul>
-      <li @click="printStart">Print</li>
-      <li @click="classificationRowDbClick">Classification</li>
-      <li @click="editOrderData">Edit order data</li>
-      <li @click="showDeleteConfirm">Delete</li>
+      <li @click="editOrderData">Edit Data</li>
+      <li @click="printStart">Print Report</li>
+      <li @click="showDeleteConfirm">Delete Data</li>
     </ul>
   </div>
 
   <Modal v-if="visible" @update:closeLayer="closeLayer" @afterOpen="onModalOpen" width="400">
     <!-- 헤더 슬롯에 들어갈 내용 -->
     <template #header>
-      <h2>Edit order data</h2>
+      <h2>Edit Data</h2>
     </template>
 
     <!-- 컨텐츠 슬롯에 들어갈 내용 -->
@@ -554,10 +553,6 @@ const editOrderData = () => {
   resetContextMenu();
 };
 
-const classificationRowDbClick = () => {
-  rowDbClick(rightClickItem.value);
-  resetContextMenu();
-}
 const selectAllItems = () => {
   props.dbData.forEach(item => {
     item.checked = selectAllCheckbox.value;

@@ -44,7 +44,7 @@ import {settingUpdate} from "@/common/lib/utils/settingSave";
 import { MESSAGES } from "@/common/defines/constants/constantMessageText";
 
 const store = useStore();
-const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Quality Check', 'Version'] as const;
+const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Add-Ons', 'Version'] as const;
 const viewerTabs = ['Login/Account', 'Analysis/Database', 'Version'] as const;
 const currentTab = ref<typeof tabs[number]>(tabs[0]);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
@@ -72,7 +72,7 @@ const changeTab = (tab: typeof tabs[number]) => {
   }
 };
 
-const components = { 'Login/Account': LoginAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Quality Check': QualityCheck, 'Version': Version };
+const components = { 'Login/Account': LoginAccount, 'Analysis/Database': AnalysisDatabase, 'Report': Report, 'Add-Ons': QualityCheck, 'Version': Version };
 const viewerComponents: any = { 'Login/Account': LoginAccount, 'Version': Version, 'Analysis/Database': AnalysisDatabase };
 
 const storedTab = sessionStorage.getItem('selectedTab');

@@ -10,8 +10,9 @@
     <font-awesome-icon
         v-if="icon"
         :icon="icon"
-        class="btn-icon"
         size="lg"
+        class="btn-icon"
+        :class="iconClass"
     />
     <slot/>
   </button>
@@ -46,6 +47,10 @@ const props = defineProps({
     type: [String, Array],
     default: null,
   },
+  iconClass: {
+    type: String,
+    default: '',
+  },
   isActive: {
     type: Boolean,
     default: false,
@@ -63,7 +68,8 @@ const computedClass = computed(() => {
     {'base-btn--active': props.isActive}, // 활성화 상태
     {'base-btn--hover': isHovered.value}, // 호버 상태
     {'base-btn--disabled': props.disabled}, // 비활성화 상태
-    props.className
+    props.className,
+    props.iconClass
   ]
 })
 

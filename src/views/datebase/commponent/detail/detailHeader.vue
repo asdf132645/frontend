@@ -18,6 +18,14 @@
           <span>{{ barcodeNo }}</span>
           <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" message='Barcode ID' />
         </p>
+<!--        <Button-->
+<!--            @mouseover="tooltipVisibleFunc('barcodeCopy', true)"-->
+<!--            @mouseout="tooltipVisibleFunc('barcodeCopy', false)"-->
+<!--            size="sm"-->
+<!--        >-->
+<!--          <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />-->
+<!--          <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" message='Copy Barcode ID' />-->
+<!--        </Button>-->
         <p
             class="pos-relative cursorPointer"
             @mouseover="tooltipVisibleFunc('barcodeCopy', true)"
@@ -101,8 +109,7 @@
         <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" message='Hospital name' />
       </li>
 
-      <li class="detailHeader-tool-container">
-        <div class="flex-align-center pos-relative">
+      <div class="detailHeader-tool-container">
           <h1 class="mr12 fs10">Tool bar</h1>
           <div class="detailHeader-tool-wrapper">
             <Button
@@ -163,7 +170,6 @@
             </Button>
           </div>
         </div>
-      </li>
     </ul>
   </div>
 

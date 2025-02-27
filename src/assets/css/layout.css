@@ -85,7 +85,7 @@
     margin-bottom: 40px;
 }
 
-.ml5 {
+.ml05 {
     margin-left: 5px;
 }
 
@@ -214,6 +214,7 @@
 }
 
 .flex-align-center-justify-around {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -531,16 +532,18 @@ main.bmComponent {
 
 .topClintInfo ul li {
     font-size: 0.9rem;
-    color: #f0f0f0;
-    white-space: nowrap;
-    padding: 2px 5px;
+    /*font-size: 0.9rem;*/
+    /*color: #f0f0f0;*/
+    /*white-space: nowrap;*/
+    /*padding: 2px 5px;*/
 }
 
 .detailHeader-tool-container {
     position: absolute;
-    left: 54.5%;
-    transform: translateX(-50%);
+    right: 16.5%;
     z-index: 10;
+    display: flex;
+    align-items: center;
 }
 
 .small-icon-menu {
@@ -1166,13 +1169,25 @@ ul.customClass li {
     height: 30px;
 }
 
+.listTable-customDatepicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: default;
+    text-align: center;
+}
+
 .settingDatePickers {
     display: flex;
     justify-content: center;
 }
 
-.settingDatePickers > div {
-    margin: 0 12px;
+.settingDatePickers > div:nth-child(1) {
+    margin-right: 20px;
+}
+
+.settingDatePickers > div:nth-child(2) {
+    margin-right: 11px;
 }
 
 .settingDatePickers > div > div > input {
@@ -1395,7 +1410,7 @@ ul.degree.analysis {
 }
 
 .categories.rbcClass ul.degree.analysis {
-    width: 24%;
+    width: 21%;
 }
 
 .defaultText {
@@ -1653,7 +1668,20 @@ p.loadingText {
 .classNmRbc {
     display: inline-block;
     text-align: left;
-    min-width: 127px;
+    width: 34%;
+}
+
+.rbcRightClickLi-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.rbcRightClickLi-wrapper > li {
+    cursor: pointer;
+}
+
+.rbcRightClickLi-wrapper > li:hover {
+    background-color: var(--gray-bg-11-color);
 }
 
 .degree {
@@ -1877,7 +1905,7 @@ li.wbcTitleText p {
 
 li.wbcTitleText p.firstP {
     text-align: center;
-    padding-right: 40px;
+    padding-right: 35px;
 }
 
 .sensitivityDiv {
@@ -1915,7 +1943,7 @@ button.degreeBtn {
 
 .categories.rbcClass .categoryNm {
     padding-left: 4px;
-    width: 19%;
+    width: 15%;
 }
 
 .loading-overlay-container {
@@ -2451,29 +2479,8 @@ input.alarmInput {
     color: var(--white-color);
 }
 
-.filterListDiv {
-    position: relative;
-    left: 10px;
-    top: 10px;
-}
-
-.filterListDiv > div {
-    display: flex;
-    align-items: start;
-}
-
 .alertMessage {
     padding: 10px;
-}
-
-.filterListDiv > div > button {
-    background: transparent;
-    color: var(--white-color);
-    border: 1px solid var(--white-color);
-    padding: 9px;
-    position: relative;
-    left: 17px;
-    margin-right: 8px;
 }
 
 table.defaultTable thead tr {
@@ -2504,7 +2511,7 @@ table.defaultTable tbody td {
     background: var(--main-bg-8-color);
     margin-left: 8px;
     margin-right: 8px;
-    height: 947px;
+    height: 91.7vh;
     font-size: 0.9rem;
 }
 
@@ -2513,6 +2520,7 @@ table.defaultTable tbody td {
 }
 
 .listBoxTable {
+    height: 91.7vh;
     width: 70%;
     display: inline-block;
     text-align: left;
@@ -2528,7 +2536,7 @@ table.defaultTable tbody td {
     flex-direction: column;
     justify-content: flex-start;
     position: absolute;
-    top: 0;
+    top: 120px;
     background: var(--black-color);
     padding: 20px;
     box-sizing: border-box;
@@ -2577,13 +2585,10 @@ img.cellImg {
 }
 
 h3.titleH3 {
+    display: flex;
+    align-items: center;
     text-align: left;
     padding: 10px;
-}
-
-.classificationListBtn:hover {
-    color: black;
-    background-color: white;
 }
 
 .settingDatePickers > select {
@@ -2922,7 +2927,7 @@ ul.leftWbcInfo {
 }
 
 .dbDataTable {
-    height: 79.8vh;
+    height: 80vh;
     /*overflow-y: auto;*/
     display: block;
     width: 100%;
@@ -2935,7 +2940,10 @@ ul.leftWbcInfo {
     top: -39px;
     background: white;
     z-index: 1;
+}
 
+.dbDataTable > thead > tr {
+    cursor: default;
 }
 
 .orderListUi {
@@ -2957,34 +2965,54 @@ ul.orderListUi > li > img {
     border-radius: 3px;
 }
 
-.search-right-wrapper {
+.classificationListBtn {
+    /*font-size: 0.8rem;*/
+    width: 24px;
+    height: 24px;
+    display: flex;
+}
+
+.listTable-main-container {
+    padding-top: 8px;
+}
+
+.listTable-btn-container {
     display: flex;
     justify-content: flex-end;
     width: 270px;
     gap: 8px;
+    margin-right: 8px;
 }
 
-.search-btn {
-    background-color: transparent;
-    color: var(--white-color);
-    border: 1px solid var(--white-color);
-    padding: 9px;
-    position: relative;
+.listTable-search-select-container {
+    width: 180px;
+    padding: 8px;
     border-radius: 5px;
-    cursor: pointer;
+    text-align: center;
 }
 
-button.searchClass {
-    padding: 5px 25px;
-    background: var(--white-color);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.listTable-search-btn-container {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+    gap: 4px;
 }
 
-button.searchClass:hover {
-    color: var(--black-color);
-    background: var(--white-color);
+.listTable-search-todayBtn {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    height: 36px;
+    gap: 0 !important;
+}
+
+.listTable-search-todayBtn > p {
+    font-size: 0.7rem;
+}
+
+.listTable-searchInput-container {
+    width: 132px;  /* 132 */
+    padding: 9px 9px 9px 36px;  /* 아이콘을 고려하여 왼쪽 패딩 추가 */
 }
 
 .reportDiv > div {
@@ -3786,8 +3814,50 @@ ul.normalItems {
     height: 341px;
 }
 
+.listTable-search-main-container {
+    display: flex;
+    align-items: flex-start;
+    padding-left: 14px;
+    justify-content: space-between;
+    margin: 8px 0;
+}
+
+.listTable-search-sub-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.listTable-search-mainTitle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 64px;
+    text-align: center;
+    font-size: 0.8rem;
+    line-height: normal;
+}
+
+.listTable-search-mainTitle > span {
+    margin-left: 4px;
+}
+
+.listTable-search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.listTable-search-btn {
+    width: 50px;
+    font-size: 0.8rem;
+    display: flex;
+    height: 36px;
+}
+
 .listTableImageContainer {
-    height: 356px;
+    height: 395px;
     overflow-y: hidden;
 }
 
@@ -3846,7 +3916,7 @@ ul.normalItems {
 .dbImageContainer {
     position: relative;
     overflow-y: hidden;
-    height: 294px;
+    height: 338px;
 }
 
 .dbRightImages {
@@ -3969,10 +4039,6 @@ li.slideStatus {
     color: #4D4F5C;
 }
 
-.searchInputBox {
-    width: 100%;
-}
-
 .searchSelect {
     width: 120px !important;
     padding: 8px;
@@ -3994,13 +4060,11 @@ li.slideStatus {
 }
 
 .searchInputBox {
-    padding: 9px;
-    width: 300px;
+    width: 424px;
     border-radius: 16px;
     margin-left: 9px;
     vertical-align: text-top;
-    padding-left: 30px; /* 아이콘을 고려하여 왼쪽 패딩 추가 */
-
+    padding: 9px 9px 9px 30px;  /* 아이콘을 고려하여 왼쪽 패딩 추가 */
 }
 
 .searchBtn {
@@ -4428,6 +4492,17 @@ p.menuIco {
     min-width: 195px;
     height: 300px;
     overflow-y: scroll;
+    padding: 12px 8px;
+    border-radius: 4px;
+}
+
+.rbc-select-box-title-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 18px;
+    font-size: 1rem;
+    margin-bottom: 4px;
 }
 
 table.cbcTable {
@@ -4489,7 +4564,7 @@ table.cbcTable td {
 }
 
 .rbcPercent {
-    width: 13%;
+    width: 12%;
 }
 
 .rbcPercent > li {
@@ -5503,7 +5578,7 @@ input.codeInput {
 
 .listWbcImg-pagination-controls {
     position: absolute;
-    bottom: 0;
+    bottom: -12px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -5762,6 +5837,12 @@ input.codeInput {
     position: absolute;
     top: 6px;
     left: 10px;
+}
+
+.rbcDegree-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .rbcDegree-span-wrapper {

@@ -10,11 +10,11 @@
       <h3 class="wbcClassInfoLeft">RBC Classification</h3>
     </div>
 
-    <ul class="rbcClass-content-title-wrapper classAttribute">
+    <ul class="classAttribute" :class="type === 'report' ? 'rbcClassReport-content-title-wrapper' : 'rbcClass-content-title-wrapper'">
       <li>Category</li>
       <li>Class</li>
-      <li class="wbcTitleText">
-        <p class="firstP">Degree</p>
+      <li class="rbcDegree-wrapper gap4">
+        <p>Degree</p>
         <p class="flex-align-center-justify-around">
           <span>0</span>
           <span>1+</span>
@@ -60,7 +60,7 @@
               </li>
               <li v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '05'"
                   @click="handleClick('05', '03', classInfo?.classNm, category?.categoryNm)"
-                  class="flex-align-center"
+                  class="flex-align-center-justify-between"
               >
                 <span>Malaria</span>
                 <div v-if="type !== 'report'">

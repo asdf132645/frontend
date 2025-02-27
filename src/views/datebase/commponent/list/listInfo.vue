@@ -29,10 +29,6 @@
             <p>Age</p>
             <p>{{ selectedItem?.cbcAge }}</p>
           </li>
-          <li>
-            <p>Hospital</p>
-            <p>{{ selectedItem?.hosNm }}</p>
-          </li>
         </ul>
         <div>
           <img v-show="!barCodeImageShowError && siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원']" @error="onImageError" :src="barcodeImg"

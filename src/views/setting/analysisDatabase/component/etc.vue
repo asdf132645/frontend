@@ -20,25 +20,6 @@
         <tbody>
         <tr v-if="viewerCheck !== 'viewer'">
           <th class="pos-relative">
-            NS/NB Integration
-            <font-awesome-icon
-                :icon="['fas', 'circle-info']"
-                @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
-                @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
-            />
-            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
-          </th>
-          <td>
-            <font-awesome-icon
-                :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleNsNbIntegration"
-            />
-          </td>
-        </tr>
-        <tr v-if="viewerCheck !== 'viewer'">
-          <th class="pos-relative">
             Alarm Timer (sec)
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
@@ -97,6 +78,16 @@
             />
           </td>
         </tr>
+        <tr>
+          <th>Auto Start</th>
+          <td>
+            <font-awesome-icon
+                :icon="autoStart ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="toggleAutoStart"
+            />
+          </td>
+        </tr>
         </tbody>
       </table>
 
@@ -150,8 +141,8 @@
           </th>
           <td>
             <div class="backupDatePickers">
-              <Datepicker v-model="cellInfo.backupStartDate" :week-starts-on="0"></Datepicker>
-              <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0"></Datepicker>
+              <Datepicker v-model="cellInfo.backupStartDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
+              <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
               <button class="backupBtn" @click="createBackup">Download</button>
             </div>
           </td>
@@ -342,6 +333,7 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {getDeviceInfoApi, putDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -415,7 +407,6 @@ const tooltipVisible = ref({
   download: false,
   upload: false,
   openDownloadSavePath: false,
-  nsNbIntegration: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
 const currentCellId = ref(0);
@@ -423,7 +414,7 @@ const allCellInfo = ref<{ serverData: CellImgAnalyzedResponse[], clientData: Cel
   serverData: [],
   clientData: [],
 });
-
+const autoStart = ref(false);
 const cellInfo = ref({
   id: '',
   analysisType: '01',
@@ -484,6 +475,7 @@ onMounted(async () => {
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
   await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.cellImageAnalyzed});
 
+  await getDeviceInfo();
   await cellImgGet();
   await driveGet();
   await cellImgGetAll();
@@ -555,6 +547,16 @@ const driveGet = async () => {
 
     console.error(e);
   }
+}
+
+const getDeviceInfo = async () => {
+  try {
+    const result = await getDeviceInfoApi()
+    autoStart.value = !!result.data[0]?.autoStart;
+  } catch (e) {
+    autoStart.value = true;
+  }
+  sessionStorage.setItem('autoStart', JSON.stringify(autoStart.value));
 }
 
 const checkIsMovingWhenSettingNotSaved = () => {
@@ -669,9 +671,19 @@ const cellImgSet = async () => {
   }
 }
 
-const toggleNsNbIntegration = () => {
-  cellInfo.value.isNsNbIntegration = !cellInfo.value.isNsNbIntegration;
-};
+const updateDeviceInfo = async () => {
+  try {
+    await putDeviceInfoApi({ autoStart: autoStart.value })
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+const toggleAutoStart = async () => {
+  autoStart.value = !autoStart.value;
+  sessionStorage.setItem('autoStart', JSON.stringify(autoStart.value));
+  await updateDeviceInfo();
+}
 
 const toggleAlarm = () => {
   cellInfo.value.isAlarm = !cellInfo.value.isAlarm;

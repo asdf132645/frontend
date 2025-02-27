@@ -5,7 +5,7 @@
         <Datepicker
           v-model="selectedDate"
           :format="dateFormat"
-          class="date-picker"
+          class="date-picker cursorDefault"
           ref="datepicker"
           :week-starts-on="0"
       />

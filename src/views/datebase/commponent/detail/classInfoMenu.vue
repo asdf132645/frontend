@@ -84,7 +84,7 @@
     </ul>
     <div @click="lisCbcClick" :class='{ "onRight": cbcLayer, "cbcLi": true }' v-if="projectType !== 'bm'">
       <font-awesome-icon :icon="['fas', 'desktop']"/>
-      <p>LIS-CBC</p>
+      <p>CBC</p>
     </div>
     <div class="wbcMenuBottom">
       <button @click="moveWbc('up')" :disabled="isButtonDisabled">

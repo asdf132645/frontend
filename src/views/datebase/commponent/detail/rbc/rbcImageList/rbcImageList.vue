@@ -135,14 +135,18 @@
 
     </div>
   </div>
-  <div v-if="showSelect" class="rbc-select-box" :style="{ left: `${selectBoxX}px`, top: `${selectBoxY}px` }">
+  <div v-if="showSelect" class="rbc-select-box shadowBox" :style="{ left: `${selectBoxX}px`, top: `${selectBoxY}px` }">
+    <ul class="rbc-select-box-title-wrapper">
+      <li>Category</li>
+      <li>Class</li>
+    </ul>
     <template v-for="(classList, outerIndex) in [rightClickItem]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
         <div class="categories" v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
           <ul class="categoryNm">
             <li>{{ category.categoryNm }}</li>
           </ul>
-          <ul class="classNmRbc">
+          <ul class="classNmRbc rbcRightClickLi-wrapper">
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo.classNm !== 'Poikilocyte'"
@@ -159,10 +163,10 @@
         </div>
       </template>
       <div class="categories">
-        <ul class="categoryNm">
+        <ul class="categoryNm rbcRightClickLi-wrapper">
           <li>Others</li>
         </ul>
-        <ul class="classNmRbc">
+        <ul class="classNmRbc rbcRightClickLi-wrapper">
           <li @click="moveRbcClassEvent('04', '01', 'Platelet')">
             <span>Platelets</span>
           </li>
@@ -456,8 +460,20 @@ const rbcClassRightClick = (event: MouseEvent) => {
   showSelect.value = true;
 
   if (event.currentTarget instanceof HTMLElement) {
-    selectBoxX.value = event.clientX;
-    selectBoxY.value = event.clientY - 300;
+    const [menuHeight, menuWidth] = [326, 240];
+    const [screenHeight, screenWidth] = [window.innerHeight, window.innerWidth];
+    const [mouseX, mouseY] = [event.clientX, event.clientY];
+    let [menuX, menuY] = [mouseX, mouseY];
+
+    if (mouseY + menuHeight > screenHeight) {
+      menuY = screenHeight - menuHeight;
+    }
+    if (mouseX + menuWidth > screenWidth) {
+      menuX = screenWidth - menuWidth;
+    }
+
+    selectBoxX.value = menuX;
+    selectBoxY.value = menuY;
   }
 };
 const showErrorAlert = (message: string) => {
