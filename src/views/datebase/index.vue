@@ -4,41 +4,91 @@
     <p class="loadingTextLogin">Loading...</p>
   </div>
 
-  <div>
-    <h3 class="titleH3">
-      Database List
-      <button @click.stop="classListToggleEvent" class="classificationListBtn">
-        <font-awesome-icon v-if="!classListToggle" :icon="['fas', 'caret-up']" flip="vertical"/>
-        <font-awesome-icon v-else :icon="['fas', 'caret-up']"/>
-      </button>
-    </h3>
+  <div class="listTable-main-container">
     <div class='listBoxTable'>
-      <div class="filterListDiv">
-        <div>
-          <select v-model="searchType" class="searchSelect">
-            <option value="barcodeNo">Barcode No</option>
-            <option value="patientId">Patient ID</option>
-            <option value="patientNm">Patient Name</option>
-          </select>
-          <div class="search-container">
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
-            <input type="text" v-model="searchText" placeholder="Search" class="searchInputBox"
-                   @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
-          </div>
-          <div class="settingDatePickers">
-            <Datepicker v-model="startDate" :week-starts-on="0"></Datepicker>
-            <Datepicker v-model="endDate" :week-starts-on="0"></Datepicker>
-          </div>
-          <button class="searchClass" @click="setDateToday">Today</button>
-          <button class="searchClass" @click="dateRefresh">Clear</button>
-          <button type="button" class="searchClass" @click="search">Search</button>
+      <div class="listTable-search-main-container">
+        <h3 class="titleH3">
+          Filters
+          <Button
+              @click.stop="classListToggleEvent"
+              :icon="['fas', 'filter']"
+              size="sm"
+              class="classificationListBtn"
+              :iconClass="'fs06'"
+              :isActive="classListToggle"
+          >
+          </Button>
+        </h3>
+        <div class="flex-align-center" style="margin-left: 320px;">
+          <div class="listTable-search-sub-container">
+            <div class="listTable-search-wrapper">
+              <h1 class="listTable-search-mainTitle">
+                <font-awesome-icon :icon="['fas', 'calendar-week']" size="lg" />
+                <span style="margin-left: 5px;">Date</span>
+              </h1>
+              <div class="settingDatePickers">
+                <Datepicker v-model="startDate" :week-starts-on="0" class="cursorDefault listTable-customDatepicker"></Datepicker>
+                <Datepicker v-model="endDate" :week-starts-on="0" class="cursorDefault listTable-customDatepicker"></Datepicker>
+              </div>
+              <Button
+                  @click="setDateToday"
+                  icon="calendar-check"
+              >
+              </Button>
+            </div>
 
-          <div class="search-right-wrapper">
-            <button v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd" @click="openCheckList" class="search-btn">
-              Patient List
-            </button>
-            <font-awesome-icon v-if="viewerCheck === 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel"
-                               class="excelIcon"/>
+            <div class="listTable-search-wrapper">
+              <div class="listTable-search-mainTitle">
+                <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
+                <span>Search</span>
+              </div>
+
+              <select v-model="searchType" class="listTable-search-select-container">
+                <option value="barcodeNo">Barcode ID</option>
+                <option value="patientId">Patient ID</option>
+                <option value="patientNm">Patient Name</option>
+              </select>
+              <div class="search-container">
+                <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
+                <input type="text" v-model="searchText" class="listTable-searchInput-container"
+                       @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
+              </div>
+<!--              <Button-->
+<!--                  @click.stop="classListToggleEvent"-->
+<!--                  :icon="['fas', 'filter']"-->
+<!--                  :iconClass="'fs06'"-->
+<!--                  :isActive="classListToggle"-->
+<!--                  class="classificationListBtn"-->
+<!--              >-->
+<!--              </Button>-->
+              <Button
+                  @click="search"
+                  size="md"
+                  class="listTable-search-btn"
+                  :icon="['fas', 'magnifying-glass']"
+              >
+                <!--              Search-->
+              </Button>
+            </div>
+          </div>
+
+          <div class="listTable-search-btn-container">
+<!--            <Button-->
+<!--                @click="search"-->
+<!--                size="md"-->
+<!--                class="listTable-search-btn"-->
+<!--                :icon="['fas', 'magnifying-glass']"-->
+<!--            >-->
+<!--&lt;!&ndash;              Search&ndash;&gt;-->
+<!--            </Button>-->
+            <Button
+                @click="dateRefresh"
+                size="md"
+                class="listTable-search-btn"
+                :icon="['fas', 'rotate-right']"
+            >
+<!--              Clear-->
+            </Button>
           </div>
         </div>
 
@@ -103,7 +153,17 @@
 
         </div>
 
+        <div class="listTable-btn-container">
+          <Button
+              v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] !== siteCd"
+              @click="openCheckList"
+              size="sm"
+              :icon="['fas', 'hospital-user']"
+              :isActive="showPopupTable"
+          ></Button>
 
+          <Button v-if="viewerCheck !== 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" size="sm"></Button>
+        </div>
       </div>
       <keep-alive>
         <ListTable
@@ -201,10 +261,7 @@ const showAlert = ref(false);
 const alertMessage = ref('');
 
 const today = new Date();
-const thirtyDaysAgo = new Date(today);
-thirtyDaysAgo.setDate(today.getDate() - 29);
-
-const startDate = ref(thirtyDaysAgo);
+const startDate = ref(new Date('2015-03-18'));
 const endDate = ref(new Date());
 const searchText = ref('');
 const searchType = ref('barcodeNo');
@@ -604,16 +661,6 @@ const getDbData = async (type: string, pageNum?: number) => {
 
 const search = () => {
   dbGetData.value = [];
-
-  // 전시회 갈 때 주석처리할 코드 START
-  const diffInMs = endDate.value.getTime() - startDate.value.getTime();
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-  if (diffInDays > 31) {
-    showSuccessAlert("You cannot select a period of more than 31 days.");
-    return;
-  }
-  // 전시회 갈 때 주석처리할 코드 END
-
   getDbData('search');
 };
 
@@ -1130,7 +1177,7 @@ const reDegree = async (rbcInfoArray: any) => {
 };
 
 const dateRefresh = () => {
-  startDate.value = thirtyDaysAgo
+  startDate.value = new Date('2015-03-18');
   endDate.value = new Date();
   searchText.value = '';
   nrCount.value = 0;

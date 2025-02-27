@@ -5,8 +5,12 @@
     <div class="remarkHeader">
       <h3 class="crcDefaultTitle"> Code Repository {{ addEditType === 'add' ? 'Add' : 'Edit' }} Modal</h3>
       <div>
-        <Button v-if="addEditType === 'add'" @click="saveCrcData" :icon="['fas', 'floppy-disk']" size="sm" variant="secondary"></Button>
-        <Button v-else @click="saveEdit" size="sm" variant="secondary">Edit</Button>
+        <Button v-if="addEditType === 'add'" @click="saveCrcData" :icon="['fas', 'floppy-disk']" size="sm" variant="secondary">
+          Save
+        </Button>
+        <Button v-else @click="saveEdit" size="sm" variant="secondary" :icon="['fas', 'pen-to-square']">
+          Edit
+        </Button>
         <button @click="closeIsCrcAddChild" class="ml10 crcCloseBtn">
           <font-awesome-icon :icon="['fas', 'xmark']"/>
         </button>

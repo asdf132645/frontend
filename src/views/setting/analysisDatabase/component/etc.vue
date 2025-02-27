@@ -141,8 +141,8 @@
           </th>
           <td>
             <div class="backupDatePickers">
-              <Datepicker v-model="cellInfo.backupStartDate" :week-starts-on="0"></Datepicker>
-              <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0"></Datepicker>
+              <Datepicker v-model="cellInfo.backupStartDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
+              <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
               <button class="backupBtn" @click="createBackup">Download</button>
             </div>
           </td>

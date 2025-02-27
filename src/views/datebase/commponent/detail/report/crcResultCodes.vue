@@ -1,6 +1,6 @@
 <template>
   <div v-if="isContent"  :class="'crcReport ' + (cbcLayer ? 'cbcLayer' : '')">
-    <div class="tabs">
+    <div class="tabs flex-align-center">
       <button
           class="tab"
           :class="{ active: activeTab === 1 }"
@@ -36,12 +36,21 @@
             @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
             @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
         >
-          <font-awesome-icon v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원자력병원']" @click="updateCRCMorphology"
-                             :icon="['fas', 'file-import']" class="hoverSizeAction"/>
+          <Button
+              v-if="visibleBySite(siteCd, [
+              HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+              '9090',
+              '0000',
+              ''
+          ], 'enable')"
+              :icon="['fas', 'file-import']"
+              @click="updateCRCMorphology"
+              size="sm"
+          >
+          </Button>
           <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top"
                    :message="MSG.TOOLTIP.CBC_TO_RESULTCODES"/>
         </div>
-        <!--        <button>testBtn</button>-->
         <span class="crcSpanMenu">Code</span>
         <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
@@ -68,8 +77,12 @@
             </li>
           </ul>
         </div>
-        <Button @click="tempSaveLocalStorage" :icon="['fas', 'floppy-disk']" size="sm" class="ml10"></Button>
-        <Button @click="tempSaveDataEmpty" :icon="['fas', 'broom']" size="sm" class="ml10"></Button>
+        <Button @click="tempSaveLocalStorage" :icon="['fas', 'floppy-disk']" size="sm" class="ml10">
+          Save
+        </Button>
+        <Button @click="tempSaveDataEmpty" :icon="['fas', 'broom']" size="sm" class="ml10">
+          Clear
+        </Button>
         <Button v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']" @click="IsWbcImageSelect = true" size="sm"
                 class="ml10">Image Select
         </Button>
@@ -251,6 +264,7 @@ import {setCrcTitles} from "@/common/helpers/crc/crcContent";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {TooltipCrcResultCodesType} from "@/common/type/tooltipType";
 import router from "@/router";
+import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 
 const crcArr = ref<any>([]);
 const props = defineProps({

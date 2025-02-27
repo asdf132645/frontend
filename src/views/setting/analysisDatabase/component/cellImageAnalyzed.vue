@@ -286,8 +286,8 @@
           </th>
           <td>
             <div class="backupDatePickers">
-              <Datepicker v-model="backupStartDate"></Datepicker>
-              <Datepicker v-model="backupEndDate"></Datepicker>
+              <Datepicker v-model="backupStartDate" class="cursorDefault"></Datepicker>
+              <Datepicker v-model="backupEndDate" class="cursorDefault"></Datepicker>
               <button class="backupBtn" @click="createBackup">Download</button>
             </div>
           </td>

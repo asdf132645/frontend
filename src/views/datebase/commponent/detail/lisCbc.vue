@@ -4,7 +4,7 @@
       <div class="loader"></div>
       <p class="loadingText">Loading...</p>
     </div>
-    <h1 class="titleCbc"><span>CBC + DIFF</span>
+    <h1 class="titleCbc"><span>CBC</span>
       <div class="flex-column-align-start ml10">
         <p class="fs08" v-if="cbcWorkList[0]?.day">exam_ymd_unit : {{ cbcWorkList[0]?.day }}</p>
         <p class="fs08" v-if="slip !== ''">slip : {{ slip }}</p>
