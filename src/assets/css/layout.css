@@ -3011,8 +3011,8 @@ ul.orderListUi > li > img {
 }
 
 .listTable-searchInput-container {
-    width: 132px;  /* 132 */
-    padding: 9px 9px 9px 36px;  /* 아이콘을 고려하여 왼쪽 패딩 추가 */
+    width: 132px; /* 132 */
+    padding: 9px 9px 9px 36px; /* 아이콘을 고려하여 왼쪽 패딩 추가 */
 }
 
 .reportDiv > div {
@@ -4064,7 +4064,7 @@ li.slideStatus {
     border-radius: 16px;
     margin-left: 9px;
     vertical-align: text-top;
-    padding: 9px 9px 9px 30px;  /* 아이콘을 고려하여 왼쪽 패딩 추가 */
+    padding: 9px 9px 9px 30px; /* 아이콘을 고려하여 왼쪽 패딩 추가 */
 }
 
 .searchBtn {
@@ -6380,6 +6380,12 @@ progress::-moz-progress-bar {
     color: white;
 }
 
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s ease-in-out;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
 
 .slideStatusPopup-title {
     margin-bottom: 8px;
