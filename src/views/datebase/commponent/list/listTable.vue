@@ -286,7 +286,6 @@ import Modal from "@/components/commonUi/modal.vue";
 import {deleteRunningApi, updatePcIpStateApi, updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
 import {useStore} from "vuex";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
-import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {getNormalRangeApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import moment from "moment";
@@ -346,7 +345,6 @@ const instance = getCurrentInstance();
 const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-const dataBasePageReset = computed(() => store.state.commonModule);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const isCtrlKeyPressed = ref(false);
 const isShiftKeyPressed = ref(false);
@@ -415,43 +413,6 @@ watch(
       loadingDelay.value = newVal;
     }
 );
-
-
-// watchEffect(async () => {
-//   try {
-//     if (props.dbData.length > 0) {
-//       await nextTick();
-//       loadingDelay.value = false;
-//       const filteredItems = props.dbData.filter(item => item.id === Number(selectedSampleId.value || 0));
-//
-//       // IntersectionObserver 설정
-//       const observer = new IntersectionObserver(handleIntersection, {
-//         root: null,
-//         rootMargin: '0px',
-//         threshold: 0.5,
-//       });
-//       if (loadMoreRef.value) {
-//         observer.observe(loadMoreRef.value);
-//       }
-//
-//       if (selectedItemId.value === '0' || !selectedItemId.value) {
-//         loadingDelay.value = false;
-//       }
-//
-//       // 데이터베이스 페이지 리셋 상태 확인
-//       if (dataBasePageReset.value.dataBasePageReset === true && filteredItems.length !== 0) {
-//         // loadingDelay.value = true;
-//         await selectItem(filteredItems[0]);
-//         await store.dispatch('commonModule/setCommonInfo', {dataBasePageReset: false});
-//         await removeCheckBox();
-//         return;
-//       }
-//     }
-//   } catch (error) {
-//     console.error('Error during watchEffect execution:', error);
-//     loadingDelay.value = false;  // 예외 발생 시에도 loadingDelay를 false로 설정
-//   }
-// });
 
 async function selectItem(item) {
   if (isShiftKeyPressed.value) {
@@ -571,9 +532,6 @@ function handleKeyUp(event) {
 const totalPages = computed(() => {
   return Math.ceil(props.total / props.itemsPerPage);
 });
-
-// 현재 페이지 그룹 계산 (5개 단위)
-const currentChunk = computed(() => Math.floor((currentPage.value - 1) / 5) * 5 + 1);
 
 // 보여줄 페이지 리스트 계산
 const displayedPages = computed(() => {
