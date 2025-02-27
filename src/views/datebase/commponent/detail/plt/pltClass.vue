@@ -125,7 +125,7 @@ const getRbcInfoForPlt = async (newSlideData) => {
 }
 
 const rbcTotalAndReCountForReport = async () => {
-  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : pbiaRootDir.value;
   const slotId = slideData.value?.slotId;
   const basePath = `${path}/${slotId}/${DIR_NAME.RBC_CLASS}`;
   const urlOld = `${basePath}/${slotId}.json`;
@@ -176,7 +176,7 @@ const rbcTotalAndReCountForReport = async () => {
 };
 
 const checkRBCTotalImageNames = async () => {
-  const rootPath = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const rootPath = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : pbiaRootDir.value;
   const fileSearchApiParam = `directoryPath=${rootPath}\\${slideData.value?.slotId}\\${DIR_NAME.RBC_IMAGE}&searchString=RBC_Image`;
   try {
     const response = await fileSearchApi(fileSearchApiParam);

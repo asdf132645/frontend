@@ -43,23 +43,30 @@
         <div class="small-icon-menu">
           <div class="lastMenu">
             <ul>
-              <li>{{ formattedDate }} {{ formattedTime }}</li>
               <li class="lastLiM">
                 <div class="cursorPointer userBox" @click="userSetOutToggle">
-                  <font-awesome-icon :icon="['fas', 'circle-user']"/>
-                  {{ userModuleDataGet.userId }}
+                  <Button
+                      :icon="['fas', 'circle-user']"
+                      @isActive="userSetOutUl"
+                      size="sm"
+                  >
+                    {{ userModuleDataGet.userId }}
+                  </Button>
+
                 </div>
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>
                 </ul>
-                <div class="logOutBox" @click='fullScreen'>
-<!--                  <font-awesome-icon :icon="['fas', 'window-restore']" />-->
-                  FULL SCREEN
-                </div>
-                <div class="logOutBox" @click="exit">
-                  EXIT
+                <div class="flex-align-center gap4">
+                  <Button @click="fullScreen" :icon="['fas', 'window-restore']" size="sm"></Button>
+                  <Button
+                      :icon="['fas', 'xmark']"
+                      size="sm"
+                      @click="exit"
+                  ></Button>
                 </div>
               </li>
+              <li>{{ formattedDate }} {{ formattedTime }}</li>
             </ul>
           </div>
           <div class="iconHeaderMenu">

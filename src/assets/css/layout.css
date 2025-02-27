@@ -657,7 +657,7 @@ li.errLogLi.warning:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 9px;
+    padding-bottom: 12px;
     text-align: left;
 }
 
@@ -719,7 +719,7 @@ ul.userSetOutUl {
 }
 
 .lastMenu {
-    width: 240px;
+    width: 168px;
     text-align: right;
     position: absolute;
     right: 0;
@@ -4170,7 +4170,7 @@ button.rollbackButton {
 
 .iconHeaderMenu {
     position: absolute;
-    right: 265px;
+    right: 200px;
     top: 26px;
 }
 
@@ -4268,26 +4268,10 @@ button.rollbackButton {
     margin: 0 auto;
 }
 
-.cursorPointer.userBox {
-    border: 1px solid #fff;
-    border-radius: 5px;
-    padding: 5px;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    line-height: initial;
-}
-
 .bigFont {
     font-size: xxx-large;
     margin-bottom: 25px;
     color: #ffffff;
-}
-
-.cursorPointer.userBox:hover {
-    background: #fff;
-    color: #000;
 }
 
 .blinkColor {

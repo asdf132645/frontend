@@ -12,7 +12,7 @@ import {
     createCbcCodeRbcApi,
     createLisCodeWbcApi,
     createLisCodeRbcApi,
-    getLisCodeWbcApi, getLisCodeRbcApi, getCellImgAllApi, updateNormalRangeApi
+    getLisCodeWbcApi, getLisCodeRbcApi, getCellImgAllApi, updateNormalRangeApi, createFilePathSetApi, getFilePathSetApi
 } from '@/common/api/service/setting/settingApi';
 import { defaultBmClassList, defaultWbcClassList } from "@/store/modules/analysis/wbcclassification";
 import {
@@ -22,7 +22,7 @@ import {
     lisCodeWbcOption,
     defaultPBNormalRange,
     rbcClassList,
-    defaultBMNormalRange
+    defaultBMNormalRange, lisHotKeyAndLisFilePathAndUrl
 } from "@/common/defines/constants/settings";
 import { useStore } from "vuex";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
@@ -103,6 +103,12 @@ const settingsConstant = ref<any>({
         'getRequest': getRbcDegreeApi,
         'createRequest': createRbcDegreeApi,
     },
+    'lisFilePath': {
+        'getRequest': getFilePathSetApi,
+        'createRequest': createFilePathSetApi,
+        'sendingForm': 'filePathSetItems',
+        'defaultItem': lisHotKeyAndLisFilePathAndUrl,
+    }
 })
 
 /** 로그인 시 Setting 값 설정 함수 */
@@ -114,10 +120,11 @@ export const initializeAllSettings = async () => {
     }
     await firstGetSettings('orderClass');
     await firstGetSettings('rbcDegree');
-    await firstGetSettings('lisCodeWbc')
-    await firstGetSettings('lisCodeRbc')
-    await firstGetSettings('cbcCode')
-    await firstGetSettings('normalRange')
+    await firstGetSettings('lisCodeWbc');
+    await firstGetSettings('lisCodeRbc');
+    await firstGetSettings('cbcCode');
+    await firstGetSettings('normalRange');
+    await firstGetSettings('lisFilePath');
 }
 
 const testFirstGetSettings = async (initializeType: string) => {
