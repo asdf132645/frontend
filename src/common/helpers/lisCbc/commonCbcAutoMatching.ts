@@ -87,6 +87,16 @@ const matchValues = (
 
         const numericCbcAge = cbcAge;
         const [minAge, maxAge] = parseAgeRange(age);
+        if (cbcAge.includes("-") || cbcAge.includes(".")) {
+            if(ageCategory === 'adult'){
+                return;
+            }
+        }else{
+            if(cbcAge > age){
+                return;
+            }
+        }
+
 
 
         if (ageCategory === 'adult') {
