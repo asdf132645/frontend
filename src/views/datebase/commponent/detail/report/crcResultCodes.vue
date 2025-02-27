@@ -524,9 +524,10 @@ const dataAutoComputeLoad = async () => {
         }
       }
     }
-  }else{
-    console.log(await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value));
   }
+  // else{
+  //   console.log(await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value));
+  // }
 }
 
 const codeSelect = (code: string) => {
@@ -1145,7 +1146,8 @@ const tooltipVisibleFunc = (type: keyof TooltipCrcResultCodesType, visible: bool
 }
 
 const updateCRCMorphology = async () => {
-  await initCbcData0033();
+  await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value);
+  // await initCbcData0033();
 }
 
 </script>
