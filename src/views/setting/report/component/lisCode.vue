@@ -3,14 +3,14 @@
     <p class="mb40"> [ WBC ] </p>
     <label v-for="item in lisCodeWbcArr" :key="item.classId">
       <p class="mb10">{{ item.fullNm }}</p>
-      <input type="text" v-model="item.key" />
+      <input type="text" v-model="item.key"/>
     </label>
   </div>
   <div class="alignDiv">
     <p class="mt20 mb40"> [ RBC ] </p>
     <label v-for="item in lisCodeRbcArr" :key="item.fullNm">
       <p class="mb10">{{ item.categoryNm }} - {{ item.fullNm }}</p>
-      <input type="text" v-model="item.key" />
+      <input type="text" v-model="item.key"/>
     </label>
   </div>
   <div class="alignDiv">
@@ -18,18 +18,18 @@
     <ul>
       <li class="minCountWrapper" v-if="minCountArr.length > 0">
         <p class="mb10 mt10">Giant Platelet</p>
-        <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)" class="form-control form-control-sm">
+        <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)"
+               class="form-control form-control-sm">
       </li>
       <li class="minCountWrapper" v-if="minCountArr.length > 0">
         <p class="mb10 mt10">Platelet Aggregation</p>
-        <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)" class="form-control form-control-sm">
+        <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)"
+               class="form-control form-control-sm">
       </li>
     </ul>
   </div>
 
-  <div class="mt10">
-    <button class="saveBtn" type="button" @click="saveLisCode()">Save</button>
-  </div>
+  <Button @click="saveLisCode()" class="setting-saveBtn mt10">Save</Button>
 
   <Confirm
       v-if="showConfirm"
@@ -59,7 +59,7 @@ import {
   settingName,
   WBC_CUSTOM_CLASS
 } from "@/common/defines/constants/settings";
-import { ApiResponse } from "@/common/api/httpClient";
+import {ApiResponse} from "@/common/api/httpClient";
 import {
   createLisCodeWbcApi, createLisCodeRbcApi, createMinCountApi,
   getLisCodeWbcApi, getLisCodeRbcApi, getMinCountApi,
@@ -73,6 +73,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {scrollToTop} from "@/common/lib/utils/scroll";
+import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -93,7 +94,7 @@ const wbcCustomItems = ref<any>([]);
 onMounted(async () => {
   await getImagePrintData();
   await getWbcCustomClasses();
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.lisCode });
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
 });
 
 watch(() => [lisCodeWbcArr.value, lisCodeRbcArr.value, minCountArr.value], async () => {
@@ -103,11 +104,11 @@ watch(() => [lisCodeWbcArr.value, lisCodeRbcArr.value, minCountArr.value], async
     minCountArr: minCountArr.value
   }
 
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(afterSetting) });
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(afterSetting)});
   if (settingType.value !== settingName.lisCode) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.lisCode });
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
   }
-}, { deep: true });
+}, {deep: true});
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -155,8 +156,8 @@ const setLisCodeWbcByCustomClass = async () => {
     lisCodeRbcArr: lisCodeRbcArr.value,
     minCountArr: minCountArr.value
   }
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: settingObj });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: settingObj });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: settingObj});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: settingObj});
 }
 
 const saveLisCode = async () => {
@@ -166,14 +167,14 @@ const saveLisCode = async () => {
     let minCountResult: ApiResponse<void>;
 
     if (saveHttpType.value === 'post') {
-      result = await createLisCodeWbcApi({ lisCodeItems: lisCodeWbcArr.value });
-      rbcResult = await createLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value });
-      minCountResult = await createMinCountApi({ minCountItems: minCountArr.value });
+      result = await createLisCodeWbcApi({lisCodeItems: lisCodeWbcArr.value});
+      rbcResult = await createLisCodeRbcApi({lisCodeItems: lisCodeRbcArr.value});
+      minCountResult = await createMinCountApi({minCountItems: minCountArr.value});
 
     } else {
-      const updateResult = await updateLisCodeWbcApi({ lisCodeItems: lisCodeWbcArr.value });
-      const updateRbcResult = await updateLisCodeRbcApi({ lisCodeItems: lisCodeRbcArr.value });
-      const updateMinCountResult = await updateMinCountApi({ minCountItems: minCountArr.value });
+      const updateResult = await updateLisCodeWbcApi({lisCodeItems: lisCodeWbcArr.value});
+      const updateRbcResult = await updateLisCodeRbcApi({lisCodeItems: lisCodeRbcArr.value});
+      const updateMinCountResult = await updateMinCountApi({minCountItems: minCountArr.value});
 
       if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
         showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
@@ -182,8 +183,8 @@ const saveLisCode = async () => {
       } else {
         showErrorAlert(MESSAGES.settingUpdateFailure);
       }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
       return;
     }
 
@@ -192,8 +193,8 @@ const saveLisCode = async () => {
       scrollToTop();
       saveHttpType.value = 'put';
       await getImagePrintData();
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
     }
   } catch (e) {
     console.error(e);
@@ -203,9 +204,9 @@ const saveLisCode = async () => {
 const filterNumbersOnly = (event: Event, is: boolean) => {
   const input = event.target as HTMLInputElement;
   const filteredValue = input.value.replace(/[^0-9]/g, '');
-  if (is){
+  if (is) {
     minCountArr.value[0].minGPCount = Number(filteredValue.trim());
-  }else {
+  } else {
     minCountArr.value[0].minPACount = Number(filteredValue.trim());
   }
 };
@@ -237,7 +238,7 @@ const getImagePrintData = async () => {
         lisCodeRbcArr.value = rbcData;
       }
 
-      if (!minCountData || (minCountData instanceof  Array && minCountData.length === 0)) {
+      if (!minCountData || (minCountData instanceof Array && minCountData.length === 0)) {
         saveHttpType.value = 'post';
         minCountArr.value = minRunCount;
       } else {
@@ -267,8 +268,8 @@ const hideAlert = () => {
 };
 
 const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
 }

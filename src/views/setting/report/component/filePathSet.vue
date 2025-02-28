@@ -20,9 +20,8 @@
       </li>
     </ul>
   </div>
-  <div class="mt10">
-    <button class="saveBtn" type="button" @click="saveFilePathSet()">Save</button>
-  </div>
+
+  <Button @click='saveFilePathSet' class="setting-saveBtn mt10">Save</Button>
 
   <Confirm
       v-if="showConfirm"
@@ -54,6 +53,7 @@ import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore();
 const router = useRouter();

@@ -57,7 +57,7 @@
                 <ul v-show="userSetOutUl" class="userSetOutUl" @click.stop>
                   <li @click="logout">LOGOUT</li>
                 </ul>
-                <div class="flex-align-center gap4">
+                <div class="appHeaderLeftBtn-wrapper">
                   <Button @click="fullScreen" :icon="['fas', 'window-restore']" size="sm"></Button>
                   <Button
                       :icon="['fas', 'xmark']"

@@ -1,30 +1,22 @@
 <template>
   <div>
     <div class="settingTabSubButtons">
-      <button @click="activateTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">
-        {{ siteCd === '9090' ? 'Analysis' : 'Cell Image Analysis' }}
-      </button>
-      <button v-if="siteCd === '9090'" @click="activateTab('etc')" :class="{ 'active': activeTab === 'etc' }" >Etc</button>
       <template v-if="viewerCheck !== 'viewer'">
-        <button v-if="projectType === 'pb'" @click="activateTab('rbcDegree')" :class="{ 'active': activeTab === 'rbcDegree' }">RBC Degree</button>
-        <button @click='activateTab("wbcRunningCount")' :class="{ 'active': activeTab === 'wbcRunningCount' }">WBC Running Count</button>
-        <button @click='activateTab("wbcCustomClass")' :class="{ 'active': activeTab === 'wbcCustomClass' }">
-          {{ projectType === 'pb' ? 'WBC' : 'BM' }} Custom Class
+        <button @click="changeTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">
+          {{ siteCd === '9090' ? 'Analysis' : 'Cell Image Analysis' }}
         </button>
-        <button @click='activateTab("wbcHotKeys")' :class="{ 'active': activeTab === 'wbcHotKeys' }">
-          {{ projectType === 'pb' ? 'WBC' : 'BM' }} Hot Keys
+      </template>
+      <button v-if="siteCd === '9090'" @click="changeTab('etc')" :class="{ 'active': activeTab === 'etc' }">Etc
+      </button>
+      <template v-if="viewerCheck !== 'viewer'">
+        <button v-if="projectType === 'pb'" @click="changeTab('rbc')" :class="{ 'active': activeTab === 'rbc' }">RBC
         </button>
-        <button v-if="projectType === 'pb' && visibleBySite(siteCd, ['9090', '0000'], 'disable')" @click='activateTab("bfHotKeys")' :class="{ 'active': activeTab === 'bfHotKeys' }">BF Hot Keys</button>
-        <button @click='activateTab("normalRange")' :class="{ 'active': activeTab === 'normalRange' }">Normal Range</button>
-        <button @click='activateTab("wbcOrder")' :class="{ 'active': activeTab === 'wbcOrder' }">
-          {{ projectType === 'pb' ? 'WBC' : 'BM' }} Order
-        </button>
+        <button @click='changeTab("wbc")' :class="{ 'active': activeTab === 'wbc' }">WBC</button>
+        <button @click='changeTab("hotkeys")' :class="{ 'active': activeTab === 'hotkeys' }">Hot Keys</button>
       </template>
     </div>
 
-<!--    <div class="tab-content">-->
-      <component :is="activeTabComponent" />
-<!--    </div>-->
+    <component :is="activeTabComponent"/>
   </div>
 
   <Confirm
@@ -44,29 +36,32 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import {computed, onBeforeMount, onMounted, ref} from 'vue';
 import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
 import NewAnalysis from "@/views/setting/analysisDatabase/component/newAnalysis.vue";
 import Etc from "@/views/setting/analysisDatabase/component/etc.vue";
-import RbcDegree from "@/views/setting/analysisDatabase/component/rbcDegree.vue";
-import WbcCustomClass from '@/views/setting/analysisDatabase/component/customClass.vue'
-import WbcHotKey from "@/views/setting/analysisDatabase/component/wbcHotKeys.vue";
-import BfHotKey from '@/views/setting/analysisDatabase/component/bfHotKeys.vue';
-import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
-import WbcOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
-import WbcRunningCount from "@/views/setting/analysisDatabase/component/wbcRunningCount.vue";
+import Rbc from "@/views/setting/analysisDatabase/component/rbc.vue";
+import Hotkey from "@/views/setting/analysisDatabase/component/hotKeys.vue";
+import Wbc from "@/views/setting/analysisDatabase/component/wbc.vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
-const activeTab = ref('cellImageAnalyzed');
+const activeTab = ref('');
 const projectType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
@@ -80,32 +75,29 @@ const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const toastInfo = ref({message: '', messageType: ''});
+const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
 
-onMounted(async () => {
-  projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
+onBeforeMount(() => {
+  projectType.value = window.PROJECT_TYPE;
 })
 
-const activateTab = (tabName: string) => {
-  if (activeTab.value === tabName) return;
-  movingTab.value = tabName;
-  if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
-    showConfirm.value = true;
-    confirmMessage.value = MESSAGES.settingNotSaved;
-  } else {
-    activeTab.value = movingTab.value;
+onMounted(() => {
+  activeTab.value = viewerCheck.value !== 'viewer' ? 'cellImageAnalyzed' : 'etc';
+})
+
+const changeTab = (tabName: string) => {
+  if (activeTab.value === tabName) {
+    return;
   }
-};
 
-const showSuccessAlert = async (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-}
+  movingTab.value = tabName;
 
-const showErrorAlert = async (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
+  if (isSettingChanged.value) {
+    showConfirm.value = true;
+  } else {
+    activeTab.value = tabName;
+  }
 };
 
 const hideAlert = () => {
@@ -118,20 +110,12 @@ const activeTabComponent = computed(() => {
       return siteCd.value === '9090' ? NewAnalysis : CellImageAnalyzed;
     case 'etc':
       return Etc;
-    case 'rbcDegree':
-      return RbcDegree;
-    case 'wbcCustomClass':
-      return WbcCustomClass;
-    case 'wbcHotKeys':
-      return WbcHotKey;
-    case 'bfHotKeys':
-      return BfHotKey;
-    case 'normalRange':
-      return NormalRange;
-    case 'wbcOrder':
-      return WbcOrder;
-    case 'wbcRunningCount':
-      return WbcRunningCount;
+    case 'rbc':
+      return Rbc;
+    case 'hotkeys':
+      return Hotkey;
+    case 'wbc':
+      return Wbc;
     default:
       return null;
   }
@@ -148,10 +132,15 @@ const handleOkConfirm = async () => {
   showConfirm.value = false;
   try {
     await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
-    await showSuccessAlert(MESSAGES.settingSaveSuccess);
+    showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
   } catch (e) {
-    await showErrorAlert(MESSAGES.settingSaveFailure);
+    showToast(MSG.TOAST.SAVE_FAIL, MESSAGES.TOAST_MSG_ERROR);
   }
 }
+
+const showToast = (message: string, type: string) => {
+  toastInfo.value = {message, messageType: type};
+  setTimeout(() => (toastInfo.value.message = ''), 1500);
+};
 
 </script>

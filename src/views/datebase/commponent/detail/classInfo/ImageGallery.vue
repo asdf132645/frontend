@@ -1,8 +1,4 @@
 <template>
-<!--  <div class="loaderBackground" v-if="loading">-->
-<!--    <div class="loader"></div>-->
-<!--    <p class="loadingText">Loading...</p>-->
-<!--  </div>-->
   <ul class="listDetail-wbcCircle-wrapper">
     <template v-for="(item, index) in wbcInfoArrChild" :key="item.id">
       <li

@@ -256,6 +256,80 @@
     align-items: end;
 }
 
+/* 버튼 공통 스타일 */
+.base-btn {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 8px 16px;
+    gap: 8px;
+    transition: 0.2s all;
+}
+
+.base-btn:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+
+.base-btn.blueText {
+    color: var(--blue-bg-0-color);
+}
+
+/* 크기 설정 */
+.base-btn--xs {
+    font-size: 10px;
+    padding: 4px 8px;
+}
+
+.base-btn--sm {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+}
+.base-btn--md {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+}
+.base-btn--lg {
+    font-size: 1rem;
+    padding: 10px 20px;
+}
+
+/* primary 스타일 */
+.base-btn--primary {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+}
+.base-btn--primary.base-btn--active {
+    background: var(--white-bg-0-color);
+    color: black;
+}
+.base-btn--primary.base-btn--hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* secondary 스타일 */
+.base-btn--secondary {
+    color: black;
+    border: 1px solid #000;
+    background: #fff;
+}
+.base-btn--secondary.base-btn--active {
+    background: var(--white-bg-0-color);
+    color: black;
+}
+.base-btn--secondary.base-btn--hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.base-btn--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .shadowBox {
     box-shadow: 2px 2px 2px var(--black-color);
     border: 1px solid var(--gray-bg-8-color);
@@ -431,6 +505,12 @@ input.number-small {
     padding: 5px;
     vertical-align: middle;
     cursor: pointer;
+}
+
+.appHeaderLeftBtn-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .appHeaderLeft > a {
@@ -810,6 +890,7 @@ li.errLogLi.critical:before {
     z-index: 12;
     color: #ffffff;
     text-align: left;
+    left: -70px;
     height: 60vh;
     padding: 20px;
     min-width: 500px;
@@ -1112,8 +1193,116 @@ p.startStopP {
     padding: 40px;
 }
 
-.customSettingContainer {
-    margin-top: 4rem;
+.setting-activeBtn-container {
+    display: flex;
+    gap: 12px;
+}
+
+.setting-rbcDegree-top-container {
+    display: flex;
+    align-items: center;
+    margin-top: 22px;
+    justify-content: center;
+}
+
+.setting-rbcDegree-resetBtn {
+    position: absolute;
+    right: 566px;
+    width: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-rbcDegree-main-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+}
+
+.setting-rbcDegree-main-title-container {
+    width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    background-color: var(--main-bg-2-color);
+    padding: 12px;
+}
+
+.setting-rbcDegree-main-title-container > p:nth-child(1) {
+    width: 200px;
+}
+
+.setting-rbcDegree-main-title-container > p:nth-child(2) {
+    width: 150px;
+}
+
+.setting-rbcDegree-main-title-container > p:nth-child(3) {
+    width: 82.5px;
+    text-align: center;
+}
+
+.setting-rbcDegree-main-title-container > p:nth-child(4) {
+    width: 82.5px;
+    text-align: center;
+}
+
+.setting-rbcDegree-main-title-container > p:nth-child(5) {
+    width: 82.5px;
+    text-align: center;
+}
+
+.setting-rbcDegree-main-title-container > p:nth-child(6) {
+    width: 82.5px;
+    text-align: center;
+}
+
+.setting-rbcDegree-container {
+    display: flex;
+    justify-content: center;
+}
+
+.setting-rbcDegree-title-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.setting-rbcDegree-title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 200px;
+    font-size: 1rem;
+}
+
+.setting-rbcDegreeClass-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.setting-rbcDegreeClass-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.setting-rbcDegreeClass-wrapper > h3 {
+    width: 150px;
+    text-align: left;
+}
+
+.setting-customClassInput-wrapper > input {
+    width: 146px;
+}
+
+.setting-runningCount-wrapper > input {
+    width: 120px;
 }
 
 ul.customClass li span {
@@ -1283,11 +1472,6 @@ button.saveBtn, .defaultBtn {
     color: var(--white-color);
     padding: 10px 80px;
     cursor: pointer;
-}
-
-.defaultBtn:hover, .saveBtn:hover {
-    background: var(--white-color);
-    color: var(--black-color);
 }
 
 /*동그라미*/
@@ -2435,6 +2619,12 @@ input.alarmInput {
     border-radius: 50%;
     transform: translate(-50%, -50%);
     cursor: pointer;
+}
+
+.degreeInput {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .degreeInput input {
@@ -3733,6 +3923,29 @@ ul.wbcHotKeysItems {
     margin-bottom: 30px;
 }
 
+.setting-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto 0;
+}
+
+.setting-addOns-container {
+    width: 700px;
+}
+
+.setting-saveBtn {
+    padding: 10px 80px;
+    width: 194px;
+}
+
+.setting-customClass-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 420px;
+}
+
 .alignDiv {
     width: 500px;
     margin: 0 auto;
@@ -3997,7 +4210,20 @@ li.slideStatus {
 
 
 /* setting */
-/* login/account */
+
+.setting-table {
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.setting-table thead {
+    background: var(--main-bg-2-color);
+}
+
+.setting-table thead th {
+    padding: 10px;
+}
 
 .settingContainer {
     width: 920px;
@@ -4010,6 +4236,8 @@ li.slideStatus {
 }
 
 .searchUserContainer {
+    display: flex;
+    align-items: center;
     text-align: left;
     margin: 30px;
 }
@@ -4470,23 +4698,98 @@ p.menuIco {
 
 .rbc-select-box {
     position: absolute;
-    z-index: 99999;
-    background: var(--white-color);
-    color: var(--black-color);
-    min-width: 195px;
-    height: 300px;
-    overflow-y: scroll;
-    padding: 12px 8px;
+    width: 320px;
+    height: 350px;
+    background-color: white;
     border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    border: 1px solid #eaeaea;
+    color: black;
+    z-index: 1000;
 }
 
 .rbc-select-box-title-wrapper {
     display: flex;
-    justify-content: flex-start;
+    background-color: var(--main-bg-2-color);
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.rbc-select-box-title-wrapper li {
+    padding: 12px 0;
+    list-style: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.rbc-select-box-title-wrapper li:first-child {
+    width: 40%;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rbc-select-box-title-wrapper li:last-child {
+    width: 60%;
+}
+
+.rbc-select-box-categories {
+    display: flex;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.rbc-select-box-categories:last-child {
+    border-bottom: none;
+}
+
+.rbc-select-box-categoryNm {
+    width: 40%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--main-gray-color);
+    border-right: 1px solid #eaeaea;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 18px;
-    font-size: 1rem;
-    margin-bottom: 4px;
+}
+
+.rbc-select-box-categoryNm li {
+    list-style: none;
+    padding: 6px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    color: #444;
+}
+
+.rbc-select-box-classNmRbc {
+    width: 60%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.rbc-select-box-classNmRbc li {
+    list-style: none;
+    padding: 4px 8px;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: left;
+}
+
+.rbc-select-box-classNmRbc li:last-child {
+    border-bottom: none;
+}
+
+.rbc-select-box-classNmRbc li:hover {
+    background-color: var(--main-gray-color);
+}
+
+.rbc-select-box-classNmRbc li span {
+    display: block;
+    color: #333;
 }
 
 table.cbcTable {
@@ -6779,27 +7082,6 @@ button.gbArrowButton.left {
     align-items: center;
     gap: 12px;
     margin-bottom: 24px;
-}
-
-.analysis-preset-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 72px;
-    height: 32px;
-    border-radius: 4px;
-    border: 1px solid white;
-    cursor: pointer;
-}
-
-.analysis-preset-btn:hover {
-    background-color: white;
-    color: black;
-}
-
-.analysis-preset-active-btn {
-    background-color: white;
-    color: black;
 }
 
 .lisRef-container {

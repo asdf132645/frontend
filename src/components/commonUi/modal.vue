@@ -4,7 +4,11 @@
     <div class="layer-content oil" :style="width ? `width: ${width}px; max-width: none;` : ''">
       <div class="layer-header">
         <slot name="header"></slot>
-        <button @click="closeLayer" class="alertCloseButton">Close</button>
+        <Button
+            @click="closeLayer"
+            :icon="['fas', 'xmark']"
+            size="sm"
+        ></Button>
       </div>
       <div class="layer-body">
         <slot name="content"></slot>
@@ -15,6 +19,7 @@
 
 <script setup>
 import { ref, onMounted, defineProps, defineEmits } from 'vue';
+import Button from "@/components/commonUi/Button.vue";
 
 const visible = ref(false);
 const props = defineProps(['width'])

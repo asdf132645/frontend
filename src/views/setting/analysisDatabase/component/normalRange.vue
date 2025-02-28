@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-column-center">
+  <div class="setting-container">
     <ul class="normalItems">
       <li v-for="item in normalItems" :key="item.id" class="flex-justify-start-align-center normalItems-wrapper">
         <span>{{ item.abbreviation }}</span>
@@ -22,7 +22,9 @@
         </div>
       </li>
     </ul>
-    <button @click="saveNormalRange" class="saveBtn" type="button">Save</button>
+    <Button @click="saveNormalRange" class="setting-saveBtn">
+      Save
+    </Button>
   </div>
 
   <Confirm
@@ -58,6 +60,7 @@ import {MESSAGES} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore();
 const router = useRouter();

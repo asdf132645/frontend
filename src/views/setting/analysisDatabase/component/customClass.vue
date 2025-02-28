@@ -1,29 +1,51 @@
 <template>
-  <div>
-    <ul class="customClass customSettingContainer">
-      <li v-for="item in wbcCustomItems" :key="item.id">
-        <span>ID: {{ item.customNum }}</span>
-        <span>
-          <input
-              v-model="item.abbreviation"
-              type="text"
-              maxlength="3"
-              placeholder="abbreviation"
-              @input="filterEnglishAndNumbers($event, item, 'abbreviation')"
-          />
-        </span>
-        <span>
-          <input
-              v-model="item.fullNm"
-              type="text"
-              maxlength="25"
-              placeholder="class name"
-              @input="filterEnglishAndNumbers($event, item, 'fullNm')"
-          />
-        </span>
-      </li>
-    </ul>
-    <button class="saveBtn" type="button" @click="saveWbcCustomClass">Save</button>
+  <div class="setting-container">
+    <div class="setting-customClass-container">
+      <table class="setting-table">
+        <colgroup>
+          <col width="20%"/>
+          <col width="40%"/>
+          <col width="40%"/>
+        </colgroup>
+        <thead>
+        <tr>
+          <th>Class ID</th>
+          <th>Abbreviation</th>
+          <th>Class name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in wbcCustomItems" :key="item.id" class="setting-customClass-wrapper">
+          <td>{{ item.customNum }}</td>
+          <td class="setting-customClassInput-wrapper">
+            <input
+                v-model="item.abbreviation"
+                type="text"
+                maxlength="3"
+                placeholder="abbreviation"
+                @input="filterEnglishAndNumbers($event, item, 'abbreviation')"
+            />
+          </td>
+          <td class="setting-customClassInput-wrapper">
+            <input
+                v-model="item.fullNm"
+                type="text"
+                maxlength="25"
+                placeholder="class name"
+                @input="filterEnglishAndNumbers($event, item, 'fullNm')"
+            />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <Button
+          class="setting-saveBtn"
+          @click="saveWbcCustomClass"
+      >
+        Save
+      </Button>
+    </div>
   </div>
 
   <Confirm
@@ -61,6 +83,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
+import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -83,12 +106,13 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   await getWbcCustomClasses();
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcCustomClass });
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.customClass });
 });
 
 watch(() => wbcCustomItems.value, async (wbcCustomItemsAfterSettingObj) => {
-  if (settingType.value !== settingName.wbcCustomClass) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcCustomClass });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcCustomItemsAfterSettingObj)});
+  if (settingType.value !== settingName.customClass) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.customClass });
   }
 }, { deep: true });
 
@@ -99,23 +123,6 @@ watch(() => settingChangedChecker.value, () => {
 const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = MESSAGES.settingNotSaved;
-}
-
-const getOrderClass = async () => {
-  try {
-    const result = await getOrderClassApi();
-    if (result) {
-      if (result?.data.length > 0) {
-        wbcClassOrder.value = result.data.sort((a: any, b: any) => Number(a.orderIdx) - Number(b.orderIdx));
-      }
-
-      const classOrderBeforeSettingObj = wbcClassOrder.value;
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(classOrderBeforeSettingObj)});
-    }
-  } catch (e) {
-    console.error(e)
-  }
 }
 
 const saveWbcCustomClass = async () => {
@@ -151,6 +158,7 @@ const saveWbcCustomClass = async () => {
     console.error(e);
   }
 };
+
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'abbreviation' | 'fullNm') => {
   const input = event.target as HTMLInputElement;
   const filteredValue = input.value.replace(/[^a-zA-Z0-9]/g, '');

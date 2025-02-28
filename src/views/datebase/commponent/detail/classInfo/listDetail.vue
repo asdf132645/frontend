@@ -569,21 +569,12 @@ const handleUpdateCellRef = (refValue: any) => {
 };
 
 const classCompare = () => {
-  if (wpsShow.value) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    showToast('When WPS is enabled, Class Compare cannot be checked.');
-    return;
-  }
+  wpsShow.value = false;
   classCompareShow.value = !classCompareShow.value;
 }
 
 const wps = () => {
-  if (classCompareShow.value && wpsShow.value === false) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    showToast('When classCompare is enabled, WPS cannot be checked.');
-    return;
-  }
-
+  classCompareShow.value = false;
   wpsShow.value = !wpsShow.value;
   if (!wpsShow.value) {
     blockClicks.value = false;

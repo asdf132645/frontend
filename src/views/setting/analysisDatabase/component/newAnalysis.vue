@@ -1,28 +1,27 @@
 <template>
   <div class="flex-center">
     <div class="cellImgAnalyzed-container">
-
       <div class="analysis-preset-wrapper">
         <div
             v-for="num in [1, 2, 3]"
             :key="num"
-            class="analysis-preset-btn"
             @click="handlePresetChange(String(num))"
-            :class="{ 'analysis-preset-active-btn': String(currentPresetNm) === String(num) }"
         >
-          <p>{{ num }}</p>
+          <Button :isActive="String(currentPresetNm) === String(num)">
+            {{ num }}
+          </Button>
         </div>
       </div>
       <table class="settingTable">
         <tbody>
-          <tr>
-            <th class="analysis-setting-subTitle">Analysis Type</th>
-            <td colspan="2">
-              <select v-model="cellInfo.analysisType">
-                <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
-              </select>
-            </td>
-          </tr>
+        <tr>
+          <th class="analysis-setting-subTitle">Analysis Type</th>
+          <td colspan="2">
+            <select v-model="cellInfo.analysisType">
+              <option v-for="type in testTypeArr" :key="type.value" :value="type.value">{{ type.text }}</option>
+            </select>
+          </td>
+        </tr>
 
         <!-- WBC / BM Diff Analysis -->
         <tr v-if="projectType === 'bm' || (projectType === 'pb' && cellInfo.analysisType === '01')">
@@ -57,16 +56,16 @@
         <!-- Edge Shot Type -->
         <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
           <th class="pos-relative">
-            Edge Shot Type
             <font-awesome-icon :icon="['fas', 'circle-info']"
                                @mouseover="() => informationFontHover('edgeShotType', 'hover')"
                                @mouseout="informationFontHover('edgeShotType', 'leave')"
             />
             <Transition>
               <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
-                <img :src="smearTop" width="400" />
+                <img :src="smearTop" width="400"/>
               </div>
             </Transition>
+            Edge Shot Type
           </th>
           <td colspan="2">
             <select v-model="cellInfo.edgeShotType">
@@ -80,10 +79,16 @@
           <th class="pos-relative">Edge Shot Count</th>
           <td>
             <select v-if="cellInfo.edgeShotType === '2'" v-model="cellInfo.edgeShotLPCount">
-              <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in EDGE_SHOT_COUNT_LIST_LP" :key="type.value" :value="type.value">{{
+                  type.text
+                }}
+              </option>
             </select>
             <select v-if="cellInfo.edgeShotType === '3'" v-model="cellInfo.edgeShotHPCount">
-              <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in EDGE_SHOT_COUNT_LIST_HP" :key="type.value" :value="type.value">{{
+                  type.text
+                }}
+              </option>
             </select>
           </td>
         </tr>
@@ -102,21 +107,24 @@
         <!-- Common Analysis -->
         <tr v-if="projectType === 'pb' && ['01', '04'].includes(cellInfo.analysisType)">
           <th :rowspan="pbsAnalysisValuesRowIndex(cellInfo.analysisType)" class="pos-relative">
-            Common
             <font-awesome-icon :icon="['fas', 'circle-info']"
                                @mouseover="() => informationFontHover('positionMargin', 'hover')"
                                @mouseout="informationFontHover('positionMargin', 'leave')"
             />
             <Transition>
               <div v-show="showTutorialImage.positionMargin" class="tutorial-positionMargin-container">
-                <img :src="commonPositionMargin" width="140" />
+                <img :src="commonPositionMargin" width="140"/>
               </div>
             </Transition>
+            Common
           </th>
           <th>Wbc Position Margin</th>
           <td>
             <select v-model="cellInfo.diffWbcPositionMargin">
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{
+                  type.text
+                }}
+              </option>
             </select>
           </td>
         </tr>
@@ -124,7 +132,10 @@
           <th>Rbc Position Margin</th>
           <td>
             <select v-model="cellInfo.diffRbcPositionMargin">
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{
+                  type.text
+                }}
+              </option>
             </select>
           </td>
         </tr>
@@ -132,7 +143,10 @@
           <th>Edge Position Margin</th>
           <td>
             <select v-model="cellInfo.diffPltPositionMargin">
-              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{ type.text }}</option>
+              <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{
+                  type.text
+                }}
+              </option>
             </select>
           </td>
         </tr>
@@ -140,12 +154,13 @@
         <!-- IA Root Path -->
         <tr>
           <th class="pos-relative" colspan="1">
-            IA Root Path
             <font-awesome-icon :icon="['fas', 'circle-info']"
                                @mouseover="tooltipVisibleFunc('iaRootPath', true)"
                                @mouseout="tooltipVisibleFunc('iaRootPath', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type="" :message="MSG.TOOLTIP.IA_ROOT_PATH" />
+            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
+            IA Root Path
           </th>
           <td colspan="2">
             <select v-model="cellInfo.iaRootPath" disabled>
@@ -154,29 +169,29 @@
           </td>
         </tr>
 
-          <tr>
-            <th class="pos-relative">
-              NS/NB Integration
-              <font-awesome-icon
-                  :icon="['fas', 'circle-info']"
-                  @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
-                  @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
-              />
-              <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
-                       :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
-            </th>
-            <td>
-              <font-awesome-icon
-                  :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                  class="iconSize"
-                  @click="toggleNsNbIntegration"
-              />
-            </td>
-          </tr>
+        <tr>
+          <th class="pos-relative">
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
+                @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
+                     :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
+            NS/NB Integration
+          </th>
+          <td>
+            <font-awesome-icon
+                :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
+                class="iconSize"
+                @click="toggleNsNbIntegration"
+            />
+          </td>
+        </tr>
         </tbody>
       </table>
 
-      <button class="saveBtn" type="button" @click='cellImgSet()'>Save</button>
+      <Button @click='cellImgSet()' class="setting-saveBtn">Save</Button>
     </div>
   </div>
 
@@ -212,7 +227,7 @@ import {
   getDrivesApi,
   putCellImgApi
 } from "@/common/api/service/setting/settingApi";
-import { computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount } from "vue";
+import {computed, nextTick, onMounted, ref, watch, getCurrentInstance, onBeforeMount} from "vue";
 import {useStore} from "vuex";
 import {
   AnalysisList,
@@ -226,19 +241,20 @@ import {
   EDGE_SHOT_COUNT_LIST_LP, EDGE_SHOT_COUNT_LIST_HP
 } from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
-import { MESSAGES, MSG } from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import commonPositionMargin from "@/assets/images/commonMargin.png";
 import smearTop from "@/assets/images/smearTop.png";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import { CellImageAnalyzedType } from "@/common/type/tooltipType";
+import {CellImageAnalyzedType} from "@/common/type/tooltipType";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import { defaultCellImgData } from "@/common/helpers/common/setting";
+import {defaultCellImgData} from "@/common/helpers/common/setting";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import Button from "@/components/commonUi/Button.vue";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -330,7 +346,7 @@ onMounted(async () => {
   cellInfo.value.analysisType = window.PROJECT_TYPE === 'bm' ? '02' : '01';
   testTypeArr.value = window.PROJECT_TYPE === 'bm' ? testBmTypeList : testTypeList;
   analysisVal.value = window.PROJECT_TYPE === 'bm' ? bmAnalysisList : AnalysisList;
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.cellImageAnalyzed});
 
   await cellImgGet();
   await driveGet();
@@ -346,17 +362,17 @@ watch(cellInfo.value, async () => {
 
   const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
     if (String(item.id) === String(cellInfo.value.id)) {
-      return { ...item, ...cellInfo.value, edgeShotType: Number(cellInfo.value.edgeShotType) };
+      return {...item, ...cellInfo.value, edgeShotType: Number(cellInfo.value.edgeShotType)};
     } else {
-      return { ...item };
+      return {...item};
     }
   })
 
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(requestAllCellInfo) });
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(requestAllCellInfo)});
   if (settingType.value !== settingName.cellImageAnalyzed) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cellImageAnalyzed });
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.cellImageAnalyzed});
   }
-}, { deep: true })
+}, {deep: true})
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -400,7 +416,7 @@ const checkIsMovingWhenSettingNotSaved = () => {
   confirmMessage.value = MESSAGES.settingNotSaved;
 }
 
-const handlePresetChange = (presetNm: '1' | '2' | '3') => {
+const handlePresetChange = (presetNm: string) => {
   currentPresetNm.value = presetNm;
 
   if (allCellInfo.value.clientData.length < 3) {
@@ -492,7 +508,7 @@ const cellImgSet = async () => {
           backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
         };
       } else {
-        return { ...item, presetChecked: false };
+        return {...item, presetChecked: false};
       }
     })
     const allCellImgIds = allCellInfo.value.serverData.map(item => String(item.id));
@@ -509,7 +525,7 @@ const cellImgSet = async () => {
     handleChangeCellId(Number(allCellInfo.value.clientData[Number(currentPresetNm.value) - 1].id));
     scrollToTop();
     const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
-    await store.dispatch('commonModule/setCommonInfo', { isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N' });
+    await store.dispatch('commonModule/setCommonInfo', {isNsNbIntegration: data?.isNsNbIntegration ? 'Y' : 'N'});
 
     // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
     sessionStorage.setItem('isNsNbIntegration', data.isNsNbIntegration ? 'Y' : 'N');
@@ -520,11 +536,11 @@ const cellImgSet = async () => {
     sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
     sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
     sessionStorage.setItem('iaRootPath', data?.iaRootPath);
-    await store.dispatch('commonModule/setCommonInfo', { resetAnalyzing: true});
-    await store.dispatch('commonModule/setCommonInfo', { showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
+    await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
+    await store.dispatch('commonModule/setCommonInfo', {showLISUploadAfterCheckingAll: data?.lisUploadCheckAll});
 
-    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+    await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+    await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   } catch (e) {
     console.error(e);
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
@@ -567,8 +583,8 @@ const hideAlert = () => {
 };
 
 const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
 }
@@ -611,7 +627,7 @@ const handleChangeCellId = (cellId: number) => {
 
 const deleteCellImg = async () => {
   try {
-    await deleteCellImgApi({ id: String(cellInfo.value.id) });
+    await deleteCellImgApi({id: String(cellInfo.value.id)});
     await cellImgGetAll();
     handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
@@ -629,9 +645,9 @@ const cellImgGetAll = async () => {
     if (result?.data && !isObjectEmpty(result?.data)) {
       allCellInfo.value.clientData = [...result.data];
       allCellInfo.value.serverData = [...result.data];
-      await store.dispatch('commonModule/setCommonInfo', { cellImageAnalyzedData: allCellInfo.value.serverData });
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', {cellImageAnalyzedData: allCellInfo.value.serverData});
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(allCellInfo.value.clientData)});
     }
   } catch (error) {
     console.error(error);

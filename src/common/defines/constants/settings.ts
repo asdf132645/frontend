@@ -976,16 +976,16 @@ export const settingName = {
     analysis: 'analysis',
     cellImageAnalyzed: 'cellImageAnalyzed',
     rbcDegree: 'rbcDegree',
-    wbcRunningCount: 'wbcRunningCount',
-    wbcCustomClass: 'wbcCustomClass',
     wbcHotKeys: 'wbcHotKeys',
     bfHotKeys: 'bfHotKeys',
-    normalRange: 'normalRange',
-    classOrder: 'classOrder',
     imagePrint: 'imagePrint',
     lisCode: 'lisCode',
     cbcCode: 'cbcCode',
     filePathSet: 'filePathSet',
+    normalRange: 'normalRange',
+    customClass: 'customClass',
+    classOrder: 'classOrder',
+    runningCount: 'runningCount'
 }
 
 export const WBC_CUSTOM_CLASS: WbcCustomClassInterface[] = [

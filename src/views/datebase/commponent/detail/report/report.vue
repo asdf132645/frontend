@@ -1,7 +1,7 @@
 <template>
 
   <ClassInfoMenu :changeSlideByLisUpload="changeSlideByLisUpload" />
-  <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')" v-if="siteCd !== '0007'">
+  <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
     <DetailHeader
         :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
         :barcodeNo="selectItems?.barcodeNo"
