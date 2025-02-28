@@ -88,28 +88,28 @@ const matchValues = (
         const numericCbcAge = cbcAge;
         const [minAge, maxAge] = parseAgeRange(age);
         if (cbcAge.includes("-") || cbcAge.includes(".")) {
-            if(ageCategory === 'adult'){
+            if (ageCategory === 'adult') {
                 return;
             }
-        }else{
-            if(cbcAge > age){
-                return;
-            }
-        }
-
-
-
-        if (ageCategory === 'adult') {
+        } else {
             if (cbcAge > age) {
                 return;
             }
         }
 
-        if (ageCategory === 'kid') {
-            if (age.includes("-")) {
-                if (numericCbcAge || minAge === null || maxAge === null) return;
-                if (Number(cbcAge) < minAge || Number(cbcAge) > maxAge) return;
+        if (age.includes("-")) {
+            if (numericCbcAge || minAge === null || maxAge === null) return;
+            if (Number(cbcAge) < minAge || Number(cbcAge) > maxAge) return;
+        }
+
+        if (ageCategory === 'adult') {
+
+            if (cbcAge > age) {
+                return;
             }
+        }
+
+        if (ageCategory === 'kid' || ageCategory === 'kidDate' || ageCategory === 'kidDate') {
 
             // age가 날짜 형식(YYYY.MM.DD)일 경우 날짜 비교
             if (age.includes(".")) {
