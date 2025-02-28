@@ -146,27 +146,30 @@ const slip = ref('');
 const slideData = computed(() => store.state.slideDataModule);
 
 watch(props.selectItems, async (newVal) => {
-  selectItemsVal.value = newVal;
-  cbcFilePathSetArr.value = await getCbcPathData();
-  cbcCodeList.value = await getCbcCodeList();
   if (datachoice.value) {
     return
   }
-  await initCbcData(selectItemsVal.value);
+  await mountedSet(newVal);
+
 }, {deep: true});
 
 onMounted(async () => {
+  await mountedSet(props.selectItems);
+});
+
+const  mountedSet = async (newVal: any) => {
+  cbcWorkList.value = [];
   if (props.selectItems) {
     firstCbcDatafilename.value = props.selectItems.barcodeNo;
   }
   datachoice.value = false;
-  selectItemsVal.value = props.selectItems;
+  selectItemsVal.value = newVal;
   cbcFilePathSetArr.value = await getCbcPathData();
   cbcCodeList.value = await getCbcCodeList();
   if (cbcFilePathSetArr.value && cbcFilePathSetArr.value !== '') {
     await initCbcData(selectItemsVal.value);
   }
-});
+}
 
 const crcCbcDataLoad = async () => {
   await cbcDataProcess();
