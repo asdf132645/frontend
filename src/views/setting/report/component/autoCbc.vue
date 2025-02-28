@@ -3,7 +3,7 @@
     <font-awesome-icon :icon="['fas', 'floppy-disk']" />
   </button>
   <div class="auto-cbc-container">
-    <h2 class="auto-cbc-title">Auto CBC</h2>
+    <h2 class="auto-cbc-title">Auto CBC Matching</h2>
 
     <div class="auto-cbc-form">
       <div class="auto-cbc-form-row">
@@ -206,6 +206,7 @@ const newData = ref({
   ageCategory: "all",
   birthdate: "",
 });
+const cbcArr = ref<any>([]);
 const draggingIndex = ref<number | null>(null); // 드래그 중인 항목 인덱스
 
 const loadAutoCbcData = async () => {
@@ -214,6 +215,7 @@ const loadAutoCbcData = async () => {
       findAutoCbcApi(),
       getCbcCodeRbcApi(),
     ]);
+    cbcArr.value = cbcResponse?.data;
     for (const item of autoCbcResponse.data) {
         if (item.ageCategory === "kidDate"){
           item.birthdate = new Date(item.age);
@@ -228,9 +230,9 @@ const loadAutoCbcData = async () => {
     // 기존 데이터가 없으면 기본값을 생성하여 서버에 저장
     if (!findAutoCbcDataArr?.value.length) {
       const cbcArrDefault = cbcResponse?.data
-          .filter((item: any) => item.classCd)
+          .filter((item: any) => item.fullNm)
           .map((item: any) => ({
-            cbc_code: item.classCd,
+            cbc_code: item.fullNm,
             conditional: ">",
             conditionalValue: "",
             mo_type: "",
@@ -249,6 +251,15 @@ const loadAutoCbcData = async () => {
         findAutoCbcDataArr.value.sort((a, b) => parseInt(a.orderIdx) - parseInt(b.orderIdx));
       }
     }
+
+    for (const el of findAutoCbcDataArr.value) {
+      for (const item of cbcArr.value) {
+        if(el.cbc_code === item.classCd){
+          el.cbc_code = item.fullNm;
+        }
+      }
+    }
+
   } catch (error) {
     console.error("데이터 불러오기 실패:", error);
   }
@@ -274,7 +285,11 @@ const createdAutoCbcData = async () => {
         dataToSend[key] = String(dataToSend[key]);
       }
     });
-
+    for (const item of cbcArr.value) {
+      if(dataToSend.cbc_code === item.fullNm){
+        dataToSend.cbc_code = item.classCd;
+      }
+    }
     await autoCbcCreateApi(dataToSend);
     Object.keys(newData.value).forEach((key) => (newData.value[key] = "")); // 새로 추가된 데이터 비우기
     await loadAutoCbcData(); // 데이터 로드
@@ -296,7 +311,11 @@ const updateAutoCbcData = async (item) => {
 
     delete dataToSend.conditionalValue; // 불필요한 conditionalValue 삭제
     delete dataToSend.birthdate; // 서버로 보내지 않기 위해 birthdate 삭제
-
+    for (const item of cbcArr.value) {
+      if(dataToSend.cbc_code === item.fullNm){
+        dataToSend.cbc_code = item.classCd;
+      }
+    }
     await autoCbcPutApi(dataToSend);
     await loadAutoCbcData();
   } catch (error) {
@@ -312,7 +331,13 @@ const updateAllAutoCbcData = async () => {
     findAutoCbcDataArr.value.forEach((item, idx) => {
       item.orderIdx = (idx + 1).toString(); // 순서를 문자열로 변환하여 설정
     });
-
+    for (const el of findAutoCbcDataArr.value) {
+      for (const item of cbcArr.value) {
+        if(el.cbc_code === item.fullNm){
+          el.cbc_code = item.classCd;
+        }
+      }
+    }
     await autoCbcUpdateAllApi(findAutoCbcDataArr.value);
     await loadAutoCbcData(); // 데이터 갱신
   } catch (error) {

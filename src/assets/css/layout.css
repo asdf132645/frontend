@@ -6914,7 +6914,7 @@ button.gbArrowButton.left {
 
 .auto-cbc-conditional-group {
     display: flex;
-    gap: 10px;
+    gap: 4px;
 }
 
 .auto-cbc-conditional-select {
@@ -7015,7 +7015,7 @@ button.gbArrowButton.left {
 }
 
 .auto-cbc-delete-button {
-    background-color: #4d3535;
+    background-color: #404040;
     color: white;
 }
 
