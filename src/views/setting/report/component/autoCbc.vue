@@ -10,19 +10,19 @@
         <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group" v-show="key !== 'conditionalValue' && key !== 'birthdate'">
           <label class="auto-cbc-label" >{{ key }}</label>
           <div v-if="key === 'title'">
-            <input v-model="newData.title" type="text" placeholder="Enter title"
+            <input v-model="newData.title" type="text" placeholder=""
                    class="auto-cbc-input" :class="{'error': titleError}" />
             <p v-if="titleError" class="auto-cbc-error-message">Title is required</p>
           </div>
 
           <div v-if="key === 'content'">
-            <input v-model="newData.content" placeholder="Enter content"
+            <input v-model="newData.content" placeholder=""
                    class="auto-cbc-input" :class="{'error': contentError}" />
             <p v-if="contentError" class="auto-cbc-error-message">Content is required</p>
           </div>
 
           <div v-if="key === 'cbc_code'">
-            <input v-model="newData.cbc_code" type="text" placeholder="CBC Code" class="auto-cbc-input" />
+            <input v-model="newData.cbc_code" type="text" placeholder="" class="auto-cbc-input" />
           </div>
 
           <div v-if="key === 'conditional'" class="auto-cbc-conditional-group">

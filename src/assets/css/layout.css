@@ -6940,12 +6940,51 @@ button.gbArrowButton.left {
 
 .auto-cbc-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 20px;
     background-color: #212121;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     border-radius: 8px;
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.auto-cbc-table thead,
+.auto-cbc-table tbody {
+    display: block;
+}
+.auto-cbc-table tbody {
+    height: 500px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #444444 #212121;
+}
+
+/* Customize scrollbar for webkit browsers */
+.auto-cbc-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.auto-cbc-table tbody::-webkit-scrollbar-track {
+    background: #212121;
+}
+
+.auto-cbc-table tbody::-webkit-scrollbar-thumb {
+    background-color: #444444;
+    border-radius: 4px;
+}
+
+.auto-cbc-table tr {
+    display: flex;
+    width: 100%;
+}
+
+.auto-cbc-table th,
+.auto-cbc-table td {
+    padding: 10px 15px;
+    text-align: left;
+    flex: 1;
 }
 
 .auto-cbc-table th {
@@ -6956,6 +6995,8 @@ button.gbArrowButton.left {
     font-size: 0.8rem;
     vertical-align: middle;
     font-size: 0.8rem;
+    position: sticky;
+    top: 0;
 }
 .arl.tab-content {
     width: 1100px;
