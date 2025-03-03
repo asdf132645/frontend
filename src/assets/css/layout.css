@@ -6915,6 +6915,7 @@ button.gbArrowButton.left {
 .auto-cbc-conditional-group {
     display: flex;
     gap: 4px;
+    min-width: 125px;
 }
 
 .auto-cbc-conditional-select {
@@ -7034,6 +7035,7 @@ button.gbArrowButton.left {
     display: flex;
     gap: 8px;
     height: 34px;
+    justify-content: center;
 }
 
 .auto-cbc-edit-button,

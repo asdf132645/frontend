@@ -81,21 +81,10 @@
 
     <!-- 데이터 리스트 -->
     <table class="auto-cbc-table">
-      <colgroup>
-        <col width="5%"/>
-        <col width="15%"/>
-        <col width="7%"/>
-        <col width="6%"/>
-        <col width="10%"/>
-        <col width="7%"/>
-        <col width="10%"/>
-        <col width="10%"/>
-        <col width="7%"/>
-      </colgroup>
       <thead>
       <tr>
         <th>cbc_code</th>
-        <th>conditional</th>
+        <th style="min-width: 125px;">conditional</th>
         <th>mo_Type</th>
         <th>title</th>
         <th>content</th>
@@ -168,9 +157,9 @@
           </select>
         </td>
         <td class="auto-cbc-table-actions">
-          <button @click="updateAutoCbcData(item)" class="auto-cbc-edit-button">
-            <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-          </button>
+<!--          <button @click="updateAutoCbcData(item)" class="auto-cbc-edit-button">-->
+<!--            <font-awesome-icon :icon="['fas', 'pen-to-square']" />-->
+<!--          </button>-->
           <button @click="deleteAutoCbcData(item.id)" class="auto-cbc-delete-button">
             <font-awesome-icon :icon="['fas', 'trash']" />
           </button>
