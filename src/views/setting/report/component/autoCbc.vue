@@ -10,19 +10,19 @@
         <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group" v-show="key !== 'conditionalValue' && key !== 'birthdate'">
           <label class="auto-cbc-label" >{{ key }}</label>
           <div v-if="key === 'title'">
-            <input v-model="newData.title" type="text" placeholder="Enter title"
+            <input v-model="newData.title" type="text" placeholder=""
                    class="auto-cbc-input" :class="{'error': titleError}" />
             <p v-if="titleError" class="auto-cbc-error-message">Title is required</p>
           </div>
 
           <div v-if="key === 'content'">
-            <input v-model="newData.content" placeholder="Enter content"
+            <input v-model="newData.content" placeholder=""
                    class="auto-cbc-input" :class="{'error': contentError}" />
             <p v-if="contentError" class="auto-cbc-error-message">Content is required</p>
           </div>
 
           <div v-if="key === 'cbc_code'">
-            <input v-model="newData.cbc_code" type="text" placeholder="CBC Code" class="auto-cbc-input" />
+            <input v-model="newData.cbc_code" type="text" placeholder="" class="auto-cbc-input" />
           </div>
 
           <div v-if="key === 'conditional'" class="auto-cbc-conditional-group">
@@ -81,21 +81,10 @@
 
     <!-- 데이터 리스트 -->
     <table class="auto-cbc-table">
-      <colgroup>
-        <col width="5%"/>
-        <col width="15%"/>
-        <col width="7%"/>
-        <col width="6%"/>
-        <col width="10%"/>
-        <col width="7%"/>
-        <col width="10%"/>
-        <col width="10%"/>
-        <col width="7%"/>
-      </colgroup>
       <thead>
       <tr>
         <th>cbc_code</th>
-        <th>conditional</th>
+        <th style="min-width: 125px;">conditional</th>
         <th>mo_Type</th>
         <th>title</th>
         <th>content</th>
@@ -168,9 +157,9 @@
           </select>
         </td>
         <td class="auto-cbc-table-actions">
-          <button @click="updateAutoCbcData(item)" class="auto-cbc-edit-button">
-            <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-          </button>
+<!--          <button @click="updateAutoCbcData(item)" class="auto-cbc-edit-button">-->
+<!--            <font-awesome-icon :icon="['fas', 'pen-to-square']" />-->
+<!--          </button>-->
           <button @click="deleteAutoCbcData(item.id)" class="auto-cbc-delete-button">
             <font-awesome-icon :icon="['fas', 'trash']" />
           </button>
