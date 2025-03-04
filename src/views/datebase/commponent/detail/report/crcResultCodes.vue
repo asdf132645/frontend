@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isContent"  :class="'crcReport ' + (cbcLayer ? 'cbcLayer' : '')">
+  <div v-if="isContent" :class="'crcReport ' + (cbcLayer ? 'cbcLayer' : '')">
     <div class="tabs flex-align-center">
       <button
           class="tab"
@@ -356,7 +356,6 @@ onBeforeMount(async () => {
   if (isContent.value) {
     const saveDataGet: any = await saveDataSlotIdGetApi(props?.selectItems?.slotId);
     const crcSettingData = saveDataGet.data.crcArr;
-    console.log(saveDataGet.data.crcArr)
     const codeVal = saveDataGet.data.code || '';
     const remarkListVal = saveDataGet.data.remarkList || [];
     const commentListVal = saveDataGet.data.commentList || [];
