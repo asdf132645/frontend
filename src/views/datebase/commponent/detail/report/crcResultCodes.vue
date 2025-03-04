@@ -439,10 +439,6 @@ onMounted(async () => {
   }
 });
 
-watch(() => props.triggerChangeCRCMorphology, async () => {
-  await initCbcData0033();
-})
-
 const childPlusBtn = () => {
   if (childRef.value) {
     childRef.value.openCrcAdd(); // 자식 컴포넌트의 함수 호출
