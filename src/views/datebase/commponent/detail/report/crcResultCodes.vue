@@ -241,7 +241,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {getCbcCodeList, getCbcPathData, getLisPathData} from "@/common/helpers/lisCbc/inhaCbcLis";
+import {getCbcCodeList, getCbcPathData, getLisPathData, getLisWbcRbcData} from "@/common/helpers/lisCbc/inhaCbcLis";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {updateRunningApi} from "@/common/api/service/runningInfo/runningInfoApi";
@@ -266,6 +266,7 @@ import {TooltipCrcResultCodesType} from "@/common/type/tooltipType";
 import router from "@/router";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {autoCbcDataMatchingDefault} from "@/common/helpers/lisCbc/commonCbcAutoMatching";
+import {commonLisHisSend} from "@/common/helpers/lisCbc/commonLisHisSend";
 
 const crcArr = ref<any>([]);
 const props = defineProps({
@@ -308,6 +309,8 @@ const lisFilePathSetArr = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const slideData = computed(() => store.state.slideDataModule);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
+const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
+
 
 const submitState = ref(false);
 const morphologyMapping: any = ref({
@@ -489,7 +492,7 @@ const initCbcData0033 = async () => {
 }
 
 const mapResultToCrcArr = (result: KcchCbcAutoMatchingReturn[], crcArr: any) => {
-  crcArr.forEach((crcItem) => {
+  crcArr.forEach((crcItem: any) => {
     const matchingItem = result.find(
         (item) =>
             item.moType.toUpperCase() === crcItem.morphologyType.toUpperCase() && item.title.toUpperCase() === crcItem.crcTitle.toUpperCase()
@@ -525,9 +528,6 @@ const dataAutoComputeLoad = async () => {
       }
     }
   }
-  // else{
-  //   console.log(await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value));
-  // }
 }
 
 const codeSelect = (code: string) => {
@@ -651,8 +651,8 @@ const newMorphMapSet = async () => {
       continue;
     }
 
-    const matchingKeys = el.crcCodeMatching.split(',').map(key => key.trim());
-    const contents = el.crcContent.split(',').map(content => content.trim());
+    const matchingKeys = el.crcCodeMatching.split(',').map((key: any) => key.trim());
+    const contents = el.crcContent.split(',').map((content: any) => content.trim());
 
     if (el.morphologyType === 'RBC') {
       // RBC에 새로운 속성 추가
@@ -782,6 +782,7 @@ const lisStart = async () => {
   });
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
+
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value, props?.selectItems?.patientNm));
@@ -794,11 +795,15 @@ const lisStart = async () => {
       nowCrcDataLis.value = nowCrcData;
       break;
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
+      await commonLisHisSend(props.selectItems?.barcodeNo, nowCrcData, props?.selectItems?.patientNm, props.selectItems, deviceSerialNm.value)
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
+      await commonLisHisSend(props.selectItems?.barcodeNo, nowCrcData, props?.selectItems?.patientNm, props.selectItems, deviceSerialNm.value)
       break;
     default:
       nowCrcDataLis.value = nowCrcData;
+      const lisResult = await commonLisHisSend(props.selectItems?.barcodeNo, nowCrcData, props?.selectItems?.patientNm, props.selectItems, deviceSerialNm.value);
+      await lisSendRes(lisResult);
       break;
   }
 }
@@ -843,6 +848,15 @@ const yamcSendLisUpdate = async (nowCrcData: any) => {
 const lisCommonDataWhether = async (lisFunc: any) => {
   const resText = await lisFunc;
   if (resText === 'Success') {
+    await commonSucessLis();
+  } else {
+    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
+    showToast('Lis Send Fail');
+  }
+}
+
+const lisSendRes = async (res: any) => {
+  if (res) {
     await commonSucessLis();
   } else {
     toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
@@ -1068,9 +1082,9 @@ const changeCode = async (codeVal: string) => {
 
 // tempSave를 클릭 시 로컬 스토리지에 데이터 저장
 const tempSaveLocalStorage = async () => {
-  const saveDataGet: any = await saveDataSlotIdGetApi(props.selectItems.slotId);
+  const saveDataGet: any = await saveDataSlotIdGetApi(props?.selectItems?.slotId);
   const data = {
-    slotId: props.selectItems.slotId,
+    slotId: props?.selectItems?.slotId,
     code: code.value,
     crcDataArr: crcDataArr.value,
     crcArr: crcArr.value,
