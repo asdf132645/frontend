@@ -27,6 +27,10 @@ export const readH7Message = async (request: any): Promise<ApiResponse<void>> =>
     return httpClient.httpPost(apiConstants.H7Message.post, request, '', false, window.LINUX_SERVER_SET );
 };
 
+export const createCrcCommonHL7MessageApi = async (request: any): Promise<ApiResponse<void>> => {
+    return httpClient.httpPost(apiConstants.H7Message.createCrcCommonHL7Message, request, '', false, window.LINUX_SERVER_SET );
+};
+
 export const readNoFlagHl7Message = async (request: any): Promise<ApiResponse<void>> => {
     return httpClient.httpPost(apiConstants.H7Message.noFlagHl7, request, '', false, window.LINUX_SERVER_SET );
 }

@@ -447,7 +447,7 @@ const commonFileData = async (firstCbcDatafilename: string) => {
       keyword: props.selectItems?.barcodeNo
     }
     await fileSysCopy(fileParams);
-    // await fileSysClean(fileSysCleanParams);
+    await fileSysClean(fileSysCleanParams);
     const msg: any = await readH7File(readFileTxtRes.data.data);
     getCBCWorkListFromFileData(msg);
 

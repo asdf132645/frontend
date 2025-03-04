@@ -481,6 +481,10 @@ export const apiConstants = {
         noFlagHl7: {
             endpoint: 'hl7/noFlagMessage',
             requiresToken: false,
+        },
+        createCrcCommonHL7Message: {
+            endpoint : 'hl7/createCrcCommonHL7Message',
+            requiresToken: false,
         }
     },
     H7MessageCustom: {

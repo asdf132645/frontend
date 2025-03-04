@@ -5231,7 +5231,7 @@ button.reSelect {
     padding: 5px 10px;
     top: -12px;
     cursor: pointer;
-    min-width: 167px;
+    min-width: 32%;
 }
 
 button.reSelect:hover {
@@ -7362,7 +7362,6 @@ button.gbArrowButton.left {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #151515;
     color: #e0e0e0;
 }
 
@@ -7371,7 +7370,7 @@ button.gbArrowButton.left {
     font-size: 24px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #333333;
+    border-bottom: 2px solid #ffffff;
 }
 
 .auto-cbc-form {

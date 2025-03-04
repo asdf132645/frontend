@@ -191,7 +191,7 @@ export const cbcDataGetCommon = async (barcodeNo: string, cbcCodeList: any) => {
     const path = await getCbcPathData();
     const readFileTxtRes: any = await readFileTxt(`path=${path}&filename=${barcodeNo}`);
     const cbcData: any = [];
-    let cbcSex = ''
+    let cbcSex = '';
     let cbcAge = '';
     if (readFileTxtRes.data.success) {
 
