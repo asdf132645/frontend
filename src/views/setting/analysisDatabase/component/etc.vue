@@ -127,6 +127,7 @@ import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgA
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {getDeviceInfoApi, putDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const router = useRouter();
@@ -169,10 +170,7 @@ const cellInfo = ref({
   keepPage: false,
   lisUploadCheckAll: false,
 });
-const toastInfo = ref({
-  message: '',
-  messageType: MESSAGES.TOAST_MSG_SUCCESS,
-})
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -319,9 +317,7 @@ const cellImgSet = async () => {
         await createCellImgApi(requestCellInfo);
       }
     }
-
-    toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-    showToast(MSG.TOAST.UPDATE_SUCCESS);
+    showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
     await cellImgGetAll();
     handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
     scrollToTop();
@@ -337,8 +333,7 @@ const cellImgSet = async () => {
     await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   } catch (e) {
     console.error(e);
-    toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
-    showToast(MSG.TOAST.UPDATE_FAIL);
+    showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
   }
 }
 
@@ -408,12 +403,10 @@ const deleteCellImg = async () => {
     await deleteCellImgApi({id: String(cellInfo.value.id)});
     await cellImgGetAll();
     handleChangeCellId(Number(allCellInfo.value.clientData[0].id));
-    toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-    showToast(MSG.TOAST.DELETE_SUCCESS);
+    showToast(MSG.TOAST.DELETE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
   } catch (error) {
     console.error(error);
-    toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
-    showToast(MSG.TOAST.DELETE_FAILED);
+    showToast(MSG.TOAST.DELETE_FAILED, MESSAGES.TOAST_MSG_ERROR);
   }
 }
 
@@ -433,12 +426,5 @@ const cellImgGetAll = async () => {
     allCellInfo.value.serverData = [];
   }
 }
-
-const showToast = (message: string) => {
-  toastInfo.value.message = message;
-  setTimeout(() => {
-    toastInfo.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
-};
 
 </script>

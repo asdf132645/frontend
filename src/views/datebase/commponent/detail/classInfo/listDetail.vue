@@ -233,8 +233,12 @@
       <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }"
            class="context-menu detail">
         <ul>
-          <li v-for="(item, itemIdx) in wbcInfo" :key="itemIdx" @click="moveSelectedImages(item, itemIdx)">
-            {{ excludeClassName(item.name) }}
+          <li
+              v-for="(item, itemIdx) in wbcInfo"
+              :key="itemIdx"
+              @click="moveSelectedImages(item, itemIdx)"
+          >
+            {{ excludeClassName(item.name, itemIdx) }}
           </li>
         </ul>
       </div>
@@ -708,9 +712,9 @@ const moveSelectedImages = async (item: any, itemIdx: any) => {
   contextMenuVisible.value = false;
 };
 
-const excludeClassName = (title: string): string => {
+const excludeClassName = (title: string, itemIdx: number): string => {
   if (title === 'Smudge' && siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) return "";
-  return title;
+  return `${itemIdx + 1}.${title}`;
 }
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {

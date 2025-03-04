@@ -39,6 +39,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
@@ -50,13 +57,15 @@ import {
   getOrderClassApi, getWbcCustomClassApi, putOrderClassApi,
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
 import { ClassOrderRequest } from "@/common/api/service/setting/dto/classOrder";
 import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -75,6 +84,7 @@ const settingChangedChecker = computed(() => store.state.commonModule.settingCha
 const settingType = computed(() => store.state.commonModule.settingType);
 const wbcCustomItems = ref<any>([]);
 const projectType = ref('');
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -179,14 +189,14 @@ const saveOrderClassSave = async () => {
       result = await putOrderClassApi(orderList);
     }
     if (result) {
-      const text = saveHttpType.value === 'post' ? MESSAGES.settingSaveSuccess : MESSAGES.UPDATE_SUCCESSFULLY
-      showSuccessAlert(text);
+      showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
     }
 
     await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
     await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   } catch (e) {
     console.error(e);
+    showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
   }
 }
 
@@ -202,18 +212,6 @@ const drop = (index: any, event: any) => {
     wbcInfoChangeVal.value.splice(index, 0, movedItem);
     dragIndex.value = -1;
   }
-};
-
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
 };
 
 const hideAlert = () => {

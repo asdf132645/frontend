@@ -182,9 +182,9 @@
   />
 
   <ToastNotification
-      v-if="toastMessage"
-      :message="toastMessage"
-      :messageType="toastMessageType"
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
       :duration="1500"
   />
 </template>
@@ -205,7 +205,7 @@ import {
 import {useStore} from "vuex";
 import router from "@/router";
 import Modal from '@/components/commonUi/modal.vue';
-import {MESSAGES, MSG, TOAST} from "@/common/defines/constants/constantMessageText";
+import { MESSAGES, MSG } from "@/common/defines/constants/constantMessageText";
 import {getCellImgAllApi, getCellImgApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {tcpReq} from "@/common/defines/constants/tcpRequest/tcpReq";
@@ -227,6 +227,7 @@ import moment from "moment/moment";
 import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import {useToast} from "@/common/lib/utils/toast";
 
 const route = useRoute();
 const appHeaderLeftHidden = ref(false);
@@ -288,8 +289,6 @@ const userSetOutUl = ref(false);
 const isStartCountUpdated = ref(false);
 const autoStartTimer = ref(0);
 const errArr = ref<any>([]);
-const toastMessage = ref('');
-const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const mouseClick = ref(false);
 const mounseLeave = ref(false);
 const tooltipVisible = reactive({
@@ -302,9 +301,10 @@ const tooltipVisible = reactive({
 const formattedDate = computed(() => currentDate.value);
 const formattedTime = computed(() => currentTime.value);
 const isLoadingErrorLog = ref(false);
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
-  projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
+  projectBm.value = window.PROJECT_TYPE === 'bm';
   machineVersion.value = window.MACHINE_VERSION;
 })
 
@@ -312,7 +312,7 @@ onMounted(async () => {
   await cellImgGet();
   await cellImgGetAll();
   updateDateTime(); // 초기 시간 설정
-  const timerId = setInterval(updateDateTime, 1000); // 1초마다 현재 시간을 갱신
+  const timerId = setInterval(updateDateTime, 60000); // 1초마다 현재 시간을 갱신
 
   // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
   onBeforeUnmount(() => {
@@ -368,7 +368,7 @@ const userSetOutToggle = () => {
 const updateDateTime = () => {
   const now = new Date();
   currentDate.value = now.toLocaleDateString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit'});
-  currentTime.value = now.toLocaleTimeString('en-US');
+  currentTime.value = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
 };
 
 const errLogOn = async () => {
@@ -404,8 +404,7 @@ const errLogLoad = async () => {
 
   if(res.code === 200){
     if(res?.data?.status === 400){
-      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-      showToast(res?.data?.response.error);
+      showToast(res?.data?.response.error, MESSAGES.TOAST_MSG_ERROR);
       return;
     }
 
@@ -466,8 +465,7 @@ const errorLogLoadMore = async () => {
 
   if (res.code === 200) {
     if (res?.data?.status === 400) {
-      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-      showToast(res?.data?.response.error);
+      showToast(res?.data?.response.error, MESSAGES.TOAST_MSG_ERROR);
       return;
     }
 
@@ -773,13 +771,6 @@ const cellImgGetAll = async () => {
     console.error(error);
   }
 }
-
-const showToast = (message: string) => {
-  toastMessage.value = message;
-  setTimeout(() => {
-    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
-};
 
 const closeErrLog = () => {
   ErrLogOpen.value = false;

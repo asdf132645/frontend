@@ -212,7 +212,7 @@ const getIpAddress = async (userId: string) => {
   try {
     const result = await getDeviceIpApi();
     const  apiUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
-    if ((result.data === '1' || (apiUrl && apiUrl.includes(result.data))) && window.FORCE_VIEWER !== 'exhibition') {
+    if ((result.data === '1' || (apiUrl && apiUrl.includes(result.data)))) {
       await store.dispatch('commonModule/setCommonInfo', {viewerCheck: 'main'});
       await updateAccount('main');
       sessionStorage.setItem('viewerCheck', 'main');

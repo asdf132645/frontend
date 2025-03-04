@@ -16,7 +16,7 @@
         v-if="showConfirm"
         :is-visible="showConfirm"
         type="setting"
-        :message="MESSAGES.settingNotSaved"
+        :message="confirmMessage"
         @hide="hideConfirm"
         @okConfirm="handleOkConfirm"
     />
@@ -42,6 +42,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Add-Ons', 'Version'] as const;
@@ -49,7 +50,7 @@ const viewerTabs = ['Login/Account', 'Analysis/Database', 'Version'] as const;
 const currentTab = ref<typeof tabs[number]>(tabs[0]);
 const movingTab = ref<typeof tabs[number]>(tabs[0]);
 const showConfirm = ref(false);
-const toastInfo = ref({message: '', messageType: ''});
+const confirmMessage = ref('');
 
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
@@ -57,6 +58,7 @@ const afterSettingFormattedString = computed(() => store.state.commonModule.afte
 const settingType = computed(() => store.state.commonModule.settingType);
 const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
 const availableTabs = computed(() => (viewerCheck.value === 'viewer' ? viewerTabs : tabs));
+const { toastInfo, showToast } = useToast();
 
 const components = {
   'Login/Account': LoginAccount,
@@ -84,6 +86,7 @@ const changeTab = (tab: typeof tabs[number]) => {
 
   if (isSettingChanged.value) {
     showConfirm.value = true;
+    confirmMessage.value = MESSAGES.settingNotSaved;
   } else {
     currentTab.value = tab;
   }
@@ -105,11 +108,6 @@ const handleOkConfirm = async () => {
   } catch (e) {
     showToast(MSG.TOAST.SAVE_FAIL, MESSAGES.TOAST_MSG_ERROR);
   }
-};
-
-const showToast = (message: string, type: string) => {
-  toastInfo.value = {message, messageType: type};
-  setTimeout(() => (toastInfo.value.message = ''), 1500);
 };
 
 </script>

@@ -6,14 +6,13 @@
           {{ siteCd === '9090' ? 'Analysis' : 'Cell Image Analysis' }}
         </button>
       </template>
-      <button v-if="siteCd === '9090'" @click="changeTab('etc')" :class="{ 'active': activeTab === 'etc' }">Etc
-      </button>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="changeTab('rbc')" :class="{ 'active': activeTab === 'rbc' }">RBC
         </button>
         <button @click='changeTab("wbc")' :class="{ 'active': activeTab === 'wbc' }">WBC</button>
         <button @click='changeTab("hotkeys")' :class="{ 'active': activeTab === 'hotkeys' }">Hot Keys</button>
       </template>
+      <button v-if="siteCd === '9090'" @click="changeTab('etc')" :class="{ 'active': activeTab === 'etc' }">Etc</button>
     </div>
 
     <component :is="activeTabComponent"/>
@@ -59,6 +58,7 @@ import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const activeTab = ref('');
@@ -75,8 +75,8 @@ const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
-const toastInfo = ref({message: '', messageType: ''});
 const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -95,6 +95,7 @@ const changeTab = (tabName: string) => {
 
   if (isSettingChanged.value) {
     showConfirm.value = true;
+    confirmMessage.value = MESSAGES.settingNotSaved;
   } else {
     activeTab.value = tabName;
   }
@@ -137,10 +138,5 @@ const handleOkConfirm = async () => {
     showToast(MSG.TOAST.SAVE_FAIL, MESSAGES.TOAST_MSG_ERROR);
   }
 }
-
-const showToast = (message: string, type: string) => {
-  toastInfo.value = {message, messageType: type};
-  setTimeout(() => (toastInfo.value.message = ''), 1500);
-};
 
 </script>

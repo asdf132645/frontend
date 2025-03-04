@@ -642,7 +642,23 @@ export const defaultPBNormalRange = [
         min: 0,
         max: 100,
         unit: '%'
+    },
+    {
+        abbreviation: 'LR',
+        fullNm: 'Reactive lymphocyte',
+        classId: '61',
+        min: 0,
+        max: 100,
+        unit: '%'
     }, {
+        abbreviation: 'LA',
+        fullNm: 'Abnormal lymphocyte',
+        classId: '62',
+        min: 0,
+        max: 100,
+        unit: '%'
+    },
+    {
         abbreviation: 'NR',
         fullNm: 'nRBC',
         classId: '12',
@@ -677,21 +693,6 @@ export const defaultPBNormalRange = [
         min: 0,
         max: 100,
         unit: 'Count'
-    },
-    {
-        abbreviation: 'LR',
-        fullNm: 'Reactive lymphocyte',
-        classId: '61',
-        min: 0,
-        max: 100,
-        unit: '%'
-    }, {
-        abbreviation: 'LA',
-        fullNm: 'Abnormal lymphocyte',
-        classId: '62',
-        min: 0,
-        max: 100,
-        unit: '%'
     },
 ]
 

@@ -69,6 +69,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {HotkeyActiveSettingType} from "@/common/type/settings";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const router = useRouter();
@@ -89,10 +90,7 @@ const activeSetting = ref({
   'wbc': true,
   'bf': false,
 })
-const toastInfo = ref({
-  message: '',
-  messageType: MESSAGES.TOAST_MSG_SUCCESS,
-})
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
@@ -142,20 +140,17 @@ const saveWbcCustomClass = async () => {
       const updateResult = await updateWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value});
 
       if (updateResult.data) {
-        toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-        showToast(MSG.TOAST.UPDATE_SUCCESS);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getWbcHotKeyClasses();
       } else {
-        toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
-        showToast(MSG.TOAST.UPDATE_FAIL);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-      toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-      showToast(MSG.TOAST.SAVE_SUCCESS);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getWbcHotKeyClasses();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -237,21 +232,17 @@ const saveBfCustomClass = async () => {
       const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
 
       if (updateResult.data) {
-        toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-        showToast(MSG.TOAST.UPDATE_SUCCESS);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getBfHotKeyClasses();
       } else {
-        toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
-        showToast(MSG.TOAST.UPDATE_FAIL);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-
-      toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-      showToast(MSG.TOAST.SAVE_SUCCESS);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getBfHotKeyClasses();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -260,13 +251,6 @@ const saveBfCustomClass = async () => {
   } catch (e) {
     console.error(e);
   }
-};
-
-const showToast = (message: string) => {
-  toastInfo.value.message = message;
-  setTimeout(() => {
-    toastInfo.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
 </script>

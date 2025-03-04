@@ -149,11 +149,4 @@ const notCanvasClick = (val: any) => {
   notCanvasClickVal.value = val;
 }
 
-const showToast = (message: string) => {
-  toastMessage.value = message;
-  setTimeout(() => {
-    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
-};
-
 </script>

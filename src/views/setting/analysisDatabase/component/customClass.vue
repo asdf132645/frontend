@@ -9,7 +9,7 @@
         </colgroup>
         <thead>
         <tr>
-          <th>Class ID</th>
+          <th>ID</th>
           <th>Abbreviation</th>
           <th>Class name</th>
         </tr>
@@ -65,6 +65,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 
@@ -77,13 +84,15 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclassification";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
 import Button from "@/components/commonUi/Button.vue";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const router = useRouter();
@@ -98,7 +107,7 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
-const wbcClassOrder = ref<any>([]);
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm'
@@ -138,17 +147,17 @@ const saveWbcCustomClass = async () => {
       const updateResult = await updateWbcCustomClassApi({ classArr: wbcCustomItems.value });
 
       if (updateResult.data) {
-        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getWbcCustomClasses();
       } else {
-        showErrorAlert(MESSAGES.settingUpdateFailure);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getWbcCustomClasses();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -198,39 +207,27 @@ const validateCustomClass = () => {
 
   for (const wbcCustomItem of wbcCustomItems.value) {
     if (wbcCustomItem.fullNm === '' && wbcCustomItem.abbreviation !== '') {
-      showErrorAlert("You should enter abbreviation")
+      showToast("You should enter abbreviation", MESSAGES.TOAST_MSG_ERROR);
       return false;
     } else if (wbcCustomItem.fullNm !== '' && wbcCustomItem.abbreviation === '') {
-      showErrorAlert("You should enter class name")
+      showToast("You should enter class name", MESSAGES.TOAST_MSG_ERROR);
       return false;
     }
 
     if (existingClassAbbreivationArr.includes(wbcCustomItem.abbreviation)) {
-      showErrorAlert(`${wbcCustomItem.abbreviation} is existing abbreviation`)
+      showToast(`${wbcCustomItem.abbreviation} is existing abbreviation`, MESSAGES.TOAST_MSG_ERROR);
       return false;
     } else if (existingClassFullNmArr.includes(wbcCustomItem.fullNm)) {
-      showErrorAlert(`${wbcCustomItem.fullNm} is existing class name`)
+      showToast(`${wbcCustomItem.fullNm} is existing class name`, MESSAGES.TOAST_MSG_ERROR);
       return false;
     } else if (wbcCustomItem.abbreviation === 'OT') {
-      showErrorAlert("Can't use OT abbreviation!")
+      showToast("Can't use OT abbreviation!", MESSAGES.TOAST_MSG_ERROR);
       return false;
     }
   }
 
   return true;
 }
-
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
 
 const hideAlert = () => {
   showAlert.value = false;

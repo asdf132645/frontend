@@ -26,6 +26,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
@@ -38,11 +45,13 @@ import {
   updateImagePrintApi
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import { MESSAGES } from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -58,6 +67,7 @@ const enteringRouterPath = computed(() => store.state.commonModule.enteringRoute
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const allChecked = ref(false);
+const { toastInfo, showToast } = useToast();
 
 onMounted(async () => {
   await getImagePrintData();
@@ -98,10 +108,10 @@ const saveImagePrint = async () => {
       const updateResult = await updateImagePrintApi({ imagePrintItems: imagePrintAndWbcArr.value });
 
       if (updateResult.data) {
-        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getImagePrintData();
       } else {
-        showErrorAlert(MESSAGES.settingUpdateFailure);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
@@ -109,7 +119,7 @@ const saveImagePrint = async () => {
     }
 
     if (result) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -143,18 +153,6 @@ const getImagePrintData = async () => {
   } catch (e) {
     console.error(e);
   }
-};
-
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
 };
 
 const hideAlert = () => {

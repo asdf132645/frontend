@@ -75,6 +75,7 @@ import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import Button from "@/components/commonUi/Button.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 
 const store = useStore();
@@ -90,10 +91,7 @@ const enteringRouterPath = computed(() => store.state.commonModule.enteringRoute
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const projectType = ref('');
-const toastInfo = ref({
-  message: '',
-  messageType: MESSAGES.TOAST_MSG_SUCCESS,
-})
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -153,12 +151,10 @@ const saveWbcRunningCount = async () => {
       const updateResult = await updateRunInfoApi({wbcRunCountItems: wbcRunInfoCountArr.value});
 
       if (updateResult.data) {
-        toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-        showToast(MSG.TOAST.UPDATE_SUCCESS);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getWbcRunningCountData();
       } else {
-        toastInfo.value.messageType = MESSAGES.TOAST_MSG_ERROR;
-        showToast(MSG.TOAST.UPDATE_FAIL);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
       await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
@@ -166,8 +162,7 @@ const saveWbcRunningCount = async () => {
     }
 
     if (result) {
-      toastInfo.value.messageType = MESSAGES.TOAST_MSG_SUCCESS;
-      showToast(MSG.TOAST.SAVE_SUCCESS);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getWbcRunningCountData();
       await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
@@ -193,12 +188,5 @@ const handleOkConfirm = async () => {
   await saveWbcRunningCount();
   showConfirm.value = false;
 }
-
-const showToast = (message: string) => {
-  toastInfo.value.message = message;
-  setTimeout(() => {
-    toastInfo.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
-};
 
 </script>

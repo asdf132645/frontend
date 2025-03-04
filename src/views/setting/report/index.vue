@@ -33,6 +33,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
@@ -44,11 +51,13 @@ import ARL from '@/views/setting/report/component/autoCbc.vue';
 import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
 import { computed, ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import Alert from "@/components/commonUi/Alert.vue";
 import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const projectBm = ref(false);
@@ -62,9 +71,10 @@ const confirmMessage = ref('');
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
-  projectBm.value = window.PROJECT_TYPE === 'bm' ? true : false;
+  projectBm.value = window.PROJECT_TYPE === 'bm';
 })
 
 const selectTab = (tabName: string) => {
@@ -97,18 +107,6 @@ const selectedTabComponent = computed(() => {
   }
 });
 
-const showSuccessAlert = async (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-}
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
-
 const hideAlert = () => {
   showAlert.value = false;
 }
@@ -124,9 +122,9 @@ const handleOkConfirm = async () => {
   showConfirm.value = false;
   try {
     await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
-    await showSuccessAlert(MESSAGES.settingSaveSuccess);
+    showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
   } catch (e) {
-    await showErrorAlert(MESSAGES.settingSaveFailure);
+    showToast(MSG.TOAST.SAVE_FAIL, MESSAGES.TOAST_MSG_ERROR);
   }
 }
 

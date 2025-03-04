@@ -11,39 +11,40 @@
       <p>Category</p>
       <p>Class</p>
       <p>0</p>
-      <p>+</p>
-      <p>++</p>
-      <p>+++</p>
+      <p>1+</p>
+      <p>2+</p>
+      <p>3+</p>
     </div>
+    <div>
+      <div class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
+        <div class="setting-rbcDegree-container">
+          <h2 class="setting-rbcDegree-title">{{ category?.categoryNm }}</h2>
+          <div class="setting-rbcDegreeClass-container">
+            <template v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
+              <div class="setting-rbcDegreeClass-wrapper" v-if="classItem.classNm !== 'Normal'">
+                <h3 class="fs10">{{ classItem.classNm }}</h3>
+                <div class='degreeInput mt1 mb1 flex-justify-between'>
+                  <div class="flex-align-center">
+                    <p>&lt;</p>
+                    <input class="number-small" type="number" v-model="classItem.degree1"/>
+                  </div>
+                  <div class="flex-align-center">
+                    <p>&lt;</p>
+                    <input class="number-small" type="number" v-model="classItem.degree2"/>
+                  </div>
+                  <div class="flex-align-center">
+                    <p>&lt;</p>
+                    <input class="number-small" type="number" v-model="classItem.degree3"/>
+                  </div>
+                  <div class="flex-align-center">
+                    <input class="number-small" type="number" v-model="classItem.degree3"/>
+                    <p>&lt;</p>
+                  </div>
 
-    <div class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
-      <div class="setting-rbcDegree-container">
-        <h2 class="setting-rbcDegree-title">{{ category?.categoryNm }}</h2>
-        <div class="setting-rbcDegreeClass-container">
-          <template v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
-            <div class="setting-rbcDegreeClass-wrapper" v-if="classItem.classNm !== 'Normal'">
-              <h3 class="fs10">{{ classItem.classNm }}</h3>
-              <div class='degreeInput mt1 mb1 flex-justify-between'>
-                <div class="flex-align-center">
-                  <p>&lt;</p>
-                  <input class="number-small" type="number" v-model="classItem.degree1"/>
                 </div>
-                <div class="flex-align-center">
-                  <p>&lt;</p>
-                  <input class="number-small" type="number" v-model="classItem.degree2"/>
-                </div>
-                <div class="flex-align-center">
-                  <p>&lt;</p>
-                  <input class="number-small" type="number" v-model="classItem.degree3"/>
-                </div>
-                <div class="flex-align-center">
-                  <input class="number-small" type="number" v-model="classItem.degree3"/>
-                  <p>&lt;</p>
-                </div>
-
               </div>
-            </div>
-          </template>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -69,6 +70,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 
@@ -80,10 +88,12 @@ import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {RbcDegreeRequest} from "@/common/api/service/setting/dto/rbcDegree";
 import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -97,6 +107,7 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const { toastInfo, showToast } = useToast();
 
 onMounted(async () => {
   await getRbcDegreeData();
@@ -171,12 +182,12 @@ const createRbcDegreeData = async () => {
     }
 
     if (result) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       scrollToTop();
       saveHttpType.value = 'put';
     }
   } catch (e) {
-    showErrorAlert(MESSAGES.settingSaveFailure);
+    showToast(MSG.TOAST.SAVE_FAIL, MESSAGES.TOAST_MSG_ERROR);
     console.error(e);
   } finally {
     await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
@@ -239,18 +250,6 @@ const processData = (data: any): void => {
   });
 
   rbcClassListArr.value = Array.from(categoryMap.values());
-};
-
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
 };
 
 const hideAlert = () => {

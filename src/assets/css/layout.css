@@ -516,9 +516,8 @@ input.number-small {
 .appHeaderLeft > a {
     font-size: 1rem;
     color: var(--white-color);
-    margin-top: 0px;
+    margin-top: 0;
     text-align: left;
-    padding-left: 30px;
     padding: 30px;
     display: inline-block;
     vertical-align: top;
@@ -600,30 +599,27 @@ main.bmComponent {
     font-size: 2rem;
 }
 
-.topClintInfo ul {
+.detailHeader-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--white-color);
+}
+
+.detailHeader-info-container {
     display: flex;
     align-items: center;
     gap: 20px;
     margin-left: 12px;
-    border-bottom: 1px solid var(--white-color);
     padding: 12px 0;
     list-style-type: none;
-}
-
-.topClintInfo ul li {
     font-size: 0.9rem;
-    /*font-size: 0.9rem;*/
-    /*color: #f0f0f0;*/
-    /*white-space: nowrap;*/
-    /*padding: 2px 5px;*/
 }
 
 .detailHeader-tool-container {
-    position: absolute;
-    right: 16.5%;
-    z-index: 10;
     display: flex;
     align-items: center;
+    margin-right: 12px;
 }
 
 .small-icon-menu {
@@ -667,7 +663,6 @@ main.bmComponent {
     font-family: sans-serif;
     border-right: 1px solid var(--gray-1-color);
     padding-bottom: 5px;
-    cursor: pointer;
 }
 
 li.errLogLi {
@@ -3822,14 +3817,15 @@ table.tableClass {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    top: 32px;
-    left: 0;
+    top: 34px;
+    right: 0;
     width: 400px;
     height: 356px;
     background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
     gap: 24px;
     border-radius: 4px;
+    z-index: 6;
 }
 
 .memoModal-header {
@@ -3953,6 +3949,13 @@ ul.wbcHotKeysItems {
     width: 420px;
 }
 
+.setting-normalRange-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 580px;
+}
+
 .alignDiv {
     width: 500px;
     margin: 0 auto;
@@ -3989,16 +3992,6 @@ ul.normalItems {
     justify-content: center;
 }
 
-.normalItems-wrapper {
-    /*gap: 14px;*/
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px auto;
-    font-size: 1rem;
-    width: 520px;
-}
-
 .bmclass {
     width: 74% !important;
     min-height: 67vh;
@@ -4031,7 +4024,7 @@ ul.normalItems {
 }
 
 .resultInformationContainer {
-    height: 341px;
+    height: 404px;
 }
 
 .listTable-search-main-container {
@@ -4077,7 +4070,7 @@ ul.normalItems {
 }
 
 .listTableImageContainer {
-    height: 395px;
+    height: 334px;
     overflow-y: hidden;
 }
 
@@ -4136,7 +4129,7 @@ ul.normalItems {
 .dbImageContainer {
     position: relative;
     overflow-y: hidden;
-    height: 338px;
+    height: 274px;
 }
 
 .dbRightImages {
@@ -4696,7 +4689,7 @@ li.cbcLi {
 
 p.menuIco {
     font-size: 1.2rem;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
 }
 
 .onRight.cbcLi {
@@ -5256,12 +5249,12 @@ button.reSelect:hover {
 }
 
 .crcPopUpDiv.crcAdd {
-    top: -44px;
-    background: #f7fafc;
-    border: 1px solid #3498db;
+    top: 0;
+    background: #f8f8f8;
+    border: 1px solid #000000;
     padding: 20px;
-    width: 52%;
-    left: 25%;
+    width: 58%;
+    left: 21%;
     z-index: 1000;
     max-height: 800px;
     /*overflow: auto;*/
@@ -5819,7 +5812,7 @@ button.btnSearchRemark:hover {
 
 .tbody-container {
     display: block;
-    max-height: 400px; /* 스크롤 높이 설정 */
+    height: 400px; /* 스크롤 높이 설정 */
     overflow-y: auto;
     width: 100%;
 }
@@ -5837,7 +5830,7 @@ button.crcDefaultBtn.remarkDelBtn {
 }
 
 .crcPopUpDiv.remark {
-    top: 0%;
+    top: 0;
     background: #f8f8f8;
     border: 1px solid #000000;
     padding: 20px;
@@ -7124,8 +7117,253 @@ button.gbArrowButton.left {
 
 .pagination button:disabled {
     color: gray;
-
 }
+
+.classInfo-barcode-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    height: 200px;
+}
+
+.classInfo-barcode-wrapper > img {
+    height: 200px;
+}
+
+.categories-lastItem {
+    border-bottom: none;
+}
+
+.imageList-tab-btn {
+    width: 120px;
+    padding: 10px 20px;
+    border: none;
+    color: var(--white-color);
+    background-color: var(--main-bg-9-color);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.imageList-btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.imageList-setting-container {
+    position: absolute;
+    top: 40px;
+    left: -147px;
+    width: 250px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.imageList-setting-container div {
+    padding: 10px 20px 10px 10px;
+}
+
+.listDetail-top-button-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 12px auto;
+}
+
+.listDetail-top-button-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.listDetail-size-setting-container {
+    position: absolute;
+    top: 36px;
+    left: 120px;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    border-radius: 4px;
+    width: 270px;
+    z-index: 3;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.listDetail-size-setting-container > input {
+    width: 96%;
+}
+
+.listDetail-size-setting-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 80%;
+}
+
+.sizeContainer div {
+    text-align: center;
+}
+
+.sizeContainer div input, .sizeContainer div button {
+    width: 250px;
+}
+
+.listDetail-img-setting-container {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    background: var(--main-bg-2-color);
+    border: 1px solid var(--white-color);
+    border-radius: 4px;
+    width: 300px;
+    z-index: 3;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.listDetail-img-setting-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.listDetail-img-setting-wrapper > input {
+    width: 96%;
+}
+
+.listDetail-img-setting-rbcWrapper {
+    display: flex;
+    align-items: center;
+    width: 95%;
+}
+
+.listDetail-wbcCircle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.listDetail-wbcCircle-wrapper .circle {
+    padding-top: 13px;
+    position: relative;
+}
+
+.listDetail-wbcCircle-wrapper > li {
+    padding: 4px;
+    display: inline-block;
+    border: 1px solid var(--gray-1-color);
+    border-radius: 100%;
+    height: 50px;
+    width: 50px;
+    min-width: 50px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.listDetail-wbcCircle-wrapper >li:hover {
+    background-color: var(--white-color);
+    color: black;
+}
+
+.detailHeader-tool-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rbcClass-content-title-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 2px;
+}
+
+.rbcClassReport-content-title-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 2px;
+}
+
+.rbcClassReport-content-title-wrapper > li {
+    padding: 5px;
+}
+
+.rbcClass-content-title-wrapper > li {
+    padding: 5px;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(1) {
+    width: 15%;
+    text-align: left;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(1) {
+    width: 13%;
+    text-align: left;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(2) {
+    width: 37%;
+    text-align: left;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(2) {
+    width: 32%;
+    text-align: left;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(3) {
+    text-align: center;
+    width: 21%;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(3) {
+    width: 20%;
+    text-align: center;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(4) {
+    text-align: center;
+    width: 10%;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(4) {
+    width: 11%;
+    text-align: left;
+}
+
+.rbcClass-content-title-wrapper > li:nth-child(5) {
+    text-align: center;
+    width: 16%;
+}
+
+.rbcClassReport-content-title-wrapper > li:nth-child(5) {
+    width: 10%;
+    text-align: center;
+}
+
+
 /* 셋팅 페이지  auto */
 /* Auto CBC Component Grayscale Dark Theme */
 .auto-cbc-container {

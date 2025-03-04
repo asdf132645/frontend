@@ -1,8 +1,7 @@
 <template>
   <div class="setting-container">
     <div class="setting-activeBtn-container">
-      <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">WBC Running Count
-      </Button>
+      <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">WBC Running Count</Button>
       <Button @click="handleSettingMenu('customClass')" :isActive="activeTab === 'customClass'">Custom Class</Button>
       <Button @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
       <Button @click="handleSettingMenu('classOrder')" :isActive="activeTab === 'classOrder'">Class Order</Button>
@@ -53,6 +52,7 @@ import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.
 import RunningCount from "@/views/setting/analysisDatabase/component/runningCount.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const showAlert = ref(false);
@@ -68,10 +68,7 @@ const settingType = computed(() => store.state.commonModule.settingType);
 const projectType = ref('');
 const activeTab = ref('runningCount');
 const movingTab = ref('');
-const toastInfo = ref({
-  message: '',
-  messageType: '',
-})
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -142,10 +139,5 @@ const handleSettingMenu = (type: keyof WbcActiveSettingType) => {
 
   activeTab.value = type;
 }
-
-const showToast = (message: string, type: string) => {
-  toastInfo.value = {message, messageType: type};
-  setTimeout(() => (toastInfo.value.message = ''), 1500);
-};
 
 </script>
