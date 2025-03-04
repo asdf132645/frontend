@@ -6848,7 +6848,7 @@ button.gbArrowButton.left {
 /* Auto CBC Component Grayscale Dark Theme */
 .auto-cbc-container {
     font-family: 'Arial', sans-serif;
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     padding: 20px;
     color: #e0e0e0;
@@ -6872,7 +6872,7 @@ button.gbArrowButton.left {
 
 .auto-cbc-form-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 15px;
 }
 
@@ -6999,7 +6999,7 @@ button.gbArrowButton.left {
     top: 0;
 }
 .arl.tab-content {
-    width: 1100px;
+    width: 1500px;
 }
 .auto-cbc-table td {
     padding: 10px 15px;
@@ -7114,7 +7114,10 @@ button.gbArrowButton.left {
 .auto-cbc-table-input:hover, .auto-cbc-table-select:hover, .auto-cbc-input:hover, .auto-cbc-select:hover{
     background-color: #1a1a1a;
 }
-
+.contDiv {
+    display: flex;
+    justify-content: space-around;
+}
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);
