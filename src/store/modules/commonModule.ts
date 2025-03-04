@@ -50,6 +50,7 @@ export interface CommonState {
     isInitializing: boolean;
     isClassInfoMenuLoading: boolean;
     isImageGalleryLoading: boolean;
+    isPltOn: boolean;
 }
 
 interface CommonModule {
@@ -105,6 +106,7 @@ interface CommonModule {
         setIsInitializing: (state: CommonState, value: boolean) => void;
         setIsClassInfoMenuLoading: (state: CommonState, value: boolean) => void;
         setIsImageGalleryLoading: (state: CommonState, value: boolean) => void;
+        setIsPltOn: (state: CommonState, value: boolean) => void;
     };
     actions: {
         setCommonInfo: (context: { commit: Commit }, payload: CommonState) => void;
@@ -161,6 +163,7 @@ export const commonModule: CommonModule = {
         isInitializing: false,
         isClassInfoMenuLoading: false,
         isImageGalleryLoading: false,
+        isPltOn: false,
     }),
     mutations: {
         setStartEmbedded(state: CommonState, value: boolean): void {
@@ -312,6 +315,9 @@ export const commonModule: CommonModule = {
         },
         setIsImageGalleryLoading(state: CommonState, value: boolean): void {
             state.isImageGalleryLoading = value;
+        },
+        setIsPltOn(state: CommonState, value: boolean): void {
+            state.isPltOn = value;
         }
     },
     actions: {
@@ -465,6 +471,9 @@ export const commonModule: CommonModule = {
             }
             if (payload.hasOwnProperty('isImageGalleryLoading')) {
                 commit('setIsImageGalleryLoading', payload.isImageGalleryLoading);
+            }
+            if (payload.hasOwnProperty('isPltOn')) {
+                commit('setIsPltOn', payload.isPltOn);
             }
         },
     },

@@ -48,7 +48,7 @@
               size="sm"
           >
           </Button>
-          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top"
+          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" :style="'left: 120px;'" position="top"
                    :message="MSG.TOOLTIP.CBC_TO_RESULTCODES"/>
         </div>
         <span class="crcSpanMenu">Code</span>

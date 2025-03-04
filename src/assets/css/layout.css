@@ -1221,7 +1221,7 @@ p.startStopP {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 24px;
+    gap: 12px;
 }
 
 .setting-rbcDegree-main-title-container {
@@ -1315,15 +1315,6 @@ ul.customClass li span {
 
 ul.customClass li {
     margin: 5px;
-}
-
-.settingImagePrint label {
-    display: flex;
-    justify-content: space-between;
-    width: 250px;
-    margin: 0 auto;
-    padding: 8px;
-    text-align: left;
 }
 
 .degreeDiv button {

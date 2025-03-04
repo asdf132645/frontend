@@ -6,8 +6,8 @@
         <button @click="selectTab('LisCode')" :class="{ 'active': activeTab === 'LisCode' }">LIS Code</button>
         <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">CBC Code</button>
         <button @click="selectTab('filePathSet')" :class="{ 'active': activeTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
-        <button @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
-        <button @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto CBC Link</button>
+        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
+        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto CBC Link</button>
       </div>
     </div>
 
@@ -71,6 +71,8 @@ const confirmMessage = ref('');
 const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const storedUser = computed(() => store.state.userModule);
+const getStoredUser = storedUser.value;
 const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {

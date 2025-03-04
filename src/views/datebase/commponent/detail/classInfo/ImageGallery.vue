@@ -506,6 +506,19 @@ const handleLeaveClassCircle = () => {
   hoverCircleClassName.value = undefined;
 }
 
+// const handleImgRightClick = () => {
+//   emits('selectImage',)
+//   //
+// // @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
+// // @dblclick="() => $emit('openModal', image, item)"
+// //   v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
+// //   @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
+// }
+//
+// const handleImgClick = () => {
+//   //
+// }
+
 const setCircleRef = (el, index) => {
   if (el) {
     circleRefs.value[index] = el;

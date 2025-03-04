@@ -67,7 +67,7 @@
         <li
             :class="{ onRight: isActive('/databasePlt') }"
             @click="pageGo('/databasePlt')"
-            v-if="projectType !== 'bm' && pltOnOff"
+            v-if="projectType !== 'bm' && isPltOn"
         >
           <p class="menuIco">
             <font-awesome-icon :icon="['fas', 'certificate']"/>
@@ -167,9 +167,9 @@ const isImageGalleryLoading = computed(() => store.state.commonModule.isImageGal
 const dbListDataFirstNum = computed(() => store.state.commonModule.dbListDataFirstNum);
 const dbListDataLastNum = computed(() => store.state.commonModule.dbListDataLastNum);
 const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
+const isPltOn = computed(() => store.state.commonModule.isPltOn);
 const slideData = computed(() => store.state.slideDataModule);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const pltOnOff = ref(false);
 const isErrorContainerOpen = ref(false);
 const slideCondition = ref({
   condition: '',
@@ -193,7 +193,10 @@ onBeforeMount(async () => {
   await store.dispatch('commonModule/setCommonInfo', {isClassInfoMenuLoading: false});
   const keepPageType = projectType.value === 'bm' ? 'bmKeepPage' : 'keepPage';
   keepPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem(keepPageType)));
-  await checkHasPltInfo();
+
+  if (!isPltOn.value) {
+    await checkHasPltInfo();
+  }
 })
 
 onMounted(async () => {
@@ -427,7 +430,7 @@ const handleDataResponse = async (dbId: any, res: any) => {
 };
 
 const updateUpDown = async (selectWbc: any, selectItemsNewVal: any) => {
-  if ((projectType.value === 'pb' && selectItems.value?.testType === '01' && isActive("/databaseRbc")) || (!keepPage.value || keepPage.value === "false")) {
+  if ((projectType.value === 'pb' && selectItems.value?.testType === '01' && isActive("/databaseRbc")) || (!keepPage.value || keepPage.value === "false") || isActive('/databasePlt')) {
     pageGo('/databaseDetail');
   }
   emits('refreshClass', selectItemsNewVal);
@@ -542,12 +545,6 @@ const checkHasPltInfo = async () => {
     return;
   }
 
-  if (isActive('/databasePlt')) {
-    pltOnOff.value = true;
-    return;
-  }
-
-  pltOnOff.value = false;
   const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
   const folderPath = `${path}/${slideData.value?.slotId}/${DIR_NAME.RBC_IMAGE}`;
   const url = `${apiBaseUrl}/folders?folderPath=${folderPath}`;
@@ -556,22 +553,22 @@ const checkHasPltInfo = async () => {
     const response = await fetch(url);
     const fileNames = await response.json();
     if (fileNames?.code === 400) {
-      pltOnOff.value = false;
+      await store.dispatch('commonModule/setCommonInfo', { isPltOn: false });
       return;
     }
     if (fileNames && fileNames.length > 0) {
       const hasPlt = fileNames.find((item) => item.includes('zPLT_Image'));
       if (hasPlt) {
-        pltOnOff.value = true;
+        await store.dispatch('commonModule/setCommonInfo', { isPltOn: true });
       } else {
-        pltOnOff.value = false;
+        await store.dispatch('commonModule/setCommonInfo', { isPltOn: false });
       }
     } else {
-      pltOnOff.value = false;
+      await store.dispatch('commonModule/setCommonInfo', { isPltOn: false });
     }
   } catch (err) {
     console.error(err);
-    pltOnOff.value = false;
+    await store.dispatch('commonModule/setCommonInfo', { isPltOn: false });
   }
 }
 

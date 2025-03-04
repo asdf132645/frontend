@@ -1462,7 +1462,6 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
         selectItemImageArr.value.push(classInfoitem);
       }
 
-      /** TODO 모두 선택할 경우 check 표시 활성화 - Shift 클릭 및 하나의 아이템도 클릭했을 때 check 표시 뜨게 구현해야 함 */
       if (selectItemImageArr.value.length === end - start + 1) {
         selectedTitle.value = wbcInfo.value[0].title;
       }

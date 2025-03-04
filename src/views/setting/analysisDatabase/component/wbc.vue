@@ -5,6 +5,7 @@
       <Button @click="handleSettingMenu('customClass')" :isActive="activeTab === 'customClass'">Custom Class</Button>
       <Button @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
       <Button @click="handleSettingMenu('classOrder')" :isActive="activeTab === 'classOrder'">Class Order</Button>
+      <Button @click="handleSettingMenu('hotkey')" :isActive="activeTab === 'hotkey'">Hot keys</Button>
     </div>
   </div>
 
@@ -53,6 +54,7 @@ import RunningCount from "@/views/setting/analysisDatabase/component/runningCoun
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import HotKeys from "@/views/setting/analysisDatabase/component/hotKeys.vue";
 
 const store = useStore();
 const showAlert = ref(false);
@@ -92,6 +94,8 @@ const activeTabComponent = computed(() => {
       return NormalRange;
     case 'classOrder':
       return ClassOrder;
+    case 'hotkey':
+      return HotKeys;
     default:
       return null;
   }

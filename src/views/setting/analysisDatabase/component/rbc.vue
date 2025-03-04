@@ -47,8 +47,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="mt-2 degreeDiv">
       <Button @click="createRbcDegreeData" class="saveBtn">Save</Button>
     </div>
   </div>

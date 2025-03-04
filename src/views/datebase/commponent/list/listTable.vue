@@ -717,7 +717,6 @@ const rowDbClick = async (item) => {
 
 }
 
-
 const getRbcDegreeData = async () => {
   try {
     const result = await getRbcDegreeApi();

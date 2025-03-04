@@ -112,7 +112,6 @@
     </ul>
 
     <div class="detailHeader-tool-container">
-      <h1 class="mr12 fs10">Tool bar</h1>
       <div class="detailHeader-tool-wrapper">
         <Button
             class="memoBoxRef pos-relative"

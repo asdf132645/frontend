@@ -3,6 +3,7 @@ export interface WbcActiveSettingType {
     customClass: boolean;
     normalRange: boolean;
     classOrder: boolean;
+    hotkey: boolean;
 }
 
 export interface HotkeyActiveSettingType {

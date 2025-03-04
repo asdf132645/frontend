@@ -244,13 +244,12 @@ const initCbcData = async (newVal: any) => {
       await cbcYwmcDataMatching();// 원주기독은 디비 접근해서 작업함
       break;
     case HOSPITAL_SITE_CD_BY_NAME['원자력병원']:
-      await crcCbcDataLoad();
       await commonCBC(firstCbcDatafilename.value);
       break;
     case HOSPITAL_SITE_CD_BY_NAME['NONE']:
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
+    case HOSPITAL_SITE_CD_BY_NAME['TEST']:
       // await uimdTestUrlSend();
-      await crcCbcDataLoad();
       await commonCBC(firstCbcDatafilename.value);
       break;
     default:
@@ -352,12 +351,14 @@ const inhaCbcLoad = async () => {
 }
 
 const commonCBC = async (firstCbcDatafilename: string) => {
+  await crcCbcDataLoad();
+
   if (cbcFilePathSetArr.value === '') {
     showErrorAlert(MESSAGES.UPLOAD_PLEASE_CBC);
     return;
   }
 
-  if (cbcFilePathSetArr.value.includes("http")) { // url
+  if (cbcFilePathSetArr.value.includes("http")) { // HTTP 통신 시 사용
     const params = {
       url: cbcFilePathSetArr.value,
       barcodeNo: props.selectItems.barcodeNo,

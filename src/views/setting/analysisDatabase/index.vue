@@ -10,7 +10,6 @@
         <button v-if="projectType === 'pb'" @click="changeTab('rbc')" :class="{ 'active': activeTab === 'rbc' }">RBC
         </button>
         <button @click='changeTab("wbc")' :class="{ 'active': activeTab === 'wbc' }">WBC</button>
-        <button @click='changeTab("hotkeys")' :class="{ 'active': activeTab === 'hotkeys' }">Hot Keys</button>
       </template>
       <button v-if="siteCd === '9090'" @click="changeTab('etc')" :class="{ 'active': activeTab === 'etc' }">Etc</button>
     </div>
