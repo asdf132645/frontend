@@ -5,89 +5,89 @@
   <div class="auto-cbc-container">
     <h2 class="auto-cbc-title">Auto CBC Matching</h2>
 
-    <div class="auto-cbc-form">
-      <div class="auto-cbc-form-row">
-        <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group"
-             v-show="key !== 'conditionalValue' && key !== 'pbiaCbcCodeArr' && key !== 'autoTitleArr' && key !== 'autoContentArr'">
-          <label class="auto-cbc-label">{{ key }}</label>
+<!--    <div class="auto-cbc-form">-->
+<!--      <div class="auto-cbc-form-row">-->
+<!--        <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group"-->
+<!--             v-show="key !== 'conditionalValue' && key !== 'pbiaCbcCodeArr' && key !== 'autoTitleArr' && key !== 'autoContentArr'">-->
+<!--          <label class="auto-cbc-label">{{ key }}</label>-->
 
 
-          <div v-if="key === 'matchingType'">
-            <select v-model="newData.matchingType" class="auto-cbc-table-select"
-                    @change="onChangeMatchingType(newData)">
-              <option :value="'PBIA'">PBIA</option>
-              <option :value="'CBC'">CBC</option>
-            </select>
-          </div>
+<!--          <div v-if="key === 'matchingType'">-->
+<!--            <select v-model="newData.matchingType" class="auto-cbc-table-select"-->
+<!--                    @change="onChangeMatchingType(newData)">-->
+<!--              <option :value="'PBIA'">PBIA</option>-->
+<!--              <option :value="'CBC'">CBC</option>-->
+<!--            </select>-->
+<!--          </div>-->
 
-          <div v-if="key === 'cbc_code'">
-            <select v-model="newData.cbc_code" class="auto-cbc-table-select">
-              <option v-for="(code, idx) in newData.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
-                {{ code.classNm }}
-              </option>
-            </select>
-          </div>
+<!--          <div v-if="key === 'cbc_code'">-->
+<!--            <select v-model="newData.cbc_code" class="auto-cbc-table-select">-->
+<!--              <option v-for="(code, idx) in newData.pbiaCbcCodeArr" :key="idx" :value="code.classNm">-->
+<!--                {{ code.classNm }}-->
+<!--              </option>-->
+<!--            </select>-->
+<!--          </div>-->
 
-          <div v-if="key === 'conditional'" class="auto-cbc-conditional-group">
-            <select v-model="newData[key]" class="auto-cbc-select auto-cbc-conditional-select">
-              <option value="&gt;">&gt;</option>
-              <option value="&lt;">&lt;</option>
-              <option value="&gt;=">&gt;=</option>
-              <option value="&lt;=">&lt;=</option>
-              <option value="==">==</option>
-            </select>
-            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, itemChild)"
-                   class="auto-cbc-input"/>
-          </div>
+<!--          <div v-if="key === 'conditional'" class="auto-cbc-conditional-group">-->
+<!--            <select v-model="newData[key]" class="auto-cbc-select auto-cbc-conditional-select">-->
+<!--              <option value="&gt;">&gt;</option>-->
+<!--              <option value="&lt;">&lt;</option>-->
+<!--              <option value="&gt;=">&gt;=</option>-->
+<!--              <option value="&lt;=">&lt;=</option>-->
+<!--              <option value="==">==</option>-->
+<!--            </select>-->
+<!--            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, itemChild)"-->
+<!--                   class="auto-cbc-input"/>-->
+<!--          </div>-->
 
-          <div v-else-if="key === 'mo_type'">
-            <select v-model="newData[key]" class="auto-cbc-select" @change="onMoTypeChange(newData)">
-              <option :value="'RBC'">RBC</option>
-              <option :value="'WBC'">WBC</option>
-              <option :value="'PLT'">PLT</option>
-            </select>
-          </div>
+<!--          <div v-else-if="key === 'mo_type'">-->
+<!--            <select v-model="newData[key]" class="auto-cbc-select" @change="onMoTypeChange(newData)">-->
+<!--              <option :value="'RBC'">RBC</option>-->
+<!--              <option :value="'WBC'">WBC</option>-->
+<!--              <option :value="'PLT'">PLT</option>-->
+<!--            </select>-->
+<!--          </div>-->
 
-          <div v-if="key === 'title'">
-            <select v-model="newData.title" class="auto-cbc-table-select" @change="onTitleChange(newData)">
-              <option v-for="(title, idx) in newData.autoTitleArr" :key="idx" :value="title.crcTitle">
-                {{ title.crcTitle }}
-              </option>
-            </select>
-          </div>
+<!--          <div v-if="key === 'title'">-->
+<!--            <select v-model="newData.title" class="auto-cbc-table-select" @change="onTitleChange(newData)">-->
+<!--              <option v-for="(title, idx) in newData.autoTitleArr" :key="idx" :value="title.crcTitle">-->
+<!--                {{ title.crcTitle }}-->
+<!--              </option>-->
+<!--            </select>-->
+<!--          </div>-->
 
-          <div v-if="key === 'content'">
-            <select v-model="newData.content" class="auto-cbc-table-select">
-              <option v-for="(content, idx) in newData.autoContentArr" :key="idx" :value="content">
-                {{ content }}
-              </option>
-            </select>
-          </div>
+<!--          <div v-if="key === 'content'">-->
+<!--            <select v-model="newData.content" class="auto-cbc-table-select">-->
+<!--              <option v-for="(content, idx) in newData.autoContentArr" :key="idx" :value="content">-->
+<!--                {{ content }}-->
+<!--              </option>-->
+<!--            </select>-->
+<!--          </div>-->
 
-          <div v-else-if="key === 'sex'">
-            <select v-model="newData[key]" class="auto-cbc-select">
-              <option value="F">F</option>
-              <option value="M">M</option>
-              <option value="all">All</option>
-            </select>
-          </div>
-          <div v-else-if="key === 'age'">
-            <input v-model="newData[key]" type="text" min="0" max="100" class="auto-cbc-input"/>
-          </div>
+<!--          <div v-else-if="key === 'sex'">-->
+<!--            <select v-model="newData[key]" class="auto-cbc-select">-->
+<!--              <option value="F">F</option>-->
+<!--              <option value="M">M</option>-->
+<!--              <option value="all">All</option>-->
+<!--            </select>-->
+<!--          </div>-->
+<!--          <div v-else-if="key === 'age'">-->
+<!--            <input v-model="newData[key]" type="text" min="0" max="100" class="auto-cbc-input"/>-->
+<!--          </div>-->
 
-          <div v-else-if="key === 'ageCategory'">
-            <select v-model="newData[key]" class="auto-cbc-select">
-              <option value="day">Day</option>
-              <option value="month">Month</option>
-              <option value="year">Year</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <button class="auto-cbc-add-button" @click="createdAutoCbcData">
-        <font-awesome-icon :icon="['fas', 'plus']"/>
-      </button>
-    </div>
+<!--          <div v-else-if="key === 'ageCategory'">-->
+<!--            <select v-model="newData[key]" class="auto-cbc-select">-->
+<!--              <option value="day">Day</option>-->
+<!--              <option value="month">Month</option>-->
+<!--              <option value="year">Year</option>-->
+<!--            </select>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <button class="auto-cbc-add-button" @click="createdAutoCbcData">-->
+<!--        <font-awesome-icon :icon="['fas', 'plus']"/>-->
+<!--      </button>-->
+<!--    </div>-->
 
     <!-- 데이터 리스트 -->
     <table class="auto-cbc-table">
@@ -109,7 +109,7 @@
         <th>matchingType</th>
         <th>cbc_code</th>
         <th>conditional</th>
-        <th>actions</th>
+<!--        <th>actions</th>-->
       </tr>
       </thead>
       <tbody
@@ -118,13 +118,6 @@
           @mousemove="onDrag"
           @mouseup="endDrag"
       >
-      <!--
-
-      draggable="true"
-                @dragstart="onDragStart(index, $event)"
-                @dragover.prevent
-                @drop="onDrop(index)"
-      -->
       <tr
           v-for="(item, index) in findAutoCbcDataArr"
           :key="index"
@@ -213,11 +206,11 @@
             </button>
           </div>
         </td>
-        <td class="auto-cbc-table-actions">
-          <button @click="deleteAutoCbcData(item.id)" class="auto-cbc-delete-button">
-            <font-awesome-icon :icon="['fas', 'trash']"/>
-          </button>
-        </td>
+<!--        <td class="auto-cbc-table-actions">-->
+<!--          <button @click="deleteAutoCbcData(item.id)" class="auto-cbc-delete-button">-->
+<!--            <font-awesome-icon :icon="['fas', 'trash']"/>-->
+<!--          </button>-->
+<!--        </td>-->
       </tr>
       </tbody>
     </table>
