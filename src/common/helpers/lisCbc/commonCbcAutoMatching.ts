@@ -30,10 +30,10 @@ interface CrcArrItem {
 }
 
 export const autoCbcDataMatchingDefault = async (barcodeNo: string, cbcCodeList: any, crcArr: any, selectItems: any) => {
-    const {cbcData, cbcSex, cbcAge} = await cbcDataGetCommon(barcodeNo, cbcCodeList);
+    const {cbcData, cbcSex, cbcAge, cbcYear} = await cbcDataGetCommon(barcodeNo, cbcCodeList);
     const findAutoCbcArr = await findAutoCbcApi();
 
-    return matchValues(findAutoCbcArr.data, cbcData, crcArr, cbcSex, cbcAge, selectItems);
+    return matchValues(findAutoCbcArr.data, cbcData, crcArr, cbcSex, cbcAge, selectItems, cbcYear);
 }
 
 const evaluateCondition = (count: any, condition: string) => {
@@ -70,31 +70,42 @@ const evaluateCondition = (count: any, condition: string) => {
 };
 
 
-
 const matchValues = (
-    findAutoCbcArr: AItem[], cbcArr: CbcArrItem[], crcArr: CrcArrItem[], cbcSex: string, cbcAge: string, selectItems: any
+    findAutoCbcArr: AItem[], cbcArr: CbcArrItem[], crcArr: CrcArrItem[], cbcSex: string, cbcAge: string, selectItems: any, cbcYear: string
 ): CrcArrItem[] => {
+    // day, month 인 경우 -> 환자 생일을 추출한 부분을 사용 과거거나 미래일 경우 리턴
+    // year - 사용 시 min, max 로 변경해서 환자나이가 셋팅 나이보다 많거나 작을경우 리턴
+    // PBIA에서 나온 데이터 인지 CBC 비교 대상인지 추출해서 비교한 후 PBIA 는 미리 만들어둔 wbc, rbc 를 합친 배열을 사용해서 카운터를 추출
+    // cbc 는 셋팅페이지에 cbc 배열을 가지고 와서 카운터를 추출 함
+    //  카운터를 추출 후 컨디셔너에 있는 조건과 카운터를 비교함
     findAutoCbcArr.forEach((itemA) => {
-        console.log(crcArr);
-        const { conditional, sex, age, ageCategory, matchingType, cbc_code, title, mo_type, content } = itemA;
-
+        const {conditional, sex, age, ageCategory, matchingType, cbc_code, title, mo_type, content} = itemA;
+        
         if (sex !== "all" && sex !== cbcSex) return;
-
-        const [minAge, maxAge] = parseAgeRange(age);
-        if (age.includes("-") && (cbcAge || minAge === null || maxAge === null || Number(cbcAge) < minAge || Number(cbcAge) > maxAge)) return;
-        if (ageCategory === 'year' && cbcAge > age) return;
-
-        const birthDate = moment(cbcAge, "YYYY.MM.DD");
         if (!["year", "month", "day"].includes(ageCategory)) return;
 
-        const unit = ageCategory as moment.unitOfTime.DurationConstructor;
-        const compareDate = moment().subtract(age, unit);
+        const [minAge, maxAge] = parseAgeRange(age);
+        if (minAge === null || maxAge === null || Number(cbcAge) < minAge || Number(cbcAge) > maxAge) return;
+        if (ageCategory === "day" || ageCategory === "month") {
+            // cbcYear (YYMMDD)에서 연, 월, 일 추출
+            const birthYear = `20${cbcYear.substring(0, 2)}`;  // "21" -> "2021"
+            const birthMonth = cbcYear.substring(2, 4); // "05" -> "05"
+            const birthDay = cbcYear.substring(4, 6);   // "12" -> "12"
 
-        if (birthDate.isAfter(compareDate, 'day')) return;
+            const birthDate = moment(`${birthYear}-${birthMonth}-${birthDay}`, "YYYY-MM-DD");
+
+            // 현재 날짜에서 age (일/개월) 만큼 빼고, 더한 날짜 계산
+            const pastDate = moment().subtract(Number(age), ageCategory as moment.unitOfTime.DurationConstructor);
+            const futureDate = moment().add(Number(age), ageCategory as moment.unitOfTime.DurationConstructor);
+
+            // 생일이 과거 범위를 벗어나거나 미래 범위를 벗어나면 리턴
+            if (birthDate.isBefore(pastDate, "day") || birthDate.isAfter(futureDate, "day")) return;
+        }
+
+
 
         let count = 0;
         if (matchingType === 'PBIA') {
-            console.log(selectItems);
             count = getPBIAItemCount(selectItems, cbc_code);
         } else {
             const cbcItem = cbcArr.find(item => item.classNm === cbc_code.replace("%", ""));
@@ -106,7 +117,7 @@ const matchValues = (
             conditional.split(",").map(cond => cond.trim()).forEach(cond => {
                 if (evaluateCondition(count, cond)) {
                     const crcItem = crcArr.find((item: any) => item.crcTitle === title && item.morphologyType === mo_type);
-                    if (crcItem) crcItem.val = content;
+                    if (crcItem) crcItem.val = content.trim();
                 }
             });
         }
