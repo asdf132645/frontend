@@ -16,7 +16,7 @@
 <!--        >Malaria-->
 <!--        </button>-->
       </div>
-      <div class='btn-imgsetbox_img_list imageSettingRef'>
+      <div class='btn-imgsetbox_img_list'>
         <Button
             class="wbc-img-set"
             size="sm"
@@ -29,7 +29,7 @@
           IMG Setting
           <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" :style="'left: 36px'" :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
         </Button>
-        <div class='imageList-setting-container imageSettingRef' v-show="imgSet_img_list">
+        <div class='imageList-setting-container' v-show="imgSet_img_list">
           <div>
             <font-awesome-icon :icon="['fas', 'sun']"/>
             <span>Brightness {{ imgBrightness }}</span>
@@ -142,11 +142,11 @@
     </ul>
     <template v-for="(classList, outerIndex) in [rightClickItem]" :key="outerIndex">
       <template v-for="(category, innerIndex) in classList" :key="innerIndex">
-        <div class="categories" v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
-          <ul class="categoryNm">
+        <div class="rbc-select-box-categories" v-show="category?.categoryNm === 'Shape' || category.categoryNm === 'Inclusion Body'">
+          <ul class="rbc-select-box-categoryNm">
             <li>{{ category.categoryNm }}</li>
           </ul>
-          <ul class="classNmRbc rbcRightClickLi-wrapper">
+          <ul class="rbc-select-box-classNmRbc rbcRightClickLi-wrapper">
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${outerIndex}-${innerIndex}-${classIndex}`">
               <li v-if="classInfo.classNm !== 'Poikilocyte'"
@@ -162,11 +162,11 @@
           </ul>
         </div>
       </template>
-      <div class="categories">
-        <ul class="categoryNm rbcRightClickLi-wrapper">
+      <div class="rbc-select-box-categories">
+        <ul class="rbc-select-box-categoryNm">
           <li>Others</li>
         </ul>
-        <ul class="classNmRbc rbcRightClickLi-wrapper">
+        <ul class="rbc-select-box-classNmRbc rbcRightClickLi-wrapper">
           <li @click="moveRbcClassEvent('04', '01', 'Platelet')">
             <span>Platelets</span>
           </li>
@@ -399,11 +399,6 @@ const handleClickOutside = (event: MouseEvent) => {
   if (selectBox && !selectBox.contains(event.target as Node)) {
     showSelect.value = false; // 셀렉트 박스 닫기
   }
-
-  const imgSettingBox = document.querySelector('.imageSettingRef');
-  if (imgSettingBox && !imgSettingBox.contains(event.target as Node)) {
-    imgSet_img_list.value = false;
-  }
 };
 
 
@@ -457,10 +452,16 @@ const rbcClassRightClick = (event: MouseEvent) => {
     return;
   }
 
+  const existingOverlays = document.getElementsByClassName('overlayElement');
+  if (existingOverlays.length === 0) {
+    showErrorAlert('Nothing has been selected');
+    return;
+  }
+
   showSelect.value = true;
 
   if (event.currentTarget instanceof HTMLElement) {
-    const [menuHeight, menuWidth] = [326, 240];
+    const [menuHeight, menuWidth] = [352, 322];
     const [screenHeight, screenWidth] = [window.innerHeight, window.innerWidth];
     const [mouseX, mouseY] = [event.clientX, event.clientY];
     let [menuX, menuY] = [mouseX, mouseY];
@@ -807,7 +808,6 @@ const initElement = async () => {
       });
 
       viewer.value.addHandler('canvas-click', async (event: any) => {
-        //
         if (!event.originalEvent.ctrlKey) {
           await removeDiv();
         }
@@ -963,7 +963,6 @@ const initElement = async () => {
 
 
       });
-
 
     }
   } catch (err) {

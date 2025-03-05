@@ -1,28 +1,55 @@
 <template>
-  <div class="flex-column-center">
-    <ul class="normalItems">
-      <li v-for="item in normalItems" :key="item.id" class="flex-justify-start-align-center normalItems-wrapper">
-        <span>{{ item.abbreviation }}</span>
-        <span class="text-left">{{ item?.fullNm }}</span>
-        <div class="flex-justify-start-align-center gap14" style="width: 250px;">
-          <input v-model="item.min"
-                 class="w50"
-                 type="number"
-                 maxlength="25"
-                 placeholder="class name"
-                 @input="filterNumbersOnly($event, item, 'min')"
-          />
-          <span>-</span>
-          <input
-              class="w50"
-              @input="filterNumbersOnly($event, item, 'max')"
-              v-model="item.max" type="number" maxlength="25" placeholder="class name"
-          />
-          <span>{{ item.unit }}</span>
-        </div>
-      </li>
-    </ul>
-    <button @click="saveNormalRange" class="saveBtn" type="button">Save</button>
+  <div class="setting-container">
+    <div class="setting-normalRange-container">
+      <table class="setting-table">
+        <colgroup>
+          <col width="40%"/>
+          <col width="10%"/>
+          <col width="15%"/>
+          <col width="10%"/>
+          <col width="15%"/>
+          <col width="10%"/>
+        </colgroup>
+        <thead>
+        <tr>
+          <th class="text-left">Class</th>
+          <th>Abbreviation</th>
+          <th>Min</th>
+          <th></th>
+          <th>Max</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in normalItems" :key="item.id" class="setting-customClass-wrapper">
+          <td class="text-left">{{ item?.fullNm }}</td>
+          <td class="text-center">{{ item.abbreviation }}</td>
+          <td>
+            <input v-model="item.min"
+                   class="w50"
+                   type="number"
+                   maxlength="25"
+                   placeholder="class name"
+                   @input="filterNumbersOnly($event, item, 'min')"
+            />
+          </td>
+          <td>-</td>
+          <td>
+            <input
+                class="w50"
+                @input="filterNumbersOnly($event, item, 'max')"
+                v-model="item.max" type="number" maxlength="25" placeholder="class name"
+            />
+          </td>
+          <td>{{ item.unit }}</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <Button class="setting-saveBtn" @click="saveNormalRange">
+        Save
+      </Button>
+    </div>
   </div>
 
   <Confirm
@@ -42,6 +69,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
@@ -54,10 +88,13 @@ import {
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {defaultPBNormalRange, defaultBMNormalRange, settingName} from "@/common/defines/constants/settings";
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -72,6 +109,7 @@ const enteringRouterPath = computed(() => store.state.commonModule.enteringRoute
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const projectType = ref('');
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -107,17 +145,17 @@ const saveNormalRange = async () => {
       const updateResult = await updateNormalRangeApi({normalRangeItems: normalItems.value});
 
       if (updateResult.data) {
-        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getNormalRange();
       } else {
-        showErrorAlert('update failed');
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getNormalRange();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -153,18 +191,6 @@ const getNormalRange = async () => {
     console.error(e);
   }
 }
-
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
 
 const hideAlert = () => {
   showAlert.value = false;

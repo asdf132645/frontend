@@ -77,7 +77,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             }
             break;
 
-        case settingName.wbcRunningCount:
+        case settingName.runningCount:
             try {
                 await updateRunInfoApi({ wbcRunCountItems: settingUpdatingData });
             } catch (e) {
@@ -85,7 +85,7 @@ export const settingUpdate = async (settingType: string, settingUpdatingData: an
             }
             break;
 
-        case settingName.wbcCustomClass:
+        case settingName.customClass:
             try {
                 await updateWbcCustomClassApi({ classArr: settingUpdatingData });
             } catch (e) {

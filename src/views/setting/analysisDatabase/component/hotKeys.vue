@@ -1,10 +1,16 @@
 <template>
-  <div>
-    <ul class="wbcHotKeysItems">
-      <li v-for="item in wbcHotKeysItems" :key="item.id">
-        <span>{{ item.abbreviation }}</span>
-        <span>{{ item.fullNm }}</span>
-        <span>
+  <div class="setting-container">
+<!--    추후 BF 개발을 할 때 살릴 코드-->
+<!--    <div class="setting-activeBtn-container">-->
+<!--      <Button @click="handleSettingMenu('wbc')" :isActive="activeSetting.wbc">WBC</Button>-->
+<!--      <Button @click="handleSettingMenu('bf')" :isActive="activeSetting.bf">BF</Button>-->
+<!--    </div>-->
+    <div>
+      <ul class="wbcHotKeysItems">
+        <li v-for="item in activeSetting.wbc ? wbcHotKeysItems : bfHotKeysItems" :key="item.id">
+          <span>{{ item.abbreviation }}</span>
+          <span>{{ item.fullNm }}</span>
+          <span>
           <input
               v-model="item.key"
               type="text"
@@ -13,9 +19,10 @@
               @input="filterEnglishAndNumbers($event, item, 'key')"
           />
         </span>
-      </li>
-    </ul>
-    <button @click="saveWbcCustomClass" class="saveBtn" type="button">Save</button>
+        </li>
+      </ul>
+      <Button class="setting-saveBtn" @click="saveCustomClass">Save</Button>
+    </div>
   </div>
 
   <Confirm
@@ -35,18 +42,34 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted, computed, onBeforeMount, watch} from 'vue';
-import {createWbcHotKeysApi, updateWbcHotKeysApi, getWbcHotKeysApi} from "@/common/api/service/setting/settingApi";
+import {
+  createWbcHotKeysApi,
+  updateWbcHotKeysApi,
+  getWbcHotKeysApi,
+  getBfHotKeysApi, createBfHotKeysApi, updateBfHotKeysApi
+} from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
-import {bmHotKeys, settingName, wbcHotKeys} from "@/common/defines/constants/settings";
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {bfHotKeys, bmHotKeys, settingName, wbcHotKeys} from "@/common/defines/constants/settings";
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import Confirm from "@/components/commonUi/Confirm.vue";
+import Button from "@/components/commonUi/Button.vue";
+import {HotkeyActiveSettingType} from "@/common/type/settings";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const router = useRouter();
@@ -61,6 +84,13 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const bfHotKeysItems = ref<any>([]);
+const activeHotkeyItems = ref<any>([]);
+const activeSetting = ref({
+  'wbc': true,
+  'bf': false,
+})
+const { toastInfo, showToast } = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
@@ -93,6 +123,14 @@ const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm
   item[field] = filteredValue.trim();
 };
 
+const saveCustomClass = async () => {
+  if (activeSetting.value.wbc) {
+    await saveWbcCustomClass();
+  } else if (activeSetting.value.bf) {
+    await saveBfCustomClass();
+  }
+}
+
 const saveWbcCustomClass = async () => {
   try {
     let result: ApiResponse<void>;
@@ -102,17 +140,17 @@ const saveWbcCustomClass = async () => {
       const updateResult = await updateWbcHotKeysApi({wbcHotKeysItems: wbcHotKeysItems.value});
 
       if (updateResult.data) {
-        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         await getWbcHotKeyClasses();
       } else {
-        showErrorAlert(MESSAGES.settingUpdateFailure);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
       return;
     }
     if (result) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getWbcHotKeyClasses();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
@@ -144,17 +182,24 @@ const getWbcHotKeyClasses = async () => {
   }
 }
 
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
+const getBfHotKeyClasses = async () => {
+  try {
+    const result = await getBfHotKeysApi();
+    if (result) {
+      if (!result?.data || (result?.data instanceof Array && result?.data.length === 0)) {
+        saveHttpType.value = 'post';
+        bfHotKeysItems.value = bfHotKeys;
+      } else {
+        saveHttpType.value = 'put';
+        bfHotKeysItems.value = result.data;
+      }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(bfHotKeysItems.value) });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(bfHotKeysItems.value) });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 const hideAlert = () => {
   showAlert.value = false;
@@ -171,5 +216,41 @@ const handleOkConfirm = async () => {
   await saveWbcCustomClass();
   showConfirm.value = false;
 }
+
+const handleSettingMenu = (type: keyof HotkeyActiveSettingType) => {
+  activeSetting.value.wbc = false;
+  activeSetting.value.bf = false;
+  activeSetting.value[type] = true;
+}
+
+const saveBfCustomClass = async () => {
+  try {
+    let result: ApiResponse<void>;
+    if (saveHttpType.value === 'post') {
+      result = await createBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
+    } else {
+      const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
+
+      if (updateResult.data) {
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
+        await getBfHotKeyClasses();
+      } else {
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
+      }
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      return;
+    }
+    if (result) {
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
+      saveHttpType.value = 'put';
+      await getBfHotKeyClasses();
+      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 </script>

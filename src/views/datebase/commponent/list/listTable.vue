@@ -241,7 +241,13 @@
         </ul>
       </div>
       <div class="modalBottom">
-        <button class="alertButton" @click="dbDataEditSet">Save</button>
+        <Button
+            @click="dbDataEditSet"
+            size="md"
+        >
+          Save
+        </Button>
+<!--        <button class="alertButton" @click="dbDataEditSet">Save</button>-->
       </div>
     </template>
   </Modal>
@@ -302,6 +308,7 @@ import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/sli
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
+import Button from "@/components/commonUi/Button.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents', 'total', 'itemsPerPage', 'toggleRefreshPagination']);
 const loadMoreRef = ref(null);
@@ -709,7 +716,6 @@ const rowDbClick = async (item) => {
   });
 
 }
-
 
 const getRbcDegreeData = async () => {
   try {

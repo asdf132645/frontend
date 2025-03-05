@@ -1,8 +1,4 @@
 <template>
-<!--  <div class="loaderBackground" v-if="loading">-->
-<!--    <div class="loader"></div>-->
-<!--    <p class="loadingText">Loading...</p>-->
-<!--  </div>-->
   <ul class="listDetail-wbcCircle-wrapper">
     <template v-for="(item, index) in wbcInfoArrChild" :key="item.id">
       <li
@@ -222,9 +218,9 @@
   </div>
 
   <ToastNotification
-      v-if="toastMessage"
-      :message="toastMessage"
-      :messageType="toastMessageType"
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
       :duration="1500"
   />
 </template>
@@ -244,6 +240,7 @@ import {useImageRefs} from "@/common/lib/utils/useImageRefs";
 import {apiUrl} from "@/common/api/apiUrl";
 import router from "@/router";
 import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -255,8 +252,6 @@ const lastItemIndex = ref(0);
 const lastClassObj = ref<any>({});
 const classList = ref<any>([]);
 const clickableItem = ref<HTMLElement | null>(null);
-const toastMessage = ref('');
-const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const scrollContainer = ref(null);
 const hoverClassName = ref(null);
 const { setImageRef } = useImageRefs();
@@ -324,6 +319,7 @@ const wpsImgClickInfoData = ref<any>({});
 const hoverCircleClassName = ref();
 const tooltipStyle = ref({ top: '0px', left: '0px' });
 const circleRefs = ref([]);
+const { toastInfo, showToast } = useToast();
 
 watch(props.hiddenImages, async (newVal) => {
   hiddenImages.value = {...newVal};
@@ -455,8 +451,7 @@ const classImgChange = async (type: string, event: any) => {
   const updateClassValue = (currentClass: any, previousClass: any, classObj: any, itemIndex: any) => {
     if (firstClass.value === lastClass.value) {
       currentClass.value = previousClass.value;
-      toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-      showToast('Class already selected.');
+      showToast('Class already selected.', MESSAGES.TOAST_MSG_ERROR);
       return;
     } else {
       previousClass.value = event ? event.target.value : currentClass.value;
@@ -473,13 +468,6 @@ const classImgChange = async (type: string, event: any) => {
   if (props.totalCount === '0') {
     await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
   }
-};
-
-const showToast = (message: string) => {
-  toastMessage.value = message;
-  setTimeout(() => {
-    toastMessage.value = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
-  }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
 const handleHoverClassCircle = async (item: { id: string, name: string }, index: number) => {
@@ -517,6 +505,19 @@ const handleHoverClassCircle = async (item: { id: string, name: string }, index:
 const handleLeaveClassCircle = () => {
   hoverCircleClassName.value = undefined;
 }
+
+// const handleImgRightClick = () => {
+//   emits('selectImage',)
+//   //
+// // @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
+// // @dblclick="() => $emit('openModal', image, item)"
+// //   v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
+// //   @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
+// }
+//
+// const handleImgClick = () => {
+//   //
+// }
 
 const setCircleRef = (el, index) => {
   if (el) {

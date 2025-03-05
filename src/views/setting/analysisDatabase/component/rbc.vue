@@ -1,29 +1,53 @@
 <template>
-  <div class="flex-column-center">
-    <div style="width: 480px;" class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
-      <div class="flex-column mt22">
-        <h2 class="fs12 mb14">{{ category?.categoryNm }}</h2>
-        <div v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
-          <div class="flex-align-center-justify-between mb10">
-            <template v-if="classItem.classNm !== 'Normal'">
-              <div style="width: 240px;" class="flex-justify-between">
+  <div class="setting-rbcDegree-main-container">
+    <div class="setting-rbcDegree-top-container">
+      <h1 class="fs12">RBC Degree</h1>
+      <div class="setting-rbcDegree-resetBtn">
+        <Button @click="onResetDegree" :icon="['fas', 'rotate-right']" size="sm"></Button>
+      </div>
+    </div>
+
+    <div class="setting-rbcDegree-main-title-container">
+      <p>Category</p>
+      <p>Class</p>
+      <p>0</p>
+      <p>1+</p>
+      <p>2+</p>
+      <p>3+</p>
+    </div>
+    <div>
+      <div class="mt2 mb4" v-for="(category, index) in rbcClassListArr.value" :key="'rbc' + index">
+        <div class="setting-rbcDegree-container">
+          <h2 class="setting-rbcDegree-title">{{ category?.categoryNm }}</h2>
+          <div class="setting-rbcDegreeClass-container">
+            <template v-for="(classItem, classIndex) in category.classInfo" :key="classIndex">
+              <div class="setting-rbcDegreeClass-wrapper" v-if="classItem.classNm !== 'Normal'">
                 <h3 class="fs10">{{ classItem.classNm }}</h3>
-                <h3>[{{ classItem.degree1 }}, {{ classItem.degree2}}, {{ classItem.degree3 }}]</h3>
-              </div>
-              <div class='degreeInput mt1 mb1 flex-justify-between'>
-                <input class="number-small" type="number" v-model="classItem.degree1"/>
-                <input class="number-small" type="number" v-model="classItem.degree2"/>
-                <input class="number-small" type="number" v-model="classItem.degree3"/>
+                <div class='degreeInput mt1 mb1 flex-justify-between'>
+                  <div class="flex-align-center">
+                    <p>&lt;</p>
+                    <input class="number-small" type="number" v-model="classItem.degree1"/>
+                  </div>
+                  <div class="flex-align-center">
+                    <p>&lt;</p>
+                    <input class="number-small" type="number" v-model="classItem.degree2"/>
+                  </div>
+                  <div class="flex-align-center">
+                    <p>&lt;</p>
+                    <input class="number-small" type="number" v-model="classItem.degree3"/>
+                  </div>
+                  <div class="flex-align-center">
+                    <input class="number-small" type="number" v-model="classItem.degree3"/>
+                    <p>&lt;</p>
+                  </div>
+
+                </div>
               </div>
             </template>
           </div>
-
         </div>
       </div>
-    </div>
-    <div class="mt-2 degreeDiv" >
-      <button class="saveBtn" @click="onResetDegree">Reset</button>
-      <button class="saveBtn" type="button" @click="createRbcDegreeData">Save</button>
+      <Button @click="createRbcDegreeData" class="saveBtn">Save</Button>
     </div>
   </div>
 
@@ -44,6 +68,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 
@@ -55,9 +86,12 @@ import Alert from "@/components/commonUi/Alert.vue";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {MESSAGES} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {RbcDegreeRequest} from "@/common/api/service/setting/dto/rbcDegree";
+import Button from "@/components/commonUi/Button.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -71,18 +105,19 @@ const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const { toastInfo, showToast } = useToast();
 
 onMounted(async () => {
   await getRbcDegreeData();
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.rbcDegree });
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.rbcDegree});
 });
 
 watch(() => rbcClassListArr.value, async (rbcClassListArrAfterSettingObj) => {
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(rbcClassListArrAfterSettingObj) });
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(rbcClassListArrAfterSettingObj)});
   if (settingType.value !== settingName.rbcDegree) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.rbcDegree });
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.rbcDegree});
   }
-}, { deep: true });
+}, {deep: true});
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
@@ -145,16 +180,16 @@ const createRbcDegreeData = async () => {
     }
 
     if (result) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       scrollToTop();
       saveHttpType.value = 'put';
     }
   } catch (e) {
-    showErrorAlert(MESSAGES.settingSaveFailure);
+    showToast(MSG.TOAST.SAVE_FAIL, MESSAGES.TOAST_MSG_ERROR);
     console.error(e);
   } finally {
-    await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-    await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+    await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+    await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   }
 };
 
@@ -169,8 +204,8 @@ const getRbcDegreeData = async () => {
     await combindDegree();
   }
 
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(rbcClassListArr.value) });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(rbcClassListArr.value) });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(rbcClassListArr.value)});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(rbcClassListArr.value)});
 };
 
 
@@ -215,25 +250,13 @@ const processData = (data: any): void => {
   rbcClassListArr.value = Array.from(categoryMap.values());
 };
 
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
-
 const hideAlert = () => {
   showAlert.value = false;
 };
 
 const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
 }

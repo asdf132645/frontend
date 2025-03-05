@@ -8,7 +8,6 @@ import './assets/css/color.css';
 import './assets/css/layout.css';
 import './assets/css/layoutExtraWide.css';
 import './assets/css/icoBtn.css';
-import './assets/css/layoutHenry.css'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 // @ts-ignore

@@ -30,7 +30,7 @@
         <div class="categories rbcClass">
           <ul class="categoryNm">
             <li @click="toggleAll(allCheckType[category?.categoryId], category?.categoryId)"
-                class="flex-column cursorPointer" style="padding-top: 6px">
+                class="flex-column" :class="type !== 'report' && 'cursorPointer'" style="padding-top: 6px">
               <span>{{ getCategoryName(category) }}</span>
               <span style="margin-left: 12px; margin-top: 2px;">
                 <font-awesome-icon class="rbc-allCheck-eye-font rbc-check-eye-font" :icon="['fas', 'eye']"
@@ -45,7 +45,7 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category?.categoryId}-${classInfo?.classId}`">
               <li @click="handleClick(category?.categoryId, classInfo?.classId, classInfo?.classNm, category?.categoryNm)"
-                  class="flex-align-center cursorPointer">
+                  class="flex-align-center" :class="type !== 'report' && 'cursorPointer'">
                 <span>{{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
                 <div
                     v-if="showCheckbox(category?.categoryId, classInfo?.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
@@ -82,10 +82,10 @@
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
-                      class="cursorPointer"
                       :class="{
                         'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
-                        'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0
+                        'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0,
+                        'cursorPointer': type !== 'report'
                       }"
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], degreeIndex - 1, false)"
                   />
@@ -97,10 +97,10 @@
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-down']"
                       v-for="degreeIndex in 4" :key="degreeIndex + '-down'"
-                      class="cursorPointer"
                       :class="{
                       'degreeActive': degreeIndex < Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 2 || 0,
-                      'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 1 || 0
+                      'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 1 || 0,
+                      'cursorPointer': type !== 'report'
                     }"
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], degreeIndex - 1, false)"
                   />
@@ -111,13 +111,14 @@
                 <span v-if="classInfo.degree === '0'" class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
-                      class="cursorPointer"
+                      :class="type !== 'report' && 'cursorPointer'"
                   />
                 </span>
                 <span v-else class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
-                      class="degreeActive cursorPointer"
+                      class="degreeActive"
+                      :class="type !== 'report' && 'cursorPointer'"
                   />
                 </span>
                 <span v-if="rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"

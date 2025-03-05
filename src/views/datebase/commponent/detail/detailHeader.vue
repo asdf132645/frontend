@@ -1,13 +1,13 @@
 <template>
-  <div class="topClintInfo">
-    <ul>
+  <div class="detailHeader-container">
+    <ul class="detailHeader-info-container">
       <li
           class="pos-relative"
           @mouseover="tooltipVisibleFunc('analysisType', true)"
           @mouseout="tooltipVisibleFunc('analysisType', false)"
       >
         <span>{{ testType }}</span>
-        <Tooltip :isVisible="tooltipVisible.analysisType" className="mb08" message='Analysis Type' />
+        <Tooltip :isVisible="tooltipVisible.analysisType" className="mb08" message='Analysis Type'/>
       </li>
       <li v-if="barcodeNo" class="flex-align-center gap8">
         <p
@@ -16,31 +16,32 @@
             @mouseout="tooltipVisibleFunc('barcodeNo', false)"
         >
           <span>{{ barcodeNo }}</span>
-          <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" message='Barcode ID' />
+          <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" message='Barcode ID'/>
         </p>
-<!--        <Button-->
-<!--            @mouseover="tooltipVisibleFunc('barcodeCopy', true)"-->
-<!--            @mouseout="tooltipVisibleFunc('barcodeCopy', false)"-->
-<!--            size="sm"-->
-<!--        >-->
-<!--          <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />-->
-<!--          <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" message='Copy Barcode ID' />-->
-<!--        </Button>-->
+        <!--        <Button-->
+        <!--            @mouseover="tooltipVisibleFunc('barcodeCopy', true)"-->
+        <!--            @mouseout="tooltipVisibleFunc('barcodeCopy', false)"-->
+        <!--            size="sm"-->
+        <!--        >-->
+        <!--          <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />-->
+        <!--          <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" message='Copy Barcode ID' />-->
+        <!--        </Button>-->
         <p
             class="pos-relative cursorPointer"
             @mouseover="tooltipVisibleFunc('barcodeCopy', true)"
             @mouseout="tooltipVisibleFunc('barcodeCopy', false)"
         >
-          <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />
-          <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" message='Copy Barcode ID' />
+          <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction"/>
+          <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" message='Copy Barcode ID'/>
         </p>
         <p
             class="pos-relative cursorPointer"
             @mouseover="tooltipVisibleFunc('barcodeEdit', true)"
             @mouseout="tooltipVisibleFunc('barcodeEdit', false)"
         >
-          <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal" :icon="['fas', 'pen-to-square']" />
-          <Tooltip :isVisible="tooltipVisible.barcodeEdit" className="mb08" message='Edit Barcode ID' />
+          <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal"
+                             :icon="['fas', 'pen-to-square']"/>
+          <Tooltip :isVisible="tooltipVisible.barcodeEdit" className="mb08" message='Edit Barcode ID'/>
         </p>
       </li>
       <li
@@ -50,7 +51,7 @@
           @mouseout="tooltipVisibleFunc('analyzedDttm', false)"
       >
         <span>{{ getDateTimeYYYYMMDDHHmmss(analyzedDttm) }}</span>
-        <Tooltip :isVisible="tooltipVisible.analyzedDttm" className="mb08" message='Analyzed Date' />
+        <Tooltip :isVisible="tooltipVisible.analyzedDttm" className="mb08" message='Analyzed Date'/>
       </li>
       <li
           class="pos-relative"
@@ -59,7 +60,7 @@
           @mouseout="tooltipVisibleFunc('patientNo', false)"
       >
         <span>{{ cbcPatientNo }}</span>
-        <Tooltip :isVisible="tooltipVisible.patientNo" className="mb08" message='Patient ID' />
+        <Tooltip :isVisible="tooltipVisible.patientNo" className="mb08" message='Patient ID'/>
       </li>
       <template v-if="cbcPatientName || patientName">
         <li
@@ -69,7 +70,7 @@
             @mouseout="tooltipVisibleFunc('patientName', false)"
         >
           {{ cbcPatientName }}
-          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" message='Patient Name' />
+          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" message='Patient Name'/>
         </li>
         <li
             class="pos-relative"
@@ -78,7 +79,7 @@
             @mouseout="tooltipVisibleFunc('patientName', false)"
         >
           {{ patientName }}
-          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" message='Patient Name' />
+          <Tooltip :isVisible="tooltipVisible.patientName" className="mb08" message='Patient Name'/>
         </li>
       </template>
       <li
@@ -88,7 +89,7 @@
           @mouseout="tooltipVisibleFunc('sex', false)"
       >
         <span>{{ cbcSex }}</span>
-        <Tooltip :isVisible="tooltipVisible.sex" className="mb08" type="" message='Sex' />
+        <Tooltip :isVisible="tooltipVisible.sex" className="mb08" type="" message='Sex'/>
       </li>
       <li
           class="pos-relative"
@@ -97,7 +98,7 @@
           @mouseout="tooltipVisibleFunc('age', false)"
       >
         <span>{{ cbcAge }}</span>
-        <Tooltip :isVisible="tooltipVisible.age" className="mb08" type="" message='Age' />
+        <Tooltip :isVisible="tooltipVisible.age" className="mb08" type="" message='Age'/>
       </li>
       <li
           class="pos-relative"
@@ -106,71 +107,75 @@
           @mouseout="tooltipVisibleFunc('hospitalName', false)"
       >
         <span>{{ hospitalName }}</span>
-        <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" message='Hospital name' />
+        <Tooltip :isVisible="tooltipVisible.hospitalName" className="mb08" message='Hospital name'/>
       </li>
+    </ul>
 
-      <div class="detailHeader-tool-container">
-          <h1 class="mr12 fs10">Tool bar</h1>
-          <div class="detailHeader-tool-wrapper">
-            <Button
-                class="memoBoxRef pos-relative"
-                @mouseover="tooltipVisibleFunc('memo', true)"
-                @mouseout="tooltipVisibleFunc('memo', false)"
-                size="sm"
-                @click="memoOpen"
-                :isActive="isMemoModalOpen"
-                :icon="['fas', 'comment-dots']"
-                :className="hasMemo() && 'blueText'"
-            >
-              Memo
-              <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MEMO" />
-            </Button>
-            <div v-if="isMemoModalOpen" class="memoModal shadowBox memoBoxRef">
-              <div class="memoModal-header">
-                <h1 class="fs12">Memo</h1>
-                <font-awesome-icon @click="memoCancel" class="memoModal-cancel-btn" :icon="['fas', 'xmark']" />
-              </div>
-              <div class="memoModal-main">
-                <div class="memoModal-wrapper">
-                  <h2 class="memoModal-title">WBC</h2>
-                  <textarea v-model="memo.wbc"></textarea>
-                </div>
-                <div class="memoModal-wrapper">
-                  <h2 class="memoModal-title">RBC</h2>
-                  <textarea v-model="memo.rbc"></textarea>
-                </div>
-              </div>
-              <div class="memoModal-btn-wrapper">
-                <button class="memoModalBtn" @click="memoChange">Save</button>
-              </div>
+    <div class="detailHeader-tool-container">
+      <div class="detailHeader-tool-wrapper">
+        <Button
+            class="memoBoxRef pos-relative"
+            @mouseover="tooltipVisibleFunc('memo', true)"
+            @mouseout="tooltipVisibleFunc('memo', false)"
+            size="sm"
+            @click="memoOpen"
+            :isActive="isMemoModalOpen"
+            :icon="['fas', 'comment-dots']"
+            :className="hasMemo() && 'blueText'"
+        >
+          Memo
+          <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.MEMO"/>
+        </Button>
+        <div v-if="isMemoModalOpen" class="memoModal shadowBox memoBoxRef">
+          <div class="memoModal-header">
+            <h1 class="fs12">Memo</h1>
+            <font-awesome-icon @click="memoCancel" class="memoModal-cancel-btn" :icon="['fas', 'xmark']"/>
+          </div>
+          <div class="memoModal-main">
+            <div class="memoModal-wrapper">
+              <h2 class="memoModal-title">WBC</h2>
+              <textarea v-model="memo.wbc"></textarea>
             </div>
-
-            <Button
-                @mouseover="tooltipVisibleFunc('confirm', true)"
-                @mouseout="tooltipVisibleFunc('confirm', false)"
-                size="sm"
-                @click="commitConfirmed"
-                :icon="['fas', 'square-check']"
-                :className="{'blueText': slideData?.submitState === 'Submit',}"
-            >
-              Confirm
-              <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type="" :message="MSG.TOOLTIP.CONFIRM" />
-            </Button>
-            <Button
-                v-if="!crcConnect && showLISUploadButton"
-                size="sm"
-                @click="lisModalOpen"
-                :class="{'blueText': slideData?.submitState.includes('lis') || lisBtnColor,}"
-                @mouseover="tooltipVisibleFunc('lisUpload', true)"
-                @mouseout="tooltipVisibleFunc('lisUpload', false)"
-                :icon="['fas', 'upload']"
-            >
-              LIS Upload
-              <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type="" :message="MSG.TOOLTIP.LIS_UPLOAD" />
+            <div class="memoModal-wrapper">
+              <h2 class="memoModal-title">RBC</h2>
+              <textarea v-model="memo.rbc"></textarea>
+            </div>
+          </div>
+          <div class="memoModal-btn-wrapper">
+            <Button @click="memoChange" :icon="['fas', 'floppy-disk']" size="sm">
+              Save
             </Button>
           </div>
         </div>
-    </ul>
+
+        <Button
+            @mouseover="tooltipVisibleFunc('confirm', true)"
+            @mouseout="tooltipVisibleFunc('confirm', false)"
+            size="sm"
+            @click="commitConfirmed"
+            :icon="['fas', 'square-check']"
+            :className="{'blueText': slideData?.submitState === 'Submit',}"
+        >
+          Confirm
+          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.CONFIRM"/>
+        </Button>
+        <Button
+            v-if="!crcConnect && showLISUploadButton"
+            size="sm"
+            @click="lisModalOpen"
+            :class="{'blueText': slideData?.submitState.includes('lis') || lisBtnColor,}"
+            @mouseover="tooltipVisibleFunc('lisUpload', true)"
+            @mouseout="tooltipVisibleFunc('lisUpload', false)"
+            :icon="['fas', 'upload']"
+        >
+          LIS Upload
+          <Tooltip :isVisible="tooltipVisible.lisUpload" className="mb08" position="top" type=""
+                   :message="MSG.TOOLTIP.LIS_UPLOAD"/>
+        </Button>
+      </div>
+    </div>
   </div>
 
   <Modal v-if="isModalOpen" @update:closeLayer="closeLayer" width="400">
@@ -373,7 +378,7 @@ watch(() => slideData.value, (newSlideData) => {
   if (!newSlideData.cbcPatientNm || newSlideData.cbcPatientNm === '' || newSlideData.cbcPatientNm !== newSlideData.patientNm) {
     emits('updateSlideDataByCBCData', newSlideData);
   }
-}, { deep: true });
+}, {deep: true});
 
 const tooltipVisibleFunc = (type: keyof DetailHeaderType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
@@ -400,7 +405,7 @@ const closeLayer = (val: boolean) => {
 const handleEditBarcodeNo = async () => {
   await nextTick();
   try {
-    const updatedRuningInfo = { ...slideData.value, barcodeNo: editingBarcodeNo.value };
+    const updatedRuningInfo = {...slideData.value, barcodeNo: editingBarcodeNo.value};
     const res = await gqlGenericUpdate(barcodeNoUpdateMutation, {
       id: slideData.value.id,
       barcodeNo: editingBarcodeNo.value,
@@ -448,7 +453,7 @@ const memoChange = async () => {
     wbcMemo: enterAppliedWbcMemo,
     rbcMemo: enterAppliedRbcMemo,
   }
-  const updatedRuningInfo = { ...slideData.value, ...updatedItem};
+  const updatedRuningInfo = {...slideData.value, ...updatedItem};
   const res = await gqlGenericUpdate(memoUpdateMutation, {
     id: updatedRuningInfo.id,
     wbcMemo: updatedRuningInfo.wbcMemo,
@@ -495,8 +500,8 @@ const mountedMethod = async () => {
   }
 
   if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
-    const { inhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, slideData.value, cbcCodeList.value, 'lisUpload');
-    await store.dispatch('commonModule/setCommonInfo', { inhaTestCode: inhaTestCode });
+    const {inhaTestCode} = await inhaCbc(cbcFilePathSetArr.value, slideData.value, cbcCodeList.value, 'lisUpload');
+    await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: inhaTestCode});
   }
   if (slideData.value?.submitState) {
     lisBtnColor.value = slideData.value?.submitState === 'lisCbc';
@@ -540,7 +545,7 @@ const onCommit = async () => {
   };
 
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await gqlGenericUpdate(cbcUpdateMutation,{
+  await gqlGenericUpdate(cbcUpdateMutation, {
     id: updatedRuningInfo.id,
     submitState: updatedRuningInfo.submitState,
     submitOfDate: updatedRuningInfo.submitOfDate,
@@ -647,7 +652,7 @@ const uimdTestCbcLisDataGet = async () => {
   }).then(async function (resultCbc) {
     // 결과 처리 코드
     const xml = resultCbc.data.trim(); // 불필요한 공백 제거
-    const cbcJson = JSON.parse(xml2json(xml, { compact: true }));
+    const cbcJson = JSON.parse(xml2json(xml, {compact: true}));
     const cbcWorkList = cbcJson.root.spcworklist.worklist;
     const fiveDiffWorkList = ['LHR10501', 'LHR10502', 'LHR10503', 'LHR10504', 'LHR10505', 'LHR10506'];
 
@@ -956,8 +961,8 @@ const gilDataSendLoad = async () => {
 }
 
 const inhaDataSendLoad = async () => {
-  const { inhaTestCode: localInhaTestCode } = await inhaCbc(cbcFilePathSetArr.value, slideData.value, cbcCodeList.value, 'lisUpload');
-  await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: localInhaTestCode });
+  const {inhaTestCode: localInhaTestCode} = await inhaCbc(cbcFilePathSetArr.value, slideData.value, cbcCodeList.value, 'lisUpload');
+  await store.dispatch('commonModule/setCommonInfo', {inhaTestCode: localInhaTestCode});
   const {
     errMessage,
     lisBtnColor: lisBtnColorVal
@@ -991,13 +996,13 @@ const otherDataSend = async () => {
     rbcInfo: slideData.value?.rbcInfoAfter,
     result: lisCodeWbcArrApp.value,
     rbcFfiltering: lisCodeRbcArrApp.value,
-    pidData: {patientId: slideData.value?.barcodeNo, patientName: slideData.value.cbcPatientNm || 'No Name' },
+    pidData: {patientId: slideData.value?.barcodeNo, patientName: slideData.value.cbcPatientNm || 'No Name'},
   };
 
   const res = await readH7Message(data);
-  if(url.includes("http")){ // HTTP 통신 시 사용
+  if (url.includes("http")) { // HTTP 통신 시 사용
     await sendLisMessage(res);
-  }else{ // 공유 폴더 사용 시
+  } else { // 공유 폴더 사용 시
     const data = {
       filepath: `${lisFilePathSetArr.value}\\${slideData.value.barcodeNo}.hl7`,
       msg: res,
@@ -1015,7 +1020,7 @@ const otherDataSend = async () => {
   }
 }
 
-const goDae =  async (): Promise<string> => {
+const goDae = async (): Promise<string> => {
   let data = `H|\\^&||||||||||P||${slideData.value?.barcodeNo}\n`;
   let seq = 0;
   let kumcMergePercent = 0;
@@ -1068,7 +1073,7 @@ const goDae =  async (): Promise<string> => {
 
 const lisFileUrlCreate = async (data: any) => {
   const filePath = `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${slideData.value?.barcodeNo}.txt`;
-  const parmsLisCopy = {filePath, data: data };
+  const parmsLisCopy = {filePath, data: data};
   await createCbcFile(parmsLisCopy);
 
   // URL이 아닌 경우, 로컬 파일 작업 수행
@@ -1172,7 +1177,7 @@ const updateSubmitState = async () => {
   lisBtnColor.value = true;
 
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
-  await gqlGenericUpdate(cbcUpdateMutation,{
+  await gqlGenericUpdate(cbcUpdateMutation, {
     id: updatedRuningInfo.id,
     submitState: updatedRuningInfo.submitState,
     submitOfDate: updatedRuningInfo.submitOfDate,

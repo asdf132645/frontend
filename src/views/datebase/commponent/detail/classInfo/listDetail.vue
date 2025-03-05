@@ -233,8 +233,12 @@
       <div v-if="contextMenuVisible" :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }"
            class="context-menu detail">
         <ul>
-          <li v-for="(item, itemIdx) in wbcInfo" :key="itemIdx" @click="moveSelectedImages(item, itemIdx)">
-            {{ excludeClassName(item.name) }}
+          <li
+              v-for="(item, itemIdx) in wbcInfo"
+              :key="itemIdx"
+              @click="moveSelectedImages(item, itemIdx)"
+          >
+            {{ excludeClassName(item.name, itemIdx) }}
           </li>
         </ul>
       </div>
@@ -569,21 +573,12 @@ const handleUpdateCellRef = (refValue: any) => {
 };
 
 const classCompare = () => {
-  if (wpsShow.value) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    showToast('When WPS is enabled, Class Compare cannot be checked.');
-    return;
-  }
+  wpsShow.value = false;
   classCompareShow.value = !classCompareShow.value;
 }
 
 const wps = () => {
-  if (classCompareShow.value && wpsShow.value === false) {
-    toastMessageType.value = MESSAGES.TOAST_MSG_ERROR;
-    showToast('When classCompare is enabled, WPS cannot be checked.');
-    return;
-  }
-
+  classCompareShow.value = false;
   wpsShow.value = !wpsShow.value;
   if (!wpsShow.value) {
     blockClicks.value = false;
@@ -717,9 +712,9 @@ const moveSelectedImages = async (item: any, itemIdx: any) => {
   contextMenuVisible.value = false;
 };
 
-const excludeClassName = (title: string): string => {
+const excludeClassName = (title: string, itemIdx: number): string => {
   if (title === 'Smudge' && siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) return "";
-  return title;
+  return `${itemIdx + 1}.${title}`;
 }
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {
@@ -1467,7 +1462,6 @@ function selectImage(itemIndex: any, imageIndex: any, classInfoitem: any) {
         selectItemImageArr.value.push(classInfoitem);
       }
 
-      /** TODO 모두 선택할 경우 check 표시 활성화 - Shift 클릭 및 하나의 아이템도 클릭했을 때 check 표시 뜨게 구현해야 함 */
       if (selectItemImageArr.value.length === end - start + 1) {
         selectedTitle.value = wbcInfo.value[0].title;
       }
