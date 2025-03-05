@@ -72,7 +72,7 @@ export const enum MESSAGES {
     DELETE = 'Delete',
     UPLOAD = 'Upload',
     OK = 'Ok',
-    FULLSCREEN_SUGGEST = 'Please click the full screen button.',
+    FULLSCREEN_SUGGEST = 'Change to full screen mode',
 
     TOAST_MSG_SUCCESS = 'success',
     TOAST_MSG_ERROR = 'error',

@@ -549,7 +549,6 @@ const getDbData = async (type: string, pageNum?: number) => {
   } else {
     pageChange = page.value;
   }
-  console.log('startDate.value', startDate.value);
   const requestData: any = {
     page: type !== 'mounted' ? pageChange : Number(pageNum),
     pageSize: 15,

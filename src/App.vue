@@ -154,8 +154,8 @@ function checkFullscreenStatus() {
     return;
   }
 
-  isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
-  if (siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
+  if (commonDataGet.value.viewerCheck === 'main') {
+    isFullscreen.value = window.matchMedia('(display-mode: fullscreen)').matches;
     if (!isFullscreen.value) {
       showSuccessAlert(MESSAGES.FULLSCREEN_SUGGEST);
     } else {
@@ -918,6 +918,10 @@ const showCoreErrorAlert = (message: string) => {
 const hideAlert = () => {
   if (alertType.value === 'coreError') {
     errorClear();
+  } else {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    }
   }
   showAlert.value = false;
 };

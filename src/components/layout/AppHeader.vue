@@ -27,7 +27,7 @@
         </router-link>
 
         <!-- 가운데 메뉴 -->
-        <div v-if="machineVersion === '100a'" class="autoStart-container">
+        <div v-if="autoStartView()" class="autoStart-container">
           <ProgressBar
               text="Auto Start"
               :value="autoStartTimer"
@@ -70,7 +70,7 @@
               <li>{{ formattedDate }} {{ formattedTime }}</li>
             </ul>
           </div>
-          <div class="iconHeaderMenu">
+          <div class="iconHeaderMenu" v-if="viewerCheck === 'main'">
             <ul>
               <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseout="closeErrLogLeave" >
                 <font-awesome-icon class="cursorPointer" :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
@@ -818,6 +818,10 @@ const errMouseSet = () => {
 
 const tooltipVisibleFunc = (type: 'oilPrime' | 'storage' | 'drawerStatus' | 'runningStatus', visible: boolean) => {
   tooltipVisible[type] = visible;
+}
+
+const autoStartView = () => {
+  return machineVersion.value === '100a' && viewerCheck.value === 'main';
 }
 
 </script>
