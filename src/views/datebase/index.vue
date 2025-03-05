@@ -7,150 +7,78 @@
   <div class="listTable-main-container">
     <div class='listBoxTable'>
       <div class="listTable-search-main-container">
-        <h3 class="titleH3">
-          Filters
-          <Button
-              @click.stop="classListToggleEvent"
-              :icon="['fas', 'filter']"
-              size="sm"
-              class="classificationListBtn"
-              :iconClass="'fs06'"
-              :isActive="classListToggle"
-          >
-          </Button>
-        </h3>
-        <div class="flex-align-center" style="margin-left: 320px;">
-          <div class="listTable-search-sub-container">
-            <div class="listTable-search-wrapper">
-              <h1 class="listTable-search-mainTitle">
-                <font-awesome-icon :icon="['fas', 'calendar-week']" size="lg" />
-                <span style="margin-left: 5px;">Date</span>
-              </h1>
-              <div class="settingDatePickers">
-                <Datepicker v-model="startDate" :week-starts-on="0" class="cursorDefault listTable-customDatepicker"></Datepicker>
-                <Datepicker v-model="endDate" :week-starts-on="0" class="cursorDefault listTable-customDatepicker"></Datepicker>
-              </div>
-              <Button
-                  @click="setDateToday"
-                  icon="calendar-check"
-              >
+        <div class="listTable-search-filter-container">
+          <div class="listTable-search-filter-wrapper">
+            <h2>Analysis</h2>
+            <MultiSelectComboBox :options="analysisOptions" v-model="selectedAnalysisValues"
+                                 @change="handleChangeAnalysisFilter" placeholder="All"/>
+          </div>
+          <div class="listTable-search-filter-wrapper">
+            <h2>Class</h2>
+            <MultiSelectComboBox :options="titleItem" v-model="selectedClassValues" @change="handleChangeClassFilter"
+                                 placeholder="All"/>
+          </div>
+        </div>
+        <div class="listTable-search-date-container">
+          <div class="listTable-search-date-wrapper">
+            <h2>Period</h2>
+            <div class="listTable-search-date-btn-wrapper">
+              <Button @click="setDate('today')" size="sm">
+                Today
               </Button>
-            </div>
-
-            <div class="listTable-search-wrapper">
-              <div class="listTable-search-mainTitle">
-                <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
-                <span>Search</span>
-              </div>
-
-              <select v-model="searchType" class="listTable-search-select-container">
-                <option value="barcodeNo">Barcode ID</option>
-                <option value="patientId">Patient ID</option>
-                <option value="patientNm">Patient Name</option>
-              </select>
-              <div class="search-container">
-                <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
-                <input type="text" v-model="searchText" class="listTable-searchInput-container"
-                       @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
-              </div>
-<!--              <Button-->
-<!--                  @click.stop="classListToggleEvent"-->
-<!--                  :icon="['fas', 'filter']"-->
-<!--                  :iconClass="'fs06'"-->
-<!--                  :isActive="classListToggle"-->
-<!--                  class="classificationListBtn"-->
-<!--              >-->
-<!--              </Button>-->
-              <Button
-                  @click="search"
-                  size="md"
-                  class="listTable-search-btn"
-                  :icon="['fas', 'magnifying-glass']"
-              >
-                <!--              Search-->
+              <Button @click="setDate('threeDay')" size="sm">
+                3D
+              </Button>
+              <Button @click="setDate('oneWeek')" size="sm">
+                1W
+              </Button>
+              <Button @click="setDate('oneMonth')" size="sm">
+                1M
               </Button>
             </div>
           </div>
 
-          <div class="listTable-search-btn-container">
-<!--            <Button-->
-<!--                @click="search"-->
-<!--                size="md"-->
-<!--                class="listTable-search-btn"-->
-<!--                :icon="['fas', 'magnifying-glass']"-->
-<!--            >-->
-<!--&lt;!&ndash;              Search&ndash;&gt;-->
-<!--            </Button>-->
-            <Button
-                @click="dateRefresh"
-                size="md"
-                class="listTable-search-btn"
-                :icon="['fas', 'rotate-right']"
-            >
-<!--              Clear-->
-            </Button>
+          <div class="settingDatePickers">
+            <Datepicker
+                v-model="startDate"
+                :week-starts-on="0"
+                class="cursorDefault listTable-customDatepicker"
+                @update:modelValue="handleDateChange"></Datepicker>
+            <Datepicker
+                v-model="endDate"
+                :week-starts-on="0"
+                class="cursorDefault listTable-customDatepicker"
+                @update:modelValue="handleDateChange"></Datepicker>
           </div>
         </div>
 
-
-        <!-- Classification List Modal -->
-        <div class="filterDivBox" v-if="classListToggle">
-          <div class="lastTestType">
-            <span>Analysis Type</span>
-            <div>
-              <label>
-                <input type="checkbox" value="00" @change="changeTestType('00')" :checked="testType === '00'"/>
-                <span>All</span>
-              </label>
-              <template v-if="!bmClassIsBoolen">
-                <label>
-                  <input type="checkbox" value="01" @change="changeTestType('01')" :checked="testType === '01'"/>
-                  <span>Diff</span>
-                </label>
-                <label>
-                  <input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
-                  <span>PBS</span>
-                </label>
-              </template>
-
-              <template v-if="bmClassIsBoolen">
-                <label>
-                  <input type="checkbox" value="02" @change="changeTestType('02')" :checked="testType === '02'"/>
-                  <span>Wedge</span>
-                </label>
-                <label>
-                  <input type="checkbox" value="04" @change="changeTestType('04')" :checked="testType === '04'"/>
-                  <span>Biopsy</span>
-                </label>
-                <label>
-                  <input type="checkbox" value="06" @change="changeTestType('06')" :checked="testType === '06'"/>
-                  <span>Squash</span>
-                </label>
-              </template>
-            </div>
+        <div class="listTable-search-wrapper">
+          <select v-model="searchType" class="listTable-search-select-container">
+            <option value="barcodeNo">Barcode ID</option>
+            <option value="patientId">Patient ID</option>
+            <option value="patientNm">Patient Name</option>
+          </select>
+          <div class="search-container">
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
+            <input type="text" v-model="searchText" class="listTable-searchInput-container"
+                   @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
           </div>
-          <!--          <div class="nrCount" v-if="!bmClassIsBoolen">-->
-          <!--            <span>NR Count</span>-->
-          <!--            <input type="text" v-model="nrCount"/>-->
-          <!--          </div>-->
-          <!--          <div class="wbcTotal">-->
-          <!--            <span>WBC Total</span>-->
-          <!--            <select v-model="wbcCountOrder">-->
-          <!--              <option value="all">Do Not Select</option>-->
-          <!--              <option>DESC</option>-->
-          <!--              <option>ASC</option>-->
-          <!--            </select>-->
-          <!--          </div>-->
-          <div class="wbcInfoFilter">
-            <span>{{ bmClassIsBoolen ? 'BM' : 'WBC' }} Info Filter</span>
-            <ul class="wbcInfoFilter">
-              <li v-for="(item, idx) in titleItem" :key="idx">
-                <input type="checkbox" :id="'checkbox_' + idx" v-model="item.checked" @change="updateFilter">
-                <label :for="'checkbox_' + idx">{{ item.title }}</label>
-              </li>
-            </ul>
-          </div>
+          <Button
+              @click="search"
+              size="md"
+              class="listTable-search-btn"
+              :icon="['fas', 'magnifying-glass']"
+          >
+            <!--              Search-->
+          </Button>
 
+          <Button
+              @click="dateRefresh"
+              size="md"
+              class="listTable-search-btn"
+              :icon="['fas', 'broom']"
+          >
+          </Button>
         </div>
 
         <div class="listTable-btn-container">
@@ -162,7 +90,8 @@
               :isActive="showPopupTable"
           ></Button>
 
-          <Button v-if="viewerCheck !== 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon" size="sm"></Button>
+          <Button v-if="viewerCheck !== 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon"
+                  size="sm"></Button>
         </div>
       </div>
       <keep-alive>
@@ -245,13 +174,18 @@ import {useRouter} from "vue-router";
 import Button from "@/components/commonUi/Button.vue";
 import PopupTable from "@/components/commonUi/PopupTable.vue";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
-import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
+import {
+  RBC_CODE_CLASS_ID, SEARCH_ANALYSIS_BM_OPTIONS,
+  SEARCH_ANALYSIS_PB_OPTIONS,
+  SHOWING_RBC_SHAPE_CLASS_IDS
+} from "@/common/defines/constants/dataBase";
 import {sdPatientNameGetAPI, sdWorklistsAPI} from "@/common/helpers/lisCbc/sdCbcLis";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {WbcInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
+import MultiSelectComboBox from "@/components/commonUi/MultiSelectComboBox.vue";
 
 
 const store = useStore();
@@ -273,7 +207,6 @@ const titleItemArr = ref([]);
 const nrCount = ref(0);
 const testType = ref('00');
 const wbcCountOrder = ref('all');
-const classListToggle = ref(false);
 const bmClassIsBoolen = ref(false);
 const instance = getCurrentInstance();
 const prevDataPage = ref('');
@@ -313,10 +246,18 @@ const isBarcodeScannerInput = {value: false};
 const myip = ref('');
 const total = ref(0);
 const toggleRefreshPagination = ref(false);
-
+const analysisOptions = ref(SEARCH_ANALYSIS_PB_OPTIONS);
+const selectedAnalysisValues = ref<string[]>(['00']);
+const selectedClassValues = ref<string[]>([]);
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
+  if (bmClassIsBoolen.value) {
+    analysisOptions.value = SEARCH_ANALYSIS_BM_OPTIONS;
+  } else {
+    analysisOptions.value = SEARCH_ANALYSIS_PB_OPTIONS;
+  }
+
 })
 
 onMounted(async () => {
@@ -325,7 +266,6 @@ onMounted(async () => {
     // loadingDelayParents.value = true;
   }
 
-  document.addEventListener('click', closeClassListBox);
   if (barcodeInput.value) {
     barcodeInput.value.focus();
   }
@@ -336,6 +276,25 @@ onMounted(async () => {
   myip.value = await getDeviceIpApi();
 
 });
+
+const handleChangeAnalysisFilter = (values: (string | number)[]) => {
+  if (!values || values.length === 0) {
+    changeTestType('00');
+    selectedAnalysisValues.value = ['00'];
+  } else {
+    changeTestType(values[0]);
+  }
+};
+
+const handleChangeClassFilter = (values: (string | number)[]) => {
+  const selectedTitleItems = titleItem.value.filter((item: any) => values.includes(item.title)).map((item: any) => item.title);
+  titleItemArr.value = selectedTitleItems ?? [];
+}
+
+
+const handleDateChange = () => {
+  search();
+}
 
 async function handleStateVal(data: any) {
   if (data?.payload !== 'refreshDb') {
@@ -355,9 +314,27 @@ async function handleStateVal(data: any) {
   await initDbData();
 }
 
-const setDateToday = () => {
-  startDate.value = new Date();
-  endDate.value = new Date();
+const setDate = (type: 'today' | 'threeDay' | 'oneWeek' | 'oneMonth') => {
+  const today = new Date();
+  let pastDate = new Date();
+  switch (type) {
+    case 'today':
+      pastDate = new Date();
+      break;
+    case 'threeDay':
+      pastDate.setDate(today.getDate() - 3);
+      break;
+    case 'oneWeek':
+      pastDate.setDate(today.getDate() - 7);
+      break;
+    case 'oneMonth':
+      pastDate.setMonth(today.getMonth() - 1);
+      break;
+    default:
+      break;
+  }
+  startDate.value = pastDate;
+  endDate.value = today;
   search();
 }
 
@@ -450,28 +427,10 @@ const handleEnter = () => {
 
 onBeforeUnmount(() => {
   // instance?.appContext.config.globalProperties.$socket.off('stateVal', handleStateVal);
-  document.removeEventListener('click', closeClassListBox);
 });
 
-const closeClassListBox = (event: MouseEvent) => {
-  const selectBox = document.querySelector('.filterDivBox');
-  const selectButton = document.querySelector('.classificationListBtn');
-  if (selectButton && selectButton.contains(event.target as Node)) return;
-  if (selectBox && !selectBox.contains(event.target as Node)) {
-    classListToggle.value = false; // 셀렉트 박스 닫기
-  }
-};
-
-const classListToggleEvent = () => {
-  classListToggle.value = !classListToggle.value;
-}
 const changeTestType = (value: any) => {
   testType.value = testType.value === value ? '' : value;
-}
-
-const updateFilter = () => {
-  const selectedItems = titleItem.value?.filter((item: any) => item.checked).map((item: any) => item.title);
-  titleItemArr.value = selectedItems ?? [];
 }
 
 const initDbData = async () => {
@@ -496,6 +455,13 @@ const initDbData = async () => {
       }
       return item;
     })
+
+    titleItem.value = titleItem.value.map((item) => {
+      return {title: item.title, checked: item.checked, label: item.title, value: item.title};
+    });
+    selectedClassValues.value = titleItemArr.value;
+    selectedAnalysisValues.value = [testType.value];
+
     await getDbData('mounted', page.value);
   } else {
     await getDbData('mounted', 1);
@@ -621,6 +587,10 @@ const getDbData = async (type: string, pageNum?: number) => {
             }
             return {...item, checked: false};
           });
+
+          titleItem.value = titleItem.value.map((item) => {
+            return {title: item.title, checked: item.checked, label: item.title, value: item.title};
+          });
         }
 
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
@@ -673,7 +643,6 @@ const disableSelectItem = async () => {
 }
 
 const loadMoreData = async (pageNum: any) => {
-  console.log(pageNum)
   page.value = pageNum;
   await getDbData('loadMoreData');
 };

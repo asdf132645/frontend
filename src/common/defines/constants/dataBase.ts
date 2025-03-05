@@ -12,6 +12,18 @@ export const BM_TEST_TYPE = [
     {value: '05', text: 'Clot section'}
 ];
 
+export const SEARCH_ANALYSIS_PB_OPTIONS = [
+    { value: '04', label: 'PBS' },
+    { value: '01', label: 'Diff' },
+    { value: '05', label: 'Quality Check' },
+];
+
+export const SEARCH_ANALYSIS_BM_OPTIONS = [
+    { value: '02', label: 'Wedge' },
+    { value: '04', label: 'Biopsy' },
+    { value: '06', label: 'Squash' },
+];
+
 export const RBC_CODE_CLASS_ID = {
     SIZE: {
         CATEGORY_ID: '01',
