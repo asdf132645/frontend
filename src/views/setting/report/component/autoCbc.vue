@@ -275,6 +275,7 @@ const loadAutoCbcData = async () => {
       getCbcCodeRbcApi(),
       crcGet(),
     ]);
+    const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
 
     // Morphology 데이터 분류
     crcData.value = crcGetApi.data;
@@ -304,8 +305,12 @@ const loadAutoCbcData = async () => {
       // matchingType에 따른 cbc_code 목록 설정
       if (item.matchingType === "PBIA") {
         item.pbiaCbcCodeArr = [];
-        for (const el of cbcArr.value) {
-          item.pbiaCbcCodeArr.push({classNm: el.fullNm});
+
+        for (const el of lisCodeWbcArr) {
+          item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
+        }
+        for (const el of lisCodeRbcArr) {
+          item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
         }
       } else {
         const neene = cbcArr.value.filter((el) => {
