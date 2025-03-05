@@ -138,6 +138,8 @@ export const MSG = {
         CELL_CLASS_COMPARE: 'Compare two WBC classes',
         CELL_WPS: 'Switch WBC Positioning System mode',
         CELL_ROLLBACK: 'Rollback cell movement',
+        LIST_CLEAR: 'Clear Date & Filters',
+        EXCEL: 'Print out Sample Info as Excel file',
     },
     TOAST: {
         DELETE_SUCCESS: 'Deleted Successfully',

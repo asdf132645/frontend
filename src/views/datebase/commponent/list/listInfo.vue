@@ -36,39 +36,43 @@
         </div>
       </div>
     </div>
-    <div class="resultInformationContainer" style="padding-top: 0;">
+    <div class="resultInformationContainer">
       <h3 class="mt20 mb10 hh3title">Result Information</h3>
-      <ul class="resInfoTopContainer">
-        <div v-if="resInfoSet()" class="resInfoContainer">
-            <li class="resInfoWrapper mb10">
-              <p>Class</p>
-              <p>Count</p>
-              <p>Percent</p>
-            </li>
-            <template v-for="result in wbcInfoAfter" :key="result.title">
-              <li v-if="showClassificationResults(result.title) && result.count > 0"
-                  class="resInfoWrapper resInfoWrapperLine">
-                <p>{{ result.title }}</p>
-                <p>{{ result.count }}</p>
-                <p>{{ percentWithNoError(result.percent) + '%' }}</p>
-              </li>
-            </template>
-            <li class="resInfoWrapper mt10 mb20">
-              <p>Total</p>
-              <p>{{ wbcTotal }}</p>
-              <p>100%</p>
-            </li>
+      <table class="resultInfo-table w-full" v-if="resInfoSet()">
+        <colgroup>
+          <col width="20" />
+          <col width="40" />
+          <col width="40" />
+        </colgroup>
+        <thead>
+        <tr>
+          <th>Class</th>
+          <th>Count</th>
+          <th>Percent</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="result in wbcInfoAfter" :key="result.title">
+          <td>{{ result.title }}</td>
+          <td>{{ result.count }}</td>
+          <td>{{ percentWithNoError(result.percent) + '%' }}</td>
+        </tr>
 
-            <template v-for="result in wbcInfoAfter" :key="result.title">
-              <li v-if="showClassificationNonWbcResults(result.title) && result.count > 0"
-                  class="resInfoWrapper resInfoWrapperLine">
-                <p>{{ result.title }}</p>
-                <p>{{ result.count }}</p>
-                <p>-</p>
-              </li>
-            </template>
-          </div>
-      </ul>
+        <tr class="resultInfo-total-wrapper" v-if="Number(wbcTotal) !== 0">
+          <td>Total</td>
+          <td>{{ wbcTotal }}</td>
+          <td>100%</td>
+        </tr>
+
+        <div class="resultInfo-table-space"></div>
+
+        <tr v-for="result in nonWbcInfoValue" :key="result.title">
+          <td>{{ result.title }}</td>
+          <td>{{ result.count }}</td>
+          <td>-</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -103,7 +107,7 @@ const nonWbcTitles = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM', 'OT'];
 const projectType = ref('');
 const orderClass = ref({});
 const wbcInfoAfter = ref({});
-const isResInfo = ref(false);
+const nonWbcInfoValue = ref({});
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
@@ -144,7 +148,9 @@ const sortClassOrder = async () => {
   const oArr = orderClass.value.sort((a, b) => Number(a.orderIdx) - Number(b.orderIdx));
   const sortArr = orderClass.value.length !== 0 ? oArr : projectType.value === 'bm' ? basicBmClassList : basicWbcArr;
   const sortedWbcInfoData = sortWbcInfo(props.selectedItem.wbcInfoAfter, sortArr);
-  wbcInfoAfter.value = sortedWbcInfoData;
+  const validWbcInfo = sortedWbcInfoData.filter((item) => Number(item.count) !== 0);
+  wbcInfoAfter.value = validWbcInfo.filter((item) => !nonWbcTitles.includes(item.title));
+  nonWbcInfoValue.value = validWbcInfo.filter((item) => nonWbcTitles.includes(item.title));
 }
 
 const sortWbcInfo = (wbcInfo, basicWbcArr) => {
@@ -241,18 +247,6 @@ const getStringArrayBySiteCd = (siteCd, testType) => {
   // testType에 따라 제외할 부분 정의
   return (testType === '01' || testType === '04') ? arraysForSiteCd.includesStr : arraysForSiteCd.includesStr2;
 };
-const showClassificationResults = (classificationResult) => {
-  return (
-      classificationResult &&
-      classificationResult.length > 0 &&
-      !nonWbcTitles.includes(classificationResult)
-  );
-};
-
-const showClassificationNonWbcResults = (classificationResult) => {
-  return (classificationResult && classificationResult.length > 0 && nonWbcTitles.includes(classificationResult))
-}
-
 
 const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
 

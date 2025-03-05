@@ -18,8 +18,7 @@
         </div>
       </div>
       <div>
-        <span v-if="isOpen" style="color: black">&#9650;</span>
-        <span v-else style="color: black">&#9660;</span>
+        <font-awesome-icon :icon="['fas', 'angle-down']" color="black" />
       </div>
     </div>
 
@@ -46,7 +45,6 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 export interface Option {
   value: string | number;
   label: string;
-  disabled?: boolean;
 }
 
 interface Props {
@@ -54,13 +52,11 @@ interface Props {
   modelValue: (string | number)[];
   placeholder?: string;
   noResultsText?: string;
-  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: '항목을 선택하세요',
   noResultsText: '선택할 항목이 없습니다',
-  disabled: false
 });
 
 const emit = defineEmits<{
@@ -80,17 +76,11 @@ const isSelected = (option: Option): boolean => {
   return props.modelValue.includes(option.value);
 };
 
-// 드롭다운 토글
 const toggleDropdown = () => {
-  if (!props.disabled) {
-    isOpen.value = !isOpen.value;
-  }
+  isOpen.value = !isOpen.value;
 };
 
-// 옵션 선택/해제
 const toggleOption = (option: Option) => {
-  if (option.disabled) return;
-
   const newValue = [...props.modelValue];
   const index = newValue.indexOf(option.value);
 

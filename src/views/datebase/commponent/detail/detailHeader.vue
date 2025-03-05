@@ -18,14 +18,6 @@
           <span>{{ barcodeNo }}</span>
           <Tooltip :isVisible="tooltipVisible.barcodeNo" className="mb08" message='Barcode ID'/>
         </p>
-        <!--        <Button-->
-        <!--            @mouseover="tooltipVisibleFunc('barcodeCopy', true)"-->
-        <!--            @mouseout="tooltipVisibleFunc('barcodeCopy', false)"-->
-        <!--            size="sm"-->
-        <!--        >-->
-        <!--          <font-awesome-icon @click="barcodeCopy" :icon="['fas', 'copy']" class="hoverSizeAction" />-->
-        <!--          <Tooltip :isVisible="tooltipVisible.barcodeCopy" className="mb08" message='Copy Barcode ID' />-->
-        <!--        </Button>-->
         <p
             class="pos-relative cursorPointer"
             @mouseover="tooltipVisibleFunc('barcodeCopy', true)"
@@ -39,8 +31,7 @@
             @mouseover="tooltipVisibleFunc('barcodeEdit', true)"
             @mouseout="tooltipVisibleFunc('barcodeEdit', false)"
         >
-          <font-awesome-icon class="detailHeader-barcodeEdit-font" v-if="isGilHospital()" @click="handleModal"
-                             :icon="['fas', 'pen-to-square']"/>
+          <font-awesome-icon class="detailHeader-barcodeEdit-font" @click="handleModal" :icon="['fas', 'pen-to-square']"/>
           <Tooltip :isVisible="tooltipVisible.barcodeEdit" className="mb08" message='Edit Barcode ID'/>
         </p>
       </li>
@@ -430,10 +421,6 @@ const showToast = (message: string) => {
     toast.value.message = ''; // 메시지를 숨기기 위해 빈 문자열로 초기화
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
-
-const isGilHospital = () => {
-  return siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인천길병원']
-}
 
 const barcodeCopy = async () => {
   const textarea = document.createElement('textarea');

@@ -628,8 +628,11 @@ const isNextFalse = () => {
   isNext.value = false;
 }
 
-const handleRightClick = (event: MouseEvent, image: any, item: any) => {
+const handleRightClick = (event: MouseEvent, image: any, item: any, itemIndex: number, imageIndex: number) => {
   event.preventDefault();
+  if (selectItemImageArr.value.length === 0) {
+    selectImage(itemIndex, imageIndex, item);
+  }
   openContextMenu(event, item);
 };
 

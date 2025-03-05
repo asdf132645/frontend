@@ -53,7 +53,7 @@
                 @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
                 @dblclick="() => $emit('openModal', image, item)"
                 v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
-                @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
+                @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item, itemIndex, imageIndex)"
             >
               <div class="pos-relative" :ref="(el) => setImageRef(image.uniqueKey, el)">
                 <div v-if="image" class="titleImg" v-show="replaceFileNamePrefix(image.fileName) !== item?.title">
@@ -121,7 +121,7 @@
                   @click="() => $emit('selectImage', firstItemIndex, imageIndex, firstClassObj)"
                   @dblclick="() => $emit('openModal', image, firstClassObj)"
                   v-if="image && !hiddenImages[`${firstClassObj.id}-${image.fileName}`]"
-                  @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, firstClassObj)"
+                  @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, firstClassObj, firstItemIndex, imageIndex)"
               >
                 <div style="position: relative;">
                   <div v-if="image" class="titleImg"
@@ -181,7 +181,7 @@
                   @click="() => $emit('selectImage', lastItemIndex, imageIndex, lastClassObj)"
                   @dblclick="() => $emit('openModal', image, lastClassObj)"
                   v-if="image && !hiddenImages[`${lastClassObj.id}-${image.fileName}`]"
-                  @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, lastClassObj)"
+                  @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, lastClassObj, lastItemIndex, imageIndex)"
               >
                 <div style="position: relative;">
                   <div v-if="image" class="titleImg"
@@ -505,19 +505,6 @@ const handleHoverClassCircle = async (item: { id: string, name: string }, index:
 const handleLeaveClassCircle = () => {
   hoverCircleClassName.value = undefined;
 }
-
-// const handleImgRightClick = () => {
-//   emits('selectImage',)
-//   //
-// // @click="() => $emit('selectImage', itemIndex, imageIndex, item)"
-// // @dblclick="() => $emit('openModal', image, item)"
-// //   v-if="image.uniqueKey && !hiddenImages[`${item.id}-${image.fileName}`]"
-// //   @contextmenu.prevent="(event) => $emit('handleRightClick', event, image, item)"
-// }
-//
-// const handleImgClick = () => {
-//   //
-// }
 
 const setCircleRef = (el, index) => {
   if (el) {

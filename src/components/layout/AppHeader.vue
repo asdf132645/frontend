@@ -49,8 +49,9 @@
                       :icon="['fas', 'circle-user']"
                       @isActive="userSetOutUl"
                       size="sm"
+                      className="appHeader-userBox"
                   >
-                    {{ userModuleDataGet.userId }}
+                    <p>{{ userModuleDataGet.userId }}</p>
                   </Button>
 
                 </div>

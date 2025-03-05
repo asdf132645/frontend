@@ -19,6 +19,7 @@
                                  placeholder="All"/>
           </div>
         </div>
+        <div class="listTable-first-line"></div>
         <div class="listTable-search-date-container">
           <div class="listTable-search-date-wrapper">
             <h2>Period</h2>
@@ -38,20 +39,28 @@
             </div>
           </div>
 
+          <div class="listTable-date-icon-first-wrapper" @click="focusDatepicker('start')">
+            <font-awesome-icon
+                :icon="['fas', 'calendar']"
+                class="listTable-date-icon"
+            />
+          </div>
+
+          <div class="listTable-date-icon-second-wrapper" @click="focusDatepicker('end')">
+            <font-awesome-icon
+                :icon="['fas', 'calendar']"
+                class="listTable-date-icon"
+            />
+          </div>
           <div class="settingDatePickers">
-            <Datepicker
-                v-model="startDate"
-                :week-starts-on="0"
-                class="cursorDefault listTable-customDatepicker"
-                @update:modelValue="handleDateChange"></Datepicker>
-            <Datepicker
-                v-model="endDate"
-                :week-starts-on="0"
-                class="cursorDefault listTable-customDatepicker"
-                @update:modelValue="handleDateChange"></Datepicker>
+            <Datepicker v-model="startDate" :week-starts-on="0" class="listTable-customDatepicker firstDate"
+                        @update:modelValue="handleDateChange"/>
+            <Datepicker v-model="endDate" :week-starts-on="0" class="listTable-customDatepicker secondDate"
+                        @update:modelValue="handleDateChange"/>
           </div>
         </div>
 
+        <div class="listTable-second-line"></div>
         <div class="listTable-search-wrapper">
           <select v-model="searchType" class="listTable-search-select-container">
             <option value="barcodeNo">Barcode ID</option>
@@ -61,37 +70,42 @@
           <div class="search-container">
             <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="search-icon"/>
             <input type="text" v-model="searchText" class="listTable-searchInput-container"
-                   @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput"/>
+                   @keydown.enter="handleEnter" ref="barcodeInput" @input="handleInput" placeholder="Search"/>
           </div>
-          <Button
-              @click="search"
-              size="md"
-              class="listTable-search-btn"
-              :icon="['fas', 'magnifying-glass']"
-          >
-            <!--              Search-->
-          </Button>
-
-          <Button
-              @click="dateRefresh"
-              size="md"
-              class="listTable-search-btn"
-              :icon="['fas', 'broom']"
-          >
-          </Button>
+          <div class="flex-center gap4 pos-relative">
+            <Button @click="search" size="sm" class="listTable-search-btn" :icon="['fas', 'magnifying-glass']"></Button>
+            <Button
+                @click="dateRefresh"
+                size="sm"
+                class="listTable-search-btn"
+                :icon="['fas', 'rotate-right']"
+                @mouseover="tooltipVisibleFunc('clear', true)"
+                @mouseout="tooltipVisibleFunc('clear', false)"
+            ></Button>
+            <Tooltip :isVisible="tooltipVisible.clear" className="mt10" position="top" :message="MSG.TOOLTIP.LIST_CLEAR"/>
+          </div>
         </div>
 
-        <div class="listTable-btn-container">
+        <div class="listTable-third-line"></div>
+        <div class="listTable-btn-container pos-relative">
           <Button
-              v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] !== siteCd"
+              v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd"
               @click="openCheckList"
               size="sm"
               :icon="['fas', 'hospital-user']"
               :isActive="showPopupTable"
           ></Button>
 
-          <Button v-if="viewerCheck !== 'main'" :icon="['fas', 'file-csv']" @click="exportToExcel" class="excelIcon"
-                  size="sm"></Button>
+          <Button
+              v-if="viewerCheck === 'main'"
+              :icon="['fas', 'file-csv']"
+              @click="exportToExcel"
+              size="sm"
+              @mouseover="tooltipVisibleFunc('excel', true)"
+              @mouseout="tooltipVisibleFunc('excel', false)"
+          >
+          </Button>
+          <Tooltip :isVisible="tooltipVisible.excel" className="mt10" position="top" :message="MSG.TOOLTIP.EXCEL"/>
         </div>
       </div>
       <keep-alive>
@@ -150,7 +164,7 @@ import NewListImg from "@/views/datebase/commponent/list/newListImg.vue";
 import ListImg from "@/views/datebase/commponent/list/listImg.vue";
 import {
   computed,
-  getCurrentInstance,
+  getCurrentInstance, nextTick,
   onBeforeMount,
   onBeforeUnmount,
   onMounted,
@@ -186,6 +200,10 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
 import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import MultiSelectComboBox from "@/components/commonUi/MultiSelectComboBox.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {ListTableType} from "@/common/type/tooltipType";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
+import {MSG} from "@/common/defines/constants/constantMessageText";
 
 
 const store = useStore();
@@ -195,8 +213,10 @@ const showAlert = ref(false);
 const alertMessage = ref('');
 
 const today = new Date();
-const startDate = ref(new Date('2015-03-18'));
-const endDate = ref(new Date());
+const thirtyDaysAgo = new Date(today);
+thirtyDaysAgo.setDate(today.getDate() - 29);
+const startDate = ref(thirtyDaysAgo);
+const endDate = ref(today);
 const searchText = ref('');
 const searchType = ref('barcodeNo');
 const page = ref(1);
@@ -249,6 +269,11 @@ const toggleRefreshPagination = ref(false);
 const analysisOptions = ref(SEARCH_ANALYSIS_PB_OPTIONS);
 const selectedAnalysisValues = ref<string[]>(['00']);
 const selectedClassValues = ref<string[]>([]);
+const tooltipVisible = ref({
+  clear: false,
+  hospital: false,
+  excel: false,
+})
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
@@ -294,6 +319,16 @@ const handleChangeClassFilter = (values: (string | number)[]) => {
 
 const handleDateChange = () => {
   search();
+}
+
+const focusDatepicker = (type: string) => {
+  const datepicker = type === 'start'
+      ? document.querySelector('.firstDate')
+      : document.querySelector('.secondDate')
+
+  if (datepicker) {
+    datepicker.focus()
+  }
 }
 
 async function handleStateVal(data: any) {
@@ -496,7 +531,6 @@ const loadLastSearchParams = () => {
 };
 
 const getDbData = async (type: string, pageNum?: number) => {
-  dbGetData.value = [];
 
   if (type === 'search') {
     checkedSelectedItems.value = [];
@@ -515,6 +549,7 @@ const getDbData = async (type: string, pageNum?: number) => {
   } else {
     pageChange = page.value;
   }
+  console.log('startDate.value', startDate.value);
   const requestData: any = {
     page: type !== 'mounted' ? pageChange : Number(pageNum),
     pageSize: 15,
@@ -532,8 +567,9 @@ const getDbData = async (type: string, pageNum?: number) => {
     requestData.title = titleItemArr.value;
   }
 
-  if (testType.value !== '00' && testType.value !== '') {
-    requestData.testType = testType.value;
+  const filteredTestType = selectedAnalysisValues.value.filter((item) => item !== '' && item !== '00');
+  if (filteredTestType.length > 0) {
+    requestData.testType = filteredTestType;
   }
 
   if (wbcCountOrder.value !== '' && wbcCountOrder.value !== 'all') {
@@ -569,6 +605,7 @@ const getDbData = async (type: string, pageNum?: number) => {
         if (type === 'search') {
           dbGetData.value = newData;
         } else {
+          dbGetData.value = [];
           newData.forEach((item: any) => {
             const index = dbGetData.value.findIndex(data => data.id === item.id);
             if (index !== -1) {
@@ -630,7 +667,6 @@ const getDbData = async (type: string, pageNum?: number) => {
 };
 
 const search = () => {
-  dbGetData.value = [];
   getDbData('search');
 };
 
@@ -1146,7 +1182,7 @@ const reDegree = async (rbcInfoArray: any) => {
 };
 
 const dateRefresh = () => {
-  startDate.value = new Date('2015-03-18');
+  startDate.value = thirtyDaysAgo;
   endDate.value = new Date();
   searchText.value = '';
   nrCount.value = 0;
@@ -1156,6 +1192,8 @@ const dateRefresh = () => {
   titleItem.value = [];
   sessionStorage.removeItem('lastSearchParams');
   localStorage.removeItem('lastSearchParams');
+  selectedAnalysisValues.value = ['00'];
+  selectedClassValues.value = [];
   search();
 }
 
@@ -1194,6 +1232,10 @@ const getDbDataAfterFunc = async () => {
       }
     }
   }
+}
+
+const tooltipVisibleFunc = (type: keyof ListTableType, visible: boolean) => {
+  tooltipVisible.value[type] = visible;
 }
 
 </script>

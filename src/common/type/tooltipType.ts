@@ -50,3 +50,9 @@ export interface DetailHeaderType {
     confirm: boolean;
     lisUpload: boolean;
 }
+
+export interface ListTableType {
+    clear: boolean;
+    hospital: boolean;
+    excel: boolean;
+}

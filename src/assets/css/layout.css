@@ -529,6 +529,14 @@ input.number-small {
     font-size: 0.8rem;
 }
 
+.appHeader-userBox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 80px;
+    text-overflow: ellipsis;
+}
+
 .headerLogo {
     width: 80px;
     position: relative;
@@ -732,7 +740,7 @@ li.errLogLi.warning:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 12px;
+    padding-bottom: 10px;
     text-align: left;
 }
 
@@ -813,7 +821,6 @@ ul.userSetOutUl {
     color: var(--white-color);
     border-left: 1px solid var(--main-bg-7-color);
 }
-
 
 span.icoText {
     margin-left: 7px;
@@ -1351,18 +1358,74 @@ ul.customClass li {
     height: 30px;
 }
 
+.listTable-first-line {
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    background-color: gray;
+    left: 268px;
+}
+
+.listTable-second-line {
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    background-color: gray;
+    left: 560px;
+}
+
+.listTable-third-line {
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    background-color: gray;
+    left: 1212px;
+}
+
+.listTable-date-icon-first-wrapper {
+    position: absolute;
+    color: black;
+    left: 286px;
+    z-index: 10;
+    top: 37px;
+    cursor: pointer;
+    width: 126.5px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+}
+
+.listTable-date-icon-second-wrapper {
+    position: absolute;
+    color: black;
+    left: 420px;
+    z-index: 10;
+    top: 37px;
+    width: 126.5px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.listTable-date-icon {
+    padding-left: 8px;
+}
+
 .listTable-customDatepicker {
     display: flex;
     align-items: center;
     gap: 12px;
-    cursor: default;
+    cursor: pointer;
     text-align: center;
+    height: 32px;
 }
 
 .settingDatePickers {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .settingDatePickers > div:nth-child(1) {
@@ -1374,7 +1437,7 @@ ul.customClass li {
 }
 
 .settingDatePickers > div > div > input {
-    height: 24px;
+    height: 20px;
 }
 
 .backupDatePickers {
@@ -1445,23 +1508,23 @@ table.settingTable select {
 .multiselect-container {
     position: relative;
     width: 160px;
+    height: 34px;
 }
 
 .multiselect-input-container {
     display: flex;
     align-items: center;
-    border: 1px solid #ccc;
+    border: 1px solid #3498db;
     border-radius: 4px;
     padding: 2px 4px;
     cursor: pointer;
-    height: 28px;
+    height: 26px;
     width: 150px;
     background-color: white;
 }
 
-.multiselect-input-container.active {
-    border-color: var(--gray-1-color);
-    box-shadow: 0 0 0 1px var(--gray-1-color);
+.multiselect-input-container:hover {
+    background-color: #f0f0f0;
 }
 
 .multiselect-selected-options {
@@ -1474,26 +1537,24 @@ table.settingTable select {
     max-width: 192px;
     gap: 5px;
     color: black;
+    padding-left: 4px;
 }
 
 .multiselect-selected-option {
     position: relative;
     display: inline-flex;
     align-items: center;
-    background-color: var(--coral-bg-0-color);
+    background-color: var(--gray-bg-0-color);
     border-radius: 2px;
     padding: 4px 8px;
     font-size: 0.8rem;
     color: black;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     max-width: 100%;
 }
 
 .multiselect-dropdown-menu {
     position: absolute;
-    width: 160px;
+    width: 158px;
     max-height: 240px;
     overflow-y: auto;
     margin-top: 5px;
@@ -1503,6 +1564,18 @@ table.settingTable select {
     z-index: 100;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     color: black;
+}
+
+.multiselect-dropdown-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.multiselect-dropdown-menu::-webkit-scrollbar-thumb {
+    background-color: #888;
+}
+
+.multiselect-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }
 
 .multiselect-dropdown-item {
@@ -1519,7 +1592,7 @@ table.settingTable select {
 }
 
 .multiselect-dropdown-item:hover {
-    background-color: #f5f5f5;
+    background-color: #888;
 }
 
 .multiselect-remove-option {
@@ -3256,10 +3329,10 @@ ul.orderListUi > li > img {
 
 .listTable-btn-container {
     display: flex;
+    align-items: flex-start;
     justify-content: flex-end;
-    width: 270px;
     gap: 8px;
-    margin-right: 8px;
+    margin-right: 18px;
 }
 
 .listTable-search-select-container {
@@ -3282,7 +3355,7 @@ ul.orderListUi > li > img {
 }
 
 .listTable-searchInput-container {
-    width: 160px;
+    width: 362px;
     padding: 9px 9px 9px 36px; /* 아이콘을 고려하여 왼쪽 패딩 추가 */
 }
 
@@ -4103,15 +4176,81 @@ ul.normalItems {
 }
 
 .resultInformationContainer {
-    height: 404px;
+    height: 400px;
+}
+
+.resultInfo-table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.resultInfo-table > thead {
+    background: var(--main-bg-2-color);
+    position: sticky;
+    padding-right: 8px;
+}
+
+.resultInfo-table thead th {
+    padding: 10px;
+}
+
+.resultInfo-table tr td {
+    padding-left: 10px;
+    border-bottom: 1px solid var(--gray-bg-2-color);
+    line-height: normal;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.resultInfo-table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.resultInfo-table > tbody {
+    display: block;
+    height: 340px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+}
+
+.resultInfo-table > tbody::-webkit-scrollbar {
+    width: 4px;
+}
+
+.resultInfo-table > tbody::-webkit-scrollbar-thumb {
+    background-color: #888;
+}
+
+.resultInfo-table > tbody::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.resultInfo-table > tbody > tr {
+    height: 25px;
+}
+
+.resultInfo-total-wrapper {
+    color: var(--coral-bg-0-color);
+    margin-bottom: 12px;
+}
+
+.resultInfo-table-space {
+    width: 100%;
+    height: 8px;
 }
 
 .listTable-search-main-container {
+    width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 260px 260px 650px 120px;
     padding-left: 14px;
     margin: 8px 0;
     column-gap: 12px;
+    position: relative;
 }
 
 .listTable-search-filter-container {
@@ -4126,19 +4265,28 @@ ul.normalItems {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /*gap: 12px;*/
+    height: 34px;
+}
+
+.listTable-search-filter-wrapper > h2 {
+    font-size: 0.8rem;
 }
 
 .listTable-search-date-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 5px;
 }
 
 .listTable-search-date-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.listTable-search-date-wrapper > h2 {
+    font-size: 0.8rem;
 }
 
 .listTable-search-date-btn-wrapper {
@@ -4155,17 +4303,18 @@ ul.normalItems {
 }
 
 .listTable-search-wrapper {
-    width: 520px;
+    width: 630px;
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-left: 18px;
 }
 
 .listTable-search-btn {
-    width: 50px;
+    width: 36px;
     font-size: 0.8rem;
     display: flex;
-    height: 36px;
+    height: 35px;
 }
 
 .listTableImageContainer {
@@ -4228,7 +4377,7 @@ ul.normalItems {
 .dbImageContainer {
     position: relative;
     overflow-y: hidden;
-    height: 274px;
+    height: 284px;
 }
 
 .dbRightImages {
@@ -6222,7 +6371,7 @@ input.codeInput {
 .isNotNormalIcon {
     position: absolute;
     top: 6px;
-    left: 10px;
+    left: 0;
 }
 
 .rbcDegree-wrapper {
@@ -6767,7 +6916,7 @@ progress::-moz-progress-bar {
 }
 
 .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.3s ease-in-out;
 }
 .fade-enter, .fade-leave-to {
     opacity: 0;
@@ -7205,6 +7354,10 @@ button.gbArrowButton.left {
     border: none;
     padding: 5px 10px;
     cursor: pointer;
+}
+
+.pagination button:hover {
+    color: white;
 }
 
 .pagination button.active {

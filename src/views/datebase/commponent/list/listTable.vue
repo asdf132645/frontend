@@ -5,8 +5,8 @@
   </div>
   <table class='defaultTable dbDataTable' ref="scrollableDiv">
     <colgroup>
-      <col width="7%"/>
-      <col width="2%"/>
+      <col width="5%"/>
+      <col width="4%"/>
       <col width="4%"/>
       <col width="7%"/>
       <col width="6%"/>
@@ -38,122 +38,116 @@
       <th>Edit</th>
     </tr>
     </thead>
-    <transition name="fade">
-
-      <tbody v-show="dbGetData.length !== 0" class="fade">
-      <template v-for="(item, idx) in dbGetData"
-                :key="item.id">
-        <tr
-            :class="{
+    <tbody v-show="dbGetData.length !== 0">
+    <tr
+        v-for="(item, idx) in dbGetData"
+        :key="item.id"
+        :class="{
             selectedTr: selectedItemId === item.id,
             submittedTr: item.submitState === 'Submit',
             lisTr: item.submitState.includes('lis'),
             rock: item.lock_status && item.pcIp !== myIp,
             checkFirst: item.submitState === 'checkFirst',
           }"
-            @click="selectItem(item)"
-            @dblclick='rowDbClick(item)'
-            ref="firstRow"
-            style="height: 49px"
-            v-bind:data-row-id="item.id"
-            @contextmenu.prevent="rowRightClick(item, $event)"
+        @click="selectItem(item)"
+        @dblclick='rowDbClick(item)'
+        ref="firstRow"
+        style="height: 49px"
+        v-bind:data-row-id="item.id"
+        @contextmenu.prevent="rowRightClick(item, $event)"
+    >
+      <td @click="handleCheckboxChange(item)">
+        <div
+            @mouseover="abnormalClassInfoOpen(true, item)"
+            @mouseout="abnormalClassInfoOpen(false, item)"
+            class="listTable-abnormalIcon-wrapper"
         >
-          <td @click="handleCheckboxChange(item)">
-            <div
-                @mouseover="abnormalClassInfoOpen(true, item)"
-                @mouseout="abnormalClassInfoOpen(false, item)"
-                class="listTable-abnormalIcon-wrapper"
-            >
+          <template
+              v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
+            <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                               v-if="item?.slideCondition?.condition === 'Bad'"
+            />
+            <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                               v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
+            />
+          </template>
+          <template v-else>
+            <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                               v-if="item.isNormal === 'N' && projectType === 'pb'"/>
+          </template>
+          <div
+              v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
+            <div class="slideStatus-container">
               <template
                   v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-                <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                   v-if="item?.slideCondition?.condition === 'Bad'"
-                />
-                <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                   v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
-                />
+                <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
+                  <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                  <span>{{ slideCondition?.desc }}</span>
+                </div>
+
+                <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
               </template>
-              <template v-else>
-                <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                                   v-if="item.isNormal === 'N' && projectType === 'pb'"/>
-              </template>
-              <div
-                  v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
-                <div class="slideStatus-container">
-                  <template
-                      v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-                    <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
-                      <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-                      <span>{{ slideCondition?.desc }}</span>
-                    </div>
-
-                    <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
-                  </template>
 
 
-                  <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'"
-                       class="slideStatusPopup-wrapper normalRange">
-                    <h1 class="slideStatusPopup-title"
-                        :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">
-                      Out of Normal Range</h1>
-                    <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo"
-                         :key="abnormalIdx">
-                      <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
-                        <span>{{ abItem?.classNm }}</span>
-                        <span>{{ handleAbnormalValue(abItem?.val) }}</span>
-                        <span>{{
-                            handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
-                          }}</span>
-                      </p>
-                    </div>
-                  </div>
-
+              <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'"
+                   class="slideStatusPopup-wrapper normalRange">
+                <h1 class="slideStatusPopup-title"
+                    :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">
+                  Out of Normal Range</h1>
+                <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo"
+                     :key="abnormalIdx">
+                  <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
+                    <span>{{ abItem?.classNm }}</span>
+                    <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                    <span>{{
+                        handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
+                      }}</span>
+                  </p>
                 </div>
               </div>
-            </div>
 
-            <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
-          </td>
-          <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
-          <td>
-            <font-awesome-icon
-                :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
-            />
-          </td>
-          <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
-          <td> {{ item?.traySlot }}</td>
-          <td> {{ item?.barcodeNo }}</td>
-          <td> {{ item?.patientId }}</td>
-          <td> {{ item?.patientNm }}</td>
-          <td> {{ item?.analyzedDttm === '' ? '' : formatDateString(item?.analyzedDttm) }}</td>
-          <td> {{ item?.tactTime }}</td>
-          <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
-          <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
-          <td>
-            <font-awesome-icon
-                v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status || item.pcIp === myIp"
-                :icon="['fas', 'pen-to-square']"
-                @click="editData(item)"/>
-          </td>
-        </tr>
-      </template>
-      <tr>
-        <div ref="loadMoreRef" style="height: 30px;"></div>
-      </tr>
-      </tbody>
-    </transition>
-    <transition>
-      <tbody v-show="dbGetData.length === 0" class="fade">
-      <tr class="text-center">
-        <td colspan="13" style="width: 1240px; cursor: auto">
-          <p class="nodataimg">
-            <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
-          </p>
-          NO Data
-        </td>
-      </tr>
-      </tbody>
-    </transition>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" v-model="item.checked" :checked="item.checked"/>
+      </td>
+      <td>{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
+      <td>
+        <font-awesome-icon
+            :icon="['fas', `${!item?.lock_status || item.pcIp === myIp ? 'lock-open' : 'lock' }`]"
+        />
+      </td>
+      <td> {{ projectType !== 'bm' ? getTestTypeText(item?.testType) : getBmTestTypeText(item?.testType) }}</td>
+      <td> {{ item?.traySlot }}</td>
+      <td> {{ item?.barcodeNo }}</td>
+      <td> {{ item?.patientId }}</td>
+      <td> {{ item?.patientNm }}</td>
+      <td> {{ item?.analyzedDttm === '' ? '' : formatDateString(item?.analyzedDttm) }}</td>
+      <td> {{ item?.tactTime }}</td>
+      <td> {{ submitStateChangeText(item?.submitState, item?.submitUserId) }}</td>
+      <td> {{ item?.submitOfDate === '' || !item?.submitOfDate ? '' : formatDateString(item?.submitOfDate) }}</td>
+      <td>
+        <font-awesome-icon
+            v-if="(item?.submitState === 'checkFirst' || item?.submitState === '' || !item?.submitState) && !item.lock_status || item.pcIp === myIp"
+            :icon="['fas', 'pen-to-square']"
+            @click="editData(item)"/>
+      </td>
+    </tr>
+    <tr>
+      <div ref="loadMoreRef" style="height: 30px;"></div>
+    </tr>
+    </tbody>
+    <tbody v-show="dbGetData.length === 0">
+    <tr class="text-center">
+      <td colspan="13" style="width: 1240px; cursor: auto; border: none;">
+        <p class="nodataimg">
+          <font-awesome-icon :icon="['fas', 'circle-exclamation']"/>
+        </p>
+        NO Data
+      </td>
+    </tr>
+    </tbody>
   </table>
   <!-- 페이지네이션 버튼 -->
   <div class="paginationDiv" v-if="dbGetData.length !== 0 && totalPages > 0">
