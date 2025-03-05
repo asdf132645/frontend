@@ -25,7 +25,7 @@
       </button>
       <div class="lisUploadDiv">
         <Button @click="lisClick" v-show="activeTab === 1" size="sm" :icon="['fas', 'upload']"></Button>
-        <Button @click="childPlusBtn" size="sm" :icon="['fas', 'circle-plus']" class="ml10"></Button>
+        <Button @click="childCodePlusBtn" size="sm" :icon="['fas', 'circle-plus']" class="ml10"></Button>
       </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
@@ -438,7 +438,7 @@ onMounted(async () => {
   }
 });
 
-const childPlusBtn = () => {
+const childCodePlusBtn = () => {
   if (childRef.value) {
     childRef.value.openCrcAdd(); // 자식 컴포넌트의 함수 호출
   }
@@ -1155,7 +1155,7 @@ const tooltipVisibleFunc = (type: keyof TooltipCrcResultCodesType, visible: bool
 }
 
 const updateCRCMorphology = async () => {
-  await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value);
+  await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
   // await initCbcData0033();
 }
 
