@@ -193,15 +193,16 @@ export const cbcDataGetCommon = async (barcodeNo: string, cbcCodeList: any) => {
     const cbcData: any = [];
     let cbcSex = '';
     let cbcAge = '';
+    let cbcYear = '';
     if (readFileTxtRes.data.success) {
 
         const msg: any = await readH7File(readFileTxtRes.data.data);
+
         msg?.data?.segments?.forEach((cbcSegment: any) => {
             const classCd = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0];
             const count = cbcSegment?.fields?.[4]?.value?.[0]?.[0]?.value?.[0] || "0";
             const unit = cbcSegment?.fields?.[2]?.value?.[0]?.[0]?.value?.[0].match(/%/g)?.[0] || "";
             const sanitizedClassCd = classCd ? classCd.replace(/[^\w\s]/gi, '') : '';
-
             if (cbcSegment.name.trim() === 'OBX') {
                 if (unit !== '%') {
                     const obj = {
@@ -214,8 +215,10 @@ export const cbcDataGetCommon = async (barcodeNo: string, cbcCodeList: any) => {
             } else if (cbcSegment.name.trim() === 'PID') {
                 cbcSex = cbcSegment?.fields[6].value[0][0].value[0]
                 cbcAge = cbcSegment?.fields[7].value[0][0].value[0];
+                cbcYear = cbcSegment?.fields[8].value[0][0].value[0];
             }
         })
     }
-    return {cbcData: cbcData, cbcSex: cbcSex, cbcAge: cbcAge};
+
+    return {cbcData: cbcData, cbcSex: cbcSex, cbcAge: cbcAge ,cbcYear};
 }

@@ -8,26 +8,24 @@
     <div class="auto-cbc-form">
       <div class="auto-cbc-form-row">
         <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group"
-             v-show="key !== 'conditionalValue' && key !== 'startDate' && key !== 'endDate'">
+             v-show="key !== 'conditionalValue' && key !== 'pbiaCbcCodeArr' && key !== 'autoTitleArr' && key !== 'autoContentArr'">
           <label class="auto-cbc-label">{{ key }}</label>
-          <div v-if="key === 'title'">
-            <input v-model="newData.title" type="text" placeholder=""
-                   class="auto-cbc-input" :class="{'error': titleError}"/>
-            <p v-if="titleError" class="auto-cbc-error-message">Title is required</p>
-          </div>
 
-          <div v-if="key === 'content'">
-            <input v-model="newData.content" placeholder=""
-                   class="auto-cbc-input" :class="{'error': contentError}"/>
-            <p v-if="contentError" class="auto-cbc-error-message">Content is required</p>
-          </div>
 
           <div v-if="key === 'matchingType'">
-            <input v-model="newData.matchingType" type="text" placeholder="" class="auto-cbc-input"/>
+            <select v-model="newData.matchingType" class="auto-cbc-table-select"
+                    @change="onChangeMatchingType(newData)">
+              <option :value="'PBIA'">PBIA</option>
+              <option :value="'CBC'">CBC</option>
+            </select>
           </div>
 
           <div v-if="key === 'cbc_code'">
-            <input v-model="newData.cbc_code" type="text" placeholder="" class="auto-cbc-input"/>
+            <select v-model="newData.cbc_code" class="auto-cbc-table-select">
+              <option v-for="(code, idx) in newData.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
+                {{ code.classNm }}
+              </option>
+            </select>
           </div>
 
           <div v-if="key === 'conditional'" class="auto-cbc-conditional-group">
@@ -36,16 +34,33 @@
               <option value="&lt;">&lt;</option>
               <option value="&gt;=">&gt;=</option>
               <option value="&lt;=">&lt;=</option>
-              <option value="===">==</option>
+              <option value="==">==</option>
             </select>
-            <input v-model="newData.conditionalValue" type="number" class="auto-cbc-input"/>
+            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, itemChild)"
+                   class="auto-cbc-input"/>
           </div>
 
           <div v-else-if="key === 'mo_type'">
-            <select v-model="newData[key]" class="auto-cbc-select">
-              <option value="RBC">RBC</option>
-              <option value="WBC">WBC</option>
-              <option value="PLT">PLT</option>
+            <select v-model="newData[key]" class="auto-cbc-select" @change="onMoTypeChange(newData)">
+              <option :value="'RBC'">RBC</option>
+              <option :value="'WBC'">WBC</option>
+              <option :value="'PLT'">PLT</option>
+            </select>
+          </div>
+
+          <div v-if="key === 'title'">
+            <select v-model="newData.title" class="auto-cbc-table-select" @change="onTitleChange(newData)">
+              <option v-for="(title, idx) in newData.autoTitleArr" :key="idx" :value="title.crcTitle">
+                {{ title.crcTitle }}
+              </option>
+            </select>
+          </div>
+
+          <div v-if="key === 'content'">
+            <select v-model="newData.content" class="auto-cbc-table-select">
+              <option v-for="(content, idx) in newData.autoContentArr" :key="idx" :value="content">
+                {{ content }}
+              </option>
             </select>
           </div>
 
@@ -78,15 +93,22 @@
     <table class="auto-cbc-table">
       <thead>
       <tr>
-        <th>matchingType</th>
-        <th>cbc_code</th>
-        <th style="width: 125px;">conditional</th>
-        <th>mo_Type</th>
+        <th class="pos-relative">
+          mo_Type
+<!--          <font-awesome-icon :icon="['fas', 'circle-info']"-->
+<!--                             @mouseover="tooltipVisibleFunc('moType', true)"-->
+<!--                             @mouseout="tooltipVisibleFunc('moType', false)"-->
+<!--          />-->
+<!--          <Tooltip :isVisible="true" className="mb08" position="top" type="" :message="MSG.TOOLTIP.MO_TYPE" />-->
+        </th>
         <th>title</th>
         <th>content</th>
-        <th>sex</th>
         <th>age</th>
+        <th>sex</th>
         <th>ageCategory</th>
+        <th>matchingType</th>
+        <th>cbc_code</th>
+        <th>conditional</th>
         <th>actions</th>
       </tr>
       </thead>
@@ -96,49 +118,20 @@
           @mousemove="onDrag"
           @mouseup="endDrag"
       >
+      <!--
+
+      draggable="true"
+                @dragstart="onDragStart(index, $event)"
+                @dragover.prevent
+                @drop="onDrop(index)"
+      -->
       <tr
           v-for="(item, index) in findAutoCbcDataArr"
           :key="index"
           :data-index="index"
           :class="draggingIndex === index ? 'dragging' : ''"
-          draggable="true"
-          @dragstart="onDragStart(index, $event)"
-          @dragover.prevent
-          @drop="onDrop(index)"
       >
-        <td>
-          <select v-model="item.matchingType" class="auto-cbc-table-select" @change="onChangeMatchingType(item)">
-            <option :value="'PBIA'">PBIA</option>
-            <option :value="'CBC'">CBC</option>
-          </select>
-        </td>
 
-        <td>
-          <select v-model="item.cbc_code" class="auto-cbc-table-select">
-            <option v-for="(code, idx) in item.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
-              {{ code.classNm }}
-            </option>
-          </select>
-        </td>
-
-        <td class="auto-cbc-conditionalArr">
-          <div v-for="(itemChild, index) in item.conditionalArray" :key="index" class="contDiv">
-            <select v-model="itemChild.operator" class="auto-cbc-select auto-cbc-conditional-select">
-              <option value=">">&gt;</option>
-              <option value="<">&lt;</option>
-              <option value=">=">&gt;=</option>
-              <option value="<=">&lt;=</option>
-              <option value="===">==</option>
-            </select>
-            <input v-model="itemChild.value" type="number" class="auto-cbc-table-input"/>
-            <button @click="addCondition(item)" type="button" v-if="index === 0">
-              <font-awesome-icon :icon="['fas', 'plus']"/>
-            </button>
-            <button @click="removeCondition(item, index)">
-              <font-awesome-icon :icon="['fas', 'minus']"/>
-            </button>
-          </div>
-        </td>
 
         <td>
           <select v-model="item.mo_type" class="auto-cbc-table-select" @change="onMoTypeChange(item)">
@@ -163,15 +156,16 @@
           </select>
         </td>
         <td>
+          <input v-model="item.age" type="text" class="auto-cbc-table-input"/>
+        </td>
+        <td>
           <select v-model="item.sex" class="auto-cbc-table-select">
             <option value="F">F</option>
             <option value="M">M</option>
             <option value="all">All</option>
           </select>
         </td>
-        <td>
-          <input v-model="item.age" type="text" class="auto-cbc-table-input"/>
-        </td>
+
         <td>
           <select v-model="item.ageCategory" class="auto-cbc-table-select">
             <option value="day">Day</option>
@@ -179,10 +173,47 @@
             <option value="year">Year</option>
           </select>
         </td>
+
+        <td>
+          <select v-model="item.matchingType" class="auto-cbc-table-select" @change="onChangeMatchingType(item)">
+            <option :value="'PBIA'">PBIA</option>
+            <option :value="'CBC'">CBC</option>
+          </select>
+        </td>
+
+        <td>
+          <select v-model="item.cbc_code" class="auto-cbc-table-select">
+            <option v-for="(code, idx) in item.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
+              {{ code.classNm }}
+            </option>
+          </select>
+        </td>
+
+        <td class="auto-cbc-conditionalArr">
+          <div v-for="(itemChild, index) in item.conditionalArray" :key="index" class="contDiv">
+            <select v-model="itemChild.operator" class="auto-cbc-select auto-cbc-conditional-select">
+              <option value=">">&gt;</option>
+              <option value="<">&lt;</option>
+              <option value=">=">&gt;=</option>
+              <option value="<=">&lt;=</option>
+              <option value="==">==</option>
+            </select>
+            <input
+                v-model="itemChild.value"
+                type="text"
+                class="auto-cbc-table-input"
+                @input="validateInput($event, itemChild)"
+                style="width: 50px;"
+            />
+            <button @click="addCondition(item)" type="button" v-if="index === 0" class="plusMinusBtn">
+              <font-awesome-icon :icon="['fas', 'plus']"/>
+            </button>
+            <button @click="removeCondition(item, index)" class="plusMinusBtn" type="button">
+              <font-awesome-icon :icon="['fas', 'minus']"/>
+            </button>
+          </div>
+        </td>
         <td class="auto-cbc-table-actions">
-          <!--          <button @click="updateAutoCbcData(item)" class="auto-cbc-edit-button">-->
-          <!--            <font-awesome-icon :icon="['fas', 'pen-to-square']" />-->
-          <!--          </button>-->
           <button @click="deleteAutoCbcData(item.id)" class="auto-cbc-delete-button">
             <font-awesome-icon :icon="['fas', 'trash']"/>
           </button>
@@ -202,42 +233,77 @@ import {
   autoCbcUpdateAllApi
 } from "@/common/api/service/autoCbc/autoCbc";
 import {crcGet, getCbcCodeRbcApi} from "@/common/api/service/setting/settingApi";
-import Datepicker from "vue3-datepicker";
 import {getLisWbcRbcData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import Button from "@/components/commonUi/Button.vue";
+import {MSG} from "@/common/defines/constants/constantMessageText";
+import Tooltip from "@/components/commonUi/Tooltip.vue";
+import {CellImageAnalyzedType} from "@/common/type/tooltipType";
 
 const findAutoCbcDataArr = ref<any>([]);
 const newData = ref({
+  pbiaCbcCodeArr: [],
+  autoTitleArr: [],
+  autoContentArr: [],
+  mo_type: "",
+  title: "",
+  content: "",
+  age: "",
+  sex: "all",
+  ageCategory: "",
   matchingType: "",
   cbc_code: "",
   conditional: ">",
   conditionalValue: "",
-  mo_type: "",
-  title: "",
-  content: "",
-  sex: "all",
-  age: "",
-  ageCategory: "",
-  startDate: new Date(),
-  endDate: new Date(),
 });
+
+const tooltipVisible = ref({
+  moType: false,
+  title: false,
+  content: false,
+  age: false,
+  sex: false,
+  ageCategory: false,
+  cbcCode: false,
+  conditional: false,
+  actions: false,
+})
+
 const crcData = ref<any>([]);
 const cbcArr = ref<any>([]);
 const draggingIndex = ref<number | null>(null); // 드래그 중인 항목 인덱스
 const newRbcData = ref<any>([]);
 const newWbcData = ref<any>([]);
 const newPltData = ref<any>([]);
+const validateInput = (event: Event, itemChild: any) => {
+  // 입력 값에 소수점과 숫자만 허용
+  const value = (event.target as HTMLInputElement).value;
+  const regex = /^[0-9]*\.?[0-9]*$/;  // 숫자와 소수점만 허용
+  if (!regex.test(value)) {
+    // 유효하지 않은 값을 입력하면 현재 값을 유지
+    itemChild.value = value.slice(0, -1);  // 마지막 문자 제거
+  }
+}
+
+const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean) => {
+  tooltipVisible.value[type] = visible;
+}
 
 const onChangeMatchingType = async (item) => {
   if (item.matchingType === 'PBIA') {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
     item.pbiaCbcCodeArr = [];
 
+    console.log('lisCodeRbcArr', lisCodeRbcArr);
+    console.log('lisCodeWbcArr', lisCodeWbcArr);
+
     for (const el of lisCodeWbcArr) {
-      item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
+      if (el.LIS_CD !== '') {
+        item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
+      }
     }
     for (const el of lisCodeRbcArr) {
-      item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
+      if (el.LIS_CD !== '') {
+        item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
+      }
     }
   } else {
     const neene = cbcArr.value.filter((el) => {
@@ -307,10 +373,14 @@ const loadAutoCbcData = async () => {
         item.pbiaCbcCodeArr = [];
 
         for (const el of lisCodeWbcArr) {
-          item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
+          if (el.LIS_CD !== '') {
+            item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
+          }
         }
         for (const el of lisCodeRbcArr) {
-          item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
+          if (el.LIS_CD !== '') {
+            item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
+          }
         }
       } else {
         const neene = cbcArr.value.filter((el) => {

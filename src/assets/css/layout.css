@@ -717,6 +717,7 @@ ul.userSetOutUl {
     background-color: var(--white-color);
     color: var(--main-bg-0-color);
 }
+
 .autoCbcLinkChild {
     display: inline-block;
     max-width: 148px;
@@ -725,6 +726,7 @@ ul.userSetOutUl {
 .autoCbcLinkChild input {
     max-width: 123px;
 }
+
 .lastMenu {
     min-width: 168px;
     text-align: right;
@@ -6374,6 +6376,7 @@ progress::-moz-progress-bar {
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.5s ease-in-out;
 }
+
 .fade-enter, .fade-leave-to {
     opacity: 0;
 }
@@ -6844,6 +6847,7 @@ button.gbArrowButton.left {
     color: gray;
 
 }
+
 /* 셋팅 페이지  auto */
 /* Auto CBC Component Grayscale Dark Theme */
 .auto-cbc-container {
@@ -6919,6 +6923,7 @@ button.gbArrowButton.left {
 
 .auto-cbc-conditional-select {
     width: 60px;
+    margin-right: 5px;
 }
 
 .auto-cbc-add-button {
@@ -6950,10 +6955,12 @@ button.gbArrowButton.left {
     display: flex;
     flex-direction: column;
 }
+
 .auto-cbc-table thead,
 .auto-cbc-table tbody {
     display: block;
 }
+
 .auto-cbc-table tbody {
     height: 500px;
     overflow-y: auto;
@@ -6990,17 +6997,19 @@ button.gbArrowButton.left {
 .auto-cbc-table th {
     background-color: #1c1c1c;
     color: #e0e0e0;
-    padding: 12px 15px;
+    padding: 14px 15px;
     text-align: center;
     font-size: 0.8rem;
     vertical-align: middle;
-    font-size: 0.8rem;
     position: sticky;
     top: 0;
+    font-weight: 600;
 }
+
 .arl.tab-content {
     width: 1500px;
 }
+
 .auto-cbc-table td {
     padding: 10px 15px;
     border-top: 1px solid #2a2a2a;
@@ -7008,11 +7017,6 @@ button.gbArrowButton.left {
 
 .auto-cbc-table tr:nth-child(even) {
     background-color: #1a1a1a;
-}
-
-.auto-cbc-table tr.dragging {
-    opacity: 0.5;
-    background-color: #262626;
 }
 
 .auto-cbc-table tr:hover {
@@ -7111,13 +7115,45 @@ button.gbArrowButton.left {
     background-color: #505050;
 }
 
-.auto-cbc-table-input:hover, .auto-cbc-table-select:hover, .auto-cbc-input:hover, .auto-cbc-select:hover{
+.auto-cbc-table th:nth-child(8), .auto-cbc-table td:nth-child(8) {
+    flex: 2;
+}
+
+.auto-cbc-table th:nth-child(9), .auto-cbc-table td:nth-child(9) {
+    flex: 2.4;
+}
+
+.auto-cbc-table th:nth-child(3), .auto-cbc-table td:nth-child(3) {
+    flex: 2;
+}
+
+.auto-cbc-table th:nth-child(2), .auto-cbc-table td:nth-child(2) {
+    flex: 2;
+}
+
+button.plusMinusBtn {
+    background: #404040;
+    color: #fff;
+    margin: 3px 1px 3px 5px;
+    border: none;
+    border-radius: 5px;
+    height: 27px;
+}
+button.plusMinusBtn {
+    background: #404040;
+    color: #fff;
+    margin: 0 2px;
+}
+
+.auto-cbc-table-input:hover, .auto-cbc-table-select:hover, .auto-cbc-input:hover, .auto-cbc-select:hover {
     background-color: #1a1a1a;
 }
+
 .contDiv {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
 }
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

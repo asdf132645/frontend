@@ -138,6 +138,7 @@ export const MSG = {
         CELL_CLASS_COMPARE: 'Compare two WBC classes',
         CELL_WPS: 'Switch WBC Positioning System mode',
         CELL_ROLLBACK: 'Rollback cell movement',
+        MO_TYPE: 'Please select the morphology type for the configuration displayed in the comprehensive result code.',
     },
     TOAST: {
         DELETE_SUCCESS: 'Deleted Successfully',
