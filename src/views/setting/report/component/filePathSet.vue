@@ -1,19 +1,19 @@
 <template>
   <div class="alignDiv" style="text-align: center">
     <ul>
-      <li>
+      <li v-if="type === 'lis'">
         <p class="mb20">LIS Hot Key</p>
         <input
             @keydown="handleKeyDown($event, 0)"
             type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
             @input="updateHotKey($event, 0)">
       </li>
-      <li>
+      <li v-if="type === 'lis'">
         <p class="mb20 mt20">LIS File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''"
                @input="updateFilePath($event, 0)">
       </li>
-      <li>
+      <li v-if="type === 'cbc'">
         <p class="mb20 mt20">CBC File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].cbcFilePath : ''"
                @input="updateCbcFilePath($event, 0)">
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed, watch} from 'vue';
+import {ref, onMounted, computed, watch, defineProps} from 'vue';
 import {lisHotKeyAndLisFilePathAndUrl, settingName} from "@/common/defines/constants/settings";
 import {ApiResponse} from "@/common/api/httpClient";
 import {createFilePathSetApi, getFilePathSetApi, updateFilePathSetApi} from "@/common/api/service/setting/settingApi";
@@ -57,6 +57,7 @@ import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore();
 const router = useRouter();
+const props = defineProps(['type'])
 const filePathSetArr = ref<FilePathItem[]>([]);
 const saveHttpType = ref('');
 const showAlert = ref(false);
@@ -88,6 +89,7 @@ const checkIsMovingWhenSettingNotSaved = () => {
   showConfirm.value = true;
   confirmMessage.value = MESSAGES.settingNotSaved;
 }
+
 const handleKeyDown = (event: KeyboardEvent, index: number) => {
   const allowedKeys = /^[a-zA-Z0-9]$|F[1-9]|F1[0-2]/; // 알파벳 대소문자, 숫자 및 F1~F12 키 패턴
 

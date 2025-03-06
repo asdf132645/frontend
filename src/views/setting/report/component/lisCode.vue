@@ -1,35 +1,45 @@
 <template>
-  <div class="alignDiv">
-    <p class="mb40"> [ WBC ] </p>
-    <label v-for="item in lisCodeWbcArr" :key="item.classId">
-      <p class="mb10">{{ item.fullNm }}</p>
-      <input type="text" v-model="item.key"/>
-    </label>
-  </div>
-  <div class="alignDiv">
-    <p class="mt20 mb40"> [ RBC ] </p>
-    <label v-for="item in lisCodeRbcArr" :key="item.fullNm">
-      <p class="mb10">{{ item.categoryNm }} - {{ item.fullNm }}</p>
-      <input type="text" v-model="item.key"/>
-    </label>
-  </div>
-  <div class="alignDiv">
-    <p class="mb20"> [ Min Count ] </p>
-    <ul>
-      <li class="minCountWrapper" v-if="minCountArr.length > 0">
-        <p class="mb10 mt10">Giant Platelet</p>
-        <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)"
-               class="form-control form-control-sm">
-      </li>
-      <li class="minCountWrapper" v-if="minCountArr.length > 0">
-        <p class="mb10 mt10">Platelet Aggregation</p>
-        <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)"
-               class="form-control form-control-sm">
-      </li>
-    </ul>
+
+  <div class="setting-activeBtn-container flex-center">
+    <Button @click="handleSettingMenu('hotkeyFilePath')" :isActive="activeTab === 'hotkeyFilePath'">Hotkey & File Path</Button>
+    <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
   </div>
 
-  <Button @click="saveLisCode()" class="setting-saveBtn mt10">Save</Button>
+  <FilePathSet v-if="activeTab === 'hotkeyFilePath'" type="lis" />
+
+  <div v-if="activeTab === 'code'">
+    <div class="alignDiv">
+      <p class="mb40"> [ WBC ] </p>
+      <label v-for="item in lisCodeWbcArr" :key="item.classId">
+        <p class="mb10">{{ item.fullNm }}</p>
+        <input type="text" v-model="item.key"/>
+      </label>
+    </div>
+    <div class="alignDiv">
+      <p class="mt20 mb40"> [ RBC ] </p>
+      <label v-for="item in lisCodeRbcArr" :key="item.fullNm">
+        <p class="mb10">{{ item.categoryNm }} - {{ item.fullNm }}</p>
+        <input type="text" v-model="item.key"/>
+      </label>
+    </div>
+    <div class="alignDiv">
+      <p class="mb20"> [ Min Count ] </p>
+      <ul>
+        <li class="minCountWrapper" v-if="minCountArr.length > 0">
+          <p class="mb10 mt10">Giant Platelet</p>
+          <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)"
+                 class="form-control form-control-sm">
+        </li>
+        <li class="minCountWrapper" v-if="minCountArr.length > 0">
+          <p class="mb10 mt10">Platelet Aggregation</p>
+          <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)"
+                 class="form-control form-control-sm">
+        </li>
+      </ul>
+    </div>
+
+    <Button @click="saveLis" class="setting-saveBtn mt10">Save</Button>
+  </div>
 
   <Confirm
       v-if="showConfirm"
@@ -57,13 +67,22 @@ import {
   LIS_CODE_RBC_OPTION,
   minRunCount,
   settingName,
-  WBC_CUSTOM_CLASS
+  WBC_CUSTOM_CLASS, lisHotKeyAndLisFilePathAndUrl
 } from "@/common/defines/constants/settings";
 import {ApiResponse} from "@/common/api/httpClient";
 import {
-  createLisCodeWbcApi, createLisCodeRbcApi, createMinCountApi,
-  getLisCodeWbcApi, getLisCodeRbcApi, getMinCountApi,
-  updateLisCodeWbcApi, updateLisCodeRbcApi, updateMinCountApi, getWbcCustomClassApi
+  createLisCodeWbcApi,
+  createLisCodeRbcApi,
+  createMinCountApi,
+  getLisCodeWbcApi,
+  getLisCodeRbcApi,
+  getMinCountApi,
+  updateLisCodeWbcApi,
+  updateLisCodeRbcApi,
+  updateMinCountApi,
+  getWbcCustomClassApi,
+  getFilePathSetApi,
+  createFilePathSetApi, updateFilePathSetApi
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
@@ -74,21 +93,32 @@ import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import Button from "@/components/commonUi/Button.vue";
+import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
+import {LisActiveSettingType, WbcActiveSettingType} from "@/common/type/settings";
+import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
 
 const store = useStore();
 const router = useRouter();
+const filePathSetArr = ref<FilePathItem[]>([]);
 const lisCodeWbcArr = ref<LisCodeWbcItem[] | any>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[] | any>([]);
 const minCountArr = ref<minCountItem[]>([]);
-const saveHttpType = ref('');
+const activeTab = ref('hotkeyFilePath');
+const movingTab = ref('');
+const saveHttpType = ref({
+  filePath: '',
+  code: '',
+})
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmMessage = ref('');
-const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
 const wbcCustomItems = ref<any>([]);
 
 onMounted(async () => {
@@ -124,7 +154,7 @@ const getWbcCustomClasses = async () => {
     const result: any = await getWbcCustomClassApi();
     if (result?.data) {
       wbcCustomItems.value = result.data.filter((item: any) => item.abbreviation && item.fullNm);
-      setLisCodeWbcByCustomClass();
+      await setLisCodeWbcByCustomClass();
     }
   } catch (e) {
     console.error('Error fetching WBC custom classes:', e);
@@ -166,7 +196,7 @@ const saveLisCode = async () => {
     let rbcResult: ApiResponse<void>;
     let minCountResult: ApiResponse<void>;
 
-    if (saveHttpType.value === 'post') {
+    if (saveHttpType.value.code === 'post') {
       result = await createLisCodeWbcApi({lisCodeItems: lisCodeWbcArr.value});
       rbcResult = await createLisCodeRbcApi({lisCodeItems: lisCodeRbcArr.value});
       minCountResult = await createMinCountApi({minCountItems: minCountArr.value});
@@ -191,7 +221,7 @@ const saveLisCode = async () => {
     if (result && rbcResult && minCountResult) {
       showSuccessAlert(MESSAGES.settingSaveSuccess);
       scrollToTop();
-      saveHttpType.value = 'put';
+      saveHttpType.value.code = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
       await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
@@ -223,26 +253,26 @@ const getImagePrintData = async () => {
       const minCountData = minCountResult.data;
 
       if (!wbcData || (wbcData instanceof Array && wbcData.length === 0)) {
-        saveHttpType.value = 'post';
+        saveHttpType.value.code = 'post';
         lisCodeWbcArr.value = lisCodeWbcOption;
       } else {
-        saveHttpType.value = 'put';
+        saveHttpType.value.code = 'put';
         lisCodeWbcArr.value = wbcData;
       }
 
       if (!rbcData || (rbcData instanceof Array && rbcData.length === 0)) {
-        saveHttpType.value = 'post';
+        saveHttpType.value.code = 'post';
         lisCodeRbcArr.value = LIS_CODE_RBC_OPTION;
       } else {
-        saveHttpType.value = 'put';
+        saveHttpType.value.code = 'put';
         lisCodeRbcArr.value = rbcData;
       }
 
       if (!minCountData || (minCountData instanceof Array && minCountData.length === 0)) {
-        saveHttpType.value = 'post';
+        saveHttpType.value.code = 'post';
         minCountArr.value = minRunCount;
       } else {
-        saveHttpType.value = 'put';
+        saveHttpType.value.code = 'put';
         minCountArr.value = minCountData;
       }
     }
@@ -271,12 +301,32 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
-  await router.push(enteringRouterPath.value);
+  activeTab.value = movingTab.value;
 }
 
 const handleOkConfirm = async () => {
   await saveLisCode();
   showConfirm.value = false;
+}
+
+const saveLis = async () => {
+  await saveLisCode();
+}
+
+const handleSettingMenu = (type: keyof LisActiveSettingType) => {
+  if (activeTab.value === type) {
+    return;
+  }
+
+  movingTab.value = type;
+
+  if (isSettingChanged.value) {
+    showConfirm.value = true;
+    confirmMessage.value = MESSAGES.settingNotSaved;
+    return;
+  }
+
+  activeTab.value = type;
 }
 
 </script>

@@ -16,118 +16,117 @@
 
 
   <div class="setting-container setting-addOns-container">
-    <table class="settingTable">
-      <colgroup>
-        <col width="70">
-        <col width="30">
-      </colgroup>
-      <tbody>
-      <tr>
-        <th class="pos-relative">
-          <font-awesome-icon
-              :icon="['fas', 'circle-info']"
-              @mouseover="tooltipVisibleFunc('downloadSavePath', true)"
-              @mouseout="tooltipVisibleFunc('downloadSavePath', false)"
-          />
-          <Tooltip :isVisible="tooltipVisible.downloadSavePath" position="top"
-                   :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH"/>
-          Download Save Path
-        </th>
+    <div class="setting-activeBtn-container">
+      <Button @click="handleSettingMenu('downloadUpload')" :isActive="activeTab === 'downloadUpload'">Download & Upload</Button>
+      <Button @click="handleSettingMenu('etc')" :isActive="activeTab === 'etc'">Etc</Button>
+    </div>
 
-        <td>
-          <div class="downloadSavePathContainer">
-            <select v-model='downloadRootPath' class="downloadPath">
-              <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
-            </select>
-            <div class="pos-relative">
-              <font-awesome-icon
-                  :icon="['fas', 'folder-open']"
-                  @click="openSourceDrive"
-                  class="openDriveIcon"
-                  @mouseover="tooltipVisibleFunc('openDownloadSavePath', true)"
-                  @mouseout="tooltipVisibleFunc('openDownloadSavePath', false)"
-              />
-              <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" position="top"
-                       :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH"/>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <th class="pos-relative">
+    <div v-if="activeTab === 'downloadUpload'" class="setting-addOns-wrapper">
+      <div class="pos-relative">
+        <font-awesome-icon :icon="['fas', 'circle-info']"
+                           @mouseover="tooltipVisibleFunc('iaRootPath', true)"
+                           @mouseout="tooltipVisibleFunc('iaRootPath', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type=""
+                 :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
+        Source Path
+      </div>
+      <div class="mb4">
+        <select v-model="cellInfo.iaRootPath" disabled>
+          <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <h2 class="pos-relative">
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseover="tooltipVisibleFunc('downloadSavePath', true)"
+            @mouseout="tooltipVisibleFunc('downloadSavePath', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.downloadSavePath" position="top"
+                 :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH"/>
+        Download Path
+      </h2>
+
+      <div class="download-savePath-container">
+        <select v-model='downloadRootPath'>
+          <option v-for="type in backupDrive" :key="type" :value="type">{{ type }}</option>
+        </select>
+        <div class="pos-relative">
           <font-awesome-icon
-              :icon="['fas', 'circle-info']"
-              @mouseover="tooltipVisibleFunc('download', true)"
-              @mouseout="tooltipVisibleFunc('download', false)"
+              :icon="['fas', 'folder-open']"
+              @click="openSourceDrive"
+              class="openDriveIcon"
+              @mouseover="tooltipVisibleFunc('openDownloadSavePath', true)"
+              @mouseout="tooltipVisibleFunc('openDownloadSavePath', false)"
           />
-          <Tooltip :isVisible="tooltipVisible.download" position="top" :message="MSG.TOOLTIP.DOWNLOAD"/>
-          Download
-        </th>
-        <td>
-          <div class="backupDatePickers">
+          <Tooltip :isVisible="tooltipVisible.openDownloadSavePath" position="top"
+                   :message="MSG.TOOLTIP.OPEN_DOWNLOAD_SAVE_PATH"/>
+        </div>
+      </div>
+
+      <h2 class="pos-relative">
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseover="tooltipVisibleFunc('download', true)"
+            @mouseout="tooltipVisibleFunc('download', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.download" position="top" :message="MSG.TOOLTIP.DOWNLOAD"/>
+        Download
+      </h2>
+
+      <div class="backupDatePickers-container">
+        <div class="backupDatePickers-wrapper">
+          <div>
             <Datepicker v-model="cellInfo.backupStartDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
+          </div>
+          <div>
             <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
-            <Button @click="createBackup">Download</Button>
           </div>
-        </td>
-      </tr>
-      <tr>
-        <th class="pos-relative">
-          <font-awesome-icon
-              :icon="['fas', 'circle-info']"
-              @mouseover="tooltipVisibleFunc('upload', true)"
-              @mouseout="tooltipVisibleFunc('upload', false)"
-          />
-          <Tooltip :isVisible="tooltipVisible.upload" position="top" :message="MSG.TOOLTIP.UPLOAD"/>
-          Upload
-        </th>
-        <td colspan="2">
-          <div class="settingUploadContainer">
-            <select v-model='uploadRootPath' class="uploadSavePath">
-              <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
-            </select>
-            <button class="uploadBtn" @click="handleSelectUploadFile">Upload</button>
-          </div>
-        </td>
-      </tr>
+        </div>
+        <Button size="sm" @click="createBackup">Download</Button>
+      </div>
 
+      <h2 class="pos-relative">
+        <font-awesome-icon
+            :icon="['fas', 'circle-info']"
+            @mouseover="tooltipVisibleFunc('upload', true)"
+            @mouseout="tooltipVisibleFunc('upload', false)"
+        />
+        <Tooltip :isVisible="tooltipVisible.upload" position="top" :message="MSG.TOOLTIP.UPLOAD"/>
+        Upload Path
+      </h2>
 
-      <!--      나중에 기능 추가 할 부분 자동 백업-->
-      <!--      <tr>-->
-      <!--        <th>Auto Backup</th>-->
-      <!--        <td>-->
-      <!--          <div class="autoDateBox">-->
-      <!--            <select v-model='cellInfo.autoBackUpMonth'>-->
-      <!--              <option v-for="month in autoDate" :key="month.value" :value="month.value">-->
-      <!--                {{ month.value }}-->
-      <!--              </option>-->
-      <!--            </select>-->
-      <!--            <span>Month</span>-->
-      <!--          </div>-->
-      <!--        </td>-->
-      <!--      </tr>-->
-      </tbody>
-    </table>
-    <ul>
-      <li class="mt20">
-        <p class="mb10">Quality Check</p>
-        <Button @click="qualityCheckOpen" size="lg" class="w120-min">OK</Button>
-      </li>
-      <li class="mt20">
-        <p class="mb10">Gripper Open</p>
-        <Button @click="onGripperOpen" size="lg" class="w120-min" :class="{'blinkGripper': isBlinkingGripper}">OK
-        </Button>
-      </li>
-      <li class="mt20">
-        <p class="mb10">Camera Reset</p>
-        <Button @click="onCameraReset" size="lg" class="w120-min" :class="{'blinkGripper': isBlinkCameraReset}">OK
-        </Button>
-      </li>
-      <li class="mt20">
-        <p class="mb10">Charge Remaining Count</p>
-        <Button @click="onScan" size="lg" class="w120-min">Scan</Button>
-      </li>
-    </ul>
+      <div class="settingUploadContainer">
+        <select v-model='uploadRootPath'>
+          <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
+        </select>
+        <Button size="sm" @click="handleSelectUploadFile" style="width: 83px;">Upload</Button>
+      </div>
+    </div>
+
+    <div v-if="activeTab === 'etc'">
+      <ul>
+        <li class="mt20">
+          <p class="mb10">Quality Check</p>
+          <Button @click="qualityCheckOpen" size="lg" class="w120-min">OK</Button>
+        </li>
+        <li class="mt20">
+          <p class="mb10">Gripper Open</p>
+          <Button @click="onGripperOpen" size="lg" class="w120-min" :class="{'blinkGripper': isBlinkingGripper}">OK
+          </Button>
+        </li>
+        <li class="mt20">
+          <p class="mb10">Camera Reset</p>
+          <Button @click="onCameraReset" size="lg" class="w120-min" :class="{'blinkGripper': isBlinkCameraReset}">OK
+          </Button>
+        </li>
+        <li class="mt20">
+          <p class="mb10">Charge Remaining Count</p>
+          <Button @click="onScan" size="lg" class="w120-min">Scan</Button>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <!-- Upload 확인 모달 -->
@@ -245,6 +244,7 @@ import {CellImageAnalyzedType} from "@/common/type/tooltipType";
 import moment from "moment/moment";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import Datepicker from "vue3-datepicker";
+import {AddOnsSettingType, WbcActiveSettingType} from "@/common/type/settings";
 
 const store = useStore();
 const instance = getCurrentInstance();
@@ -286,6 +286,7 @@ let cameraResetTimeOut: ReturnType<typeof setTimeout> | null = null;
 const downloadConfirmMessage = ref('');
 const saveHttpType = ref('');
 const downloadDto = ref<any>({});
+const activeTab = ref('downloadUpload');
 const tooltipVisible = ref({
   iaRootPath: false,
   downloadSavePath: false,
@@ -680,5 +681,13 @@ const handleSelectUploadFile = async () => {
   } finally {
     showUploadSelectModal.value = true;
   }
+}
+
+const handleSettingMenu = (type: keyof AddOnsSettingType) => {
+  if (activeTab.value === type) {
+    return;
+  }
+
+  activeTab.value = type;
 }
 </script>

@@ -45,7 +45,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
-          <th>Stitch Count</th>
+          <th>RBC Field</th>
           <td>
             <select v-model="cellInfo.stitchCount">
               <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -118,7 +118,7 @@
             </Transition>
             Common
           </th>
-          <th>Wbc Position Margin</th>
+          <th>WBC Position Margin</th>
           <td>
             <select v-model="cellInfo.diffWbcPositionMargin">
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{
@@ -129,7 +129,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
-          <th>Rbc Position Margin</th>
+          <th>RBC Position Margin</th>
           <td>
             <select v-model="cellInfo.diffRbcPositionMargin">
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{

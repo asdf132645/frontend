@@ -44,7 +44,7 @@
                 {{ presetHelperCellInfo?.edgeShotCount }}
               </li>
               <li v-if="presetHelperCellInfo?.stitchCount">
-                <span>Stitch Count</span>
+                <span>RBC Field</span>
                 {{ presetHelperCellInfo?.stitchCount }}
               </li>
               <li v-if="presetHelperCellInfo?.wbcCount">

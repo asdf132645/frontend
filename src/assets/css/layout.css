@@ -584,7 +584,7 @@ main.bmComponent {
 }
 
 .openDriveIcon {
-    width: 50px;
+    width: 30px;
     cursor: pointer;
 }
 
@@ -1442,26 +1442,45 @@ ul.customClass li {
     height: 20px;
 }
 
-.backupDatePickers {
+.backupDatePickers-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
 }
 
-.backupDatePickers > div {
-    margin: 0 12px;
-}
-
-.backupDatePickers > div > div > input {
-    height: 24px;
-}
-
-.backupDatePickers > div > div:nth-child(4) {
+.backupDatePickers-container > div > div:nth-child(4) {
     top: -270px;
+}
+
+.backupDatePickers-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 216px;
+    margin-top: 8px;
+}
+
+.backupDatePickers-wrapper .v3dp__datepicker {
+    width: 100px;
+    height: 35px;
+}
+
+.backupDatePickers-wrapper > div > div > div > input {
+    height: 17px;
 }
 
 .settingUploadContainer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
+    gap: 4px;
+}
+
+.settingUploadContainer > select {
+    width: 230px;
+    height: 29px;
 }
 
 .line {
@@ -1505,6 +1524,15 @@ table.settingTable select {
     display: flex;
     justify-content: space-between;
     width: 200px;
+}
+
+.setting-addOns-wrapper {
+    margin-top: 20px;
+    width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    text-align: left;
+    align-items: center;
 }
 
 .multiselect-container {
@@ -1673,8 +1701,9 @@ button.saveBtn, .defaultBtn {
 /*}*/
 
 .classTitle {
-    font-weight: bold;
-    font-size: 1.2rem;
+    background-color: var(--main-bg-2-color);
+    padding: 10px;
+    font-size: 1rem;
     margin-bottom: 1.2rem;
 }
 
@@ -2994,19 +3023,14 @@ button.uploadBtn {
     color: var(--main-bg-2-color);
 }
 
-.downloadSavePathContainer {
+.download-savePath-container {
     display: flex;
     align-items: center;
 }
 
-select.downloadPath {
-    margin: 0 0 0 12px;
-    width: 60%;
-}
-
-select.uploadSavePath {
-    margin: 0 -2px 0 12px;
-    width: 100%;
+.download-savePath-container > select {
+    width: 230px;
+    height: 29px;
 }
 
 h3.titleH3 button {
@@ -4065,6 +4089,11 @@ ul.editOrder li input {
 
 .inputDisabled:hover {
     background-color: var(--input-disabled-color);
+}
+
+.setting-hotkeys-title-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 ul.wbcHotKeysItems li {
@@ -7924,6 +7953,40 @@ button.plusMinusBtn {
 .contDiv {
     display: flex;
     justify-content: flex-start;
+}
+
+.hotkeys-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.hotkeys-header th {
+    text-align: center;
+    padding: 10px 6px;
+    background-color: var(--main-bg-2-color);
+}
+
+.hotkeys-header th:nth-child(2) {
+    text-align: left;
+}
+
+.hotkeys-item td {
+    padding: 4px 6px;
+}
+
+.hotkeys-item input {
+    width: 60px;
+    padding: 5px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.hotkeys-item input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
 }
 
 @keyframes bounce {
