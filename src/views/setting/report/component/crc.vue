@@ -32,7 +32,7 @@
             <span>CRC Remark Select Count</span>
             <div class="flex-center mt10" style="gap: 14px;">
               <div class="flex-align-center">
-<!--                <label class="crc-setting-title" for="crc-remark">{{ setCrcTitles(siteCd, remarkTxt) }}</label>-->
+                <!--                <label class="crc-setting-title" for="crc-remark">{{ setCrcTitles(siteCd, remarkTxt) }}</label>-->
                 <input class="crc-setting-title" v-model="remarkTxt"/>
                 <input class="crc-setting-title-input" id="crc-remark" type="checkbox" @change="changeCrcRemarkCount"
                        value="0"
@@ -40,7 +40,6 @@
               </div>
 
               <div class="flex-align-center">
-<!--                <label class="crc-setting-title" for="crc-comment">{{ setCrcTitles(siteCd, commentTxt) }}</label>-->
                 <input class="crc-setting-title" v-model="commentTxt"/>
                 <input class="crc-setting-title-input" id="crc-comment" type="checkbox" @change="changeCrcRemarkCount"
                        value="1"
@@ -48,9 +47,6 @@
               </div>
 
               <div class="flex-align-center">
-<!--                <label class="crc-setting-title" for="crc-recommendation">{{-->
-<!--                    setCrcTitles(siteCd, recommendationTxt)-->
-<!--                  }}</label>-->
                 <input class="crc-setting-title" v-model="recommendationTxt"/>
                 <input class="crc-setting-title-input" id="crc-recommendation" type="checkbox"
                        @change="changeCrcRemarkCount" value="2"
@@ -107,6 +103,7 @@
           :items="crcArr"
           @updateCrc="onUpdateCrc"
           @deleteCrc="onDeleteCrc"
+          @noServerDataDel="noServerDataDel"
           moType="RBC"
           pageName="set"
           :masterId="masterId"
@@ -119,6 +116,7 @@
               :items="crcArr"
               @updateCrc="onUpdateCrc"
               @deleteCrc="onDeleteCrc"
+              @noServerDataDel="noServerDataDel"
               moType="WBC"
               pageName="set"
               :masterId="masterId"
@@ -131,6 +129,7 @@
               :items="crcArr"
               @updateCrc="onUpdateCrc"
               @deleteCrc="onDeleteCrc"
+              @noServerDataDel="noServerDataDel"
               moType="PLT"
               pageName="set"
               :masterId="masterId"
@@ -201,7 +200,8 @@ const commentTxt = ref('Comment');
 const recommendationTxt = ref('Recommendation');
 
 onMounted(async () => {
-  await nextTick()
+  await nextTick();
+  crcData.value = [];
   crcData.value = await crcGet();
   const crcOptionApi = await crcOptionGet();
 
@@ -221,7 +221,7 @@ onMounted(async () => {
 
     const updatedItems = crcRemarkCountArr.value.map(item => {
       if (item.name === "remark") {
-        return { ...item, name: "R" + item.name.slice(1) };
+        return {...item, name: "R" + item.name.slice(1)};
       }
       return item;
     });
@@ -231,7 +231,7 @@ onMounted(async () => {
   } else {
     crcRemarkCountArr.value = [
       {"checked": false, "name": remarkTxt.value},
-      { "checked": false, "name": commentTxt.value},
+      {"checked": false, "name": commentTxt.value},
       {"checked": false, "name": recommendationTxt.value}
     ]
   }
@@ -275,11 +275,13 @@ const addCrcArr = () => {
     return;
   }
   crcArr.value.push({
+    id: Date.now(),
     crcTitle: crcTitle.value,
     crcType: crcType.value,
     crcPercentText: crcPercentText.value,
     morphologyType: morphologyType.value,
     crcContent: crcContent.value,
+    noServerData: true,
   });
 };
 
@@ -295,6 +297,11 @@ const onDeleteCrc = async ({index, id}: { index: number, id: any }) => {
   crcArr.value.splice(findId, 1); // 배열에서 제거
   await deleteCrcApi({id}); // 서버에 삭제 요청
 };
+
+const noServerDataDel  = ({index, id}: { index: number, id: any }) => {
+  const cbcarrFilter = crcArr.value.filter((item: any) => item.id !== id);
+  crcArr.value = cbcarrFilter;
+}
 
 // 데이터 저장 함수
 const saveCrcData = async () => {
