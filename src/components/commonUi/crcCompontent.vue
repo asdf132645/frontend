@@ -77,7 +77,7 @@
         <div v-if="pageName === 'set' && isMasterId(masterId)">
           <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex !== item.id" @click="editCrcArr(item.id)">EDIT</button>
           <button type="button" class="crcBtn" style="padding: 4px 0;" v-if="editIndex === item.id" @click="updateCrcArr(item.id)">OK</button>
-          <button type="button" class="crcBtn" style="padding: 4px 0;" @click="delCrcArr(idx, item.id)">DEL</button>
+          <button type="button" class="crcBtn" style="padding: 4px 0;" @click="delCrcArr(idx, item)">DEL</button>
         </div>
       </div>
     </ul>
@@ -111,7 +111,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect', 'changeCrcData']);
+const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect', 'changeCrcData', 'noServerDataDel']);
 const arrData = ref<any>([]);
 const lisCodeMatchingInfo = ref('병원 lis code 매칭 시키는 부분 - 병원에서 사용하는 타이틀로 연동해서 LIS 전송하는 부분');
 const lisValMatchingInfo = ref('병원 lis 받는 Value 매칭 시키는 부분 - 병원에서 Lis 받을 때 실제 보내야하는 값으로 치환시켜주는 부분 , 구분');
@@ -152,8 +152,13 @@ const updateCrcArr = (id: number) => {
   editIndex.value = null;
 };
 
-const delCrcArr = (idx: number, id: any) => {
-  emit('deleteCrc', {index: idx, id});
+const delCrcArr = (idx: number, item: any) => {
+
+  if(item.noServerData){
+    emit('noServerDataDel', {index: idx, id: item.id})
+  }else{
+    emit('deleteCrc', {index: idx, id: item.id});
+  }
 };
 
 const moTypeTextChange = (txt: string) => {
