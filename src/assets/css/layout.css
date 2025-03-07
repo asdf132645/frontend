@@ -105,6 +105,10 @@
     margin-right: 12px;
 }
 
+.mr20 {
+    margin-right: 20px;
+}
+
 .pl0 {
     padding-left: 0 !important;
 }
@@ -584,7 +588,7 @@ main.bmComponent {
 }
 
 .openDriveIcon {
-    width: 50px;
+    width: 30px;
     cursor: pointer;
 }
 
@@ -1316,6 +1320,13 @@ p.startStopP {
     width: 120px;
 }
 
+.setting-lisCode-container {
+    margin: 0 auto;
+    width: 1500px;
+    display: flex;
+    justify-content: center;
+}
+
 ul.customClass li span {
     display: inline-block;
     margin-right: 22px;
@@ -1358,6 +1369,17 @@ ul.customClass li {
     display: flex;
     justify-content: flex-end;
     height: 30px;
+}
+
+.listTable-hide-datepicker {
+    position: absolute;
+    width: 100px;
+    top: 39px;
+    height: 28px;
+    background-color: white;
+    z-index: 10;
+    left: 310px;
+    cursor: pointer;
 }
 
 .listTable-first-line {
@@ -1442,26 +1464,45 @@ ul.customClass li {
     height: 20px;
 }
 
-.backupDatePickers {
+.backupDatePickers-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
 }
 
-.backupDatePickers > div {
-    margin: 0 12px;
-}
-
-.backupDatePickers > div > div > input {
-    height: 24px;
-}
-
-.backupDatePickers > div > div:nth-child(4) {
+.backupDatePickers-container > div > div:nth-child(4) {
     top: -270px;
+}
+
+.backupDatePickers-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 216px;
+    margin-top: 8px;
+}
+
+.backupDatePickers-wrapper .v3dp__datepicker {
+    width: 100px;
+    height: 35px;
+}
+
+.backupDatePickers-wrapper > div > div > div > input {
+    height: 17px;
 }
 
 .settingUploadContainer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
+    gap: 4px;
+}
+
+.settingUploadContainer > select {
+    width: 230px;
+    height: 29px;
 }
 
 .line {
@@ -1505,6 +1546,16 @@ table.settingTable select {
     display: flex;
     justify-content: space-between;
     width: 200px;
+}
+
+.setting-addOns-wrapper {
+    margin-top: 20px;
+    width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    text-align: left;
+    align-items: center;
+    gap: 12px;
 }
 
 .multiselect-container {
@@ -1556,7 +1607,7 @@ table.settingTable select {
 
 .multiselect-dropdown-menu {
     position: absolute;
-    width: 158px;
+    min-width: 158px;
     max-height: 240px;
     overflow-y: auto;
     margin-top: 5px;
@@ -1581,12 +1632,14 @@ table.settingTable select {
 }
 
 .multiselect-dropdown-item {
-    padding: 8px 12px;
+    padding: 8px 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.8rem;
+    width: 100%;
+    white-space: nowrap;
 }
 
 .multiselect-dropdown-item > input {
@@ -1673,8 +1726,9 @@ button.saveBtn, .defaultBtn {
 /*}*/
 
 .classTitle {
-    font-weight: bold;
-    font-size: 1.2rem;
+    background-color: var(--main-bg-2-color);
+    padding: 10px;
+    font-size: 1rem;
     margin-bottom: 1.2rem;
 }
 
@@ -2738,14 +2792,23 @@ ul.settingTabBtn li {
     padding-bottom: 3px;
 }
 
+ul.settingTabBtn li:hover {
+    border-bottom: 1px solid var(--coral-bg-1-color);
+}
+
+ul.settingTabBtn li.activeTab {
+    font-weight: 600;
+    border-bottom: 1px solid var(--coral-bg-0-color);
+}
+
 .settingWrap {
-    padding: 0px 20px;
+    padding: 0 20px;
 }
 
 
 li.activeTab {
     font-weight: 600;
-    border-bottom: 1px solid var(--blue-bg-0-color);
+    border-bottom: 1px solid var(--blue-bg-1-color);
 }
 
 table.settingTable td, table.settingTable th {
@@ -2836,6 +2899,11 @@ input.alarmInput {
 
 .settingTabSubButtons button.active {
     background-color: var(--coral-bg-0-color);
+    color: var(--white-color);
+}
+
+.settingTabSubButtons button:not(.active):hover {
+    background-color: var(--coral-bg-5-color);
     color: var(--white-color);
 }
 
@@ -2994,19 +3062,14 @@ button.uploadBtn {
     color: var(--main-bg-2-color);
 }
 
-.downloadSavePathContainer {
+.download-savePath-container {
     display: flex;
     align-items: center;
 }
 
-select.downloadPath {
-    margin: 0 0 0 12px;
-    width: 60%;
-}
-
-select.uploadSavePath {
-    margin: 0 -2px 0 12px;
-    width: 100%;
+.download-savePath-container > select {
+    width: 230px;
+    height: 29px;
 }
 
 h3.titleH3 button {
@@ -3341,7 +3404,7 @@ ul.orderListUi > li > img {
     width: 120px;
     padding: 8px;
     border-radius: 5px;
-    text-align: center;
+    text-align: left;
 }
 
 .listTable-search-todayBtn {
@@ -3375,7 +3438,7 @@ ul.orderListUi > li > img {
 }
 
 .reportDetail {
-    width: 56%;
+    width: 50%;
     background: var(--white-color);
     color: var(--gray-bg-3-color);
     font-size: 0.8rem;
@@ -4065,6 +4128,11 @@ ul.editOrder li input {
 
 .inputDisabled:hover {
     background-color: var(--input-disabled-color);
+}
+
+.setting-hotkeys-title-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 ul.wbcHotKeysItems li {
@@ -4880,7 +4948,7 @@ li.cbcLi {
 .cbcLi {
     position: absolute;
     bottom: 100px;
-    left: 36px;
+    left: 46px;
     font-size: 0.8rem;
     cursor: pointer;
 }
@@ -4896,13 +4964,6 @@ li.cbcLi {
     margin-bottom: 10px;
     border-bottom: 1px solid white;
     z-index: 100;
-}
-
-.classInfoMenu-noWarning-container {
-    position: relative;
-    height: 30px;
-    border-bottom: 1px solid white;
-    cursor: default !important;
 }
 
 .classInfoMenu-error-container {
@@ -5140,11 +5201,11 @@ table.cbcTable td {
 }
 
 .printRbcCategory {
-    width: 21%;
+    width: 18%;
 }
 
 .printRbcClass {
-    width: 27%;
+    width: 32%;
 }
 
 .printRbcDegree {
@@ -5388,8 +5449,8 @@ textarea.remarkTextArea {
     width: 100%;
     height: 37px;
     box-sizing: border-box;
-    max-width: 100%;
-    max-height: 140px;
+    max-width: 870px;
+    max-height: 120px;
 }
 
 .remarkHeader {
@@ -5778,10 +5839,6 @@ button.crcLisBtn {
     color: #fff;
     border-radius: 2px;
     top: 8px;
-}
-
-span.crcSpanMenu {
-    margin-left: 20px;
 }
 
 select.crcSelect {
@@ -6772,14 +6829,13 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 440px;
+    left: 140px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
     padding: 4px;
     border-radius: 4px;
     box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);
-
 }
 
 .tutorial-positionMargin-container {
@@ -6814,14 +6870,10 @@ progress::-moz-progress-bar {
 
 .tooltip-pos-top {
     bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .tooltip-pos-bottom {
-    top: 150%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 100%;
 }
 
 .tooltip-pos-left {
@@ -7395,7 +7447,7 @@ button.gbArrowButton.left {
     padding: 10px 20px;
     border: none;
     color: var(--white-color);
-    background-color: var(--main-bg-9-color);
+    background-color: var(--main-bg-2-color);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
@@ -7924,6 +7976,40 @@ button.plusMinusBtn {
 .contDiv {
     display: flex;
     justify-content: flex-start;
+}
+
+.hotkeys-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.hotkeys-header th {
+    text-align: center;
+    padding: 10px 6px;
+    background-color: var(--main-bg-2-color);
+}
+
+.hotkeys-header th:nth-child(2) {
+    text-align: left;
+}
+
+.hotkeys-item td {
+    padding: 4px 6px;
+}
+
+.hotkeys-item input {
+    width: 60px;
+    padding: 5px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.hotkeys-item input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
 }
 
 @keyframes bounce {

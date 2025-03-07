@@ -19,12 +19,7 @@
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
       <div class="reportDiv">
         <div class="rbcDiv shadowBox" :class="cbcLayer ? 'rbcDivInReportWithCBC' : ''" v-if="!projectBm && selectItems.testType === '04'">
-          <template v-if="siteCd === '9090'">
-            <RbcClassNew v-if="!isLoading" :rbcInfo="rbcInfo" type='report' />
-          </template>
-          <template v-else>
-            <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report' />
-          </template>
+          <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report' />
         </div>
         <div class="wbcDiv shadowBox">
           <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
@@ -141,7 +136,8 @@
             </div>
             <div class="rbcRight" v-if="!projectBm && selectItems.testType === '04'">
               <h3 class="reportH3 pl0">RBC classification result</h3>
-              <template v-for="(classList, outerIndex) in [slideData.rbcInfoAfter]" :key="outerIndex">
+              <template v-for="(classList, outerIndex) in [rbcInfoData]" :key="outerIndex">
+                <!--              <template v-for="(classList, outerIndex) in [slideData.rbcInfoAfter]" :key="outerIndex">-->
                 <template v-for="(category, innerIndex) in classList" :key="innerIndex">
                   <div class="categories">
                     <ul class="printRbcCategory">
@@ -184,22 +180,22 @@
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
                             style="cursor: default;"
                         >
-                          {{ Number(shapeOthersCount) || 0 }}
+                          {{ Number(rbcCount.shapeOthersTotalCount) || 0 }}
                         </li>
 
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
                             style="cursor: default;"
                         >
-                          {{ Number(malariaCount) || 0 }}
+                          {{ Number(rbcCount.malariaCount) || 0 }}
                         </li>
                       </template>
 
                       <li v-show="category?.categoryNm === 'Size' || category?.categoryNm === 'Chromia'"
                           style="cursor: default;">
-                        {{ Number(sizeChromiaTotal) || 0 }}
+                        {{ Number(rbcCount.sizeChromiaTotalCount) || 0 }}
                       </li>
                       <li v-show="category?.categoryNm === 'Inclusion Body'" style="cursor: default;">
-                        {{ Number(shapeBodyTotal) || 0 }}
+                        {{ Number(rbcCount.shapeBodyTotalCount) || 0 }}
                       </li>
                     </ul>
                     <ul class="printRbcPercent">
@@ -212,37 +208,43 @@
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
                             style="cursor: default;"
                         >
-                          {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
+                          {{ percentageChange(rbcCount.shapeOthersTotalCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
                         </li>
 
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
                             style="cursor: default;"
                         >
-                          {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
+                          {{ percentageChange(rbcCount.malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
                         </li>
                       </template>
 
                       <li v-show="category.categoryNm !== 'Shape'" style="cursor: default;">100%</li>
                     </ul>
                   </div>
+
+                  <div v-if="innerIndex === classList.length - 1" class="categories">
+                    <ul class="printRbcCategory">
+                      <li style="cursor: default;">Others</li>
+                    </ul>
+
+                    <ul class="printRbcClass">
+                      <li style="cursor: default;">Platelet</li>
+                    </ul>
+                    <ul class="printRbcDegree">-</ul>
+                    <ul class="w-quarter">{{ rbcCount.pltCount || 0 }} PLT / 1000 RBC</ul>
+                  </div>
                 </template>
               </template>
             </div>
           </div>
         </div>
-        <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems" />
+        <Crc v-else-if="isContent && crcConnect" :crcDataVal="crcData" :selectItems="selectItems"/>
       </div>
     </div>
 
   </div>
   <div ref="printContent">
-    <template v-if="siteCd === '9090'">
-      <PrintNew v-if="printOnOff" @printClose="printClose"/>
-    </template>
-    <template v-else>
-      <Print v-if="printOnOff" @printClose="printClose"/>
-    </template>
-
+    <Print v-if="printOnOff" @printClose="printClose"/>
   </div>
 
   <ToastNotification
@@ -264,7 +266,7 @@ import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 import { formatDateString } from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
-import { crcGet, crcOptionGet, getOrderClassApi } from "@/common/api/service/setting/settingApi";
+import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {
@@ -282,8 +284,7 @@ import { DIR_NAME } from "@/common/defines/constants/settings";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
-import RbcClassNew from "@/views/datebase/commponent/detail/rbc/rbcClassNew.vue";
+import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
 
 const getCategoryName = (category: WbcInfo) => category?.name;
 const store = useStore();
@@ -295,27 +296,27 @@ const rbcInfo = ref<any>([]);
 const siteCd = computed(() => store.state.commonModule.siteCd);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
-const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
 const slideData = computed(() => store.state.slideDataModule);
-
 const projectBm = ref(false);
 const orderClass = ref<any>([]);
 const isLoading = ref(true);
 const nonWbcTitleArr = ['NR', 'GP', 'PA', 'AR', 'MA', 'SM'];
 const nonWbcClassList = ref<any[]>([]);
 const printContent = ref<HTMLElement | null>(null);
-const patientName = ref('');
-
 const rbcInfoData = ref<any>([]);
 const rbcInfoPathAfter = ref<any>([]);
-const rbcTotalVal = ref(0);
-const sizeChromiaTotal = ref(0);
-const chromiaTotalTwo = ref(0);
-const shapeBodyTotal = ref(0);
-const shapeOthersCount = ref(0);
-const malariaCount = ref(0);
-const maxRbcCount: any = ref('');
-const pltCount = ref(0);
+const rbcCount = ref({
+  rbcTotalCount: 0,
+  pltCount: 0,
+  pltTotalCount: 0,
+  malariaCount: 0,
+  maxRbcCount: 0,
+  sizeChromiaTotalCount: 0,
+  chromiaTotalCount: 0,
+  shapeBodyTotalCount: 0,
+  shapeOthersTotalCount: 0,
+})
+const rbcDegreeStandard = ref<any>([]);
 const wbcInfoAfter = ref<any>([]);
 const crcData = ref<any>([]);
 const crcConnect = ref(false);
@@ -323,6 +324,8 @@ const isContent = ref(false);
 const changeSlideByLisUpload = ref(false);
 const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
+const totalRBCImageNames = ref<string[]>([]);
+const patientName = ref('');
 
 watch(
     () => slideData.value,
@@ -334,33 +337,31 @@ watch(
         await getOrderClass();
         await initData(newVal);
 
-        if (!projectBm.value && slideData.value.testType === '04') {
-          await rbcTotalAndReCount();
+        if (!projectBm.value && slideData.value?.testType === '04') {
           rbcInfoData.value = isObjectEmpty(slideData.value?.rbcInfoAfter) ? slideData.value?.rbcInfo.rbcClass : slideData.value?.rbcInfoAfter;
-          await countReAdd();
-
+          resetRBCValue(rbcInfoData.value);
+          await checkRBCTotalImageNames();
+          await rbcTotalAndReCountForReport();
+          // await reDegree(rbcInfoData.value);
           slideData.value.rbcInfoAfter = rbcInfoData.value;
-
         }
       }
     },
     {immediate: true, deep: true}
 );
 
-
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
-  if (!projectBm.value) {
-    const crcOptionApi = await crcOptionGet();
-    if (crcOptionApi.data.length !== 0) {
-      crcConnect.value = crcOptionApi.data[0].crcConnect;
-    }
-    const result = (await crcGet());
-    if (result.code === 200) {
-      isContent.value = true;
-      crcData.value = result.data;
-    }
+  const crcOptionApi = await crcOptionGet();
+  if (crcOptionApi.data.length !== 0) {
+    crcConnect.value = crcOptionApi.data[0].crcConnect;
   }
+  const result = (await crcGet());
+  if (result.code === 200) {
+    isContent.value = true;
+    crcData.value = result.data;
+  }
+
 })
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -371,14 +372,15 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(async () => {
   await nextTick();
+  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
   isLoading.value = false;
+  await getRbcDegreeData();
   await getOrderClass();
   await initData();
   document.addEventListener('click', handleClickOutside);
   await store.dispatch('commonModule/setCommonInfo', {cbcLayer: true});
-
-
 });
+
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
@@ -387,7 +389,6 @@ const getDetailRunningInfo = async (data) => {
   try {
     selectItems.value = data;
     patientName.value = data?.patientNm;
-
     if (
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] ||
         siteCd.value === HOSPITAL_SITE_CD_BY_NAME['UIMD'] ||
@@ -437,81 +438,110 @@ const percentChangeBySiteCd = () => {
   wbcInfo.value = selectItems.value.wbcInfoAfter;
 }
 
-const rbcTotalAndReCount = async () => {
-  const path = selectItems.value?.img_drive_root_path !== '' && selectItems.value?.img_drive_root_path ? selectItems.value?.img_drive_root_path : iaRootPath.value;
-  const url_new = `${path}/${selectItems.value?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItems.value?.slotId}_new_0.json`;
-  const response_new = await readJsonFile({fullPath: url_new});
-  const url_Old = `${path}/${selectItems.value?.slotId}/${DIR_NAME.RBC_CLASS}/${selectItems.value?.slotId}.json`;
-  const response_old = await readJsonFile({fullPath: url_Old});
-  if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
-    const newJsonData = response_new?.data;
-    for (const rbcItem of response_old.data[0].rbcClassList) {
-      for (const newRbcData of newJsonData) {
-        const foundElementIndex = rbcItem.classInfo.findIndex((el: any) => el.index === newRbcData.index);
-        if (foundElementIndex !== -1) {
-          rbcItem.classInfo.splice(foundElementIndex, 1);
-        }
-        if (rbcItem.categoryId === newRbcData.categoryId) {
-          let newRbcDataObj = {
-            classNm: newRbcData.classNm,
-            classId: newRbcData.classId,
-            posX: String(newRbcData.posX),
-            posY: String(newRbcData.posY),
-            width: newRbcData.width,
-            height: newRbcData.height,
-            index: newRbcData.index,
-          }
-          rbcItem.classInfo.push(newRbcDataObj);
-        }
-      }
-    }
-    rbcInfoPathAfter.value = response_old.data[0].rbcClassList;
-  } else {
-    if (response_old.data.length === 0 || !response_old?.data[rbcImagePageNumber.value]) {
-      rbcInfoPathAfter.value = [];
-    } else {
-      rbcInfoPathAfter.value = response_old?.data[0].rbcClassList;
-    }
-  }
-  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
-    return;
-  }
-  let total = 0;
-  let chromiaTotalval = 0;
-  let shapeTotalVal = 0;
-  let inclusionBody = 0;
-  rbcInfoPathAfter.value.forEach(el => {
-    switch (el.categoryId) {
-      case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
-        total = el.classInfo.length;
-        break;
-      case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
-        chromiaTotalval = el.classInfo.length;
-        break;
-      case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
-        shapeTotalVal = el.classInfo.length;
-
-        for (const classItem of el.classInfo) {
-          if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
-            shapeOthersCount.value += 1;
-          }
-        }
-        break;
-      case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
-        inclusionBody = el.classInfo.length;
-        break;
-      default:
-        break;
-    }
-  });
-
-  rbcTotalVal.value = Number(total);
-  sizeChromiaTotal.value = Number(total);
-  chromiaTotalTwo.value = chromiaTotalval;
-  shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
+const resetTotalCounts = () => {
+  rbcCount.value.rbcTotalCount = 0;
+  rbcCount.value.sizeChromiaTotalCount = 0;
+  rbcCount.value.chromiaTotalCount = 0;
+  rbcCount.value.shapeBodyTotalCount = 0;
+  rbcCount.value.shapeOthersTotalCount = 0;
+  rbcCount.value.maxRbcCount = 0;
+  rbcCount.value.pltCount = 0;
+  rbcCount.value.malariaCount = 0;
+  rbcCount.value.pltTotalCount = 0;
 }
 
-const countReAdd = async () => {
+const rbcTotalAndReCountForReport = async () => {
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+
+  resetTotalCounts();
+  for (const rbcImageName of totalRBCImageNames.value) {
+    const url_new = `${path}/${slideData.value.slotId}/${DIR_NAME.RBC_CLASS}/${slideData.value.slotId}_new_${rbcImageName}.json`;
+    const response_new = await readJsonFile({fullPath: url_new});
+    const url_Old = `${path}/${slideData.value.slotId}/${DIR_NAME.RBC_CLASS}/${slideData.value.slotId}.json`;
+    const response_old = await readJsonFile({fullPath: url_Old});
+
+    if (response_new.data !== 'not file') { // 비포 , 애프터에 따른 json 파일 불러오는 부분
+      const newJsonData = response_new?.data;
+      for (const rbcItem of response_old.data[Number(rbcImageName)].rbcClassList) {
+        for (const newRbcData of newJsonData) {
+          // 기존 부분 삭제 // 여기서 index 찾아서 새로 생성된 json 부분을 추가해야함
+          const foundElementIndex = rbcItem.classInfo.findIndex((el: any) =>
+              el.index === newRbcData.index
+          );
+          if (foundElementIndex !== -1) {
+            rbcItem.classInfo.splice(foundElementIndex, 1);
+          }
+          if (rbcItem.categoryId === newRbcData.categoryId) {
+            let newRbcDataObj = {
+              classNm: newRbcData.classNm,
+              classId: newRbcData.classId,
+              posX: String(newRbcData.posX),
+              posY: String(newRbcData.posY),
+              width: newRbcData.width,
+              height: newRbcData.height,
+              index: newRbcData.index,
+            }
+            rbcItem.classInfo.push(newRbcDataObj);
+          }
+        }
+      }
+      rbcInfoPathAfter.value = response_old.data[Number(rbcImageName)].rbcClassList;
+    } else {
+      if (response_old.data.length === 0 || !response_old?.data[Number(rbcImageName)]) {
+        rbcInfoPathAfter.value = [];
+      } else {
+        rbcInfoPathAfter.value = response_old?.data[Number(rbcImageName)].rbcClassList;
+      }
+    }
+    if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+      return;
+    }
+
+    let total = 0;
+    let chromiaTotalval = 0;
+    let shapeTotalVal = 0;
+    let inclusionBody = 0;
+
+    rbcInfoPathAfter.value.forEach(el => {
+      switch (el.categoryId) {
+        case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
+          total = el.classInfo.length;
+          break;
+        case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
+          chromiaTotalval = el.classInfo.length;
+          break;
+        case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
+          shapeTotalVal = el.classInfo.length;
+
+          for (const classItem of el.classInfo) {
+            if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
+              rbcCount.value.shapeOthersTotalCount += 1;
+            }
+          }
+          break;
+        case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
+          inclusionBody = el.classInfo.length;
+          break;
+        default:
+          break;
+      }
+    });
+
+    rbcCount.value.rbcTotalCount += Number(total);
+    rbcCount.value.sizeChromiaTotalCount += Number(total);
+    rbcCount.value.chromiaTotalCount += chromiaTotalval;
+    rbcCount.value.shapeBodyTotalCount += Number(shapeTotalVal) + Number(inclusionBody);
+
+
+    if (totalRBCImageNames.value[totalRBCImageNames.value.length - 1] === rbcImageName) {
+      await countReAddForReport('last');
+    } else {
+      await countReAddForReport();
+    }
+  }
+}
+
+const countReAddForReport = async (type?: 'last') => {
   for (const category of rbcInfoData.value) {
     for (const classItem of category.classInfo) {
       let count = 0;
@@ -523,17 +553,18 @@ const countReAdd = async () => {
         }
       }
 
-      classItem.originalDegree = count;
-      classItem.percent = percentageChange(count, category.categoryId);
+      classItem.originalDegree += Number(count);
+      if (type === 'last') {
+        classItem.percent = percentageChange(classItem.originalDegree, category.categoryId);  // percent는 맨 마지막에 계산해야 함
+      }
     }
   }
 
-  maxRbcCount.value = 0;
   let totalPLT = 0;
   let malariaTotal = 0;
   for (const el of rbcInfoPathAfter.value) {
     if (el.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
-      maxRbcCount.value += Number(el.classInfo.length);
+      rbcCount.value.maxRbcCount += Number(el.classInfo.length);
     }
     if (el.categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) {
       for (const xel of el.classInfo) {
@@ -549,9 +580,21 @@ const countReAdd = async () => {
       }
     }
   }
-  pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
-  malariaCount.value = malariaTotal;
+  rbcCount.value.pltTotalCount += totalPLT;
+
+  if (type === 'last') {
+    rbcCount.value.pltCount += Math.floor((rbcCount.value.pltTotalCount / parseFloat(rbcCount.value.maxRbcCount)) * 1000);
+  }
+  rbcCount.value.malariaCount += malariaTotal;
 };
+
+const resetRBCValue = (rbcInfo: any) => {
+  for (const categoryItem of rbcInfo) {
+    for (const classItem of categoryItem.classInfo) {
+      classItem.originalDegree = 0;
+    }
+  }
+}
 
 const percentageChange = (count: any, categoryId: string): any => {
   const percentage: any = ((Number(count) / calculateRbcTotalByCategoryId(categoryId)) * 100).toFixed(1);
@@ -562,14 +605,14 @@ const percentageChange = (count: any, categoryId: string): any => {
 const calculateRbcTotalByCategoryId = (categoryId: string) => {
   switch (categoryId) {
     case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
-      return Number(rbcTotalVal.value);
+      return Number(rbcCount.value.rbcTotalCount);
     case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
-      return Number(chromiaTotalTwo.value);
+      return Number(rbcCount.value.chromiaTotalCount);
     case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
     case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
-      return Number(shapeBodyTotal.value);
+      return Number(rbcCount.value.shapeBodyTotalCount);
     default:
-      return Number(rbcTotalVal.value);
+      return Number(rbcCount.value.rbcTotalCount);
   }
 }
 
@@ -677,6 +720,27 @@ const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   return newSortArr;
 };
 
+const checkRBCTotalImageNames = async () => {
+  const rootPath = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const fileSearchApiParam = `directoryPath=${rootPath}\\${slideData.value?.slotId}\\${DIR_NAME.RBC_IMAGE}&searchString=RBC_Image`;
+  try {
+    const response = await fileSearchApi(fileSearchApiParam);
+
+    if (response.data) {
+      const rbcImageFileNames = response.data.filter((item) => item.endsWith('_files'));
+      totalRBCImageNames.value = rbcImageFileNames.map((item) => {
+        const splitedItem = item.split('_');
+        return splitedItem[splitedItem.length - 2];
+      })
+    } else {
+      totalRBCImageNames.value = [];
+    }
+  } catch (error) {
+    totalRBCImageNames.value = [];
+    console.error(error);
+  }
+}
+
 const showToast = (message: string) => {
   toastMessage.value = message;
   setTimeout(() => {
@@ -689,5 +753,144 @@ const uploadLisChangeSlide = (hospitalNm: any) => {
     changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
   }
 }
+
+const getRbcDegreeData = async () => {
+  try {
+    const result = await getRbcDegreeApi();
+    const data = result.data;
+    rbcDegreeStandard.value = data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const reDegree = async (rbcInfoArray: any) => {
+  let totalCount = rbcCount.value.rbcTotalCount;
+  let sizeTotal = rbcCount.value.sizeChromiaTotalCount;
+  let chromiaTotal = rbcCount.value.chromiaTotalCount;
+  if (!Array.isArray(rbcInfoArray)) {
+    return;
+  }
+  rbcInfoArray.forEach((rbcCategory: any) => {
+    rbcCategory.classInfo.forEach((rbcClass: any) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.originalDegree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+
+          } else if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+          if (isNaN(percent)) {
+            percent = 0;
+          }
+          const setDegree = (value: any) => (rbcClass.degree = value);
+          // 0
+          if (percent < Number(degreeStandard.degree1)) {
+            setDegree('0');
+            return;
+          }
+          // 1
+          else if (percent < Number(degreeStandard.degree2)) {
+            setDegree('1');
+            return;
+          }
+          // 2
+          else if (percent < Number(degreeStandard.degree3)) {
+            setDegree('2');
+            return;
+          }
+          // 3
+          else {
+            setDegree('3');
+            return;
+          }
+        }
+      });
+    });
+  });
+
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
+      if (!rbcDegreeStandard.value) {
+        return;
+      }
+      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
+        if (
+            degreeStandard.categoryId === rbcCategory.categoryId &&
+            degreeStandard.classId === rbcClass.classId
+        ) {
+          const degreeCount = Number(rbcClass.originalDegree);
+          let percent = 0;
+
+          if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) { // size total
+            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
+          } else if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) { // chromia total
+            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
+          } else { // shape, inclusion body total
+            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
+          }
+
+          if (isNaN(percent)) percent = 0;
+
+          const setDegree = (value: any) => (rbcClass.degree = value);
+
+          if (percent < Number(degreeStandard.degree1)) setDegree('0');
+          else if (percent < Number(degreeStandard.degree2)) setDegree('1');
+          else if (percent < Number(degreeStandard.degree3)) setDegree('2');
+          else setDegree('3');
+        }
+      });
+    });
+  });
+
+  rbcInfoArray.forEach((rbcCategory) => {
+    rbcCategory.classInfo.forEach((rbcClass) => {
+      // size
+      if (rbcCategory.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) {
+        if (rbcClass.classId === RBC_CODE_CLASS_ID.SIZE.NORMAL) rbcCategory.classInfo[0].degree = '1';
+        if ([RBC_CODE_CLASS_ID.SIZE.MACROCYTE, RBC_CODE_CLASS_ID.SIZE.MICROCTYE].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // chromia
+      if (rbcCategory.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) {
+        if (rbcClass.classId === RBC_CODE_CLASS_ID.CHROMIA.NORMAL) rbcCategory.classInfo[0].degree = '1';
+        if ([RBC_CODE_CLASS_ID.CHROMIA.HYPERCHROMIC, RBC_CODE_CLASS_ID.CHROMIA.HYPOCHROMIC].includes(rbcClass.classId) && Number(rbcClass.degree) > 0)
+          rbcCategory.classInfo[0].degree = '0';
+      }
+
+      // Poikilocytosis
+      if (rbcCategory.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) {
+        if (rbcClass.classId === RBC_CODE_CLASS_ID.SHAPE.NORMAL) {
+          // normal
+          rbcCategory.classInfo[0].degree = '1'
+          // poikilo
+          rbcCategory.classInfo[1].degree = '0'
+        }
+
+        if (rbcClass.classId !== RBC_CODE_CLASS_ID.SHAPE.NORMAL && rbcClass.classId !== RBC_CODE_CLASS_ID.SHAPE.POLIKILOCYTOSIS) {
+          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+
+          if (Number(rbcClass.degree) > poikiloDegree) {
+            rbcCategory.classInfo[0].degree = '0'
+            rbcCategory.classInfo[1].degree = rbcClass.degree
+          }
+        }
+      }
+    });
+  });
+};
 
 </script>

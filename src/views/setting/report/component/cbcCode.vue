@@ -1,33 +1,86 @@
 <template>
-  <div class="alignDiv" style="width: 660px;">
-    <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
-      <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>
-      <input v-else type="text" v-model="item.fullNm" />
-      <div class="pos-relative w220 flex-align-center">
-        <font-awesome-icon
-            v-show="editingCBCCd !== item.cd"
-            @click="editCBC(item.cd)"
-            class="cursorPointer hoverSizeAction cbc-setting-icon"
-            :icon="['fas', 'pen-to-square']"
-        />
-        <font-awesome-icon
-            v-show="editingCBCCd === item.cd"
-            @click="clearEditing"
-            class="cursorPointer hoverSizeAction cbc-setting-icon"
-            :icon="['fas', 'square-check']" />
-        <font-awesome-icon
-            @click="deleteCBCCode(item.cd)"
-            class="cursorPointer hoverSizeAction"
-            style="margin-right: 4px;"
-            :icon="['fas', 'trash']" />
-        <input type="text" v-model="item.classCd" />
-      </div>
-    </label>
+
+  <div class="setting-activeBtn-container flex-center">
+    <Button @click="handleSettingMenu('filePath')" :isActive="activeTab === 'filePath'">File Path</Button>
+    <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
   </div>
 
-  <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
-  <div class="mt10">
-    <button class="saveBtn" type="button" @click="saveCbcCode()">Save</button>
+  <FilePathSet v-if="activeTab === 'filePath'" type="cbc" />
+
+  <div v-if="activeTab === 'code'" class="alignDiv" style="width: 660px;">
+    <table class="setting-table">
+      <colgroup>
+        <col width="60%"/>
+        <col width="30%"/>
+        <col width="10%"/>
+      </colgroup>
+      <thead>
+      <tr>
+        <th class="text-left">Class name</th>
+        <th>CBC Code</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
+        <td v-if="editingCBCCd !== item.cd" class="text-left">{{ item.fullNm }}</td>
+        <td v-else>
+          <input type="text" v-model="item.fullNm" />
+        </td>
+
+        <td>
+          <input class="w140" type="text" v-model="item.classCd" />
+        </td>
+
+        <td class="pos-relative">
+          <font-awesome-icon
+              v-show="editingCBCCd !== item.cd"
+              @click="editCBC(item.cd)"
+              class="cursorPointer hoverSizeAction"
+              :icon="['fas', 'pen-to-square']"
+          />
+          <font-awesome-icon
+              v-show="editingCBCCd === item.cd"
+              @click="clearEditing"
+              class="cursorPointer hoverSizeAction "
+              :icon="['fas', 'square-check']" />
+          <font-awesome-icon
+              @click="deleteCBCCode(item.cd)"
+              class="cursorPointer hoverSizeAction"
+              style="margin-right: 4px;"
+              :icon="['fas', 'trash']" />
+        </td>
+      </tr>
+      </tbody>
+    </table>
+<!--    <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">-->
+<!--      <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>-->
+<!--      <input v-else type="text" v-model="item.fullNm" />-->
+<!--      <div class="pos-relative w220 flex-align-center">-->
+<!--        <font-awesome-icon-->
+<!--            v-show="editingCBCCd !== item.cd"-->
+<!--            @click="editCBC(item.cd)"-->
+<!--            class="cursorPointer hoverSizeAction cbc-setting-icon"-->
+<!--            :icon="['fas', 'pen-to-square']"-->
+<!--        />-->
+<!--        <font-awesome-icon-->
+<!--            v-show="editingCBCCd === item.cd"-->
+<!--            @click="clearEditing"-->
+<!--            class="cursorPointer hoverSizeAction cbc-setting-icon"-->
+<!--            :icon="['fas', 'square-check']" />-->
+<!--        <font-awesome-icon-->
+<!--            @click="deleteCBCCode(item.cd)"-->
+<!--            class="cursorPointer hoverSizeAction"-->
+<!--            style="margin-right: 4px;"-->
+<!--            :icon="['fas', 'trash']" />-->
+<!--        <input type="text" v-model="item.classCd" />-->
+<!--      </div>-->
+<!--    </label>-->
+
+    <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
+    <div class="mt10">
+      <button class="saveBtn" type="button" @click="saveCbcSetting">Save</button>
+    </div>
   </div>
 
   <Confirm
@@ -51,37 +104,58 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
-import { defaultCbcList, defaultCbcList_0011, settingName } from "@/common/defines/constants/settings";
+import {
+  defaultCbcList,
+  defaultCbcList_0011,
+  lisHotKeyAndLisFilePathAndUrl,
+  settingName
+} from "@/common/defines/constants/settings";
 import { ApiResponse } from "@/common/api/httpClient";
-import { createCbcCodeRbcApi, getCbcCodeRbcApi, updateCbcCodeRbcApi } from "@/common/api/service/setting/settingApi";
+import {
+  createCbcCodeRbcApi, createFilePathSetApi,
+  getCbcCodeRbcApi,
+  getFilePathSetApi,
+  updateCbcCodeRbcApi, updateFilePathSetApi
+} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import { CbcCodeItem } from "@/common/api/service/setting/dto/lisCodeDto";
 import { MESSAGES } from '@/common/defines/constants/constantMessageText';
 import { getDeviceInfoApi } from "@/common/api/service/device/deviceApi";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
 import {scrollToTop} from "@/common/lib/utils/scroll";
+import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
+import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
+import Button from "@/components/commonUi/Button.vue";
+import {CbcActiveSettingType} from "@/common/type/settings";
 
 const store = useStore();
-const router = useRouter();
 const cbcCodeArr = ref<CbcCodeItem[]>([]);
-const saveHttpType = ref('');
+const filePathSetArr = ref<FilePathItem[]>([]);
+const saveHttpType = ref({
+  code: '',
+  filePath: '',
+})
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmMessage = ref('');
-const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
+const activeTab = ref('filePath');
+const movingTab = ref('');
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
 const siteCd = ref('');
 const editingCBCCd = ref('00');
 
 onMounted(async () => {
   await getDeviceInfo();
   await getImagePrintData();
+  await getFilePathSetData();
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
 });
 
@@ -105,7 +179,7 @@ const saveCbcCode = async () => {
   try {
     let result: ApiResponse<void>;
 
-    if (saveHttpType.value === 'post') {
+    if (saveHttpType.value.code === 'post') {
       result = await createCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
     } else {
       const updateResult = await updateCbcCodeRbcApi({ cbcCodeItems: cbcCodeArr.value });
@@ -123,10 +197,47 @@ const saveCbcCode = async () => {
 
     if (result) {
       showSuccessAlert(MESSAGES.settingSaveSuccess);
-      saveHttpType.value = 'put';
+      saveHttpType.value.code = 'put';
       await getImagePrintData();
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const saveCbcSetting = async () => {
+  await saveCbcCode();
+  await saveFilePathSet();
+}
+
+const saveFilePathSet = async () => {
+  try {
+    let result: ApiResponse<void>;
+
+    if (saveHttpType.value === 'post') {
+      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value});
+    } else {
+      const updateResult = await updateFilePathSetApi({filePathSetItems: filePathSetArr.value});
+
+      if (updateResult.data) {
+        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        await getFilePathSetData();
+      } else {
+        showErrorAlert(MESSAGES.settingUpdateFailure);
+      }
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
+      return;
+    }
+
+    if (result) {
+      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      saveHttpType.value = 'put';
+      await getFilePathSetData();
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
     }
   } catch (e) {
     console.error(e);
@@ -141,7 +252,7 @@ const getImagePrintData = async () => {
       const data = result.data;
 
       if (!data || (data instanceof Array && data.length === 0)) {
-        saveHttpType.value = 'post';
+        saveHttpType.value.code = 'post';
 
         if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
           cbcCodeArr.value = defaultCbcList_0011;
@@ -150,7 +261,7 @@ const getImagePrintData = async () => {
         }
 
       } else {
-        saveHttpType.value = 'put';
+        saveHttpType.value.code = 'put';
         cbcCodeArr.value = data;
       }
 
@@ -189,6 +300,32 @@ const clearEditing = () => {
   editingCBCCd.value = '00';
 }
 
+const getFilePathSetData = async () => {
+  try {
+    const result = await getFilePathSetApi();
+
+    if (result && result.data) {
+      const data = result.data;
+
+      if (!data || (data instanceof Array && data.length === 0)) {
+        saveHttpType.value.filePath = 'post';
+        filePathSetArr.value = lisHotKeyAndLisFilePathAndUrl;
+      } else {
+        saveHttpType.value.filePath = 'put';
+        filePathSetArr.value = data;
+      }
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(filePathSetArr.value)});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(filePathSetArr.value)});
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const updateCbcFilePath = (event: any, index: number) => {
+  filePathSetArr.value[index].cbcFilePath = event.target.value;
+};
+
 const showSuccessAlert = (message: string) => {
   showAlert.value = true;
   alertType.value = 'success';
@@ -210,12 +347,28 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
   await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   showConfirm.value = false;
-  await router.push(enteringRouterPath.value);
+  activeTab.value = movingTab.value;
 }
 
 const handleOkConfirm = async () => {
   await saveCbcCode();
   showConfirm.value = false;
+}
+
+const handleSettingMenu = (type: keyof CbcActiveSettingType) => {
+  if (activeTab.value === type) {
+    return;
+  }
+
+  movingTab.value = type;
+
+  if (isSettingChanged.value) {
+    showConfirm.value = true;
+    confirmMessage.value = MESSAGES.settingNotSaved;
+    return;
+  }
+
+  activeTab.value = type;
 }
 
 </script>

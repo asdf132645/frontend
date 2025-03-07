@@ -45,7 +45,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
-          <th>Stitch Count</th>
+          <th>RBC Field</th>
           <td>
             <select v-model="cellInfo.stitchCount">
               <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>
@@ -60,6 +60,7 @@
                                @mouseover="() => informationFontHover('edgeShotType', 'hover')"
                                @mouseout="informationFontHover('edgeShotType', 'leave')"
             />
+
             <Transition>
               <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
                 <img :src="smearTop" width="400"/>
@@ -94,7 +95,7 @@
         </tr>
 
         <!-- BF Analysis -->
-        <tr v-if="projectType === 'pb' && visibleBySite(siteCd, ['9090', '0000'], 'disable')">
+        <tr v-if="projectType === 'pb'">
           <th>BF Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
@@ -118,7 +119,7 @@
             </Transition>
             Common
           </th>
-          <th>Wbc Position Margin</th>
+          <th>WBC Position Margin</th>
           <td>
             <select v-model="cellInfo.diffWbcPositionMargin">
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{
@@ -129,7 +130,7 @@
           </td>
         </tr>
         <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
-          <th>Rbc Position Margin</th>
+          <th>RBC Position Margin</th>
           <td>
             <select v-model="cellInfo.diffRbcPositionMargin">
               <option v-for="type in POSITION_MARGIN_LIST" :key="type.value" :value="type.value">{{
@@ -158,8 +159,7 @@
                                @mouseover="tooltipVisibleFunc('iaRootPath', true)"
                                @mouseout="tooltipVisibleFunc('iaRootPath', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
+            <Tooltip :isVisible="tooltipVisible.iaRootPath" position="top" :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
             IA Root Path
           </th>
           <td colspan="2">
@@ -176,8 +176,7 @@
                 @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
                 @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" position="top" :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
             NS/NB Integration
           </th>
           <td>
@@ -253,7 +252,6 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {defaultCellImgData} from "@/common/helpers/common/setting";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 

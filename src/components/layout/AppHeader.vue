@@ -226,8 +226,6 @@ import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import moment from "moment/moment";
 import {getBrowserExit} from "@/common/api/service/browserExit/browserExitApi";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {useToast} from "@/common/lib/utils/toast";
 
 const route = useRoute();
@@ -373,14 +371,6 @@ const updateDateTime = () => {
 };
 
 const errLogOn = async () => {
-  if (
-      !visibleBySite(siteCd.value, [
-      HOSPITAL_SITE_CD_BY_NAME['TEST'],
-      HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
-        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
-      ], 'enable')) {
-    return;
-  }
   mouseClick.value = !mouseClick.value;
   if(mounseLeave.value){
     return
@@ -779,29 +769,12 @@ const closeErrLog = () => {
 }
 
 const openErrLogOver = async () => {
-  if (
-      !visibleBySite(siteCd.value, [
-        HOSPITAL_SITE_CD_BY_NAME['TEST'],
-        HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
-        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
-      ], 'enable')) {
-    return;
-  }
   ErrLogOpen.value = true;
   mounseLeave.value = true;
   await errLogLoad();
 }
 
 const closeErrLogLeave = () => {
-  if (
-      !visibleBySite(siteCd.value, [
-        HOSPITAL_SITE_CD_BY_NAME['TEST'],
-        HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
-        HOSPITAL_SITE_CD_BY_NAME['UIMD'],
-      ], 'enable')) {
-    return;
-  }
-
   if (mouseClick.value){
     return;
   }

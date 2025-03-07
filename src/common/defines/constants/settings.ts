@@ -955,7 +955,7 @@ export const wbcRunningCount = [
     }];
 
 export const lisHotKeyAndLisFilePathAndUrl = [
-    {lisHotKey: '', lisFilePath: '', cbcFilePath: 'C:\\UIMD_Web\\CBC'},
+    {lisHotKey: '', lisFilePath: '', cbcFilePath: ''},
 ]
 
 export const DIR_NAME = {

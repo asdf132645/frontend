@@ -44,7 +44,7 @@
                 {{ presetHelperCellInfo?.edgeShotCount }}
               </li>
               <li v-if="presetHelperCellInfo?.stitchCount">
-                <span>Stitch Count</span>
+                <span>RBC Field</span>
                 {{ presetHelperCellInfo?.stitchCount }}
               </li>
               <li v-if="presetHelperCellInfo?.wbcCount">
@@ -282,15 +282,8 @@ watch(() => cellImageAnalyzedData.value, () => {
 
   if (currentPreset) {
     setCellInfo(currentPreset);
+    checkAnalysisSettingChanged(cellInfo.value);
   }
-}, { deep: true })
-
-watch(() => cellInfo.value, (newCellInfo) => {
-  if (!newCellInfo) {
-    return;
-  }
-
-  checkAnalysisSettingChanged(newCellInfo);
 }, { deep: true })
 
 const initDataExecute = async () => {

@@ -39,22 +39,21 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, onMounted, ref, watch} from "vue";
+import {computed, onBeforeMount, ref, watch} from "vue";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
-import {settingName} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import Button from "@/components/commonUi/Button.vue";
 import {WbcActiveSettingType} from "@/common/type/settings";
-import ClassOrder from "@/views/setting/analysisDatabase/component/classOrder.vue";
-import CustomClass from "@/views/setting/analysisDatabase/component/customClass.vue";
-import NormalRange from "@/views/setting/analysisDatabase/component/normalRange.vue";
-import RunningCount from "@/views/setting/analysisDatabase/component/runningCount.vue";
+import ClassOrder from "@/views/setting/analysisDatabase/component/wbc/component/classOrder.vue";
+import CustomClass from "@/views/setting/analysisDatabase/component/wbc/component/customClass.vue";
+import NormalRange from "@/views/setting/analysisDatabase/component/wbc/component/normalRange.vue";
+import RunningCount from "@/views/setting/analysisDatabase/component/wbc/component/runningCount.vue";
+import HotKeys from "@/views/setting/analysisDatabase/component/wbc/component/hotKeys.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
-import HotKeys from "@/views/setting/analysisDatabase/component/hotKeys.vue";
 
 const store = useStore();
 const showAlert = ref(false);
@@ -75,10 +74,6 @@ const { toastInfo, showToast } = useToast();
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
 })
-
-onMounted(async () => {
-  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.wbc});
-});
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();

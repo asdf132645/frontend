@@ -7,46 +7,42 @@
   <div class="wbcMenu">
     <ul>
       <template v-if="['bm', 'pb'].includes(projectType)">
-        <template
-            v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-          <li
-              v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
-              class="classInfoMenu-warning-container"
-              @mouseover="showErrorContainer(true)"
-              @mouseout="showErrorContainer(false)"
-          >
-            <p class="menuIco">
-              <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']"
-                                 v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'"/>
-              <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']"
-                                 v-else-if="slideData?.isNormal === 'N' && projectType === 'pb'"/>
-            </p>
-            <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
-              <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
-                <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-                <p>{{ slideCondition?.desc }}</p>
-              </div>
+        <li
+            v-if="((slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad') || slideData?.isNormal === 'N')"
+            class="classInfoMenu-warning-container"
+            @mouseover="showErrorContainer(true)"
+            @mouseout="showErrorContainer(false)"
+        >
+          <p class="menuIco">
+            <font-awesome-icon class="icon-red-color" :icon="['fas', 'triangle-exclamation']"
+                               v-if="slideData?.slideCondition && slideData?.slideCondition?.condition === 'Bad'"/>
+            <font-awesome-icon class="icon-yellow-color" :icon="['fas', 'triangle-exclamation']"
+                               v-else-if="slideData?.isNormal === 'N' && projectType === 'pb'"/>
+          </p>
+          <div v-if="isErrorContainerOpen" class="classInfoMenu-error-container shadowBox">
+            <div class="classInfoMenu-error-wrapper" v-if="slideCondition?.condition === 'Bad'">
+              <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+              <p>{{ slideCondition?.desc }}</p>
+            </div>
 
-              <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
+            <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
 
-              <div v-if="Array.isArray(slideData?.abnormalClassInfo) && projectType === 'pb'"
-                   class="classInfoMenu-error-wrapper normalRange mt08">
-                <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
-                <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo"
-                     :key="abnormalIdx">
-                  <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
-                    <span>{{ abItem?.classNm }}</span>
-                    <span>{{ handleAbnormalValue(abItem?.val) }}</span>
-                    <span>{{
-                        handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
-                      }}</span>
-                  </p>
-                </div>
+            <div v-if="Array.isArray(slideData?.abnormalClassInfo) && projectType === 'pb'"
+                 class="classInfoMenu-error-wrapper normalRange mt08">
+              <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
+              <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in slideData?.abnormalClassInfo"
+                   :key="abnormalIdx">
+                <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
+                  <span>{{ abItem?.classNm }}</span>
+                  <span>{{ handleAbnormalValue(abItem?.val) }}</span>
+                  <span>{{
+                      handleAbnormalRange(abItem?.val, currentAbnormalRange[abnormalIdx]?.min, currentAbnormalRange[abnormalIdx]?.max, currentAbnormalRange[abnormalIdx]?.unit)
+                    }}</span>
+                </p>
               </div>
             </div>
-          </li>
-          <li v-else class="classInfoMenu-noWarning-container"></li>
-        </template>
+          </div>
+        </li>
 
         <li
             :class="{ onRight: isActive(projectType === 'bm' ? '/databaseWhole' : '/databaseRbc') }"
@@ -135,8 +131,6 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
 import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/slideData";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const emits = defineEmits();
 const showAlert = ref(false);
@@ -540,8 +534,7 @@ const handleAbnormalValue = (value: string) => {
 }
 
 const checkHasPltInfo = async () => {
-  // 인하대 업데이트로 잠시 막아놓음 (PLT 분리 Version 사용 X)
-  if (projectType.value !== 'pb' || siteCd.value === '0011') {
+  if (projectType.value !== 'pb') {
     return;
   }
 

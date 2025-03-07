@@ -27,14 +27,14 @@
               <Button @click="setDate('today')" size="sm">
                 Today
               </Button>
-              <Button @click="setDate('threeDay')" size="sm">
-                3D
-              </Button>
               <Button @click="setDate('oneWeek')" size="sm">
                 1W
               </Button>
               <Button @click="setDate('oneMonth')" size="sm">
                 1M
+              </Button>
+              <Button @click="setDate('oneYear')" size="sm">
+                1Y
               </Button>
             </div>
           </div>
@@ -52,9 +52,10 @@
                 class="listTable-date-icon"
             />
           </div>
+          <div v-if="isAllDate" class="listTable-hide-datepicker" @click="focusDatepicker('start')"></div>
           <div class="settingDatePickers">
             <Datepicker v-model="startDate" :week-starts-on="0" class="listTable-customDatepicker firstDate"
-                        @update:modelValue="handleDateChange"/>
+                        @update:modelValue="handleDateChange" />
             <Datepicker v-model="endDate" :week-starts-on="0" class="listTable-customDatepicker secondDate"
                         @update:modelValue="handleDateChange"/>
           </div>
@@ -81,8 +82,9 @@
                 :icon="['fas', 'rotate-right']"
                 @mouseover="tooltipVisibleFunc('clear', true)"
                 @mouseout="tooltipVisibleFunc('clear', false)"
-            ></Button>
-            <Tooltip :isVisible="tooltipVisible.clear" className="mt10" position="top" :message="MSG.TOOLTIP.LIST_CLEAR"/>
+            >
+              <Tooltip :isVisible="tooltipVisible.clear" position="top" :message="MSG.TOOLTIP.LIST_CLEAR"/>
+            </Button>
           </div>
         </div>
 
@@ -94,7 +96,10 @@
               size="sm"
               :icon="['fas', 'hospital-user']"
               :isActive="showPopupTable"
+              @mouseover="tooltipVisibleFunc('hospital', true)"
+              @mouseout="tooltipVisibleFunc('hospital', false)"
           ></Button>
+          <Tooltip :isVisible="tooltipVisible.hospital" className="mt10" position="top" :message="MSG.TOOLTIP.HOSPITAL_CBC_LIST"/>
 
           <Button
               v-if="viewerCheck === 'main'"
@@ -129,18 +134,7 @@
     </div>
     <div class='listBox'>
       <ListInfo :dbData="dbGetData" :selectedItem="selectedItem"/>
-      <template v-if="visibleBySite(siteCd, [
-          HOSPITAL_SITE_CD_BY_NAME['UIMD'],
-          HOSPITAL_SITE_CD_BY_NAME['TEST'],
-          HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
-          HOSPITAL_SITE_CD_BY_NAME['인천길병원'],
-      ], 'enable')">
-        <NewListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
-      </template>
-      <template v-else>
-        <ListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
-      </template>
-
+      <ListImg :dbData="dbGetData" :selectedItem="selectedItem"/>
     </div>
   </div>
 
@@ -160,7 +154,6 @@
 
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
-import NewListImg from "@/views/datebase/commponent/list/newListImg.vue";
 import ListImg from "@/views/datebase/commponent/list/listImg.vue";
 import {
   computed,
@@ -168,7 +161,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onMounted,
-  ref,
+  ref, watch,
 } from "vue";
 import {
   detailRunningApi,
@@ -198,7 +191,6 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {WbcInfo} from "@/store/modules/testPageCommon/ruuningInfo";
 import {DIR_NAME} from "@/common/defines/constants/settings";
 import {getDeviceIpApi} from "@/common/api/service/device/deviceApi";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import MultiSelectComboBox from "@/components/commonUi/MultiSelectComboBox.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {ListTableType} from "@/common/type/tooltipType";
@@ -215,7 +207,7 @@ const alertMessage = ref('');
 const today = new Date();
 const thirtyDaysAgo = new Date(today);
 thirtyDaysAgo.setDate(today.getDate() - 29);
-const startDate = ref(thirtyDaysAgo);
+const startDate = ref(new Date('2015-03-18'));
 const endDate = ref(today);
 const searchText = ref('');
 const searchType = ref('barcodeNo');
@@ -274,6 +266,7 @@ const tooltipVisible = ref({
   hospital: false,
   excel: false,
 })
+const isAllDate = computed(() => moment(startDate.value).isSame(new Date('2015-03-18')));
 
 onBeforeMount(async () => {
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
@@ -327,6 +320,10 @@ const focusDatepicker = (type: string) => {
       : document.querySelector('.secondDate')
 
   if (datepicker) {
+
+    if (moment(startDate.value).isSame(new Date('2015-03-18'))) {
+      startDate.value = new Date();
+    }
     datepicker.focus()
   }
 }
@@ -349,15 +346,15 @@ async function handleStateVal(data: any) {
   await initDbData();
 }
 
-const setDate = (type: 'today' | 'threeDay' | 'oneWeek' | 'oneMonth') => {
+const setDate = (type: 'today' | 'oneYear' | 'oneWeek' | 'oneMonth') => {
   const today = new Date();
   let pastDate = new Date();
   switch (type) {
     case 'today':
       pastDate = new Date();
       break;
-    case 'threeDay':
-      pastDate.setDate(today.getDate() - 3);
+    case 'oneYear':
+      pastDate.setDate(today.getMonth() - 12);
       break;
     case 'oneWeek':
       pastDate.setDate(today.getDate() - 7);
@@ -492,8 +489,9 @@ const initDbData = async () => {
     })
 
     titleItem.value = titleItem.value.map((item) => {
-      return {title: item.title, checked: item.checked, label: item.title, value: item.title};
+      return {title: item.title, checked: item.checked, label: item.title, value: item.title, name: item.name };
     });
+
     selectedClassValues.value = titleItemArr.value;
     selectedAnalysisValues.value = [testType.value];
 
@@ -625,7 +623,7 @@ const getDbData = async (type: string, pageNum?: number) => {
           });
 
           titleItem.value = titleItem.value.map((item) => {
-            return {title: item.title, checked: item.checked, label: item.title, value: item.title};
+            return {title: item.title, checked: item.checked, label: item.title, value: item.title, name: item.name };
           });
         }
 
@@ -1181,7 +1179,7 @@ const reDegree = async (rbcInfoArray: any) => {
 };
 
 const dateRefresh = () => {
-  startDate.value = thirtyDaysAgo;
+  startDate.value = new Date('2015-03-18');
   endDate.value = new Date();
   searchText.value = '';
   nrCount.value = 0;

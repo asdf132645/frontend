@@ -55,7 +55,7 @@
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
           <th v-if="projectType === 'bm'"></th>
-          <th>Stitch Count</th>
+          <th>RBC Field</th>
           <td>
             <select v-model='stitchCount'>
               <option v-for="type in stitchCountList" :key="type.value" :value="type.value">{{ type.text }}</option>

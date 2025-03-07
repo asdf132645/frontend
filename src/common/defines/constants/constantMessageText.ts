@@ -141,6 +141,8 @@ export const MSG = {
         MO_TYPE: 'Please select the morphology type for the configuration displayed in the comprehensive result code.',
         LIST_CLEAR: 'Clear Date & Filters',
         EXCEL: 'Print out Sample Info as Excel file',
+        CRC_ADD_CODE: 'Add Result Code',
+        HOSPITAL_CBC_LIST: 'Show CBC patient list',
     },
     TOAST: {
         DELETE_SUCCESS: 'Deleted Successfully',

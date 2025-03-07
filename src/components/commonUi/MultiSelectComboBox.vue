@@ -31,6 +31,7 @@
       >
         <input type="checkbox" :checked="isSelected(option)" />
         <span>{{ option.label }}</span>
+        <span v-if="option.name">({{ option.name }})</span>
       </div>
       <div v-if="props.options.length === 0" class="multiselect-no-results">
         {{ noResultsText }}
@@ -45,6 +46,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 export interface Option {
   value: string | number;
   label: string;
+  name?: string;
 }
 
 interface Props {
@@ -115,4 +117,5 @@ watch(isOpen, (newValue) => {
     isOpen.value = false;
   }
 });
+
 </script>

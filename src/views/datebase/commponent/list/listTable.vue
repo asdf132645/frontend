@@ -6,13 +6,13 @@
   <table class='defaultTable dbDataTable' ref="scrollableDiv">
     <colgroup>
       <col width="5%"/>
-      <col width="4%"/>
-      <col width="4%"/>
+      <col width="1%"/>
+      <col width="5%"/>
       <col width="7%"/>
       <col width="6%"/>
       <col width="8%"/>
       <col width="8%"/>
-      <col width="8%"/>
+      <col width="10%"/>
       <col width="12%"/>
       <col width="10%"/>
       <col width="6%"/>
@@ -56,44 +56,31 @@
         v-bind:data-row-id="item.id"
         @contextmenu.prevent="rowRightClick(item, $event)"
     >
-      <td @click="handleCheckboxChange(item)">
+      <td @click="handleCheckboxChange(item)" style="vertical-align: baseline">
         <div
             @mouseover="abnormalClassInfoOpen(true, item)"
             @mouseout="abnormalClassInfoOpen(false, item)"
             class="listTable-abnormalIcon-wrapper"
         >
-          <template
-              v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-            <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                               v-if="item?.slideCondition?.condition === 'Bad'"
-            />
-            <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                               v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
-            />
-          </template>
-          <template v-else>
-            <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
-                               v-if="item.isNormal === 'N' && projectType === 'pb'"/>
-          </template>
+          <font-awesome-icon class="icon-red-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                             v-if="item?.slideCondition?.condition === 'Bad'"
+          />
+          <font-awesome-icon class="icon-yellow-color isNotNormalIcon" :icon="['fas', 'triangle-exclamation']"
+                             v-else-if="item?.isNormal === 'N' && projectType === 'pb'"
+          />
           <div
               v-if="popupItemId === item.id && (item.isNormal === 'N' || slideCondition?.condition === 'Bad') && !isObjectEmpty(item.abnormalClassInfo)">
             <div class="slideStatus-container">
-              <template
-                  v-if="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable')">
-                <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
-                  <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
-                  <span>{{ slideCondition?.desc }}</span>
-                </div>
+              <div v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-wrapper">
+                <h1 class="slideStatusPopup-title icon-red-color">Condition</h1>
+                <span>{{ slideCondition?.desc }}</span>
+              </div>
 
-                <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
-              </template>
-
+              <hr v-if="slideCondition?.condition === 'Bad'" class="slideStatusPopup-line"/>
 
               <div v-if="Array.isArray(item?.abnormalClassInfo) && projectType === 'pb'"
                    class="slideStatusPopup-wrapper normalRange">
-                <h1 class="slideStatusPopup-title"
-                    :class="visibleBySite(siteCd, [HOSPITAL_SITE_CD_BY_NAME['원자력병원'], HOSPITAL_SITE_CD_BY_NAME['TEST']], 'enable') ? 'icon-yellow-color' : ''">
-                  Out of Normal Range</h1>
+                <h1 class="slideStatusPopup-title icon-yellow-color">Out of Normal Range</h1>
                 <div class="slideStatusPopup-content" v-for="(abItem, abnormalIdx) in item.abnormalClassInfo"
                      :key="abnormalIdx">
                   <p v-if="abItem?.classNm" class="slideStatusPopup-normal-wrapper">
@@ -246,13 +233,8 @@
     </template>
   </Modal>
 
-  <PrintNew v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
+  <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"
             :selectItemWbc="selectItemWbc" @printClose="printClose"/>
-  <!--  <template v-else>-->
-  <!--    <Print v-if="printOnOff" :selectItems="rightClickItem" ref="printContent" :printOnOff="printOnOff"-->
-  <!--           :selectItemWbc="selectItemWbc" @printClose="printClose"/>-->
-  <!--  </template>-->
-
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -297,11 +279,9 @@ import {DIR_NAME} from "@/common/defines/constants/settings";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
-import PrintNew from "@/views/datebase/commponent/detail/report/printNew.vue";
+import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import {gqlGenericUpdate, slideConditionUpdateMutation} from "@/gql/mutation/slideData";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import Button from "@/components/commonUi/Button.vue";
 
 const props = defineProps(['dbData', 'selectedItemIdFalse', 'notStartLoading', 'loadingDelayParents', 'total', 'itemsPerPage', 'toggleRefreshPagination']);
@@ -349,7 +329,6 @@ const instance = getCurrentInstance();
 const barcodeImg = ref('');
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const selectedSampleId = computed(() => store.state.commonModule.selectedSampleId);
-const siteCd = computed(() => store.state.commonModule.siteCd);
 const isCtrlKeyPressed = ref(false);
 const isShiftKeyPressed = ref(false);
 const firstShiftKeyStr = ref('');

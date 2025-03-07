@@ -7,7 +7,7 @@
       </colgroup>
       <thead>
       <tr>
-        <th>Class name</th>
+        <th class="text-left">Class name</th>
         <th>
           <input type="checkbox" @click="toggleAllChecks"/>
         </th>

@@ -182,8 +182,7 @@
               :icon="['fas', 'rotate-left']"
           >
             Rollback
-            <Tooltip :isVisible="tooltipVisible.rollback" className="mb08 left20" :style="'left: 12px;'" position="top"
-                     type="" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
+            <Tooltip :isVisible="tooltipVisible.rollback" className="mb08" position="top" style="left: -56px;" :message="MSG.TOOLTIP.CELL_ROLLBACK"/>
           </Button>
         </div>
       </div>

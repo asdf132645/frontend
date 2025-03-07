@@ -3,9 +3,16 @@
     <div class="settingTabSubButtons">
       <button @click="selectTab('ImagePrint')" :class="{ 'active': activeTab === 'ImagePrint' }">Image Print</button>
       <div v-if="!projectBm">
-        <button @click="selectTab('LisCode')" :class="{ 'active': activeTab === 'LisCode' }">LIS Code</button>
-        <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">CBC Code</button>
-        <button @click="selectTab('filePathSet')" :class="{ 'active': activeTab === 'filePathSet' }">LIS(CBC) Hot Key & File Path</button>
+        <button @click="selectTab('LisCode')" :class="{ 'active': activeTab === 'LisCode' }">
+          IA
+          <font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" />
+          LIS
+        </button>
+        <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">
+          CBC
+          <font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" />
+          IA
+        </button>
         <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report CRC</button>
         <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto CBC Link</button>
       </div>
@@ -48,7 +55,6 @@ import LisCode from "@/views/setting/report/component/lisCode.vue";
 import cbcCode from "@/views/setting/report/component/cbcCode.vue";
 import CRC from "@/views/setting/report/component/crc.vue";
 import ARL from '@/views/setting/report/component/autoCbc.vue';
-import FilePathSet from '@/views/setting/report/component/filePathSet.vue';
 import { computed, ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
@@ -98,8 +104,6 @@ const selectedTabComponent = computed(() => {
       return LisCode;
     case 'CbcCode':
       return cbcCode;
-    case 'filePathSet':
-      return FilePathSet;
     case 'CRC':
       return CRC;
     case 'ARL':
