@@ -81,8 +81,9 @@
                 :icon="['fas', 'rotate-right']"
                 @mouseover="tooltipVisibleFunc('clear', true)"
                 @mouseout="tooltipVisibleFunc('clear', false)"
-            ></Button>
-            <Tooltip :isVisible="tooltipVisible.clear" className="mt10" position="top" :message="MSG.TOOLTIP.LIST_CLEAR"/>
+            >
+              <Tooltip :isVisible="tooltipVisible.clear" position="top" :message="MSG.TOOLTIP.LIST_CLEAR"/>
+            </Button>
           </div>
         </div>
 

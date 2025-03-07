@@ -2,16 +2,14 @@
   <div>
     <div class="settingTabSubButtons">
       <template v-if="viewerCheck !== 'viewer'">
-        <button @click="changeTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">
-          {{ siteCd === '9090' ? 'Analysis' : 'Cell Image Analysis' }}
-        </button>
+        <button @click="changeTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Analysis</button>
       </template>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="changeTab('rbc')" :class="{ 'active': activeTab === 'rbc' }">RBC
         </button>
         <button @click='changeTab("wbc")' :class="{ 'active': activeTab === 'wbc' }">WBC</button>
       </template>
-      <button v-if="siteCd === '9090'" @click="changeTab('etc')" :class="{ 'active': activeTab === 'etc' }">Etc</button>
+      <button @click="changeTab('etc')" :class="{ 'active': activeTab === 'etc' }">Etc</button>
     </div>
 
     <component :is="activeTabComponent"/>
@@ -45,12 +43,11 @@
 
 <script setup lang="ts">
 import {computed, onBeforeMount, onMounted, ref} from 'vue';
-import CellImageAnalyzed from "@/views/setting/analysisDatabase/component/cellImageAnalyzed.vue";
-import NewAnalysis from "@/views/setting/analysisDatabase/component/newAnalysis.vue";
+import Analysis from "@/views/setting/analysisDatabase/component/analysis.vue";
 import Etc from "@/views/setting/analysisDatabase/component/etc.vue";
-import Rbc from "@/views/setting/analysisDatabase/component/rbc.vue";
-import Hotkey from "@/views/setting/analysisDatabase/component/hotKeys.vue";
-import Wbc from "@/views/setting/analysisDatabase/component/wbc.vue";
+import Rbc from "@/views/setting/analysisDatabase/component/rbc/index.vue";
+import Hotkey from "@/views/setting/analysisDatabase/component/wbc/component/hotKeys.vue";
+import Wbc from "@/views/setting/analysisDatabase/component/wbc/index.vue";
 import {useStore} from "vuex";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
@@ -107,7 +104,7 @@ const hideAlert = () => {
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
     case 'cellImageAnalyzed':
-      return siteCd.value === '9090' ? NewAnalysis : CellImageAnalyzed;
+      return Analysis;
     case 'etc':
       return Etc;
     case 'rbc':

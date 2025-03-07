@@ -24,8 +24,25 @@
         Dashboard
       </button>
       <div class="lisUploadDiv">
-        <Button @click="lisClick" v-show="activeTab === 1" size="sm" :icon="['fas', 'upload']"></Button>
-        <Button @click="childCodePlusBtn" size="sm" :icon="['fas', 'circle-plus']" class="ml10"></Button>
+        <Button
+            @click="lisClick"
+            v-show="activeTab === 1"
+            size="sm"
+            :icon="['fas', 'upload']"
+            @mouseover="tooltipVisibleFunc('lisUpload', true)"
+            @mouseout="tooltipVisibleFunc('lisUpload', false)"
+        ></Button>
+        <Tooltip :isVisible="tooltipVisible.lisUpload" position="bottom" :message="MSG.TOOLTIP.LIS_UPLOAD"/>
+
+        <Button
+            @click="childCodePlusBtn"
+            size="sm"
+            :icon="['fas', 'circle-plus']"
+            class="ml10"
+            @mouseover="tooltipVisibleFunc('addCode', true)"
+            @mouseout="tooltipVisibleFunc('addCode', false)"
+        ></Button>
+        <Tooltip :isVisible="tooltipVisible.addCode" position="bottom" :message="MSG.TOOLTIP.CRC_ADD_CODE"/>
       </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
@@ -338,6 +355,8 @@ const createdSummary = ref<any>({
 });
 const tooltipVisible = ref({
   cbcToResultCodes: false,
+  lisUpload: false,
+  addCode: false,
 })
 const childRef = ref(null);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
@@ -778,6 +797,7 @@ const lisStart = async () => {
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
 
+  console.log('siteCd.value', siteCd.value);
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value, props?.selectItems?.patientNm));
@@ -1155,8 +1175,12 @@ const tooltipVisibleFunc = (type: keyof TooltipCrcResultCodesType, visible: bool
 }
 
 const updateCRCMorphology = async () => {
-  await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
-  // await initCbcData0033();
+  if (siteCd.value === '0033') {
+    await initCbcData0033();
+  } else {
+    await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
+  }
+  // await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
 }
 
 </script>

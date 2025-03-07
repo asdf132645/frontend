@@ -27,8 +27,7 @@
                            @mouseover="tooltipVisibleFunc('iaRootPath', true)"
                            @mouseout="tooltipVisibleFunc('iaRootPath', false)"
         />
-        <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type=""
-                 :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
+        <Tooltip :isVisible="tooltipVisible.iaRootPath" position="top" :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
         Source Path
       </div>
       <div class="mb4">
@@ -43,8 +42,7 @@
             @mouseover="tooltipVisibleFunc('downloadSavePath', true)"
             @mouseout="tooltipVisibleFunc('downloadSavePath', false)"
         />
-        <Tooltip :isVisible="tooltipVisible.downloadSavePath" position="top"
-                 :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH"/>
+        <Tooltip :isVisible="tooltipVisible.downloadSavePath" position="top" :message="MSG.TOOLTIP.DOWNLOAD_SAVE_PATH"/>
         Download Path
       </h2>
 

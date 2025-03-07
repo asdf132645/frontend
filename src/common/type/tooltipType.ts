@@ -16,6 +16,8 @@ export interface TooltipListDetailType {
 
 export interface TooltipCrcResultCodesType {
     cbcToResultCodes: boolean;
+    lisUpload: boolean;
+    addCode: boolean;
 }
 
 export interface TooltipRbcClassType {

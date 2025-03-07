@@ -1316,6 +1316,13 @@ p.startStopP {
     width: 120px;
 }
 
+.setting-lisCode-container {
+    margin: 0 auto;
+    width: 1500px;
+    display: flex;
+    justify-content: center;
+}
+
 ul.customClass li span {
     display: inline-block;
     margin-right: 22px;
@@ -1533,6 +1540,7 @@ table.settingTable select {
     grid-template-columns: 1fr 1fr;
     text-align: left;
     align-items: center;
+    gap: 12px;
 }
 
 .multiselect-container {
@@ -2767,14 +2775,23 @@ ul.settingTabBtn li {
     padding-bottom: 3px;
 }
 
+ul.settingTabBtn li:hover {
+    border-bottom: 1px solid var(--coral-bg-1-color);
+}
+
+ul.settingTabBtn li.activeTab {
+    font-weight: 600;
+    border-bottom: 1px solid var(--coral-bg-0-color);
+}
+
 .settingWrap {
-    padding: 0px 20px;
+    padding: 0 20px;
 }
 
 
 li.activeTab {
     font-weight: 600;
-    border-bottom: 1px solid var(--blue-bg-0-color);
+    border-bottom: 1px solid var(--blue-bg-1-color);
 }
 
 table.settingTable td, table.settingTable th {
@@ -2865,6 +2882,11 @@ input.alarmInput {
 
 .settingTabSubButtons button.active {
     background-color: var(--coral-bg-0-color);
+    color: var(--white-color);
+}
+
+.settingTabSubButtons button:not(.active):hover {
+    background-color: var(--coral-bg-5-color);
     color: var(--white-color);
 }
 
@@ -6801,7 +6823,7 @@ progress::-moz-progress-bar {
 .tutorial-edgeShotType-container {
     position: absolute;
     top: 0;
-    left: 440px;
+    left: 140px;
     display: flex;
     z-index: 12;
     background-color: var(--main-gray-color);
@@ -6843,8 +6865,6 @@ progress::-moz-progress-bar {
 
 .tooltip-pos-top {
     bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .tooltip-pos-bottom {

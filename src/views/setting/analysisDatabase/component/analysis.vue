@@ -60,6 +60,7 @@
                                @mouseover="() => informationFontHover('edgeShotType', 'hover')"
                                @mouseout="informationFontHover('edgeShotType', 'leave')"
             />
+
             <Transition>
               <div v-if="showTutorialImage.edgeShotType" class="tutorial-edgeShotType-container">
                 <img :src="smearTop" width="400"/>
@@ -158,8 +159,7 @@
                                @mouseover="tooltipVisibleFunc('iaRootPath', true)"
                                @mouseout="tooltipVisibleFunc('iaRootPath', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.iaRootPath" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
+            <Tooltip :isVisible="tooltipVisible.iaRootPath" position="top" :message="MSG.TOOLTIP.IA_ROOT_PATH"/>
             IA Root Path
           </th>
           <td colspan="2">
@@ -176,8 +176,7 @@
                 @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
                 @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
             />
-            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" className="mb08" position="top" type=""
-                     :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
+            <Tooltip :isVisible="tooltipVisible.nsNbIntegration" position="top" :message="MSG.TOOLTIP.NS_NB_INTEGRATION"/>
             NS/NB Integration
           </th>
           <td>
