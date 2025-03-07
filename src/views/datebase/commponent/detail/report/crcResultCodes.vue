@@ -42,33 +42,32 @@
             @mouseover="tooltipVisibleFunc('addCode', true)"
             @mouseout="tooltipVisibleFunc('addCode', false)"
         ></Button>
-        <Tooltip :isVisible="tooltipVisible.addCode" position="bottom" :message="MSG.TOOLTIP.CRC_ADD_CODE"/>
+        <Tooltip :isVisible="tooltipVisible.addCode" position="bottom" :message="MSG.TOOLTIP.CRC_ADD_CODE" :style="activeTab !== 1 && 'left: -58px'" />
       </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->
     <div class="tab-content crcDiv reportCrcDiv" v-show="activeTab === 1">
       <div class="text-left crcMenu mb10">
         <div
-            class="pos-relative"
+            v-if="visibleBySite(siteCd, [
+              HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
+              '0031',
+              '0030',
+          ], 'disable')"
+            class="pos-relative mr20"
             @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"
             @mouseout="tooltipVisibleFunc('cbcToResultCodes', false)"
         >
           <Button
-              v-if="visibleBySite(siteCd, [
-              HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
-              '9090',
-              '0000',
-              ''
-          ], 'enable')"
               :icon="['fas', 'file-import']"
               @click="updateCRCMorphology"
               size="sm"
           >
           </Button>
-          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" :style="'left: 120px;'" position="top"
+          <Tooltip :isVisible="tooltipVisible.cbcToResultCodes" className="mb08" position="top"
                    :message="MSG.TOOLTIP.CBC_TO_RESULTCODES"/>
         </div>
-        <span class="crcSpanMenu">Code</span>
+        <span>Code</span>
         <div class="autocomplete-container ml10">
           <!-- 검색 입력 필드 -->
 

@@ -314,6 +314,9 @@ const zoomToBox = (x: any, y: any, width: any, height: any) => {
 const drawBoxAllCanvas = async (findWbcClass: any) => {
   for (const el of findWbcClass) {
     const { boxX1, boxY1, boxWidth, boxHeight } = boxCoordinateReturn(el);
+    if (isNaN(boxX1) || isNaN(boxY1)) {
+      continue;
+    }
 
     const overlayDiv = document.createElement('div');
     overlayDiv.style.border = '2px solid red'; // 박스 스타일

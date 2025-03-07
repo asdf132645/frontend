@@ -149,7 +149,7 @@
             :className="{'blueText': slideData?.submitState === 'Submit',}"
         >
           Confirm
-          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" type=""
+          <Tooltip :isVisible="tooltipVisible.confirm" className="mb08" position="top" style="left: 0"
                    :message="MSG.TOOLTIP.CONFIRM"/>
         </Button>
         <Button

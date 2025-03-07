@@ -16,25 +16,16 @@
     />
     <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
     <div :class="'databaseWbcRight shadowBox pos-relative' + (cbcLayer ? ' cbcLayer' : '')">
-      <template v-if="siteCd === '9090'">
-        <RbcClassNew :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
-                  @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
-                  :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
-                  :notCanvasClickVal="notCanvasClickVal"
-        />
-      </template>
-      <template v-else>
-        <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
-                  @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
-                  :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
-                  :notCanvasClickVal="notCanvasClickVal"
-        />
-      </template>
-
+      <RbcClass :allUnCheck="allUnCheck" @isBeforeUpdate="isBeforeUpdate" @classInfoArrUpdate="classInfoArrUpdate"
+                   @classInfoArrUpdateRe="classInfoArrUpdateRe" type='listTable'
+                   :allCheckClear="allCheckClear" :rbcInfo="rbcInfo"
+                   :notCanvasClickVal="notCanvasClickVal"
+      />
     </div>
 
     <div :class="'databaseWbcLeft' + (cbcLayer ? ' cbcLayer' : '')">
-      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore" :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
+      <RbcImageList @notCanvasClick="notCanvasClick" @unChecked="unChecked" :isBefore="isBefore"
+                    :classInfoArr="classInfoArr" :selectItems="selectItems" type='listTable' :rbcInfo="rbcInfo"/>
     </div>
   </div>
 
@@ -49,17 +40,16 @@
 
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue';
-import RbcClass from "./rbcClass.vue";
 import RbcImageList from "./rbcImageList/rbcImageList.vue";
 import {useStore} from "vuex";
-import { getTestTypeText } from "@/common/lib/utils/conversionDataUtils";
+import {getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
 import {useGetRunningInfoByIdQuery} from "@/gql/useQueries";
 import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
-import RbcClassNew from "@/views/datebase/commponent/detail/rbc/rbcClassNew.vue";
+import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
 
 const selectItems = ref<any>({});
 const store = useStore();
@@ -106,7 +96,7 @@ const refreshClass = async (data: any) => {
   rbcInfo.value = data;
   selectItems.value = data;
   allCheckClear.value = !allCheckClear.value;
-  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
+  await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
 }
 
 const classInfoArrUpdate = (data: any) => {
@@ -114,9 +104,9 @@ const classInfoArrUpdate = (data: any) => {
 }
 
 const classInfoArrUpdateRe = async (data: any) => {
-  const { result, loading, error } = useGetRunningInfoByIdQuery(
-      { id: Number(selectItems.value?.id) },
-      { fetchPolicy: 'no-cache' }
+  const {result, loading, error} = useGetRunningInfoByIdQuery(
+      {id: Number(selectItems.value?.id)},
+      {fetchPolicy: 'no-cache'}
   );
 
   watch(result, (newValue) => {
@@ -125,7 +115,7 @@ const classInfoArrUpdateRe = async (data: any) => {
       store.dispatch('slideDataModule/updateSlideData', newValue?.getRunningInfoByIdGQL);
       const result = newValue?.getRunningInfoByIdGQL;
 
-      store.dispatch('commonModule/setCommonInfo', { testType: selectItems.value.testType });
+      store.dispatch('commonModule/setCommonInfo', {testType: selectItems.value.testType});
 
       selectItems.value = result;
       rbcInfo.value = result;
@@ -136,7 +126,6 @@ const classInfoArrUpdateRe = async (data: any) => {
       console.log('No result');
     }
   });
-
 
 
 }

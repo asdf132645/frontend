@@ -1,19 +1,16 @@
 <template>
   <div class="contentLeft" v-show="props.isClass">
-    <ExecuteNew v-if="siteCd === '9090' || siteCd === '0000'" @initDataChangeText="initDataChangeText"/>
-    <Execute v-else @initDataChangeText="initDataChangeText"/>
+    <ExecuteNew @initDataChangeText="initDataChangeText"/>
     <ProcessInfo :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"/>
     <orderList :parsedData="props.parsedData" :startStatus="props.startStatus" :pb100aCassette="pb100aCassette"/>
   </div>
   <div class="contentRight" v-show="props.isClass">
     <RenewalWorking
-        v-if="visibleBySite(siteCd, [
-            HOSPITAL_SITE_CD_BY_NAME['UIMD'],
-            HOSPITAL_SITE_CD_BY_NAME['TEST'],
-            HOSPITAL_SITE_CD_BY_NAME['원자력병원']
-            ], 'enable') && (!bmIsBoolen && pbVersion === '100a')"
-        :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo" :pb100aCassette="pb100aCassette" class="contentRightChild"/>
-    <workingView v-else :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette" class="contentRightChild"/>
+        v-if="!bmIsBoolen && pbVersion === '100a'"
+        :initValData="initValData" :parsedData="props.parsedData" :parsedDataSysInfo="parsedDataSysInfo"
+        :pb100aCassette="pb100aCassette" class="contentRightChild"/>
+    <workingView v-else :initValData="initValData" :parsedData="props.parsedData" :pb100aCassette="pb100aCassette"
+                 class="contentRightChild"/>
     <rbcclassification @rbcUpdate="rbcUpdate" :parsedData="props.parsedData" v-if="!bmIsBoolen"
                        class="contentRightChild"/>
     <wbcclassification @classInfoUpdate="classInfoUpdate" :parsedData="props.parsedData" :bmIsBoolen="bmIsBoolen"
@@ -32,14 +29,11 @@ import orderList from './commponent/orderList.vue';
 import wbcclassification from './commponent/classInfoification.vue';
 import rbcclassification from './commponent/rbcclassification.vue';
 import FoundingCells from "@/views/analysis/commponent/foundingCells.vue";
-import {defineEmits, defineProps, onMounted, ref, onBeforeMount, computed, watch} from "vue";
+import {defineEmits, defineProps, ref, onBeforeMount, computed} from "vue";
 import router from "@/router";
 import {useStore} from "vuex";
 import RenewalWorking from "@/views/analysis/commponent/renewalWorking.vue";
-import Preset from "@/views/analysis/commponent/preset.vue";
 import ExecuteNew from "@/views/analysis/commponent/executeNew.vue";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const emits = defineEmits();
 
@@ -49,7 +43,6 @@ const props = defineProps(['parsedData', 'isClass', 'startStatus', 'pb100aCasset
 const pbVersion = ref<any>('');
 const initValData = ref(false);
 const viewerCheck = computed(() => store.state.commonModule.viewerCheck);
-const siteCd = computed(() => store.state.commonModule.siteCd);
 
 onBeforeMount(async () => {
   if (viewerCheck.value === 'viewer') {
@@ -57,7 +50,7 @@ onBeforeMount(async () => {
   }
 
   pbVersion.value = window.MACHINE_VERSION;
-  bmIsBoolen.value = window.PROJECT_TYPE === 'bm' ? true : false;
+  bmIsBoolen.value = window.PROJECT_TYPE === 'bm';
 
 });
 
@@ -71,7 +64,7 @@ const classInfoUpdate = (data: any) => {
 }
 
 const initDataChangeText = async (val: any) => {
-  await store.dispatch('commonModule/setCommonInfo', { initValData: val });
+  await store.dispatch('commonModule/setCommonInfo', {initValData: val});
 }
 
 </script>

@@ -95,7 +95,7 @@
         </tr>
 
         <!-- BF Analysis -->
-        <tr v-if="projectType === 'pb' && visibleBySite(siteCd, ['9090', '0000'], 'disable')">
+        <tr v-if="projectType === 'pb'">
           <th>BF Analysis Values</th>
           <th>Cell Analyzing Count</th>
           <td>
@@ -252,7 +252,6 @@ import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {defaultCellImgData} from "@/common/helpers/common/setting";
-import {visibleBySite} from "@/common/lib/utils/visibleBySite";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 

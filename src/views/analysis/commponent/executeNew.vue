@@ -282,15 +282,8 @@ watch(() => cellImageAnalyzedData.value, () => {
 
   if (currentPreset) {
     setCellInfo(currentPreset);
+    checkAnalysisSettingChanged(cellInfo.value);
   }
-}, { deep: true })
-
-watch(() => cellInfo.value, (newCellInfo) => {
-  if (!newCellInfo) {
-    return;
-  }
-
-  checkAnalysisSettingChanged(newCellInfo);
 }, { deep: true })
 
 const initDataExecute = async () => {

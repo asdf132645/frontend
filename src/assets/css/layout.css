@@ -105,6 +105,10 @@
     margin-right: 12px;
 }
 
+.mr20 {
+    margin-right: 20px;
+}
+
 .pl0 {
     padding-left: 0 !important;
 }
@@ -1367,6 +1371,17 @@ ul.customClass li {
     height: 30px;
 }
 
+.listTable-hide-datepicker {
+    position: absolute;
+    width: 100px;
+    top: 39px;
+    height: 28px;
+    background-color: white;
+    z-index: 10;
+    left: 310px;
+    cursor: pointer;
+}
+
 .listTable-first-line {
     position: absolute;
     height: 100%;
@@ -1592,7 +1607,7 @@ table.settingTable select {
 
 .multiselect-dropdown-menu {
     position: absolute;
-    width: 158px;
+    min-width: 158px;
     max-height: 240px;
     overflow-y: auto;
     margin-top: 5px;
@@ -1617,12 +1632,14 @@ table.settingTable select {
 }
 
 .multiselect-dropdown-item {
-    padding: 8px 12px;
+    padding: 8px 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.8rem;
+    width: 100%;
+    white-space: nowrap;
 }
 
 .multiselect-dropdown-item > input {
@@ -3387,7 +3404,7 @@ ul.orderListUi > li > img {
     width: 120px;
     padding: 8px;
     border-radius: 5px;
-    text-align: center;
+    text-align: left;
 }
 
 .listTable-search-todayBtn {
@@ -3421,7 +3438,7 @@ ul.orderListUi > li > img {
 }
 
 .reportDetail {
-    width: 56%;
+    width: 50%;
     background: var(--white-color);
     color: var(--gray-bg-3-color);
     font-size: 0.8rem;
@@ -4931,7 +4948,7 @@ li.cbcLi {
 .cbcLi {
     position: absolute;
     bottom: 100px;
-    left: 36px;
+    left: 46px;
     font-size: 0.8rem;
     cursor: pointer;
 }
@@ -4947,13 +4964,6 @@ li.cbcLi {
     margin-bottom: 10px;
     border-bottom: 1px solid white;
     z-index: 100;
-}
-
-.classInfoMenu-noWarning-container {
-    position: relative;
-    height: 30px;
-    border-bottom: 1px solid white;
-    cursor: default !important;
 }
 
 .classInfoMenu-error-container {
@@ -5191,11 +5201,11 @@ table.cbcTable td {
 }
 
 .printRbcCategory {
-    width: 21%;
+    width: 18%;
 }
 
 .printRbcClass {
-    width: 27%;
+    width: 32%;
 }
 
 .printRbcDegree {
@@ -5439,8 +5449,8 @@ textarea.remarkTextArea {
     width: 100%;
     height: 37px;
     box-sizing: border-box;
-    max-width: 100%;
-    max-height: 140px;
+    max-width: 870px;
+    max-height: 120px;
 }
 
 .remarkHeader {
@@ -5829,10 +5839,6 @@ button.crcLisBtn {
     color: #fff;
     border-radius: 2px;
     top: 8px;
-}
-
-span.crcSpanMenu {
-    margin-left: 20px;
 }
 
 select.crcSelect {
@@ -6830,7 +6836,6 @@ progress::-moz-progress-bar {
     padding: 4px;
     border-radius: 4px;
     box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);
-
 }
 
 .tutorial-positionMargin-container {
@@ -6868,9 +6873,7 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-bottom {
-    top: 150%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 100%;
 }
 
 .tooltip-pos-left {
@@ -7444,7 +7447,7 @@ button.gbArrowButton.left {
     padding: 10px 20px;
     border: none;
     color: var(--white-color);
-    background-color: var(--main-bg-9-color);
+    background-color: var(--main-bg-2-color);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }

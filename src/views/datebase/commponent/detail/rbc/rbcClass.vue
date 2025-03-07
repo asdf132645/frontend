@@ -3,7 +3,7 @@
     <img v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대구로병원'] && barcodeImg !== ''" @error="onImageError" :src="barcodeImg" />
     <p v-else>Barcode Image is missing</p>
   </div>
-
+  <!--  {{ jsonIsBool }}-->
   <div v-show="jsonIsBool" class="createdRbc"> Creating a new RBC classification ...</div>
   <div>
     <div class="mt10 flex-justify-between mb10">
@@ -45,7 +45,7 @@
             <template v-for="(classInfo, classIndex) in category?.classInfo"
                       :key="`${category?.categoryId}-${classInfo?.classId}`">
               <li @click="handleClick(category?.categoryId, classInfo?.classId, classInfo?.classNm, category?.categoryNm)"
-                  class="flex-align-center" :class="type !== 'report' && 'cursorPointer'">
+                  class="flex-align-center-justify-between" :class="type !== 'report' && 'cursorPointer'">
                 <span>{{ classInfo?.classNm === 'TearDropCell' ? 'TearDrop Cell' : classInfo?.classNm }}</span>
                 <div
                     v-if="showCheckbox(category?.categoryId, classInfo?.classId, VISIBLE_RBC_OPTIONS) && type !== 'report'">
@@ -83,8 +83,8 @@
                       :icon="['fac', 'half-circle-up']"
                       v-for="degreeIndex in 4" :key="degreeIndex"
                       :class="{
-                        'degreeActive': degreeIndex < Number(classInfo?.degree) + 2 || 0,
-                        'degree0-img': degreeIndex >= Number(classInfo?.degree) + 1 || 0,
+                        'degreeActive': degreeIndex < Number(getDegreeValue(classInfo)) + 2 || 0,
+                        'degree0-img': degreeIndex >= Number(getDegreeValue(classInfo)) + 1 || 0,
                         'cursorPointer': type !== 'report'
                       }"
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], degreeIndex - 1, false)"
@@ -98,8 +98,8 @@
                       :icon="['fac', 'half-circle-down']"
                       v-for="degreeIndex in 4" :key="degreeIndex + '-down'"
                       :class="{
-                      'degreeActive': degreeIndex < Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 2 || 0,
-                      'degree0-img': degreeIndex >= Number(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree) + 1 || 0,
+                      'degreeActive': degreeIndex < Number(getDegreeValue(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex])) + 2 || 0,
+                      'degree0-img': degreeIndex >= Number(getDegreeValue(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex])) + 1 || 0,
                       'cursorPointer': type !== 'report'
                     }"
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex], degreeIndex - 1, false)"
@@ -108,20 +108,20 @@
 
               </li>
               <li v-else>
-                <span v-if="classInfo.degree === '0'" class="rbcSapn">
+                <span v-if="getDegreeValue(classInfo) === 0" class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
-                      :class="type !== 'report' && 'cursorPointer'"
+                      :class="type === 'report' && 'cursorPointer'"
                   />
                 </span>
                 <span v-else class="rbcSapn">
                   <font-awesome-icon
                       :icon="['fac', 'half-circle-up']"
                       class="degreeActive"
-                      :class="type !== 'report' && 'cursorPointer'"
+                      :class="type === 'report' && 'cursorPointer'"
                   />
                 </span>
-                <span v-if="rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]?.degree === '0'" class="rbcSapnDown"
+                <span v-if="getDegreeValue(rbcInfoAfterVal[innerIndex]?.classInfo[classIndex]) === 0" class="rbcSapnDown"
                 >
                   <font-awesome-icon
                       @click="onClickDegree(rbcInfoAfterVal[innerIndex], rbcInfoAfterVal[innerIndex]?.classInfo[classIndex],'0', true)"
@@ -158,21 +158,21 @@
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '03'">
-                {{ Number(shapeOthersCount) || 0 }}
+                {{ Number(rbcCount.shapeOthersTotalCount) || 0 }}
               </li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && category?.categoryId === '05'">
-                {{ Number(malariaCount) || 0 }}
+                {{ Number(rbcCount.malariaCount) || 0 }}
               </li>
               <div v-if="classIndex === category?.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02']" :key="categoryId" class="underline"
                      v-show="rbcInfoAfterVal[innerIndex].categoryId === categoryId">
-                  {{ Number(sizeChromiaTotal) || 0 }}
+                  {{ Number(rbcCount.sizeChromiaTotalCount) || 0 }}
                 </div>
               </div>
               <div class="underline"
                    v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
-                {{ Number(shapeBodyTotal) || 0 }}
+                {{ Number(rbcCount.shapeBodyTotalCount) || 0 }}
               </div>
             </template>
           </ul>
@@ -185,11 +185,11 @@
               <li v-else>-</li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '03'">
-                {{ percentageChange(shapeOthersCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}%
+                {{ percentageChange(rbcCount.shapeOthersTotalCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}%
               </li>
               <li class="defaultText"
                   v-if="classIndex === category?.classInfo.length - 1 && rbcInfoAfterVal[innerIndex]?.categoryId === '05'">
-                {{ percentageChange(malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}%
+                {{ percentageChange(rbcCount.malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}%
               </li>
               <div v-if="classIndex === category?.classInfo.length - 1">
                 <div v-for="categoryId in ['01', '02', '05']" :key="categoryId" class="underline"
@@ -207,12 +207,12 @@
     </template>
     <!--orders-->
     <div>
-      <div class="categories rbcClass">
+      <div class="categories rbcClass categories-lastItem">
         <ul class="categoryNm">
           <li>Others</li>
         </ul>
         <ul class="classNmRbc">
-          <li @click="handleClick('04', '01', 'Platelet', 'Others')" style="padding-top: 0;" class="flex-align-center">
+          <li @click="handleClick('04', '01', 'Platelet', 'Others')" style="padding-top: 0;" class="flex-align-center-justify-between">
             <span>Platelet</span>
             <div v-if="type !== 'report'">
               <font-awesome-icon :icon="['fas', 'eye']" class="rbc-check-eye-font" color="#29C7CA"
@@ -225,7 +225,7 @@
           </li>
         </ul>
         <ul class="degree analysis">
-          <li style="width: 130px;">{{ pltCount || 0 }} PLT / 1000 RBC</li>
+          <li style="width: 130px;">{{ rbcCount.pltCount || 0 }} PLT / 1000 RBC</li>
         </ul>
         <ul class="rbcPercent"></ul>
         <ul class="rbcPercent"></ul>
@@ -241,7 +241,6 @@
     <!--          <SliderBar v-model="sliderValue" :min="0" :max="100" leftText="less" rightText="more"/>-->
     <!--          <button class="degreeBtn" type="button" @click="sensRbcReJsonSend">Ok</button>-->
     <!--        </div>-->
-
   </div>
   <Alert
       v-if="showAlert"
@@ -251,10 +250,10 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-</template>
+  </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watch, onMounted, computed, defineEmits, nextTick } from 'vue';
+import {ref, defineProps, watch, onMounted, computed, defineEmits, nextTick} from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {RbcInfo} from "@/store/modules/analysis/rbcClassification";
@@ -272,6 +271,7 @@ import {
 } from "@/common/defines/constants/rbc";
 import { DIR_NAME } from "@/common/defines/constants/settings";
 import { gqlGenericUpdate, rbcUpdateMutation } from "@/gql/mutation/slideData";
+import {fileSearchApi} from "@/common/api/service/fileSys/fileSysApi";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {getBarcodeDetailImageUrl} from "@/common/lib/utils/conversionDataUtils";
 
@@ -281,8 +281,17 @@ const checkedClassIndices = ref<string[]>([]);
 const props = defineProps(['rbcInfo', 'type', 'allCheckClear', 'notCanvasClickVal']);
 const rbcInfoAfterVal = ref<any>([]);
 const rbcInfoBeforeVal = ref<any>([]);
-const pltCount = ref(0);
-const malariaCount = ref(0);
+const rbcCount = ref({
+  rbcTotalCount: 0,
+  pltCount: 0,
+  pltTotalCount: 0,
+  malariaCount: 0,
+  maxRbcCount: 0,
+  sizeChromiaTotalCount: 0,
+  chromiaTotalCount: 0,
+  shapeBodyTotalCount: 0,
+  shapeOthersTotalCount: 0,
+});
 const sliderValue = ref(50);
 const store = useStore();
 const showAlert = ref(false);
@@ -293,7 +302,6 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const isBefore = ref(false);
 const classInfoArr = ref<any>([]);
 const emits = defineEmits();
-const maxRbcCount: any = ref('');
 const router = useRouter();
 const except = ref(false);
 const rightClickItem: any = ref([]);
@@ -307,37 +315,40 @@ const allCheckType = ref<Record<string, boolean>>({
 })
 const rbcInfoPathAfter = ref<any>([]);
 const jsonIsBool = ref(false);
-const rbcTotalVal = ref(0);
 const iaRootPath = computed(() => store.state.commonModule.iaRootPath);
 const rbcReData = computed(() => store.state.commonModule.rbcReData);
 const resetRbcArr = computed(() => store.state.commonModule.resetRbcArr);
 const rbcImagePageNumber = computed(() => store.state.commonModule.rbcImagePageNumber);
 const slideData = computed(() => store.state.slideDataModule);
-
 const rbcDegreeStandard = ref<any>([]);
-const sizeChromiaTotal = ref(0);
-const chromiaTotalTwo = ref(0);
-const shapeBodyTotal = ref(0);
 const rbcReDataCheck = computed(() => store.state.commonModule.rbcReDataCheck);
 const rbcSendtimerId = ref<number | null>(null);
 let timeoutId: any;
 const projectType = ref(window.PROJECT_TYPE);
-const shapeOthersCount = ref(0);
+const totalRBCImageNames = ref<string[]>([])
 const barcodeImg = ref('');
 
 onMounted(async () => {
   await nextTick();
   await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
-  const {path} = router.currentRoute.value;
-  pltCount.value = slideData.value?.rbcInfo.pltCount;
-  malariaCount.value = slideData.value?.rbcInfo.malariaCount;
-  maxRbcCount.value = slideData.value?.rbcInfo.maxRbcCount;
+  const { path } = router.currentRoute.value;
+  rbcCount.value.pltCount = slideData.value?.rbcInfo.pltCount;
+  rbcCount.value.malariaCount = slideData.value?.rbcInfo.malariaCount;
+  rbcCount.value.maxRbcCount = slideData.value?.rbcInfo.maxRbcCount;
   except.value = path === '/report';
   rightClickItem.value = [];
   rightClickItemSet();
-  await rbcTotalAndReCount(rbcImagePageNumber.value);
+  await getRbcDegreeData();
+
   await afterChange(slideData.value);
-  await countReAdd();
+  await checkRBCTotalImageNames();
+  if (path.includes('report') && totalRBCImageNames.value.length > 1) {
+    await rbcTotalAndReCountForReport();
+  } else {
+    await rbcTotalAndReCount(rbcImagePageNumber.value);
+    await countReAdd();
+  }
+  await reDegree(rbcInfoBeforeVal.value);
   setBarCodeImage(slideData.value);
 });
 
@@ -349,6 +360,7 @@ watch(() => props.allCheckClear, (newItem) => {
 watch(() => rbcImagePageNumber.value, async (newRbcPageNumber) => {
   await rbcTotalAndReCount(newRbcPageNumber);
   await countReAdd();
+  await reDegree(rbcInfoBeforeVal.value);
 })
 
 const rightClickItemSet = () => {
@@ -378,11 +390,19 @@ watch(
     () => slideData.value.id,
     async (newVal, oldVal) => {
       await nextTick();
-      await rbcTotalAndReCount(rbcImagePageNumber.value);
-      await getRbcDegreeData();
+
+      const { path } = router.currentRoute.value;
+      await afterChange(slideData.value);
+      await checkRBCTotalImageNames();
+      if (path.includes('report') && totalRBCImageNames.value.length > 1) {
+        await rbcTotalAndReCountForReport();
+      } else {
+        await rbcTotalAndReCount(rbcImagePageNumber.value);
+        await countReAdd();
+      }
+
       await reDegree(rbcInfoBeforeVal.value);
-      pltCount.value = slideData.value?.pltCount;
-      malariaCount.value = slideData.value?.malariaCount;
+      await reDegree(rbcInfoAfterVal.value);
       rightClickItemSet();
       allCheckType.value = {
         '01': true,
@@ -391,11 +411,10 @@ watch(
         '04': true,
         '05': true,
       }
-      await afterChange(slideData.value);
-      await countReAdd();
-      setBarCodeImage(slideData.value);
+      // await afterChange(slideData.value);
+      // await countReAdd();
     },
-    { deep: true}
+    { deep: true }
 );
 
 
@@ -427,10 +446,23 @@ watch(() => rbcReData, async (newItem) => {
       // await afterChange();
       await rbcTotalAndReCount(rbcImagePageNumber.value);
       await countReAdd();
-      await getRbcDegreeData();
     }, 1000);
   }
 
+}, {deep: true});
+
+watch(rbcReDataCheck, (newVal) => {
+  resetTimer();
+
+  if (rbcSendtimerId.value !== null) {
+    clearInterval(rbcSendtimerId.value);
+  }
+
+  rbcSendtimerId.value = window.setInterval(() => {
+    if (newVal) {
+      sensRbcReJsonSend();
+    }
+  }, 800);
 }, {deep: true});
 
 const showCheckbox = (categoryId: string, classId: string, availableClassIds: {
@@ -542,7 +574,7 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
   let chromiaTotalval = 0;
   let shapeTotalVal = 0;
   let inclusionBody = 0;
-  shapeOthersCount.value = 0;
+  rbcCount.value.shapeOthersTotalCount = 0;
   rbcInfoPathAfter.value.forEach(el => {
     switch (el.categoryId) {
       case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
@@ -556,7 +588,7 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
 
         for (const classItem of el.classInfo) {
           if (!SHOWING_RBC_SHAPE_CLASS_IDS.includes(classItem.classId)) {
-            shapeOthersCount.value += 1;
+            rbcCount.value.shapeOthersTotalCount += 1;
           }
         }
         break;
@@ -568,11 +600,126 @@ const rbcTotalAndReCount = async (pageNumber: any) => {
     }
   });
 
-  rbcTotalVal.value = Number(total);
-  sizeChromiaTotal.value = Number(total);
-  chromiaTotalTwo.value = chromiaTotalval;
-  shapeBodyTotal.value = Number(shapeTotalVal) + Number(inclusionBody);
+  rbcCount.value.rbcTotalCount = Number(total);
+  rbcCount.value.sizeChromiaTotalCount = Number(total);
+  rbcCount.value.chromiaTotalCount = chromiaTotalval;
+  rbcCount.value.shapeBodyTotalCount = Number(shapeTotalVal) + Number(inclusionBody);
 }
+
+const resetTotalCounts = () => {
+  rbcCount.value.rbcTotalCount = 0;
+  rbcCount.value.sizeChromiaTotalCount = 0;
+  rbcCount.value.chromiaTotalCount = 0;
+  rbcCount.value.shapeBodyTotalCount = 0;
+  rbcCount.value.shapeOthersTotalCount = 0;
+  rbcCount.value.maxRbcCount = 0;
+  rbcCount.value.pltCount = 0;
+  rbcCount.value.malariaCount = 0;
+  rbcCount.value.pltTotalCount = 0;
+}
+
+const checkRBCTotalImageNames = async () => {
+  const rootPath = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const fileSearchApiParam = `directoryPath=${rootPath}\\${slideData.value?.slotId}\\${DIR_NAME.RBC_IMAGE}&searchString=RBC_Image`;
+  try {
+    const response = await fileSearchApi(fileSearchApiParam);
+
+    if (response.data) {
+      const rbcImageFileNames = response.data.filter((item) => item.endsWith('_files'));
+      totalRBCImageNames.value = rbcImageFileNames.map((item) => {
+        const splitedItem = item.split('_');
+        return splitedItem[splitedItem.length - 2];
+      })
+    } else {
+      totalRBCImageNames.value = [];
+    }
+  } catch (error) {
+    totalRBCImageNames.value = [];
+    console.error(error);
+  }
+}
+
+const rbcTotalAndReCountForReport = async () => {
+  const path = slideData.value?.img_drive_root_path !== '' && slideData.value?.img_drive_root_path ? slideData.value?.img_drive_root_path : iaRootPath.value;
+  const slotId = slideData.value?.slotId;
+  const basePath = `${path}/${slotId}/${DIR_NAME.RBC_CLASS}`;
+  const urlOld = `${basePath}/${slotId}.json`;
+
+  resetTotalCounts();
+  for (const rbcImageName of totalRBCImageNames.value) {
+    const urlNew = `${basePath}/${slotId}_new_${rbcImageName}.json`;
+
+    const responseNew = await readJsonFile({fullPath: urlNew });
+    const responseOld = await readJsonFile({fullPath: urlOld });
+
+    const oldData = responseOld?.data?.[Number(rbcImageName)]?.rbcClassList || [];
+    const newData = responseNew.data !== 'not file' ? responseNew.data : [];
+
+    for (const rbcItem of oldData) {
+      for (const newRbcData of newData) {
+        // 기존 요소 제거
+        const foundIndex = rbcItem.classInfo.findIndex((el: any) => el.index === newRbcData.index);
+        if (foundIndex !== -1) {
+          rbcItem.classInfo.splice(foundIndex, 1);
+        }
+
+        // 새 요소 추가
+        if (rbcItem.categoryId === newRbcData.categoryId) {
+          rbcItem.classInfo.push({
+            classNm: newRbcData.classNm,
+            classId: newRbcData.classId,
+            posX: String(newRbcData.posX),
+            posY: String(newRbcData.posY),
+            width: newRbcData.width,
+            height: newRbcData.height,
+            index: newRbcData.index,
+          });
+        }
+      }
+    }
+
+    rbcInfoPathAfter.value = oldData;
+
+    if (!Array.isArray(rbcInfoPathAfter.value)) {
+      return;
+    }
+
+    // 카테고리별 총계 계산
+    let [total, chromiaTotal, shapeTotal, inclusionTotal] = [0, 0, 0, 0];
+
+    rbcInfoPathAfter.value.forEach((el) => {
+      switch (el.categoryId) {
+        case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
+          total = el.classInfo.length;
+          break;
+        case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
+          chromiaTotal = el.classInfo.length;
+          break;
+        case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
+          shapeTotal = el.classInfo.length;
+
+          // Shape Others 계산
+          rbcCount.value.shapeOthersTotalCount += el.classInfo.filter(
+              (item) => !SHOWING_RBC_SHAPE_CLASS_IDS.includes(item.classId)
+          ).length;
+          break;
+        case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
+          inclusionTotal = el.classInfo.length;
+          break;
+      }
+    });
+
+    // 총계 업데이트
+    rbcCount.value.rbcTotalCount += total;
+    rbcCount.value.sizeChromiaTotalCount += total;
+    rbcCount.value.chromiaTotalCount += chromiaTotal;
+    rbcCount.value.shapeBodyTotalCount += shapeTotal + inclusionTotal;
+
+    // 마지막 이미지를 처리할 때만 countReAddForReport 호출
+    const isLastImage = totalRBCImageNames.value[totalRBCImageNames.value.length - 1] === rbcImageName;
+    await countReAddForReport(isLastImage ? 'last' : undefined);
+  }
+};
 
 const percentageChange = (count: any, categoryId: string): any => {
   const percentage: any = ((Number(count) / calculateRbcTotalByCategoryId(categoryId)) * 100).toFixed(1);
@@ -583,14 +730,14 @@ const percentageChange = (count: any, categoryId: string): any => {
 const calculateRbcTotalByCategoryId = (categoryId: string) => {
   switch (categoryId) {
     case RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID:
-      return Number(rbcTotalVal.value);
+      return Number(rbcCount.value.rbcTotalCount);
     case RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID:
-      return Number(chromiaTotalTwo.value);
+      return Number(rbcCount.value.chromiaTotalCount);
     case RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID:
     case RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID:
-      return Number(shapeBodyTotal.value);
+      return Number(rbcCount.value.shapeBodyTotalCount);
     default:
-      return Number(rbcTotalVal.value);
+      return Number(rbcCount.value.rbcTotalCount);
   }
 }
 
@@ -620,22 +767,6 @@ const resetTimer = () => {
     clearTimeout(rbcSendtimerId.value);
   }
 };
-
-
-watch(rbcReDataCheck, (newVal) => {
-  resetTimer();
-
-  if (rbcSendtimerId.value !== null) {
-    clearInterval(rbcSendtimerId.value);
-  }
-
-  rbcSendtimerId.value = window.setInterval(() => {
-    if (newVal) {
-      sensRbcReJsonSend();
-    }
-  }, 800);
-}, {deep: true});
-
 
 const sensRbcReJsonSend = async () => {
   jsonIsBool.value = true;
@@ -674,9 +805,73 @@ const afterChange = async (newItem?: any) => {
   isBefore.value = false;
   emits('isBeforeUpdate', false);
   rbcInfoBeforeVal.value = slideData.value?.rbcInfo.rbcClass;
+  resetRBCValue(rbcInfoBeforeVal.value);
   rbcInfoAfterVal.value = slideData.value?.rbcInfoAfter;
   await classChange();
 }
+
+const resetRBCValue = (rbcInfo: any) => {
+  for (const categoryItem of rbcInfo) {
+    for (const classItem of categoryItem.classInfo) {
+      classItem.originalDegree = 0;
+    }
+  }
+}
+
+const countReAddForReport = async (type?: 'last') => {
+  if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
+    return;
+  }
+
+  if (!rbcInfoPathAfter.value || !Array.isArray(rbcInfoPathAfter.value)) {
+    return;
+  }
+
+  for (const category of rbcInfoBeforeVal.value) {
+    for (const classItem of category.classInfo) {
+      let count = 0;
+      for (const afterCategory of rbcInfoPathAfter.value) {
+        for (const afterClassItem of afterCategory.classInfo) {
+          if (afterClassItem.classId === classItem.classId && afterCategory.categoryId === category.categoryId) {
+            count++;
+          }
+        }
+      }
+
+      classItem.originalDegree += Number(count);
+      if (type === 'last') {
+        classItem.percent = percentageChange(classItem.originalDegree, category.categoryId);  // percent는 맨 마지막에 계산해야 함
+      }
+    }
+  }
+
+  let totalPLT = 0;
+  let malariaTotal = 0;
+  for (const el of rbcInfoPathAfter.value) {
+    if (el.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
+      rbcCount.value.maxRbcCount += Number(el.classInfo.length);
+    }
+    if (el.categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) {
+      for (const xel of el.classInfo) {
+        if (xel.classId === RBC_CODE_CLASS_ID.OTHERS.PLATELET) {
+          totalPLT += 1;
+        }
+      }
+    } else if (el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
+      for (const xel of el.classInfo) {
+        if (xel.classId === RBC_CODE_CLASS_ID.INCLUSION_BODY.MALARIA) {
+          malariaTotal += 1;
+        }
+      }
+    }
+  }
+  rbcCount.value.pltTotalCount += totalPLT;
+
+  if (type === 'last') {
+    rbcCount.value.pltCount += Math.floor((rbcCount.value.pltTotalCount / parseFloat(rbcCount.value.maxRbcCount)) * 1000);
+  }
+  rbcCount.value.malariaCount += malariaTotal;
+};
 
 const countReAdd = async () => {
   if (!rbcInfoBeforeVal.value || !Array.isArray(rbcInfoBeforeVal.value)) {
@@ -703,12 +898,12 @@ const countReAdd = async () => {
     }
   }
 
-  maxRbcCount.value = 0;
+  rbcCount.value.maxRbcCount = 0;
   let totalPLT = 0;
   let malariaTotal = 0;
   for (const el of rbcInfoPathAfter.value) {
     if (el.categoryId === RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID || el.categoryId === RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) {
-      maxRbcCount.value += Number(el.classInfo.length);
+      rbcCount.value.maxRbcCount += Number(el.classInfo.length);
     }
     if (el.categoryId === RBC_CODE_CLASS_ID.OTHERS.CATEGORY_ID) {
       for (const xel of el.classInfo) {
@@ -725,10 +920,9 @@ const countReAdd = async () => {
     }
   }
 
-  pltCount.value = Math.floor((totalPLT / parseFloat(maxRbcCount.value)) * 1000);
-  malariaCount.value = malariaTotal;
+  rbcCount.value.pltCount = Math.floor((totalPLT / parseFloat(rbcCount.value.maxRbcCount)) * 1000);
+  rbcCount.value.malariaCount = malariaTotal;
 };
-
 
 const rbcInfoAfterSensitivity = async (selectedClassVal: string) => {
   let rbcInfoAfterData = JSON.parse(JSON.stringify(rbcInfoAfterVal.value));
@@ -868,12 +1062,24 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
           } else {
             item.degree = String(degreeIndex);
           }
+
+          item.rbcImageDegreeInfo = item.rbcImageDegreeInfo || [];
+          const existingItem = item.rbcImageDegreeInfo.find(info => info.imageNo === rbcImagePageNumber.value);
+
+          if (existingItem) {
+            existingItem.degree = item.degree;
+            existingItem.originalDegree = item.originalDegree
+          } else {
+            item.rbcImageDegreeInfo.push({ imageNo: rbcImagePageNumber.value, degree: item.degree, originalDegree: item.originalDegree });
+          }
         }
         return item;
       });
     }
     return rbc;
   });
+
+  console.log('rbcInfoAfter', rbcInfoAfter);
 
   // rbcInfoAfterVal 업데이트
   rbcInfoAfterVal.value = rbcInfoAfter;
@@ -892,7 +1098,6 @@ const onClickDegree = async (category: any, classInfo: any, degreeIndex: any, is
   if (res && res?.data?.updateRunningInfoGQL[0].length !== 0) {
     await rbcTotalAndReCount(rbcImagePageNumber.value);
     await countReAdd();
-    await getRbcDegreeData();
   }
 
 };
@@ -914,61 +1119,12 @@ const getRbcDegreeData = async () => {
 const reDegree = async (rbcInfoArray: any) => {
   if (projectType.value === 'bm') return;
 
-  let totalCount = rbcTotalVal.value;
-  let sizeTotal = sizeChromiaTotal.value;
-  let chromiaTotal = chromiaTotalTwo.value;
-  if (!Array.isArray(rbcInfoBeforeVal.value)) {
+  let totalCount = rbcCount.value.rbcTotalCount;
+  let sizeTotal = rbcCount.value.sizeChromiaTotalCount;
+  let chromiaTotal = rbcCount.value.chromiaTotalCount;
+  if (!Array.isArray(rbcInfoArray)) {
     return;
   }
-  rbcInfoArray.forEach((rbcCategory: any) => {
-    rbcCategory.classInfo.forEach((rbcClass: any) => {
-      if (!rbcDegreeStandard.value) {
-        return;
-      }
-      rbcDegreeStandard.value.forEach((degreeStandard: any) => {
-        if (
-            degreeStandard.categoryId === rbcCategory.categoryId &&
-            degreeStandard.classId === rbcClass.classId
-        ) {
-          const degreeCount = Number(rbcClass.originalDegree);
-          let percent = 0;
-
-          if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) { // size total
-            percent = Number(((degreeCount / sizeTotal) * 100).toFixed(2));
-
-          } else if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.CHROMIA.CATEGORY_ID) { // chromia total
-            percent = Number(((degreeCount / chromiaTotal) * 100).toFixed(2));
-          } else { // shape, inclusion body total
-            percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
-          }
-          if (isNaN(percent)) {
-            percent = 0;
-          }
-          const setDegree = (value: any) => (rbcClass.degree = value);
-          // 0
-          if (percent < Number(degreeStandard.degree1)) {
-            setDegree('0');
-            return;
-          }
-          // 1
-          else if (percent < Number(degreeStandard.degree2)) {
-            setDegree('1');
-            return;
-          }
-          // 2
-          else if (percent < Number(degreeStandard.degree3)) {
-            setDegree('2');
-            return;
-          }
-          // 3
-          else {
-            setDegree('3');
-            return;
-          }
-        }
-      });
-    });
-  });
 
   rbcInfoArray.forEach((rbcCategory) => {
     rbcCategory.classInfo.forEach((rbcClass) => {
@@ -980,7 +1136,12 @@ const reDegree = async (rbcInfoArray: any) => {
             degreeStandard.categoryId === rbcCategory.categoryId &&
             degreeStandard.classId === rbcClass.classId
         ) {
-          const degreeCount = Number(rbcClass.originalDegree);
+
+          const originalDegree = rbcClass.rbcImageDegreeInfo?.find(
+              (item) => item.imageNo === rbcImagePageNumber.value
+          )?.originalDegree || rbcClass.originalDegree;
+
+          const degreeCount = Number(originalDegree);
           let percent = 0;
 
           if (degreeStandard.categoryId === RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) { // size total
@@ -990,7 +1151,6 @@ const reDegree = async (rbcInfoArray: any) => {
           } else { // shape, inclusion body total
             percent = Number(((degreeCount / totalCount) * 100).toFixed(2));
           }
-
           if (isNaN(percent)) percent = 0;
 
           const setDegree = (value: any) => (rbcClass.degree = value);
@@ -1041,6 +1201,19 @@ const reDegree = async (rbcInfoArray: any) => {
     });
   });
 };
+
+const getDegreeValue = (classInfo: any) => {
+  if (!classInfo.rbcImageDegreeInfo) {
+    return Number(classInfo.degree);
+  } else {
+    const existItem = classInfo.rbcImageDegreeInfo.find((item) => item.imageNo === rbcImagePageNumber.value);
+    if (!existItem) {
+      return Number(classInfo.degree);
+    } else {
+      return Number(existItem.degree);
+    }
+  }
+}
 
 const onImageError = () => {
   barcodeImg.value = '';

@@ -8,29 +8,74 @@
   <FilePathSet v-if="activeTab === 'filePath'" type="cbc" />
 
   <div v-if="activeTab === 'code'" class="alignDiv" style="width: 660px;">
-    <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
-      <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>
-      <input v-else type="text" v-model="item.fullNm" />
-      <div class="pos-relative w220 flex-align-center">
-        <font-awesome-icon
-            v-show="editingCBCCd !== item.cd"
-            @click="editCBC(item.cd)"
-            class="cursorPointer hoverSizeAction cbc-setting-icon"
-            :icon="['fas', 'pen-to-square']"
-        />
-        <font-awesome-icon
-            v-show="editingCBCCd === item.cd"
-            @click="clearEditing"
-            class="cursorPointer hoverSizeAction cbc-setting-icon"
-            :icon="['fas', 'square-check']" />
-        <font-awesome-icon
-            @click="deleteCBCCode(item.cd)"
-            class="cursorPointer hoverSizeAction"
-            style="margin-right: 4px;"
-            :icon="['fas', 'trash']" />
-        <input type="text" v-model="item.classCd" />
-      </div>
-    </label>
+    <table class="setting-table">
+      <colgroup>
+        <col width="60%"/>
+        <col width="30%"/>
+        <col width="10%"/>
+      </colgroup>
+      <thead>
+      <tr>
+        <th class="text-left">Class name</th>
+        <th>CBC Code</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
+        <td v-if="editingCBCCd !== item.cd" class="text-left">{{ item.fullNm }}</td>
+        <td v-else>
+          <input type="text" v-model="item.fullNm" />
+        </td>
+
+        <td>
+          <input class="w140" type="text" v-model="item.classCd" />
+        </td>
+
+        <td class="pos-relative">
+          <font-awesome-icon
+              v-show="editingCBCCd !== item.cd"
+              @click="editCBC(item.cd)"
+              class="cursorPointer hoverSizeAction"
+              :icon="['fas', 'pen-to-square']"
+          />
+          <font-awesome-icon
+              v-show="editingCBCCd === item.cd"
+              @click="clearEditing"
+              class="cursorPointer hoverSizeAction "
+              :icon="['fas', 'square-check']" />
+          <font-awesome-icon
+              @click="deleteCBCCode(item.cd)"
+              class="cursorPointer hoverSizeAction"
+              style="margin-right: 4px;"
+              :icon="['fas', 'trash']" />
+        </td>
+      </tr>
+      </tbody>
+    </table>
+<!--    <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">-->
+<!--      <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>-->
+<!--      <input v-else type="text" v-model="item.fullNm" />-->
+<!--      <div class="pos-relative w220 flex-align-center">-->
+<!--        <font-awesome-icon-->
+<!--            v-show="editingCBCCd !== item.cd"-->
+<!--            @click="editCBC(item.cd)"-->
+<!--            class="cursorPointer hoverSizeAction cbc-setting-icon"-->
+<!--            :icon="['fas', 'pen-to-square']"-->
+<!--        />-->
+<!--        <font-awesome-icon-->
+<!--            v-show="editingCBCCd === item.cd"-->
+<!--            @click="clearEditing"-->
+<!--            class="cursorPointer hoverSizeAction cbc-setting-icon"-->
+<!--            :icon="['fas', 'square-check']" />-->
+<!--        <font-awesome-icon-->
+<!--            @click="deleteCBCCode(item.cd)"-->
+<!--            class="cursorPointer hoverSizeAction"-->
+<!--            style="margin-right: 4px;"-->
+<!--            :icon="['fas', 'trash']" />-->
+<!--        <input type="text" v-model="item.classCd" />-->
+<!--      </div>-->
+<!--    </label>-->
 
     <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
     <div class="mt10">

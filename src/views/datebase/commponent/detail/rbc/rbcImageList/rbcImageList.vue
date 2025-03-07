@@ -27,7 +27,7 @@
             @mouseout="tooltipVisibleFunc('imageSetting', false)"
         >
           IMG Setting
-          <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" :style="'left: 36px'" :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
+          <Tooltip :isVisible="tooltipVisible.imageSetting" className="mb08" position="top" style="left: -14px" :message="MSG.TOOLTIP.CELL_IMG_SETTING"/>
         </Button>
         <div class='imageList-setting-container' v-show="imgSet_img_list">
           <div>

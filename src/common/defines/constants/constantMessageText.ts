@@ -142,6 +142,7 @@ export const MSG = {
         LIST_CLEAR: 'Clear Date & Filters',
         EXCEL: 'Print out Sample Info as Excel file',
         CRC_ADD_CODE: 'Add Result Code',
+        HOSPITAL_CBC_LIST: 'Show CBC patient list',
     },
     TOAST: {
         DELETE_SUCCESS: 'Deleted Successfully',

@@ -2,7 +2,7 @@
   <div>
     <div class="settingTabSubButtons">
       <template v-if="viewerCheck !== 'viewer'">
-        <button @click="changeTab('cellImageAnalyzed')" :class="{ 'active': activeTab === 'cellImageAnalyzed' }">Analysis</button>
+        <button @click="changeTab('analysis')" :class="{ 'active': activeTab === 'analysis' }">Analysis</button>
       </template>
       <template v-if="viewerCheck !== 'viewer'">
         <button v-if="projectType === 'pb'" @click="changeTab('rbc')" :class="{ 'active': activeTab === 'rbc' }">RBC
@@ -79,7 +79,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  activeTab.value = viewerCheck.value !== 'viewer' ? 'cellImageAnalyzed' : 'etc';
+  activeTab.value = viewerCheck.value !== 'viewer' ? 'analysis' : 'etc';
 })
 
 const changeTab = (tabName: string) => {
@@ -103,7 +103,7 @@ const hideAlert = () => {
 
 const activeTabComponent = computed(() => {
   switch (activeTab.value) {
-    case 'cellImageAnalyzed':
+    case 'analysis':
       return Analysis;
     case 'etc':
       return Etc;
