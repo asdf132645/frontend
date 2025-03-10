@@ -40,6 +40,7 @@
         @dragstart="startDrag(idx, $event)"
         @dragover.prevent
         @drop="drop(idx, $event)"
+        :class="type === 'report' && 'dragNone'"
     >
       <ul :class="{'nth1Child': true, 'cursorMove': toggleLock}" v-if="shouldRenderCategory(item.title)"
           @click="goClass(item.id)" title="BLUE text: changed element">

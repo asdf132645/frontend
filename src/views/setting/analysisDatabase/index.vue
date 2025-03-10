@@ -15,13 +15,16 @@
     <component :is="activeTabComponent"/>
   </div>
 
-  <Confirm
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      type="setting"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
 
   <Alert
@@ -55,6 +58,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const activeTab = ref('');
@@ -122,6 +126,10 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   activeTab.value = movingTab.value;
+  showConfirm.value = false;
+}
+
+const closeConfirm = () => {
   showConfirm.value = false;
 }
 

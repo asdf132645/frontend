@@ -1,7 +1,7 @@
 <template>
   <div class="setting-container">
     <div class="setting-activeBtn-container">
-      <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">WBC Running Count</Button>
+      <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">Custom WBC Running Count</Button>
       <Button @click="handleSettingMenu('customClass')" :isActive="activeTab === 'customClass'">Custom Class</Button>
       <Button @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
       <Button @click="handleSettingMenu('classOrder')" :isActive="activeTab === 'classOrder'">Class Order</Button>
@@ -11,13 +11,16 @@
 
   <component :is="activeTabComponent"/>
 
-  <Confirm
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      type="setting"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
 
   <!-- 모달 창 -->
@@ -54,6 +57,7 @@ import HotKeys from "@/views/setting/analysisDatabase/component/wbc/component/ho
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const showAlert = ref(false);
@@ -110,6 +114,10 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   activeTab.value = movingTab.value;
+}
+
+const closeConfirm = () => {
+  showConfirm.value = false;
 }
 
 const handleOkConfirm = async () => {

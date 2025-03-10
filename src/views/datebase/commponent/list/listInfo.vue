@@ -40,9 +40,9 @@
       <h3 class="mt20 mb10 hh3title">Result Information</h3>
       <table class="resultInfo-table w-full" v-if="resInfoSet()">
         <colgroup>
-          <col width="20" />
-          <col width="40" />
-          <col width="40" />
+          <col width="60%" />
+          <col width="20%" />
+          <col width="20%" />
         </colgroup>
         <thead>
         <tr>
@@ -53,7 +53,7 @@
         </thead>
         <tbody>
         <tr v-for="result in wbcInfoAfter" :key="result.title">
-          <td>{{ result.title }}</td>
+          <td>{{ result.title }} ({{ result?.name }})</td>
           <td>{{ result.count }}</td>
           <td>{{ percentWithNoError(result.percent) + '%' }}</td>
         </tr>
@@ -67,7 +67,7 @@
         <div class="resultInfo-table-space"></div>
 
         <tr v-for="result in nonWbcInfoValue" :key="result.title">
-          <td>{{ result.title }}</td>
+          <td>{{ result.title }} ({{ result?.name }})</td>
           <td>{{ result.count }}</td>
           <td>-</td>
         </tr>

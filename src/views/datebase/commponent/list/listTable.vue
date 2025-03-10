@@ -6,7 +6,7 @@
   <table class='defaultTable dbDataTable' ref="scrollableDiv">
     <colgroup>
       <col width="5%"/>
-      <col width="1%"/>
+      <col width="4%"/>
       <col width="5%"/>
       <col width="7%"/>
       <col width="6%"/>
@@ -21,8 +21,8 @@
     </colgroup>
     <thead>
     <tr style="position: sticky; top: 0;">
-      <th>
-        <input type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
+      <th style="padding-left: 28px;">
+        <input class="text-right" type="checkbox" v-model="selectAllCheckbox" @change="selectAllItems"/>
       </th>
       <th>NO</th>
       <th>State</th>
@@ -56,7 +56,7 @@
         v-bind:data-row-id="item.id"
         @contextmenu.prevent="rowRightClick(item, $event)"
     >
-      <td @click="handleCheckboxChange(item)" style="vertical-align: baseline">
+      <td @click="handleCheckboxChange(item)" style="vertical-align: baseline; padding-left: 38px;">
         <div
             @mouseover="abnormalClassInfoOpen(true, item)"
             @mouseout="abnormalClassInfoOpen(false, item)"

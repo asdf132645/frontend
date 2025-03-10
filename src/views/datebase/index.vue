@@ -55,7 +55,7 @@
           <div v-if="isAllDate" class="listTable-hide-datepicker" @click="focusDatepicker('start')"></div>
           <div class="settingDatePickers">
             <Datepicker v-model="startDate" :week-starts-on="0" class="listTable-customDatepicker firstDate"
-                        @update:modelValue="handleDateChange" />
+                        @update:modelValue="handleDateChange"/>
             <Datepicker v-model="endDate" :week-starts-on="0" class="listTable-customDatepicker secondDate"
                         @update:modelValue="handleDateChange"/>
           </div>
@@ -99,7 +99,8 @@
               @mouseover="tooltipVisibleFunc('hospital', true)"
               @mouseout="tooltipVisibleFunc('hospital', false)"
           ></Button>
-          <Tooltip :isVisible="tooltipVisible.hospital" className="mt10" position="top" :message="MSG.TOOLTIP.HOSPITAL_CBC_LIST"/>
+          <Tooltip :isVisible="tooltipVisible.hospital" className="mt10" position="top"
+                   :message="MSG.TOOLTIP.HOSPITAL_CBC_LIST"/>
 
           <Button
               v-if="viewerCheck === 'main'"
@@ -155,14 +156,7 @@
 import ListTable from "@/views/datebase/commponent/list/listTable.vue";
 import ListInfo from "@/views/datebase/commponent/list/listInfo.vue";
 import ListImg from "@/views/datebase/commponent/list/listImg.vue";
-import {
-  computed,
-  getCurrentInstance, nextTick,
-  onBeforeMount,
-  onBeforeUnmount,
-  onMounted,
-  ref, watch,
-} from "vue";
+import {computed, getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted, ref} from "vue";
 import {
   detailRunningApi,
   getRunningApi,
@@ -176,7 +170,7 @@ import {executeExcelCreate} from "@/common/api/service/excel/excelApi";
 import {useStore} from "vuex";
 import pako from "pako";
 import {readJsonFile} from "@/common/api/service/fileReader/fileReaderApi";
-import {getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
+import {getRbcDegreeApi, getWbcCustomClassApi} from "@/common/api/service/setting/settingApi";
 import {useRouter} from "vue-router";
 import Button from "@/components/commonUi/Button.vue";
 import PopupTable from "@/components/commonUi/PopupTable.vue";
@@ -266,6 +260,7 @@ const tooltipVisible = ref({
   hospital: false,
   excel: false,
 })
+const customClassArr = ref<any>([]);
 const isAllDate = computed(() => moment(startDate.value).isSame(new Date('2015-03-18')));
 
 onBeforeMount(async () => {
@@ -279,6 +274,7 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  await getCustomClass();
   if (!eventTriggered.value) {
     await initDbData();
     // loadingDelayParents.value = true;
@@ -292,7 +288,6 @@ onMounted(async () => {
   instance?.appContext.config.globalProperties.$socket.on('stateVal', handleStateVal);
   document.addEventListener('keydown', handleGlobalKeydown);
   myip.value = await getDeviceIpApi();
-
 });
 
 const handleChangeAnalysisFilter = (values: (string | number)[]) => {
@@ -481,15 +476,9 @@ const initDbData = async () => {
     wbcCountOrder.value = lastSearchParams.wbcTotal;
     testType.value = lastSearchParams.testType;
     titleItemArr.value = lastSearchParams.wbcInfo ?? [];
-    titleItem.value = titleItem.value.map((item: WbcInfo) => {
-      if (lastSearchParams.wbcInfo.includes(item.title)) {
-        return {...item, checked: true}
-      }
-      return item;
-    })
 
     titleItem.value = titleItem.value.map((item) => {
-      return {title: item.title, checked: item.checked, label: item.title, value: item.title, name: item.name };
+      return {title: item.title, label: item.title, value: item.title, name: item.name};
     });
 
     selectedClassValues.value = titleItemArr.value;
@@ -614,17 +603,8 @@ const getDbData = async (type: string, pageNum?: number) => {
         }
 
         if (titleItem.value.length === 0) {
-          const wbcInfoItems = dbGetData.value[0]?.wbcInfo?.wbcInfo[0];
-          titleItem.value = wbcInfoItems.map((item: WbcInfo) => {
-            if (titleItemArr.value.includes(item.title)) {
-              return {...item, checked: true};
-            }
-            return {...item, checked: false};
-          });
-
-          titleItem.value = titleItem.value.map((item) => {
-            return {title: item.title, checked: item.checked, label: item.title, value: item.title, name: item.name };
-          });
+          const rawTitleItems = dbGetData.value[0]?.wbcInfo?.wbcInfo[0] ?? [];
+          setTitleItemsForFilter(rawTitleItems);
         }
 
         if (wbcCountOrder.value === '' || wbcCountOrder.value === 'all') {
@@ -734,6 +714,28 @@ const excecuteExcel = async () => {
   } finally {
     isPrintingExcel.value = false;
   }
+}
+
+const setTitleItemsForFilter = (rawTitleItems: any[]) => {
+  const validCustomClassArr = customClassArr.value
+      .filter(item => item?.abbreviation && item?.fullNm)
+      .map(item => ({
+        title: item.abbreviation,
+        label: item.abbreviation,
+        value: item.abbreviation,
+        name: item.fullNm
+      }));
+
+  const filterArtifactTitleItems = rawTitleItems
+      .filter(item => siteCd.value === '0006' || item?.title !== 'SM')
+      .map(item => ({
+        title: item.title,
+        label: item.title,
+        value: item.title,
+        name: item.name
+      }));
+
+  titleItem.value = [...filterArtifactTitleItems, ...validCustomClassArr];
 }
 
 const convertRbcData = async (dataList: any) => {
@@ -1166,7 +1168,7 @@ const reDegree = async (rbcInfoArray: any) => {
         }
 
         if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
-          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+          const poikiloDegree = Number(rbcCategory.classInfo[1].degree)
 
           if (Number(rbcClass.degree) > poikiloDegree) {
             rbcCategory.classInfo[0].degree = '0'
@@ -1228,6 +1230,15 @@ const getDbDataAfterFunc = async () => {
         console.error(`SD 환자정보 조회 실패: ${error}`);
       }
     }
+  }
+}
+
+const getCustomClass = async () => {
+  try {
+    const result = await getWbcCustomClassApi();
+    customClassArr.value = result.data;
+  } catch (e) {
+    console.error(e);
   }
 }
 
