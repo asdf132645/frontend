@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isContent" class="crcReport">
+  <div v-if="isContent" class="crcReport" :style="slideData?.testType === '01' && 'width: 75%;'">
     <div class="tabs">
       <button
           class="tab"

@@ -29,7 +29,7 @@
                     @classOrderChanged="classOrderChanged" @submitStateChanged="submitStateChanged" @uploadLisChangeSlide="uploadLisChangeSlide" @updateCRCMorphology="updateCRCMorphology"
           />
         </div>
-        <div class="reportDetail shadowBox" :class="{ 'reportBm': projectBm }" v-if="!crcConnect">
+        <div class="reportDetail shadowBox" :class="{ 'reportBm': projectBm }" v-if="!crcConnect" :style="(slideData?.testType === '01' && !projectBm) && 'width: 75%;'">
           <div class="reportTitle">
             <span>[Hospital]</span> <span>DM Serial Nbr : {{ selectItems?.slotId }}</span>
             <font-awesome-icon :icon="['fas', 'print']" @click="printStart" class="printStart"/>
