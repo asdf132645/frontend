@@ -2,29 +2,30 @@
   <button class="auto-cbc-update-all-button" @click="updateAllAutoCbcData" type="button">
     <font-awesome-icon :icon="['fas', 'floppy-disk']"/>
   </button>
-<!--  <font-awesome-icon :icon="['fas', 'file-excel']" />-->
-<!--  <input type="file" @change="handleFileUpload" accept=".xlsx, .xls"/>-->
-  <div class="custom-file-input auto-cbc-update-all-button">
-    <label for="file-upload" class="file-upload-label">
-      <font-awesome-icon :icon="['fas', 'file-excel']" />
-    </label>
-    <input
-        id="file-upload"
-        type="file"
-        @change="handleFileUpload"
-        accept=".xlsx, .xls"
-        class="file-input"
-        v-show="false"
-    />
-  </div>
+  <!--  <font-awesome-icon :icon="['fas', 'file-excel']" />-->
+  <!--  <input type="file" @change="handleFileUpload" accept=".xlsx, .xls"/>-->
 
+  <label for="file-upload" class="file-upload-label">
+    <div class="custom-file-input auto-cbc-update-all-button">
+      <font-awesome-icon :icon="['fas', 'file-excel']"/>
+    </div>
+
+  </label>
+  <input
+      id="file-upload"
+      type="file"
+      @change="handleFileUpload"
+      accept=".xlsx, .xls"
+      class="file-input"
+      v-show="false"
+  />
   <div class="auto-cbc-container">
     <h2 class="auto-cbc-title">Auto CBC Matching</h2>
 
     <div class="auto-cbc-form">
       <div class="auto-cbc-form-row">
         <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group"
-             v-show="key !== 'conditionalValue' && key !== 'pbiaCbcCodeArr' && key !== 'autoTitleArr' && key !== 'autoContentArr'">
+             v-show="key !== 'conditionalValue' && key !== 'pbiaCbcCodeArr' && key !== 'autoTitleArr' && key !== 'autoContentArr' && key !== 'conditionalArray'">
           <label class="auto-cbc-label">{{ key }}</label>
 
 
@@ -259,6 +260,7 @@ const newData = ref({
   cbc_code: "",
   conditional: ">",
   conditionalValue: "",
+  conditionalArray:[],
 });
 
 const tooltipVisible = ref({
@@ -294,11 +296,17 @@ const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean)
 }
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
+  const uploadButton = target; // 파일 업로드 버튼
+  if (uploadButton) {
+    uploadButton.disabled = true; // 파일 업로드 버튼을 비활성화
+  }
+
   if (target.files && target.files[0]) {
     const file = target.files[0];
     const reader = new FileReader();
 
     reader.onload = (e) => {
+      findAutoCbcDataArr.value = [];
       const data = new Uint8Array(e.target?.result as ArrayBuffer);
       const workbook = XLSX.read(data, {type: "array"});
       const firstSheetName = workbook.SheetNames[0];
@@ -329,15 +337,32 @@ const handleFileUpload = (event: Event) => {
 
           const numberPattern = /(<=|>=|==|<|>)?\s*(\d+(?:\.\d+)?)/g; // 연산자 포함 숫자 매칭
           const sexPattern = /(남자|여자|M|F)/; // 성별 패턴
-          const agePattern = /(\d+)\s*-\s*(\d+)\s*세/; // 나이 범주 패턴
+          const agePattern = /(\d+)\s*-\s*(\d+)\s*세|(\d+)\s*세/; // 나이 범주 패턴 (단일 나이와 범주 모두 처리)
 
           const conditionalArray = [];
+          const groupedConditions = [];
           let match;
 
+          // 괄호로 묶인 조건 추출
+          const parenthesesPattern = /\(([^)]+)\)/g;
+          let parenthesisMatch;
+
+          // 괄호 안의 조건을 먼저 추출
+          while ((parenthesisMatch = parenthesesPattern.exec(str)) !== null) {
+            const innerConditions = parenthesisMatch[1].trim().split(',').map(item => item.trim());
+            if (innerConditions.length === 2) {
+              groupedConditions.push({sex: innerConditions[0], age: innerConditions[1]});
+            }
+          }
+
+
+          // 괄호가 제거된 원본 문자열에서 조건 추출
+          str = str.replace(parenthesesPattern, '').trim();
+
+          // 숫자와 연산자 추출
           while ((match = numberPattern.exec(str)) !== null) {
             const operator = match[1] ? match[1].trim() : '>'; // 연산자 추출
             const value = match[2]; // 숫자 값 추출
-
             conditionalArray.push({operator, value});
           }
 
@@ -346,23 +371,37 @@ const handleFileUpload = (event: Event) => {
             conditionalArray.push({operator: "==", value: "0"});
           }
 
+          // 성별 처리 수정
           let sex = 'all';
           const sexMatch = str.match(sexPattern);
           if (sexMatch) {
             const matchedSex = sexMatch[0].trim();
-            sex = matchedSex === '남자' || matchedSex === 'M' ? 'M' : 'F';
+            sex = (matchedSex === '남자' || matchedSex === 'M') ? 'M' : 'F';
+          } else if (groupedConditions[0]?.sex) {
+            sex = (groupedConditions[0]?.sex === '남자' || groupedConditions[0]?.sex === 'M') ? 'M' : 'F';
           }
 
+          // 나이 처리 수정
           let age = '';
           let ageCategory = '';
           const ageMatch = str.match(agePattern);
           if (ageMatch) {
-            age = `${ageMatch[1]}-${ageMatch[2]}`;
-            ageCategory = ageMatch[0];
+            // 나이 범주가 있을 경우
+            if (ageMatch[1] && ageMatch[2]) {
+              age = `${ageMatch[1]}-${ageMatch[2]}`; // 범주 형식
+            } else if (ageMatch[3]) {
+              age = ageMatch[3]; // 단일 나이 형식
+            }
+          } else if (groupedConditions[0]?.age) {
+            age = groupedConditions[0]?.age
           }
+
+          // age에서 숫자 기호 제거
+          age = age.replace(/[^0-9-=<>\s]/g, ''); // 숫자, '-', '=', 부등호만 남기기
 
           return {sex, age, ageCategory, conditionalArray};
         };
+
 
         const extractValues2 = (str: string) => {
           str = str.replace(/≤/g, "<=").replace(/≥/g, ">=");
@@ -454,9 +493,18 @@ const handleFileUpload = (event: Event) => {
           findAutoCbcDataArr.value.push(newItem);
         });
       });
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      }
+
+      if (uploadButton) {
+        uploadButton.disabled = false; // 업로드 완료 후 버튼을 다시 활성화
+      }
     };
 
     reader.readAsArrayBuffer(file);
+    (target as HTMLInputElement).value = '';
+
   }
 };
 
@@ -516,68 +564,7 @@ const removeCondition = (item, index) => {
 const loadAutoCbcData = async () => {
   findAutoCbcDataArr.value = [];
   try {
-    const [autoCbcResponse, cbcResponse, crcGetApi] = await Promise.all([
-      findAutoCbcApi(),
-      getCbcCodeRbcApi(),
-      crcGet(),
-    ]);
-    const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
-
-    // Morphology 데이터 분류
-    crcData.value = crcGetApi.data;
-    newRbcData.value = crcData.value.filter(el => el.morphologyType === 'RBC');
-    newWbcData.value = crcData.value.filter(el => el.morphologyType === 'WBC');
-    newPltData.value = crcData.value.filter(el => el.morphologyType === 'PLT');
-
-    cbcArr.value = cbcResponse?.data;
-
-    // 기존 데이터 불러오기
-    findAutoCbcDataArr.value = autoCbcResponse.data.map((item) => {
-
-      // mo_type에 따라 autoTitleArr 설정
-      if (item.mo_type === "RBC") {
-        item.autoTitleArr = [...newRbcData.value];
-      } else if (item.mo_type === "WBC") {
-        item.autoTitleArr = [...newWbcData.value];
-      } else {
-        item.autoTitleArr = [...newPltData.value];
-      }
-
-
-      // title 값이 있으면 content 자동 설정
-      const selectedTitle = item.autoTitleArr.find((el) => el.crcTitle === item.title);
-      item.autoContentArr = selectedTitle ? selectedTitle.crcContent.split(",") : [];
-
-      // matchingType에 따른 cbc_code 목록 설정
-      if (item.matchingType === "PBIA") {
-        item.pbiaCbcCodeArr = [];
-
-        for (const el of lisCodeWbcArr) {
-          if (el.LIS_CD !== '') {
-            item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
-          }
-        }
-        for (const el of lisCodeRbcArr) {
-          if (el.LIS_CD !== '') {
-            item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
-          }
-        }
-      } else {
-        const neene = cbcArr.value.filter((el) => {
-          return el.classCd !== ''
-        });
-        item.pbiaCbcCodeArr = neene.map((el) => ({classNm: el.fullNm}));
-      }
-      item.conditionalArray = item.conditional
-          ? [...item.conditional.matchAll(/([<>]=?|==)\s*(-?\d+(?:\.\d+)?)/g)].map(match => {
-            return {operator: match[1], value: match[2]};
-          })
-          : [];
-
-
-      return item;
-    });
-
+    await setData();
     // orderIdx를 기준으로 정렬
     findAutoCbcDataArr.value.sort((a, b) => parseInt(a.orderIdx) - parseInt(b.orderIdx));
 
@@ -586,39 +573,110 @@ const loadAutoCbcData = async () => {
   }
 };
 
+const setData = async () => {
+  const [autoCbcResponse, cbcResponse, crcGetApi] = await Promise.all([
+    findAutoCbcApi(),
+    getCbcCodeRbcApi(),
+    crcGet(),
+  ]);
+  const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
+
+  // Morphology 데이터 분류
+  crcData.value = crcGetApi.data;
+  newRbcData.value = crcData.value.filter(el => el.morphologyType === 'RBC');
+  newWbcData.value = crcData.value.filter(el => el.morphologyType === 'WBC');
+  newPltData.value = crcData.value.filter(el => el.morphologyType === 'PLT');
+
+  cbcArr.value = cbcResponse?.data;
+
+  // 기존 데이터 불러오기
+  findAutoCbcDataArr.value = autoCbcResponse.data.map((item) => {
+
+    // mo_type에 따라 autoTitleArr 설정
+    if (item.mo_type === "RBC") {
+      item.autoTitleArr = [...newRbcData.value];
+    } else if (item.mo_type === "WBC") {
+      item.autoTitleArr = [...newWbcData.value];
+    } else {
+      item.autoTitleArr = [...newPltData.value];
+    }
+
+
+    // title 값이 있으면 content 자동 설정
+    const selectedTitle = item.autoTitleArr.find((el) => el.crcTitle === item.title);
+    item.autoContentArr = selectedTitle ? selectedTitle.crcContent.split(",") : [];
+
+    // matchingType에 따른 cbc_code 목록 설정
+    if (item.matchingType === "PBIA") {
+      item.pbiaCbcCodeArr = [];
+
+      for (const el of lisCodeWbcArr) {
+        if (el.LIS_CD !== '') {
+          item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
+        }
+      }
+      for (const el of lisCodeRbcArr) {
+        if (el.LIS_CD !== '') {
+          item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
+        }
+      }
+    } else {
+      const neene = cbcArr.value.filter((el) => {
+        return el.classCd !== ''
+      });
+      item.pbiaCbcCodeArr = neene.map((el) => ({classNm: el.fullNm}));
+    }
+    item.conditionalArray = item.conditional
+        ? [...item.conditional.matchAll(/([<>]=?|==)\s*(-?\d+(?:\.\d+)?)/g)].map(match => {
+          return {operator: match[1], value: match[2]};
+        })
+        : [];
+
+
+    return item;
+  });
+
+}
+
 
 const createdAutoCbcData = async () => {
   try {
-    const dataToSend = { ...newData.value };
+    // 새로운 데이터 복사
+    const dataToSend = {...newData.value};
 
-    // 조건 부호와 값 결합
-    dataToSend.conditional = `${dataToSend.conditional}${dataToSend.conditionalValue}`;
+    // conditional과 conditionalValue 결합 (값이 존재할 경우에만)
+    if (dataToSend.conditional) {
+      dataToSend.conditionalArray.push({
+        operator: dataToSend.conditional || '',
+        value: dataToSend.conditionalValue || ''
+      })
+    }
+
     delete dataToSend.conditionalValue; // 불필요한 값 삭제
 
     // 임시 ID 생성 (UUID 또는 timestamp 사용 가능)
     dataToSend.tempId = `temp-${Date.now()}`;
 
-    // orderIdx를 기존 배열 길이 + 1로 설정 (맨 앞에 추가되므로 조정 가능)
-    dataToSend.orderIdx = "1"; // 맨 앞이므로 "1" 부여
+    // orderIdx를 findAutoCbcDataArr 길이에 따라 설정 (가장 앞에 추가하므로 +1)
+    dataToSend.orderIdx = (findAutoCbcDataArr.value.length + 1).toString();
 
-    // 모든 값 문자열 변환
+    // 모든 값 문자열로 변환
     Object.keys(dataToSend).forEach((key) => {
-      if (dataToSend[key] !== undefined && dataToSend[key] !== null) {
+      if (dataToSend[key] !== undefined && dataToSend[key] !== null && key !== 'conditionalArray' && key !== 'autoTitleArr' && key !== 'autoContentArr' && key !== 'pbiaCbcCodeArr') {
         dataToSend[key] = String(dataToSend[key]);
       }
     });
-
-    findAutoCbcDataArr.value.unshift({ ...dataToSend });
-
-    // 입력 폼 초기화
-    Object.keys(newData.value).forEach((key) => (newData.value[key] = ""));
+    // 새로운 데이터를 배열의 맨 앞에 추가
+    findAutoCbcDataArr.value.unshift({...dataToSend});
+    // 폼 초기화
+    Object.keys(newData.value).forEach((key) => {
+      newData.value[key] = ''; // 폼 초기화
+    });
 
   } catch (error) {
     console.error("데이터 추가 실패:", error);
   }
 };
-
-
 
 
 const updateAllAutoCbcData = async () => {
@@ -651,18 +709,17 @@ const updateAllAutoCbcData = async () => {
 };
 
 
-
 const deleteAutoCbcData = async (item) => {
   console.log(item.id)
-  if (item.excelData || item.tempId){
-    if(item.tempId){
+  if (item.excelData || item.tempId) {
+    if (item.tempId) {
       findAutoCbcDataArr.value = findAutoCbcDataArr.value.filter(items => items.tempId !== item.tempId);
-    }else{
+    } else {
       findAutoCbcDataArr.value = findAutoCbcDataArr.value.filter(items => items.id !== item.id);
     }
-  }else {
+  } else {
     try {
-      await autoCbcDelApi({ id: item.id});
+      await autoCbcDelApi({id: item.id});
       await loadAutoCbcData();
     } catch (error) {
       console.error("데이터 삭제 실패:", error);
