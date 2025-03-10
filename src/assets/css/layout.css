@@ -4037,7 +4037,7 @@ table.tableClass {
     top: 34px;
     right: 0;
     width: 400px;
-    height: 356px;
+    height: 490px;
     background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
     gap: 24px;
@@ -4057,7 +4057,7 @@ table.tableClass {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    height: 70%;
+    height: 81%;
 }
 
 .memoModal-title {

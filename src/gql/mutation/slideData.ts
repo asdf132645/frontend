@@ -61,6 +61,7 @@ export const memoUpdateDocument = gql`
             id
             wbcMemo
             rbcMemo
+            pltMemo
         }
     }
 `;

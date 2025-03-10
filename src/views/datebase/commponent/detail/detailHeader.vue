@@ -132,6 +132,10 @@
               <h2 class="memoModal-title">RBC</h2>
               <textarea v-model="memo.rbc"></textarea>
             </div>
+            <div class="memoModal-wrapper">
+              <h2 class="memoModal-title">PLT</h2>
+              <textarea v-model="memo.plt"></textarea>
+            </div>
           </div>
           <div class="memoModal-btn-wrapper">
             <Button @click="memoChange" :icon="['fas', 'floppy-disk']" size="sm">
@@ -298,6 +302,7 @@ const isMemoModalOpen = ref(false);
 const memo = ref({
   wbc: '',
   rbc: '',
+  plt: '',
 })
 const showConfirm = ref(false);
 const confirmMessage = ref('');
@@ -336,6 +341,7 @@ onMounted(async () => {
 
   memo.value.wbc = slideData.value?.wbcMemo;
   memo.value.rbc = slideData.value?.rbcMemo;
+  memo.value.plt = slideData.value?.pltMemo;
 
   if (!projectBm.value) {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
@@ -366,6 +372,7 @@ watch(() => slideData.value, (newSlideData) => {
   setShowLISButton();
   memo.value.wbc = newSlideData?.wbcMemo;
   memo.value.rbc = newSlideData?.rbcMemo;
+  memo.value.plt = newSlideData?.pltMemo;
   if (!newSlideData.cbcPatientNm || newSlideData.cbcPatientNm === '' || newSlideData.cbcPatientNm !== newSlideData.patientNm) {
     emits('updateSlideDataByCBCData', newSlideData);
   }
@@ -436,15 +443,18 @@ const barcodeCopy = async () => {
 const memoChange = async () => {
   const enterAppliedWbcMemo = memo.value.wbc.replaceAll('\r\n', '<br>');
   const enterAppliedRbcMemo = memo.value.rbc.replaceAll('\r\n', '<br>');
+  const enterAppliedPltMemo = memo.value.plt.replaceAll('\r\n', '<br>');
   const updatedItem = {
     wbcMemo: enterAppliedWbcMemo,
     rbcMemo: enterAppliedRbcMemo,
+    pltMemo: enterAppliedPltMemo,
   }
   const updatedRuningInfo = {...slideData.value, ...updatedItem};
   const res = await gqlGenericUpdate(memoUpdateMutation, {
     id: updatedRuningInfo.id,
     wbcMemo: updatedRuningInfo.wbcMemo,
     rbcMemo: updatedRuningInfo.rbcMemo,
+    pltMemo: updatedRuningInfo.pltMemo,
   });
 
   await store.dispatch('slideDataModule/updateSlideData', updatedRuningInfo);
@@ -455,6 +465,7 @@ const memoChange = async () => {
     showToast('Success');
     memo.value.wbc = updatedRuningInfo.wbcMemo;
     memo.value.rbc = updatedRuningInfo.rbcMemo;
+    memo.value.plt = updatedRuningInfo.pltMemo;
   }
   isMemoModalOpen.value = false;
 }
@@ -478,7 +489,7 @@ const hideAlert = () => {
 };
 
 const hasMemo = () => {
-  return slideData.value?.wbcMemo || slideData.value?.rbcMemo;
+  return slideData.value?.wbcMemo || slideData.value?.rbcMemo || slideData.value?.pltMemo;
 }
 
 const mountedMethod = async () => {
