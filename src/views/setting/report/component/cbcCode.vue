@@ -32,7 +32,7 @@
           <input class="w140" type="text" v-model="item.classCd" />
         </td>
 
-        <td class="pos-relative">
+        <td class="pos-relative flex-center gap14">
           <font-awesome-icon
               v-show="editingCBCCd !== item.cd"
               @click="editCBC(item.cd)"
@@ -53,34 +53,18 @@
       </tr>
       </tbody>
     </table>
-<!--    <label class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">-->
-<!--      <p v-if="editingCBCCd !== item.cd" class="pt5">{{ item.fullNm }}</p>-->
-<!--      <input v-else type="text" v-model="item.fullNm" />-->
-<!--      <div class="pos-relative w220 flex-align-center">-->
-<!--        <font-awesome-icon-->
-<!--            v-show="editingCBCCd !== item.cd"-->
-<!--            @click="editCBC(item.cd)"-->
-<!--            class="cursorPointer hoverSizeAction cbc-setting-icon"-->
-<!--            :icon="['fas', 'pen-to-square']"-->
-<!--        />-->
-<!--        <font-awesome-icon-->
-<!--            v-show="editingCBCCd === item.cd"-->
-<!--            @click="clearEditing"-->
-<!--            class="cursorPointer hoverSizeAction cbc-setting-icon"-->
-<!--            :icon="['fas', 'square-check']" />-->
-<!--        <font-awesome-icon-->
-<!--            @click="deleteCBCCode(item.cd)"-->
-<!--            class="cursorPointer hoverSizeAction"-->
-<!--            style="margin-right: 4px;"-->
-<!--            :icon="['fas', 'trash']" />-->
-<!--        <input type="text" v-model="item.classCd" />-->
-<!--      </div>-->
-<!--    </label>-->
-
-    <button class="cursorPointer" @click="addCBCCode"><font-awesome-icon :icon="['fas', 'plus']" /></button>
-    <div class="mt10">
-      <button class="saveBtn" type="button" @click="saveCbcSetting">Save</button>
+    <div>
+      <Button
+          @click="addCBCCode"
+          :icon="['fas', 'plus']"
+          class="setting-saveBtn"
+      >
+      </Button>
     </div>
+
+    <Button @click="saveCbcSetting" class="setting-saveBtn mt10">
+      Save
+    </Button>
   </div>
 
   <Confirm

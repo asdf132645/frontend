@@ -271,7 +271,7 @@ const calcRbcDegree = (rbcInfos: any, parsedData: any) => {
         }
 
         if (rbcClass.classId !== '01' && rbcClass.classId !== '02') {
-          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+          const poikiloDegree = Number(rbcCategory.classInfo[1].degree)
 
           if (Number(rbcClass.degree) > poikiloDegree) {
             rbcCategory.classInfo[0].degree = '0'

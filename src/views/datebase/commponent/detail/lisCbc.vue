@@ -252,12 +252,12 @@ const initCbcData = async (newVal: any) => {
     case HOSPITAL_SITE_CD_BY_NAME['UIMD']:
     case HOSPITAL_SITE_CD_BY_NAME['TEST']:
       // await uimdTestUrlSend();
-      // await commonCbc();
-      await commonCBC(firstCbcDatafilename.value);
+      await commonCbc();
+      // await commonCBC(firstCbcDatafilename.value);
       break;
     default:
-      // await commonCbc();
-      await commonCBC(firstCbcDatafilename.value);
+      await commonCbc();
+      // await commonCBC(firstCbcDatafilename.value);
       break;
   }
   await updateCbcData();
@@ -419,7 +419,7 @@ const commonCBC = async (firstCbcDatafilename: string) => {
         if (cbcSegment.name.trim() === 'OBX') {
           cbcCodeList.value.forEach(function (cbcCode: any) {
             if (cbcCode.classCd === cbcSegment.fields[3].value[0][0].value[0]) {
-              var obj = {
+              const obj = {
                 classNm: cbcCode.cd,
                 count: cbcSegment.fields[5].value[0][0].value[0],
                 unit: cbcSegment.fields[6].value[0][0].value[0]

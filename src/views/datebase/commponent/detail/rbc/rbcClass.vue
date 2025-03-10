@@ -1190,7 +1190,7 @@ const reDegree = async (rbcInfoArray: any) => {
         }
 
         if (rbcClass.classId !== RBC_CODE_CLASS_ID.SHAPE.NORMAL && rbcClass.classId !== RBC_CODE_CLASS_ID.SHAPE.POLIKILOCYTOSIS) {
-          var poikiloDegree = Number(rbcCategory.classInfo[1].degree)
+          const poikiloDegree = Number(rbcCategory.classInfo[1].degree)
 
           if (Number(rbcClass.degree) > poikiloDegree) {
             rbcCategory.classInfo[0].degree = '0'
