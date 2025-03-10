@@ -7,6 +7,7 @@
           <th class="pos-relative">
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
+                class="iconHover-position"
                 @mouseover="tooltipVisibleFunc('alarm', true)"
                 @mouseout="tooltipVisibleFunc('alarm', false)"
             />
@@ -28,6 +29,7 @@
           <th class="pos-relative">
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
+                class="iconHover-position"
                 @mouseover="tooltipVisibleFunc('keepPage', true)"
                 @mouseout="tooltipVisibleFunc('keepPage', false)"
             />
@@ -46,12 +48,13 @@
           <th class="pos-relative">
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
+                class="iconHover-position"
                 @mouseover="tooltipVisibleFunc('lisUploadCheckAll', true)"
                 @mouseout="tooltipVisibleFunc('lisUploadCheckAll', false)"
             />
             <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" position="top"
                      :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK"/>
-            LIS Upload Check
+            LIS Upload After Checking Cells
           </th>
           <td>
             <font-awesome-icon
@@ -78,14 +81,16 @@
     </div>
   </div>
 
-
-  <Confirm
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      :type="confirmType"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
 
   <Alert
@@ -128,6 +133,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {getDeviceInfoApi, putDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -372,6 +378,10 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
+}
+
+const closeConfirm = () => {
+  showConfirm.value = false;
 }
 
 const handleOkConfirm = async () => {

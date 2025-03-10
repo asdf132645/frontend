@@ -30,6 +30,7 @@ export const initialState: SlideDataState = {
     isNsNbIntegration: '',
     wbcMemo: '',
     rbcMemo: '',
+    pltMemo: '',
     pcIp: '',
     cbcPatientNo: '',
     cbcPatientNm: '',
@@ -73,6 +74,7 @@ export interface SlideDataState {
     isNsNbIntegration?: string;
     wbcMemo?: string;
     rbcMemo?: string;
+    pltMemo?: string;
     pcIp?: string;
     cbcPatientNo?: string;
     cbcPatientNm?: string;
@@ -120,6 +122,7 @@ interface SlideDataModule {
         setIsNsNbIntegration(state: SlideDataState, isNsNbIntegration: string): void;
         setWbcMemo(state: SlideDataState, wbcMemo: string): void;
         setRbcMemo(state: SlideDataState, rbcMemo: string): void;
+        setPltMemo(state: SlideDataState, pltMemo: string): void;
         setPcIp(state: SlideDataState, pcIp: string): void;
         setCbcPatientNo(state: SlideDataState, cbcPatientNo: string): void;
         setCbcPatientNm(state: SlideDataState, cbcPatientNm: string): void;
@@ -171,6 +174,7 @@ export const slideDataModule: SlideDataModule = {
         isNsNbIntegration: '',
         wbcMemo: '',
         rbcMemo: '',
+        pltMemo: '',
         pcIp: '',
         cbcPatientNo: '',
         cbcPatientNm: '',
@@ -273,6 +277,9 @@ export const slideDataModule: SlideDataModule = {
         setRbcMemo(state, rbcMemo) {
             state.rbcMemo = rbcMemo;
         },
+        setPltMemo(state, pltMemo) {
+            state.pltMemo = pltMemo;
+        },
         setPcIp(state, pcIp) {
             state.pcIp = pcIp;
         },
@@ -341,6 +348,7 @@ export const slideDataModule: SlideDataModule = {
             commit('setIsNsNbIntegration', payload.isNsNbIntegration);
             commit('setWbcMemo', payload.wbcMemo);
             commit('setRbcMemo', payload.rbcMemo);
+            commit('setPltMemo', payload.pltMemo);
             commit('setPcIp', payload.pcIp);
             commit('setCbcPatientNo', payload.cbcPatientNo);
             commit('setCbcPatientNm', payload.cbcPatientNm);

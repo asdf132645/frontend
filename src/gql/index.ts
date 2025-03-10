@@ -19,6 +19,12 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type AbnormalClassInfo = {
+  __typename?: 'AbnormalClassInfo';
+  classNm?: Maybe<Scalars['String']['output']>;
+  val?: Maybe<Scalars['String']['output']>;
+};
+
 export type ClassInfo = {
   __typename?: 'ClassInfo';
   classId?: Maybe<Scalars['String']['output']>;
@@ -93,7 +99,7 @@ export type RbcInfo = {
 
 export type RuningInfoEntity = {
   __typename?: 'RuningInfoEntity';
-  abnormalClassInfo?: Maybe<AbnormalClassInfo>;
+  abnormalClassInfo?: Maybe<Array<Maybe<AbnormalClassInfo>>>;
   analyzedDttm?: Maybe<Scalars['String']['output']>;
   barcodeNo?: Maybe<Scalars['String']['output']>;
   bf_lowPowerPath?: Maybe<Array<Scalars['String']['output']>>;
@@ -116,10 +122,12 @@ export type RuningInfoEntity = {
   patientId?: Maybe<Scalars['String']['output']>;
   patientNm?: Maybe<Scalars['String']['output']>;
   pcIp?: Maybe<Scalars['String']['output']>;
+  pltMemo?: Maybe<Scalars['String']['output']>;
   rbcInfo?: Maybe<RbcInfo>;
   rbcInfoAfter?: Maybe<Array<RbcAfterClassInfos>>;
   rbcInfoPosAfter: Array<Scalars['String']['output']>;
   rbcMemo?: Maybe<Scalars['String']['output']>;
+  slideCondition?: Maybe<SlideCondition>;
   slotId: Scalars['String']['output'];
   slotNo: Scalars['String']['output'];
   submitOfDate?: Maybe<Scalars['String']['output']>;
@@ -132,6 +140,12 @@ export type RuningInfoEntity = {
   wbcInfo?: Maybe<WbcResponse>;
   wbcInfoAfter: Array<WbcInfoAfter>;
   wbcMemo?: Maybe<Scalars['String']['output']>;
+};
+
+export type SlideCondition = {
+  __typename?: 'SlideCondition';
+  condition?: Maybe<Scalars['String']['output']>;
+  desc?: Maybe<Scalars['String']['output']>;
 };
 
 export type UpdateRuningInfoDto = {
@@ -164,10 +178,12 @@ export type UpdateRuningInfoDtoItems = {
   patientId?: InputMaybe<Scalars['String']['input']>;
   patientNm?: InputMaybe<Scalars['String']['input']>;
   pcIp?: InputMaybe<Scalars['String']['input']>;
+  pltMemo?: InputMaybe<Scalars['String']['input']>;
   rbcInfo?: InputMaybe<Scalars['JSON']['input']>;
   rbcInfoAfter?: InputMaybe<Scalars['JSON']['input']>;
   rbcInfoPosAfter?: InputMaybe<Array<Scalars['String']['input']>>;
   rbcMemo?: InputMaybe<Scalars['String']['input']>;
+  slideCondition?: InputMaybe<Scalars['JSON']['input']>;
   slotId?: InputMaybe<Scalars['String']['input']>;
   slotNo?: InputMaybe<Scalars['String']['input']>;
   submitOfDate?: InputMaybe<Scalars['String']['input']>;
@@ -209,12 +225,6 @@ export type WbcResponse = {
   wbcInfo?: Maybe<Array<Array<WbcInfo>>>;
 };
 
-export type AbnormalClassInfo = {
-  __typename?: 'abnormalClassInfo';
-  classNm?: Maybe<Scalars['String']['output']>;
-  val?: Maybe<Scalars['String']['output']>;
-};
-
 export type WbcImages = {
   __typename?: 'wbcImages';
   coordinates?: Maybe<Coordinates>;
@@ -230,14 +240,14 @@ export type GetRunningInfoByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo?: string | null, patientId?: string | null, patientNm?: string | null, gender?: string | null, birthDay?: string | null, wbcCount?: string | null, slotId: string, orderDttm: string, testType: string, analyzedDttm?: string | null, tactTime?: string | null, maxWbcCount?: string | null, cassetId?: string | null, isNormal?: string | null, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, isAllClassesChecked?: boolean | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null } };
+export type GetRunningInfoByIdQuery = { __typename?: 'Query', getRunningInfoByIdGQL: { __typename?: 'RuningInfoEntity', id: number, lock_status?: boolean | null, traySlot?: string | null, slotNo: string, barcodeNo?: string | null, patientId?: string | null, patientNm?: string | null, gender?: string | null, birthDay?: string | null, wbcCount?: string | null, slotId: string, orderDttm: string, testType: string, analyzedDttm?: string | null, tactTime?: string | null, maxWbcCount?: string | null, cassetId?: string | null, isNormal?: string | null, submitState?: string | null, submitOfDate?: string | null, submitUserId?: string | null, isNsNbIntegration?: string | null, wbcMemo?: string | null, rbcMemo?: string | null, pcIp?: string | null, cbcPatientNo?: string | null, cbcPatientNm?: string | null, cbcSex?: string | null, cbcAge?: string | null, img_drive_root_path?: string | null, hosName?: string | null, isAllClassesChecked?: boolean | null, wbcInfo?: { __typename?: 'WbcResponse', totalCount?: string | null, maxWbcCount?: string | null, wbcInfo?: Array<Array<{ __typename?: 'WbcInfo', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>> | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }>, rbcInfo?: { __typename?: 'RbcInfo', malariaCount?: string | null, maxRbcCount?: string | null, pltCount?: string | null, rbcClass?: Array<{ __typename?: 'RbcClassInfo', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'ClassInfo', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: string | null } | null> | null } | null> | null } | null, rbcInfoAfter?: Array<{ __typename?: 'RbcAfterClassInfos', categoryId?: string | null, categoryNm?: string | null, classInfo?: Array<{ __typename?: 'RbcAfterClassInfoObj', classId?: string | null, classNm?: string | null, degree?: string | null, originalDegree?: number | null, percent?: string | null } | null> | null }> | null, abnormalClassInfo?: Array<{ __typename?: 'AbnormalClassInfo', classNm?: string | null, val?: string | null } | null> | null } };
 
 export type UpdateRunningInfoMutationVariables = Exact<{
   updateDto: UpdateRuningInfoDto;
 }>;
 
 
-export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, isNormal?: string | null, pcIp?: string | null, lock_status?: boolean | null, abnormalClassInfo?: { __typename?: 'abnormalClassInfo', classNm?: string | null, val?: string | null } | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }> }> };
+export type UpdateRunningInfoMutation = { __typename?: 'Mutation', updateRunningInfoGQL: Array<{ __typename?: 'RuningInfoEntity', id: number, isNormal?: string | null, pcIp?: string | null, lock_status?: boolean | null, abnormalClassInfo?: Array<{ __typename?: 'AbnormalClassInfo', classNm?: string | null, val?: string | null } | null> | null, wbcInfoAfter: Array<{ __typename?: 'WbcInfoAfter', id?: string | null, name?: string | null, count?: string | null, title?: string | null, percent?: string | null, images?: Array<{ __typename?: 'wbcImages', fileName?: string | null, title?: string | null, filter?: string | null, height?: number | null, width?: number | null, coordinates?: { __typename?: 'Coordinates', display?: string | null } | null } | null> | null }> }> };
 
 
 export const GetRunningInfoByIdDocument = gql`

@@ -36,15 +36,6 @@
     </Button>
   </div>
 
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      type="setting"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
-
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -76,6 +67,7 @@ import {useRouter} from "vue-router";
 import Button from "@/components/commonUi/Button.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 
 const store = useStore();
@@ -176,6 +168,10 @@ const saveWbcRunningCount = async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const closeConfirm = () => {
+  showConfirm.value = false;
+}
 
 const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});

@@ -94,6 +94,7 @@ export const GetRunningInfoByIdDocument = gql`
             isNsNbIntegration
             wbcMemo
             rbcMemo
+            pltMemo
             pcIp
             cbcPatientNo
             cbcPatientNm

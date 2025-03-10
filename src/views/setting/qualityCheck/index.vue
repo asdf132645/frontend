@@ -110,6 +110,10 @@
           <Button @click="qualityCheckOpen" size="lg" class="w120-min">OK</Button>
         </li>
         <li class="mt20">
+          <p class="mb10">Charge Remaining Count</p>
+          <Button @click="onScan" size="lg" class="w120-min">Scan</Button>
+        </li>
+        <li class="mt20">
           <p class="mb10">Gripper Open</p>
           <Button @click="onGripperOpen" size="lg" class="w120-min" :class="{'blinkGripper': isBlinkingGripper}">OK
           </Button>
@@ -118,10 +122,6 @@
           <p class="mb10">Camera Reset</p>
           <Button @click="onCameraReset" size="lg" class="w120-min" :class="{'blinkGripper': isBlinkCameraReset}">OK
           </Button>
-        </li>
-        <li class="mt20">
-          <p class="mb10">Charge Remaining Count</p>
-          <Button @click="onScan" size="lg" class="w120-min">Scan</Button>
         </li>
       </ul>
     </div>
@@ -242,7 +242,7 @@ import {CellImageAnalyzedType} from "@/common/type/tooltipType";
 import moment from "moment/moment";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import Datepicker from "vue3-datepicker";
-import {AddOnsSettingType, WbcActiveSettingType} from "@/common/type/settings";
+import {AddOnsSettingType} from "@/common/type/settings";
 
 const store = useStore();
 const instance = getCurrentInstance();
