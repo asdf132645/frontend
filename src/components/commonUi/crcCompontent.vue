@@ -3,7 +3,7 @@
     {{ moTypeTextChange(moType) }}
   </div>
   <div :class="{ rbcCrcDiv: moType === 'RBC' }">
-    <ul :class="{ 'rbcCrcThreeGrid': moType === 'RBC' && arrData.length >= 15, 'rbcCrcGrid': moType === 'RBC' }">
+    <ul :class="{ 'rbcCrcThreeGrid': moType === 'RBC' && siteCd === HOSPITAL_SITE_CD_BY_NAME['부산해운대백병원'], 'rbcCrcGrid': moType === 'RBC' }">
       <div v-for="(item, idx) in arrData" :key="idx" class="grid-item crcItemDiv">
         <p>
           <input
@@ -86,6 +86,8 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue';
 import {isMasterId} from "@/common/lib/utils/validators";
+import {useStore} from "vuex";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const props = defineProps({
   items: {
@@ -110,8 +112,10 @@ const props = defineProps({
   }
 });
 
+const store = useStore();
 const emit = defineEmits(['updateCrc', 'deleteCrc', 'updateSelect', 'changeCrcData']);
 const arrData = ref<any>([]);
+const siteCd = computed(() => store.state.commonModule.siteCd);
 const lisCodeMatchingInfo = ref('병원 lis code 매칭 시키는 부분 - 병원에서 사용하는 타이틀로 연동해서 LIS 전송하는 부분');
 const lisValMatchingInfo = ref('병원 lis 받는 Value 매칭 시키는 부분 - 병원에서 Lis 받을 때 실제 보내야하는 값으로 치환시켜주는 부분 , 구분');
 
