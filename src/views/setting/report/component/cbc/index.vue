@@ -1,15 +1,13 @@
 <template>
-  <div class="setting-container">
-    <div class="setting-activeBtn-container">
-      <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">Custom WBC Running Count</Button>
-      <Button @click="handleSettingMenu('customClass')" :isActive="activeTab === 'customClass'">Custom Class</Button>
-      <Button @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
-      <Button @click="handleSettingMenu('classOrder')" :isActive="activeTab === 'classOrder'">Class Order</Button>
-      <Button @click="handleSettingMenu('hotkey')" :isActive="activeTab === 'hotkey'">Hot keys</Button>
-    </div>
+
+  <div class="setting-activeBtn-container flex-center">
+    <Button @click="handleSettingMenu('filePath')" :isActive="activeTab === 'filePath'">File Path</Button>
+    <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
   </div>
 
-  <component :is="activeTabComponent"/>
+  <FilePathSet v-if="activeTab === 'filePath'" type="cbc" />
+
+  <CbcCode v-if="activeTab === 'code'" />
 
   <ConfirmThreeBtn
       v-if="showConfirm"
@@ -23,7 +21,13 @@
       @okConfirm2="hideConfirm"
   />
 
-  <!-- 모달 창 -->
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
+
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -32,28 +36,19 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
-
-  <ToastNotification
-      v-if="toastInfo.message"
-      :message="toastInfo.message"
-      :messageType="toastInfo.messageType"
-      :duration="1500"
-  />
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, ref, watch} from "vue";
+import { ref, onMounted, computed, watch } from 'vue';
+import {settingName} from "@/common/defines/constants/settings";
 import Alert from "@/components/commonUi/Alert.vue";
+import { CbcCodeItem } from "@/common/api/service/setting/dto/lisCodeDto";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
-import Confirm from "@/components/commonUi/Confirm.vue";
-import {useStore} from "vuex";
+import { useStore } from "vuex";
+import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
+import CbcCode from "@/views/setting/report/component/cbc/component/code.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {WbcActiveSettingType} from "@/common/type/settings";
-import ClassOrder from "@/views/setting/analysisDatabase/component/wbc/component/classOrder.vue";
-import CustomClass from "@/views/setting/analysisDatabase/component/wbc/component/customClass.vue";
-import NormalRange from "@/views/setting/analysisDatabase/component/wbc/component/normalRange.vue";
-import RunningCount from "@/views/setting/analysisDatabase/component/wbc/component/runningCount.vue";
-import HotKeys from "@/views/setting/analysisDatabase/component/wbc/component/hotKeys.vue";
+import {CbcActiveSettingType} from "@/common/type/settings";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
@@ -62,45 +57,35 @@ import {useRouter} from "vue-router";
 
 const store = useStore();
 const router = useRouter();
+const cbcCodeArr = ref<CbcCodeItem[]>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmMessage = ref('');
+const activeTab = ref('filePath');
+const movingTab = ref('');
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
-const settingType = computed(() => store.state.commonModule.settingType);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const projectType = ref('');
-const activeTab = ref('runningCount');
-const movingTab = ref('');
 const { toastInfo, showToast } = useToast();
 
-onBeforeMount(() => {
-  projectType.value = window.PROJECT_TYPE;
-})
+onMounted(async () => {
+  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
+});
+
+watch(() => cbcCodeArr.value, async (cbcCodeArrAfterSetting) => {
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cbcCodeArrAfterSetting) });
+  if (settingType.value !== settingName.cbcCode) {
+    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
+  }
+}, { deep: true });
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
-})
-
-const activeTabComponent = computed(() => {
-  switch (activeTab.value) {
-    case 'runningCount':
-      return RunningCount;
-    case 'customClass':
-      return CustomClass;
-    case 'normalRange':
-      return NormalRange;
-    case 'classOrder':
-      return ClassOrder;
-    case 'hotkey':
-      return HotKeys;
-    default:
-      return null;
-  }
 })
 
 const checkIsMovingWhenSettingNotSaved = () => {
@@ -112,21 +97,20 @@ const hideAlert = () => {
   showAlert.value = false;
 };
 
+const closeConfirm = () => {
+  showConfirm.value = false;
+}
+
 const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
+  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
+  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
   showConfirm.value = false;
   activeTab.value = movingTab.value;
   await router.push(enteringRouterPath.value);
 }
 
-const closeConfirm = () => {
-  showConfirm.value = false;
-}
-
 const handleOkConfirm = async () => {
   showConfirm.value = false;
-
   try {
     await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
     showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
@@ -135,7 +119,7 @@ const handleOkConfirm = async () => {
   }
 }
 
-const handleSettingMenu = (type: keyof WbcActiveSettingType) => {
+const handleSettingMenu = (type: keyof CbcActiveSettingType) => {
   if (activeTab.value === type) {
     return;
   }
@@ -152,3 +136,4 @@ const handleSettingMenu = (type: keyof WbcActiveSettingType) => {
 }
 
 </script>
+

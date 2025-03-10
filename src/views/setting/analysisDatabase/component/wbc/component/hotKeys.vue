@@ -25,15 +25,6 @@
     </div>
   </div>
 
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      type="setting"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
-
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -64,25 +55,17 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {bfHotKeys, bmHotKeys, settingName, wbcHotKeys} from "@/common/defines/constants/settings";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import Button from "@/components/commonUi/Button.vue";
-import {HotkeyActiveSettingType} from "@/common/type/settings";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
-const router = useRouter();
 const saveHttpType = ref('');
 const wbcHotKeysItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const projectType = ref('pb');
-const showConfirm = ref(false);
-const confirmMessage = ref('');
-const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const bfHotKeysItems = ref<any>([]);
 const activeHotkeyItems = ref<any>([]);
@@ -107,15 +90,6 @@ watch(() => wbcHotKeysItems.value, async (wbcHotKeysItemsAfterSettingObj) => {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcHotKeys });
   }
 }, { deep: true });
-
-watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNotSaved();
-})
-
-const checkIsMovingWhenSettingNotSaved = () => {
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.settingNotSaved;
-}
 
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm') => {
   const input = event.target as HTMLInputElement;
@@ -204,24 +178,6 @@ const getBfHotKeyClasses = async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-
-const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
-  showConfirm.value = false;
-  await router.push(enteringRouterPath.value);
-}
-
-const handleOkConfirm = async () => {
-  await saveWbcCustomClass();
-  showConfirm.value = false;
-}
-
-const handleSettingMenu = (type: keyof HotkeyActiveSettingType) => {
-  activeSetting.value.wbc = false;
-  activeSetting.value.bf = false;
-  activeSetting.value[type] = true;
-}
 
 const saveBfCustomClass = async () => {
   try {

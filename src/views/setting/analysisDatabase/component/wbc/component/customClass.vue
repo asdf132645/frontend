@@ -48,15 +48,6 @@
     </div>
   </div>
 
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      type="setting"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
-
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -86,26 +77,19 @@ import { ApiResponse } from "@/common/api/httpClient";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import { basicWbcArr, basicBmClassList } from "@/store/modules/analysis/wbcclassification";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
 import Button from "@/components/commonUi/Button.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
-const router = useRouter();
 const saveHttpType = ref('');
 const wbcCustomItems = ref<any>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const projectBm = ref(false);
-const showConfirm = ref(false);
-const confirmMessage = ref('');
-const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const { toastInfo, showToast } = useToast();
 
@@ -124,15 +108,6 @@ watch(() => wbcCustomItems.value, async (wbcCustomItemsAfterSettingObj) => {
     await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.customClass });
   }
 }, { deep: true });
-
-watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNotSaved();
-})
-
-const checkIsMovingWhenSettingNotSaved = () => {
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.settingNotSaved;
-}
 
 const saveWbcCustomClass = async () => {
   if (!validateCustomClass()) {
@@ -232,17 +207,5 @@ const validateCustomClass = () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-
-const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
-  showConfirm.value = false;
-  await router.push(enteringRouterPath.value);
-}
-
-const handleOkConfirm = async () => {
-  await saveWbcCustomClass();
-  showConfirm.value = false;
-}
 
 </script>

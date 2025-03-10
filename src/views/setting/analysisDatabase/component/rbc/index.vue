@@ -86,7 +86,6 @@ import {computed, onMounted, reactive, ref, watch} from 'vue';
 import {rbcClassList, defaultRbcDegree, settingName} from '@/common/defines/constants/settings';
 import {createRbcDegreeApi, getRbcDegreeApi, putRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";

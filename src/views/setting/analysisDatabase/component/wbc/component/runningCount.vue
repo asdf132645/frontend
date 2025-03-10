@@ -61,26 +61,18 @@ import {AnalysisList2, settingName, wbcRunningCount} from "@/common/defines/cons
 import {runCountItem} from "@/common/api/service/setting/dto/runWbcInfoCountDto";
 import {createRunInfoWbcApi, getRunInfoApi, updateRunInfoApi} from "@/common/api/service/setting/settingApi";
 import {ApiResponse} from "@/common/api/httpClient";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 import Button from "@/components/commonUi/Button.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
-import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 
 const store = useStore();
-const router = useRouter();
 const saveHttpType = ref('');
 const wbcRunInfoCountArr = ref<runCountItem[]>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmMessage = ref('');
-const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const projectType = ref('');
 const { toastInfo, showToast } = useToast();
@@ -100,15 +92,6 @@ watch(() => wbcRunInfoCountArr.value, async (wbcRunInfoCountArrAfterSettingObj) 
     await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.runningCount});
   }
 }, {deep: true});
-
-watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNotSaved();
-})
-
-const checkIsMovingWhenSettingNotSaved = () => {
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.settingNotSaved;
-}
 
 const getWbcRunningCountData = async () => {
   try {
@@ -168,21 +151,5 @@ const saveWbcRunningCount = async () => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-
-const closeConfirm = () => {
-  showConfirm.value = false;
-}
-
-const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
-  showConfirm.value = false;
-  await router.push(enteringRouterPath.value);
-}
-
-const handleOkConfirm = async () => {
-  await saveWbcRunningCount();
-  showConfirm.value = false;
-}
 
 </script>

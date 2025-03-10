@@ -1,15 +1,13 @@
 <template>
-  <div class="setting-container">
-    <div class="setting-activeBtn-container">
-      <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">Custom WBC Running Count</Button>
-      <Button @click="handleSettingMenu('customClass')" :isActive="activeTab === 'customClass'">Custom Class</Button>
-      <Button @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
-      <Button @click="handleSettingMenu('classOrder')" :isActive="activeTab === 'classOrder'">Class Order</Button>
-      <Button @click="handleSettingMenu('hotkey')" :isActive="activeTab === 'hotkey'">Hot keys</Button>
-    </div>
+
+  <div class="setting-activeBtn-container flex-center">
+    <Button @click="handleSettingMenu('hotkeyFilePath')" :isActive="activeTab === 'hotkeyFilePath'">Hotkey & File Path</Button>
+    <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
   </div>
 
-  <component :is="activeTabComponent"/>
+  <FilePathSet v-if="activeTab === 'hotkeyFilePath'" type="lis" />
+
+  <LisCode v-if="activeTab === 'code'" />
 
   <ConfirmThreeBtn
       v-if="showConfirm"
@@ -23,7 +21,6 @@
       @okConfirm2="hideConfirm"
   />
 
-  <!-- 모달 창 -->
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -42,65 +39,63 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, ref, watch} from "vue";
+import {ref, onMounted, computed, watch} from 'vue';
+import {settingName} from "@/common/defines/constants/settings";
+import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
-import Confirm from "@/components/commonUi/Confirm.vue";
+import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import {useStore} from "vuex";
+import {scrollToTop} from "@/common/lib/utils/scroll";
 import Button from "@/components/commonUi/Button.vue";
-import {WbcActiveSettingType} from "@/common/type/settings";
-import ClassOrder from "@/views/setting/analysisDatabase/component/wbc/component/classOrder.vue";
-import CustomClass from "@/views/setting/analysisDatabase/component/wbc/component/customClass.vue";
-import NormalRange from "@/views/setting/analysisDatabase/component/wbc/component/normalRange.vue";
-import RunningCount from "@/views/setting/analysisDatabase/component/wbc/component/runningCount.vue";
-import HotKeys from "@/views/setting/analysisDatabase/component/wbc/component/hotKeys.vue";
+import {LisActiveSettingType} from "@/common/type/settings";
+import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
+import LisCode from "@/views/setting/report/component/lis/component/code.vue";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
+import {useRouter} from "vue-router";
 import {settingUpdate} from "@/common/lib/utils/settingSave";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
-import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
-import {useRouter} from "vue-router";
 
 const store = useStore();
 const router = useRouter();
+const lisCodeWbcArr = ref<LisCodeWbcItem[] | any>([]);
+const lisCodeRbcArr = ref<LisCodeRbcItem[] | any>([]);
+const minCountArr = ref<minCountItem[]>([]);
+const activeTab = ref('hotkeyFilePath');
+const movingTab = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmMessage = ref('');
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const settingType = computed(() => store.state.commonModule.settingType);
 const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
-const settingType = computed(() => store.state.commonModule.settingType);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const projectType = ref('');
-const activeTab = ref('runningCount');
-const movingTab = ref('');
 const { toastInfo, showToast } = useToast();
 
-onBeforeMount(() => {
-  projectType.value = window.PROJECT_TYPE;
-})
+onMounted(async () => {
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
+});
+
+watch(() => [lisCodeWbcArr.value, lisCodeRbcArr.value, minCountArr.value], async () => {
+  const afterSetting = {
+    lisCodeWbcArr: lisCodeWbcArr.value,
+    lisCodeRbcArr: lisCodeRbcArr.value,
+    minCountArr: minCountArr.value
+  }
+
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(afterSetting)});
+  if (settingType.value !== settingName.lisCode) {
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
+  }
+}, {deep: true});
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();
-})
-
-const activeTabComponent = computed(() => {
-  switch (activeTab.value) {
-    case 'runningCount':
-      return RunningCount;
-    case 'customClass':
-      return CustomClass;
-    case 'normalRange':
-      return NormalRange;
-    case 'classOrder':
-      return ClassOrder;
-    case 'hotkey':
-      return HotKeys;
-    default:
-      return null;
-  }
 })
 
 const checkIsMovingWhenSettingNotSaved = () => {
@@ -112,6 +107,10 @@ const hideAlert = () => {
   showAlert.value = false;
 };
 
+const closeConfirm = () => {
+  showConfirm.value = false;
+}
+
 const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
@@ -120,13 +119,8 @@ const hideConfirm = async () => {
   await router.push(enteringRouterPath.value);
 }
 
-const closeConfirm = () => {
-  showConfirm.value = false;
-}
-
 const handleOkConfirm = async () => {
   showConfirm.value = false;
-
   try {
     await settingUpdate(settingType.value, JSON.parse(afterSettingFormattedString.value));
     showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
@@ -135,7 +129,7 @@ const handleOkConfirm = async () => {
   }
 }
 
-const handleSettingMenu = (type: keyof WbcActiveSettingType) => {
+const handleSettingMenu = (type: keyof LisActiveSettingType) => {
   if (activeTab.value === type) {
     return;
   }
@@ -152,3 +146,4 @@ const handleSettingMenu = (type: keyof WbcActiveSettingType) => {
 }
 
 </script>
+

@@ -50,7 +50,6 @@
       <div class="text-left crcMenu mb10">
         <div
             v-if="visibleBySite(siteCd, [
-              HOSPITAL_SITE_CD_BY_NAME['원자력병원'],
               '0031',
               '0030',
           ], 'disable')"

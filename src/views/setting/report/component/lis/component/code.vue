@@ -1,13 +1,5 @@
 <template>
-
-  <div class="setting-activeBtn-container flex-center">
-    <Button @click="handleSettingMenu('hotkeyFilePath')" :isActive="activeTab === 'hotkeyFilePath'">Hotkey & File Path</Button>
-    <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
-  </div>
-
-  <FilePathSet v-if="activeTab === 'hotkeyFilePath'" type="lis" />
-
-  <div v-if="activeTab === 'code'">
+  <div>
     <div class="alignDiv">
       <p class="mb40"> [ WBC ] </p>
       <label v-for="item in lisCodeWbcArr" :key="item.classId">
@@ -41,15 +33,6 @@
     <Button @click="saveLis" class="setting-saveBtn mt10">Save</Button>
   </div>
 
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      type="setting"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
-
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -57,6 +40,13 @@
       :message="alertMessage"
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
+ />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
   />
 </template>
 
@@ -67,7 +57,7 @@ import {
   LIS_CODE_RBC_OPTION,
   minRunCount,
   settingName,
-  WBC_CUSTOM_CLASS, lisHotKeyAndLisFilePathAndUrl
+  WBC_CUSTOM_CLASS
 } from "@/common/defines/constants/settings";
 import {ApiResponse} from "@/common/api/httpClient";
 import {
@@ -81,30 +71,21 @@ import {
   updateLisCodeRbcApi,
   updateMinCountApi,
   getWbcCustomClassApi,
-  getFilePathSetApi,
-  createFilePathSetApi, updateFilePathSetApi
 } from "@/common/api/service/setting/settingApi";
 import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
-import {MESSAGES} from '@/common/defines/constants/constantMessageText';
+import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import Button from "@/components/commonUi/Button.vue";
-import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
-import {LisActiveSettingType, WbcActiveSettingType} from "@/common/type/settings";
-import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
-const router = useRouter();
-const filePathSetArr = ref<FilePathItem[]>([]);
 const lisCodeWbcArr = ref<LisCodeWbcItem[] | any>([]);
 const lisCodeRbcArr = ref<LisCodeRbcItem[] | any>([]);
 const minCountArr = ref<minCountItem[]>([]);
-const activeTab = ref('hotkeyFilePath');
-const movingTab = ref('');
 const saveHttpType = ref({
   filePath: '',
   code: '',
@@ -112,14 +93,9 @@ const saveHttpType = ref({
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmMessage = ref('');
-const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
-const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
-const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
-const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
 const wbcCustomItems = ref<any>([]);
+const { toastInfo, showToast } = useToast();
 
 onMounted(async () => {
   await getImagePrintData();
@@ -139,15 +115,6 @@ watch(() => [lisCodeWbcArr.value, lisCodeRbcArr.value, minCountArr.value], async
     await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
   }
 }, {deep: true});
-
-watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNotSaved();
-})
-
-const checkIsMovingWhenSettingNotSaved = () => {
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.settingNotSaved;
-}
 
 const getWbcCustomClasses = async () => {
   try {
@@ -207,11 +174,11 @@ const saveLisCode = async () => {
       const updateMinCountResult = await updateMinCountApi({minCountItems: minCountArr.value});
 
       if (updateResult.data && updateRbcResult.data && updateMinCountResult.data) {
-        showSuccessAlert(MESSAGES.UPDATE_SUCCESSFULLY);
+        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
         scrollToTop();
         await getImagePrintData();
       } else {
-        showErrorAlert(MESSAGES.settingUpdateFailure);
+        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
       await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
       await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
@@ -219,7 +186,7 @@ const saveLisCode = async () => {
     }
 
     if (result && rbcResult && minCountResult) {
-      showSuccessAlert(MESSAGES.settingSaveSuccess);
+      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       scrollToTop();
       saveHttpType.value.code = 'put';
       await getImagePrintData();
@@ -281,52 +248,12 @@ const getImagePrintData = async () => {
   }
 };
 
-const showSuccessAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-};
-
-const showErrorAlert = (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'error';
-  alertMessage.value = message;
-};
-
 const hideAlert = () => {
   showAlert.value = false;
 };
 
-const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
-  showConfirm.value = false;
-  activeTab.value = movingTab.value;
-}
-
-const handleOkConfirm = async () => {
-  await saveLisCode();
-  showConfirm.value = false;
-}
-
 const saveLis = async () => {
   await saveLisCode();
-}
-
-const handleSettingMenu = (type: keyof LisActiveSettingType) => {
-  if (activeTab.value === type) {
-    return;
-  }
-
-  movingTab.value = type;
-
-  if (isSettingChanged.value) {
-    showConfirm.value = true;
-    confirmMessage.value = MESSAGES.settingNotSaved;
-    return;
-  }
-
-  activeTab.value = type;
 }
 
 </script>

@@ -5487,6 +5487,7 @@ textarea.remarkTextArea {
     box-sizing: border-box;
     max-width: 870px;
     max-height: 120px;
+    min-height: 80px;
 }
 
 .remarkHeader {

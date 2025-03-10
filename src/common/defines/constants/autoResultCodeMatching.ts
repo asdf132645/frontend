@@ -184,8 +184,8 @@ export const kcchCbcAutoMatching = ({ data, sex, age }: KcchCbcAutoMatchingProp)
             if (count >= 15000) return [{ moType: 'WBC', title: 'Number', content: 'moderately increased' }];
             if (count > 10000) return [{ moType: 'WBC', title: 'Number', content: 'slightly increased' }];
             if (count >= 3000 && count < 4000) return [{ moType: 'WBC', title: 'Number', content: 'slightly decreased' }];
-            if (count >= 1500) return [{ moType: 'WBC', title: 'Number', content: 'moderately decreased' }];
-            if (count < 1500) return [{ moType: 'WBC', title: 'Number', content: 'markedly decreased' }];
+            if (count < 3000 && count >= 1500) return [{ moType: 'WBC', title: 'Number', content: 'moderately decreased' }];
+            if (count > 1500) return [{ moType: 'WBC', title: 'Number', content: 'markedly decreased' }];
             return [];
         },
 

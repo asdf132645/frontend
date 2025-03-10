@@ -22,15 +22,6 @@
     </Button>
   </div>
 
-  <Confirm
-      v-if="showConfirm"
-      :is-visible="showConfirm"
-      type="setting"
-      :message="confirmMessage"
-      @hide="hideConfirm"
-      @okConfirm="handleOkConfirm"
-  />
-
   <Alert
       v-if="showAlert"
       :is-visible="showAlert"
@@ -58,9 +49,7 @@ import {
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
-import Confirm from "@/components/commonUi/Confirm.vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
 import {settingName, WBC_CUSTOM_CLASS} from "@/common/defines/constants/settings";
 import { ClassOrderRequest } from "@/common/api/service/setting/dto/classOrder";
 import Button from "@/components/commonUi/Button.vue";
@@ -68,7 +57,6 @@ import {useToast} from "@/common/lib/utils/toast";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 
 const store = useStore();
-const router = useRouter();
 const wbcInfoChangeVal = ref<ClassOrderRequest[]>([]);
 const dragIndex = ref(-1);
 const dragOffsetY = ref(0);
@@ -77,10 +65,6 @@ const saveHttpType = ref('');
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
-const showConfirm = ref(false);
-const confirmMessage = ref('');
-const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
-const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
 const wbcCustomItems = ref<any>([]);
 const projectType = ref('');
@@ -104,14 +88,6 @@ watch(() => wbcInfoChangeVal.value, async (classOrderAfterSettingObj) => {
   }
 }, { deep: true });
 
-watch(() => settingChangedChecker.value, () => {
-  checkIsMovingWhenSettingNotSaved();
-})
-
-const checkIsMovingWhenSettingNotSaved = () => {
-  showConfirm.value = true;
-  confirmMessage.value = MESSAGES.settingNotSaved;
-}
 
 const getWbcCustomClasses = async () => {
   try {
@@ -217,20 +193,5 @@ const drop = (index: any, event: any) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-
-const hideConfirm = async () => {
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
-  showConfirm.value = false;
-  await router.push(enteringRouterPath.value);
-
-}
-
-const handleOkConfirm = async () => {
-  await saveOrderClassSave();
-  showConfirm.value = false;
-  await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
-}
 
 </script>
