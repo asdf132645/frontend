@@ -4983,7 +4983,7 @@ input.etcTextInput {
 }
 
 .settingWrapDiv .grid-item.crcItemDiv div, .settingWrapDiv .grid-item.crcItemDiv p {
-    width: 19%;
+    width: 33%;
 }
 
 .settingWrapDiv .grid-item.crcItemDiv div input, .settingWrapDiv .grid-item.crcItemDiv div select {
@@ -5050,6 +5050,12 @@ button.crcBtnWithBg:hover {
 .rbcCrcGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    column-gap: 5px;
+}
+
+.rbcCrcThreeGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     column-gap: 5px;
 }
 

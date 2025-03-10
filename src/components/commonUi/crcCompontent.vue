@@ -3,7 +3,7 @@
     {{ moTypeTextChange(moType) }}
   </div>
   <div :class="{ rbcCrcDiv: moType === 'RBC' }">
-    <ul :class="{ 'rbcCrcGrid': moType === 'RBC' }">
+    <ul :class="{ 'rbcCrcThreeGrid': moType === 'RBC' && arrData.length >= 15, 'rbcCrcGrid': moType === 'RBC' }">
       <div v-for="(item, idx) in arrData" :key="idx" class="grid-item crcItemDiv">
         <p>
           <input
