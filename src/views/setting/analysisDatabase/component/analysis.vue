@@ -57,6 +57,7 @@
         <tr v-if="projectType === 'pb' && cellInfo.analysisType === '04'">
           <th class="pos-relative">
             <font-awesome-icon :icon="['fas', 'circle-info']"
+                               class="iconHover-position"
                                @mouseover="() => informationFontHover('edgeShotType', 'hover')"
                                @mouseout="informationFontHover('edgeShotType', 'leave')"
             />
@@ -109,6 +110,7 @@
         <tr v-if="projectType === 'pb' && ['01', '04'].includes(cellInfo.analysisType)">
           <th :rowspan="pbsAnalysisValuesRowIndex(cellInfo.analysisType)" class="pos-relative">
             <font-awesome-icon :icon="['fas', 'circle-info']"
+                               class="iconHover-position"
                                @mouseover="() => informationFontHover('positionMargin', 'hover')"
                                @mouseout="informationFontHover('positionMargin', 'leave')"
             />
@@ -156,6 +158,7 @@
         <tr>
           <th class="pos-relative" colspan="1">
             <font-awesome-icon :icon="['fas', 'circle-info']"
+                               class="iconHover-position"
                                @mouseover="tooltipVisibleFunc('iaRootPath', true)"
                                @mouseout="tooltipVisibleFunc('iaRootPath', false)"
             />
@@ -173,6 +176,7 @@
           <th class="pos-relative">
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
+                class="iconHover-position"
                 @mouseover="tooltipVisibleFunc('nsNbIntegration', true)"
                 @mouseout="tooltipVisibleFunc('nsNbIntegration', false)"
             />
@@ -194,13 +198,16 @@
     </div>
   </div>
 
-  <Confirm
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      :type="confirmType"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
 
   <Alert
@@ -254,6 +261,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {defaultCellImgData} from "@/common/helpers/common/setting";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const instance = getCurrentInstance();
 const store = useStore();
@@ -569,6 +577,10 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
+}
+
+const closeConfirm = () => {
+  showConfirm.value = false;
 }
 
 const handleOkConfirm = async () => {

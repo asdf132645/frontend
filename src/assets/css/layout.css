@@ -157,6 +157,14 @@
     position: relative;
 }
 
+.pointerNone {
+    pointer-events: none;
+}
+
+.dragNone {
+    -webkit-user-drag: none;
+}
+
 .cursorNotAllowed {
     cursor: not-allowed;
 }
@@ -464,7 +472,7 @@
 }
 
 .text-right {
-    text-align: right;
+    text-align: right !important;
 }
 
 .fs08 {
@@ -1378,7 +1386,7 @@ ul.customClass li {
     height: 28px;
     background-color: white;
     z-index: 10;
-    left: 310px;
+    left: 282px;
     cursor: pointer;
 }
 
@@ -1387,7 +1395,7 @@ ul.customClass li {
     height: 100%;
     width: 1px;
     background-color: gray;
-    left: 268px;
+    left: 246px;
 }
 
 .listTable-second-line {
@@ -1395,7 +1403,7 @@ ul.customClass li {
     height: 100%;
     width: 1px;
     background-color: gray;
-    left: 560px;
+    left: 552px;
 }
 
 .listTable-third-line {
@@ -1409,7 +1417,7 @@ ul.customClass li {
 .listTable-date-icon-first-wrapper {
     position: absolute;
     color: black;
-    left: 286px;
+    left: 276px;
     z-index: 10;
     top: 37px;
     cursor: pointer;
@@ -1422,7 +1430,7 @@ ul.customClass li {
 .listTable-date-icon-second-wrapper {
     position: absolute;
     color: black;
-    left: 420px;
+    left: 410px;
     z-index: 10;
     top: 37px;
     width: 126.5px;
@@ -1490,6 +1498,11 @@ ul.customClass li {
 
 .backupDatePickers-wrapper > div > div > div > input {
     height: 17px;
+}
+
+.iconHover-position {
+    position: absolute;
+    left: -20px;
 }
 
 .settingUploadContainer {
@@ -1560,7 +1573,7 @@ table.settingTable select {
 
 .multiselect-container {
     position: relative;
-    width: 160px;
+    width: 120px;
     height: 34px;
 }
 
@@ -1572,7 +1585,7 @@ table.settingTable select {
     padding: 2px 4px;
     cursor: pointer;
     height: 26px;
-    width: 150px;
+    width: 120px;
     background-color: white;
 }
 
@@ -1607,7 +1620,7 @@ table.settingTable select {
 
 .multiselect-dropdown-menu {
     position: absolute;
-    min-width: 158px;
+    min-width: 128px;
     max-height: 240px;
     overflow-y: auto;
     margin-top: 5px;
@@ -4273,6 +4286,30 @@ ul.normalItems {
     padding-bottom: 4px;
 }
 
+.resultInfo-table tr td:nth-child(1) {
+    width: 60%;
+}
+
+.resultInfo-table tr td:nth-child(2) {
+    width: 20%;
+}
+
+.resultInfo-table tr td:nth-child(3) {
+    width: 20%;
+}
+
+.resultInfo-table tr th:nth-child(1) {
+    width: 60%;
+}
+
+.resultInfo-table tr th:nth-child(2) {
+    width: 20%;
+}
+
+.resultInfo-table tr th:nth-child(3) {
+    width: 20%;
+}
+
 .resultInfo-table tr {
     display: table;
     width: 100%;
@@ -4319,12 +4356,11 @@ ul.normalItems {
     grid-template-columns: 260px 260px 650px 120px;
     padding-left: 14px;
     margin: 8px 0;
-    column-gap: 12px;
     position: relative;
 }
 
 .listTable-search-filter-container {
-    width: 240px;
+    width: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -4377,7 +4413,7 @@ ul.normalItems {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-left: 18px;
+    margin-left: 38px;
 }
 
 .listTable-search-btn {
@@ -6430,7 +6466,7 @@ input.codeInput {
 .isNotNormalIcon {
     position: absolute;
     top: 6px;
-    left: 0;
+    left: -20px;
 }
 
 .rbcDegree-wrapper {
@@ -6965,7 +7001,7 @@ progress::-moz-progress-bar {
     padding: 0 10px 10px 10px;
     border: 1px solid #dedede;
     top: 4px;
-    left: 36px;
+    left: 4px;
     color: white;
 }
 

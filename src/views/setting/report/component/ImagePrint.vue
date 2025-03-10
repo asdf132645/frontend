@@ -26,14 +26,26 @@
 
   <Button @click='saveImagePrint' class="setting-saveBtn mt10">Save</Button>
 
-  <Confirm
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      type="setting"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
+
+<!--  <Confirm-->
+<!--      v-if="showConfirm"-->
+<!--      :is-visible="showConfirm"-->
+<!--      type="setting"-->
+<!--      :message="confirmMessage"-->
+<!--      @hide="hideConfirm"-->
+<!--      @okConfirm="handleOkConfirm"-->
+<!--  />-->
 
   <Alert
       v-if="showAlert"
@@ -69,6 +81,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -185,6 +198,10 @@ const toggleAllChecks = () => {
     selectedItems.value = [];
   }
 };
+
+const closeConfirm = () => {
+  showConfirm.value = false;
+}
 
 const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});

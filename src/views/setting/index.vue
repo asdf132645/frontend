@@ -12,13 +12,16 @@
     </ul>
     <component class="settingWrap" :is="currentTabComponent"/>
 
-    <Confirm
+    <ConfirmThreeBtn
         v-if="showConfirm"
         :is-visible="showConfirm"
-        type="setting"
         :message="confirmMessage"
-        @hide="hideConfirm"
+        :confirmFirstText="MESSAGES.SAVE"
+        :confirmSecondText="MESSAGES.LEAVE"
+        :closeText="MESSAGES.CANCEL"
+        @hide="closeConfirm"
         @okConfirm="handleOkConfirm"
+        @okConfirm2="hideConfirm"
     />
 
     <ToastNotification
@@ -43,6 +46,7 @@ import {settingUpdate} from "@/common/lib/utils/settingSave";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const tabs = ['Login/Account', 'Analysis/Database', 'Report', 'Add-Ons', 'Version'] as const;
@@ -98,6 +102,10 @@ const hideConfirm = async () => {
   showConfirm.value = false;
   currentTab.value = movingTab.value;
 };
+
+const closeConfirm = () => {
+  showConfirm.value = false;
+}
 
 const handleOkConfirm = async () => {
   showConfirm.value = false;

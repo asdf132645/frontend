@@ -23,13 +23,17 @@
     </div>
   </div>
 
-  <Confirm
+
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      type="setting"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
 
   <Alert
@@ -64,6 +68,7 @@ import Alert from "@/components/commonUi/Alert.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const projectBm = ref(false);
@@ -121,6 +126,10 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   activeTab.value = movingTab.value;
+  showConfirm.value = false;
+}
+
+const closeConfirm = () => {
   showConfirm.value = false;
 }
 
