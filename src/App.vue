@@ -682,6 +682,7 @@ async function socketData(data: any) {
           isNsNbIntegration: isNsNbIntegrationLocal.value || '',
           wbcMemo: '',
           rbcMemo: '',
+          pltMemo: '',
           abnormalClassInfo: classInfo,
           slideCondition: {
             condition: completeSlot?.condition,

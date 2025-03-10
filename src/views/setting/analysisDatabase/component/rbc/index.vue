@@ -51,13 +51,16 @@
     </div>
   </div>
 
-  <Confirm
+  <ConfirmThreeBtn
       v-if="showConfirm"
       :is-visible="showConfirm"
-      type="setting"
       :message="confirmMessage"
-      @hide="hideConfirm"
+      :confirmFirstText="MESSAGES.SAVE"
+      :confirmSecondText="MESSAGES.LEAVE"
+      :closeText="MESSAGES.CANCEL"
+      @hide="closeConfirm"
       @okConfirm="handleOkConfirm"
+      @okConfirm2="hideConfirm"
   />
 
   <Alert
@@ -92,6 +95,7 @@ import {RbcDegreeRequest} from "@/common/api/service/setting/dto/rbcDegree";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -253,6 +257,10 @@ const processData = (data: any): void => {
 const hideAlert = () => {
   showAlert.value = false;
 };
+
+const closeConfirm = () => {
+  showConfirm.value = false;
+}
 
 const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
