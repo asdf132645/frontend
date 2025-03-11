@@ -81,15 +81,13 @@ import { ref, onMounted, computed, watch } from 'vue';
 import {
   defaultCbcList,
   defaultCbcList_0011,
-  lisHotKeyAndLisFilePathAndUrl,
   settingName
 } from "@/common/defines/constants/settings";
 import { ApiResponse } from "@/common/api/httpClient";
 import {
-  createCbcCodeRbcApi, createFilePathSetApi,
+  createCbcCodeRbcApi,
   getCbcCodeRbcApi,
-  getFilePathSetApi,
-  updateCbcCodeRbcApi, updateFilePathSetApi
+  updateCbcCodeRbcApi
 } from "@/common/api/service/setting/settingApi";
 import Alert from "@/components/commonUi/Alert.vue";
 import { CbcCodeItem } from "@/common/api/service/setting/dto/lisCodeDto";
@@ -97,17 +95,14 @@ import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import { getDeviceInfoApi } from "@/common/api/service/device/deviceApi";
 import { useStore } from "vuex";
 import { HOSPITAL_SITE_CD_BY_NAME } from "@/common/defines/constants/siteCd";
-import {FilePathItem} from "@/common/api/service/setting/dto/filePathSetDto";
 import Button from "@/components/commonUi/Button.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const cbcCodeArr = ref<CbcCodeItem[]>([]);
-const filePathSetArr = ref<FilePathItem[]>([]);
 const saveHttpType = ref({
   code: '',
-  filePath: '',
 })
 const showAlert = ref(false);
 const alertType = ref('');
@@ -120,7 +115,6 @@ const { toastInfo, showToast } = useToast();
 onMounted(async () => {
   await getDeviceInfo();
   await getImagePrintData();
-  await getFilePathSetData();
   await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
 });
 
@@ -165,40 +159,7 @@ const saveCbcCode = async () => {
 
 const saveCbcSetting = async () => {
   await saveCbcCode();
-  await saveFilePathSet();
 }
-
-const saveFilePathSet = async () => {
-  try {
-    let result: ApiResponse<void>;
-
-    if (saveHttpType.value === 'post') {
-      result = await createFilePathSetApi({filePathSetItems: filePathSetArr.value});
-    } else {
-      const updateResult = await updateFilePathSetApi({filePathSetItems: filePathSetArr.value});
-
-      if (updateResult.data) {
-        showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
-        await getFilePathSetData();
-      } else {
-        showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
-      }
-      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
-      return;
-    }
-
-    if (result) {
-      showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
-      saveHttpType.value = 'put';
-      await getFilePathSetData();
-      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 const getImagePrintData = async () => {
   try {
@@ -255,28 +216,6 @@ const editCBC = (CBCCd: string) => editingCBCCd.value = CBCCd;
 const clearEditing = () => {
   editingCBCCd.value = '00';
 }
-
-const getFilePathSetData = async () => {
-  try {
-    const result = await getFilePathSetApi();
-
-    if (result && result.data) {
-      const data = result.data;
-
-      if (!data || (data instanceof Array && data.length === 0)) {
-        saveHttpType.value.filePath = 'post';
-        filePathSetArr.value = lisHotKeyAndLisFilePathAndUrl;
-      } else {
-        saveHttpType.value.filePath = 'put';
-        filePathSetArr.value = data;
-      }
-      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(filePathSetArr.value)});
-      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(filePathSetArr.value)});
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 const hideAlert = () => {
   showAlert.value = false;

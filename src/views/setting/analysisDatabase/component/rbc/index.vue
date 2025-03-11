@@ -26,18 +26,18 @@
                 <div class='degreeInput mt1 mb1 flex-justify-between'>
                   <div class="flex-align-center">
                     <p>&lt;</p>
-                    <input class="number-small" type="number" v-model="classItem.degree1"/>
+                    <input class="number-small" type="number" v-model="classItem.degree1" @input="handleDegreeInput(classItem, 'degree1')"/>
                   </div>
                   <div class="flex-align-center">
                     <p>&lt;</p>
-                    <input class="number-small" type="number" v-model="classItem.degree2"/>
+                    <input class="number-small" type="number" v-model="classItem.degree2" @input="handleDegreeInput(classItem, 'degree2')"/>
                   </div>
                   <div class="flex-align-center">
                     <p>&lt;</p>
-                    <input class="number-small" type="number" v-model="classItem.degree3"/>
+                    <input class="number-small" type="number" v-model="classItem.degree3" @input="handleDegreeInput(classItem, 'degree3')"/>
                   </div>
                   <div class="flex-align-center">
-                    <input class="number-small" type="number" v-model="classItem.degree3"/>
+                    <input class="number-small" type="number" v-model="classItem.degree3" @input="handleDegreeInput(classItem, 'degree3')"/>
                     <p>&lt;</p>
                   </div>
 
@@ -107,6 +107,8 @@ const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
+const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const { toastInfo, showToast } = useToast();
 
@@ -117,6 +119,9 @@ onMounted(async () => {
 
 watch(() => rbcClassListArr.value, async (rbcClassListArrAfterSettingObj) => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(rbcClassListArrAfterSettingObj)});
+  console.log(afterSettingFormattedString.value);
+  console.log();
+  console.log(beforeSettingFormattedString.value);
   if (settingType.value !== settingName.rbcDegree) {
     await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.rbcDegree});
   }
@@ -252,6 +257,10 @@ const processData = (data: any): void => {
 
   rbcClassListArr.value = Array.from(categoryMap.values());
 };
+
+const handleDegreeInput = (item: any, key: string) => {
+  item[key] = String(item[key]);
+}
 
 const hideAlert = () => {
   showAlert.value = false;

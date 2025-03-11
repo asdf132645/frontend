@@ -169,8 +169,8 @@ const setLisCodeWbcByCustomClass = async () => {
     lisCodeRbcArr: lisCodeRbcArr.value,
     minCountArr: minCountArr.value
   }
-  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: settingObj});
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: settingObj});
+  await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(settingObj) });
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(settingObj) });
 }
 
 const saveLisCode = async () => {

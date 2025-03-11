@@ -77,7 +77,6 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import Confirm from "@/components/commonUi/Confirm.vue";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -105,6 +104,7 @@ onMounted(async () => {
 });
 
 watch(() => selectedItems.value, async (newItem) => {
+
   imagePrintAndWbcArr.value.forEach((item) => {
     item.checked = newItem.includes(item.classId);
   });
@@ -175,11 +175,11 @@ const getImagePrintData = async () => {
         const withoutRbcPrint = data.filter((item) => item.fullNm !== 'rbcPrintModel');
         imagePrintAndWbcArr.value = withoutRbcPrint;
         selectedItems.value = withoutRbcPrint.filter((item) => item.checked).map((item) => item.classId);
-        allChecked.value = selectedItems.value.length === imagePrintAndWbcArr.value.length ? true : false;
+        allChecked.value = selectedItems.value.length === imagePrintAndWbcArr.value.length;
       }
 
-      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(imagePrintAndWbcArr.value) });
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(imagePrintAndWbcArr.value) });
     }
   } catch (e) {
     console.error(e);

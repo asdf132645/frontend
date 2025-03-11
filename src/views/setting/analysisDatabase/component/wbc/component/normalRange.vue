@@ -144,7 +144,7 @@ const saveNormalRange = async () => {
 const filterNumbersOnly = (event: Event, item: any, field: 'min' | 'max') => {
   const input = event.target as HTMLInputElement;
   const filteredValue = input.value.replace(/[^0-9]/g, '');
-  item[field] = filteredValue.trim();
+  item[field] = Number(filteredValue.trim());
 };
 
 const getNormalRange = async () => {
