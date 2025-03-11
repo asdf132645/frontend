@@ -300,10 +300,12 @@
     font-size: 0.8rem;
     padding: 6px 12px;
 }
+
 .base-btn--md {
     font-size: 0.8rem;
     padding: 8px 16px;
 }
+
 .base-btn--lg {
     font-size: 1rem;
     padding: 10px 20px;
@@ -315,10 +317,12 @@
     color: white;
     border: 1px solid white;
 }
+
 .base-btn--primary.base-btn--active {
     background: var(--white-bg-0-color);
     color: black;
 }
+
 .base-btn--primary.base-btn--hover {
     background: rgba(255, 255, 255, 0.2);
 }
@@ -329,10 +333,12 @@
     border: 1px solid #000;
     background: #fff;
 }
+
 .base-btn--secondary.base-btn--active {
     background: var(--white-bg-0-color);
     color: black;
 }
+
 .base-btn--secondary.base-btn--hover {
     background: rgba(255, 255, 255, 0.2);
 }
@@ -7621,7 +7627,7 @@ button.gbArrowButton.left {
     cursor: pointer;
 }
 
-.listDetail-wbcCircle-wrapper >li:hover {
+.listDetail-wbcCircle-wrapper > li:hover {
     background-color: var(--white-color);
     color: black;
 }
@@ -7712,7 +7718,7 @@ button.gbArrowButton.left {
 /* Auto CBC Component Grayscale Dark Theme */
 .auto-cbc-container {
     font-family: 'Arial', sans-serif;
-    max-width: 1500px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 20px;
     color: #e0e0e0;
@@ -7845,6 +7851,7 @@ button.gbArrowButton.left {
 .auto-cbc-table tr {
     display: flex;
     width: 100%;
+    align-items: start;
 }
 
 .auto-cbc-table th,
@@ -7867,12 +7874,17 @@ button.gbArrowButton.left {
 }
 
 .arl.tab-content {
-    width: 1500px;
+    width: 1600px;
 }
 
 .auto-cbc-table td {
     padding: 10px 15px;
     border-top: 1px solid #2a2a2a;
+    min-height: 36px;
+}
+
+button.plusMinusBtn:hover {
+    background-color: #384e4e;
 }
 
 .auto-cbc-table tr:nth-child(even) {
@@ -7893,18 +7905,29 @@ button.gbArrowButton.left {
     background-color: #1a1a1a;
     color: #e0e0e0;
 }
-
+.confirm {
+    cursor: pointer;
+}
 .auto-cbc-table-actions {
     display: flex;
     gap: 8px;
     height: 34px;
     justify-content: center;
+    align-items: center;
+}
+
+tr.confirmOk {
+    background: #404040 !important;
+}
+
+tr.confirmOk td input, tr.confirmOk td select, tr.confirmOk td button {
+    background: #404040;
 }
 
 .auto-cbc-edit-button,
 .auto-cbc-delete-button {
     padding: 6px 12px;
-    border: none;
+    border: 1px solid #333333;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
@@ -7994,15 +8017,12 @@ button.gbArrowButton.left {
 button.plusMinusBtn {
     background: #404040;
     color: #fff;
-    margin: 3px 1px 3px 5px;
-    border: none;
-    border-radius: 5px;
-    height: 27px;
-}
-button.plusMinusBtn {
-    background: #404040;
-    color: #fff;
     margin: 0 2px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0 9px;
+    border: 1px solid #333333;
 }
 
 .auto-cbc-table-input:hover, .auto-cbc-table-select:hover, .auto-cbc-input:hover, .auto-cbc-select:hover {
