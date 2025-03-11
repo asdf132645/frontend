@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isToggle">
+    <div v-if="isToggle" class="flex-column-center">
       <div class="crcWrap flex-column-align-center">
         <div v-if="isUserAdminType(userType)" class="setting-crc-wrapper">
           <span>CRC Password</span>
@@ -10,20 +10,17 @@
         <template v-if="isMasterId(masterId)">
           <div class="setting-crc-wrapper">
             <span>CRC Default Mode</span>
-            <font-awesome-icon :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
-                               @click="crcDefaultModeOn"/>
+            <Toggle @click="crcDefaultModeOn" :isToggleOn="crcDefaultMode" />
           </div>
 
           <div class="setting-crc-wrapper">
             <span>CRC LIS Two Mode</span>
-            <font-awesome-icon :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
-                               @click="lisTwoModeOn"/>
+            <Toggle @click="lisTwoModeOn" :isToggleOn="lisTwoMode" />
           </div>
 
           <div class="setting-crc-wrapper">
             <span>CRC Connect</span>
-            <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
-                               @click="crcConnectOn"/>
+            <Toggle @click="crcConnectOn" :isToggleOn="crcConnect" />
           </div>
 
           <div class="setting-crc-remarkSelect-wrapper mt10">
@@ -96,43 +93,37 @@
       </div>
 
 
-      <crc-compontent
-          :items="crcArr"
-          @updateCrc="onUpdateCrc"
-          @deleteCrc="onDeleteCrc"
-          @noServerDataDel="noServerDataDel"
-          moType="RBC"
-          pageName="set"
-          :masterId="masterId"
-          :userType="userType"
-      ></crc-compontent>
-
-      <div class="moDivBox mt20">
-        <div>
-          <crc-compontent
-              :items="crcArr"
-              @updateCrc="onUpdateCrc"
-              @deleteCrc="onDeleteCrc"
-              @noServerDataDel="noServerDataDel"
-              moType="WBC"
-              pageName="set"
-              :masterId="masterId"
-              :userType="userType"
-          ></crc-compontent>
-        </div>
-
-        <div>
-          <crc-compontent
-              :items="crcArr"
-              @updateCrc="onUpdateCrc"
-              @deleteCrc="onDeleteCrc"
-              @noServerDataDel="noServerDataDel"
-              moType="PLT"
-              pageName="set"
-              :masterId="masterId"
-              :userType="userType"
-          ></crc-compontent>
-        </div>
+      <div class="setting-crcComponent-main-container">
+        <crc-compontent
+            :items="crcArr"
+            @updateCrc="onUpdateCrc"
+            @deleteCrc="onDeleteCrc"
+            @noServerDataDel="noServerDataDel"
+            moType="RBC"
+            pageName="set"
+            :masterId="masterId"
+            :userType="userType"
+        ></crc-compontent>
+        <crc-compontent
+            :items="crcArr"
+            @updateCrc="onUpdateCrc"
+            @deleteCrc="onDeleteCrc"
+            @noServerDataDel="noServerDataDel"
+            moType="WBC"
+            pageName="set"
+            :masterId="masterId"
+            :userType="userType"
+        ></crc-compontent>
+        <crc-compontent
+            :items="crcArr"
+            @updateCrc="onUpdateCrc"
+            @deleteCrc="onDeleteCrc"
+            @noServerDataDel="noServerDataDel"
+            moType="PLT"
+            pageName="set"
+            :masterId="masterId"
+            :userType="userType"
+        ></crc-compontent>
       </div>
     </div>
   </div>
@@ -175,6 +166,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import {setCrcTitles} from "../../../../common/helpers/crc/crcContent";
+import Toggle from "@/components/commonUi/Toggle.vue";
 
 const isToggle = ref(false);
 const crcTitle = ref('');

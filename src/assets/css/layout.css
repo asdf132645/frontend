@@ -348,6 +348,16 @@
     cursor: not-allowed;
 }
 
+.base-toggle {
+    position: relative;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.base-toggle:hover {
+    transform: scale(1.02);
+}
+
 .shadowBox {
     box-shadow: 2px 2px 2px var(--black-color);
     border: 1px solid var(--gray-bg-8-color);
@@ -1338,6 +1348,36 @@ p.startStopP {
     width: 120px;
 }
 
+.setting-crc-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.setting-crc-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.setting-crc-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+}
+
+.setting-crc-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.setting-crcComponent-main-container {
+    display: flex;
+    gap: 20px;
+    width: 1800px;
+    justify-content: center;
+}
+
+.setting-crcComponent-container {
+    border-radius: 4px;
+    padding: 10px;
+    width: 600px;
+}
+
 .setting-crc-wrapper {
     display: flex;
     align-items: center;
@@ -1877,6 +1917,7 @@ ul.degree.analysis {
     max-width: 100%;
     overflow: hidden;
     position: relative; /* 수정 */
+    border-radius: 0 4px 4px 4px;
 }
 
 .reportSection .wbcClassScroll {
@@ -4166,6 +4207,19 @@ ul.editOrder li input {
     background-color: var(--input-disabled-color);
 }
 
+.setting-hotkey-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 520px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.setting-hotkey-title-wrapper {
+    background-color: var(--main-bg-2-color);
+    padding: 10px;
+}
+
 .setting-hotkeys-title-wrapper {
     display: flex;
     align-items: center;
@@ -4653,6 +4707,8 @@ li.slideStatus {
 
 .setting-table > tbody > tr > td {
     padding-bottom: 6px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .settingContainer {
@@ -6204,7 +6260,8 @@ table.remarkDefaultTable input {
 
 .lisUploadDiv {
     position: absolute;
-    right: 20px;
+    right: 12px;
+    display: flex;
 }
 
 table.remarkDefaultTable tr td:last-child {
@@ -7002,15 +7059,11 @@ progress::-moz-progress-bar {
 }
 
 .tooltip-pos-left {
-    right: 150%;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 100%;
 }
 
 .tooltip-pos-right {
-    left: 150%;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 100%;
 }
 
 .openseadragon-canvas.nav-bar-canvas {

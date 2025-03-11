@@ -159,12 +159,22 @@ const getNormalRange = async () => {
         normalItems.value = result.data;
       }
 
+      reOrderNormalItems();
+
       await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(normalItems.value) });
       await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(normalItems.value) });
     }
   } catch (e) {
     console.error(e);
   }
+}
+
+const reOrderNormalItems = () => {
+  normalItems.value.sort((a,b) => {
+    if (a.unit === '%' && b.unit !== '%') return -1;
+    if (a.unit !== '%' && b.unit === '%') return 1;
+    return 0;
+  })
 }
 
 const hideAlert = () => {

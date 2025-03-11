@@ -15,11 +15,7 @@
             Alarm Timer (sec)
           </th>
           <td>
-            <font-awesome-icon
-                :icon="cellInfo.isAlarm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleAlarm"
-            />
+            <Toggle @click="toggleAlarm" :isToggleOn="cellInfo.isAlarm" />
           </td>
           <td>
             <input type="text" v-model='cellInfo.alarmCount' class="alarmInput" @input="filterNumbersOnly($event)">
@@ -29,7 +25,7 @@
           <th class="pos-relative">
             <font-awesome-icon
                 :icon="['fas', 'circle-info']"
-                class="iconHover-position"
+                class="iconHover-position cursorPointer"
                 @mouseover="tooltipVisibleFunc('keepPage', true)"
                 @mouseout="tooltipVisibleFunc('keepPage', false)"
             />
@@ -37,11 +33,7 @@
             Keep Page
           </th>
           <td>
-            <font-awesome-icon
-                :icon="cellInfo.keepPage ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleKeepPage"
-            />
+            <Toggle @click="toggleKeepPage" :isToggleOn="cellInfo.keepPage" />
           </td>
         </tr>
         <tr>
@@ -57,21 +49,13 @@
             LIS Upload After Checking Cells
           </th>
           <td>
-            <font-awesome-icon
-                :icon="cellInfo.lisUploadCheckAll ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleLisUploadCheckAll"
-            />
+            <Toggle @click="toggleLisUploadCheckAll" :isToggleOn="cellInfo.lisUploadCheckAll" />
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
           <th>Auto Start</th>
           <td>
-            <font-awesome-icon
-                :icon="autoStart ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleAutoStart"
-            />
+            <Toggle @click="toggleAutoStart" :isToggleOn="autoStart" />
           </td>
         </tr>
         </tbody>
@@ -134,6 +118,7 @@ import {getDeviceInfoApi, putDeviceInfoApi} from "@/common/api/service/device/de
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
+import Toggle from "@/components/commonUi/Toggle.vue";
 
 const store = useStore();
 const router = useRouter();

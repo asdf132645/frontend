@@ -1,16 +1,20 @@
 <template>
   <div class="setting-container">
-<!--    추후 BF 개발을 할 때 살릴 코드-->
-<!--    <div class="setting-activeBtn-container">-->
-<!--      <Button @click="handleSettingMenu('wbc')" :isActive="activeSetting.wbc">WBC</Button>-->
-<!--      <Button @click="handleSettingMenu('bf')" :isActive="activeSetting.bf">BF</Button>-->
-<!--    </div>-->
-    <div>
-      <ul class="wbcHotKeysItems">
-        <li v-for="item in activeSetting.wbc ? wbcHotKeysItems : bfHotKeysItems" :key="item.id">
-          <span>{{ item.abbreviation }}</span>
-          <span>{{ item.fullNm }}</span>
-          <span>
+    <!--    추후 BF 개발을 할 때 살릴 코드-->
+    <!--    <div class="setting-activeBtn-container">-->
+    <!--      <Button @click="handleSettingMenu('wbc')" :isActive="activeSetting.wbc">WBC</Button>-->
+    <!--      <Button @click="handleSettingMenu('bf')" :isActive="activeSetting.bf">BF</Button>-->
+    <!--    </div>-->
+    <div class="setting-hotkey-container setting-hotkey-title-wrapper">
+      <p>Abbreviation</p>
+      <p class="text-left">Class name</p>
+      <p>Hotkey</p>
+    </div>
+    <ul>
+      <li class="setting-hotkey-container" v-for="item in activeSetting.wbc ? wbcHotKeysItems : bfHotKeysItems" :key="item.id">
+        <span>{{ item.abbreviation }}</span>
+        <span class="text-left">{{ item.fullNm }}</span>
+        <span>
           <input
               v-model="item.key"
               type="text"
@@ -19,11 +23,10 @@
               @input="filterEnglishAndNumbers($event, item, 'key')"
           />
         </span>
-        </li>
-      </ul>
-      <Button class="setting-saveBtn" @click="saveCustomClass">Save</Button>
-    </div>
+      </li>
+    </ul>
   </div>
+  <Button class="setting-saveBtn mt10" @click="saveCustomClass">Save</Button>
 
   <Alert
       v-if="showAlert"
@@ -73,7 +76,7 @@ const activeSetting = ref({
   'wbc': true,
   'bf': false,
 })
-const { toastInfo, showToast } = useToast();
+const {toastInfo, showToast} = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE === 'bm' ? 'bm' : 'pb';
@@ -81,15 +84,15 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   await getWbcHotKeyClasses();
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcHotKeys });
+  await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.wbcHotKeys});
 });
 
 watch(() => wbcHotKeysItems.value, async (wbcHotKeysItemsAfterSettingObj) => {
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcHotKeysItemsAfterSettingObj) });
+  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(wbcHotKeysItemsAfterSettingObj)});
   if (settingType.value !== settingName.wbcHotKeys) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.wbcHotKeys });
+    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.wbcHotKeys});
   }
-}, { deep: true });
+}, {deep: true});
 
 const filterEnglishAndNumbers = (event: Event, item: any, field: 'key' | 'fullNm') => {
   const input = event.target as HTMLInputElement;
@@ -119,16 +122,16 @@ const saveWbcCustomClass = async () => {
       } else {
         showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
       return;
     }
     if (result) {
       showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getWbcHotKeyClasses();
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
     }
   } catch (e) {
     console.error(e);
@@ -148,8 +151,8 @@ const getWbcHotKeyClasses = async () => {
         wbcHotKeysItems.value = result.data;
       }
 
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(wbcHotKeysItems.value) });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(wbcHotKeysItems.value) });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(wbcHotKeysItems.value)});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(wbcHotKeysItems.value)});
     }
   } catch (e) {
     console.error(e);
@@ -167,8 +170,8 @@ const getBfHotKeyClasses = async () => {
         saveHttpType.value = 'put';
         bfHotKeysItems.value = result.data;
       }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: JSON.stringify(bfHotKeysItems.value) });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(bfHotKeysItems.value) });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: JSON.stringify(bfHotKeysItems.value)});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(bfHotKeysItems.value)});
     }
   } catch (e) {
     console.error(e);
@@ -183,9 +186,9 @@ const saveBfCustomClass = async () => {
   try {
     let result: ApiResponse<void>;
     if (saveHttpType.value === 'post') {
-      result = await createBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
+      result = await createBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value});
     } else {
-      const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value });
+      const updateResult = await updateBfHotKeysApi({bfHotKeysItems: bfHotKeysItems.value});
 
       if (updateResult.data) {
         showToast(MSG.TOAST.UPDATE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
@@ -193,16 +196,16 @@ const saveBfCustomClass = async () => {
       } else {
         showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
       }
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
       return;
     }
     if (result) {
       showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
       saveHttpType.value = 'put';
       await getBfHotKeyClasses();
-      await store.dispatch('commonModule/setCommonInfo', { beforeSettingFormattedString: null });
-      await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: null });
+      await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
+      await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
     }
   } catch (e) {
     console.error(e);

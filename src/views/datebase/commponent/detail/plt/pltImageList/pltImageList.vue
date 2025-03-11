@@ -65,13 +65,10 @@
             </div>
             <button class="resetBtn" @click="rgbReset">RGB Reset</button>
           </div>
-          <div>
+          <div class="flex-center">
             <font-awesome-icon :icon="['fas', 'th']"/>
             <span>Grid</span>
-            <font-awesome-icon
-                :icon="isGrid ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                @click="onClickGrid"
-            />
+            <Toggle @click="onClickGrid" :isToggleOn="isGrid" />
           </div>
           <div>
             <div>
@@ -92,19 +89,16 @@
               </button>
             </div>
           </div>
-          <div>
+          <div class="flex-center">
             <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
             <span>Zoom</span>
-            <font-awesome-icon
-                :icon="isMagnifyingGlass ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                @click="onClickZoom"
-            />
+            <Toggle @click="onClickZoom" :isToggleOn="isMagnifyingGlass" />
           </div>
 
         </div>
       </div>
     </div>
-    <div class="tiling-viewer_img_list-box_img_list">
+    <div class="tiling-viewer_img_list-box_img_list shadowBox">
       <div v-if="tileExist" ref="tilingViewerLayer" id="tiling-viewer_img_list"
            @contextmenu.prevent="rbcClassRightClick"></div>
       <div v-else>
@@ -174,6 +168,7 @@ import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 import {MSG} from "@/common/defines/constants/constantMessageText";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import Button from "@/components/commonUi/Button.vue";
+import Toggle from "@/components/commonUi/Toggle.vue";
 
 const showAlert = ref(false);
 const alertType = ref('');

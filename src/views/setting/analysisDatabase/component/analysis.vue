@@ -184,11 +184,7 @@
             NS/NB Integration
           </th>
           <td>
-            <font-awesome-icon
-                :icon="cellInfo.isNsNbIntegration ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                class="iconSize"
-                @click="toggleNsNbIntegration"
-            />
+            <Toggle @click="toggleNsNbIntegration" :isToggleOn="cellInfo.isNsNbIntegration" />
           </td>
         </tr>
         </tbody>
@@ -262,6 +258,7 @@ import {defaultCellImgData} from "@/common/helpers/common/setting";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import ConfirmThreeBtn from "@/components/commonUi/ConfirmThreeBtn.vue";
+import Toggle from "@/components/commonUi/Toggle.vue";
 
 const instance = getCurrentInstance();
 const store = useStore();

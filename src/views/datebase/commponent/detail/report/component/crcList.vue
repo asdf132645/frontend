@@ -1,7 +1,7 @@
 <template>
   <div class="tab-content crcDiv reportCrcDiv">
     <div class="text-right mb10">
-      <Button @click="deleteRow('check')" :icon="['fas', 'trash']"></Button>
+      <Button size="sm" @click="deleteRow('check')" :icon="['fas', 'trash']"></Button>
     </div>
     <ul class="crcListContentUl">
       <li class="crcListContentHeader">

@@ -77,21 +77,15 @@
             </div>
             <button class="resetBtn" @click="rgbReset">RGB Reset</button>
           </div>
-          <div>
+          <div class="flex-center">
             <font-awesome-icon :icon="['fas', 'th']"/>
             <span>Grid</span>
-            <font-awesome-icon
-                :icon="isGrid ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                @click="onClickGrid"
-            />
+            <Toggle @click="onClickGrid" :isToggleOn="isGrid" />
           </div>
           <!-- <div>
             <font-awesome-icon :icon="['fas', 'crop']"/>
             <span>Crop</span>
-            <font-awesome-icon
-              :icon="isCrop? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-              @click="onClickCrop"
-            />
+            <Toggle @click="onClickCrop" :isToggleOn="isCrop" />
           </div> -->
           <div>
 
@@ -113,13 +107,10 @@
               </button>
             </div>
           </div>
-          <div>
+          <div class="flex-center">
             <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
             <span>Zoom</span>
-            <font-awesome-icon
-                :icon="isMagnifyingGlass ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
-                @click="onClickZoom"
-            />
+            <Toggle @click="onClickZoom" :isToggleOn="isMagnifyingGlass" />
           </div>
 
         </div>
@@ -200,6 +191,7 @@ import {openseadragonPrefixUrl} from "@/common/lib/utils/assetUtils";
 import Button from "@/components/commonUi/Button.vue";
 import {MSG} from "@/common/defines/constants/constantMessageText";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
+import Toggle from "@/components/commonUi/Toggle.vue";
 
 const showAlert = ref(false);
 const alertType = ref('');

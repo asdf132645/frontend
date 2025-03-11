@@ -24,25 +24,34 @@
         Dashboard
       </button>
       <div class="lisUploadDiv">
-        <Button
-            @click="lisClick"
-            v-show="activeTab === 1"
-            size="sm"
-            :icon="['fas', 'upload']"
-            @mouseover="tooltipVisibleFunc('lisUpload', true)"
-            @mouseout="tooltipVisibleFunc('lisUpload', false)"
-        ></Button>
-        <Tooltip :isVisible="tooltipVisible.lisUpload" position="bottom" :message="MSG.TOOLTIP.LIS_UPLOAD"/>
+        <div>
+          <Button
+              @click="lisClick"
+              v-show="activeTab === 1"
+              size="sm"
+              :icon="['fas', 'upload']"
+              @mouseover="tooltipVisibleFunc('lisUpload', true)"
+              @mouseout="tooltipVisibleFunc('lisUpload', false)"
+          ></Button>
+          <Tooltip :isVisible="tooltipVisible.lisUpload" position="bottom" :message="MSG.TOOLTIP.LIS_UPLOAD"/>
+        </div>
 
-        <Button
-            @click="childCodePlusBtn"
-            size="sm"
-            :icon="['fas', 'circle-plus']"
-            class="ml10"
-            @mouseover="tooltipVisibleFunc('addCode', true)"
-            @mouseout="tooltipVisibleFunc('addCode', false)"
-        ></Button>
-        <Tooltip :isVisible="tooltipVisible.addCode" position="bottom" :message="MSG.TOOLTIP.CRC_ADD_CODE" :style="activeTab !== 1 && 'left: -58px'" />
+        <div class="pos-relative">
+          <Button
+              @click="childCodePlusBtn"
+              size="sm"
+              :icon="['fas', 'circle-plus']"
+              class="ml10"
+              @mouseover="tooltipVisibleFunc('addCode', true)"
+              @mouseout="tooltipVisibleFunc('addCode', false)"
+          ></Button>
+          <Tooltip
+              :isVisible="tooltipVisible.addCode"
+              position="bottom"
+              :message="MSG.TOOLTIP.CRC_ADD_CODE"
+              :style="'left: -58px;'"
+          />
+        </div>
       </div>
     </div>
     <!-- 첫 번째 탭 콘텐츠 -->

@@ -15,10 +15,12 @@
       </thead>
       <tbody>
       <tr v-for="(wbcRunning) in wbcRunInfoCountArr" :key="wbcRunning.id">
-        <td class="setting-runningCount-wrapper"><input type="number" v-model="wbcRunning.min"
-                                                        class="form-control form-control-sm"></td>
-        <td class="setting-runningCount-wrapper"><input type="number" v-model="wbcRunning.max"
-                                                        class="form-control form-control-sm"></td>
+        <td class="setting-runningCount-wrapper">
+          <input type="number" v-model="wbcRunning.min" class="form-control form-control-sm" />
+        </td>
+        <td class="setting-runningCount-wrapper">
+          <input type="number" v-model="wbcRunning.max" class="form-control form-control-sm" />
+        </td>
         <td>
           <select v-model="wbcRunning.wbcTargetCount" class="form-select form-select-sm">
             <option v-for="option in AnalysisList2" :key="option.value" :value="+option.value">{{
@@ -75,7 +77,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const settingType = computed(() => store.state.commonModule.settingType);
 const projectType = ref('');
-const { toastInfo, showToast } = useToast();
+const {toastInfo, showToast} = useToast();
 
 onBeforeMount(() => {
   projectType.value = window.PROJECT_TYPE;
