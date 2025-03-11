@@ -188,10 +188,6 @@
     </div>
   </div>
 
-  <Button @click="cellImgSet">
-    Save
-  </Button>
-
   <ConfirmThreeBtn
       v-if="showDownloadConfirm"
       :is-visible="showDownloadConfirm"
@@ -224,9 +220,8 @@
 <script setup lang="ts">
 
 import {
-  createCellImgApi,
   getCellImgApi,
-  getDrivesApi, putCellImgApi,
+  getDrivesApi,
   qualityCheck,
   remainingCount
 } from "@/common/api/service/setting/settingApi";
@@ -619,41 +614,6 @@ const cellImgGet = async () => {
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
       }
     }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-const cellImgSet = async () => {
-  const cellImgSet = {
-    iaRootPath: cellInfo.value.iaRootPath,
-    backupPath: downloadRootPath.value,
-    backupStartDate: moment(cellInfo.value.backupStartDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    backupEndDate: moment(cellInfo.value.backupEndDate).add(1, 'day').local().toDate().toISOString().split('T')[0],
-    autoBackUpMonth: cellInfo.value.autoBackUpMonth,
-    autoBackUpStartDate: cellInfo.value.autoBackUpMonth !== 'Not selected' ? moment(new Date()).local().toDate().toISOString().split('T')[0]:null,
-  }
-
-  try {
-
-    let result: any = {};
-    if (saveHttpType.value === 'post') {
-      result = await createCellImgApi(cellImgSet);
-    } else {
-      result = await putCellImgApi(cellImgSet, cellInfo.value.id);
-    }
-
-    if (result) {
-      const text = saveHttpType.value === 'post' ? MESSAGES.settingSaveSuccess : MESSAGES.UPDATE_SUCCESSFULLY;
-      showSuccessAlert(text);
-      scrollToTop();
-      const data = result?.data;
-      sessionStorage.setItem('iaRootPath', data?.iaRootPath);
-      sessionStorage.setItem('isAlarm', String(data?.isAlarm));
-      await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
-    }
-
-    await cellImgGet();
   } catch (e) {
     console.error(e);
   }

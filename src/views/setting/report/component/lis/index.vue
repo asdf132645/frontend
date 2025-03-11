@@ -1,8 +1,8 @@
 <template>
 
   <div class="setting-activeBtn-container flex-center">
-    <Button @click="handleSettingMenu('hotkeyFilePath')" :isActive="activeTab === 'hotkeyFilePath'">Hotkey & File Path</Button>
     <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
+    <Button @click="handleSettingMenu('hotkeyFilePath')" :isActive="activeTab === 'hotkeyFilePath'">Hotkey & File Path</Button>
   </div>
 
   <FilePathSet v-if="activeTab === 'hotkeyFilePath'" type="lis" />
@@ -56,7 +56,7 @@ import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const router = useRouter();
-const activeTab = ref('hotkeyFilePath');
+const activeTab = ref('code');
 const movingTab = ref('');
 const showAlert = ref(false);
 const alertType = ref('');

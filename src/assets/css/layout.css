@@ -1445,12 +1445,12 @@ ul.customClass li {
 
 .listTable-hide-datepicker {
     position: absolute;
-    width: 100px;
+    width: 70px;
     top: 39px;
     height: 28px;
     background-color: white;
     z-index: 10;
-    left: 282px;
+    left: 300px;
     cursor: pointer;
 }
 
@@ -4243,6 +4243,38 @@ ul.wbcHotKeysItems {
     flex-direction: column;
     align-items: center;
     margin: 20px auto 0;
+}
+
+.setting-cbcCode-container {
+    display: grid;
+    width: 100%;
+}
+
+.setting-cbcCode-header {
+    display: grid;
+    grid-template-columns: 60% 30% 10%;
+    background-color: var(--main-bg-2-color);
+    padding: 10px;
+}
+
+.setting-cbcCode-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.setting-cbcCode-wrapper::-webkit-scrollbar {
+    width: 4px;
+}
+
+.setting-cbcCode-gridRow {
+    display: grid;
+    grid-template-columns: 60% 30% 10%;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.setting-cbcCode-gridCell {
+    padding: 10px;
 }
 
 .setting-report-container {

@@ -1,55 +1,49 @@
 <template>
   <div class="alignDiv" style="width: 660px;">
-    <table class="setting-table">
-      <colgroup>
-        <col width="60%"/>
-        <col width="30%"/>
-        <col width="10%"/>
-      </colgroup>
-      <thead>
-      <tr>
-        <th class="text-left">Class name</th>
-        <th>CBC Code</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr class="pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
-        <td v-if="editingCBCCd !== item.cd" class="text-left">{{ item.fullNm }}</td>
-        <td v-else>
-          <input type="text" v-model="item.fullNm" />
-        </td>
+    <div class="setting-grid">
+      <div class="setting-cbcCode-header">
+        <div class="grid-header-item text-left">Class name</div>
+        <div class="grid-header-item">CBC Code</div>
+        <div class="grid-header-item">Action</div>
+      </div>
 
-        <td>
-          <input class="w140" type="text" v-model="item.classCd" />
-        </td>
+      <div class="setting-cbcCode-wrapper">
+        <div class="setting-cbcCode-gridRow pos-relative" v-for="item in cbcCodeArr" :key="item.cd">
+          <div v-if="editingCBCCd !== item.cd" class="setting-cbcCode-gridCell text-left">{{ item.fullNm }}</div>
+          <div v-else class="setting-cbcCode-gridCell">
+            <input type="text" v-model="item.fullNm" />
+          </div>
 
-        <td class="pos-relative flex-center gap14">
-          <font-awesome-icon
-              v-show="editingCBCCd !== item.cd"
-              @click="editCBC(item.cd)"
-              class="cursorPointer hoverSizeAction"
-              :icon="['fas', 'pen-to-square']"
-          />
-          <font-awesome-icon
-              v-show="editingCBCCd === item.cd"
-              @click="clearEditing"
-              class="cursorPointer hoverSizeAction "
-              :icon="['fas', 'square-check']" />
-          <font-awesome-icon
-              @click="deleteCBCCode(item.cd)"
-              class="cursorPointer hoverSizeAction"
-              style="margin-right: 4px;"
-              :icon="['fas', 'trash']" />
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          <div class="setting-cbcCode-gridCell">
+            <input class="w140" type="text" v-model="item.classCd" />
+          </div>
+
+          <div class="setting-cbcCode-gridCell pos-relative flex-center gap14">
+            <font-awesome-icon
+                v-show="editingCBCCd !== item.cd"
+                @click="editCBC(item.cd)"
+                class="cursorPointer hoverSizeAction"
+                :icon="['fas', 'pen-to-square']"
+            />
+            <font-awesome-icon
+                v-show="editingCBCCd === item.cd"
+                @click="clearEditing"
+                class="cursorPointer hoverSizeAction"
+                :icon="['fas', 'square-check']" />
+            <font-awesome-icon
+                @click="deleteCBCCode(item.cd)"
+                class="cursorPointer hoverSizeAction"
+                style="margin-right: 4px;"
+                :icon="['fas', 'trash']" />
+          </div>
+        </div>
+      </div>
+    </div>
     <div>
       <Button
           @click="addCBCCode"
           :icon="['fas', 'plus']"
-          class="setting-saveBtn"
+          class="setting-saveBtn mt10"
       >
       </Button>
     </div>
@@ -222,4 +216,3 @@ const hideAlert = () => {
 };
 
 </script>
-

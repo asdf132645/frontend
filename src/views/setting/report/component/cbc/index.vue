@@ -1,8 +1,8 @@
 <template>
 
   <div class="setting-activeBtn-container flex-center">
-    <Button @click="handleSettingMenu('filePath')" :isActive="activeTab === 'filePath'">File Path</Button>
     <Button @click="handleSettingMenu('code')" :isActive="activeTab === 'code'">Code</Button>
+    <Button @click="handleSettingMenu('filePath')" :isActive="activeTab === 'filePath'">File Path</Button>
   </div>
 
   <FilePathSet v-if="activeTab === 'filePath'" type="cbc" />
@@ -60,7 +60,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const showConfirm = ref(false);
 const confirmMessage = ref('');
-const activeTab = ref('filePath');
+const activeTab = ref('code');
 const movingTab = ref('');
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);

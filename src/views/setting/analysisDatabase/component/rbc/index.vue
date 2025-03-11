@@ -107,8 +107,6 @@ const showConfirm = ref(false);
 const confirmMessage = ref('');
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
-const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
-const beforeSettingFormattedString = computed(() => store.state.commonModule.beforeSettingFormattedString);
 const settingType = computed(() => store.state.commonModule.settingType);
 const { toastInfo, showToast } = useToast();
 
@@ -119,9 +117,6 @@ onMounted(async () => {
 
 watch(() => rbcClassListArr.value, async (rbcClassListArrAfterSettingObj) => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(rbcClassListArrAfterSettingObj)});
-  console.log(afterSettingFormattedString.value);
-  console.log();
-  console.log(beforeSettingFormattedString.value);
   if (settingType.value !== settingName.rbcDegree) {
     await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.rbcDegree});
   }
