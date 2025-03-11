@@ -41,12 +41,9 @@
 <script setup lang="ts">
 import {ref, onMounted, computed, watch} from 'vue';
 import {settingName} from "@/common/defines/constants/settings";
-import {LisCodeRbcItem, LisCodeWbcItem} from "@/common/api/service/setting/dto/lisCodeDto";
 import Alert from "@/components/commonUi/Alert.vue";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
-import {minCountItem} from "@/common/api/service/setting/dto/minCountDto";
 import {useStore} from "vuex";
-import {scrollToTop} from "@/common/lib/utils/scroll";
 import Button from "@/components/commonUi/Button.vue";
 import {LisActiveSettingType} from "@/common/type/settings";
 import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
@@ -59,9 +56,6 @@ import {useToast} from "@/common/lib/utils/toast";
 
 const store = useStore();
 const router = useRouter();
-const lisCodeWbcArr = ref<LisCodeWbcItem[] | any>([]);
-const lisCodeRbcArr = ref<LisCodeRbcItem[] | any>([]);
-const minCountArr = ref<minCountItem[]>([]);
 const activeTab = ref('hotkeyFilePath');
 const movingTab = ref('');
 const showAlert = ref(false);
@@ -80,19 +74,6 @@ const { toastInfo, showToast } = useToast();
 onMounted(async () => {
   await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
 });
-
-watch(() => [lisCodeWbcArr.value, lisCodeRbcArr.value, minCountArr.value], async () => {
-  const afterSetting = {
-    lisCodeWbcArr: lisCodeWbcArr.value,
-    lisCodeRbcArr: lisCodeRbcArr.value,
-    minCountArr: minCountArr.value
-  }
-
-  await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: JSON.stringify(afterSetting)});
-  if (settingType.value !== settingName.lisCode) {
-    await store.dispatch('commonModule/setCommonInfo', {settingType: settingName.lisCode});
-  }
-}, {deep: true});
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();

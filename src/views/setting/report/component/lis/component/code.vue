@@ -1,37 +1,53 @@
 <template>
-  <div>
-    <div class="alignDiv">
-      <p class="mb40"> [ WBC ] </p>
-      <label v-for="item in lisCodeWbcArr" :key="item.classId">
-        <p class="mb10">{{ item.fullNm }}</p>
-        <input type="text" v-model="item.key"/>
-      </label>
-    </div>
-    <div class="alignDiv">
-      <p class="mt20 mb40"> [ RBC ] </p>
-      <label v-for="item in lisCodeRbcArr" :key="item.fullNm">
-        <p class="mb10">{{ item.categoryNm }} - {{ item.fullNm }}</p>
-        <input type="text" v-model="item.key"/>
-      </label>
-    </div>
-    <div class="alignDiv">
-      <p class="mb20"> [ Min Count ] </p>
-      <ul>
-        <li class="minCountWrapper" v-if="minCountArr.length > 0">
-          <p class="mb10 mt10">Giant Platelet</p>
-          <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)"
-                 class="form-control form-control-sm">
-        </li>
-        <li class="minCountWrapper" v-if="minCountArr.length > 0">
-          <p class="mb10 mt10">Platelet Aggregation</p>
-          <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)"
-                 class="form-control form-control-sm">
-        </li>
-      </ul>
+  <div class="setting-report-container">
+    <div class="setting-report-code-container">
+      <h2> [ WBC ] </h2>
+      <div class="setting-reportCode-title-wrapper">
+        <p class="text-left">IA Class name</p>
+        <p class="text-left">LIS(HIS) Class name</p>
+      </div>
+      <div class="setting-report-code-wrapper">
+        <template v-for="item in lisCodeWbcArr" :key="item.classId">
+          <p class="text-left">{{ item.fullNm }}</p>
+          <input type="text" class="w-fit" v-model="item.key"/>
+        </template>
+      </div>
     </div>
 
-    <Button @click="saveLis" class="setting-saveBtn mt10">Save</Button>
+    <div class="setting-report-code-container">
+      <h2> [ RBC ] </h2>
+      <div class="setting-reportCode-title-wrapper">
+        <p class="text-left">IA Class name</p>
+        <p class="text-left">LIS(HIS) Class name</p>
+      </div>
+      <div class="setting-report-code-wrapper">
+        <template v-for="item in lisCodeRbcArr" :key="item.classId">
+          <p class="text-left">{{ item.categoryNm }} - {{ item.fullNm }}</p>
+          <input type="text" class="w-fit" v-model="item.key"/>
+        </template>
+      </div>
+    </div>
+
+    <div class="setting-report-code-container">
+      <h2> [ Min Count ] </h2>
+
+      <div class="setting-reportCode-title-wrapper">
+        <p class="text-left">Class name</p>
+        <p class="text-left">Count</p>
+      </div>
+      <div class="setting-report-code-wrapper" v-if="minCountArr.length > 0 && minCountArr.length > 0">
+        <p class="text-left">Giant Platelet</p>
+        <input type="text" v-model="minCountArr[0].minGPCount" @input="filterNumbersOnly($event, true)"
+               class="form-control form-control-sm w-fit">
+
+        <p class="text-left">Platelet Aggregation</p>
+          <input type="text" v-model="minCountArr[0].minPACount" @input="filterNumbersOnly($event, false)"
+                 class="form-control form-control-sm w-fit">
+      </div>
+    </div>
   </div>
+
+  <Button @click="saveLis" class="setting-saveBtn mt20">Save</Button>
 
   <Alert
       v-if="showAlert"
@@ -40,7 +56,7 @@
       :message="alertMessage"
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
- />
+  />
 
   <ToastNotification
       v-if="toastInfo.message"
@@ -95,7 +111,7 @@ const alertType = ref('');
 const alertMessage = ref('');
 const settingType = computed(() => store.state.commonModule.settingType);
 const wbcCustomItems = ref<any>([]);
-const { toastInfo, showToast } = useToast();
+const {toastInfo, showToast} = useToast();
 
 onMounted(async () => {
   await getImagePrintData();

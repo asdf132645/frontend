@@ -2,37 +2,34 @@
   <div>
     <div v-if="isToggle">
       <div class="crcWrap flex-column-align-center">
-        <div class="w30p">
-          <div v-if="isUserAdminType(userType)" class="flex-align-center-justify-between mb10">
-            <span>CRC Password</span>
-            <input style="width: 100px;" type="text" placeholder="password" v-model="crcPassWord"/>
-          </div>
+        <div v-if="isUserAdminType(userType)" class="setting-crc-wrapper">
+          <span>CRC Password</span>
+          <input style="width: 100px;" type="text" placeholder="password" v-model="crcPassWord"/>
         </div>
 
-        <div v-if="isMasterId(masterId)" class="">
-          <div class="flex-align-center-justify-between mb20">
+        <template v-if="isMasterId(masterId)">
+          <div class="setting-crc-wrapper">
             <span>CRC Default Mode</span>
             <font-awesome-icon :icon="crcDefaultMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
                                @click="crcDefaultModeOn"/>
           </div>
 
-          <div class="flex-align-center-justify-between mb20">
+          <div class="setting-crc-wrapper">
             <span>CRC LIS Two Mode</span>
             <font-awesome-icon :icon="lisTwoMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
                                @click="lisTwoModeOn"/>
           </div>
 
-          <div class="flex-align-center-justify-between mb20">
+          <div class="setting-crc-wrapper">
             <span>CRC Connect</span>
             <font-awesome-icon :icon="crcConnect ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']" class="iconSize"
                                @click="crcConnectOn"/>
           </div>
 
-          <div class="flex-column-align-center mt10">
+          <div class="setting-crc-remarkSelect-wrapper mt10">
             <span>CRC Remark Select Count</span>
             <div class="flex-center mt10" style="gap: 14px;">
               <div class="flex-align-center">
-                <!--                <label class="crc-setting-title" for="crc-remark">{{ setCrcTitles(siteCd, remarkTxt) }}</label>-->
                 <input class="crc-setting-title" v-model="remarkTxt"/>
                 <input class="crc-setting-title-input" id="crc-remark" type="checkbox" @change="changeCrcRemarkCount"
                        value="0"
@@ -57,7 +54,7 @@
             </div>
 
           </div>
-        </div>
+        </template>
         <ul class="mt30" v-if="isMasterId(masterId)">
           <li>
             <p>crcTitle</p>
@@ -150,6 +147,13 @@
       @hide="hideAlert"
       @update:hideAlert="hideAlert"
   />
+
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
@@ -166,8 +170,11 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {useStore} from "vuex";
 import {isMasterId, isUserAdminType} from "@/common/lib/utils/validators";
 import {scrollToTop} from "@/common/lib/utils/scroll";
-import {setCrcTitles} from "../../../../common/helpers/crc/crcContent";
 import Button from "@/components/commonUi/Button.vue";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
+import {setCrcTitles} from "../../../../common/helpers/crc/crcContent";
 
 const isToggle = ref(false);
 const crcTitle = ref('');
@@ -198,6 +205,7 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const remarkTxt = ref('Remark');
 const commentTxt = ref('Comment');
 const recommendationTxt = ref('Recommendation');
+const { toastInfo, showToast } = useToast();
 
 onMounted(async () => {
   await nextTick();
@@ -264,12 +272,7 @@ const changeCrcRemarkCount = (eve: Event) => {
 const hideAlert = () => {
   showAlert.value = false;
 };
-const showSuccessAlert = async (message: string) => {
-  showAlert.value = true;
-  alertType.value = 'success';
-  alertMessage.value = message;
-  scrollToTop();
-};
+
 const addCrcArr = () => {
   if (crcTitle.value === '' || crcType.value === '') {
     return;
@@ -346,7 +349,8 @@ const saveCrcData = async () => {
     }
   }
 
-  await showSuccessAlert('Success');
+  showToast(MSG.TOAST.SAVE_SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
+  scrollToTop();
 };
 
 const crcDefaultModeOn = () => {

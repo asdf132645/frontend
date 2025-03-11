@@ -88,7 +88,9 @@
       </div>
 
       <div class="modalBottom">
-        <button type="button" class="alertButton" @click="putSelectedUserData">Edit</button>
+        <Button @click="putSelectedUserData" :icon="['fas', 'pen-to-square']" size="sm">
+          Edit
+        </Button>
       </div>
     </template>
   </Modal>
@@ -112,6 +114,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import router from "@/router";
 import { useStore } from "vuex";
 import { isMasterId } from "@/common/lib/utils/validators";
+import Button from "@/components/commonUi/Button.vue";
 
 const store = useStore()
 const storedUser = computed(() => store.state.userModule)

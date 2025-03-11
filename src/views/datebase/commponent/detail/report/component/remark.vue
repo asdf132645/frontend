@@ -21,9 +21,13 @@
           <input type="text" v-model="searchRemark" class="searchInputBox"/>
         </div>
         <!-- Search 버튼에 searchRemark 함수 연결 -->
-        <button class="btnSearchRemark" type="button" @click="searchRemarkData">
-          <font-awesome-icon :icon="['fas', 'magnifying-glass']"/>
-        </button>
+        <Button
+            @click="searchRemarkData"
+            :icon="['fas', 'magnifying-glass']"
+            variant="secondary"
+        >
+
+        </Button>
         <button class="crcDefaultBtn ml10 remarkDelBtn" @click="deleteSelectedRemarks">
           <font-awesome-icon :icon="['fas', 'trash']"/>
         </button>
@@ -82,10 +86,13 @@
               </td>
               <td v-else class="text-center">
                 <!-- Edit 버튼 -->
-                <button @click="startEdit(idx, item)">
-                  <font-awesome-icon :icon="['fas', 'pen-to-square']"/>
-                </button>
-
+                <Button
+                    @click="startEdit(idx, item)"
+                    :icon="['fas', 'pen-to-square']"
+                    variant="secondary"
+                    size="sm"
+                >
+                </Button>
               </td>
             </tr>
             </tbody>
@@ -108,8 +115,8 @@
               <td><textarea v-model="newRemarkContent" placeholder="content" class="remarkTextArea"
                             maxlength="1000"></textarea></td>
               <td colspan="2">
-                <button @click="addRemark" class="crcDefaultBtn ml10 width100">
-                  <font-awesome-icon :icon="['fas', 'plus']"/>
+                <button @click="addRemark" class="crcDefaultBtn ml10 w-full h100">
+                  <font-awesome-icon :icon="['fas', 'plus']" size="2xl"/>
                 </button>
               </td>
             </tr>
@@ -153,6 +160,9 @@ import PassWordCheck from "@/components/commonUi/PassWordCheck.vue";
 import {MESSAGES} from "@/common/defines/constants/constantMessageText";
 import {useStore} from "vuex";
 import {setCrcTitles} from "../../../../../../common/helpers/crc/crcContent";
+import Button from "@/components/commonUi/Button.vue";
+import {add} from "lodash";
+import {capitalizedFirst} from "@/common/lib/utils/conversionDataUtils";
 const selectAll = ref(false);
 
 const props = defineProps({
@@ -202,13 +212,13 @@ const loadRemarks = async (type?: string) => {
 
   if (props.type === 'remark') {
     response = await crcRemarkGet();
-    remarkNm.value = crcOptionApi.data[0].crcRemarkCount[0].name
+    remarkNm.value = capitalizedFirst(crcOptionApi.data[0].crcRemarkCount[0].name);
   } else if (props.type === 'comment') {
     response = await crcCommentGet();
-    remarkNm.value = crcOptionApi.data[0].crcRemarkCount[1].name
+    remarkNm.value = capitalizedFirst(crcOptionApi.data[0].crcRemarkCount[1].name);
   } else {
     response = await crcRecoGet();
-    remarkNm.value = crcOptionApi.data[0].crcRemarkCount[2].name
+    remarkNm.value = capitalizedFirst(crcOptionApi.data[0].crcRemarkCount[2].name);
   }
 
   remarkArr.value = response?.data || [];

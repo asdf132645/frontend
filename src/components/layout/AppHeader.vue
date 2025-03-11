@@ -70,7 +70,8 @@
               <li>{{ formattedDate }} {{ formattedTime }}</li>
             </ul>
           </div>
-          <div class="iconHeaderMenu" v-if="viewerCheck === 'main'">
+
+          <div class="iconHeaderMenu" v-if="viewerCheck !== 'main'">
             <ul>
               <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseout="closeErrLogLeave" >
                 <font-awesome-icon class="cursorPointer" :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
@@ -145,9 +146,9 @@
           <div ref="statusBarWrapper" class="statusBarWrapper">
             <div ref="statusBar" class="statusBar"></div>
           </div>
-          <div>
-            <button @click='onReset' class="alertButton">Reset</button>
-          </div>
+          <Button @click="onReset" :icon="['fas', 'rotate-right']">
+            Reset
+          </Button>
         </div>
       </div>
 
@@ -157,8 +158,9 @@
         <div class="flex-column-align-end">
           <div class="statusBarWrapper">
           </div>
-          <button type="button" @click='onPrime' :class="{'alertButton': true, 'blinkGripper': isBlinkingPrime}">Prime
-          </button>
+          <Button @click="onPrime" :class="{'blinkGripper': isBlinkingPrime}" :icon="['fas', 'droplet']">
+            Prime
+          </Button>
         </div>
       </div>
 

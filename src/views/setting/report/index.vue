@@ -6,7 +6,7 @@
         <button @click="selectTab('LisCode')" :class="{ 'active': activeTab === 'LisCode' }">
           IA
           <font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" />
-          LIS
+          LIS(HIS)
         </button>
         <button @click="selectTab('CbcCode')" :class="{ 'active': activeTab === 'CbcCode' }">
           CBC
@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div :class="{'tab-content crc':activeTab === 'CRC','arl':activeTab === 'ARL', 'tab-content':activeTab !== 'CRC'}">
+    <div :class="{'tab-content crc':activeTab === 'CRC','tab-content arl':activeTab === 'ARL'}">
       <component :is="selectedTabComponent"/>
     </div>
   </div>
@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import ImagePrint from "@/views/setting/report/component/ImagePrint.vue";
 import LisCode from "@/views/setting/report/component/lis/index.vue";
-import cbcCode from "@/views/setting/report/component/cbcCode.vue";
+import CbcCode from "@/views/setting/report/component/cbc/index.vue";
 import CRC from "@/views/setting/report/component/crc.vue";
 import ARL from '@/views/setting/report/component/autoCbc.vue';
 import { computed, ref, onBeforeMount } from "vue";
@@ -110,7 +110,7 @@ const selectedTabComponent = computed(() => {
     case 'LisCode':
       return LisCode;
     case 'CbcCode':
-      return cbcCode;
+      return CbcCode;
     case 'CRC':
       return CRC;
     case 'ARL':

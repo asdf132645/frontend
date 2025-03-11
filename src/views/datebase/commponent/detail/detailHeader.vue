@@ -197,7 +197,9 @@
         </ul>
       </div>
       <div class="modalBottom">
-        <button class="alertButton" @click="handleEditBarcodeNo">Save</button>
+        <Button @click="handleEditBarcodeNo" :icon="['fas', 'floppy-disk']">
+          Save
+        </Button>
       </div>
     </template>
   </Modal>

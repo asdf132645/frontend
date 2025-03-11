@@ -39,10 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
-import {settingName} from "@/common/defines/constants/settings";
+import { ref, computed, watch } from 'vue';
 import Alert from "@/components/commonUi/Alert.vue";
-import { CbcCodeItem } from "@/common/api/service/setting/dto/lisCodeDto";
 import {MESSAGES, MSG} from '@/common/defines/constants/constantMessageText';
 import { useStore } from "vuex";
 import FilePathSet from "@/views/setting/report/component/filePathSet.vue";
@@ -57,7 +55,6 @@ import {useRouter} from "vue-router";
 
 const store = useStore();
 const router = useRouter();
-const cbcCodeArr = ref<CbcCodeItem[]>([]);
 const showAlert = ref(false);
 const alertType = ref('');
 const alertMessage = ref('');
@@ -72,17 +69,6 @@ const afterSettingFormattedString = computed(() => store.state.commonModule.afte
 const isSettingChanged = computed(() => beforeSettingFormattedString.value !== afterSettingFormattedString.value);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const { toastInfo, showToast } = useToast();
-
-onMounted(async () => {
-  await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
-});
-
-watch(() => cbcCodeArr.value, async (cbcCodeArrAfterSetting) => {
-  await store.dispatch('commonModule/setCommonInfo', { afterSettingFormattedString: JSON.stringify(cbcCodeArrAfterSetting) });
-  if (settingType.value !== settingName.cbcCode) {
-    await store.dispatch('commonModule/setCommonInfo', { settingType: settingName.cbcCode });
-  }
-}, { deep: true });
 
 watch(() => settingChangedChecker.value, () => {
   checkIsMovingWhenSettingNotSaved();

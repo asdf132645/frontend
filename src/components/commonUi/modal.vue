@@ -4,11 +4,7 @@
     <div class="layer-content oil" :style="width ? `width: ${width}px; max-width: none;` : ''">
       <div class="layer-header">
         <slot name="header"></slot>
-        <Button
-            @click="closeLayer"
-            :icon="['fas', 'xmark']"
-            size="sm"
-        ></Button>
+        <font-awesome-icon :icon="['fas', 'xmark']" size="md" class="hoverSizeAction cursorPointer" @click="closeLayer" />
       </div>
       <div class="layer-body">
         <slot name="content"></slot>
@@ -19,7 +15,7 @@
 
 <script setup>
 import { ref, onMounted, defineProps, defineEmits } from 'vue';
-import Button from "@/components/commonUi/Button.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const visible = ref(false);
 const props = defineProps(['width'])

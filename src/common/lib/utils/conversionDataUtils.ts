@@ -44,3 +44,11 @@ export const getBarcodeDetailImageUrl = (imageName: string, iaRootPath: string, 
     const apiBaseUrl = window.LINUX_SERVER_SET ? window.EQUIPMENTPCIP : window.APP_API_BASE_URL;
     return `${apiBaseUrl}/images/imgQualityCdn?folder=${iaRootPath + "/" + slotId + "/" + barcodeDirName + "/"}&imageName=${imageName}&quality=30`;
 }
+
+export const capitalizedFirst = (text: string) => {
+    if (!text) {
+        return '';
+    }
+
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}

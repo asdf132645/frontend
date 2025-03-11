@@ -2,14 +2,14 @@
   <div class="alignDiv" style="text-align: center">
     <ul>
       <li v-if="type === 'lis'">
-        <p class="mb20">LIS Hot Key</p>
+        <p class="mb20">LIS(HIS) Hot Key</p>
         <input
             @keydown="handleKeyDown($event, 0)"
             type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisHotKey : ''"
             @input="updateHotKey($event, 0)">
       </li>
       <li v-if="type === 'lis'">
-        <p class="mb20 mt20">LIS File Path</p>
+        <p class="mb20 mt20">LIS(HIS) File Path</p>
         <input type="text" :value="filePathSetArr[0] ? filePathSetArr[0].lisFilePath : ''"
                @input="updateFilePath($event, 0)">
       </li>

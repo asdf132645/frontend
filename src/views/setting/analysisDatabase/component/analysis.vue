@@ -296,12 +296,15 @@ const siteCd = computed(() => store.state.commonModule.siteCd);
 const enteringRouterPath = computed(() => store.state.commonModule.enteringRouterPath);
 const settingChangedChecker = computed(() => store.state.commonModule.settingChangedChecker);
 const settingType = computed(() => store.state.commonModule.settingType);
+const beforeSettingFormattedString= computed(() => store.state.commonModule.beforeSettingFormattedString);
+const afterSettingFormattedString = computed(() => store.state.commonModule.afterSettingFormattedString);
 const saveHttpType = ref('');
 const showTutorialImage = ref({
   edgeShotType: false,
   positionMargin: false,
 })
 const currentPresetNm = ref('1');
+const movingPresetNm = ref('1');
 const apiUrl = ref('');
 const tooltipVisible = ref({
   iaRootPath: false,
@@ -421,7 +424,14 @@ const checkIsMovingWhenSettingNotSaved = () => {
 }
 
 const handlePresetChange = (presetNm: string) => {
+  if (beforeSettingFormattedString.value !== afterSettingFormattedString.value) {
+    movingPresetNm.value = presetNm;
+    checkIsMovingWhenSettingNotSaved();
+    return;
+  }
+
   currentPresetNm.value = presetNm;
+  movingPresetNm.value = presetNm;
 
   if (allCellInfo.value.clientData.length < 3) {
     const {
@@ -541,9 +551,6 @@ const cellImgSet = async () => {
     sessionStorage.setItem('iaRootPath', data?.iaRootPath);
     await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
     await store.dispatch('commonModule/setCommonInfo', {showLISUploadAfterCheckingAll: data?.lisUploadCheckAll});
-
-    await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
-    await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   } catch (e) {
     console.error(e);
     showToast(MSG.TOAST.UPDATE_FAIL, MESSAGES.TOAST_MSG_ERROR);
@@ -577,6 +584,8 @@ const hideConfirm = async () => {
   await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
   showConfirm.value = false;
   await router.push(enteringRouterPath.value);
+  currentPresetNm.value = movingPresetNm.value;
+  handlePresetChange(movingPresetNm.value);
 }
 
 const closeConfirm = () => {

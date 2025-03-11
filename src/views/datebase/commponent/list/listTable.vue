@@ -225,10 +225,10 @@
         <Button
             @click="dbDataEditSet"
             size="md"
+            :icon="['fas', 'floppy-disk']"
         >
           Save
         </Button>
-<!--        <button class="alertButton" @click="dbDataEditSet">Save</button>-->
       </div>
     </template>
   </Modal>
