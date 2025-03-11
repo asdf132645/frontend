@@ -71,7 +71,7 @@
             </ul>
           </div>
 
-          <div class="iconHeaderMenu" v-if="viewerCheck !== 'main'">
+          <div class="iconHeaderMenu" v-if="viewerCheck === 'main'">
             <ul>
               <li class="alarm" @click="errLogOn" @mouseover="openErrLogOver" @mouseout="closeErrLogLeave" >
                 <font-awesome-icon class="cursorPointer" :icon="['fas', 'bell']" :class="{ 'blinking-red': isErrorAlarm, 'blinking-blue': isCompleteAlarm }"/>
