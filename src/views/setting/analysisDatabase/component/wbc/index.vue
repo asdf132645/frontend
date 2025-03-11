@@ -3,7 +3,7 @@
     <div class="setting-activeBtn-container">
       <Button @click="handleSettingMenu('runningCount')" :isActive="activeTab === 'runningCount'">Custom WBC Running Count</Button>
       <Button @click="handleSettingMenu('customClass')" :isActive="activeTab === 'customClass'">Custom Class</Button>
-      <Button @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
+      <Button v-if="projectType !== 'bm'" @click="handleSettingMenu('normalRange')" :isActive="activeTab === 'normalRange'">Normal Range</Button>
       <Button @click="handleSettingMenu('classOrder')" :isActive="activeTab === 'classOrder'">Class Order</Button>
       <Button @click="handleSettingMenu('hotkey')" :isActive="activeTab === 'hotkey'">Hot keys</Button>
     </div>

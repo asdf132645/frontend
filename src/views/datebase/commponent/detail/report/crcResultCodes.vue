@@ -1182,7 +1182,7 @@ const tooltipVisibleFunc = (type: keyof TooltipCrcResultCodesType, visible: bool
 }
 
 const updateCRCMorphology = async () => {
-  if (siteCd.value === '0033') {
+  if (siteCd.value === '0000') {
     await initCbcData0033();
   } else {
     await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);

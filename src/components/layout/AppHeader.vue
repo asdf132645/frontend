@@ -303,10 +303,12 @@ const formattedDate = computed(() => currentDate.value);
 const formattedTime = computed(() => currentTime.value);
 const isLoadingErrorLog = ref(false);
 const { toastInfo, showToast } = useToast();
+const forceViewer = ref('');
 
 onBeforeMount(() => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
   machineVersion.value = window.MACHINE_VERSION;
+  forceViewer.value = window.FORCE_VIEWER;
 })
 
 onMounted(async () => {
@@ -314,6 +316,10 @@ onMounted(async () => {
   await cellImgGetAll();
   updateDateTime(); // 초기 시간 설정
   const timerId = setInterval(updateDateTime, 60000); // 1초마다 현재 시간을 갱신
+
+  if (userModuleDataGet.value) {
+    userId.value = userModuleDataGet.value?.id;
+  }
 
   // 컴포넌트가 해제되기 전에 타이머를 정리하여 메모리 누수를 방지
   onBeforeUnmount(() => {
@@ -471,7 +477,7 @@ const handleOkConfirm = async () => {
 
   await logoutApi({userId: userId.value});
   if (clickType.value === 'exit') {
-    if (viewerCheck.value === 'main') {
+    if (viewerCheck.value === 'main' && forceViewer.value === 'main') {
       await EventBus.publish('childEmitSocketData', tcpReq().embedStatus.exit);
     } else {
       const result = await getDeviceIpApi();

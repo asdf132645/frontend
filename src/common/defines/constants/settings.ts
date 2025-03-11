@@ -857,7 +857,6 @@ export const imagePrintAndWbc = [
     {fullNm: 'Platelet aggregation', classId: '14', checked: false},
     {fullNm: 'Malaria', classId: '16', checked: false},
     {fullNm: 'Artifact(Smudge)', classId: '15', checked: false},
-    {fullNm: 'rbcPrintModel', classId: '99999', checked: false},
 ]
 
 export const imagePrintAndBm = [
@@ -902,7 +901,6 @@ export const lisCodeWbcOption = [
     {fullNm: 'Platelet aggregation', classId: '14', key: 'PA'},
     {fullNm: 'Malaria', classId: '16', key: 'MA'},
     {fullNm: 'Artifact(Smudge)', classId: '15', key: 'AR'},
-    {fullNm: 'rbcPrintModel', classId: '99999', key: ''},
 ];
 
 export const LIS_CODE_RBC_OPTION = [

@@ -352,16 +352,17 @@ watch(
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
-  const crcOptionApi = await crcOptionGet();
-  if (crcOptionApi.data.length !== 0) {
-    crcConnect.value = crcOptionApi.data[0].crcConnect;
+  if (!projectBm.value) {
+    const crcOptionApi = await crcOptionGet();
+    if (crcOptionApi.data.length !== 0) {
+      crcConnect.value = crcOptionApi.data[0].crcConnect;
+    }
+    const result = (await crcGet());
+    if (result.code === 200) {
+      isContent.value = true;
+      crcData.value = result.data;
+    }
   }
-  const result = (await crcGet());
-  if (result.code === 200) {
-    isContent.value = true;
-    crcData.value = result.data;
-  }
-
 })
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -378,7 +379,9 @@ onMounted(async () => {
   await getOrderClass();
   await initData();
   document.addEventListener('click', handleClickOutside);
-  await store.dispatch('commonModule/setCommonInfo', {cbcLayer: true});
+  if (!projectBm.value) {
+    await store.dispatch('commonModule/setCommonInfo', {cbcLayer: true});
+  }
 });
 
 onUnmounted(() => {

@@ -1874,7 +1874,7 @@ ul.classInfo {
 
 .categoryNm {
     display: inline-block;
-    width: 35%;
+    width: 40%;
 }
 
 ul.degree.analysis {
@@ -2290,18 +2290,18 @@ ul.nth1Child {
 }
 
 ul.nth1Child > :nth-child(1) {
-    width: 35%;
+    width: 40%;
     text-align: left;
 }
 
 ul.nth1Child > :nth-child(2) {
-    width: 35%;
+    width: 30%;
     text-align: center;
 }
 
 ul.nth1Child > :nth-child(3) {
     text-align: center;
-    width: 35%;
+    width: 30%;
 }
 
 .degreeActive {
@@ -4115,6 +4115,22 @@ table.tableClass {
     right: 0;
     width: 400px;
     height: 490px;
+    background: var(--gray-bg-12-color);
+    padding: 10px 15px 10px 10px;
+    gap: 24px;
+    border-radius: 4px;
+    z-index: 6;
+}
+
+.memoModalBm {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    top: 34px;
+    right: 0;
+    width: 400px;
+    height: 220px;
     background: var(--gray-bg-12-color);
     padding: 10px 15px 10px 10px;
     gap: 24px;

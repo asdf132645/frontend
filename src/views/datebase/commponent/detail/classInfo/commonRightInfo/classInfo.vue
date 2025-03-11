@@ -99,16 +99,16 @@
             <li class="mb10 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
             <li class="w-fit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
           </ul>
-          <ul style="width: 29%;">
+          <ul style="width: 30%;">
             <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
-            <li class="grayText" style="cursor: default; padding-left: -20px;">{{
+            <li class="grayText" style="cursor: default; padding-left: 10px;">{{
                 Number(nWbcItem?.count.before) || 0
               }}
             </li>
           </ul>
           <ul class="degree" style="width: 27%">
             <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
-            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default;">{{
+            <li :class="nWbcItem.isChanged && 'blueText'" style="cursor: default; padding-left: 2px;">{{
                 Number(nWbcItem?.count.after) || 0
               }}
             </li>

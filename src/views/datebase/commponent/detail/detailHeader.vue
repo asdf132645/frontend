@@ -118,7 +118,7 @@
           <Tooltip :isVisible="tooltipVisible.memo" className="mb08" position="top" type=""
                    :message="MSG.TOOLTIP.MEMO"/>
         </Button>
-        <div v-if="isMemoModalOpen" class="memoModal shadowBox memoBoxRef">
+        <div v-if="isMemoModalOpen" class="memoModal shadowBox memoBoxRef" :class="projectBm && 'memoModalBm'">
           <div class="memoModal-header">
             <h1 class="fs12">Memo</h1>
             <font-awesome-icon @click="memoCancel" class="memoModal-cancel-btn" :icon="['fas', 'xmark']"/>
@@ -128,11 +128,12 @@
               <h2 class="memoModal-title">WBC</h2>
               <textarea v-model="memo.wbc"></textarea>
             </div>
-            <div class="memoModal-wrapper">
+
+            <div class="memoModal-wrapper" v-if="!projectBm">
               <h2 class="memoModal-title">RBC</h2>
               <textarea v-model="memo.rbc"></textarea>
             </div>
-            <div class="memoModal-wrapper">
+            <div class="memoModal-wrapper" v-if="!projectBm">
               <h2 class="memoModal-title">PLT</h2>
               <textarea v-model="memo.plt"></textarea>
             </div>
@@ -157,7 +158,7 @@
                    :message="MSG.TOOLTIP.CONFIRM"/>
         </Button>
         <Button
-            v-if="!crcConnect && showLISUploadButton"
+            v-if="!crcConnect && showLISUploadButton && !projectBm"
             size="sm"
             @click="lisModalOpen"
             :class="{'blueText': slideData?.submitState.includes('lis') || lisBtnColor,}"
@@ -444,8 +445,14 @@ const barcodeCopy = async () => {
 
 const memoChange = async () => {
   const enterAppliedWbcMemo = memo.value.wbc.replaceAll('\r\n', '<br>');
-  const enterAppliedRbcMemo = memo.value.rbc.replaceAll('\r\n', '<br>');
-  const enterAppliedPltMemo = memo.value.plt.replaceAll('\r\n', '<br>');
+  let enterAppliedRbcMemo, enterAppliedPltMemo;
+  if (projectBm.value) {
+    enterAppliedRbcMemo = '';
+    enterAppliedPltMemo = '';
+  } else {
+    enterAppliedRbcMemo = memo.value.rbc.replaceAll('\r\n', '<br>');
+    enterAppliedPltMemo = memo.value.plt.replaceAll('\r\n', '<br>');
+  }
   const updatedItem = {
     wbcMemo: enterAppliedWbcMemo,
     rbcMemo: enterAppliedRbcMemo,
