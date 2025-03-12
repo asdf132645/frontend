@@ -343,6 +343,15 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
+.base-btn--success {
+    color: white;
+    background: #3498db;
+    /*padding: 30px;*/
+    /*margin: 5px;*/
+    /*border-radius: 15px;*/
+    /*font-size: 2.5rem;*/
+}
+
 .base-btn--disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -1629,7 +1638,7 @@ table.settingTable select {
     margin-top: 20px;
     width: 500px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 340px;
     text-align: left;
     align-items: center;
     gap: 12px;
@@ -2290,7 +2299,7 @@ ul.nth1Child {
 }
 
 ul.nth1Child > :nth-child(1) {
-    width: 40%;
+    width: 35%;
     text-align: left;
 }
 
@@ -2385,7 +2394,6 @@ span.rbcSapnDown .degreeActive {
 
 li.wbcTitleText p {
     text-align: left;
-    padding-left: 10px;
 }
 
 li.wbcTitleText p.firstP {
@@ -2688,6 +2696,7 @@ span.proSpan {
     flex-direction: column;
     margin: 20px auto;
     width: 430px;
+    gap: 12px;
 }
 
 p.loginTitle {
@@ -2733,7 +2742,7 @@ ul.loginUl li {
     text-align: center;
 }
 
-input.loginInput {
+.loginInput {
     width: 92%;
     border: none;
     margin: 5px;

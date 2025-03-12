@@ -82,7 +82,9 @@
             <Datepicker v-model="cellInfo.backupEndDate" :week-starts-on="0" class="cursorDefault"></Datepicker>
           </div>
         </div>
-        <Button size="sm" @click="createBackup">Download</Button>
+        <Button size="sm" @click="createBackup" :icon="['fas', 'download']" class="text-center">
+          Download
+        </Button>
       </div>
 
       <h2 class="pos-relative">
@@ -99,7 +101,9 @@
         <select v-model='uploadRootPath'>
           <option v-for="type in drive" :key="type" :value="type">{{ type }}</option>
         </select>
-        <Button size="sm" @click="handleSelectUploadFile" style="width: 83px;">Upload</Button>
+        <Button size="sm" @click="handleSelectUploadFile" style="width: 102px;" :icon="['fas', 'upload']" class="text-center">
+          Upload
+        </Button>
       </div>
     </div>
 

@@ -25,7 +25,7 @@
       <li>Class</li>
       <li class="wbcTitleText">
         <p class="firstP">Before</p>
-        <p>(Count | Percent)</p>
+        <p class="text-left">(Count | Percent)</p>
       </li>
       <li class="wbcTitleText">
         <p class="firstP">After</p>
@@ -101,7 +101,7 @@
           </ul>
           <ul style="width: 30%;">
             <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
-            <li class="grayText" style="cursor: default; padding-left: 10px;">{{
+            <li class="grayText" style="cursor: default;">{{
                 Number(nWbcItem?.count.before) || 0
               }}
             </li>

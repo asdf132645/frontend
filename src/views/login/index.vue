@@ -21,8 +21,14 @@
         </ul>
 
         <div class='loginBtn'>
+<!--          <Button @click="loginUser" @keyup.enter="loginUser">-->
+<!--            Login-->
+<!--          </Button>-->
+<!--          <Button @click="goJoinPage">-->
+<!--            Add User-->
+<!--          </Button>-->
           <button type="button" @click="loginUser()" @keyup.enter="loginUser">Login</button>
-          <button type="button" @click="goJoinPage">Add User</button>
+          <button type="button" >Add User</button>
         </div>
       </div>
     </div>
@@ -54,8 +60,8 @@ import Alert from "@/components/commonUi/Alert.vue";
 import {initializeAllSettings} from "@/common/helpers/common/setting";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {readFileTxt} from "@/common/api/service/fileReader/fileReaderApi";
+import Button from "@/components/commonUi/Button.vue";
 
-// 스토어
 const store = useStore();
 const password = ref('');
 const idVal = ref('');

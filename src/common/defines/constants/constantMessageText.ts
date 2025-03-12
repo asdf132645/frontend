@@ -156,6 +156,17 @@ export const MSG = {
         BARCODE_COPIED: 'Barcode Copied',
         LIS_UPLOAD_ONLY_WBC: 'LIS(HIS) upload is only allowed on the WBC tab'
     },
+    SIGNUP: {
+        ENTER_ID: 'Please enter id',
+        USER_ID_VAILD: 'ID is not available',
+        PWD: 'Please enter password',
+        NAME: 'Please enter name',
+        EMPLOYEE_NO: 'Please enter Employee No',
+        REPEAT_PWD: 'Please enter repeat password',
+        PWD_SAME: 'Please check if the password and password are the same',
+        DUPLICATE_ID: 'Duplicated user id',
+        SIGNUP_FAIL: 'Sign up failed',
+    },
     ERROR: {
         SETTING_SAVE: 'Save failed',
         SETTING_UPDATE: 'Update failed',

@@ -1002,13 +1002,11 @@ const updateList = (newList: any[], type: string) => {
 const remarkallContentPush = (newList: any, list) => {
   const seperator = siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] ? '\r' : '\r\r';
   for (const el of newList) {
-    for (const el of newList) {
-      if (list.value[0].remarkAllContent.length === 0) {
-        list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
-      } else {
-        list.value[0].remarkAllContent += seperator;
-        list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
-      }
+    if (list.value[0].remarkAllContent.length === 0) {
+      list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
+    } else {
+      list.value[0].remarkAllContent += seperator;
+      list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
     }
   }
   // list.value[0].remarkAllContent += '\r'

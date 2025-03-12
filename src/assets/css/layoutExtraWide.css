@@ -87,7 +87,7 @@
         padding-top: 50px;
     }
 
-    input.loginInput {
+    .loginInput {
         width: 80%;
         border: none;
         height: 4rem;
