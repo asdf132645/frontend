@@ -124,6 +124,7 @@ import Confirm from "@/components/commonUi/Confirm.vue";
 import {getDeviceInfoApi} from "@/common/api/service/device/deviceApi";
 import {getDateTimeStr} from "@/common/lib/utils/dateUtils";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 
 const store = useStore();
@@ -511,8 +512,8 @@ const cellImgGet = async () => {
 }
 
 const setWbcRunningCount = async () => {
-  // 0011 - 인하대인 경우 -> WbcRunningCount로 분류
-  if (window.PROJECT_TYPE !== 'pb' || siteCd.value !== '0011') return;
+  // 인하대인 경우 -> WbcRunningCount로 분류
+  if (window.PROJECT_TYPE !== 'pb' || siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['인하대병원']) return;
 
   try {
     const runCountResult = await getRunInfoApi();

@@ -231,8 +231,9 @@ const getStringArrayBySiteCd = (siteCd, testType) => {
     siteCd = '0000';
     testType = '01';
   }
-  const arraysBySiteCd = { // 0006 -> 고대
-    '0006': {
+
+  const arraysBySiteCd = {
+    '0006': {  // 고대
       includesStr: ["AR", "NR", "GP", "PA", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
       includesStr2: ["NR", "AR", "MC", "MA", "SM", 'NE', 'GP', 'PA', 'OT'],
     },

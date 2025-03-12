@@ -113,11 +113,8 @@ const settingsConstant = ref<any>({
 
 /** 로그인 시 Setting 값 설정 함수 */
 export const initializeAllSettings = async () => {
-    const siteCd = '9090'
     await firstGetSettings('cellImage');
-    if (siteCd === '9090') {
-        await testFirstGetSettings('analysis');
-    }
+    await testFirstGetSettings('analysis');
     await firstGetSettings('orderClass');
     await firstGetSettings('rbcDegree');
     await firstGetSettings('lisCodeWbc');

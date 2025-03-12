@@ -192,6 +192,7 @@ import Button from "@/components/commonUi/Button.vue";
 import {MSG} from "@/common/defines/constants/constantMessageText";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import Toggle from "@/components/commonUi/Toggle.vue";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const showAlert = ref(false);
 const alertType = ref('');
@@ -980,7 +981,7 @@ const fetchTilesInfo = async (folderPath: string) => {
 
       // RBC, PLT 분리 전에 RBC 쪽에서 PLT를 보여주는 코드
       // 인하대 허용
-      if (siteCd.value === '0011') {
+      if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
         const keywords = ['zPLT_Image', 'RBC_Image'];
         showRbcPlt = keywords.some(keyword => fileName.includes(keyword));
       } else {
@@ -989,7 +990,7 @@ const fetchTilesInfo = async (folderPath: string) => {
       }
 
       // PLT 안보이는 조건 (인하대)
-      const showPlt = siteCd.value === '0011' ? fileName.endsWith('_files') && showRbcPlt : fileName.endsWith('_files') && !notPlt;
+      const showPlt = siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] ? fileName.endsWith('_files') && showRbcPlt : fileName.endsWith('_files') && !notPlt;
       if (showPlt) {
 
         const fileNameResult = extractSubStringBeforeFiles(fileName);

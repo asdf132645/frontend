@@ -93,7 +93,7 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in filterByTitle(wbcInfoVal, 'nonWbc')" :key="outerIndex">
-        <div class="categories" v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'"
+        <div class="categories" v-show="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && nWbcItem?.title !== 'SM'"
              @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
             <li class="mb10 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>

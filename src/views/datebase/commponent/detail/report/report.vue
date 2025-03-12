@@ -119,7 +119,7 @@
                 </colgroup>
                 <tbody>
                 <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
-                  <tr v-show="siteCd !== '0006' && nWbcItem?.title !== 'SM'">
+                  <tr v-show="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && nWbcItem?.title !== 'SM'">
                     <td>{{ getCategoryName(nWbcItem) }}</td>
                     <td>
                       {{ Number(nWbcItem?.count) || 0 }}

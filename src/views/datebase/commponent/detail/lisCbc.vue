@@ -32,7 +32,7 @@
 
       </div>
     </h1>
-    <div v-if="siteCd ==='0002' && cbcWorkList.length !== 0" class="cbcDivWarp">
+    <div v-if="HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
         <colgroup>
           <col width="50%"/>
@@ -44,7 +44,7 @@
         </tr>
       </table>
     </div>
-    <div v-else-if="siteCd ==='0007' && cbcWorkList.length !== 0" class="cbcDivWarp">
+    <div v-else-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['삼광의료재단'] && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
         <colgroup>
           <col width="50%"/>

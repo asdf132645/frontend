@@ -3,7 +3,7 @@
     <template v-for="(item, index) in wbcInfoArrChild" :key="item.id">
       <li
           @click="scrollToElement(item.id)"
-          v-if="siteCd !== '0006' && item?.title !== 'SM'"
+          v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && item?.title !== 'SM'"
           @dragover.prevent="$emit('onDragOverCircle')"
           @drop="$emit('onDropCircle', item)"
           class="pos-relative"
@@ -241,6 +241,7 @@ import {apiUrl} from "@/common/api/apiUrl";
 import router from "@/router";
 import Button from "@/components/commonUi/Button.vue";
 import {useToast} from "@/common/lib/utils/toast";
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 const refsArray = ref<any[]>([]);
 const store = useStore();
@@ -399,7 +400,7 @@ const handleImageLoad = async (itemIndex: any) => {
   emits('update:cellRef', cellRef);
   await classImgChange('first', null);
   await classImgChange('last', null);
-  classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== '0006' && item?.title !== 'SM');
+  classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && item?.title !== 'SM');
 
   if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
     await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });

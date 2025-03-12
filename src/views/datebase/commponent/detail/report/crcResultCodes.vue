@@ -59,8 +59,8 @@
       <div class="text-left crcMenu mb10">
         <div
             v-if="visibleBySite(siteCd, [
-              '0031',
-              '0030',
+              HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'],
+              HOSPITAL_SITE_CD_BY_NAME['원주기독병원'],
           ], 'disable')"
             class="pos-relative mr20"
             @mouseover="tooltipVisibleFunc('cbcToResultCodes', true)"

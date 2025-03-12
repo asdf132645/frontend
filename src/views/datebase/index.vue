@@ -727,7 +727,7 @@ const setTitleItemsForFilter = (rawTitleItems: any[]) => {
       }));
 
   const filterArtifactTitleItems = rawTitleItems
-      .filter(item => siteCd.value === '0006' || item?.title !== 'SM')
+      .filter(item => siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] || item?.title !== 'SM')
       .map(item => ({
         title: item.title,
         label: item.title,

@@ -1,10 +1,11 @@
+import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 
 export const calculateWbcPercentages = (
     classList: any[],
     siteCd: any
 ) => {
-    const includesStr = siteCd === '0006' ? ["AR", "NR", "GP", "PA", "MC", "MA", "SM"]:["AR", "NR", "GP", "PA", "MC", "MA"];
+    const includesStr = siteCd === HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] ? ["AR", "NR", "GP", "PA", "MC", "MA", "SM"]:["AR", "NR", "GP", "PA", "MC", "MA"];
     const total = classList
         .filter(
             (category) =>
