@@ -345,11 +345,12 @@
 
 .base-btn--success {
     color: white;
-    background: #3498db;
-    /*padding: 30px;*/
-    /*margin: 5px;*/
-    /*border-radius: 15px;*/
-    /*font-size: 2.5rem;*/
+    background: var(--button-confirm);
+    border: none;
+}
+
+.base-btn--success.base-btn--hover {
+    background: var(--button-confirm-hover);
 }
 
 .base-btn--disabled {
@@ -1203,6 +1204,11 @@ p.startStopP-wrapper {
     margin-top: 5px;
     cursor: pointer;
     border-radius: 5px;
+    transition: ease-in-out 0.1s;
+}
+
+p.startStopP-wrapper:hover {
+    background-color: #393939;
 }
 
 p.startStopP {
@@ -2720,13 +2726,11 @@ ul.loginUl {
     padding-top: 80px;
 }
 
-.loginBtn > button {
-    background: var(--blue-bg-0-color);
-    border: none;
-    color: var(--white-color);
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+.login-btn-wrapper {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: center;
 }
 
 .loginFooter {
@@ -4238,6 +4242,19 @@ ul.editOrder li input {
     width: 520px;
     margin-bottom: 8px;
     align-items: center;
+}
+
+.setting-hotkey-container input {
+    width: 160px;
+}
+
+.setting-hotkey-overflow-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.setting-hotkey-overflow-container::-webkit-scrollbar {
+    width: 4px;
 }
 
 .setting-hotkey-title-wrapper {

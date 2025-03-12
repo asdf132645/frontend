@@ -10,7 +10,7 @@
       <p class="text-left">Class name</p>
       <p>Hotkey</p>
     </div>
-    <ul>
+    <ul class="setting-hotkey-overflow-container">
       <li class="setting-hotkey-container" v-for="item in activeSetting.wbc ? wbcHotKeysItems : bfHotKeysItems" :key="item.id">
         <span>{{ item.abbreviation }}</span>
         <span class="text-left">{{ item.fullNm }}</span>

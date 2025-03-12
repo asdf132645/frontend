@@ -20,15 +20,13 @@
           </li>
         </ul>
 
-        <div class='loginBtn'>
-<!--          <Button @click="loginUser" @keyup.enter="loginUser">-->
-<!--            Login-->
-<!--          </Button>-->
-<!--          <Button @click="goJoinPage">-->
-<!--            Add User-->
-<!--          </Button>-->
-          <button type="button" @click="loginUser()" @keyup.enter="loginUser">Login</button>
-          <button type="button" >Add User</button>
+        <div class="login-btn-wrapper">
+          <Button @click="loginUser" @keyup.enter="loginUser" variant="success">
+            Login
+          </Button>
+          <Button @click="goJoinPage" variant="success">
+            Add User
+          </Button>
         </div>
       </div>
     </div>
