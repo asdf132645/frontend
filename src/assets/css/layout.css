@@ -7960,7 +7960,9 @@ tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td
     color: rgba(118, 118, 118, 0.3);
 }
 
-
+.auto-cbc-table thead {
+    margin-right: 8px;
+}
 .allConfirm {
     display: inline-block;
     width: 7%;
@@ -8094,7 +8096,7 @@ tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td
 .auto-cbc-table th {
     background-color: #1c1c1c;
     color: #e0e0e0;
-    padding: 14px 15px;
+    padding: 14px 7px;
     text-align: center;
     font-size: 0.8rem;
     vertical-align: middle;
