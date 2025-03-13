@@ -19,6 +19,11 @@
           </div>
 
           <div class="setting-crc-wrapper">
+            <span>Remark Seperator include Enter</span>
+            <Toggle @click="toggleRemarkSeparatorTwoLine" :isToggleOn="remarkSeparatorTwoLine" />
+          </div>
+
+          <div class="setting-crc-wrapper">
             <span>CRC Connect</span>
             <Toggle @click="crcConnectOn" :isToggleOn="crcConnect" />
           </div>
@@ -165,7 +170,6 @@ import Button from "@/components/commonUi/Button.vue";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
 import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
-import {setCrcTitles} from "../../../../common/helpers/crc/crcContent";
 import Toggle from "@/components/commonUi/Toggle.vue";
 
 const isToggle = ref(false);
@@ -192,7 +196,7 @@ const crcPassWord = ref('');
 const store = useStore();
 const masterId = computed(() => store.state.userModule.userId);
 const userType = computed(() => store.state.userModule.userType);
-const siteCd = computed(() => store.state.commonModule.siteCd);
+const remarkSeparatorTwoLine = ref(false);
 
 const remarkTxt = ref('Remark');
 const commentTxt = ref('Comment');
@@ -213,6 +217,7 @@ onMounted(async () => {
     crcConnect.value = crcData.crcConnect;
     crcOptionId.value = crcData.id;
     crcRemarkCountArr.value = crcData.crcRemarkCount;
+    remarkSeparatorTwoLine.value = crcData.remarkSeparatorTwoLine;
 
     if (crcRemarkCountArr.value.length >= 3) {
       [remarkTxt.value, commentTxt.value, recommendationTxt.value] = crcRemarkCountArr.value.map(item => item.name);
@@ -315,7 +320,8 @@ const saveCrcData = async () => {
         crcConnect: crcConnect.value,
         crcRemarkCount: crcRemarkCountArr.value,
         crcPassWord: crcPassWord.value,
-        lisTwoMode: lisTwoMode.value
+        lisTwoMode: lisTwoMode.value,
+        remarkSeparatorTwoLine: remarkSeparatorTwoLine.value
       });
     } else {
       await createCrcOptionApi({
@@ -323,7 +329,8 @@ const saveCrcData = async () => {
         crcConnect: crcConnect.value,
         crcRemarkCount: crcRemarkCountArr.value,
         crcPassWord: crcPassWord.value,
-        lisTwoMode: lisTwoMode.value
+        lisTwoMode: lisTwoMode.value,
+        remarkSeparatorTwoLine: remarkSeparatorTwoLine.value
       });
     }
     if (crcOptionPutWhether.value && crcData.value.data.length !== 0) {
@@ -350,6 +357,10 @@ const crcDefaultModeOn = () => {
 }
 const lisTwoModeOn = () => {
   lisTwoMode.value = !lisTwoMode.value;
+}
+
+const toggleRemarkSeparatorTwoLine = () => {
+  remarkSeparatorTwoLine.value = !remarkSeparatorTwoLine.value;
 }
 
 const crcConnectOn = () => {

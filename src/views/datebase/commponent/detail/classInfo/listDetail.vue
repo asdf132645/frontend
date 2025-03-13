@@ -2207,10 +2207,8 @@ const tooltipVisibleFunc = (type: keyof TooltipListDetailType, visible: boolean)
   tooltipVisible.value[type] = visible;
 }
 
-const uploadLisChangeSlide = (hospitalNm: any) => {
-  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
-  }
+const uploadLisChangeSlide = () => {
+  changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
 }
 
 </script>

@@ -17,6 +17,7 @@ export interface CellImgAnalyzedRequest {
     alarmCount: string;
     keepPage: boolean;
     lisUploadCheckAll: boolean;
+    lisAutoNextPage: boolean;
     backupPath: string;
     backupStartDate: string;
     backupEndDate: string;
@@ -45,6 +46,7 @@ export interface CellImgAnalyzedResponse {
     alarmCount: string;
     keepPage: boolean;
     lisUploadCheckAll: boolean;
+    lisAutoNextPage: boolean;
     backupPath: string;
     backupStartDate: Date;
     backupEndDate: Date;

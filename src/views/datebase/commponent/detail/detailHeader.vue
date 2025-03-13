@@ -323,9 +323,11 @@ const cbcCodeList = ref<any>([]);
 const lisBtnColor = ref(false);
 const restrictedRoutes = ['/report', '/databaseRbc', '/databasePlt', '/databaseWhole'];
 const deviceSerialNm = computed(() => store.state.commonModule.deviceSerialNm);
+const localLisAutoNextPage = ref(false);
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
+  localLisAutoNextPage.value = JSON.parse(JSON.stringify(sessionStorage.getItem('lisAutoNextPage')));
 
   if (!projectBm.value) {
     const crcOptionApi = await crcOptionGet();
@@ -638,6 +640,11 @@ const uploadLis = async () => {
       await otherDataSend();
       break;
   }
+
+  console.log('localLisAutoNextPage', localLisAutoNextPage);
+  if (localLisAutoNextPage.value) {
+    emits('uploadLisChangeSlide');
+  }
 }
 
 const uimdTestCbcLisDataGet = async () => {
@@ -718,7 +725,7 @@ const uimdTestCbcLisDataGet = async () => {
 
     // ANC insert LHR10599=> ANC 계산
     if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
-      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
+      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt?._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
       wbcTemp.push({
         testcd: 'LHR10599',
         percent: ancResult,
@@ -809,7 +816,7 @@ const cmcSeoulLisAndCbcDataGet = () => {
 
     // ANC insert LHR10599=> ANC 계산
     if ((nsPercentItem.length > 0) && (wbcDiffCountItem.length > 0)) {
-      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
+      const ancResult = ((Number(wbcDiffCountItem[0].inptrslt?._cdata) * nsPercentItem[0].percent) / 100).toFixed(2);
       wbcTemp.push({
         testcd: 'LHR10599',
         percent: ancResult,
@@ -955,7 +962,6 @@ const gilDataSendLoad = async () => {
           toast.value.type = MESSAGES.TOAST_MSG_SUCCESS;
           showToast(MESSAGES.IDS_MSG_SUCCESS);
           await updateSubmitState();
-          emits('uploadLisChangeSlide', HOSPITAL_SITE_CD_BY_NAME['인천길병원']);
 
         } catch (error: any) {
           showErrorAlert(error.response.data.message);

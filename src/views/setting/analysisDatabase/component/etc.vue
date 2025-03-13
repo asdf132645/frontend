@@ -30,7 +30,7 @@
                 @mouseout="tooltipVisibleFunc('keepPage', false)"
             />
             <Tooltip :isVisible="tooltipVisible.keepPage" position="top" :message="MSG.TOOLTIP.KEEP_PAGE"/>
-            Keep Page
+            Keep left Tab
           </th>
           <td>
             <Toggle @click="toggleKeepPage" :isToggleOn="cellInfo.keepPage" />
@@ -46,10 +46,26 @@
             />
             <Tooltip :isVisible="tooltipVisible.lisUploadCheckAll" position="top"
                      :message="MSG.TOOLTIP.LIS_UPLOAD_CHECK"/>
-            LIS Upload After Checking Cells
+            Verify cells for upload
           </th>
           <td>
             <Toggle @click="toggleLisUploadCheckAll" :isToggleOn="cellInfo.lisUploadCheckAll" />
+          </td>
+        </tr>
+        <tr>
+          <th class="pos-relative">
+            <font-awesome-icon
+                :icon="['fas', 'circle-info']"
+                class="iconHover-position"
+                @mouseover="tooltipVisibleFunc('lisAutoNextPage', true)"
+                @mouseout="tooltipVisibleFunc('lisAutoNextPage', false)"
+            />
+            <Tooltip :isVisible="tooltipVisible.lisAutoNextPage" position="top"
+                     :message="MSG.TOOLTIP.MOVE_PAGE_AFTER_LIS"/>
+            Auto move to the next slide data
+          </th>
+          <td>
+            <Toggle @click="toggleLisAutoNextPage" :isToggleOn="cellInfo.lisAutoNextPage" />
           </td>
         </tr>
         <tr v-if="viewerCheck !== 'viewer'">
@@ -109,7 +125,7 @@ import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import Confirm from "@/components/commonUi/Confirm.vue";
 import {useRouter} from "vue-router";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
-import {CellImageAnalyzedType} from "@/common/type/tooltipType";
+import {CellImageAnalyzedType, EtcType} from "@/common/type/tooltipType";
 import {scrollToTop} from "@/common/lib/utils/scroll";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {CellImgAnalyzedResponse} from "@/common/api/service/setting/dto/cellImgAnalyzedDto";
@@ -138,14 +154,10 @@ const settingType = computed(() => store.state.commonModule.settingType);
 const saveHttpType = ref('');
 const apiUrl = ref('');
 const tooltipVisible = ref({
-  iaRootPath: false,
   alarm: false,
   keepPage: false,
   lisUploadCheckAll: false,
-  downloadSavePath: false,
-  download: false,
-  upload: false,
-  openDownloadSavePath: false,
+  lisAutoNextPage: false,
 })
 const machineVersion = ref<'12a' | '100a'>('12a');
 const currentCellId = ref(0);
@@ -160,6 +172,7 @@ const cellInfo = ref({
   alarmCount: '5',
   keepPage: false,
   lisUploadCheckAll: false,
+  lisAutoNextPage: false,
 });
 const { toastInfo, showToast } = useToast();
 
@@ -273,6 +286,7 @@ const cellImgGet = async () => {
         cellInfo.value.alarmCount = data.alarmCount;
         cellInfo.value.keepPage = data.keepPage;
         cellInfo.value.lisUploadCheckAll = data.lisUploadCheckAll;
+        cellInfo.value.lisAutoNextPage = data.lisAutoNextPage;
         sessionStorage.setItem('isAlarm', String(data?.isAlarm));
       }
     }
@@ -282,22 +296,29 @@ const cellImgGet = async () => {
 }
 
 const cellImgSet = async () => {
+  const copyCellInfo = { ...cellInfo.value };
+
+  if (copyCellInfo?.id) {
+    delete copyCellInfo.id;
+  }
+
   try {
     const requestAllCellInfo = allCellInfo.value.clientData.map((item) => {
       if (String(item.id) === String(cellInfo.value.id)) {
         return {
-          ...cellInfo.value,
+          ...copyCellInfo,
           id: Number(cellInfo.value.id),
           presetChecked: true,
           backupEndDate: allCellInfo.value.serverData[0].backupEndDate,
           backupStartDate: allCellInfo.value.serverData[0].backupStartDate,
         };
       } else {
-        return {...item, presetChecked: false};
+        return {...item, presetChecked: false, ...copyCellInfo };
       }
     })
     const allCellImgIds = allCellInfo.value.serverData.map(item => String(item.id));
 
+    console.log('requestAllCellInfo, requestAllCellInfo', requestAllCellInfo);
     for (const requestCellInfo of requestAllCellInfo) {
       if (allCellImgIds.includes(String(requestCellInfo.id))) {
         await putCellImgApi(requestCellInfo, String(requestCellInfo.id));
@@ -315,10 +336,11 @@ const cellImgSet = async () => {
     const data = allCellInfo.value.serverData.filter((item) => String(item.id) === String(cellInfo.value.id))[0];
     // 공통으로 사용되는 부분 세션스토리지 저장 새로고침시에도 가지고 있어야하는부분
     sessionStorage.setItem('isAlarm', String(data?.isAlarm));
+    sessionStorage.setItem('lisAutoNextPage', String(data?.lisAutoNextPage));
     const keepPageType = projectType.value === 'pb' ? 'keepPage' : 'bmKeepPage'
     sessionStorage.setItem(keepPageType, String(data?.keepPage));
     await store.dispatch('commonModule/setCommonInfo', {resetAnalyzing: true});
-    await store.dispatch('commonModule/setCommonInfo', {showLISUploadAfterCheckingAll: data?.lisUploadCheckAll});
+    await store.dispatch('commonModule/setCommonInfo', {showLISUploadAfterCheckingAll: data?.lisUploadCheckAll });
 
     await store.dispatch('commonModule/setCommonInfo', {beforeSettingFormattedString: null});
     await store.dispatch('commonModule/setCommonInfo', {afterSettingFormattedString: null});
@@ -354,6 +376,10 @@ const toggleLisUploadCheckAll = () => {
   cellInfo.value.lisUploadCheckAll = !cellInfo.value.lisUploadCheckAll;
 };
 
+const toggleLisAutoNextPage = () => {
+  cellInfo.value.lisAutoNextPage = !cellInfo.value.lisAutoNextPage;
+}
+
 const hideAlert = () => {
   showAlert.value = false;
 };
@@ -379,7 +405,7 @@ const handleOkConfirm = async () => {
   showConfirm.value = false;
 }
 
-const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean) => {
+const tooltipVisibleFunc = (type: keyof EtcType, visible: boolean) => {
   tooltipVisible.value[type] = visible;
 }
 
@@ -390,6 +416,7 @@ const handleChangeCellId = (cellId: number) => {
     cellInfo.value.alarmCount = selectedCellInfo.alarmCount;
     cellInfo.value.keepPage = selectedCellInfo.keepPage;
     cellInfo.value.lisUploadCheckAll = selectedCellInfo.lisUploadCheckAll;
+    cellInfo.value.lisAutoNextPage = selectedCellInfo.lisAutoNextPage;
   }
 }
 

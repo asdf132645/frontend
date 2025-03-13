@@ -259,7 +259,7 @@ import Remark from "@/views/datebase/commponent/detail/report/component/remark.v
 import {
   crcDataGet,
   crcGet,
-  crcOptionGet,
+  crcOptionGet, getCellImgApi,
   saveDataCreateApi, saveDataPutDataApi,
   saveDataSlotIdGetApi
 } from "@/common/api/service/setting/settingApi";
@@ -428,6 +428,7 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
+  await getRemarkSeparator();
   await nextTick();
   await dataAutoComputeLoad();
   submitState.value = props.selectItems?.submitState.includes('lis') || props.selectItems?.submitState === 'Submit';
@@ -1187,5 +1188,15 @@ const updateCRCMorphology = async () => {
   }
   // await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
 }
+
+// const getRemarkSeparator = async () => {
+//   // remarkSeparatorTwoLine
+//   try {
+//     const result = await getCellImgApi();
+//     console.log(result);
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }
 
 </script>

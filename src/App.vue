@@ -875,6 +875,7 @@ const cellImgGet = async () => {
         sessionStorage.setItem('edgeShotLPCount', String(data?.edgeShotLPCount));
         sessionStorage.setItem('edgeShotHPCount', String(data?.edgeShotHPCount));
         sessionStorage.setItem('keepPage', String(data?.keepPage));
+        sessionStorage.setItem('lisAutoNextPage', String(data?.lisAutoNextPage));
       }
     }
   } catch (e) {

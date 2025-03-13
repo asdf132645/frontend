@@ -32,15 +32,15 @@
 
       </div>
     </h1>
-    <div v-if="HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] && cbcWorkList.length !== 0" class="cbcDivWarp">
+    <div v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['서울성모병원'] && cbcWorkList.length !== 0" class="cbcDivWarp">
       <table class="cbcTable">
         <colgroup>
           <col width="50%"/>
           <col width="50%"/>
         </colgroup>
         <tr v-for="(cbcItem) in cbcWorkList" :key="cbcItem.id">
-          <td>{{ cbcItem.tclsscrnnm._cdata }}</td>
-          <td>{{ cbcItem.inptrslt._cdata }}</td>
+          <td>{{ cbcItem.tclsscrnnm?._cdata }}</td>
+          <td>{{ cbcItem.inptrslt?._cdata }}</td>
         </tr>
       </table>
     </div>

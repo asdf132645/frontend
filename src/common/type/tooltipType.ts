@@ -25,6 +25,13 @@ export interface TooltipRbcClassType {
     memo: boolean;
 }
 
+export interface EtcType {
+    alarm: boolean;
+    keepPage: boolean;
+    lisUploadCheckAll: boolean;
+    lisAutoNextPage: boolean;
+}
+
 export interface CellImageAnalyzedType {
     iaRootPath: boolean;
     nsNbIntegration: boolean;

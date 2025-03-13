@@ -751,10 +751,8 @@ const showToast = (message: string) => {
   }, 1500); // 5초 후 토스트 메시지 사라짐
 };
 
-const uploadLisChangeSlide = (hospitalNm: any) => {
-  if (hospitalNm === HOSPITAL_SITE_CD_BY_NAME['인천길병원']) {
-    changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
-  }
+const uploadLisChangeSlide = () => {
+  changeSlideByLisUpload.value = !changeSlideByLisUpload.value;
 }
 
 const getRbcDegreeData = async () => {
