@@ -10,7 +10,6 @@ import {
     fileSysCopy,
     fileSysExistsFile
 } from "@/common/api/service/fileSys/fileSysApi";
-import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 
 interface SdCBCType {
     iaRootPath: string;

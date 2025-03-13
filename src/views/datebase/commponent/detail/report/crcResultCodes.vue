@@ -259,7 +259,7 @@ import Remark from "@/views/datebase/commponent/detail/report/component/remark.v
 import {
   crcDataGet,
   crcGet,
-  crcOptionGet, getCellImgApi,
+  crcOptionGet,
   saveDataCreateApi, saveDataPutDataApi,
   saveDataSlotIdGetApi
 } from "@/common/api/service/setting/settingApi";
@@ -325,6 +325,7 @@ const passWordPassLis = ref(false);
 const passLayout = ref(false);
 const crcPassWordVal = ref('');
 const lisTwoMode = ref(false);
+const remarkSeparatorTwoLine = ref(false);
 const userModuleDataGet = computed(() => store.state.userModule);
 const searchText = ref('');
 const showDropdown = ref(false);
@@ -420,6 +421,7 @@ onBeforeMount(async () => {
     crcPassWord.value = crcOptionApi.data[0].crcPassWord;
     crcPassWordVal.value = crcOptionApi.data[0].crcPassWord;
     lisTwoMode.value = crcOptionApi.data[0].lisTwoMode;
+    remarkSeparatorTwoLine.value = crcOptionApi.data[0].remarkSeparatorTwoLine;
   }
   const {lisFilePathSetArr: lisFilePathSetArrVar, lisHotKey: lisHotKeyVal} = await getLisPathData();
   lisHotKey.value = lisHotKeyVal;
@@ -428,7 +430,6 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-  await getRemarkSeparator();
   await nextTick();
   await dataAutoComputeLoad();
   submitState.value = props.selectItems?.submitState.includes('lis') || props.selectItems?.submitState === 'Submit';
@@ -1001,7 +1002,7 @@ const updateList = (newList: any[], type: string) => {
   }
 }
 const remarkallContentPush = (newList: any, list) => {
-  const seperator = siteCd.value === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] ? '\r' : '\r\r';
+  const seperator = remarkSeparatorTwoLine.value ? '\r\r' : '\r';
   for (const el of newList) {
     if (list.value[0].remarkAllContent.length === 0) {
       list.value[0].remarkAllContent += convertToNewlines(el.remarkAllContent);
@@ -1189,14 +1190,5 @@ const updateCRCMorphology = async () => {
   // await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
 }
 
-// const getRemarkSeparator = async () => {
-//   // remarkSeparatorTwoLine
-//   try {
-//     const result = await getCellImgApi();
-//     console.log(result);
-//   } catch (err) {
-//     console.log(err)
-//   }
-// }
 
 </script>
