@@ -18,7 +18,7 @@
       v-show="false"
   />
   <div class="auto-cbc-container">
-    <h2 class="auto-cbc-title">Auto CBC Matching</h2>
+    <h2 class="auto-cbc-title">Auto Diagnostic Result Code Link</h2>
 
     <div class="auto-cbc-form">
       <div class="auto-cbc-form-row">
@@ -60,12 +60,12 @@
             <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, itemChild)"
                    class="auto-cbc-input"/>
           </div>
-          <div v-if="key ===  'unit'">
-            <select v-model="newData[key]" class="auto-cbc-select">
-              <option value="#">#</option>
-              <option value="%">%</option>
-            </select>
-          </div>
+          <!--          <div v-if="key ===  'unit'">-->
+          <!--            <select v-model="newData[key]" class="auto-cbc-select">-->
+          <!--              <option value="#">#</option>-->
+          <!--              <option value="%">%</option>-->
+          <!--            </select>-->
+          <!--          </div>-->
 
           <div v-else-if="key === 'mo_type'">
             <select v-model="newData[key]" class="auto-cbc-select" @change="onMoTypeChange(newData)">
@@ -124,16 +124,15 @@
         <th>matchingCode</th>
         <th>conditional</th>
         <th>age</th>
-        <th>sex</th>
         <th>ageCategory</th>
-        <th>unit</th>
+        <th>sex</th>
         <th class="pos-relative">
-          mo_Type
+          morphologyType
         </th>
         <th>title</th>
         <th>content</th>
-        <th>actions</th>
         <th>confirm</th>
+        <th>actions</th>
       </tr>
       </thead>
       <tbody
@@ -192,14 +191,6 @@
           <input v-model="item.age" type="text" class="auto-cbc-table-input"/>
         </td>
         <td>
-          <select v-model="item.sex" class="auto-cbc-table-select">
-            <option value="F">F</option>
-            <option value="M">M</option>
-            <option value="all">All</option>
-          </select>
-        </td>
-
-        <td>
           <select v-model="item.ageCategory" class="auto-cbc-table-select">
             <option value="day">Day</option>
             <option value="month">Month</option>
@@ -207,11 +198,18 @@
           </select>
         </td>
         <td>
-          <select v-model="item.unit" class="auto-cbc-table-select">
-            <option :value="'%'">%</option>
-            <option :value="'#'">#</option>
+          <select v-model="item.sex" class="auto-cbc-table-select">
+            <option value="F">F</option>
+            <option value="M">M</option>
+            <option value="all">All</option>
           </select>
         </td>
+        <!--        <td>-->
+        <!--          <select v-model="item.unit" class="auto-cbc-table-select">-->
+        <!--            <option :value="'%'">%</option>-->
+        <!--            <option :value="'#'">#</option>-->
+        <!--          </select>-->
+        <!--        </td>-->
 
         <td>
           <select v-model="item.mo_type" class="auto-cbc-table-select" @change="onMoTypeChange(item)">
@@ -236,18 +234,16 @@
             </option>
           </select>
         </td>
-
-
-        <td class="auto-cbc-table-actions">
-          <button @click="deleteAutoCbcData(item)" class="auto-cbc-delete-button">
-            <font-awesome-icon :icon="['fas', 'trash']"/>
-          </button>
-        </td>
         <td class="auto-cbc-table-actions" @click="toggleConfirm(item)">
           <font-awesome-icon
               :icon="item.confirm ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']"
               class="iconSize confirm"
           />
+        </td>
+        <td class="auto-cbc-table-actions">
+          <button @click="deleteAutoCbcData(item)" class="auto-cbc-delete-button">
+            <font-awesome-icon :icon="['fas', 'trash']"/>
+          </button>
         </td>
       </tr>
       </tbody>
@@ -264,7 +260,7 @@ import {
   autoCbcUpdateAllApi
 } from "@/common/api/service/autoCbc/autoCbc";
 import * as XLSX from "xlsx";
-import {crcGet, getCbcCodeRbcApi} from "@/common/api/service/setting/settingApi";
+import {crcGet, getCbcCodeRbcApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import {getLisWbcRbcData} from "@/common/helpers/lisCbc/inhaCbcLis";
 import {MSG} from "@/common/defines/constants/constantMessageText";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
@@ -275,19 +271,18 @@ const newData = ref({
   pbiaCbcCodeArr: [],
   autoTitleArr: [],
   autoContentArr: [],
-  mo_type: "",
-  title: "",
-  content: "",
-  age: "",
-  sex: "all",
-  ageCategory: "",
   matchingType: "",
   cbc_code: "",
   conditional: ">",
   conditionalValue: "",
+  age: "",
+  ageCategory: "",
+  sex: "all",
+  mo_type: "",
+  title: "",
+  content: "",
   conditionalArray: [],
   confirm: false,
-  unit: '',
 });
 
 const tooltipVisible = ref({
@@ -304,7 +299,7 @@ const tooltipVisible = ref({
 
 const crcData = ref<any>([]);
 const cbcArr = ref<any>([]);
-const draggingIndex = ref<number | null>(null); // 드래그 중인 항목 인덱스
+const draggingIndex = ref<number | null>(null); // 드래그 중인 조건 인덱스
 const newRbcData = ref<any>([]);
 const newWbcData = ref<any>([]);
 const newPltData = ref<any>([]);
@@ -363,7 +358,7 @@ const handleFileUpload = (event: Event) => {
           moType = uimdValue; // 해당 값이 없으면 원래 값을 사용
         }
 
-        // 항목에서 수치, 성별, 나이 추출 함수
+        // 조건에서 수치, 성별, 나이 추출 함수
         const extractValues = (str: string) => {
           // ≤, ≥ 같은 기호를 일반 연산자로 변환
           str = str.replace(/≤/g, "<=").replace(/≥/g, ">=");
@@ -492,17 +487,16 @@ const handleFileUpload = (event: Event) => {
         };
 
 
-        // row['항목']에서 수치, 성별, 나이 추출
-        const results = /^[FMA]/.test(row['항목']) ? extractValues2(row['항목']) : [extractValues(row['항목'])];
+        // row['조건']에서 수치, 성별, 나이 추출
+        const results = /^[FMA]/.test(row['조건']) ? extractValues2(row['조건']) : [extractValues(row['조건'])];
 
         results.forEach(({sex, age, ageCategory, conditionalArray}) => {
           // title과 content 추출
           const titleParts = uimdValue.split('-');
           const title = titleParts[1]; // SIZE 부분
           const content = titleParts[2]; // Microcyte 부분
-          const parts = row['CBC 항목'].split('_'); // '_'로 분리
+          const parts = row['matchingType'].split('_'); // '_'로 분리
           const cbcText = parts.length > 1 ? parts.slice(1).join('_') : '';
-          const unit = row['단위'];
 
 
           // findAutoCbcDataArr에 데이터 추가
@@ -514,11 +508,10 @@ const handleFileUpload = (event: Event) => {
             age: age || 'All',
             ageCategory: ageCategory || 'year',
             conditionalArray: conditionalArray,
-            matchingType: row['CBC 항목'].includes('CBC') ? 'CBC' : 'PBIA',
+            matchingType: row['matchingType'].includes('CBC') ? 'CBC' : 'PBIA',
             cbc_code: cbcText,
             id: new Date(),
             excelData: true,
-            unit: unit,
           };
 
           // mo_type 변경 시 이벤트 발생
@@ -547,20 +540,21 @@ const handleFileUpload = (event: Event) => {
 const onChangeMatchingType = async (item) => {
   if (item.matchingType === 'PBIA') {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
+
     item.pbiaCbcCodeArr = [];
 
-    console.log('lisCodeRbcArr', lisCodeRbcArr);
-    console.log('lisCodeWbcArr', lisCodeWbcArr);
-
     for (const el of lisCodeWbcArr) {
-      if (el.LIS_CD !== '') {
-        item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
-      }
+      item.pbiaCbcCodeArr.push({classNm: el.CD_NM, type: 'WBC'});
     }
+    console.log(lisCodeWbcArr)
+
     for (const el of lisCodeRbcArr) {
-      if (el.LIS_CD !== '') {
-        item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
-      }
+      item.pbiaCbcCodeArr.push({
+        classNm: `${el.CATEGORY_NM}_${el.CLASS_NM}`,
+        type: 'RBC',
+        categoryId: el.categoryId,
+        classId: el.classId
+      });
     }
   } else {
     const neene = cbcArr.value.filter((el) => {
@@ -644,16 +638,16 @@ const setData = async () => {
     // matchingType에 따른 cbc_code 목록 설정
     if (item.matchingType === "PBIA") {
       item.pbiaCbcCodeArr = [];
-
       for (const el of lisCodeWbcArr) {
-        if (el.LIS_CD !== '') {
-          item.pbiaCbcCodeArr.push({classNm: el.CD_NM});
-        }
+        item.pbiaCbcCodeArr.push({classNm: el.CD_NM, type: 'WBC'});
       }
       for (const el of lisCodeRbcArr) {
-        if (el.LIS_CD !== '') {
-          item.pbiaCbcCodeArr.push({classNm: el.CLASS_NM});
-        }
+        item.pbiaCbcCodeArr.push({
+          classNm: `${el.CATEGORY_NM}_${el.CLASS_NM}`,
+          type: 'RBC',
+          categoryId: el.categoryId,
+          classId: el.classId
+        });
       }
     } else {
       const neene = cbcArr.value.filter((el) => {
@@ -756,6 +750,7 @@ const deleteAutoCbcData = async (item) => {
   } else {
     try {
       await autoCbcDelApi({id: item.id});
+      findAutoCbcDataArr.value = findAutoCbcDataArr.value.filter(items => items.id !== item.id);
       // await loadAutoCbcData();
     } catch (error) {
       console.error("데이터 삭제 실패:", error);
@@ -787,7 +782,7 @@ const endDrag = (event: MouseEvent) => {
 const onDrop = async (index: number) => {
   if (draggingIndex.value === null || draggingIndex.value === index) return;
 
-  // 항목 순서 변경
+  // 조건 순서 변경
   const movedItem = findAutoCbcDataArr.value.splice(draggingIndex.value, 1)[0];
   findAutoCbcDataArr.value.splice(index, 0, movedItem);
 
