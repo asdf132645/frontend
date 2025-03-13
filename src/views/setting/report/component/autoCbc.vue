@@ -5,10 +5,13 @@
 
   <label for="file-upload" class="file-upload-label">
     <div class="custom-file-input auto-cbc-update-all-button">
-      <font-awesome-icon :icon="['fas', 'file-excel']"/>
+      <font-awesome-icon :icon="['fas', 'file-csv']"/>
     </div>
-
   </label>
+  <div class="allConfirm">
+    <label for="inputName">All Confirm :</label>
+    <input type="checkbox" id="inputName" v-model="allConfirmed" @change="toggleAllConfirm" />
+  </div>
   <input
       id="file-upload"
       type="file"
@@ -50,7 +53,8 @@
               <option value="&lt;=">&lt;=</option>
               <option value="==">==</option>
             </select>
-            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, newData.conditionalValue, 'add')"
+            <input v-model="newData.conditionalValue" type="text"
+                   @input="validateInput($event, newData.conditionalValue, 'add')"
                    class="auto-cbc-input"/>
           </div>
           <!--          <div v-if="key ===  'unit'">-->
@@ -142,7 +146,8 @@
       >
 
         <td>
-          <select v-model="item.matchingType" class="auto-cbc-table-select" @change="onChangeMatchingType(item)" :disabled="item.confirm">
+          <select v-model="item.matchingType" class="auto-cbc-table-select" @change="onChangeMatchingType(item)"
+                  :disabled="item.confirm">
             <option :value="'PBIA'">PBIA</option>
             <option :value="'CBC'">CBC</option>
           </select>
@@ -158,7 +163,8 @@
 
         <td class="auto-cbc-conditionalArr">
           <div v-for="(itemChild, index) in item.conditionalArray" :key="index" class="contDiv">
-            <select v-model="itemChild.operator" class="auto-cbc-table-select auto-cbc-conditional-select" :disabled="item.confirm">
+            <select v-model="itemChild.operator" class="auto-cbc-table-select auto-cbc-conditional-select"
+                    :disabled="item.confirm">
               <option value=">">&gt;</option>
               <option value="<">&lt;</option>
               <option value=">=">&gt;=</option>
@@ -173,10 +179,12 @@
                 style="width: 50px;"
                 :disabled="item.confirm"
             />
-            <button @click="addCondition(item)" type="button" v-if="index === 0" class="plusMinusBtn" :disabled="item.confirm">
+            <button @click="addCondition(item)" type="button" v-if="index === 0" class="plusMinusBtn"
+                    :disabled="item.confirm">
               <font-awesome-icon :icon="['fas', 'plus']"/>
             </button>
-            <button @click="removeCondition(item, index)" class="plusMinusBtn" type="button" v-if="index !== 0" :disabled="item.confirm">
+            <button @click="removeCondition(item, index)" class="plusMinusBtn" type="button" v-if="index !== 0"
+                    :disabled="item.confirm">
               <font-awesome-icon :icon="['fas', 'minus']"/>
             </button>
           </div>
@@ -206,14 +214,16 @@
         <!--        </td>-->
 
         <td>
-          <select v-model="item.mo_type" class="auto-cbc-table-select" @change="onMoTypeChange(item)" :disabled="item.confirm">
+          <select v-model="item.mo_type" class="auto-cbc-table-select" @change="onMoTypeChange(item)"
+                  :disabled="item.confirm">
             <option :value="'RBC'">RBC</option>
             <option :value="'WBC'">WBC</option>
             <option :value="'PLT'">PLT</option>
           </select>
         </td>
         <td>
-          <select v-model="item.title" class="auto-cbc-table-select" @change="onTitleChange(item)" :disabled="item.confirm">
+          <select v-model="item.title" class="auto-cbc-table-select" @change="onTitleChange(item)"
+                  :disabled="item.confirm">
             <option v-for="(title, idx) in item.autoTitleArr" :key="idx" :value="title.crcTitle">
               {{ title.crcTitle }}
             </option>
@@ -269,6 +279,7 @@ import ToastNotification from "@/components/commonUi/ToastNotification.vue";
 import {useToast} from "@/common/lib/utils/toast";
 
 const findAutoCbcDataArr = ref<any>([]);
+
 interface NewData {
   pbiaCbcCodeArr: any[];
   autoTitleArr: any[];
@@ -312,7 +323,8 @@ const draggingIndex = ref<number | null>(null); // 드래그 중인 조건 인�
 const newRbcData = ref<any>([]);
 const newWbcData = ref<any>([]);
 const newPltData = ref<any>([]);
-const { toastInfo, showToast } = useToast();
+const {toastInfo, showToast} = useToast();
+const allConfirmed = ref(false);
 
 // 제외 키 목록 - 화면에서 안 보여주기
 const excludeKeys = new Set([
@@ -328,8 +340,15 @@ const excludeKeys = new Set([
 const filteredKeys = computed(() =>
     Object.keys(newData.value).filter((key) => !excludeKeys.has(key))
 );
+const toggleAllConfirm = () => {
+  findAutoCbcDataArr.value.forEach((item: any) => {
+    item.confirm = allConfirmed.value; // 체크 상태에 맞게 confirm 값 설정
+  });
+};
 
-const changName = (code: any) : string => {
+
+
+const changName = (code: any): string => {
   const type = code.type ? `${code.type}_` : '';
   return `${type}${code.classNm}`;
 }
@@ -340,9 +359,9 @@ const validateInput = (event: Event, itemChild: any, type?: string) => {
   const regex = /^[0-9]*\.?[0-9]*$/;  // 숫자와 소수점만 허용
   if (!regex.test(value)) {
     // 유효하지 않은 값을 입력하면 현재 값을 유지
-    if(type === 'add'){
+    if (type === 'add') {
       newData.value.conditionalValue = value.slice(0, -1);  // 마지막 문자 제거
-    }else{
+    } else {
       itemChild.value = value.slice(0, -1);  // 마지막 문자 제거
     }
   }
@@ -709,12 +728,12 @@ const createdAutoCbcData = async () => {
     let allFillErrBool = false;
 
     fieldsToCheck.forEach(field => {
-      if(valCheckReturn(dataToSend[field])){
+      if (valCheckReturn(dataToSend[field])) {
         allFillErrBool = true;
       }
     });
 
-    if(allFillErrBool){
+    if (allFillErrBool) {
       showToast(MSG.TOAST.AUTO_CBC_ALL_VAL, MESSAGES.TOAST_MSG_ERROR);
       return;
     }
@@ -846,7 +865,6 @@ const onDrop = async (index: number) => {
     console.error("순서 변경 실패:", error);
   }
 };
-
 
 
 onMounted(async () => {

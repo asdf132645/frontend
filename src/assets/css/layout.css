@@ -7960,6 +7960,22 @@ tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td
     color: rgba(118, 118, 118, 0.3);
 }
 
+
+.allConfirm {
+    display: inline-block;
+    width: 7%;
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.allConfirm input {
+    width: 14%;
+    cursor: pointer;
+}
+
 .auto-cbc-label {
     display: block;
     margin-bottom: 5px;
@@ -8089,6 +8105,7 @@ tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td
 
 .arl.tab-content {
     width: 1600px;
+    position: relative;
 }
 
 .auto-cbc-table td {
