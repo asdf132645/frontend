@@ -13,7 +13,7 @@
           <font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" />
           IA
         </button>
-        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">Report DRC</button>
+        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">DRC</button>
         <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto DRC Link</button>
       </div>
     </div>

@@ -7930,7 +7930,7 @@ button.gbArrowButton.left {
     font-family: 'Arial', sans-serif;
     max-width: 1600px;
     margin: 0 auto;
-    padding: 20px;
+    /*padding: 20px;*/
     color: #e0e0e0;
 }
 
@@ -7963,12 +7963,13 @@ tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td
 .auto-cbc-table thead {
     margin-right: 8px;
 }
+
 .allConfirm {
     display: inline-block;
     width: 7%;
     position: absolute;
     left: 23px;
-    top: 24px;
+    top: 9px;
     text-align: left;
     cursor: pointer;
 }
@@ -8093,6 +8094,18 @@ tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td
     flex: 1;
 }
 
+button.auto-toggle-button {
+    position: absolute;
+    left: -41px;
+    background: #363636;
+    color: #fff;
+    border: none;
+    padding: 9px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+}
+
 .auto-cbc-table th {
     background-color: #1c1c1c;
     color: #e0e0e0;
@@ -8196,7 +8209,7 @@ tr.confirmOk td input, tr.confirmOk td select, tr.confirmOk td button {
     cursor: pointer;
     font-weight: 600;
     margin-right: 21px;
-    margin-top: 9px;
+    margin-top: -16px;
     transition: background-color 0.2s;
     float: right;
 }

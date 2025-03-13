@@ -22,18 +22,18 @@
   />
   <div class="auto-cbc-container">
     <h2 class="auto-cbc-title">Auto Diagnostic Result Code Link</h2>
-
-    <div class="auto-cbc-form">
+    <button class="auto-toggle-button" @click="isExpanded = !isExpanded">
+      <font-awesome-icon :icon="['fas', isExpanded ? 'chevron-up' : 'chevron-down']" />
+    </button>
+    <div class="auto-cbc-form" v-show="isExpanded">
       <div class="auto-cbc-form-row">
         <div v-for="(key, idx) in filteredKeys" :key="idx" class="auto-cbc-form-group">
           <label class="auto-cbc-label">{{ key === 'cbc_code' ? 'matchingCode' : key }}</label>
 
-
           <div v-if="key === 'matchingType'">
-            <select v-model="newData.matchingType" class="auto-cbc-select"
-                    @change="onChangeMatchingType(newData)">
-              <option :value="'PBIA'">PBIA</option>
-              <option :value="'CBC'">CBC</option>
+            <select v-model="newData.matchingType" class="auto-cbc-select" @change="onChangeMatchingType(newData)">
+              <option value="PBIA">PBIA</option>
+              <option value="CBC">CBC</option>
             </select>
           </div>
 
@@ -47,28 +47,20 @@
 
           <div v-if="key === 'conditional'" class="auto-cbc-conditional-group">
             <select v-model="newData[key]" class="auto-cbc-select auto-cbc-conditional-select">
-              <option value="&gt;">&gt;</option>
-              <option value="&lt;">&lt;</option>
-              <option value="&gt;=">&gt;=</option>
-              <option value="&lt;=">&lt;=</option>
+              <option value=">">&gt;</option>
+              <option value="<">&lt;</option>
+              <option value=">=">&gt;=</option>
+              <option value="<=">&lt;=</option>
               <option value="==">==</option>
             </select>
-            <input v-model="newData.conditionalValue" type="text"
-                   @input="validateInput($event, newData.conditionalValue, 'add')"
-                   class="auto-cbc-input"/>
+            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, newData.conditionalValue, 'add')" class="auto-cbc-input"/>
           </div>
-          <!--          <div v-if="key ===  'unit'">-->
-          <!--            <select v-model="newData[key]" class="auto-cbc-select">-->
-          <!--              <option value="#">#</option>-->
-          <!--              <option value="%">%</option>-->
-          <!--            </select>-->
-          <!--          </div>-->
 
           <div v-else-if="key === 'mo_type'">
             <select v-model="newData[key]" class="auto-cbc-select" @change="onMoTypeChange(newData)">
-              <option :value="'RBC'">RBC</option>
-              <option :value="'WBC'">WBC</option>
-              <option :value="'PLT'">PLT</option>
+              <option value="RBC">RBC</option>
+              <option value="WBC">WBC</option>
+              <option value="PLT">PLT</option>
             </select>
           </div>
 
@@ -316,7 +308,7 @@ const newData = ref<NewData>({
   conditionalArray: [],
   confirm: false,
 });
-
+const isExpanded = ref(true);
 const crcData = ref<any>([]);
 const cbcArr = ref<any>([]);
 const draggingIndex = ref<number | null>(null); // 드래그 중인 조건 인덱스
