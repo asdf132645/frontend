@@ -22,14 +22,7 @@
 
     <div class="auto-cbc-form">
       <div class="auto-cbc-form-row">
-        <div v-for="(value, key) in newData" :key="key" class="auto-cbc-form-group"
-             v-show="key !== 'conditionalValue'
-             && key !== 'pbiaCbcCodeArr'
-             && key !== 'autoTitleArr'
-             && key !== 'autoContentArr'
-             && key !== 'conditionalArray'
-             && key !== 'confirm'
-">
+        <div v-for="(key, idx) in filteredKeys" :key="idx" class="auto-cbc-form-group">
           <label class="auto-cbc-label">{{ key === 'cbc_code' ? 'matchingCode' : key }}</label>
 
 
@@ -57,7 +50,7 @@
               <option value="&lt;=">&lt;=</option>
               <option value="==">==</option>
             </select>
-            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, itemChild)"
+            <input v-model="newData.conditionalValue" type="text" @input="validateInput($event, newData.conditionalValue, 'add')"
                    class="auto-cbc-input"/>
           </div>
           <!--          <div v-if="key ===  'unit'">-->
@@ -149,14 +142,14 @@
       >
 
         <td>
-          <select v-model="item.matchingType" class="auto-cbc-table-select" @change="onChangeMatchingType(item)">
+          <select v-model="item.matchingType" class="auto-cbc-table-select" @change="onChangeMatchingType(item)" :disabled="item.confirm">
             <option :value="'PBIA'">PBIA</option>
             <option :value="'CBC'">CBC</option>
           </select>
         </td>
 
         <td>
-          <select v-model="item.cbc_code" class="auto-cbc-table-select">
+          <select v-model="item.cbc_code" class="auto-cbc-table-select" :disabled="item.confirm">
             <option v-for="(code, idx) in item.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
               {{ changName(code) }}
             </option>
@@ -165,7 +158,7 @@
 
         <td class="auto-cbc-conditionalArr">
           <div v-for="(itemChild, index) in item.conditionalArray" :key="index" class="contDiv">
-            <select v-model="itemChild.operator" class="auto-cbc-table-select auto-cbc-conditional-select">
+            <select v-model="itemChild.operator" class="auto-cbc-table-select auto-cbc-conditional-select" :disabled="item.confirm">
               <option value=">">&gt;</option>
               <option value="<">&lt;</option>
               <option value=">=">&gt;=</option>
@@ -178,27 +171,28 @@
                 class="auto-cbc-table-input"
                 @input="validateInput($event, itemChild)"
                 style="width: 50px;"
+                :disabled="item.confirm"
             />
-            <button @click="addCondition(item)" type="button" v-if="index === 0" class="plusMinusBtn">
+            <button @click="addCondition(item)" type="button" v-if="index === 0" class="plusMinusBtn" :disabled="item.confirm">
               <font-awesome-icon :icon="['fas', 'plus']"/>
             </button>
-            <button @click="removeCondition(item, index)" class="plusMinusBtn" type="button" v-if="index !== 0">
+            <button @click="removeCondition(item, index)" class="plusMinusBtn" type="button" v-if="index !== 0" :disabled="item.confirm">
               <font-awesome-icon :icon="['fas', 'minus']"/>
             </button>
           </div>
         </td>
         <td>
-          <input v-model="item.age" type="text" class="auto-cbc-table-input"/>
+          <input v-model="item.age" type="text" class="auto-cbc-table-input" :disabled="item.confirm"/>
         </td>
         <td>
-          <select v-model="item.ageCategory" class="auto-cbc-table-select">
+          <select v-model="item.ageCategory" class="auto-cbc-table-select" :disabled="item.confirm">
             <option value="day">Day</option>
             <option value="month">Month</option>
             <option value="year">Year</option>
           </select>
         </td>
         <td>
-          <select v-model="item.sex" class="auto-cbc-table-select">
+          <select v-model="item.sex" class="auto-cbc-table-select" :disabled="item.confirm">
             <option value="F">F</option>
             <option value="M">M</option>
             <option value="all">All</option>
@@ -212,14 +206,14 @@
         <!--        </td>-->
 
         <td>
-          <select v-model="item.mo_type" class="auto-cbc-table-select" @change="onMoTypeChange(item)">
+          <select v-model="item.mo_type" class="auto-cbc-table-select" @change="onMoTypeChange(item)" :disabled="item.confirm">
             <option :value="'RBC'">RBC</option>
             <option :value="'WBC'">WBC</option>
             <option :value="'PLT'">PLT</option>
           </select>
         </td>
         <td>
-          <select v-model="item.title" class="auto-cbc-table-select" @change="onTitleChange(item)">
+          <select v-model="item.title" class="auto-cbc-table-select" @change="onTitleChange(item)" :disabled="item.confirm">
             <option v-for="(title, idx) in item.autoTitleArr" :key="idx" :value="title.crcTitle">
               {{ title.crcTitle }}
             </option>
@@ -228,7 +222,7 @@
 
 
         <td>
-          <select v-model="item.content" class="auto-cbc-table-select">
+          <select v-model="item.content" class="auto-cbc-table-select" :disabled="item.confirm">
             <option v-for="(content, idx) in item.autoContentArr" :key="idx" :value="content">
               {{ content }}
             </option>
@@ -241,7 +235,7 @@
           />
         </td>
         <td class="auto-cbc-table-actions">
-          <button @click="deleteAutoCbcData(item)" class="auto-cbc-delete-button">
+          <button @click="deleteAutoCbcData(item)" class="auto-cbc-delete-button" v-if="!item.confirm">
             <font-awesome-icon :icon="['fas', 'trash']"/>
           </button>
         </td>
@@ -249,6 +243,12 @@
       </tbody>
     </table>
   </div>
+  <ToastNotification
+      v-if="toastInfo.message"
+      :message="toastInfo.message"
+      :messageType="toastInfo.messageType"
+      :duration="1500"
+  />
 </template>
 
 <script setup lang="ts">
@@ -262,22 +262,43 @@ import {
 import * as XLSX from "xlsx";
 import {crcGet, getCbcCodeRbcApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import {getLisWbcRbcData} from "@/common/helpers/lisCbc/inhaCbcLis";
-import {MSG} from "@/common/defines/constants/constantMessageText";
+import {MESSAGES, MSG} from "@/common/defines/constants/constantMessageText";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {CellImageAnalyzedType} from "@/common/type/tooltipType";
+import ToastNotification from "@/components/commonUi/ToastNotification.vue";
+import {useToast} from "@/common/lib/utils/toast";
 
 const findAutoCbcDataArr = ref<any>([]);
-const newData = ref<any>({
+interface NewData {
+  pbiaCbcCodeArr: any[];
+  autoTitleArr: any[];
+  autoContentArr: any[];
+  matchingType: string;
+  cbc_code: string;
+  conditional: string;
+  conditionalValue: string;
+  age: string;
+  ageCategory: string;
+  sex: string;
+  mo_type: string;
+  title: string;
+  content: string;
+  conditionalArray: any[];
+  confirm: boolean;
+}
+
+
+const newData = ref<NewData>({
   pbiaCbcCodeArr: [],
   autoTitleArr: [],
   autoContentArr: [],
   matchingType: "",
   cbc_code: "",
-  conditional: ">",
+  conditional: "",
   conditionalValue: "",
   age: "",
   ageCategory: "",
-  sex: "all",
+  sex: "",
   mo_type: "",
   title: "",
   content: "",
@@ -285,37 +306,45 @@ const newData = ref<any>({
   confirm: false,
 });
 
-const tooltipVisible = ref({
-  moType: false,
-  title: false,
-  content: false,
-  age: false,
-  sex: false,
-  ageCategory: false,
-  cbcCode: false,
-  conditional: false,
-  actions: false,
-})
-
 const crcData = ref<any>([]);
 const cbcArr = ref<any>([]);
 const draggingIndex = ref<number | null>(null); // 드래그 중인 조건 인덱스
 const newRbcData = ref<any>([]);
 const newWbcData = ref<any>([]);
 const newPltData = ref<any>([]);
+const { toastInfo, showToast } = useToast();
+
+// 제외 키 목록 - 화면에서 안 보여주기
+const excludeKeys = new Set([
+  "conditionalValue",
+  "pbiaCbcCodeArr",
+  "autoTitleArr",
+  "autoContentArr",
+  "conditionalArray",
+  "confirm",
+]);
+
+
+const filteredKeys = computed(() =>
+    Object.keys(newData.value).filter((key) => !excludeKeys.has(key))
+);
 
 const changName = (code: any) : string => {
   const type = code.type ? `${code.type}_` : '';
   return `${type}${code.classNm}`;
 }
 
-const validateInput = (event: Event, itemChild: any) => {
+const validateInput = (event: Event, itemChild: any, type?: string) => {
   // 입력 값에 소수점과 숫자만 허용
   const value = (event.target as HTMLInputElement).value;
   const regex = /^[0-9]*\.?[0-9]*$/;  // 숫자와 소수점만 허용
   if (!regex.test(value)) {
     // 유효하지 않은 값을 입력하면 현재 값을 유지
-    itemChild.value = value.slice(0, -1);  // 마지막 문자 제거
+    if(type === 'add'){
+      newData.value.conditionalValue = value.slice(0, -1);  // 마지막 문자 제거
+    }else{
+      itemChild.value = value.slice(0, -1);  // 마지막 문자 제거
+    }
   }
 }
 
@@ -484,7 +513,6 @@ const handleFileUpload = (event: Event) => {
               conditionalArray
             });
           });
-
           return results;
         };
 
@@ -574,7 +602,7 @@ const onTitleChange = (item: any) => {
 };
 
 
-const onMoTypeChange = (item) => {
+const onMoTypeChange = (item: any) => {
   if (item.mo_type === 'RBC') {
     item.autoTitleArr = newRbcData.value;
   } else if (item.mo_type === 'WBC') {
@@ -583,11 +611,11 @@ const onMoTypeChange = (item) => {
     item.autoTitleArr = newPltData.value;
   }
 };
-const addCondition = (item) => {
+const addCondition = (item: any) => {
   item.conditionalArray.push({operator: ">", value: ""});
 };
 
-const removeCondition = (item, index) => {
+const removeCondition = (item: any, index: any) => {
   item.conditionalArray.splice(index, 1);
 };
 const loadAutoCbcData = async () => {
@@ -595,7 +623,7 @@ const loadAutoCbcData = async () => {
   try {
     await setData();
     // orderIdx를 기준으로 정렬
-    findAutoCbcDataArr.value.sort((a, b) => parseInt(a.orderIdx) - parseInt(b.orderIdx));
+    findAutoCbcDataArr.value.sort((a: any, b: any) => parseInt(a.orderIdx) - parseInt(b.orderIdx));
 
   } catch (error) {
     console.error("데이터 불러오기 실패:", error);
@@ -612,14 +640,14 @@ const setData = async () => {
 
   // Morphology 데이터 분류
   crcData.value = crcGetApi.data;
-  newRbcData.value = crcData.value.filter(el => el.morphologyType === 'RBC');
-  newWbcData.value = crcData.value.filter(el => el.morphologyType === 'WBC');
-  newPltData.value = crcData.value.filter(el => el.morphologyType === 'PLT');
+  newRbcData.value = crcData.value.filter((el: any) => el.morphologyType === 'RBC');
+  newWbcData.value = crcData.value.filter((el: any) => el.morphologyType === 'WBC');
+  newPltData.value = crcData.value.filter((el: any) => el.morphologyType === 'PLT');
 
   cbcArr.value = cbcResponse?.data;
 
   // 기존 데이터 불러오기
-  findAutoCbcDataArr.value = autoCbcResponse.data.map((item) => {
+  findAutoCbcDataArr.value = autoCbcResponse.data.map((item: any) => {
 
     // mo_type에 따라 autoTitleArr 설정
     if (item.mo_type === "RBC") {
@@ -632,7 +660,7 @@ const setData = async () => {
 
 
     // title 값이 있으면 content 자동 설정
-    const selectedTitle = item.autoTitleArr.find((el) => el.crcTitle === item.title);
+    const selectedTitle = item.autoTitleArr.find((el: any) => el.crcTitle === item.title);
     item.autoContentArr = selectedTitle ? selectedTitle.crcContent.split(",") : [];
 
     // matchingType에 따른 cbc_code 목록 설정
@@ -650,10 +678,10 @@ const setData = async () => {
         });
       }
     } else {
-      const neene = cbcArr.value.filter((el) => {
+      const neene = cbcArr.value.filter((el: any) => {
         return el.classCd !== ''
       });
-      item.pbiaCbcCodeArr = neene.map((el) => ({classNm: el.fullNm}));
+      item.pbiaCbcCodeArr = neene.map((el: any) => ({classNm: el.fullNm}));
     }
     item.conditionalArray = item.conditional
         ? [...item.conditional.matchAll(/([<>]=?|==)\s*(-?\d+(?:\.\d+)?)/g)].map(match => {
@@ -678,15 +706,16 @@ const createdAutoCbcData = async () => {
       'age', 'cbc_code', 'conditional', 'content',
       'matchingType', 'mo_type', 'sex', 'title'
     ];
-    let x = false;
+    let allFillErrBool = false;
 
     fieldsToCheck.forEach(field => {
       if(valCheckReturn(dataToSend[field])){
-        x = true;
+        allFillErrBool = true;
       }
     });
 
-    if(x){
+    if(allFillErrBool){
+      showToast(MSG.TOAST.AUTO_CBC_ALL_VAL, MESSAGES.TOAST_MSG_ERROR);
       return;
     }
 
@@ -707,7 +736,7 @@ const createdAutoCbcData = async () => {
     dataToSend.orderIdx = (findAutoCbcDataArr.value.length + 1).toString();
 
     // 모든 값 문자열로 변환
-    Object.keys(dataToSend).forEach((key) => {
+    Object.keys(dataToSend).forEach((key: any) => {
       if (dataToSend[key] !== undefined && dataToSend[key] !== null && key !== 'conditionalArray' && key !== 'autoTitleArr' && key !== 'autoContentArr' && key !== 'pbiaCbcCodeArr' && key !== 'confirm') {
         dataToSend[key] = String(dataToSend[key]);
       }
@@ -749,6 +778,8 @@ const updateAllAutoCbcData = async () => {
 
     // 서버에 한 번에 업데이트 요청
     await autoCbcUpdateAllApi(findAutoCbcDataArr.value);
+    showToast(MSG.TOAST.SUCCESS, MESSAGES.TOAST_MSG_SUCCESS);
+
 
   } catch (error) {
     console.error("전체 데이터 수정 실패:", error);
@@ -815,6 +846,8 @@ const onDrop = async (index: number) => {
     console.error("순서 변경 실패:", error);
   }
 };
+
+
 
 onMounted(async () => {
   await loadAutoCbcData();

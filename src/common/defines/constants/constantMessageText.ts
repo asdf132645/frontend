@@ -155,7 +155,8 @@ export const MSG = {
         SUCCESS: 'Success',
         ERROR: 'Error',
         BARCODE_COPIED: 'Barcode Copied',
-        LIS_UPLOAD_ONLY_WBC: 'LIS(HIS) upload is only allowed on the WBC tab'
+        LIS_UPLOAD_ONLY_WBC: 'LIS(HIS) upload is only allowed on the WBC tab',
+        AUTO_CBC_ALL_VAL: 'All values must be filled in.',
     },
     SIGNUP: {
         ENTER_ID: 'Please enter id',

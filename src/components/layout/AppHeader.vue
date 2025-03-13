@@ -268,7 +268,6 @@ const analysisType = computed(() => store.state.commonModule.analysisType);
 const isCompleteAlarm = computed(() => store.state.commonModule.isCompleteAlarm);
 const isErrorAlarm = computed(() => store.state.commonModule.isErrorAlarm);
 const rootDir = computed(() => store.state.commonModule.iaRootPath);
-const siteCd = computed(() => store.state.commonModule.siteCd);
 
 const isErrorAlarmRunning = ref(false);
 const isCompleteAlarmRunning = ref(false);
@@ -276,8 +275,6 @@ const alarmCount = ref(0);
 const noRouterPush = ref(false);
 const currentDate = ref<string>("");
 const currentTime = ref<string>("");
-let isCompleteAlarmInterval = null;
-let isErrorAlarmInterval = null;
 const isPlayingCompleteAlarm = ref(false);
 const isPlayingErrorAlarm = ref(false);
 const showAlert = ref(false);

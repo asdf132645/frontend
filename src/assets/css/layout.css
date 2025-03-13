@@ -7952,8 +7952,12 @@ button.gbArrowButton.left {
 
 .auto-cbc-form-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(139px, 1fr));
     gap: 15px;
+}
+
+tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td button:disabled {
+    color: rgba(118, 118, 118, 0.3);
 }
 
 .auto-cbc-label {
@@ -8115,9 +8119,11 @@ button.plusMinusBtn:hover {
     background-color: #1a1a1a;
     color: #e0e0e0;
 }
+
 .confirm {
     cursor: pointer;
 }
+
 .auto-cbc-table-actions {
     display: flex;
     gap: 8px;
