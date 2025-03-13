@@ -44,7 +44,7 @@
           <div v-if="key === 'cbc_code'">
             <select v-model="newData.cbc_code" class="auto-cbc-select">
               <option v-for="(code, idx) in newData.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
-                {{ code.classNm }}
+                {{ changName(code) }}
               </option>
             </select>
           </div>
@@ -158,7 +158,7 @@
         <td>
           <select v-model="item.cbc_code" class="auto-cbc-table-select">
             <option v-for="(code, idx) in item.pbiaCbcCodeArr" :key="idx" :value="code.classNm">
-              {{ code.classNm }}
+              {{ changName(code) }}
             </option>
           </select>
         </td>
@@ -267,7 +267,7 @@ import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {CellImageAnalyzedType} from "@/common/type/tooltipType";
 
 const findAutoCbcDataArr = ref<any>([]);
-const newData = ref({
+const newData = ref<any>({
   pbiaCbcCodeArr: [],
   autoTitleArr: [],
   autoContentArr: [],
@@ -303,6 +303,12 @@ const draggingIndex = ref<number | null>(null); // 드래그 중인 조건 인�
 const newRbcData = ref<any>([]);
 const newWbcData = ref<any>([]);
 const newPltData = ref<any>([]);
+
+const changName = (code: any) : string => {
+  const type = code.type ? `${code.type}_` : '';
+  return `${type}${code.classNm}`;
+}
+
 const validateInput = (event: Event, itemChild: any) => {
   // 입력 값에 소수점과 숫자만 허용
   const value = (event.target as HTMLInputElement).value;
@@ -311,10 +317,6 @@ const validateInput = (event: Event, itemChild: any) => {
     // 유효하지 않은 값을 입력하면 현재 값을 유지
     itemChild.value = value.slice(0, -1);  // 마지막 문자 제거
   }
-}
-
-const tooltipVisibleFunc = (type: keyof CellImageAnalyzedType, visible: boolean) => {
-  tooltipVisible.value[type] = visible;
 }
 
 const toggleConfirm = (item: any) => {
@@ -435,7 +437,7 @@ const handleFileUpload = (event: Event) => {
           str = str.replace(/≤/g, "<=").replace(/≥/g, ">=");
 
           const rows = str.split('\n'); // 여러 줄로 나누기
-          const results = [];
+          const results: any = [];
           let currentSex = ''; // 현재 성별 저장
 
           rows.forEach(row => {
@@ -537,7 +539,7 @@ const handleFileUpload = (event: Event) => {
 };
 
 
-const onChangeMatchingType = async (item) => {
+const onChangeMatchingType = async (item: any) => {
   if (item.matchingType === 'PBIA') {
     const {lisCodeWbcArr, lisCodeRbcArr} = await getLisWbcRbcData();
 
@@ -546,27 +548,25 @@ const onChangeMatchingType = async (item) => {
     for (const el of lisCodeWbcArr) {
       item.pbiaCbcCodeArr.push({classNm: el.CD_NM, type: 'WBC'});
     }
-    console.log(lisCodeWbcArr)
-
     for (const el of lisCodeRbcArr) {
       item.pbiaCbcCodeArr.push({
         classNm: `${el.CATEGORY_NM}_${el.CLASS_NM}`,
         type: 'RBC',
-        categoryId: el.categoryId,
-        classId: el.classId
+        categoryId: el.IA_CATEGORY_CD,
+        classId: el.IA_CLASS_CD
       });
     }
   } else {
-    const neene = cbcArr.value.filter((el) => {
+    const neene = cbcArr.value.filter((el: any) => {
       return el.classCd !== ''
     });
-    item.pbiaCbcCodeArr = neene.map((el) => ({classNm: el.fullNm}));
+    item.pbiaCbcCodeArr = neene.map((el: any) => ({classNm: el.fullNm}));
   }
 };
 
-const onTitleChange = (item) => {
+const onTitleChange = (item: any) => {
   if (item.title) { // item.title이 정의되어 있는지 확인
-    const selectedTitle = item.autoTitleArr.find((el) => el.crcTitle === item.title);
+    const selectedTitle = item.autoTitleArr.find((el: any) => el.crcTitle === item.title);
     item.autoContentArr = selectedTitle ? selectedTitle.crcContent.split(',') : [];
   } else {
     item.autoContentArr = [];
@@ -645,8 +645,8 @@ const setData = async () => {
         item.pbiaCbcCodeArr.push({
           classNm: `${el.CATEGORY_NM}_${el.CLASS_NM}`,
           type: 'RBC',
-          categoryId: el.categoryId,
-          classId: el.classId
+          categoryId: el.IA_CATEGORY_CD,
+          classId: el.IA_CLASS_CD
         });
       }
     } else {
@@ -667,11 +667,28 @@ const setData = async () => {
 
 }
 
-
+const valCheckReturn = (val: string): boolean => {
+  return val === ''
+}
 const createdAutoCbcData = async () => {
   try {
     // 새로운 데이터 복사
     const dataToSend = {...newData.value};
+    const fieldsToCheck = [
+      'age', 'cbc_code', 'conditional', 'content',
+      'matchingType', 'mo_type', 'sex', 'title'
+    ];
+    let x = false;
+
+    fieldsToCheck.forEach(field => {
+      if(valCheckReturn(dataToSend[field])){
+        x = true;
+      }
+    });
+
+    if(x){
+      return;
+    }
 
     // conditional과 conditionalValue 결합 (값이 존재할 경우에만)
     if (dataToSend.conditional) {
