@@ -13,8 +13,8 @@
           <font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" />
           IA
         </button>
-        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('CRC')" :class="{ 'active': activeTab === 'CRC' }">DRC</button>
-        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto DRC Link</button>
+        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('DRC')" :class="{ 'active': activeTab === 'DRC' }">DRC</button>
+<!--        <button v-if="getStoredUser.userType.includes('admin')" @click="selectTab('ARL')" :class="{ 'active': activeTab === 'ARL' }">Auto DRC Link</button>-->
       </div>
     </div>
 
@@ -57,7 +57,7 @@
 import ImagePrint from "@/views/setting/report/component/ImagePrint.vue";
 import LisCode from "@/views/setting/report/component/lis/index.vue";
 import CbcCode from "@/views/setting/report/component/cbc/index.vue";
-import CRC from "@/views/setting/report/component/crc.vue";
+import DRC from "@/views/setting/report/component/drc.vue";
 import ARL from '@/views/setting/report/component/autoCbc.vue';
 import { computed, ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
@@ -111,8 +111,8 @@ const selectedTabComponent = computed(() => {
       return LisCode;
     case 'CbcCode':
       return CbcCode;
-    case 'CRC':
-      return CRC;
+    case 'DRC':
+      return DRC;
     case 'ARL':
       return ARL;
     default:
