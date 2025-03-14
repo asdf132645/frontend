@@ -441,9 +441,11 @@ const tooltipVisible = ref<TooltipListDetailType>({
   wps: false,
   rollback: false,
 })
+const enableArtifactSmudge = ref(false);
 
 
 onBeforeMount(async () => {
+  enableArtifactSmudge.value = window.config.ENABLE_ARTIFACT_SMUDGE;
   isLoading.value = false;
   isLoadedSlideData.value = false;
   projectType.value = window.PROJECT_TYPE;
@@ -715,8 +717,13 @@ const moveSelectedImages = async (item: any, itemIdx: any) => {
 };
 
 const excludeClassName = (title: string, itemIdx: number): string => {
-  if (title === 'Smudge' && siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) return "";
-  return `${itemIdx + 1}.${title}`;
+  const showIndex = itemIdx + 1;
+  if (title === 'Smudge' && !enableArtifactSmudge.value) return "";
+  if (title === 'Artifact(Smudge)' && enableArtifactSmudge.value) {
+    return `${showIndex}.Artifact`;
+  } else {
+    return `${showIndex}.${title}`;
+  }
 }
 
 const sortWbcInfo = async (wbcInfo: any, basicWbcArr: any) => {

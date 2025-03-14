@@ -121,6 +121,7 @@ const lisCodeRbcArrApp = ref<any>([]);
 const lisFilePath = ref('');
 const currentSlotId = ref('');
 const runningInfoId = ref('');
+const lisUploadBeforeSave = ref(false);
 let intervalId: any;
 
 instance?.appContext.config.globalProperties.$socket.on('isTcpConnected', async (isTcpConnected) => {
@@ -215,6 +216,8 @@ watch(userModuleDataGet.value, (newUserId) => {
 });
 
 onBeforeMount(() => {
+  lisUploadBeforeSave.value = window.config.ENABLE_SAVE_AND_LIS_SEND;
+
   instance?.appContext.config.globalProperties.$socket.emit('viewerCheck', {
     type: 'SEND_DATA',
     payload: window.APP_API_BASE_URL
@@ -513,7 +516,7 @@ async function socketData(data: any) {
         // iCasStat (0 - 없음, 1 - 있음, 2 - 진행중, 3 - 완료, 4 - 에러, 9 - 스캔)
         if ((dataICasStat.search(regex) < 0) || data?.oCasStat === '111111111111' && !commonDataGet.value.runningInfoStop) {
           tcpReq().embedStatus.runIngComp.reqUserId = userModuleDataGet.value.userId;
-          if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원']) {
+          if (lisUploadBeforeSave.value) {
             if (pbVersion.value !== '100a') {
               await store.dispatch('commonModule/setCommonInfo', {reqArr: tcpReq().embedStatus.runIngComp});
               await store.dispatch('commonModule/setCommonInfo', {runningInfoStop: true});
@@ -581,7 +584,7 @@ async function socketData(data: any) {
           nonRbcClassList: matchedWbcInfo?.nonRbcClassList,
           totalCount: matchedWbcInfo?.totalCount,
           maxWbcCount: matchedWbcInfo?.maxWbcCount,
-        }
+        };
         let wbcInfoAfter: any = [];
         let wbcInfoNewVal: any = [];
         const getDefaultWbcInfo = () => !projectBm.value ? {wbcInfo: [basicWbcArr]} : {wbcInfo: [basicBmClassList]};
@@ -611,9 +614,7 @@ async function socketData(data: any) {
 
           if (findWbcIndex !== -1) { // 유효한 인덱스인지 확인
             if (!newWbcInfo.wbcInfo[0][findWbcIndex].images.find((item) => item?.fileName === el?.FILE_NM) ) {
-              newWbcInfo.wbcInfo[0][findWbcIndex].images.push({
-                fileName: el?.FILE_NM
-              })
+              newWbcInfo.wbcInfo[0][findWbcIndex].images.push({ fileName: el?.FILE_NM });
             }
           }
         }
@@ -622,7 +623,7 @@ async function socketData(data: any) {
         const updateWbcInfoAfter = () => Object.keys(newWbcInfo).length === 0 ? getDefaultWbcInfoAfter() : newWbcInfo?.wbcInfo[0];
         const rbcInfoAfter = !projectBm.value ? rbcArrElements[0].rbcInfo : [];
         let submitState = '';
-        if (siteCd.value === HOSPITAL_SITE_CD_BY_NAME['인하대병원'] && completeSlot.testType !== '04') {
+        if (lisUploadBeforeSave.value && completeSlot.testType !== '04') {
           // 인하대 WBC 정보를 저장
           newWbcInfo.wbcInfo[0] = await inhaPercentChange(completeSlot, updateWbcInfoAfter());
 

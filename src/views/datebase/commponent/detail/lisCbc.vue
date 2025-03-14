@@ -10,7 +10,7 @@
         <p class="fs08" v-if="slip !== ''">slip : {{ slip }}</p>
       </div>
 
-      <span class="ml10" v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] || siteCd === ''" @click="cbcListOpen">
+      <span class="ml10" v-if="enableCbcList" @click="cbcListOpen">
         <font-awesome-icon :icon="['fas', 'rectangle-list']" class="cursorPointer"/>
       </span>
       <div v-if="cbcPopup" class="cbcPopUpContainer">
@@ -62,7 +62,7 @@
         </tr>
       </table>
     </div>
-    <div v-else-if="cbcWorkListForShow.length !== 0 || siteCd === HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']"
+    <div v-else-if="cbcWorkListForShow.length !== 0 || enableAbsPercentBoth"
          class="cbcDivWarp">
       <table class="cbcShowTable">
         <colgroup>
@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
 import {xml2json} from 'xml-js';
-import {computed, defineProps, onMounted, ref, watch} from "vue";
+import {computed, defineProps, onBeforeMount, onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {readFileTxt, readH7File} from "@/common/api/service/fileReader/fileReaderApi";
 import {useStore} from "vuex";
@@ -146,6 +146,8 @@ const datachoice = ref(false);
 const pbiaRootDir = computed(() => store.state.commonModule.iaRootPath);
 const slip = ref('');
 const slideData = computed(() => store.state.slideDataModule);
+const enableAbsPercentBoth = ref(false);
+const enableCbcList = ref(false);
 
 watch(props.selectItems, async (newVal) => {
   if (datachoice.value) {
@@ -154,6 +156,11 @@ watch(props.selectItems, async (newVal) => {
   await mountedSet(newVal);
 
 }, {deep: true});
+
+onBeforeMount(() => {
+  enableAbsPercentBoth.value = window.config.ENABLE_CBC_ABS_PERCENT_BOTH;
+  enableCbcList.value = window.config.ENABLE_CBC_LIST;
+})
 
 onMounted(async () => {
   await mountedSet(props.selectItems);

@@ -14,3 +14,10 @@ export interface classArr {
 export interface UpdateWbcCustomClassDto {
     classArr: classArr[];
 }
+
+export interface CustomClassDto {
+    id: number;
+    abbreviation: string;
+    fullNm: string;
+    customNum: number;
+}

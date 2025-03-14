@@ -25,7 +25,7 @@ export function getDateTimeStrForUI(): string {
     return formattedTime;
 }
 
-export const formatDateString = (dateString: any) => {
+export const formatDateString = (dateString: Date | string) => {
     if(!dateString){
        return null;
     }

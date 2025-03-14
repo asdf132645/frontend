@@ -3,7 +3,6 @@
     <template v-for="(item, index) in wbcInfoArrChild" :key="item.id">
       <li
           @click="scrollToElement(item.id)"
-          v-if="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && item?.title !== 'SM'"
           @dragover.prevent="$emit('onDragOverCircle')"
           @drop="$emit('onDropCircle', item)"
           class="pos-relative"
@@ -227,7 +226,7 @@
 
 <script setup lang="ts">
 
-import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick} from 'vue';
+import {computed, ref, watch, defineExpose, toRefs, onMounted, nextTick, onBeforeMount} from 'vue';
 import {useStore} from "vuex";
 import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {debounce} from "lodash";
@@ -320,7 +319,12 @@ const wpsImgClickInfoData = ref<any>({});
 const hoverCircleClassName = ref();
 const tooltipStyle = ref({ top: '0px', left: '0px' });
 const circleRefs = ref([]);
+const enableArtifactSmudge = ref(false);
 const { toastInfo, showToast } = useToast();
+
+onBeforeMount(() => {
+  enableArtifactSmudge.value = window.config.ENABLE_ARTIFACT_SMUDGE;
+})
 
 watch(props.hiddenImages, async (newVal) => {
   hiddenImages.value = {...newVal};
@@ -344,6 +348,9 @@ const debouncedUpdate = debounce(async (newVal) => {
       uniqueKey: `image_${index}_${imgIndex}_${timestamp}`
     })) || []
   }));
+
+  setWbcCircleClasses([...wbcInfoArrChild.value]);
+
   await classImgChange('first', null);
   await classImgChange('last', null);
 
@@ -366,6 +373,8 @@ watch(
             uniqueKey: `image_${index}_${imgIndex}_${Date.now()}`
           })) || []
         }));
+
+        setWbcCircleClasses([...wbcInfoArrChild.value]);
 
         await nextTick(); // 상태 업데이트 후 강제 렌더링
         classImgChange('first', null);
@@ -397,10 +406,19 @@ const handleImageLoad = async (itemIndex: any) => {
   if(router.currentRoute.value.fullPath !== '/databaseDetail'){
     return;
   }
+
   emits('update:cellRef', cellRef);
   await classImgChange('first', null);
   await classImgChange('last', null);
-  classList.value = props.wbcInfo.filter((item: any) => siteCd.value !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && item?.title !== 'SM');
+  const localWbcInfo = props.wbcInfo;
+  if (enableArtifactSmudge.value) {
+    classList.value = localWbcInfo.map((item) => {
+      if (item.title === 'AR') return { ...item, name: 'Artifact' };
+      return item;
+    })
+  } else {
+    classList.value = localWbcInfo.filter((item) => item.title !== 'SM');
+  }
 
   if (itemIndex === props.wbcInfo.length - 1 || itemIndex < props.wbcInfo.length - 1) {
     await store.dispatch('commonModule/setCommonInfo', { isImageGalleryLoading: false });
@@ -512,5 +530,18 @@ const setCircleRef = (el, index) => {
     circleRefs.value[index] = el;
   }
 };
+
+const setWbcCircleClasses = (wbcInfoArr: any) => {
+  if (enableArtifactSmudge.value) {
+    wbcInfoArrChild.value = wbcInfoArr.map((item) => {
+      if (item.title === 'AR') {
+        return { ...item, name: 'Artifact' };
+      }
+      return item;
+    })
+  } else {
+    wbcInfoArrChild.value = wbcInfoArr.filter((item) => item.title !== 'SM');
+  }
+}
 
 </script>

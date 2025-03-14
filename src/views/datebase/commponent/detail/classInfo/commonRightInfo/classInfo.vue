@@ -93,11 +93,10 @@
 
     <div v-if="!projectBm">
       <template v-for="(nWbcItem, outerIndex) in filterByTitle(wbcInfoVal, 'nonWbc')" :key="outerIndex">
-        <div class="categories" v-show="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && nWbcItem?.title !== 'SM'"
-             @click="goClass(nWbcItem.id)">
+        <div class="categories" @click="goClass(nWbcItem.id)">
           <ul class="categoryNm" style="cursor: default;">
             <li class="mb10 liTitle" v-if="outerIndex === 0" style="cursor: default;">non-WBC</li>
-            <li class="w-fit" style="cursor: default;">{{ getStringValue(nWbcItem.name) }}</li>
+            <li class="w-fit" style="cursor: default;">{{ nWbcItem.name }}</li>
           </ul>
           <ul style="width: 30%;">
             <li class="mb10 liTitle" v-if="outerIndex === 0"></li>
@@ -223,10 +222,12 @@ const tooltipVisible = ref<TooltipClassInfoType>({
   beforeCountPercent: false,
   afterCountPercent: false,
   lisUpload: false,
-})
+});
+const enableArtifactSmudge = ref(false);
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
+  enableArtifactSmudge.value = Boolean(enableArtifactSmudge);
 })
 
 onMounted(async () => {
@@ -316,14 +317,6 @@ const toggleLockEvent = () => {
   toggleLock.value = !toggleLock.value;
 }
 
-const getStringValue = (title: string): string => {
-  if (title === 'Artifact(Smudge)' && siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원']) {
-    return "Artifact";
-  } else {
-    return title;
-  }
-};
-
 const sortWbcInfo = (wbcInfo: any, basicWbcArr: any) => {
   let newSortArr = JSON.parse(JSON.stringify(wbcInfo));
 
@@ -358,17 +351,20 @@ const getOrderClass = async () => {
 
 const beforeAfterChange = async (newItem: any) => {
   await getOrderClass();
-  const customClassItems = slideData.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
+
+  // 슬라이드 데이터 설정
   selectItems.value = slideData.value;
   slideData.value.wbcInfoAfter = newItem;
   selectItems.value.wbcInfoAfter = newItem;
 
+  // 커스텀 클래스 필터링
   const availableCustomClassArr = customClassArr.value.filter((item: any) => item.abbreviation !== '' && item.fullNm !== '')
+  const customClassItems = slideData.value.wbcInfoAfter.filter((item: any) => 90 <= Number(item.id) && Number(item.id) <= 95);
+
+  // 중복 제거
   let wbcBeforeInfo = removeDuplicatesById(selectItems.value.wbcInfo.wbcInfo[0] || [])
   let wbcAfterInfo = removeDuplicatesById(selectItems.value?.wbcInfoAfter || selectItems.value.wbcInfo.wbcInfo[0] || []);
 
-  wbcBeforeInfo = removeDuplicatesById(wbcBeforeInfo);
-  wbcAfterInfo = removeDuplicatesById(wbcAfterInfo);
 
 
   // customClass가 있는 상태에서 첫 진입 시
@@ -419,6 +415,20 @@ const beforeAfterChange = async (newItem: any) => {
 
   const wbcBeforeArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? defaultBmClassList : defaultWbcClassList;
   const wbcAfterArr = orderClass.value.length !== 0 ? orderClass.value : window.PROJECT_TYPE === 'bm' ? basicBmClassList : basicWbcArr;
+
+  if (enableArtifactSmudge.value) {
+    wbcAfterInfo = wbcAfterInfo.map((item) => {
+      if (item.title === 'AR') return { ...item, name: 'Artifact' };
+      return item;
+    })
+    wbcBeforeInfo = wbcAfterInfo.map((item) => {
+      if (item.title === 'AR') return { ...item, name: 'Artifact' };
+      return item;
+    })
+  } else {
+    wbcAfterInfo = wbcAfterInfo.filter((item) => item.title !== 'SM');
+    wbcBeforeInfo = wbcBeforeInfo.filter((item) => item.title !== 'SM');
+  }
 
   wbcInfoAfterVal.value = wbcAfterInfo;
   wbcInfoBeforeVal.value = wbcBeforeInfo;
@@ -474,7 +484,6 @@ const beforeAfterChange = async (newItem: any) => {
     }
     wbcInfoVal.value.push(item);
   }
-
 }
 
 /** Before, After 이미지들이 같은지 비교 */

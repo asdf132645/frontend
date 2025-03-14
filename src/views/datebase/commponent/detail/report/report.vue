@@ -1,6 +1,6 @@
 <template>
 
-  <ClassInfoMenu :changeSlideByLisUpload="changeSlideByLisUpload" />
+  <ClassInfoMenu :changeSlideByLisUpload="changeSlideByLisUpload"/>
   <div :class="'reportSection' + (cbcLayer ? ' cbcLayer' : '')">
     <DetailHeader
         :testType="projectBm ? getBmTestTypeText(selectItems?.testType) : getTestTypeText(selectItems?.testType)"
@@ -18,8 +18,9 @@
     <div style="display:flex;">
       <LisCbc v-if="cbcLayer" :selectItems="selectItems"/>
       <div class="reportDiv">
-        <div class="rbcDiv shadowBox" :class="cbcLayer ? 'rbcDivInReportWithCBC' : ''" v-if="!projectBm && selectItems.testType === '04'">
-          <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report' />
+        <div class="rbcDiv shadowBox" :class="cbcLayer ? 'rbcDivInReportWithCBC' : ''"
+             v-if="!projectBm && selectItems.testType === '04'">
+          <RbcClass v-if="!isLoading" :rbcInfo="rbcInfo" type='report'/>
         </div>
         <div class="wbcDiv shadowBox">
           <WbcClass v-if="!isLoading" :wbcInfo="wbcInfo" :selectItems="selectItems" type='report'
@@ -119,7 +120,7 @@
                 </colgroup>
                 <tbody>
                 <template v-for="(nWbcItem, outerIndex) in nonWbcClassList" :key="outerIndex">
-                  <tr v-show="siteCd !== HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] && nWbcItem?.title !== 'SM'">
+                  <tr>
                     <td>{{ getCategoryName(nWbcItem) }}</td>
                     <td>
                       {{ Number(nWbcItem?.count) || 0 }}
@@ -164,8 +165,12 @@
                       <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Degree</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">{{ Number(classInfo?.degree) || 0 }}</li>
-                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'" class="cursorDefault">-</li>
-                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">-</li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
+                            class="cursorDefault">-
+                        </li>
+                        <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'">
+                          -
+                        </li>
                       </template>
 
                       <li class="printTotalText cursorDefault" v-show="category.categoryNm !== 'Shape'">Total</li>
@@ -202,19 +207,25 @@
                       <li v-if="innerIndex === 0" class="mb10 liTitle" style="cursor: default;">Percent</li>
                       <template v-for="(classInfo, classIndex) in category?.classInfo" :key="classIndex">
                         <li style="cursor: default;">
-                          {{ percentageChange(Number(classInfo?.originalDegree), RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) || 0 }}
+                          {{
+                            percentageChange(Number(classInfo?.originalDegree), RBC_CODE_CLASS_ID.SIZE.CATEGORY_ID) || 0
+                          }}
                         </li>
 
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryId === '03'"
                             style="cursor: default;"
                         >
-                          {{ percentageChange(rbcCount.shapeOthersTotalCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0 }}
+                          {{
+                            percentageChange(rbcCount.shapeOthersTotalCount, RBC_CODE_CLASS_ID.SHAPE.CATEGORY_ID) || 0
+                          }}
                         </li>
 
                         <li v-if="classIndex === category.classInfo.length - 1 && category?.categoryNm === 'Inclusion Body'"
                             style="cursor: default;"
                         >
-                          {{ percentageChange(rbcCount.malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0 }}
+                          {{
+                            percentageChange(rbcCount.malariaCount, RBC_CODE_CLASS_ID.INCLUSION_BODY.CATEGORY_ID) || 0
+                          }}
                         </li>
                       </template>
 
@@ -258,13 +269,13 @@
 <script setup lang="ts">
 
 import {computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from "vue";
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 import WbcClass from "@/views/datebase/commponent/detail/classInfo/commonRightInfo/classInfo.vue";
 import {getBmTestTypeText, getTestTypeText} from "@/common/lib/utils/conversionDataUtils";
 import {defaultBmClassList, defaultWbcClassList, WbcInfo} from "@/store/modules/analysis/wbcclassification";
 import Print from "@/views/datebase/commponent/detail/report/print.vue";
 import RbcClass from "@/views/datebase/commponent/detail/rbc/rbcClass.vue";
-import { formatDateString } from "@/common/lib/utils/dateUtils";
+import {formatDateString} from "@/common/lib/utils/dateUtils";
 import ClassInfoMenu from "@/views/datebase/commponent/detail/classInfoMenu.vue";
 import {crcGet, crcOptionGet, getOrderClassApi, getRbcDegreeApi} from "@/common/api/service/setting/settingApi";
 import LisCbc from "@/views/datebase/commponent/detail/lisCbc.vue";
@@ -280,7 +291,7 @@ import {removeDuplicatesById} from "@/common/lib/utils/removeDuplicateIds";
 import {HOSPITAL_SITE_CD_BY_NAME} from "@/common/defines/constants/siteCd";
 import {RBC_CODE_CLASS_ID, SHOWING_RBC_SHAPE_CLASS_IDS} from "@/common/defines/constants/dataBase";
 import DetailHeader from "@/views/datebase/commponent/detail/detailHeader.vue";
-import { DIR_NAME } from "@/common/defines/constants/settings";
+import {DIR_NAME} from "@/common/defines/constants/settings";
 import {isObjectEmpty} from "@/common/lib/utils/validators";
 import {MESSAGES, MSG_GENERAL} from "@/common/defines/constants/constantMessageText";
 import ToastNotification from "@/components/commonUi/ToastNotification.vue";
@@ -326,6 +337,7 @@ const toastMessage = ref('');
 const toastMessageType = ref(MESSAGES.TOAST_MSG_SUCCESS);
 const totalRBCImageNames = ref<string[]>([]);
 const patientName = ref('');
+const enableArtifactSmudge = ref(false);
 
 watch(
     () => slideData.value,
@@ -352,6 +364,7 @@ watch(
 
 onBeforeMount(async () => {
   projectBm.value = window.PROJECT_TYPE === 'bm';
+  enableArtifactSmudge.value = window.config.ENABLE_ARTIFACT_SMUDGE;
   if (!projectBm.value) {
     const crcOptionApi = await crcOptionGet();
     if (crcOptionApi.data.length !== 0) {
@@ -373,7 +386,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(async () => {
   await nextTick();
-  await store.dispatch('commonModule/setCommonInfo', { rbcImagePageNumber: 0 });
+  await store.dispatch('commonModule/setCommonInfo', {rbcImagePageNumber: 0});
   isLoading.value = false;
   await getRbcDegreeData();
   await getOrderClass();
@@ -654,7 +667,6 @@ const getStringArrayBySiteCd = (siteCd: string, testType: string): string[] => {
 };
 
 
-
 const printClose = () => {
   printOnOff.value = false;
 }
@@ -702,7 +714,16 @@ async function initData(data?: any) {
     wbcInfo.value = sortedWbcInfo;
   }
 
-  await percentChangeBySiteCd();
+  if (enableArtifactSmudge.value) {
+    nonWbcClassList.value = nonWbcClassList.value.map((item) => {
+      if (item.title === 'AR') return {...item, name: 'Artifact'};
+      return item;
+    });
+  } else {
+    nonWbcClassList.value = nonWbcClassList.value.filter((item) => item.title !== 'SM');
+  }
+
+  percentChangeBySiteCd();
 
   rbcInfo.value = data;
 }

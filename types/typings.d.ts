@@ -15,6 +15,14 @@ declare global {
         MAIN_WEBSOCKET_IP?: string;
         EQUIPMENTPCIP? : string;
         LINUX_SERVER_SET? : boolean;
+        config: {
+            ENABLE_ARTIFACT_SMUDGE: boolean,
+            ENABLE_SAVE_AND_LIS_SEND: boolean,
+            ENABLE_CBC_LIST: boolean,
+            ENABLE_CBC_PATIENT_LIST: boolean,
+            ENABLE_CBC_ABS_PERCENT_BOTH: boolean,
+            ENABLE_SEND_WBC_IMAGES: boolean,
+        }
     }
 }
 

@@ -91,7 +91,7 @@
         <div class="listTable-third-line"></div>
         <div class="listTable-btn-container pos-relative">
           <Button
-              v-if="HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd"
+              v-if="enablePatientList"
               @click="openCheckList"
               size="sm"
               :icon="['fas', 'hospital-user']"
@@ -190,6 +190,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {ListTableType} from "@/common/type/tooltipType";
 import Tooltip from "@/components/commonUi/Tooltip.vue";
 import {MSG} from "@/common/defines/constants/constantMessageText";
+import {CustomClassDto} from "@/common/api/service/setting/dto/wbcCustomClassDto";
 
 
 const store = useStore();
@@ -260,10 +261,14 @@ const tooltipVisible = ref({
   hospital: false,
   excel: false,
 })
-const customClassArr = ref<any>([]);
+const customClassArr = ref<CustomClassDto[]>([]);
 const isAllDate = computed(() => moment(startDate.value).isSame(new Date('2015-03-18')));
+const enablePatientList = ref(false);
+const enableArtifactSmudge = ref(false);
 
 onBeforeMount(async () => {
+  enablePatientList.value = window.config.ENABLE_CBC_PATIENT_LIST;
+  enableArtifactSmudge.value = window.config.ENABLE_ARTIFACT_SMUDGE;
   bmClassIsBoolen.value = window.PROJECT_TYPE === 'bm';
   if (bmClassIsBoolen.value) {
     analysisOptions.value = SEARCH_ANALYSIS_BM_OPTIONS;
@@ -719,24 +724,25 @@ const excecuteExcel = async () => {
 const setTitleItemsForFilter = (rawTitleItems: any[]) => {
   const validCustomClassArr = customClassArr.value
       .filter(item => item?.abbreviation && item?.fullNm)
-      .map(item => ({
-        title: item.abbreviation,
-        label: item.abbreviation,
-        value: item.abbreviation,
-        name: item.fullNm
+      .map(({ abbreviation, fullNm }) => ({
+        title: abbreviation,
+        label: abbreviation,
+        value: abbreviation,
+        name: fullNm
       }));
 
   const filterArtifactTitleItems = rawTitleItems
-      .filter(item => siteCd.value === HOSPITAL_SITE_CD_BY_NAME['고대안암병원'] || item?.title !== 'SM')
-      .map(item => ({
-        title: item.title,
-        label: item.title,
-        value: item.title,
-        name: item.name
+      .filter(({ title }) => enableArtifactSmudge.value || title !== 'SM') // 조건을 한 줄로 정리
+      .map(({ title, name }) => ({
+        title,
+        label: title,
+        value: title,
+        name: title === 'AR' && enableArtifactSmudge.value ? 'Artifact' : name,
       }));
 
   titleItem.value = [...filterArtifactTitleItems, ...validCustomClassArr];
-}
+};
+
 
 const convertRbcData = async (dataList: any) => {
   if (bmClassIsBoolen.value) {
@@ -1201,7 +1207,7 @@ const checkListItem = (items: any) => {
 }
 
 const getDbDataAfterFunc = async () => {
-  if (HOSPITAL_SITE_CD_BY_NAME['SD의학연구소'] === siteCd.value) {
+  if (enablePatientList.value === siteCd.value) {
     if (dbGetData.value.length > 0) {
       const barcodeNoList = dbGetData.value.map((item: any) => item.barcodeNo) ?? [];
       const formatedStartDate = moment(startDate.value).format('YYYY-MM-DD');

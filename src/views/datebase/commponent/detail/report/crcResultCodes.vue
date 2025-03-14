@@ -107,7 +107,7 @@
         <Button @click="tempSaveDataEmpty" :icon="['fas', 'broom']" size="sm" class="ml10">
           Clear
         </Button>
-        <Button v-if="siteCd === HOSPITAL_SITE_CD_BY_NAME['원주기독병원']" @click="IsWbcImageSelect = true" size="sm"
+        <Button v-if="enableSendWbcImage" @click="IsWbcImageSelect = true" size="sm"
                 class="ml10">Image Select
         </Button>
       </div>
@@ -368,6 +368,7 @@ const tooltipVisible = ref({
 })
 const childRef = ref(null);
 const cbcLayer = computed(() => store.state.commonModule.cbcLayer);
+const enableSendWbcImage = ref(false);
 
 const selectWbcImgSend = (arr: any) => {
   selectWbcImgArr.value = [];
@@ -376,7 +377,9 @@ const selectWbcImgSend = (arr: any) => {
   showToast('Success');
   IsWbcImageSelect.value = false;
 }
+
 onBeforeMount(async () => {
+  enableSendWbcImage.value = window.config.ENABLE_SEND_WBC_IMAGES;
   await nextTick();
 
   isContent.value = true;
@@ -806,7 +809,6 @@ const lisStart = async () => {
   nowCrcData = updateCrcDataWithCode(crcSetData, nowCrcData);
   nowCrcData = updateCrcContent(crcSetData, nowCrcData);
 
-  console.log('siteCd.value', siteCd.value);
   switch (siteCd.value) {
     case HOSPITAL_SITE_CD_BY_NAME['SD의학연구소']:
       await lisCommonDataWhether(lisSendSD(props.selectItems?.barcodeNo, nowCrcData, lisFilePathSetArr.value, props?.selectItems?.patientNm));
