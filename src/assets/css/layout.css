@@ -7952,8 +7952,9 @@ button.gbArrowButton.left {
 
 .auto-cbc-form-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(139px, 1fr));
+    grid-template-columns: 90px 350px 150px 80px 90px 60px 90px 250px 180px;
     gap: 15px;
+    justify-content: center;
 }
 
 tr.confirmOk td input:disabled, tr.confirmOk td select:disabled, tr.confirmOk td button:disabled {
@@ -8259,7 +8260,7 @@ tr.confirmOk td input, tr.confirmOk td select, tr.confirmOk td button {
 }
 
 .auto-cbc-table th:nth-child(2), .auto-cbc-table td:nth-child(2) {
-    flex: 2;
+    flex: 4.5;
 }
 
 button.plusMinusBtn {
