@@ -267,7 +267,6 @@ import {
   gqlGenericUpdate,
   memoUpdateMutation, useUpdateRunningInfoMutation
 } from '@/gql/mutation/slideData';
-import {createCBCFileFunc} from "@/common/helpers/lisCbc";
 
 const router = useRouter();
 const showLISUploadButton = ref(true);
@@ -1020,7 +1019,11 @@ const goDae = (): string => {
 
 
 const lisFileUrlCreate = async (data: any) => {
-  await createCBCFileFunc({ barcodeNo: selectItems.value?.barcodeNo, data: data });  // CBC 파일 생성
+  const cbcParams = {
+    filePath: `D:\\UIMD_Data\\UI_Log\\LIS_IA\\${selectItems.value?.barcodeNo}.txt`,
+    data: data,
+  };
+  await createCbcFile(cbcParams);
 
   // URL이 아닌 경우, 로컬 파일 작업 수행
   if (!lisFilePathSetArr.value.includes("http")) {
