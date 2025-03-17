@@ -33,7 +33,6 @@ export const commonGetCBC = async ({ cbcFileName, cbcFilePath, barcodeNo, userId
     let cbcWorkList: { classNm: string; count: string; unit: string }[] = [];
     let [cbcPatientNo, cbcPatientNm, cbcSex, cbcAge, hosName] = ['', '', '', '', ''];
     let loading = false;
-    console.log(1);
 
     // HTTP 통신 방식
     if (cbcFilePath.includes('http')) {
@@ -146,9 +145,7 @@ const commonFileData = async ({ barcodeNo, slotId, imgDriveRootPath, cbcFilePath
         }
         await fileSysCopy(fileParams);
         await fileSysClean(fileSysCleanParams);
-        console.log('readFileTxtRes', readFileTxtRes);
         const msg: any = await readH7File(readFileTxtRes.data.data);
-        console.log('msg', msg);
         const { cbcPatientNm: localCbcPatientNm, cbcPatientNo: localCbcPatientNo, cbcSex: localCbcSex, cbcAge: localCbcAge, cbcWorkList: localCbcWorkList, hosName: localHosName} = getCBCWorkListFromFileData(msg, cbcCodeList);
         cbcPatientNm = localCbcPatientNm;
         cbcPatientNo = localCbcPatientNo;

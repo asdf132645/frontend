@@ -441,7 +441,7 @@ const handleFileUpload = (event: Event) => {
             conditionalArray.push({operator: "==", value: "0"});
           }
 
-          // 성별 처리 수정
+          // 성별 처리
           let sex = 'all';
           const sexMatch = str.match(sexPattern);
           if (sexMatch) {
@@ -451,7 +451,7 @@ const handleFileUpload = (event: Event) => {
             sex = (groupedConditions[0]?.sex === '남자' || groupedConditions[0]?.sex === 'M') ? 'M' : 'F';
           }
 
-          // 나이 처리 수정
+          // 나이 처리
           let age = '';
           let ageCategory = '';
           const ageMatch = str.match(agePattern);
@@ -538,7 +538,6 @@ const handleFileUpload = (event: Event) => {
           const content = titleParts[2]; // Microcyte 부분
           const parts = row['matchingType'].split('_'); // '_'로 분리
           const cbcText = parts.length > 1 ? parts.slice(1).join('_') : '';
-
 
           // findAutoCbcDataArr에 데이터 추가
           const newItem = {
