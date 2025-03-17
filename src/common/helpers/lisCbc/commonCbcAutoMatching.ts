@@ -112,11 +112,10 @@ const matchValues = (
             if (!cbcItem) return;
             count = Number(cbcItem.count);
         }
-        console.log(conditional)
         if (conditional) {
             const conditions = conditional.split(",").map(cond => cond.trim());
 
-            // 모든 조건이 만족해야 한다
+            // conditional에 조건이 2개 이상일 경우 모든 조건이 통과되야함
             const allConditionsMet = conditions.every(cond => evaluateCondition(count, cond));
 
             if (allConditionsMet) {
