@@ -4,7 +4,6 @@ node_modules
 dependencies.tar.gz
 frontend.egg
 npm_packages
-/public/config.js
 # local env files
 .env
 .env.local

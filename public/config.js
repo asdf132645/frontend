@@ -11,3 +11,25 @@ window.FORCE_VIEWER = 'main'; // main or viewer or exhibition
 window.PORT = '8080';
 window.LINUXSERVER = false; // Run Linux Server Bullion
 window.EQUIPMENTPCIP = 'http://192.168.0.43:3020'; // Actual EQUIPMENT PC IP - Use when running Linux
+
+// Site 별 기능들 Boolean
+window.config = {
+    // Function
+
+    // 고대 안암병원 전용 true, 나머지 false
+    ENABLE_ARTIFACT_SMUDGE: false,
+
+    // LIS
+    // 인하대 전용 true, 나머지 false
+    ENABLE_SAVE_AND_LIS_SEND: false,
+
+    // CBC
+    // SD 의학연구소 전용 true, 나머지 false
+    ENABLE_CBC_LIST: false,
+    ENABLE_CBC_PATIENT_LIST: false,
+    ENABLE_CBC_ABS_PERCENT_BOTH: false,
+
+    // DRC
+    // 원주기독 전용 true, 나머지 false
+    ENABLE_SEND_WBC_IMAGES: false,
+}
