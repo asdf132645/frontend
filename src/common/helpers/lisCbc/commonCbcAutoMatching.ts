@@ -112,14 +112,17 @@ const matchValues = (
             if (!cbcItem) return;
             count = Number(cbcItem.count);
         }
-
+        console.log(conditional)
         if (conditional) {
-            conditional.split(",").map(cond => cond.trim()).forEach(cond => {
-                if (evaluateCondition(count, cond)) {
-                    const crcItem = crcArr.find((item: any) => item.crcTitle === title && item.morphologyType === mo_type);
-                    if (crcItem) crcItem.val = content.trim();
-                }
-            });
+            const conditions = conditional.split(",").map(cond => cond.trim());
+
+            // 모든 조건이 만족해야 한다
+            const allConditionsMet = conditions.every(cond => evaluateCondition(count, cond));
+
+            if (allConditionsMet) {
+                const crcItem = crcArr.find((item: any) => item.crcTitle === title && item.morphologyType === mo_type);
+                if (crcItem) crcItem.val = content.trim();
+            }
         }
     });
     return crcArr;

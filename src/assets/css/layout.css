@@ -7937,7 +7937,7 @@ button.gbArrowButton.left {
 .auto-cbc-title {
     color: #ffffff;
     font-size: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
     padding-bottom: 10px;
     border-bottom: 2px solid #ffffff;
 }
@@ -8256,7 +8256,7 @@ tr.confirmOk td input, tr.confirmOk td select, tr.confirmOk td button {
 }
 
 .auto-cbc-table th:nth-child(3), .auto-cbc-table td:nth-child(3) {
-    flex: 2;
+    flex: 2.3;
 }
 
 .auto-cbc-table th:nth-child(2), .auto-cbc-table td:nth-child(2) {

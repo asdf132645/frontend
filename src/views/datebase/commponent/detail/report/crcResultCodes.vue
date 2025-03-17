@@ -1187,7 +1187,6 @@ const updateCRCMorphology = async () => {
   } else {
     await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
   }
-  // await autoCbcDataMatchingDefault(props?.selectItems?.barcodeNo, cbcCodeList.value, crcArr.value, props?.selectItems);
 }
 
 
